@@ -100,7 +100,7 @@ DecisionCache.get(key)
 **Zalety względem diskcache:**
 - L1 RAM: dostęp nanosekundowy dla często używanych decyzji
 - L2 SQLite: trwałość, współdzielenie między procesami
-- Async-native: `anyio.to_thread.run_sync` dla wszystkich operacji SQLite
+- Async-native: `_run_l2` helper konsoliduje wszystkie 10× `anyio.to_thread.run_sync` dla operacji SQLite
 - Thread-safe: `threading.Lock` dla L1, `check_same_thread=False` dla L2
 - JSON serializacja: bezpieczniejsza niż pickle
 
@@ -1145,5 +1145,5 @@ class NewAgent:
 
 ---
 
-> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 7.1.0 — Enterprise Optimization (minor units, batching, RBAC)
+> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 7.3.0 — Enterprise Optimization v3.0 (anyio.to_thread.run_sync Consolidation)
 > **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-06 · **Weryfikator:** Technical Lead

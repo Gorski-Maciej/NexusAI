@@ -7,7 +7,7 @@ from __future__ import annotations
 import uuid
 from typing import final
 
-import anyio
+import msgspec
 import pendulum
 from msgspec import Struct, field
 
@@ -15,6 +15,7 @@ from nexus_ai.core.broker import broker
 from nexus_ai.core.logger import get_logger
 from nexus_ai.core.msgspec_utils import DecodeError, msgspec_dumps, msgspec_loads
 from nexus_ai.core.time_utils import human_diff
+from nexus_ai.core.vectorize import execute_db
 from nexus_ai.db.analytics import DuckDBManager
 from nexus_ai.services.decision_structs import (
     CorrectionStats,
@@ -155,7 +156,7 @@ class DecisionLogger:
         """Persist a decision with full PLE context to decisions table + trust_score_cache."""
         decision_id = uuid.uuid4().hex
         try:
-            await anyio.to_thread.run_sync(self._duckdb.execute,
+            await execute_db(self._duckdb,
                 "INSERT INTO decisions (id, invoice_id, alpha_vote, beta_vote, gamma_vote, final_decision, trust_score, trust_components, context, timestamp, user_correction, decision_level, decision_pattern, ple_stm_snapshot, ple_ltm_profile) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (decision_id, invoice_id, msgspec_dumps(alpha_verdict, ensure_ascii=False), msgspec_dumps(beta_verdict, ensure_ascii=False),
                  msgspec_dumps(gamma_verdict, ensure_ascii=False), final_decision, float(trust_score),
@@ -165,9 +166,9 @@ class DecisionLogger:
                  msgspec_dumps(ple_stm_snapshot, ensure_ascii=False) if ple_stm_snapshot else None,
                  msgspec_dumps(ple_ltm_profile, ensure_ascii=False) if ple_ltm_profile else None))
 
-            await anyio.to_thread.run_sync(self._cache_trust_score, contractor_nip=str(context.contractor_nip or "unknown"),
-                                           category=str(context.category or "unknown"), trust_score=trust_score,
-                                           trust_components=trust_components, final_decision=final_decision)
+            await self._cache_trust_score(contractor_nip=str(context.contractor_nip or "unknown"),
+                                          category=str(context.category or "unknown"), trust_score=trust_score,
+                                          trust_components=trust_components, final_decision=final_decision)
 
             day_start = pendulum.now("UTC").start_of("day")
             since_midnight = human_diff(day_start, pendulum.now("UTC"), locale="pl", absolute=True)
@@ -180,10 +181,10 @@ class DecisionLogger:
             except Exception as event_err: logger.warning("[DecisionLogger] Failed to emit DecisionMade: %s", event_err)
         except Exception as exc: logger.error("[DecisionLogger] failed to log invoice_id=%s: %s", invoice_id, exc)
 
-    def _cache_trust_score(self, contractor_nip: str, category: str, trust_score: float,
-                           trust_components: TrustComponents, final_decision: str) -> None:
-        """Zapisz trust score do trust_score_cache (synchronicznie, wołane z executa)."""
-        self._duckdb.execute(
+    async def _cache_trust_score(self, contractor_nip: str, category: str, trust_score: float,
+                                  trust_components: TrustComponents, final_decision: str) -> None:
+        """Zapisz trust score do trust_score_cache (async przez execute_db)."""
+        await execute_db(self._duckdb,
             "INSERT INTO trust_score_cache (id, contractor_nip, category, trust_score, ai_confidence, vendor_reliability, data_consistency, context_trust, final_decision, user_correction, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (uuid.uuid4().hex, contractor_nip, category, float(trust_score), float(trust_components.ai_confidence),
              float(trust_components.vendor_reliability), float(trust_components.data_consistency),
@@ -192,10 +193,10 @@ class DecisionLogger:
     async def record_user_correction(self, invoice_id: str, correction: str) -> None:
         """Record a user correction for a previously logged decision."""
         try:
-            await anyio.to_thread.run_sync(self._duckdb.execute,
+            await execute_db(self._duckdb,
                 "UPDATE decisions SET user_correction = ? WHERE invoice_id = ? AND user_correction IS NULL",
                 (correction, invoice_id))
-            await anyio.to_thread.run_sync(self._duckdb.execute,
+            await execute_db(self._duckdb,
                 "UPDATE trust_score_cache SET user_correction = ? WHERE contractor_nip = (SELECT context->>'contractor_nip' FROM decisions WHERE invoice_id = ? LIMIT 1) AND user_correction IS NULL",
                 (correction, invoice_id))
             logger.info("[DecisionLogger] recorded user correction invoice_id=%s correction=%s", invoice_id, correction)

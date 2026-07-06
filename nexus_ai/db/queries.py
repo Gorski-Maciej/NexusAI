@@ -139,12 +139,13 @@ class FTSManager(AsyncBaseService):
     def __init__(self, db_path: str | Path) -> None:
         super().__init__(db_path)
 
+    async def _run_fts(self, fn, *args: Any) -> Any:
+        """Execute a sync FTS operation in a thread."""
+        return await anyio.to_thread.run_sync(fn, *args)
+
     async def _on_connect(self, conn: sqlite3.Connection) -> None:
-        await anyio.to_thread.run_sync(
-            lambda: (
-                conn.execute("PRAGMA cache_size = -25600;"),
-                conn.execute("PRAGMA temp_store = MEMORY;"),
-            )
+        await self._run_fts(
+            lambda: conn.execute("PRAGMA cache_size = -25600;") or conn.execute("PRAGMA temp_store = MEMORY;")
         )
 
     async def ensure_tables(self) -> None:
@@ -206,19 +207,17 @@ class FTSManager(AsyncBaseService):
         conn = await self.get_conn()
 
         def _rebuild():
-            conn.execute("INSERT INTO invoices_fts(invoices_fts) VALUES('rebuild')")
-            conn.execute("INSERT INTO contractors_fts(contractors_fts) VALUES('rebuild')")
-            conn.execute("INSERT INTO audit_logs_fts(audit_logs_fts) VALUES('rebuild')")
-            conn.execute("INSERT INTO events_fts(events_fts) VALUES('rebuild')")
+            for tbl in ["invoices_fts", "contractors_fts", "audit_logs_fts", "events_fts"]:
+                conn.execute(f"INSERT INTO {tbl}({tbl}) VALUES('rebuild')")
             conn.commit()
 
-        await anyio.to_thread.run_sync(_rebuild)
+        await self._run_fts(_rebuild)
         logger.info("[FTS] All indexes rebuilt")
 
     async def close(self) -> None:
         if self._conn:
             try:
-                await anyio.to_thread.run_sync(self._conn.execute, "PRAGMA optimize;")
+                await self._run_fts(self._conn.execute, "PRAGMA optimize;")
             except Exception:
                 pass
         await super().close()

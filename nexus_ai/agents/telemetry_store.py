@@ -1,22 +1,5 @@
 """AgentTelemetryStore — DuckDB + Parquet hurtownia telemetrii agentów.
 
-GENIALNY POMYSŁ ENTERPRISE v5.4:
-Zgodnie z aa3fvcx.txt §11 — wszystkie dane telemetryczne (decyzje, korekty,
-rountingi, tracy) przechowywane w DuckDB i eksportowane do Parquet.
-
-Architektura:
-- DuckDB: szybkie zapytania analityczne (SQL)
-- Parquet: kompaktowe, skompresowane przechowywanie
-- DuckDB potrafi bezpośrednio odpytywać pliki Parquet
-- Zero dodatkowej infrastruktury — wszystko w procesie
-
-Tabele:
-- telemetry_decisions: każda decyzja agenta
-- telemetry_corrections: każda korekta użytkownika
-- telemetry_routes: każda decyzja routingu (PredictiveTaskRouter)
-- telemetry_traces: pełne DecisionTrace
-- telemetry_feedback: metryki pętli feedbacku
-
 Zgodnie z RAPORT_TECHNOLOGII_NEXUSAI.txt:
 - DuckDB
 - Parquet (PyArrow)
@@ -30,8 +13,9 @@ import json
 import uuid
 from typing import Any
 
-import anyio
 from structlog import get_logger
+
+from nexus_ai.core.vectorize import execute_db, execute_db_fetchall, execute_db_fetchone, get_columns
 
 logger = get_logger("nexus.agents.telemetry")
 
@@ -42,13 +26,7 @@ logger = get_logger("nexus.agents.telemetry")
 
 
 class AgentTelemetryStore:
-    """Hurtownia telemetrii agentów — DuckDB + Parquet.
-
-    GENIALNY POMYSŁ v5.4:
-    Każda decyzja, korekta, routing i trace są trwale przechowywane.
-    DuckDB pozwala na błyskawiczne zapytania analityczne.
-    Parquet zapewnia kompaktowe, skompresowane przechowywanie.
-    """
+    """Hurtownia telemetrii agentów — DuckDB + Parquet."""
 
     def __init__(self, db_path: str | None = None) -> None:
         self._db_path = db_path or "/tmp/nexus-telemetry.db"
@@ -61,121 +39,70 @@ class AgentTelemetryStore:
             return
         try:
             import duckdb
-            self._conn = await anyio.to_thread.run_sync(
-                lambda: duckdb.connect(self._db_path)
-            )
+            self._conn = duckdb.connect(self._db_path)
 
-            # Tabela decyzji
-            self._conn.execute("""
-                CREATE TABLE IF NOT EXISTS telemetry_decisions (
-                    decision_id VARCHAR PRIMARY KEY,
-                    vendor_nip VARCHAR,
-                    amount_gross DOUBLE,
-                    category VARCHAR,
-                    document_type VARCHAR,
-                    agent_name VARCHAR,
-                    status VARCHAR,
-                    trust_score DOUBLE,
-                    decision_mode VARCHAR,
-                    trace_id VARCHAR,
-                    spans_count INTEGER,
-                    total_duration_ms DOUBLE,
+            for table_sql in [
+                """CREATE TABLE IF NOT EXISTS telemetry_decisions (
+                    decision_id VARCHAR PRIMARY KEY, vendor_nip VARCHAR,
+                    amount_gross DOUBLE, category VARCHAR, document_type VARCHAR,
+                    agent_name VARCHAR, status VARCHAR, trust_score DOUBLE,
+                    decision_mode VARCHAR, trace_id VARCHAR, spans_count INTEGER,
+                    total_duration_ms DOUBLE, quality_score DOUBLE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)""",
+                """CREATE TABLE IF NOT EXISTS telemetry_corrections (
+                    correction_id VARCHAR PRIMARY KEY, decision_id VARCHAR,
+                    agent_name VARCHAR, ai_decision VARCHAR, user_correction VARCHAR,
+                    correction_reason VARCHAR, vendor_nip VARCHAR, category VARCHAR,
+                    amount_gross DOUBLE, delta DOUBLE, feedback_type VARCHAR,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)""",
+                """CREATE TABLE IF NOT EXISTS telemetry_routes (
+                    route_id VARCHAR PRIMARY KEY, decision_id VARCHAR,
+                    vendor_nip VARCHAR, trust_score DOUBLE, confidence DOUBLE,
+                    route VARCHAR, skip_agents VARCHAR, force_agents VARCHAR,
+                    circuit_breaker_open BOOLEAN, threshold_adjustments VARCHAR,
+                    applied_rules_count INTEGER, estimated_time_ms DOUBLE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)""",
+                """CREATE TABLE IF NOT EXISTS telemetry_traces (
+                    trace_id VARCHAR PRIMARY KEY, decision_id VARCHAR,
+                    vendor_nip VARCHAR, amount_gross DOUBLE, category VARCHAR,
+                    document_type VARCHAR, spans_json VARCHAR,
+                    total_duration_ms DOUBLE, final_status VARCHAR,
+                    final_trust_score DOUBLE, decision_mode VARCHAR,
                     quality_score DOUBLE,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-
-            # Tabela korekt
-            self._conn.execute("""
-                CREATE TABLE IF NOT EXISTS telemetry_corrections (
-                    correction_id VARCHAR PRIMARY KEY,
-                    decision_id VARCHAR,
-                    agent_name VARCHAR,
-                    ai_decision VARCHAR,
-                    user_correction VARCHAR,
-                    correction_reason VARCHAR,
-                    vendor_nip VARCHAR,
-                    category VARCHAR,
-                    amount_gross DOUBLE,
-                    delta DOUBLE,
-                    feedback_type VARCHAR,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-
-            # Tabela routingu
-            self._conn.execute("""
-                CREATE TABLE IF NOT EXISTS telemetry_routes (
-                    route_id VARCHAR PRIMARY KEY,
-                    decision_id VARCHAR,
-                    vendor_nip VARCHAR,
-                    trust_score DOUBLE,
-                    confidence DOUBLE,
-                    route VARCHAR,
-                    skip_agents VARCHAR,
-                    force_agents VARCHAR,
-                    circuit_breaker_open BOOLEAN,
-                    threshold_adjustments VARCHAR,
-                    applied_rules_count INTEGER,
-                    estimated_time_ms DOUBLE,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-
-            # Tabela trace'ów (pełne DecisionTrace jako JSON)
-            self._conn.execute("""
-                CREATE TABLE IF NOT EXISTS telemetry_traces (
-                    trace_id VARCHAR PRIMARY KEY,
-                    decision_id VARCHAR,
-                    vendor_nip VARCHAR,
-                    amount_gross DOUBLE,
-                    category VARCHAR,
-                    document_type VARCHAR,
-                    spans_json VARCHAR,
-                    total_duration_ms DOUBLE,
-                    final_status VARCHAR,
-                    final_trust_score DOUBLE,
-                    decision_mode VARCHAR,
-                    quality_score DOUBLE,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-
-            # Tabela metryk feedbacku
-            self._conn.execute("""
-                CREATE TABLE IF NOT EXISTS telemetry_feedback (
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)""",
+                """CREATE TABLE IF NOT EXISTS telemetry_feedback (
                     id VARCHAR PRIMARY KEY,
                     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    total_decisions INTEGER,
-                    accepts INTEGER,
-                    corrections INTEGER,
-                    correction_rate DOUBLE,
-                    avg_response_time_ms DOUBLE,
-                    avg_feedback_latency_ms DOUBLE,
-                    avg_quality_score DOUBLE
-                )
-            """)
-
-            # Indeksy
-            for idx_col in [
-                "vendor_nip", "agent_name", "status", "decision_mode", "created_at",
+                    total_decisions INTEGER, accepts INTEGER, corrections INTEGER,
+                    correction_rate DOUBLE, avg_response_time_ms DOUBLE,
+                    avg_feedback_latency_ms DOUBLE, avg_quality_score DOUBLE)""",
             ]:
+                self._conn.execute(table_sql)
+
+            for idx_col in ["vendor_nip", "agent_name", "status", "decision_mode", "created_at"]:
                 try:
-                    self._conn.execute(
-                        f"CREATE INDEX IF NOT EXISTS idx_td_{idx_col} "
-                        f"ON telemetry_decisions({idx_col})"
-                    )
-                except Exception as exc:
-                    logger.debug("[TELEMETRY] Index creation failed for %s: %s", idx_col, exc)
+                    self._conn.execute(f"CREATE INDEX IF NOT EXISTS idx_td_{idx_col} ON telemetry_decisions({idx_col})")
+                except Exception:
+                    pass
 
             self._initialized = True
-            logger.info(
-                "[TELEMETRY] Store initialized | DB: %s | tables: 5",
-                self._db_path,
-            )
+            logger.info("[TELEMETRY] Store initialized | DB: %s | tables: 5", self._db_path)
         except Exception as exc:
             logger.warning("[TELEMETRY] Init failed (DuckDB not available?): %s", exc)
             self._initialized = True
+
+    def _ensure_conn(self) -> bool:
+        """Ensure connection is initialized. Returns True if ready."""
+        return self._conn is not None
+
+    async def _execute(self, sql: str, params: list | tuple | None = None) -> None:
+        """Execute SQL with error handling, skipping if no connection."""
+        if not self._conn:
+            return
+        try:
+            await execute_db(self._conn, sql, params)
+        except Exception as exc:
+            logger.debug("[TELEMETRY] Execute failed: %s", exc)
 
     # ── Record Decision ──────────────────────────────────────────────
 
@@ -196,28 +123,18 @@ class AgentTelemetryStore:
         quality_score: float = 0.0,
     ) -> None:
         """Zapisz decyzję w telemetrii."""
-        if not self._initialized:
+        if not self._ensure_conn():
             await self.initialize()
-        if not self._conn:
-            return
-
-        try:
-            await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(
-                    """INSERT OR REPLACE INTO telemetry_decisions
-                       (decision_id, vendor_nip, amount_gross, category, document_type,
-                        agent_name, status, trust_score, decision_mode, trace_id,
-                        spans_count, total_duration_ms, quality_score)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (
-                        decision_id, vendor_nip, amount_gross, category, document_type,
-                        agent_name, status, trust_score, decision_mode, trace_id,
-                        spans_count, total_duration_ms, quality_score,
-                    ),
-                )
-            )
-        except Exception as exc:
-            logger.debug("[TELEMETRY] Record decision failed: %s", exc)
+        await self._execute(
+            "INSERT OR REPLACE INTO telemetry_decisions "
+            "(decision_id, vendor_nip, amount_gross, category, document_type, "
+            "agent_name, status, trust_score, decision_mode, trace_id, "
+            "spans_count, total_duration_ms, quality_score) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (decision_id, vendor_nip, amount_gross, category, document_type,
+             agent_name, status, trust_score, decision_mode, trace_id,
+             spans_count, total_duration_ms, quality_score),
+        )
 
     # ── Record Correction ────────────────────────────────────────────
 
@@ -236,28 +153,18 @@ class AgentTelemetryStore:
         feedback_type: str = "correct",
     ) -> None:
         """Zapisz korektę w telemetrii."""
-        if not self._initialized:
+        if not self._ensure_conn():
             await self.initialize()
-        if not self._conn:
-            return
-
-        try:
-            await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(
-                    """INSERT OR REPLACE INTO telemetry_corrections
-                       (correction_id, decision_id, agent_name, ai_decision,
-                        user_correction, correction_reason, vendor_nip, category,
-                        amount_gross, delta, feedback_type)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (
-                        correction_id, decision_id, agent_name, ai_decision,
-                        user_correction, correction_reason, vendor_nip, category,
-                        amount_gross, delta, feedback_type,
-                    ),
-                )
-            )
-        except Exception as exc:
-            logger.debug("[TELEMETRY] Record correction failed: %s", exc)
+        await self._execute(
+            "INSERT OR REPLACE INTO telemetry_corrections "
+            "(correction_id, decision_id, agent_name, ai_decision, "
+            "user_correction, correction_reason, vendor_nip, category, "
+            "amount_gross, delta, feedback_type) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (correction_id, decision_id, agent_name, ai_decision,
+             user_correction, correction_reason, vendor_nip, category,
+             amount_gross, delta, feedback_type),
+        )
 
     # ── Record Route ─────────────────────────────────────────────────
 
@@ -276,32 +183,21 @@ class AgentTelemetryStore:
         estimated_time_ms: float = 0.0,
     ) -> None:
         """Zapisz decyzję routingu w telemetrii."""
-        if not self._initialized:
+        if not self._ensure_conn():
             await self.initialize()
-        if not self._conn:
-            return
-
         route_id = uuid.uuid4().hex[:16]
-
-        try:
-            await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(
-                    """INSERT INTO telemetry_routes
-                       (route_id, decision_id, vendor_nip, trust_score, confidence,
-                        route, skip_agents, force_agents, circuit_breaker_open,
-                        threshold_adjustments, applied_rules_count, estimated_time_ms)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (
-                        route_id, decision_id, vendor_nip, trust_score, confidence,
-                        json.dumps(route), json.dumps(skip_agents),
-                        json.dumps(force_agents), circuit_breaker_open,
-                        json.dumps(threshold_adjustments or {}),
-                        applied_rules_count, estimated_time_ms,
-                    ),
-                )
-            )
-        except Exception as exc:
-            logger.debug("[TELEMETRY] Record route failed: %s", exc)
+        await self._execute(
+            "INSERT INTO telemetry_routes "
+            "(route_id, decision_id, vendor_nip, trust_score, confidence, "
+            "route, skip_agents, force_agents, circuit_breaker_open, "
+            "threshold_adjustments, applied_rules_count, estimated_time_ms) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (route_id, decision_id, vendor_nip, trust_score, confidence,
+             json.dumps(route), json.dumps(skip_agents),
+             json.dumps(force_agents), circuit_breaker_open,
+             json.dumps(threshold_adjustments or {}),
+             applied_rules_count, estimated_time_ms),
+        )
 
     # ── Record Trace ─────────────────────────────────────────────────
 
@@ -321,28 +217,18 @@ class AgentTelemetryStore:
         quality_score: float = 0.0,
     ) -> None:
         """Zapisz pełny DecisionTrace w telemetrii."""
-        if not self._initialized:
+        if not self._ensure_conn():
             await self.initialize()
-        if not self._conn:
-            return
-
-        try:
-            await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(
-                    """INSERT OR REPLACE INTO telemetry_traces
-                       (trace_id, decision_id, vendor_nip, amount_gross, category,
-                        document_type, spans_json, total_duration_ms, final_status,
-                        final_trust_score, decision_mode, quality_score)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (
-                        trace_id, decision_id, vendor_nip, amount_gross, category,
-                        document_type, spans_json, total_duration_ms, final_status,
-                        final_trust_score, decision_mode, quality_score,
-                    ),
-                )
-            )
-        except Exception as exc:
-            logger.debug("[TELEMETRY] Record trace failed: %s", exc)
+        await self._execute(
+            "INSERT OR REPLACE INTO telemetry_traces "
+            "(trace_id, decision_id, vendor_nip, amount_gross, category, "
+            "document_type, spans_json, total_duration_ms, final_status, "
+            "final_trust_score, decision_mode, quality_score) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (trace_id, decision_id, vendor_nip, amount_gross, category,
+             document_type, spans_json, total_duration_ms, final_status,
+             final_trust_score, decision_mode, quality_score),
+        )
 
     # ── Record Feedback Metrics ──────────────────────────────────────
 
@@ -357,30 +243,32 @@ class AgentTelemetryStore:
         avg_quality_score: float,
     ) -> None:
         """Zapisz metryki pętli feedbacku."""
-        if not self._initialized:
+        if not self._ensure_conn():
             await self.initialize()
-        if not self._conn:
-            return
-
         metric_id = uuid.uuid4().hex[:16]
-        try:
-            await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(
-                    """INSERT INTO telemetry_feedback
-                       (id, total_decisions, accepts, corrections, correction_rate,
-                        avg_response_time_ms, avg_feedback_latency_ms, avg_quality_score)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (
-                        metric_id, total_decisions, accepts, corrections,
-                        correction_rate, avg_response_time_ms,
-                        avg_feedback_latency_ms, avg_quality_score,
-                    ),
-                )
-            )
-        except Exception as exc:
-            logger.debug("[TELEMETRY] Record feedback metrics failed: %s", exc)
+        await self._execute(
+            "INSERT INTO telemetry_feedback "
+            "(id, total_decisions, accepts, corrections, correction_rate, "
+            "avg_response_time_ms, avg_feedback_latency_ms, avg_quality_score) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (metric_id, total_decisions, accepts, corrections,
+             correction_rate, avg_response_time_ms,
+             avg_feedback_latency_ms, avg_quality_score),
+        )
 
     # ── Query Analytics ──────────────────────────────────────────────
+
+    async def _fetch_dict(self, sql: str, params: list | tuple | None = None) -> list[dict[str, Any]]:
+        """Execute SQL and return results as list of dicts."""
+        if not self._conn:
+            return []
+        try:
+            rows = await execute_db_fetchall(self._conn, sql, params)
+            columns = get_columns(self._conn)
+            return [dict(zip(columns, row, strict=True)) for row in rows]
+        except Exception as exc:
+            logger.debug("[TELEMETRY] Query failed: %s", exc)
+            return []
 
     async def query_decisions(
         self,
@@ -388,95 +276,46 @@ class AgentTelemetryStore:
         status: str = "",
         limit: int = 100,
     ) -> list[dict[str, Any]]:
-        """Odpytaj decyzje z telemetrii.
-
-        Args:
-            vendor_nip: Filtruj po NIP (opcjonalnie).
-            status: Filtruj po statusie (opcjonalnie).
-            limit: Maksymalna liczba wyników.
-
-        Returns:
-            Lista decyzji jako dict.
-        """
-        if not self._conn:
-            return []
-
+        """Odpytaj decyzje z telemetrii."""
         sql = "SELECT * FROM telemetry_decisions WHERE 1=1"
         params: list[Any] = []
-
         if vendor_nip:
-            sql += " AND vendor_nip = ?"
-            params.append(vendor_nip)
+            sql += " AND vendor_nip = ?"; params.append(vendor_nip)
         if status:
-            sql += " AND status = ?"
-            params.append(status)
-
-        sql += " ORDER BY created_at DESC LIMIT ?"
-        params.append(limit)
-
-        try:
-            rows = await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(sql, params).fetchall()
-            )
-            columns = [desc[0] for desc in self._conn.description]
-            return [dict(zip(columns, row, strict=True)) for row in rows]
-        except Exception as exc:
-            logger.debug("[TELEMETRY] Query failed: %s", exc)
-            return []
+            sql += " AND status = ?"; params.append(status)
+        sql += " ORDER BY created_at DESC LIMIT ?"; params.append(limit)
+        return await self._fetch_dict(sql, params)
 
     async def query_corrections(
-        self,
-        vendor_nip: str = "",
-        limit: int = 100,
+        self, vendor_nip: str = "", limit: int = 100
     ) -> list[dict[str, Any]]:
         """Odpytaj korekty z telemetrii."""
-        if not self._conn:
-            return []
-
         sql = "SELECT * FROM telemetry_corrections WHERE 1=1"
         params: list[Any] = []
-
         if vendor_nip:
-            sql += " AND vendor_nip = ?"
-            params.append(vendor_nip)
+            sql += " AND vendor_nip = ?"; params.append(vendor_nip)
+        sql += " ORDER BY created_at DESC LIMIT ?"; params.append(limit)
+        return await self._fetch_dict(sql, params)
 
-        sql += " ORDER BY created_at DESC LIMIT ?"
-        params.append(limit)
-
-        try:
-            rows = await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(sql, params).fetchall()
-            )
-            columns = [desc[0] for desc in self._conn.description]
-            return [dict(zip(columns, row, strict=True)) for row in rows]
-        except Exception as exc:
-            logger.debug("[TELEMETRY] Query corrections failed: %s", exc)
-            return []
-
-    async def get_aggregate_stats(
-        self,
-        days: int = 30,
-    ) -> dict[str, Any]:
+    async def get_aggregate_stats(self, days: int = 30) -> dict[str, Any]:
         """Pobierz zagregowane statystyki z ostatnich N dni."""
         if not self._conn:
             return {"available": False}
-
         try:
-            row = await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(
-                    """SELECT
-                        COUNT(*) as total_decisions,
-                        COUNT(CASE WHEN status = 'AUTO_POST' THEN 1 END) as auto_posted,
-                        COUNT(CASE WHEN status = 'REVIEW' THEN 1 END) as reviewed,
-                        COUNT(CASE WHEN status = 'BLOCK' THEN 1 END) as blocked,
-                        AVG(trust_score) as avg_trust,
-                        AVG(quality_score) as avg_quality,
-                        AVG(total_duration_ms) as avg_duration_ms,
-                        COUNT(DISTINCT vendor_nip) as unique_vendors
-                    FROM telemetry_decisions
-                    WHERE created_at >= CURRENT_TIMESTAMP - INTERVAL ? DAYS""",
-                    (days,),
-                ).fetchone()
+            row = await execute_db_fetchone(
+                self._conn,
+                """SELECT
+                    COUNT(*) as total_decisions,
+                    COUNT(CASE WHEN status = 'AUTO_POST' THEN 1 END) as auto_posted,
+                    COUNT(CASE WHEN status = 'REVIEW' THEN 1 END) as reviewed,
+                    COUNT(CASE WHEN status = 'BLOCK' THEN 1 END) as blocked,
+                    AVG(trust_score) as avg_trust,
+                    AVG(quality_score) as avg_quality,
+                    AVG(total_duration_ms) as avg_duration_ms,
+                    COUNT(DISTINCT vendor_nip) as unique_vendors
+                FROM telemetry_decisions
+                WHERE created_at >= CURRENT_TIMESTAMP - INTERVAL ? DAYS""",
+                (days,),
             )
             if row:
                 return {
@@ -492,85 +331,50 @@ class AgentTelemetryStore:
                 }
         except Exception as exc:
             logger.debug("[TELEMETRY] Aggregate query failed: %s", exc)
-
         return {"available": False}
 
-    async def get_correction_analysis(
-        self,
-        days: int = 30,
-    ) -> dict[str, Any]:
+    async def get_correction_analysis(self, days: int = 30) -> dict[str, Any]:
         """Analiza korekt — najczęściej korygowane wzorce."""
         if not self._conn:
             return {"available": False}
-
         try:
-            # Najczęstsze typy korekt
-            rows = await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(
-                    """SELECT
-                        vendor_nip,
-                        ai_decision,
-                        user_correction,
-                        COUNT(*) as count,
-                        AVG(amount_gross) as avg_amount
-                    FROM telemetry_corrections
-                    WHERE created_at >= CURRENT_TIMESTAMP - INTERVAL ? DAYS
-                    GROUP BY vendor_nip, ai_decision, user_correction
-                    ORDER BY count DESC
-                    LIMIT 10""",
-                    (days,),
-                ).fetchall()
+            rows = await execute_db_fetchall(
+                self._conn,
+                """SELECT vendor_nip, ai_decision, user_correction,
+                    COUNT(*) as count, AVG(amount_gross) as avg_amount
+                   FROM telemetry_corrections
+                   WHERE created_at >= CURRENT_TIMESTAMP - INTERVAL ? DAYS
+                   GROUP BY vendor_nip, ai_decision, user_correction
+                   ORDER BY count DESC LIMIT 10""",
+                (days,),
             )
-
             return {
                 "available": True,
                 "top_corrections": [
-                    {
-                        "vendor_nip": str(r[0]),
-                        "ai_decision": str(r[1]),
-                        "user_correction": str(r[2]),
-                        "count": int(r[3]),
-                        "avg_amount": float(r[4]) if r[4] else 0.0,
-                    }
+                    {"vendor_nip": str(r[0]), "ai_decision": str(r[1]),
+                     "user_correction": str(r[2]), "count": int(r[3]),
+                     "avg_amount": float(r[4]) if r[4] else 0.0}
                     for r in rows
                 ],
             }
         except Exception as exc:
             logger.debug("[TELEMETRY] Correction analysis failed: %s", exc)
-
         return {"available": False}
 
     # ── Export ───────────────────────────────────────────────────────
 
     async def export_to_parquet(self, table: str, output_path: str) -> bool:
-        """Eksportuj tabelę telemetryczną do pliku Parquet.
-
-        Args:
-            table: Nazwa tabeli (decisions, corrections, routes, traces, feedback).
-            output_path: Ścieżka wyjściowa pliku .parquet.
-
-        Returns:
-            True jeśli eksport się powiódł.
-        """
+        """Eksportuj tabelę telemetryczną do pliku Parquet."""
         if not self._conn:
             return False
-
         table_map = {
-            "decisions": "telemetry_decisions",
-            "corrections": "telemetry_corrections",
-            "routes": "telemetry_routes",
-            "traces": "telemetry_traces",
+            "decisions": "telemetry_decisions", "corrections": "telemetry_corrections",
+            "routes": "telemetry_routes", "traces": "telemetry_traces",
             "feedback": "telemetry_feedback",
         }
-
         full_table = table_map.get(table, f"telemetry_{table}")
-
         try:
-            await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(
-                    f"COPY {full_table} TO '{output_path}' (FORMAT PARQUET)"
-                )
-            )
+            await execute_db(self._conn, f"COPY {full_table} TO '{output_path}' (FORMAT PARQUET)")
             logger.info("[TELEMETRY] Exported %s → %s", full_table, output_path)
             return True
         except Exception as exc:
@@ -581,33 +385,29 @@ class AgentTelemetryStore:
 
     @property
     def count_decisions(self) -> int:
-        if self._conn:
-            try:
-                row = self._conn.execute(
-                    "SELECT COUNT(*) FROM telemetry_decisions"
-                ).fetchone()
-                return int(row[0]) if row else 0
-            except Exception as exc:
-                logger.debug("[TELEMETRY] Count decisions failed: %s", exc)
-        return 0
+        if not self._conn:
+            return 0
+        try:
+            row = self._conn.execute("SELECT COUNT(*) FROM telemetry_decisions").fetchone()
+            return int(row[0]) if row else 0
+        except Exception:
+            return 0
 
     @property
     def count_corrections(self) -> int:
-        if self._conn:
-            try:
-                row = self._conn.execute(
-                    "SELECT COUNT(*) FROM telemetry_corrections"
-                ).fetchone()
-                return int(row[0]) if row else 0
-            except Exception as exc:
-                logger.debug("[TELEMETRY] Count corrections failed: %s", exc)
-        return 0
+        if not self._conn:
+            return 0
+        try:
+            row = self._conn.execute("SELECT COUNT(*) FROM telemetry_corrections").fetchone()
+            return int(row[0]) if row else 0
+        except Exception:
+            return 0
 
     async def close(self) -> None:
         """Zamknij połączenie DuckDB."""
         if self._conn:
             try:
-                await anyio.to_thread.run_sync(self._conn.close)
+                self._conn.close()
             except Exception as exc:
                 logger.debug("[TELEMETRY] Close failed: %s", exc)
             self._conn = None

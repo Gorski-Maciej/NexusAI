@@ -48,9 +48,13 @@ class AsyncBaseService:
         self._wal_mode = wal_mode
         self._conn: sqlite3.Connection | None = None
 
+    async def _exec_sync(self, fn: Any, *args: Any, **kwargs: Any) -> Any:
+        """Execute a synchronous function in a thread."""
+        return await anyio.to_thread.run_sync(fn, *args, **kwargs)
+
     async def get_conn(self) -> sqlite3.Connection:
         if self._conn is None:
-            self._conn = await anyio.to_thread.run_sync(
+            self._conn = await self._exec_sync(
                 self._pool.get_conn, self._db_path,
                 enable_extensions=self._enable_extensions,
                 sqlcipher_key=self._sqlcipher_key, wal_mode=self._wal_mode,
@@ -134,10 +138,10 @@ class AsyncBaseService:
     async def close(self) -> None:
         if self._conn is not None:
             try:
-                await anyio.to_thread.run_sync(self._conn.execute, "PRAGMA optimize;")
+                await self._exec_sync(self._conn.execute, "PRAGMA optimize;")
             except Exception:
                 pass
-            await anyio.to_thread.run_sync(self._pool.close_conn, self._db_path)
+            await self._exec_sync(self._pool.close_conn, self._db_path)
             self._conn = None
 
     async def __aenter__(self) -> AsyncBaseService:

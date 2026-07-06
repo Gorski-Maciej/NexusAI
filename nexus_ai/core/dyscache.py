@@ -94,7 +94,7 @@ class DysCache:
             return
 
         try:
-            self._l2_conn = await anyio.to_thread.run_sync(self._init_l2_sync)
+            self._l2_conn = await self._run_l2(self._init_l2_sync)
             self._l2_initialized = True
             _log.info("[DYSCACHE] L2 (SQLite) initialized at %s", self._l2_path)
         except Exception as exc:
@@ -127,7 +127,7 @@ class DysCache:
 
         if self._l2_conn:
             try:
-                await anyio.to_thread.run_sync(self._l2_conn.close)
+                await self._run_l2(self._l2_conn.close)
             except Exception:
                 pass
             self._l2_conn = None
@@ -155,7 +155,7 @@ class DysCache:
         # 2. Sprawdź L2 (SQLite)
         if self._l2_conn:
             try:
-                row = await anyio.to_thread.run_sync(self._get_l2_sync, key)
+                row = await self._run_l2(self._get_l2_sync, key)
                 if row is not None:
                     value = json.loads(row[0])
                     expires_at = row[1]
@@ -167,7 +167,7 @@ class DysCache:
                         ttl = max(0, remaining)
                         if remaining <= 0:
                             # Wpis wygasł — usuń
-                            await anyio.to_thread.run_sync(self._del_l2_sync, key)
+                            await self._run_l2(self._del_l2_sync, key)
                             return default
 
                     with self._lock:
@@ -209,9 +209,7 @@ class DysCache:
             value_json = json.dumps(value, ensure_ascii=False, default=str)
             expires_at = time.time() + effective_ttl if effective_ttl > 0 else None
             try:
-                await anyio.to_thread.run_sync(
-                    self._set_l2_sync, key, value_json, expires_at
-                )
+                await self._run_l2(self._set_l2_sync, key, value_json, expires_at)
             except Exception as exc:
                 _log.debug("[DYSCACHE] L2 set failed: %s", exc)
 
@@ -222,7 +220,7 @@ class DysCache:
 
         if self._l2_conn:
             try:
-                await anyio.to_thread.run_sync(self._del_l2_sync, key)
+                await self._run_l2(self._del_l2_sync, key)
             except Exception:
                 pass
 
@@ -233,7 +231,7 @@ class DysCache:
 
         if self._l2_conn:
             try:
-                await anyio.to_thread.run_sync(self._clear_l2_sync)
+                await self._run_l2(self._clear_l2_sync)
             except Exception:
                 pass
 
@@ -250,12 +248,13 @@ class DysCache:
         if not self._l2_conn:
             return 0
         try:
-            row = await anyio.to_thread.run_sync(
+            cursor = await self._run_l2(
                 lambda: self._l2_conn.execute(
                     "SELECT COUNT(*) FROM dyscache WHERE expires_at IS NULL OR expires_at > ?",
                     (time.time(),),
-                ).fetchone()
+                )
             )
+            row = cursor.fetchone()
             return row[0] if row else 0
         except Exception:
             return 0
@@ -269,7 +268,7 @@ class DysCache:
         if not self._l2_conn:
             return 0
         try:
-            cursor = await anyio.to_thread.run_sync(
+            cursor = await self._run_l2(
                 lambda: self._l2_conn.execute(
                     "DELETE FROM dyscache WHERE expires_at IS NOT NULL AND expires_at <= ?",
                     (time.time(),),
@@ -282,6 +281,12 @@ class DysCache:
             return count
         except Exception:
             return 0
+
+    # ── Internal: L2 helper ──────────────────────────────────────────────
+
+    async def _run_l2(self, func, *args: Any) -> Any:
+        """Execute a synchronous L2 method in a thread."""
+        return await anyio.to_thread.run_sync(func, *args)
 
     # ── Internal: L1 ──────────────────────────────────────────────────────
 

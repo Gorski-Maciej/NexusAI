@@ -201,10 +201,10 @@ class TesseractEngine(BaseOCREngine):
             return None
 
     async def _extract_text_impl(self, image_path: Path) -> str | None:
-        return await self._run()
+        return await self._run_ocr(self._run)
 
     async def _extract_confidence_impl(self, image_path: Path) -> list[dict] | None:
-        result = await self._run(extra_config=["tsv"])
+        result = await self._run_ocr(self._run, extra_config=["tsv"])
         if not result:
             return None
         lines = result.strip().split("\n")
@@ -234,7 +234,7 @@ class TesseractEngine(BaseOCREngine):
         return words if words else None
 
     async def _extract_amount_impl(self, image_path: Path) -> float | None:
-        result = await self._run(extra_config=["--psm", "6", "-c", "tessedit_char_whitelist=0123456789.,-"])
+        result = await self._run_ocr(self._run, extra_config=["--psm", "6", "-c", "tessedit_char_whitelist=0123456789.,-"])
         if result and (match := re.search(r"[\d\s,.-]+", result)):
             try:
                 return float(match.group().replace(" ", "").replace(",", "."))
@@ -243,7 +243,7 @@ class TesseractEngine(BaseOCREngine):
         return None
 
     async def _extract_digits_impl(self, image_path: Path, expected_length: int = 10) -> str | None:
-        result = await self._run(extra_config=["--psm", "7", "-c", "tessedit_char_whitelist=0123456789"])
+        result = await self._run_ocr(self._run, extra_config=["--psm", "7", "-c", "tessedit_char_whitelist=0123456789"])
         if result:
             digits = re.sub(r"\D", "", result)
             if expected_length and len(digits) >= expected_length:
@@ -332,11 +332,11 @@ class PaddleOCREngine(BaseOCREngine):
         return "\n".join(lines) if lines else None
 
     async def _extract_text_impl(self, image_path: Path) -> str | None:
-        result = await anyio.to_thread.run_sync(lambda: self._ocr.ocr(str(image_path), cls=True, det=True, rec=True))
+        result = await self._run_ocr(self._ocr.ocr, str(image_path), cls=True, det=True, rec=True)
         return self._parse_ocr_result(result)
 
     async def _extract_confidence_impl(self, image_path: Path) -> list[dict] | None:
-        result = await anyio.to_thread.run_sync(lambda: self._ocr.ocr(str(image_path), cls=True, det=True, rec=True))
+        result = await self._run_ocr(self._ocr.ocr, str(image_path), cls=True, det=True, rec=True)
         if not result or not result[0] or result[0] == [None]:
             return None
         return [{"text": item[1][0].strip(), "confidence": round(float(item[1][1]), 4), "bbox": item[0]}
@@ -344,7 +344,7 @@ class PaddleOCREngine(BaseOCREngine):
                 for item in line_group if item and len(item) >= 2 and item[1] and item[1][0] and item[1][1] >= 0.5]
 
     async def _extract_amount_impl(self, image_path: Path) -> float | None:
-        result = await anyio.to_thread.run_sync(lambda: self._ocr.ocr(str(image_path), cls=True, det=True, rec=True))
+        result = await self._run_ocr(self._ocr.ocr, str(image_path), cls=True, det=True, rec=True)
         if not result or not result[0] or result[0] == [None]:
             return None
         amounts = []
@@ -383,7 +383,7 @@ class PaddleOCREngine(BaseOCREngine):
         if not self._available or self._ocr is None:
             return None
         try:
-            result = await anyio.to_thread.run_sync(lambda: self._ocr.ocr(str(image_path), cls=True, det=True, rec=True))
+            result = await self._run_ocr(self._ocr.ocr, str(image_path), cls=True, det=True, rec=True)
             if not result or not result[0] or result[0] == [None]:
                 return {"blocks": [], "block_count": 0, "source": "paddleocr", "version": "PP-OCRv4"}
             blocks = [{"bbox": item[0], "text": item[1][0].strip(), "confidence": round(float(item[1][1]), 4)}
@@ -399,7 +399,7 @@ class PaddleOCREngine(BaseOCREngine):
         if not self._available or self._structure_engine is None:
             return None
         try:
-            result = await anyio.to_thread.run_sync(lambda: self._structure_engine(str(image_path)))
+            result = await self._run_ocr(self._structure_engine, str(image_path))
             if not result:
                 return None
             items = [{"type": b.get("type", "text"), "bbox": b.get("bbox", []),
@@ -483,7 +483,7 @@ class DocTREngine(BaseOCREngine):
     async def _extract_text_impl(self, image_path: Path) -> str | None:
         from doctr.io import DocumentFile
         try:
-            result = await anyio.to_thread.run_sync(lambda: self._predictor(DocumentFile.from_images(str(image_path))).render())
+            result = await self._run_ocr(lambda: self._predictor(DocumentFile.from_images(str(image_path))).render())
             return result.strip() if result else None
         finally:
             _cleanup_model(self._predictor, "doctr")
@@ -491,7 +491,7 @@ class DocTREngine(BaseOCREngine):
     async def _extract_confidence_impl(self, image_path: Path) -> list[dict] | None:
         from doctr.io import DocumentFile
         try:
-            result = await anyio.to_thread.run_sync(lambda: self._predictor(DocumentFile.from_images(str(image_path))).export())
+            result = await self._run_ocr(lambda: self._predictor(DocumentFile.from_images(str(image_path))).export())
             return [{"text": w.get("value", ""), "confidence": round(float(w.get("confidence", 0.0)), 4),
                       "bbox": w.get("geometry", []), "block_type": b.get("type", "text")}
                      for page in result.get("pages", []) for b in page.get("blocks", [])
@@ -504,7 +504,7 @@ class DocTREngine(BaseOCREngine):
             return {"status": "unavailable"}
         from doctr.io import DocumentFile
         try:
-            return await anyio.to_thread.run_sync(lambda: self._predictor(DocumentFile.from_images(str(image_path))).export())
+            return await self._run_ocr(lambda: self._predictor(DocumentFile.from_images(str(image_path))).export())
         finally:
             _cleanup_model(self._predictor, "doctr_structured")
 
@@ -513,7 +513,7 @@ class DocTREngine(BaseOCREngine):
             return None
         from doctr.io import DocumentFile
         try:
-            result = await anyio.to_thread.run_sync(lambda: self._table_predictor(DocumentFile.from_images(str(image_path))).export())
+            result = await self._run_ocr(lambda: self._table_predictor(DocumentFile.from_images(str(image_path))).export())
             tables = []
             for page in result.get("pages", []):
                 for t in page.get("tables", []):
@@ -526,7 +526,7 @@ class DocTREngine(BaseOCREngine):
         from doctr.io import DocumentFile
         try:
             doc = DocumentFile.from_pdf(str(pdf_path))
-            result = await anyio.to_thread.run_sync(lambda: self._predictor(doc).render())
+            result = await self._run_ocr(lambda: self._predictor(doc).render())
             return result.strip() if result else None
         finally:
             _cleanup_model(self._predictor, "doctr_pdf")
@@ -536,7 +536,7 @@ class DocTREngine(BaseOCREngine):
             return None
         from doctr.io import DocumentFile
         try:
-            return await anyio.to_thread.run_sync(lambda: self._kie_predictor(DocumentFile.from_images(str(image_path))).export())
+            return await self._run_ocr(lambda: self._kie_predictor(DocumentFile.from_images(str(image_path))).export())
         finally:
             _cleanup_model(self._kie_predictor, "doctr_kie")
 
@@ -545,7 +545,7 @@ class DocTREngine(BaseOCREngine):
             return None
         from doctr.io import DocumentFile
         try:
-            result = await anyio.to_thread.run_sync(lambda: self._predictor(DocumentFile.from_images(str(image_path))).export())
+            result = await self._run_ocr(lambda: self._predictor(DocumentFile.from_images(str(image_path))).export())
             blocks = []
             for page in result.get("pages", []):
                 for b in page.get("blocks", []):
@@ -626,15 +626,15 @@ class EasyOCREngine(BaseOCREngine):
         return kw
 
     async def _extract_text_impl(self, image_path: Path) -> str | None:
-        result = await anyio.to_thread.run_sync(lambda: self._reader.readtext(str(image_path), **self._kwargs(detail=0)))
+        result = await self._run_ocr(self._reader.readtext, str(image_path), **self._kwargs(detail=0))
         return "\n".join(result) if result else None
 
     async def _extract_confidence_impl(self, image_path: Path) -> list[dict] | None:
-        result = await anyio.to_thread.run_sync(lambda: self._reader.readtext(str(image_path), **self._kwargs(detail=1)))
+        result = await self._run_ocr(self._reader.readtext, str(image_path), **self._kwargs(detail=1))
         return [{"text": text, "confidence": round(conf, 4), "bbox": bbox} for bbox, text, conf in result] if result else None
 
     async def _extract_amount_impl(self, image_path: Path) -> float | None:
-        result = await anyio.to_thread.run_sync(lambda: self._reader.readtext(str(image_path), **self._kwargs(detail=0, allowlist="0123456789.,")))
+        result = await self._run_ocr(self._reader.readtext, str(image_path), **self._kwargs(detail=0, allowlist="0123456789.,"))
         if not result:
             return None
         text = " ".join(result)
@@ -646,7 +646,7 @@ class EasyOCREngine(BaseOCREngine):
         return None
 
     async def _extract_digits_impl(self, image_path: Path, expected_length: int = 10) -> str | None:
-        result = await anyio.to_thread.run_sync(lambda: self._reader.readtext(str(image_path), **self._kwargs(detail=0, allowlist="0123456789")))
+        result = await self._run_ocr(self._reader.readtext, str(image_path), **self._kwargs(detail=0, allowlist="0123456789"))
         if not result:
             return None
         text = " ".join(result)
@@ -664,7 +664,7 @@ class EasyOCREngine(BaseOCREngine):
         kw = self._kwargs(detail=0)
         kw["text_threshold"] = adjusted_threshold
         kw["low_text"] = adjusted_low
-        result = await anyio.to_thread.run_sync(lambda: self._reader.readtext(str(image_path), **kw))
+        result = await self._run_ocr(self._reader.readtext, str(image_path), **kw)
         return "\n".join(result) if result else None
 
 

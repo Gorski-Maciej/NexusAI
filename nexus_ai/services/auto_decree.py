@@ -16,10 +16,13 @@ from pathlib import Path
 from typing import Any, final
 
 import anyio
+from structlog import get_logger
 
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.embeddings import get_embedding_service
 from nexus_ai.db.vector_store import AsyncVectorStore
+
+logger = get_logger("nexus.services.auto_decree")
 
 
 @final
@@ -39,6 +42,12 @@ class AutoDecreeEngine:
         self._store = AsyncVectorStore(str(store_path))
         self._embedding_service = get_embedding_service()
         self._templates_initialized = False
+
+    @staticmethod
+    async def _embed(text: str, embedding_service=None) -> Any:
+        """Generate embedding in a thread (sync embedder)."""
+        svc = embedding_service or get_embedding_service()
+        return await anyio.to_thread.run_sync(svc.embed, text)
 
     async def _init_vec0(self) -> None:
         """Lazy init vec0 invoice_templates table."""
@@ -93,8 +102,7 @@ class AutoDecreeEngine:
         # 2. Wyszukiwanie wektorowe przez vec0
         await self._init_vec0()
 
-        embedding = await anyio.to_thread.run_sync(self._embedding_service.embed, ocr_text)
-
+        embedding = await self._embed(ocr_text, self._embedding_service)
         try:
             similar = await self._store.search_similar(
                 query_vector=embedding,
@@ -148,7 +156,7 @@ class AutoDecreeEngine:
             template_id: ID szablonu.
         """
         await self._init_vec0()
-        embedding = await anyio.to_thread.run_sync(self._embedding_service.embed, ocr_text)
+        embedding = await self._embed(ocr_text, self._embedding_service)
 
         await self._store.insert_vectors_batch(
             vectors=[(template_id or contractor_nip, embedding)],

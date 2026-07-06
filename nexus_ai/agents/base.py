@@ -19,13 +19,18 @@ from __future__ import annotations
 
 import hashlib
 import json
-import uuid
+import uuid as _uuid
 from typing import Any, Protocol
 
 import anyio
 import pendulum
 from msgspec import json as msgspec_json
 from structlog import get_logger
+
+from nexus_ai.agents.topics import AgentTopic
+
+# ── Shared shortcuts (M15, M16) ──────────────────────────────────────────
+utcnow = pendulum.now  # shortcut: utcnow("UTC").isoformat()
 
 
 # ── Protocols for duck-typed dependencies ─────────────────────────────────
@@ -97,10 +102,7 @@ from nexus_ai.agents.models import (
     TrustScore,
     make_context,
 )
-from nexus_ai.agents.topics import AgentTopic
 from nexus_ai.core.broker import emit_event
-
-logger = get_logger("nexus.agents")
 
 
 # ═════════════════════════════════════════════════════════════════════════
@@ -176,26 +178,21 @@ class DecisionCache:
             except Exception as exc:
                 self._logger.debug("[CACHE] dyscache set failed: %s", exc)
 
+    async def _run_vec(self, fn) -> Any:
+        """Execute a sync sqlite-vec operation in a thread."""
+        return await anyio.to_thread.run_sync(fn)
+
     async def find_similar(
         self,
         embedding: list[float],
         k: int = 5,
         threshold: float = 0.1,
     ) -> list[dict[str, Any]]:
-        """Znajdź podobne decyzje przez k-NN w sqlite-vec.
-
-        Args:
-            embedding: Wektor 768d.
-            k: Liczba wyników.
-            threshold: Maksymalna odległość (domyślnie 0.1).
-
-        Returns:
-            Lista podobnych decyzji.
-        """
+        """Znajdź podobne decyzje przez k-NN w sqlite-vec."""
         if not self._sqlite_vec:
             return []
         try:
-            results = await anyio.to_thread.run_sync(
+            results = await self._run_vec(
                 lambda: self._sqlite_vec.execute(
                     "SELECT rowid, distance FROM decision_patterns WHERE embedding MATCH ? AND distance < ? LIMIT ?",
                     [json.dumps(embedding), threshold, k],
@@ -225,7 +222,7 @@ class DecisionCache:
         if not self._sqlite_vec:
             return
         try:
-            await anyio.to_thread.run_sync(
+            await self._run_vec(
                 lambda: self._sqlite_vec.execute(
                     "INSERT INTO decision_patterns (embedding) VALUES (?)",
                     [json.dumps(embedding)],
@@ -234,7 +231,7 @@ class DecisionCache:
             rowid = self._sqlite_vec.lastrowid
             self._sqlite_vec.execute(
                 "INSERT INTO decision_map (rowid, decision_id, decision_json, created_at) VALUES (?, ?, ?, ?)",
-                [rowid, decision_id, decision_json, pendulum.now("UTC").isoformat()],
+                [rowid, decision_id, decision_json, utcnow("UTC").isoformat()],
             )
             self._sqlite_vec.commit()
         except Exception as exc:
@@ -290,11 +287,9 @@ class ProofChainManager:
             index=len(self._chain),
             decision_id=decision_id,
             decision_json=decision_json,
-            timestamp=pendulum.now("UTC").isoformat(),
+            timestamp=utcnow("UTC").isoformat(),
             previous_hash=self.last_hash,
         )
-
-        # Oblicz SHA-256
         block_data = json.dumps({
             "index": block.index,
             "decision_id": block.decision_id,
@@ -310,7 +305,6 @@ class ProofChainManager:
             hasher.update(block_data)
             block.hash = hasher.hexdigest()
         except ImportError:
-            # Fallback: hashlib SHA-256
             block.hash = hashlib.sha256(block_data).hexdigest()
 
         self._chain.append(block)
@@ -335,8 +329,6 @@ class ProofChainManager:
                     i, expected_prev[:16], actual_prev[:16],
                 )
                 return False
-
-            # Zweryfikuj hash bloku
             block = self._chain[i]
             block_data = json.dumps({
                 "index": block.index,
@@ -352,7 +344,6 @@ class ProofChainManager:
                     i, expected_hash[:16], block.hash[:16],
                 )
                 return False
-
         return True
 
     def export_for_audit(self, output_path: str) -> None:
@@ -371,7 +362,7 @@ class ProofChainManager:
             ],
             "verified": self.verify_chain(),
             "total_blocks": len(self._chain),
-            "exported_at": pendulum.now("UTC").isoformat(),
+            "exported_at": utcnow("UTC").isoformat(),
         }
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(export_data, f, indent=2, ensure_ascii=False)
@@ -403,7 +394,6 @@ class ContinuousLearningProvider:
         self._max_records = max_records
         self._config = LearningConfig()
         self._logger = get_logger("nexus.agents.learning")
-        # ── GENIALNY POMYSŁ: Cognitive Audit Trail ──
         self._correction_embeddings: dict[str, list[CognitiveProofBlock]] = {}
 
     def get_trust_score(self, key: str) -> BayesianTrustScore:
@@ -421,30 +411,25 @@ class ContinuousLearningProvider:
         correction_embedding: list[float] | None = None,
     ) -> LearningRecord:
         delta = self._calculate_delta(predicted, corrected)
-
         record = LearningRecord(
-            id=uuid.uuid4().hex[:16],
+            id=_uuid.uuid4().hex[:16],
             decision_id=decision_id,
             agent_name=agent_name,
             predicted_value=predicted,
             corrected_value=corrected,
             delta=delta,
             feedback_type=feedback_type,
-            timestamp=pendulum.now("UTC").isoformat(),
+            timestamp=utcnow("UTC").isoformat(),
         )
-
         if feedback_type in (FeedbackType.ACCEPT, FeedbackType.CORRECT):
             trust = self.get_trust_score(agent_name)
             trust.update(correct=(feedback_type == FeedbackType.ACCEPT))
-
-        # ── GENIALNY POMYSŁ: Cognitive Audit Trail ──
-        # Przy korekcie: zapisz embedding, aby przy podobnych przypadkach auto-naprawić
         if feedback_type == FeedbackType.CORRECT and correction_embedding:
             block = CognitiveProofBlock(
                 index=len(self._correction_embeddings.get(agent_name, [])),
                 decision_id=decision_id,
                 decision_json=json.dumps(corrected),
-                timestamp=pendulum.now("UTC").isoformat(),
+                timestamp=utcnow("UTC").isoformat(),
                 correction_embedding=correction_embedding,
                 correction_count=1,
                 auto_patched=False,
@@ -452,7 +437,6 @@ class ContinuousLearningProvider:
             if agent_name not in self._correction_embeddings:
                 self._correction_embeddings[agent_name] = []
             self._correction_embeddings[agent_name].append(block)
-
         self._learning_records.append(record)
         if len(self._learning_records) > self._max_records:
             self._learning_records = self._learning_records[-self._max_records:]
@@ -460,7 +444,6 @@ class ContinuousLearningProvider:
             "[LEARN] Recorded feedback for %s | agent=%s | delta=%.3f | type=%s",
             decision_id, agent_name, delta, feedback_type,
         )
-
         return record
 
     async def find_similar_corrections(
@@ -469,15 +452,9 @@ class ContinuousLearningProvider:
         embedding: list[float],
         k: int = 5,
     ) -> list[CognitiveProofBlock]:
-        """GENIALNY POMYSŁ: Znajdź podobne korekty przez k-NN.
-
-        Gdy nowa decyzja jest podobna do wcześniej skorygowanej →
-        automatycznie zastosuj poprzednią korektę.
-        """
         blocks = self._correction_embeddings.get(agent_name, [])
         if not blocks or not embedding:
             return []
-        # Prosty cosine similarity (w produkcji: sqlite-vec)
         scored = []
         for block in blocks:
             if block.correction_embedding:
@@ -490,11 +467,6 @@ class ContinuousLearningProvider:
         return [b for b, s in scored[:k] if s > 0.85]
 
     def should_auto_patch_opa(self, agent_name: str) -> bool:
-        """GENIALNY POMYSŁ: Sprawdź czy należy auto-naprawić reguły OPA.
-
-        Gdy ta sama korekta powtarza się > min_samples_for_opa_update razy →
-        automatyczna aktualizacja reguł OPA.
-        """
         records = [r for r in self._learning_records
                    if r.agent_name == agent_name and r.feedback_type == FeedbackType.CORRECT]
         return len(records) >= self._config.min_samples_for_opa_update
@@ -504,56 +476,24 @@ class ContinuousLearningProvider:
         vendor_key: str,
         base_threshold: float = 0.92,
     ) -> float:
-        """Oblicz adaptacyjny próg decyzyjny dla danego kontrahenta.
-
-        Args:
-            vendor_key: Klucz kontrahenta (np. NIP).
-            base_threshold: Bazowy próg (domyślnie 0.92 dla AUTO_POST).
-
-        Returns:
-            Adaptacyjny próg (niższy dla znanych, wyższy dla nowych).
-        """
         trust = self.get_trust_score(vendor_key)
         return trust.adaptive_threshold(base=base_threshold)
 
     @property
     def total_corrections(self) -> int:
-        """Łączna liczba korekt."""
-        return sum(
-            1 for r in self._learning_records
-            if r.feedback_type == FeedbackType.CORRECT
-        )
+        return sum(1 for r in self._learning_records if r.feedback_type == FeedbackType.CORRECT)
 
     @property
     def total_accepts(self) -> int:
-        """Łączna liczba akceptacji."""
-        return sum(
-            1 for r in self._learning_records
-            if r.feedback_type == FeedbackType.ACCEPT
-        )
+        return sum(1 for r in self._learning_records if r.feedback_type == FeedbackType.ACCEPT)
 
     @staticmethod
-    def _calculate_delta(
-        predicted: dict[str, Any],
-        corrected: dict[str, Any],
-    ) -> float:
-        """Oblicz deltę między przewidzianą a poprawioną wartością.
-
-        Normalizuje różnice między polami do zakresu 0.0-1.0.
-        """
+    def _calculate_delta(predicted: dict[str, Any], corrected: dict[str, Any]) -> float:
         if not predicted or not corrected:
             return 1.0
-
-        differences = 0
-        total_fields = max(len(predicted), len(corrected))
-
-        for key in set(predicted) | set(corrected):
-            pred_val = predicted.get(key)
-            corr_val = corrected.get(key)
-            if pred_val != corr_val:
-                differences += 1
-
-        return min(1.0, differences / max(total_fields, 1))
+        differences = sum(1 for k in set(predicted) | set(corrected)
+                          if predicted.get(k) != corrected.get(k))
+        return min(1.0, differences / max(len(predicted) | len(corrected), 1))
 
 
 # ═════════════════════════════════════════════════════════════════════════
@@ -577,6 +517,7 @@ class BaseAgent:
       - AgentHealth — monitorowanie stanu
       - Adaptive thresholds — bayesiańskie progi
       - KnowledgeMesh — GENIALNY POMYSŁ v5.3 (siatka wiedzy agentów)
+      - Helper methods: _ctx, mesh_ready, _uid (code reduction SR-3, SR-4, M16)
     """
 
     def __init__(
@@ -602,23 +543,43 @@ class BaseAgent:
         self._decision_mode = DecisionMode(self._config.get("decision_mode", "auto_post"))
 
         # ── GENIALNY POMYSŁ v5.3: Agent Knowledge Mesh ──
-        self._knowledge_mesh = knowledge_mesh  # współdzielony między agentami
+        self._knowledge_mesh = knowledge_mesh
 
         # ── Enterprise: Health ───────────────────────────────────
-        self._health = AgentHealth(
-            agent_name=name,
-            status="initialized",
-        )
+        self._health = AgentHealth(agent_name=name, status="initialized")
         self._health_start_time: float = 0.0
         self._decisions_count: int = 0
         self._errors_count: int = 0
 
+    # ── Helpers for code reduction (SR-3, SR-4, M16) ──────────────────
+
+    def _ctx(self, target: str, priority: int = 5, **overrides: Any) -> AgentContext:
+        """Fast AgentContext builder — reduces ~30 verbose make_context calls."""
+        return make_context(
+            task_id=_uuid.uuid4().hex[:8],
+            source=self.name,
+            target=target,
+            priority=priority,
+            **overrides,
+        )
+
+    @staticmethod
+    def _uid(length: int = 8) -> str:
+        """Generate a short unique hex ID."""
+        return _uuid.uuid4().hex[:length]
+
+    @property
+    def mesh_ready(self) -> bool:
+        """Check if KnowledgeMesh is initialized (replaces 15x repeated check)."""
+        return self._knowledge_mesh is not None and self._knowledge_mesh.is_initialized
+
+    # ── Lifecycle ─────────────────────────────────────────────────
+
     async def start(self) -> None:
         """Uruchom agenta — rozpocznij nasłuchiwanie na topicach."""
         self._running = True
-        self._health_start_time = pendulum.now("UTC").timestamp()
+        self._health_start_time = utcnow("UTC").timestamp()
         await self._decision_cache.initialize()
-
         self._health.status = "healthy"
         self._logger.info("[AGENT] %s started | mode=%s", self.name, self._decision_mode.value)
 
@@ -641,11 +602,7 @@ class BaseAgent:
     ) -> None:
         """Wyślij wiadomość do NATS JetStream."""
         topic_str = str(topic) if isinstance(topic, AgentTopic) else topic
-        ctx = context or make_context(
-            task_id=uuid.uuid4().hex[:16],
-            source=self.name,
-            target="unknown",
-        )
+        ctx = context or self._ctx(target="unknown")
         message = AgentMessage(
             context=ctx,
             payload=msgspec_json.decode(msgspec_json.encode(payload)) if not isinstance(payload, dict) else payload,
@@ -655,38 +612,25 @@ class BaseAgent:
 
     @property
     def learning(self) -> ContinuousLearningProvider:
-        """Dostęp do Continuous Learning Provider."""
         return self._learning_provider
 
     @property
     def decision_cache(self) -> DecisionCache:
-        """Dostęp do Decision Cache."""
         return self._decision_cache
 
     @property
     def proof_chain(self) -> ProofChainManager:
-        """Dostęp do Proof Chain Manager."""
         return self._proof_chain
 
     @property
     def mode(self) -> DecisionMode:
-        """Dostęp do trybu decyzyjnego (AUTO_POST / SUGGEST / ASK_USER)."""
         return self._decision_mode
 
     @property
     def mesh(self) -> _SupportsKnowledgeMesh | None:
-        """Dostęp do Agent Knowledge Mesh (GENIALNY POMYSŁ v5.3).
-
-        Współdzielony między wszystkimi agentami.
-        Używany do:
-        - Dynamicznego routingu zadań (PredictiveTaskRouter)
-        - Aktualizacji Trust Score (CollectiveBayesianField)
-        - Współdzielenia doświadczeń (CrossAgentExperienceReplay)
-        """
         return self._knowledge_mesh
 
     def set_mesh(self, mesh: _SupportsKnowledgeMesh) -> None:
-        """Ustaw współdzielony Knowledge Mesh dla agenta."""
         self._knowledge_mesh = mesh
 
     async def record_feedback(
@@ -696,17 +640,6 @@ class BaseAgent:
         feedback_type: FeedbackType = FeedbackType.ACCEPT,
         correction_embedding: list[float] | None = None,
     ) -> LearningRecord:
-        """Zapisz feedback użytkownika i uruchom propagację.
-
-        Args:
-            decision: Oryginalna decyzja agenta.
-            corrected: Poprawione wartości (jeśli CORRECT).
-            feedback_type: Typ feedbacku.
-            correction_embedding: Embedding korekty (dla Cognitive Audit Trail).
-
-        Returns:
-            LearningRecord z zapisanymi danymi.
-        """
         predicted = decision.supporting_data if decision.supporting_data else (
             {"verdict": decision.verdict.status, "reason": decision.verdict.reason}
         )
@@ -725,7 +658,6 @@ class BaseAgent:
         return record
 
     def get_threshold(self, vendor_key: str, base: float = 0.92) -> float:
-        """Pobierz adaptacyjny próg dla kontrahenta."""
         return self._learning_provider.get_adaptive_threshold(vendor_key, base)
 
     # ── Enterprise: Decision Creation with Proof Chain ────────────
@@ -739,18 +671,6 @@ class BaseAgent:
         decision_mode: DecisionMode | None = None,
         **kwargs: Any,
     ) -> AgentDecision:
-        """Utwórz decyzję agenta z Proof Chain.
-
-        Args:
-            decision_id: ID decyzji.
-            status: Status: AUTO_POST, REVIEW, BLOCK, ESCALATED.
-            trust_score: Trust Score (0.0-1.0).
-            reason: Przyczyna decyzji.
-            decision_mode: Tryb decyzyjny (None = użyj domyślnego).
-
-        Returns:
-            AgentDecision z ProofBlock.
-        """
         mode = decision_mode or self._decision_mode
         ts = TrustScore(
             ai_confidence=kwargs.get("ai_confidence", trust_score),
@@ -759,7 +679,6 @@ class BaseAgent:
             context_trust=kwargs.get("context_trust", 0.0),
             overall=trust_score,
         )
-
         decision = AgentDecision(
             decision_id=decision_id,
             agent_name=self.name,
@@ -775,42 +694,35 @@ class BaseAgent:
             trust_score=ts,
             explanation=kwargs.get("explanation", ""),
             supporting_data=kwargs.get("supporting_data", {}),
-            created_at=pendulum.now("UTC").isoformat(),
+            created_at=utcnow("UTC").isoformat(),
             decision_mode=mode,
         )
-
-        # Dodaj do Proof Chain
         decision_json = msgspec_json.encode(decision).decode()
         proof_block = self._proof_chain.add_block(decision_id, decision_json)
         decision.proof_block = proof_block
         decision.verdict.proof_hash = proof_block.hash
-
         self._decisions_count += 1
         self._health.decisions_total = self._decisions_count
-
         return decision
 
     # ── Enterprise: Health & Monitoring ───────────────────────────
 
     @property
     def health(self) -> AgentHealth:
-        """Pobierz aktualny status zdrowia agenta."""
         self._update_health()
         return self._health
 
     def _update_health(self) -> None:
-        """Aktualizuj status zdrowia."""
         self._health.models_loaded = (
             self._model_manager.loaded_models if self._model_manager
             and hasattr(self._model_manager, 'loaded_models') else 0
         )
         if self._health_start_time:
-            self._health.uptime_seconds = pendulum.now("UTC").timestamp() - self._health_start_time
-        self._health.last_heartbeat = pendulum.now("UTC").isoformat()
+            self._health.uptime_seconds = utcnow("UTC").timestamp() - self._health_start_time
+        self._health.last_heartbeat = utcnow("UTC").isoformat()
         self._health.error_count = self._errors_count
 
     async def heartbeat(self) -> None:
-        """Wyślij heartbeat agenta z pełnym statusem zdrowia."""
         self._update_health()
         await self.publish(
             AgentTopic.SYSTEM_HEARTBEAT,
@@ -823,7 +735,6 @@ class BaseAgent:
     # ── Model management ─────────────────────────────────────────
 
     def get_model(self, model_path: str, **kwargs: Any):
-        """Pobierz lub utwórz model AI."""
         if self._model_manager and hasattr(self._model_manager, 'get_or_create'):
             return self._model_manager.get_or_create(
                 model_path,
@@ -840,7 +751,6 @@ class BaseAgent:
         prompt: str,
         **kwargs: Any,
     ) -> str:
-        """Generuj tekst z modelu."""
         if self._model_manager and hasattr(self._model_manager, 'infer'):
             return await self._model_manager.infer(
                 model_path,
@@ -859,7 +769,6 @@ class BaseAgent:
         messages: list[dict[str, str]],
         **kwargs: Any,
     ) -> str:
-        """Chat completion z modelem."""
         if self._model_manager and hasattr(self._model_manager, 'chat'):
             return await self._model_manager.chat(
                 model_path,

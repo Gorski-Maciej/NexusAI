@@ -31,7 +31,7 @@ import pendulum
 from msgspec import json as msgspec_json
 from structlog import get_logger
 
-from nexus_ai.agents.base import BaseAgent, DecisionCache
+from nexus_ai.agents.base import BaseAgent
 from nexus_ai.agents.error_handbook import DynamicErrorHandbook, HandbookQuery
 from nexus_ai.agents.knowledge_mesh import KnowledgeMesh
 from nexus_ai.agents.models import RouteDecision
@@ -43,20 +43,21 @@ from nexus_ai.agents.decision_trace import (
     MultiModelEnsemble,
 )
 from nexus_ai.agents.telemetry_store import AgentTelemetryStore
+from nexus_ai.core.vectorize import vectorize_invoice
 from nexus_ai.agents.models import (
+    ActionCard,
     ActionCardFeed,
     ActionCardResponse,
     AgentDecision,
     AnalyticsQuery,
     AnalyticsResult,
     ConfidenceVote,
-    ContextDimension,
-    DashboardState,
     DataExtractionRequest,
     DataExtractionResult,
     DecisionMode,
     ExecutiveSummary,
     FeedbackType,
+    FinancialImpactOption,
     QualityCheckRequest,
     QualityCheckResult,
     StrategicMode,
@@ -67,10 +68,8 @@ from nexus_ai.agents.models import (
 from nexus_ai.agents.proactive_workflow import (
     ActionCardGenerator,
     ProactiveWorkflowScheduler,
-    WorkflowType,
 )
 from nexus_ai.agents.user_decision_profile import (
-    BusinessStrategy,
     UserDecisionProfile,
     WeeklyAutonomyReport,
 )
@@ -352,22 +351,16 @@ class AgentOrchestrator(BaseAgent):
 
         # Uruchom symulacje (w tle, DuckDB :memory:)
         # Używamy ThreadPoolExecutor wewnątrz ShadowSimulator
-        import concurrent.futures
-        loop = None
+        import asyncio
         try:
-            import asyncio
             loop = asyncio.get_running_loop()
-        except RuntimeError:
-            pass
-
-        if loop:
             report = await loop.run_in_executor(
                 None,
                 self._shadow_simulator.simulate,
                 invoice_data,
                 variants,
             )
-        else:
+        except RuntimeError:
             report = self._shadow_simulator.simulate(invoice_data, variants)
 
         logger.info(
@@ -903,8 +896,7 @@ class AgentOrchestrator(BaseAgent):
         Używa sqlite-vec k-NN (k=5, distance < 0.1).
         """
         try:
-            # Wektoryzacja danych faktury (symulacja)
-            embedding = self._vectorize_invoice(invoice_data)
+            embedding = vectorize_invoice(invoice_data)
             similar = await self._decision_cache.find_similar(
                 embedding, k=5, threshold=0.1,
             )
@@ -926,7 +918,7 @@ class AgentOrchestrator(BaseAgent):
     ) -> None:
         """Zapisz decyzję w cache z embeddingiem."""
         try:
-            embedding = self._vectorize_invoice(invoice_data)
+            embedding = vectorize_invoice(invoice_data)
             decision_json = msgspec_json.encode(decision).decode()
             await self._decision_cache.store_embedding(
                 embedding, decision.decision_id, decision_json,
@@ -939,23 +931,6 @@ class AgentOrchestrator(BaseAgent):
             )
         except Exception as exc:
             logger.debug("[ORCH] Cache store failed: %s", exc)
-
-    @staticmethod
-    def _vectorize_invoice(invoice_data: dict[str, Any]) -> list[float]:
-        """Wektoryzacja danych faktury do 768-wymiarowego wektora.
-
-        W rzeczywistości używa modelu embeddding.
-        Symulacja: prosta transformacja pól na wektor.
-        """
-        # Symulacja embeddingu — w produkcji używa sqlite-vec lub modelu
-        import hashlib
-        text = json.dumps(invoice_data, sort_keys=True)
-        hash_bytes = hashlib.sha256(text.encode()).digest()
-        # Rozszerz do 768 wymiarów przez interpolację
-        vector = []
-        for i in range(768):
-            vector.append(float(hash_bytes[i % 32]) / 255.0)
-        return vector
 
     # ── Weighted Voting ────────────────────────────────────────────
 
@@ -1421,7 +1396,7 @@ Czy ta decyzja jest poprawna? Odpowiedz TAK lub NIE i uzasadnij."""
         )
 
         # ── 2. ContinuousLearningProvider ──
-        correction_embedding = self._vectorize_invoice(
+        correction_embedding = vectorize_invoice(
             extracted if extracted else {"decision_id": decision.decision_id}
         ) if extracted else None
         await self.record_feedback(

@@ -1,39 +1,18 @@
-"""Agent Knowledge Mesh (AKM) — Samoucząca się Siatka Wiedzy Agentów.
+"""Agent Knowledge Mesh — Samoucząca się Siatka Wiedzy Agentów.
 
-GENIALNY POMYSŁ ENTERPRISE v5.3:
-Zamiast izolowanych pętli uczenia, agenci współdzielą TRZYWARSTWOWĄ siatkę wiedzy:
-
-  WARSTWA 1: Cross-Agent Experience Replay
-    Gdy agent A uczy się → automatycznie tworzy reguły dla agentów B, C, D.
-    QualityValidator wykrywa błąd VAT → Extraction dostaje flagę HIGH_SCRUTINY.
-    Orchestrator dostaje obniżony próg AUTO_POST.
-
-  WARSTWA 2: Collective Bayesian Field
-    Jedno, współdzielone pole Bayesiańskie per (vendor_nip, category, amount_range).
-    Wszystkie 5 agentów aktualizuje to samo pole.
-    Gdy Extraction poprawia OCR → Quality automatycznie wie, że dane są lepsze.
-
-  WARSTWA 3: Predictive Task Routing
-    Dynamiczny DAG pipeline'u zamiast sztywnej ścieżki Extraction→Quality→Orchestrator.
-    Trust ≥ 0.92 → POMIŃ QualityValidator + Analytics (50ms zamiast 15s).
-    Trust < 0.30 → CIRCUIT BREAKER → EXPAND pipeline (4-Eyes + Analytics).
-
-Zgodnie z aa3fvcx.txt i RAPORT_TECHNOLOGII_NEXUSAI.txt:
+Zgodnie z RAPORT_TECHNOLOGII_NEXUSAI.txt:
   - DuckDB — Collective Bayesian Field + Experience Replay
   - sqlite-vec — embeddingi dla Cross-Agent Experience Replay (k-NN)
   - msgspec — wszystkie struktury danych
   - NATS JetStream — publikacja eventów Mesh
   - stamina — Circuit Breaker na poziomie agenta
-  - anyio — pełna asynchroniczność
 """
 
 from __future__ import annotations
 
-import hashlib
 import json
 from typing import Any
 
-import anyio
 import pendulum
 from msgspec import json as msgspec_json
 from structlog import get_logger
@@ -44,6 +23,7 @@ from nexus_ai.agents.models import (
     MeshField,
     RouteDecision,
 )
+from nexus_ai.core.vectorize import execute_db, execute_db_fetchall, execute_db_fetchone, vectorize_text
 
 logger = get_logger("nexus.agents.mesh")
 
@@ -115,33 +95,17 @@ class CollectiveBayesianField:
             return
         try:
             import duckdb
-            self._conn = await anyio.to_thread.run_sync(
-                lambda: duckdb.connect(self._db_path)
-            )
-            self._conn.execute("""
-                CREATE TABLE IF NOT EXISTS mesh_bayesian_field (
-                    vendor_nip VARCHAR NOT NULL,
-                    category VARCHAR NOT NULL DEFAULT '',
-                    amount_range VARCHAR NOT NULL DEFAULT '',
-                    alpha DOUBLE DEFAULT 1.0,
-                    beta DOUBLE DEFAULT 1.0,
-                    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_by_agent VARCHAR DEFAULT '',
-                    total_decisions INTEGER DEFAULT 0,
-                    auto_post_count INTEGER DEFAULT 0,
-                    correction_count INTEGER DEFAULT 0,
-                    PRIMARY KEY (vendor_nip, category, amount_range)
-                )
-            """)
-            self._conn.execute(
-                "CREATE INDEX IF NOT EXISTS idx_mesh_nip "
-                "ON mesh_bayesian_field(vendor_nip)"
-            )
+            self._conn = duckdb.connect(self._db_path)
+            self._conn.execute("""CREATE TABLE IF NOT EXISTS mesh_bayesian_field (
+                vendor_nip VARCHAR NOT NULL, category VARCHAR NOT NULL DEFAULT '',
+                amount_range VARCHAR NOT NULL DEFAULT '', alpha DOUBLE DEFAULT 1.0,
+                beta DOUBLE DEFAULT 1.0, last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_by_agent VARCHAR DEFAULT '', total_decisions INTEGER DEFAULT 0,
+                auto_post_count INTEGER DEFAULT 0, correction_count INTEGER DEFAULT 0,
+                PRIMARY KEY (vendor_nip, category, amount_range))""")
+            self._conn.execute("CREATE INDEX IF NOT EXISTS idx_mesh_nip ON mesh_bayesian_field(vendor_nip)")
             self._initialized = True
-            logger.info(
-                "[MESH] CollectiveBayesianField initialized | DB: %s | fields: %d",
-                self._db_path, self.count,
-            )
+            logger.info("[MESH] CollectiveBayesianField initialized | DB: %s | fields: %d", self._db_path, self.count)
         except Exception as exc:
             logger.warning("[MESH] DuckDB init failed (fallback to RAM): %s", exc)
             self._initialized = True
@@ -238,21 +202,16 @@ class CollectiveBayesianField:
         # Zapisz do DuckDB
         if self._conn:
             try:
-                await anyio.to_thread.run_sync(
-                    lambda: self._conn.execute(
-                        """INSERT OR REPLACE INTO mesh_bayesian_field
-                           (vendor_nip, category, amount_range, alpha, beta,
-                            last_updated, updated_by_agent, total_decisions,
-                            auto_post_count, correction_count)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                        (
-                            vendor_nip, category, amount_range,
-                            field.alpha, field.beta,
-                            field.last_updated, agent_name,
-                            field.total_decisions, field.auto_post_count,
-                            field.correction_count,
-                        ),
-                    )
+                await execute_db(
+                    self._conn,
+                    "INSERT OR REPLACE INTO mesh_bayesian_field "
+                    "(vendor_nip, category, amount_range, alpha, beta, "
+                    "last_updated, updated_by_agent, total_decisions, "
+                    "auto_post_count, correction_count) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (vendor_nip, category, amount_range, field.alpha, field.beta,
+                     field.last_updated, agent_name, field.total_decisions,
+                     field.auto_post_count, field.correction_count),
                 )
             except Exception as exc:
                 logger.debug("[MESH] DuckDB update failed: %s", exc)
@@ -281,15 +240,13 @@ class CollectiveBayesianField:
             return (0.5, 0.0, 0)
 
         try:
-            rows = await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(
-                    """SELECT SUM(alpha) as total_alpha, SUM(beta) as total_beta,
-                              SUM(total_decisions) as total_dec
-                       FROM mesh_bayesian_field
-                       WHERE vendor_nip = ?""",
-                    (vendor_nip,),
-                ).fetchone()
+            row = await execute_db_fetchone(
+                self._conn,
+                "SELECT SUM(alpha) as total_alpha, SUM(beta) as total_beta, "
+                "SUM(total_decisions) as total_dec FROM mesh_bayesian_field WHERE vendor_nip = ?",
+                (vendor_nip,),
             )
+            rows = (row,) if row else None
             if rows and rows[0] is not None:
                 alpha = float(rows[0])
                 beta = float(rows[1])
@@ -320,15 +277,13 @@ class CollectiveBayesianField:
             return None
 
         try:
-            row = await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(
-                    """SELECT vendor_nip, category, amount_range, alpha, beta,
-                              last_updated, updated_by_agent, total_decisions,
-                              auto_post_count, correction_count
-                       FROM mesh_bayesian_field
-                       WHERE vendor_nip = ? AND category = ? AND amount_range = ?""",
-                    (vendor_nip, category, amount_range),
-                ).fetchone()
+            row = await execute_db_fetchone(
+                self._conn,
+                "SELECT vendor_nip, category, amount_range, alpha, beta, "
+                "last_updated, updated_by_agent, total_decisions, "
+                "auto_post_count, correction_count FROM mesh_bayesian_field "
+                "WHERE vendor_nip = ? AND category = ? AND amount_range = ?",
+                (vendor_nip, category, amount_range),
             )
             if row:
                 field = MeshField(
@@ -352,22 +307,18 @@ class CollectiveBayesianField:
 
     @property
     def count(self) -> int:
-        """Liczba pól w bazie."""
         if self._conn:
             try:
-                row = self._conn.execute(
-                    "SELECT COUNT(*) FROM mesh_bayesian_field"
-                ).fetchone()
+                row = self._conn.execute("SELECT COUNT(*) FROM mesh_bayesian_field").fetchone()
                 return int(row[0]) if row else 0
-            except Exception as exc:
-                logger.debug("[MESH] Bayesian count failed: %s", exc)
+            except Exception:
+                return 0
         return len(self._cache)
 
     async def close(self) -> None:
-        """Zamknij połączenie DuckDB."""
         if self._conn:
             try:
-                await anyio.to_thread.run_sync(self._conn.close)
+                self._conn.close()
             except Exception as exc:
                 logger.debug("[MESH] Bayesian close failed: %s", exc)
             self._conn = None
@@ -486,39 +437,21 @@ class CrossAgentExperienceReplay:
         self._initialized = False
 
     async def initialize(self) -> None:
-        """Inicjalizuj DuckDB i utwórz tabelę."""
         if self._initialized:
             return
         try:
             import duckdb
-            self._conn = await anyio.to_thread.run_sync(
-                lambda: duckdb.connect(self._db_path)
-            )
-            self._conn.execute("""
-                CREATE TABLE IF NOT EXISTS mesh_experience_replay (
-                    rule_id VARCHAR PRIMARY KEY,
-                    source_agent VARCHAR NOT NULL,
-                    target_agent VARCHAR NOT NULL,
-                    trigger_condition VARCHAR NOT NULL,
-                    action VARCHAR NOT NULL,
-                    params JSON DEFAULT '{}',
-                    priority INTEGER DEFAULT 5,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    hit_count INTEGER DEFAULT 0,
-                    last_hit TIMESTAMP,
-                    embedding FLOAT[768],
-                    active BOOLEAN DEFAULT TRUE
-                )
-            """)
-            self._conn.execute(
-                "CREATE INDEX IF NOT EXISTS idx_mesh_replay_target "
-                "ON mesh_experience_replay(target_agent, active)"
-            )
+            self._conn = duckdb.connect(self._db_path)
+            self._conn.execute("""CREATE TABLE IF NOT EXISTS mesh_experience_replay (
+                rule_id VARCHAR PRIMARY KEY, source_agent VARCHAR NOT NULL,
+                target_agent VARCHAR NOT NULL, trigger_condition VARCHAR NOT NULL,
+                action VARCHAR NOT NULL, params JSON DEFAULT '{}',
+                priority INTEGER DEFAULT 5, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                hit_count INTEGER DEFAULT 0, last_hit TIMESTAMP,
+                embedding FLOAT[768], active BOOLEAN DEFAULT TRUE)""")
+            self._conn.execute("CREATE INDEX IF NOT EXISTS idx_mesh_replay_target ON mesh_experience_replay(target_agent, active)")
             self._initialized = True
-            logger.info(
-                "[MESH] CrossAgentExperienceReplay initialized | rules: %d",
-                self.count,
-            )
+            logger.info("[MESH] CrossAgentExperienceReplay initialized | rules: %d", self.count)
         except Exception as exc:
             logger.warning("[MESH] Experience Replay init failed (fallback to RAM): %s", exc)
             self._initialized = True
@@ -572,30 +505,25 @@ class CrossAgentExperienceReplay:
             )
 
             # Dodaj embedding dla k-NN
-            rule.embedding = self._vectorize(
-                vendor_nip, category, source_agent, template["target"], rule.action,
-            )
+            rule.embedding = vectorize_text(vendor_nip, category, source_agent, template["target"], rule.action)
 
             # Zapisz do DuckDB
             if self._conn:
                 try:
-                    await anyio.to_thread.run_sync(
-                        lambda: self._conn.execute(
-                            """INSERT INTO mesh_experience_replay
-                               (rule_id, source_agent, target_agent, trigger_condition,
-                                action, params, priority, created_at, hit_count, embedding, active)
-                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                            (
-                                rule.rule_id, rule.source_agent, rule.target_agent,
-                                rule.trigger_condition, rule.action,
-                                json.dumps(rule.params), rule.priority,
-                                rule.created_at, rule.hit_count,
-                                rule.embedding, rule.active,
-                            ),
-                        )
+                    await execute_db(
+                        self._conn,
+                        "INSERT INTO mesh_experience_replay "
+                        "(rule_id, source_agent, target_agent, trigger_condition, "
+                        "action, params, priority, created_at, hit_count, embedding, active) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (rule.rule_id, rule.source_agent, rule.target_agent,
+                         rule.trigger_condition, rule.action,
+                         json.dumps(rule.params), rule.priority,
+                         rule.created_at, rule.hit_count,
+                         rule.embedding, rule.active),
                     )
                 except Exception as exc:
-                    logger.debug("[MESH] DuckDB insert rule failed: %s", exc)
+                    logger.debug("[MESH] Insert rule failed: %s", exc)
 
             # Cache w RAM
             self._rules[rule.rule_id] = rule
@@ -640,22 +568,14 @@ class CrossAgentExperienceReplay:
             return rules[:max_rules]
 
         try:
-            sql = """SELECT rule_id, source_agent, target_agent, trigger_condition,
-                            action, params, priority, created_at, hit_count, last_hit, active
-                     FROM mesh_experience_replay
-                     WHERE target_agent = ? AND active = TRUE"""
+            sql = "SELECT rule_id, source_agent, target_agent, trigger_condition, " \
+                  "action, params, priority, created_at, hit_count, last_hit, active " \
+                  "FROM mesh_experience_replay WHERE target_agent = ? AND active = TRUE"
             params: list[Any] = [target_agent]
-
             if vendor_nip:
-                sql += " AND trigger_condition LIKE ?"
-                params.append(f"%{vendor_nip}%")
-
-            sql += " ORDER BY priority ASC, hit_count DESC LIMIT ?"
-            params.append(max_rules)
-
-            rows = await anyio.to_thread.run_sync(
-                lambda: self._conn.execute(sql, params).fetchall()
-            )
+                sql += " AND trigger_condition LIKE ?"; params.append(f"%{vendor_nip}%")
+            sql += " ORDER BY priority ASC, hit_count DESC LIMIT ?"; params.append(max_rules)
+            rows = await execute_db_fetchall(self._conn, sql, params)
 
             rules = []
             for row in rows:
@@ -690,7 +610,6 @@ class CrossAgentExperienceReplay:
             return []
 
     async def _increment_hits(self, rule_ids: list[str]) -> None:
-        """Zwiększ licznik trafień dla reguł."""
         if not self._conn:
             for rid in rule_ids:
                 if rid in self._rules:
@@ -699,48 +618,25 @@ class CrossAgentExperienceReplay:
             return
         try:
             now = pendulum.now("UTC").isoformat()
-            await anyio.to_thread.run_sync(
-                lambda: self._conn.executemany(
-                    """UPDATE mesh_experience_replay
-                       SET hit_count = hit_count + 1, last_hit = ?
-                       WHERE rule_id = ?""",
-                    [(now, rid) for rid in rule_ids],
-                )
-            )
+            for rid in rule_ids:
+                await execute_db(self._conn, "UPDATE mesh_experience_replay SET hit_count = hit_count + 1, last_hit = ? WHERE rule_id = ?", (now, rid))
         except Exception as exc:
             logger.debug("[MESH] Increment hits failed: %s", exc)
 
-    @staticmethod
-    def _vectorize(
-        vendor_nip: str,
-        category: str,
-        source_agent: str,
-        target_agent: str,
-        action: str,
-    ) -> list[float]:
-        """Wektoryzacja reguły do 768d (symulacja — w produkcji model embedding)."""
-        text = f"{vendor_nip}:{category}:{source_agent}:{target_agent}:{action}"
-        hash_bytes = hashlib.sha256(text.encode()).digest()
-        return [float(hash_bytes[i % 32]) / 255.0 for i in range(768)]
-
     @property
     def count(self) -> int:
-        """Liczba reguł w bazie."""
         if self._conn:
             try:
-                row = self._conn.execute(
-                    "SELECT COUNT(*) FROM mesh_experience_replay"
-                ).fetchone()
+                row = self._conn.execute("SELECT COUNT(*) FROM mesh_experience_replay").fetchone()
                 return int(row[0]) if row else 0
-            except Exception as exc:
-                logger.debug("[MESH] Experience count failed: %s", exc)
+            except Exception:
+                return 0
         return len(self._rules)
 
     async def close(self) -> None:
-        """Zamknij połączenie DuckDB."""
         if self._conn:
             try:
-                await anyio.to_thread.run_sync(self._conn.close)
+                self._conn.close()
             except Exception as exc:
                 logger.debug("[MESH] Experience close failed: %s", exc)
             self._conn = None

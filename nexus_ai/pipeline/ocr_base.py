@@ -41,6 +41,8 @@ def catch_ocr_errors(default: Any = None):
     return decorator
 
 
+import anyio
+
 class BaseOCREngine(ABC):
     """Wspólna klasa bazowa dla wszystkich silników OCR.
 
@@ -64,6 +66,10 @@ class BaseOCREngine(ABC):
 
     @abstractmethod
     def _init_engine(self) -> None: ...
+
+    async def _run_ocr(self, fn, *args, **kwargs):
+        """Execute sync OCR operation in a thread."""
+        return await anyio.to_thread.run_sync(lambda: fn(*args, **kwargs))
 
     @abstractmethod
     async def _extract_text_impl(self, image_path: Path) -> str | None: ...

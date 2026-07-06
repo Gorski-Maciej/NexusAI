@@ -1,44 +1,18 @@
 """ProactiveWorkflowScheduler — Autonomiczny Silnik Proaktywnych Workflow.
 
-GENIALNY POMYSŁ ENTERPRISE (v5.0):
-Transformacja agentów z REAKTYWNYCH w PROAKTYWNYCH zarządców księgowości.
-
-Zgodnie z aa3fvcx.txt, AGENT_SYSTEM_ENTERPRISE.txt:
-- Tylko technologie z RAPORT_TECHNOLOGII_NEXUSAI.txt
-- 5 agentów, JEDEN poziom automatyzacji (DecisionMode)
+Zgodnie z RAPORT_TECHNOLOGII_NEXUSAI.txt:
 - Taskiq Scheduler dla zadań cronowych
 - NATS JetStream dla komunikacji między agentami
 - psutil dla monitorowania zasobów
-- diskcache dla stanu workflow
 - pendulum dla harmonogramowania czasowego
 
-Architektura ENTERPRISE:
-─────────────────────────────────────────────────────────────────────────────
-AgentOrchestrator (CFO)
-  └── ProactiveWorkflowScheduler
-        ├── WorkflowManager      — zarządzanie cyklem życia workflow
-        ├── ResourceOptimizer    — auto-unload modeli, dynamiczne skalowanie
-        ├── TaxDeadlineMonitor   — alerty ZUS, VAT, PIT/CIT, KSeF
-        ├── PaymentScheduler     — przygotowanie paczek przelewów
-        ├── VendorMonitor        — monitoring kontrahentów (zmiany kont, VAT)
-        └── HealthGuardian       — monitoring agentów, auto-restart
-─────────────────────────────────────────────────────────────────────────────
-
-Harmonogram proaktywny (cron przez Taskiq Scheduler):
-  06:00 — Daily Briefing: podsumowanie poprzedniego dnia
-  07:00 — KSeF Check: pobranie nowych faktur z KSeF
-  08:00 — Bank Sync: sprawdzenie konta bankowego, nowe transakcje
-  09:00 — Dunning Check: windykacja należności
-  10:00 — Vendor Monitor: weryfikacja Białej Listy MF, zmiany kont
-  14:00 — Tax Deadline Alert: alerty o zbliżających się terminach
-  16:00 — Payment Batch: przygotowanie paczki przelewów na jutro
-  18:00 — Evening Summary: podsumowanie dnia dla przedsiębiorcy
-  22:00 — Resource Optimizer: auto-unload nieużywanych modeli
-
-  Poniedziałek 07:00 — Weekly Report: P&L, DSO, top kontrahenci
-  1. dzień miesiąca 08:00 — Monthly Closing: uzgodnienia, amortyzacja
-  10., 20., 25. dzień miesiąca — Tax Calendar Alert
-  Ostatni dzień miesiąca 18:00 — Month-End Closing
+AgentOrchestrator → ProactiveWorkflowScheduler
+  ├── WorkflowManager    — cykl życia workflow
+  ├── ResourceOptimizer  — auto-unload modeli
+  ├── TaxDeadlineMonitor — alerty ZUS, VAT, PIT/CIT
+  ├── PaymentScheduler   — paczki przelewów
+  ├── VendorMonitor      — monitoring kontrahentów
+  └── HealthGuardian     — health check, auto-restart
 """
 
 from __future__ import annotations
@@ -54,12 +28,9 @@ from nexus_ai.agents.models import (
     ActionCard,
     ActionCardFeed,
     ActionCardOption,
-    ActionCardResponse,
-    AgentContext,
     AgentDecision,
-    AgentHealth,
     AnalyticsQuery,
-    DecisionMode,
+    AnalyticsResult,
     FinancialImpactOption,
     make_context,
 )
@@ -646,8 +617,6 @@ class ActionCardGenerator:
                 gross = float(gross)
             except (ValueError, TypeError):
                 gross = 0
-        vendor_nip = extracted.get("nip", "")
-
         # Alert podatkowy
         if document_type == "TAX_ALERT":
             return self.DECISION_TEMPLATES["TAX_ALERT"]
@@ -682,7 +651,7 @@ class ActionCardGenerator:
         parts = []
 
         if document_type == "TAX_ALERT":
-            parts.append(f"Zbliża się termin płatności podatku.")
+            parts.append("Zbliża się termin płatności podatku.")
             parts.append(decision.explanation[:200] if decision.explanation else "Szczegóły w karcie.")
         elif document_type == "ASSET":
             parts.append(f"Zakup na kwotę {gross} PLN wymaga decyzji o klasyfikacji.")
@@ -1266,82 +1235,64 @@ class ProactiveWorkflowScheduler:
     # Handlery workflow — konkretne implementacje
     # ══════════════════════════════════════════════════════════════════
 
-    async def _handle_daily_briefing(self) -> dict[str, Any]:
-        """Poranny Daily Briefing — podsumowanie dla przedsiębiorcy.
-
-        AgentAnalytics generuje brief, Orchestrator wysyła do UI.
-        """
-        if not self._orchestrator or "analytics" not in getattr(
-            self._orchestrator, "_sub_agents", {}
-        ):
-            return {"status": "no_orchestrator"}
-
-        analytics = self._orchestrator._sub_agents["analytics"]
-
-        query = AnalyticsQuery(
-            query_id=f"daily-brief-{pendulum.now('UTC').to_date_string()}",
-            query_type="daily_brief",
-            sql_query="""
-                SELECT
-                    COUNT(*) AS new_invoices,
-                    COALESCE(SUM(amount_gross), 0) AS total_amount,
-                    COUNT(CASE WHEN status = 'pending_decision' THEN 1 END) AS pending_decisions,
-                    COUNT(CASE WHEN status = 'overdue' THEN 1 END) AS overdue_count
-                FROM invoice_read_model
-                WHERE created_at >= DATE('now', '-1 day')
-            """,
-        )
-        result = await analytics.analyze(query)
-
-        # Wyślij do Orchestratora (publikacja NATS)
+    async def _publish(
+        self, topic: str, payload: dict[str, Any], target: str = "orchestrator", priority: int = 3
+    ) -> None:
+        """Helper: publish NATS message (awaited)."""
+        if not self._orchestrator:
+            return
         ctx = make_context(
-            task_id=query.query_id,
+            task_id=f"{payload.get('action', topic.split('.')[-1])}-{uuid.uuid4().hex[:8]}",
             source="proactive-scheduler",
-            target="orchestrator",
-            priority=3,
+            target=target,
+            priority=priority,
         )
-        await self._orchestrator.publish(AgentTopic.ANALYTICS_RESULT, result, ctx)
+        await self._orchestrator.publish(topic, payload, ctx)
 
+    def _has_analytics(self) -> bool:
+        return bool(self._orchestrator and "analytics" in getattr(self._orchestrator, "_sub_agents", {}))
+
+    async def _run_analytics_query(self, query_id: str, sql: str) -> AnalyticsResult | None:
+        """Helper: run an analytics query and publish result."""
+        if not self._has_analytics():
+            return None
+        analytics = self._orchestrator._sub_agents["analytics"]
+        query = AnalyticsQuery(query_id=query_id, query_type="sql", sql_query=sql)
+        result = await analytics.analyze(query)
+        await self._publish(AgentTopic.ANALYTICS_RESULT, result, priority=3)
+        return result
+
+    async def _handle_daily_briefing(self) -> dict[str, Any]:
+        """Poranny Daily Briefing — podsumowanie dla przedsiębiorcy."""
+        result = await self._run_analytics_query(
+            f"daily-brief-{pendulum.now('UTC').to_date_string()}",
+            "SELECT COUNT(*) AS new_invoices, "
+            "COALESCE(SUM(amount_gross), 0) AS total_amount, "
+            "COUNT(CASE WHEN status = 'pending_decision' THEN 1 END) AS pending_decisions, "
+            "COUNT(CASE WHEN status = 'overdue' THEN 1 END) AS overdue_count "
+            "FROM invoice_read_model WHERE created_at >= DATE('now', '-1 day')",
+        )
         return {
-            "brief_generated": result.success,
-            "new_invoices": result.data[0].get("new_invoices", 0) if result.data else 0,
-            "pending_decisions": result.data[0].get("pending_decisions", 0) if result.data else 0,
-            "daily_brief": result.daily_brief[:200] if result.daily_brief else "",
-        }
+            "brief_generated": bool(result and result.success),
+            "new_invoices": result.data[0].get("new_invoices", 0) if result and result.data else 0,
+            "pending_decisions": result.data[0].get("pending_decisions", 0) if result and result.data else 0,
+            "daily_brief": result.daily_brief[:200] if result and result.daily_brief else "",
+        } if result else {"status": "no_analytics"}
 
     async def _handle_ksef_fetch(self) -> dict[str, Any]:
-        """Automatyczne pobranie faktur z KSeF.
-
-        AgentDataExtraction sprawdza API KSeF i pobiera nowe faktury.
-        """
+        """Automatyczne pobranie faktur z KSeF."""
         if not self._orchestrator:
             return {"status": "no_orchestrator"}
-
-        extraction = self._orchestrator._sub_agents.get("extraction")
-        if not extraction:
+        if not self._orchestrator._sub_agents.get("extraction"):
             return {"status": "no_extraction_agent"}
-
-        # Publikuj zadanie pobrania KSeF
-        ctx = make_context(
-            task_id=f"ksef-fetch-{uuid.uuid4().hex[:8]}",
-            source="proactive-scheduler",
-            target="extraction",
-            priority=2,
-        )
-        await self._orchestrator.publish(
+        await self._publish(
             AgentTopic.KSEF_RECEIVE,
-            {
-                "action": "fetch_new",
-                "since": pendulum.now("UTC").subtract(days=1).isoformat(),
-                "auto_process": True,
-            },
-            ctx,
+            {"action": "fetch_new",
+             "since": pendulum.now("UTC").subtract(days=1).isoformat(),
+             "auto_process": True},
+            target="extraction", priority=2,
         )
-
-        return {
-            "status": "dispatched",
-            "timestamp": pendulum.now("UTC").isoformat(),
-        }
+        return {"status": "dispatched", "timestamp": pendulum.now("UTC").isoformat()}
 
     async def _handle_bank_sync(self) -> dict[str, Any]:
         """Synchronizacja z kontem bankowym.
@@ -1620,8 +1571,6 @@ class ProactiveWorkflowScheduler:
         ResourceOptimizer sprawdza które modele można odładować.
         """
         resources = self._resource_optimizer.get_system_resources()
-        unloaded: list[str] = []
-
         if not self._orchestrator:
             return {"status": "no_orchestrator", "models_unloaded": 0}
 
@@ -1791,85 +1740,29 @@ class ProactiveWorkflowScheduler:
 
     async def _handle_compliance_scan(self) -> dict[str, Any]:
         """Skan compliance — reguły OPA, RODO, KSeF."""
-        if not self._orchestrator or "quality" not in getattr(
-            self._orchestrator, "_sub_agents", {}
-        ):
+        if not self._orchestrator or "quality" not in getattr(self._orchestrator, "_sub_agents", {}):
             return {"status": "no_orchestrator"}
-
-        ctx = make_context(
-            task_id=f"compliance-{uuid.uuid4().hex[:8]}",
-            source="proactive-scheduler",
-            target="quality",
-            priority=4,
-        )
-        await self._orchestrator.publish(
+        await self._publish(
             AgentTopic.COMPLIANCE_CHECK,
-            {
-                "checks": ["opa_rules", "gdpr", "ksef", "proof_chain"],
-            },
-            ctx,
+            {"checks": ["opa_rules", "gdpr", "ksef", "proof_chain"]},
+            target="quality", priority=4,
         )
-
         return {"status": "dispatched"}
-
-        return {"status": "dispatched"}
-
-    async def _handle_decision_feed_refresh(self) -> dict[str, Any]:
-        """Odświeżenie feedu kart decyzyjnych dla UI.
-
-        GENIALNY POMYSŁ v5.1:
-        Co 30 minut buduje ActionCardFeed ze wszystkich oczekujących
-        decyzji (SUGGEST/ASK_USER) i publikuje na ui.feed.pending.
-        Dzięki temu UI zawsze ma świeży feed kart dla przedsiębiorcy.
-        """
-        if not self._orchestrator:
-            return {"status": "no_orchestrator"}
-
-        try:
-            feed = await self._orchestrator.build_daily_decision_feed()
-            return {
-                "status": "ok",
-                "total_cards": feed.total_pending,
-                "urgent": feed.urgent_count,
-            }
-        except Exception as exc:
-            self._logger.warning("[PROACTIVE] Feed refresh failed: %s", exc)
-            return {"status": "error", "error": str(exc)}
 
     # ── GENIALNY POMYSŁ v6.0: Silent Partner Handlers ────────────────
 
     async def _handle_executive_summary_generation(self) -> dict[str, Any]:
-        """Generowanie Executive Summary — Silent Partner v6.0.
-
-        Codziennie o 06:00 agent generuje Executive Summary
-        zamiast Daily Briefing + Decision Feed.
-        Przedsiębiorca widzi:
-        - Podsumowanie zaksięgowanych faktur
-        - Oszczędność czasu
-        - Strategiczne rekomendacje
-        - Przycisk "Akceptuj wszystkie"
-        """
+        """Generowanie Executive Summary — Silent Partner v6.0."""
         if not self._orchestrator:
             return {"status": "no_orchestrator"}
-
         try:
-            # Sprawdź czy Silent Partner jest włączony
-            silent_mode = getattr(self._orchestrator, 'silent_mode', False)
-            if not silent_mode:
+            if not getattr(self._orchestrator, 'silent_mode', False):
                 return {"status": "skipped", "reason": "Silent Partner is OFF"}
-
-            # Zbuduj Executive Summary
-            summary = await self._orchestrator.build_executive_summary(
-                greeting_name="Przedsiębiorco",
-            )
-
+            summary = await self._orchestrator.build_executive_summary(greeting_name="Przedsiębiorco")
             return {
-                "status": "ok",
-                "summary_id": summary.summary_id,
-                "auto_posted": summary.auto_posted_count,
-                "verified": summary.verified_count,
-                "silent_rate": summary.silent_rate,
-                "time_saved_min": summary.time_saved_minutes,
+                "status": "ok", "summary_id": summary.summary_id,
+                "auto_posted": summary.auto_posted_count, "verified": summary.verified_count,
+                "silent_rate": summary.silent_rate, "time_saved_min": summary.time_saved_minutes,
                 "dashboard_state": summary.dashboard_state.value,
                 "recommendations": len(summary.strategic_recommendations),
             }
@@ -1878,31 +1771,16 @@ class ProactiveWorkflowScheduler:
             return {"status": "error", "error": str(exc)}
 
     async def _handle_strategy_refresh(self) -> dict[str, Any]:
-        """Odświeżenie kontekstu strategicznego — Silent Partner v6.0.
-
-        Co 6 godzin agent analizuje 5 wymiarów kontekstu
-        i dostosowuje tryb strategiczny.
-        """
+        """Odświeżenie kontekstu strategicznego — Silent Partner v6.0."""
         if not self._orchestrator:
             return {"status": "no_orchestrator"}
-
         try:
             strategy = getattr(self._orchestrator, 'strategy_engine', None)
             if not strategy:
                 return {"status": "skipped", "reason": "No strategy engine"}
-
-            # Analizuj kontekst
             context = strategy.analyze_context()
-
-            # Wybierz optymalny tryb
             mode, reason = strategy.select_strategic_mode(context)
-
-            return {
-                "status": "ok",
-                "current_mode": mode.value,
-                "reason": reason,
-                "context": context.summary,
-            }
+            return {"status": "ok", "current_mode": mode.value, "reason": reason, "context": context.summary}
         except Exception as exc:
             self._logger.warning("[PROACTIVE] Strategy refresh failed: %s", exc)
             return {"status": "error", "error": str(exc)}
@@ -1934,7 +1812,6 @@ class ProactiveWorkflowScheduler:
                 status = getattr(decision.verdict, 'status', 'REVIEW')
                 if status in ("REVIEW", "BLOCK", "ESCALATED"):
                     try:
-                        from nexus_ai.agents.models import DecisionMode
                         await self._orchestrator.record_user_feedback(
                             decision_id=decision_id,
                             corrected_status="AUTO_POST",

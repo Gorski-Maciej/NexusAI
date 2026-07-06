@@ -77,47 +77,53 @@ class NexusCache:
         self._sync_compute_locks_lock = threading.Lock()
         logger.info("[CACHE] Initialized: dir=%s ttl=%s size=%d", self._cache_dir, default_ttl, size_limit)
 
+    # ── L2 helper ──────────────────────────────────────────────────
+
+    async def _run_cache(self, fn, *args: Any) -> Any:
+        """Execute a synchronous cache method in a thread."""
+        return await anyio.to_thread.run_sync(fn, *args)
+
     # ══════════════════════════════════════════════════════════════════════
     # Async API
     # ══════════════════════════════════════════════════════════════════════
 
     async def get(self, key: str) -> Any | None:
-        return await anyio.to_thread.run_sync(self._delegate, "get", key)
+        return await self._run_cache(self._delegate, "get", key)
 
     async def get_many(self, *keys: str) -> list[Any | None]:
         if not keys:
             return []
-        raw_results = await anyio.to_thread.run_sync(self._cache.get_many, list(keys))
+        raw_results = await self._run_cache(self._cache.get_many, list(keys))
         return [_deserialize(r) for r in (raw_results or [])]
 
     async def set(self, key: str, value: Any, ttl: int | None = None) -> None:
         data = _serialize(value, key)
         if data is not None:
-            await anyio.to_thread.run_sync(self._cache.set, key, data, expire=ttl or self._default_ttl)
+            await self._run_cache(self._cache.set, key, data, expire=ttl or self._default_ttl)
 
     async def set_many(self, mapping: dict[str, Any], ttl: int | None = None) -> None:
         serialized: dict[str, bytes] = {k: v for k, v in ((k, _serialize(v, k)) for k, v in mapping.items()) if v is not None}
         if serialized:
-            await anyio.to_thread.run_sync(self._cache.set_many, serialized, expire=ttl or self._default_ttl)
+            await self._run_cache(self._cache.set_many, serialized, expire=ttl or self._default_ttl)
 
     async def delete(self, key: str) -> None:
         try:
-            await anyio.to_thread.run_sync(self._cache.__delitem__, key)
+            await self._run_cache(self._cache.__delitem__, key)
         except KeyError:
             pass
 
     async def delete_many(self, *keys: str) -> None:
         if keys:
-            await anyio.to_thread.run_sync(self._run_sync, "delete_many", keys)
+            await self._run_cache(self._run_sync, "delete_many", keys)
 
     async def clear(self, prefix: str | None = None) -> None:
-        await anyio.to_thread.run_sync(self._clear_sync, prefix)
+        await self._run_cache(self._clear_sync, prefix)
 
     async def keys(self, prefix: str = "") -> list[str]:
-        return await anyio.to_thread.run_sync(self._filter_keys, prefix)
+        return await self._run_cache(self._filter_keys, prefix)
 
     async def warm(self, entries: dict[str, Any], ttl: int | None = None) -> int:
-        return await anyio.to_thread.run_sync(self._warm_sync, entries, ttl)
+        return await self._run_cache(self._warm_sync, entries, ttl)
 
     # ══════════════════════════════════════════════════════════════════════
     # Sync methods (delegują do _run_sync)
@@ -200,7 +206,7 @@ class NexusCache:
         async with lock:
             if (cached := await self.get(key)) is not None:
                 return cached
-            value = await compute_func() if inspect.iscoroutinefunction(compute_func) else await anyio.to_thread.run_sync(compute_func)
+            value = await compute_func() if inspect.iscoroutinefunction(compute_func) else await self._run_cache(compute_func)
             await self.set(key, value, ttl=ttl)
             return value
 

@@ -22,30 +22,25 @@ import anyio
 import pendulum
 from structlog import get_logger
 
-from nexus_ai.agents.base import BaseAgent, _SupportsKnowledgeMesh
-from nexus_ai.agents.models import AnalyticsQuery, AnalyticsResult, make_context
+from nexus_ai.agents.base import BaseAgent
+from nexus_ai.agents.models import AnalyticsQuery, AnalyticsResult
 from nexus_ai.agents.topics import AgentTopic
 from nexus_ai.core.inference import ModelManager
+from nexus_ai.services.mesh_service import MeshService
 
 logger = get_logger("nexus.agents.analytics")
 
+DAILY_BRIEF_LIMIT = 5  # M20: named constant instead of magic number
+
 
 class AgentAnalytics(BaseAgent):
-    """Agent Analityczny — analityka finansowa przez DuckDB.
-
-    Enterprise:
-    - Proactive Monitoring 24/7
-    - Natural Language Insights (daily brief)
-    - Anomaly Detection (statystyczna + ML)
-    - Automatyczne raporty
-    - Risk Flags
-    """
+    """Agent Analityczny — analityka finansowa przez DuckDB."""
 
     def __init__(
         self,
         model_manager: ModelManager | None = None,
         config: dict[str, Any] | None = None,
-        knowledge_mesh: _SupportsKnowledgeMesh | None = None,
+        knowledge_mesh=None,
     ) -> None:
         super().__init__(
             name="analytics",
@@ -59,21 +54,21 @@ class AgentAnalytics(BaseAgent):
         self._scheduler_task: Any = None
         self._models: dict[str, str] = {}
         self._anomaly_detector: Any = None
-        self._last_daily_brief_date: str = ""  # Zapobiega duplikatom
+        self._last_daily_brief_date: str = ""
 
     async def start(self) -> None:
-        """Inicjalizuj serwisy i uruchom harmonogram."""
         await super().start()
         await self._init_services()
         self._start_scheduler()
         logger.info("[AGENT] Analytics ready | models: %s", self._models)
 
     async def _init_services(self) -> None:
-        """Inicjalizuj serwisy analityczne."""
+        """Inicjalizuj serwisy analityczne ze współdzielonym DuckDB."""
+        from nexus_ai.core.config import AppConfig
+        from nexus_ai.db.analytics import DuckDBManager
+        config = AppConfig()
+
         try:
-            from nexus_ai.db.analytics import DuckDBManager
-            from nexus_ai.core.config import AppConfig
-            config = AppConfig()
             self._duckdb = DuckDBManager(str(config.duckdb_path))
             logger.info("[ANALYTICS] DuckDB connected")
         except Exception as exc:
@@ -117,179 +112,92 @@ class AgentAnalytics(BaseAgent):
             try:
                 now = pendulum.now("UTC")
                 today = now.to_date_string()
-
-                # Dzienne: o 6:00 UTC
                 if now.hour == 6 and now.minute == 0 and self._last_daily_brief_date != today:
                     self._last_daily_brief_date = today
                     await self._generate_daily_brief()
-
-                # Tygodniowe: poniedziałek 7:00
                 if now.weekday() == 0 and now.hour == 7 and now.minute == 0:
-                    await self._weekly_report()
-
-                # Miesięczne: 1. dzień 8:00
+                    await self._scheduled_report("weekly", "7 DAY")  # M9
                 if now.day == 1 and now.hour == 8 and now.minute == 0:
-                    await self._monthly_report()
-
+                    await self._scheduled_report("monthly", "30 DAY")
                 await anyio.sleep(60)
-            except Exception as exc:
-                logger.warning("[ANALYTICS] Proactive loop error: %s", exc)
+            except Exception:
                 await anyio.sleep(60)
-
-    # ── Główna metoda analizy ────────────────────────────────────
 
     async def analyze(self, query: AnalyticsQuery) -> AnalyticsResult:
-        """Przetwórz zapytanie analityczne.
-
-        Enterprise:
-        1. NL→SQL przez Hrida-T2SQL
-        2. Exec SQL na DuckDB
-        3. Interpretacja przez Granite 3.2
-        4. Anomaly Detection przez Fin-RWKV
-        5. Risk Flags proaktywnie
-        """
+        """Przetwórz zapytanie analityczne."""
         logger.info("[ANALYTICS] Processing query %s (type=%s)", query.query_id, query.query_type)
-
-        # 1. NL → SQL
         sql = query.sql_query
-        if not sql and query.natural_language and self._models["sql_model"]:
+        if not sql and query.natural_language and self._models.get("sql_model"):
             sql = await self._nl_to_sql(query.natural_language)
             logger.info("[ANALYTICS] NL→SQL: %s", sql)
-
         if not sql:
-            return AnalyticsResult(
-                query_id=query.query_id, success=False,
-                error="No SQL query provided and NL→SQL conversion failed",
-            )
-
-        # 2. Exec SQL
+            return AnalyticsResult(query_id=query.query_id, success=False, error="No SQL query provided")
         if not self._duckdb:
-            return AnalyticsResult(
-                query_id=query.query_id, success=False, error="DuckDB not available",
-            )
+            return AnalyticsResult(query_id=query.query_id, success=False, error="DuckDB not available")
 
         try:
             result_data = await self._execute_query(sql, query.params)
         except Exception as exc:
-            return AnalyticsResult(
-                query_id=query.query_id, success=False,
-                error=f"Query execution failed: {exc}", sql_executed=sql,
-            )
+            return AnalyticsResult(query_id=query.query_id, success=False, error=f"Query execution failed: {exc}", sql_executed=sql)
 
-        # 3. Interpretacja
         summary = ""
-        if result_data and self._models["analyst_model"]:
+        if result_data and self._models.get("analyst_model"):
             summary = await self._interpret_results(result_data, query)
-
-        # 4. Anomalie
         anomalies = await self._detect_anomalies(result_data)
-
-        # 5. Risk flags
         risk_flags = await self._detect_risk_flags(result_data, query)
 
-        # 5a. 🆕 KnowledgeMesh Integration — publikuj eventy przy anomaliach
         await self._publish_mesh_events(query, anomalies, risk_flags, vendor_nip=query.context.get("vendor_nip", "") if query.context else "")
 
         return AnalyticsResult(
-            query_id=query.query_id, success=True,
-            summary=summary, data=result_data,
-            anomalies=anomalies, sql_executed=sql,
-            model_used=self._models["sql_model"] or "direct-sql",
-            risk_flags=risk_flags,
+            query_id=query.query_id, success=True, summary=summary, data=result_data,
+            anomalies=anomalies, sql_executed=sql, model_used=self._models["sql_model"] or "direct-sql", risk_flags=risk_flags,
         )
 
-    # ── Daily Brief (Enterprise) ──────────────────────────────────
-
     async def _generate_daily_brief(self) -> None:
-        """Generuj codzienny brief finansowy.
-
-        Enterprise: NL podsumowanie dnia poprzedniego.
-        """
+        """Generuj codzienny brief finansowy."""
         logger.info("[ANALYTICS] Generating daily brief")
         try:
-            # Zebranie danych
             query = AnalyticsQuery(
                 query_id=f"daily-brief-{pendulum.now('UTC').to_date_string()}",
                 query_type="daily_brief",
-                sql_query="""
-                    SELECT DATE(created_at) AS day,
-                           COUNT(*) AS invoice_count,
-                           SUM(amount_gross) AS total_amount
-                    FROM invoice_read_model
-                    WHERE created_at >= CURRENT_DATE - INTERVAL '1' DAY
-                    GROUP BY 1
-                """,
+                sql_query="SELECT DATE(created_at) AS day, COUNT(*) AS invoice_count, SUM(amount_gross) AS total_amount FROM invoice_read_model WHERE created_at >= CURRENT_DATE - INTERVAL '1' DAY GROUP BY 1",
             )
             result = await self.analyze(query)
-
             brief = "Codzienny briefing finansowy — brak danych."
             if result.data:
-                # Użyj modelu do generowania briefu
-                data_str = str(result.data[:5])
+                data_str = str(result.data[:DAILY_BRIEF_LIMIT])  # M20
                 brief = await self._generate_nl_brief(data_str)
-
-            # Wyślij brief
-            ctx = make_context(
-                task_id=query.query_id, source=self.name, target="orchestrator",
-            )
-            await self.publish(AgentTopic.ANALYTICS_RESULT, AnalyticsResult(
-                query_id=query.query_id, success=True,
-                daily_brief=brief, data=result.data,
-            ), ctx)
-
+            ctx = self._ctx(target="orchestrator")
+            await self.publish(AgentTopic.ANALYTICS_RESULT, AnalyticsResult(query_id=query.query_id, success=True, daily_brief=brief, data=result.data), ctx)
             logger.info("[ANALYTICS] Daily brief generated: %s...", brief[:100])
         except Exception as exc:
             logger.warning("[ANALYTICS] Daily brief failed: %s", exc)
 
     async def _generate_nl_brief(self, data_str: str) -> str:
-        """Generuj NL brief przez Granite 3.2."""
         model_path = self._models.get("analyst_model")
         if not model_path:
             return f"Dane z ostatniego dnia: {data_str}"
-
-        prompt = f"""Jesteś głównym analitykiem finansowym. Na podstawie danych z ostatniego dnia, przygotuj zwięzły codzienny brief finansowy (po polsku, 2-3 zdania).
-
-Dane: {data_str}
-
-Brief:"""
+        prompt = f"Jesteś głównym analitykiem finansowym. Na podstawie danych z ostatniego dnia, przygotuj zwięzły codzienny brief finansowy (po polsku, 2-3 zdania).\n\nDane: {data_str}\n\nBrief:"
         try:
             return await self.infer(model_path, prompt, max_tokens=200, temperature=0.2)
         except Exception as exc:
-            logger.debug("[ANALYTICS] NL brief generation failed: %s", exc)
+            logger.debug("[ANALYTICS] NL brief failed: %s", exc)
             return f"Dane: {data_str}"
 
-    # ── Anomaly Detection (Enterprise) ────────────────────────────
-
     async def _detect_anomalies(self, data: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """Wykrywanie anomalii (statystyczne + ML).
-
-        Enterprise:
-        - Z-score > 2σ
-        - IQR
-        - Mahalanobis distance
-        - Change point detection
-        """
-        anomalies = []
+        """Wykrywanie anomalii (statystyczne + ML)."""
         if not data:
-            return anomalies
-
-        # Użyj istniejących serwisów
+            return []
+        anomalies = []
         try:
-            if data and self._anomaly_detector:
+            if self._anomaly_detector:
                 for row in data:
-                    if hasattr(self._anomaly_detector, 'detect'):
-                        result = self._anomaly_detector.detect(row)
-                        if isinstance(result, dict) and result.get("is_anomaly"):
-                            anomalies.append({
-                                "type": result.get("method", "statistical"),
-                                "severity": result.get("severity", "medium"),
-                                "description": result.get("reason", "Anomaly detected"),
-                                "row": row,
-                            })
+                    result = getattr(self._anomaly_detector, 'detect', lambda x: {})(row)
+                    if isinstance(result, dict) and result.get("is_anomaly"):
+                        anomalies.append({"type": result.get("method", "statistical"), "severity": result.get("severity", "medium"), "description": result.get("reason", "Anomaly detected"), "row": row})
         except Exception as exc:
             logger.debug("[ANALYTICS] Anomaly detection failed: %s", exc)
 
-        # Statystyczne (Z-score)
         try:
             numeric_fields = self._find_numeric_fields(data)
             for field in numeric_fields:
@@ -297,253 +205,85 @@ Brief:"""
                 if len(values) < 2:
                     continue
                 mean = sum(values) / len(values)
-                variance = sum((v - mean) ** 2 for v in values) / len(values)
-                std = variance ** 0.5
+                var = sum((v - mean) ** 2 for v in values) / len(values)
+                std = var ** 0.5
                 if std == 0:
                     continue
-                for i, row in enumerate(data):
+                for row in data:
                     val = row.get(field, 0)
                     if isinstance(val, (int, float)):
-                        z_score = abs((val - mean) / std)
-                        if z_score > 2.0:
-                            anomalies.append({
-                                "type": "z_score",
-                                "severity": "high" if z_score > 3.0 else "medium",
-                                "description": f"Z-score={z_score:.1f} dla {field}={val} (mean={mean:.1f})",
-                                "row": row,
-                                "field": field,
-                                "z_score": z_score,
-                            })
+                        z = abs((val - mean) / std)
+                        if z > 2.0:
+                            anomalies.append({"type": "z_score", "severity": "high" if z > 3.0 else "medium", "description": f"Z={z:.1f} dla {field}={val}", "row": row, "field": field, "z_score": z})
         except Exception as exc:
             logger.debug("[ANALYTICS] Statistical anomaly detection failed: %s", exc)
-
         return anomalies
 
-    async def _detect_risk_flags(
-        self,
-        data: list[dict[str, Any]],
-        query: AnalyticsQuery,
-    ) -> list[dict[str, Any]]:
-        """Proaktywne wykrywanie flag ryzyka.
-
-        Enterprise: overdue, DSO, VAT, cash flow alerts.
-        """
-        flags = []
+    async def _detect_risk_flags(self, data: list[dict[str, Any]], query: AnalyticsQuery) -> list[dict[str, Any]]:
         if not data:
-            return flags
-
+            return []
+        flags = []
         for row in data:
-            # Overdue
             if row.get("status") == "OVERDUE" and row.get("amount_gross", 0):
-                flags.append({
-                    "type": "overdue",
-                    "severity": "high",
-                    "description": f"Przeterminowana faktura: {row.get('invoice_number', 'N/A')} "
-                                   f"na kwotę {row.get('amount_gross', 0)} PLN",
-                    "row": row,
-                })
-
-            # Wysoka kwota
+                flags.append({"type": "overdue", "severity": "high", "description": f"Przeterminowana: {row.get('invoice_number', 'N/A')} na {row.get('amount_gross', 0)} PLN", "row": row})
             gross = row.get("amount_gross", 0)
             if isinstance(gross, (int, float)) and gross > 50000:
-                flags.append({
-                    "type": "high_amount",
-                    "severity": "medium",
-                    "description": f"Wysoka kwota: {gross} PLN",
-                    "row": row,
-                })
-
+                flags.append({"type": "high_amount", "severity": "medium", "description": f"Wysoka kwota: {gross} PLN", "row": row})
         return flags
 
-    # ── 🆕 KnowledgeMesh Integration ─────────────────────────────────
-
-    async def _publish_mesh_events(
-        self,
-        query: AnalyticsQuery,
-        anomalies: list[dict[str, Any]],
-        risk_flags: list[dict[str, Any]],
-        vendor_nip: str = "",
-    ) -> None:
-        """Aktualizuj KnowledgeMesh gdy Analytics wykryje anomalie.
-
-        GENIALNY POMYSŁ v5.4:
-        Analytics dzieli się informacją o ryzyku finansowym z innymi agentami.
-        - Z-score anomaly → QualityValidator TRIGGER_DEEP_CHECK + Orchestrator LOWER_THRESHOLD
-        - Risk flag (overdue, high_amount) → QualityValidator INCREASE_SCRUTINY + Orchestrator LOWER_THRESHOLD
-        - Cashflow anomaly → Wszyscy agenci dostają alert
-
-        CROSS_AGENT_RULES w knowledge_mesh.py:
-          analytics.anomaly_detected → QualityValidator TRIGGER_DEEP_CHECK
-          analytics.anomaly_detected → Orchestrator LOWER_THRESHOLD
-        """
-        if not self._knowledge_mesh or not self._knowledge_mesh.is_initialized:
+    # M10: Guard clauses + MeshService (TOP-2)
+    async def _publish_mesh_events(self, query: AnalyticsQuery, anomalies: list[dict[str, Any]], risk_flags: list[dict[str, Any]], vendor_nip: str = "") -> None:
+        if not self.mesh_ready:
             return
-
-        mesh = self._knowledge_mesh
         category = query.context.get("category", "") if query.context else ""
         amount = float(query.context.get("amount_gross", 0)) if query.context else 0.0
 
-        # ── 1. Poważne anomalie Z-score (> 3σ) → QualityValidator TRIGGER_DEEP_CHECK ──
-        high_severity_anomalies = [a for a in anomalies if a.get("severity") == "high"]
-        if high_severity_anomalies:
-            fields = list({a.get("field", "unknown") for a in high_severity_anomalies})
-            max_z = max(a.get("z_score", 0) for a in high_severity_anomalies)
-            logger.warning(
-                "[MESH] %d high-severity anomalies | fields=%s | max_z_score=%.1f",
-                len(high_severity_anomalies), fields, max_z,
-            )
-            # Jeden event zbiorczy zamiast N pojedynczych
-            await mesh.share_experience(
-                event_type="analytics.anomaly_detected",
-                source_agent=self.name,
-                vendor_nip=vendor_nip or "unknown",
-                category=category,
-                amount=amount,
-                details={
-                    "query_id": query.query_id,
-                    "query_type": query.query_type,
-                    "severity": "high",
-                    "fields": fields,
-                    "max_z_score": max_z,
-                    "anomaly_count": len(high_severity_anomalies),
-                    "detection_method": "z_score",
-                    "anomalies": [
-                        {"field": a.get("field", ""), "z_score": a.get("z_score", 0)}
-                        for a in high_severity_anomalies[:20]
-                    ],
-                },
-            )
-            # Jedna aktualizacja Trust na vendor (nie na anomalię)
-            await mesh.update_trust(
-                vendor_nip=vendor_nip or "unknown",
-                correct=False,
-                agent_name=self.name,
-                category=category,
-                amount=amount,
-            )
-            logger.info(
-                "[MESH] 📡 analytics.anomaly_detected (high) → QualityValidator TRIGGER_DEEP_CHECK | %d anomalies | fields=%s",
-                len(high_severity_anomalies), fields,
-            )
-
-        # ── 2. Średnie anomalie Z-score (2-3σ) → QualityValidator INCREASE_SCRUTINY ──
+        high_anomalies = [a for a in anomalies if a.get("severity") == "high"]
         medium_anomalies = [a for a in anomalies if a.get("severity") == "medium" and a.get("type") == "z_score"]
-        if medium_anomalies:
+        high_risk = [f for f in risk_flags if f.get("severity") in ("high", "critical")]
+
+        # High severity → reduce trust
+        if high_anomalies:
+            fields = list({a.get("field", "?") for a in high_anomalies})
+            await MeshService.publish_event(
+                mesh=self.mesh, event_type="analytics.anomaly_detected", source_agent=self.name,
+                vendor_nip=vendor_nip or "unknown", category=category, amount=amount,
+                severity="high", trust_correct=False,
+                details={"query_id": query.query_id, "fields": fields, "anomaly_count": len(high_anomalies), "detection_method": "z_score"},
+            )
+        # Medium anomalies → share experience only, no trust adjustment
+        elif medium_anomalies:
             fields = list({a.get("field", "?") for a in medium_anomalies})
-            logger.info(
-                "[MESH] Medium anomalies | fields=%s | count=%d",
-                fields, len(medium_anomalies),
+            await MeshService.publish_event(
+                mesh=self.mesh, event_type="analytics.anomaly_detected", source_agent=self.name,
+                vendor_nip=vendor_nip or "unknown", category=category, amount=amount,
+                severity="medium", adjust_trust=False,
+                details={"query_id": query.query_id, "fields": fields, "anomaly_count": len(medium_anomalies)},
             )
-            await mesh.share_experience(
-                event_type="analytics.anomaly_detected",
-                source_agent=self.name,
-                vendor_nip=vendor_nip or "unknown",
-                category=category,
-                amount=amount,
-                details={
-                    "query_id": query.query_id,
-                    "query_type": query.query_type,
-                    "severity": "medium",
-                    "fields": fields,
-                    "anomaly_count": len(medium_anomalies),
-                    "detection_method": "z_score",
-                },
+        # High risk flags → reduce trust
+        if high_risk:
+            await MeshService.reduce_trust(
+                mesh=self.mesh, vendor_nip=vendor_nip or "unknown", source_agent=self.name,
+                category=category, amount=amount, event_type="analytics.anomaly_detected",
+                reason=f"high_risk_flags_{[f.get('type','') for f in high_risk]}",
             )
-
-        # ── 3. Risk flags (overdue, high_amount) → QualityValidator + Orchestrator ──
-        high_risk_flags = [f for f in risk_flags if f.get("severity") in ("high", "critical")]
-        if high_risk_flags:
-            flag_types = list({f.get("type", "?") for f in high_risk_flags})
-            logger.warning(
-                "[MESH] High-risk flags detected | types=%s | count=%d",
-                flag_types, len(high_risk_flags),
-            )
-            await mesh.share_experience(
-                event_type="analytics.anomaly_detected",
-                source_agent=self.name,
-                vendor_nip=vendor_nip or "unknown",
-                category=category,
-                amount=amount,
-                details={
-                    "query_id": query.query_id,
-                    "query_type": query.query_type,
-                    "severity": "high",
-                    "flag_types": flag_types,
-                    "flag_count": len(high_risk_flags),
-                    "detection_method": "risk_flag",
-                    "flags": [
-                        {"type": f.get("type", ""), "description": f.get("description", "")[:200]}
-                        for f in high_risk_flags[:10]
-                    ],
-                },
-            )
-            # Obniż Trust Score przy poważnych flagach ryzyka
-            for flag in high_risk_flags:
-                if flag.get("type") == "overdue":
-                    await mesh.update_trust(
-                        vendor_nip=vendor_nip or "unknown",
-                        correct=False,
-                        agent_name=self.name,
-                        category=category,
-                        amount=amount,
-                    )
-                    break  # jedna aktualizacja wystarczy na vendor
-
-        # ── 4. Cashflow anomaly (query type = cashflow) ──
-        if query.query_type in ("cashflow", "forecast") and (anomalies or risk_flags):
-            logger.info(
-                "[MESH] Cashflow anomaly | query=%s | anomalies=%d | flags=%d",
-                query.query_id, len(anomalies), len(risk_flags),
-            )
-            await mesh.share_experience(
-                event_type="analytics.anomaly_detected",
-                source_agent=self.name,
-                vendor_nip=vendor_nip or "unknown",
-                category="cashflow",
-                amount=amount,
-                details={
-                    "query_id": query.query_id,
-                    "query_type": query.query_type,
-                    "severity": "high" if high_severity_anomalies else "medium",
-                    "anomaly_count": len(anomalies),
-                    "flag_count": len(risk_flags),
-                    "detection_method": "cashflow_analysis",
-                },
-            )
-
-    # ── NL → SQL ─────────────────────────────────────────────────
 
     async def _nl_to_sql(self, nl_query: str) -> str:
-        model_path = self._models["sql_model"]
+        model_path = self._models.get("sql_model")
         if not model_path:
             return ""
-
         schema_context = ""
         if self._duckdb:
             try:
-                tables = self._duckdb.execute(
-                    "SELECT table_name FROM information_schema.tables WHERE table_schema = 'main'"
-                ).fetchall()
+                tables = self._duckdb.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'main'").fetchall()
                 schema_parts = []
                 for (tname,) in tables[:10]:
-                    cols = self._duckdb.execute(
-                        f"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{tname}'"
-                    ).fetchall()
-                    col_str = ", ".join(f"{c[0]} {c[1]}" for c in cols[:20])
-                    schema_parts.append(f"{tname}({col_str})")
+                    cols = self._duckdb.execute(f"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{tname}'").fetchall()
+                    schema_parts.append(f"{tname}({', '.join(f'{c[0]} {c[1]}' for c in cols[:20])})")
                 schema_context = "Schemat bazy:\n" + "\n".join(schema_parts)
-            except Exception as exc:
-                logger.debug("[ANALYTICS] Schema fetch failed: %s", exc)
+            except Exception:
                 pass
-
-        prompt = f"""Jesteś ekspertem SQL. Na podstawie schematu bazy danych i pytania, wygeneruj zapytanie SQL.
-
-{schema_context}
-
-Pytanie: {nl_query}
-
-Zwróć WYŁĄCZNIE zapytanie SQL, bez komentarzy:"""
-
+        prompt = f"Jesteś ekspertem SQL. Na podstawie schematu bazy danych i pytania, wygeneruj zapytanie SQL.\n\n{schema_context}\n\nPytanie: {nl_query}\n\nZwróć WYŁĄCZNIE zapytanie SQL, bez komentarzy:"
         try:
             result = await self.infer(model_path, prompt, max_tokens=256, temperature=0.05)
             return result.strip()
@@ -556,81 +296,38 @@ Zwróć WYŁĄCZNIE zapytanie SQL, bez komentarzy:"""
             return []
 
         def _sync_query() -> list[dict[str, Any]]:
-            if params:
-                result = self._duckdb.execute(sql, params)
-            else:
-                result = self._duckdb.execute(sql)
+            result = self._duckdb.execute(sql, params or {})
             columns = [desc[0] for desc in result.description] if result.description else []
             rows = result.fetchall()
-            return [dict(zip(columns, row, strict=True)) for row in rows]
+            return [dict(zip(columns, row)) for row in rows]
 
         return await anyio.to_thread.run_sync(_sync_query)
 
     async def _interpret_results(self, data: list[dict[str, Any]], query: AnalyticsQuery) -> str:
-        model_path = self._models["analyst_model"]
+        model_path = self._models.get("analyst_model")
         if not model_path or not data:
             return ""
-
         data_str = str(data[:10])
-        prompt = f"""Jesteś głównym analitykiem finansowym. Na podstawie danych i pytania, przygotuj zwięzłe podsumowanie biznesowe (po polsku).
-
-Dane: {data_str}
-Pytanie: {query.natural_language or query.query_type}
-
-Podsumowanie (2-3 zdania):"""
+        prompt = f"Jesteś głównym analitykiem finansowym. Na podstawie danych i pytania, przygotuj zwięzłe podsumowanie biznesowe (po polsku).\n\nDane: {data_str}\nPytanie: {query.natural_language or query.query_type}\n\nPodsumowanie (2-3 zdania):"
         try:
             return await self.infer(model_path, prompt, max_tokens=200, temperature=0.1)
         except Exception as exc:
             logger.warning("[ANALYTICS] Interpretation failed: %s", exc)
             return ""
 
-    # ── Raporty ───────────────────────────────────────────────────
-
-    async def _weekly_report(self) -> None:
-        logger.info("[ANALYTICS] Running weekly report")
-        query = AnalyticsQuery(
-            query_id=f"weekly-{pendulum.now('UTC').isoformat()}",
-            query_type="sql",
-            sql_query="""
-                SELECT DATE_TRUNC('week', created_at) AS week,
-                       COUNT(*) AS invoice_count,
-                       SUM(amount_gross) AS total_amount,
-                       AVG(amount_gross) AS avg_amount
-                FROM invoice_read_model
-                WHERE created_at >= CURRENT_DATE - INTERVAL '7' DAY
-                GROUP BY 1 ORDER BY 1
-            """,
-        )
+    # M9: Consolidated report generator
+    async def _scheduled_report(self, period: str, interval: str) -> None:
+        logger.info("[ANALYTICS] Running %s report", period)
+        query_id = f"{period}-{pendulum.now('UTC').isoformat()}"
+        sql_template = f"SELECT DATE_TRUNC('{period}', created_at) AS {period[0]}, COUNT(*) AS invoice_count, SUM(amount_gross) AS total_amount FROM invoice_read_model WHERE created_at >= CURRENT_DATE - INTERVAL '{interval}' GROUP BY 1 ORDER BY 1"
+        query = AnalyticsQuery(query_id=query_id, query_type="sql", sql_query=sql_template)
         result = await self.analyze(query)
         if result.success and result.summary:
-            ctx = make_context(task_id=query.query_id, source=self.name, target="orchestrator")
-            await self.publish(AgentTopic.ANALYTICS_RESULT, result, ctx)
-
-    async def _monthly_report(self) -> None:
-        logger.info("[ANALYTICS] Running monthly report")
-        query = AnalyticsQuery(
-            query_id=f"monthly-{pendulum.now('UTC').isoformat()}",
-            query_type="sql",
-            sql_query="""
-                SELECT DATE_TRUNC('month', created_at) AS month,
-                       COUNT(*) AS invoice_count,
-                       SUM(amount_gross) AS total_revenue,
-                       COUNT(DISTINCT contractor_id) AS unique_contractors,
-                       SUM(CASE WHEN status = 'OVERDUE' THEN amount_gross ELSE 0 END) AS overdue_amount
-                FROM invoice_read_model
-                WHERE created_at >= CURRENT_DATE - INTERVAL '30' DAY
-                GROUP BY 1 ORDER BY 1
-            """,
-            context={"report_type": "monthly"},
-        )
-        result = await self.analyze(query)
-        if result.success:
-            ctx = make_context(task_id=query.query_id, source=self.name, target="orchestrator")
+            ctx = self._ctx(target="orchestrator")
             await self.publish(AgentTopic.ANALYTICS_RESULT, result, ctx)
 
     @staticmethod
     def _find_numeric_fields(data: list[dict[str, Any]]) -> list[str]:
-        """Znajdź pola numeryczne w danych."""
         numeric = set()
         for row in data:
             for key, value in row.items():
@@ -639,14 +336,8 @@ Podsumowanie (2-3 zdania):"""
         return list(numeric)
 
     async def process_query(self, query: AnalyticsQuery) -> None:
-        """Przetwórz zapytanie analityczne.
-
-        Taskiq task: agent_analytics.process_query
-        """
+        """Przetwórz zapytanie analityczne. Taskiq task."""
         result = await self.analyze(query)
-        ctx = make_context(task_id=query.query_id, source=self.name, target="orchestrator")
+        ctx = self._ctx(target="orchestrator")
         await self.publish(AgentTopic.ANALYTICS_RESULT, result, ctx)
-        logger.info(
-            "[AGENT] Analytics result for %s | success=%s | rows=%d | anomalies=%d",
-            query.query_id, result.success, len(result.data), len(result.anomalies),
-        )
+        logger.info("[AGENT] Analytics result for %s | success=%s | rows=%d | anomalies=%d", query.query_id, result.success, len(result.data), len(result.anomalies))

@@ -9,7 +9,6 @@ import sqlite3
 from pathlib import Path
 from typing import Any, final
 
-import anyio
 import pendulum
 from structlog import get_logger
 
@@ -17,6 +16,7 @@ from nexus_ai.agents.base import _SupportsDecisionLogger, _SupportsDuckDB
 from nexus_ai.core.broker import broker
 from nexus_ai.core.config import AppConfig
 from nexus_ai.core.msgspec_utils import msgspec_dumps
+from nexus_ai.core.vectorize import execute_db
 from nexus_ai.db.async_base_service import AsyncBaseService
 
 logger = get_logger("nexus.services.notification")
@@ -91,11 +91,12 @@ class DailyBriefingGenerator:
         if not self._duckdb:
             return {"count": 0, "total_amount": 0.0}
         try:
-            rows = await anyio.to_thread.run_sync(
-                self._duckdb.execute,
+            cursor = await execute_db(
+                self._duckdb,
                 "SELECT COUNT(*), COALESCE(SUM(amount_gross), 0) FROM oltp.invoices WHERE status = ? AND DATE(created_at) = DATE(?)",
                 [status, day],
             )
+            rows = cursor.fetchall() if cursor else []
             if rows and rows[0]:
                 return {"count": int(rows[0][0]), "total_amount": float(rows[0][1])}
         except Exception as exc:
@@ -106,10 +107,11 @@ class DailyBriefingGenerator:
         if not self._duckdb:
             return 0
         try:
-            rows = await anyio.to_thread.run_sync(
-                self._duckdb.execute,
+            cursor = await execute_db(
+                self._duckdb,
                 "SELECT COUNT(*) FROM oltp.invoices WHERE status IN ('MANUAL_REVIEW', 'PENDING_REVIEW')",
             )
+            rows = cursor.fetchall() if cursor else []
             return int(rows[0][0]) if rows and rows[0] and rows[0][0] else 0
         except Exception as exc:
             logger.debug("[DailyBriefing] count_pending error: %s", exc)
@@ -119,11 +121,12 @@ class DailyBriefingGenerator:
         if not self._duckdb:
             return []
         try:
-            rows = await anyio.to_thread.run_sync(
-                self._duckdb.execute,
+            cursor = await execute_db(
+                self._duckdb,
                 "SELECT contractor_nip, COUNT(*) as cnt, SUM(amount_gross) as total FROM oltp.invoices WHERE DATE(created_at) = DATE(?) GROUP BY contractor_nip ORDER BY cnt DESC LIMIT 3",
                 [day],
             )
+            rows = cursor.fetchall() if cursor else []
             return (
                 [{"nip": str(r[0]), "count": int(r[1]), "total_amount": float(r[2])} for r in rows]
                 if rows
@@ -137,7 +140,7 @@ class DailyBriefingGenerator:
         if not self._logger:
             return {"trend": "stable"}
         try:
-            stats = await anyio.to_thread.run_sync(self._logger.get_user_correction_stats)
+            stats = await self._run_sync(self._logger.get_user_correction_stats)
             cr = stats.get("correction_rate", 0.0)
             if cr < 0.05:
                 return {"trend": "up", "correction_rate": cr}
@@ -147,6 +150,12 @@ class DailyBriefingGenerator:
         except Exception as exc:
             logger.debug("[DailyBriefing] trust_trend error: %s", exc)
             return {"trend": "stable"}
+
+    @staticmethod
+    async def _run_sync(fn, *args, **kwargs) -> Any:
+        """Execute a synchronous function in a thread."""
+        import anyio
+        return await anyio.to_thread.run_sync(lambda: fn(*args, **kwargs))
 
     @staticmethod
     def _generate_alerts(auto_posted, blocked, pending_review) -> list[dict[str, Any]]:
@@ -246,17 +255,11 @@ class AsyncNotificationService(AsyncBaseService):
 
     async def _on_connect(self, conn: sqlite3.Connection) -> None:
         """Hook tworzący schemat przy pierwszym połączeniu (async)."""
-
-        def _sync() -> None:
-            conn.execute(
-                "CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, title TEXT NOT NULL, message TEXT NOT NULL, notification_type TEXT NOT NULL DEFAULT 'info', reference_type TEXT, reference_id TEXT, is_read INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL)"
-            )
-            conn.execute(
-                "CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read, created_at DESC)"
-            )
-            conn.commit()
-
-        await anyio.to_thread.run_sync(_sync)
+        await execute_db(conn,
+            "CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, title TEXT NOT NULL, message TEXT NOT NULL, notification_type TEXT NOT NULL DEFAULT 'info', reference_type TEXT, reference_id TEXT, is_read INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL)")
+        await execute_db(conn,
+            "CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read, created_at DESC)")
+        conn.commit()
 
     async def send_daily_briefing(self, user_id: str) -> dict[str, Any]:
         """Generate and persist a daily briefing summary (async)."""
@@ -471,82 +474,62 @@ class AsyncNotificationService(AsyncBaseService):
         )
         await self.commit()
 
-    async def _fetch_pending_decisions(self, user_id: str) -> list[dict[str, Any]]:
-        """Fetch decisions awaiting user action.
+    async def _run_duckdb_query(self, sql: str, params: list | None = None) -> Any:
+        """Utwórz tymczasowe połączenie DuckDB (read-only), wykonaj zapytanie i zamknij."""
+        from nexus_ai.core.config import AppConfig
+        from nexus_ai.db.analytics import DuckDBManager
+        import anyio
 
-        DuckDB (sync) jest wołany przez anyio.to_thread.run_sync()
-        aby nie blokować pętli async.
-        """
+        cfg = AppConfig()
+        mgr = DuckDBManager(db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True)
         try:
-            from nexus_ai.core.config import AppConfig
-            from nexus_ai.db.analytics import DuckDBManager
+            return await execute_db(mgr, sql, params)
+        finally:
+            await anyio.to_thread.run_sync(mgr.close)
 
-            cfg = AppConfig()
-            mgr = DuckDBManager(
-                db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True
+    async def _fetch_pending_decisions(self, user_id: str) -> list[dict[str, Any]]:
+        """Fetch decisions awaiting user action."""
+        try:
+            cursor = await self._run_duckdb_query(
+                """
+                SELECT id, number, amount_gross, currency, status,
+                       contractor_nip, created_at
+                FROM oltp.invoices
+                WHERE status IN ('MANUAL_REVIEW', 'PENDING_REVIEW')
+                ORDER BY created_at DESC
+                LIMIT 10
+                """,
             )
-            try:
-                # DuckDB execute() jest SYNC -- wołamy w thread aby nie blokować async loop
-                rows = await anyio.to_thread.run_sync(
-                    mgr.execute,
-                    """
-                    SELECT id, number, amount_gross, currency, status,
-                           contractor_nip, created_at
-                    FROM oltp.invoices
-                    WHERE status IN ('MANUAL_REVIEW', 'PENDING_REVIEW')
-                    ORDER BY created_at DESC
-                    LIMIT 10
-                    """,
-                )
-                if not rows:
-                    return []
-                decisions = []
-                for r in rows:
-                    decisions.append(
-                        {
-                            "invoice_id": str(r[0]),
-                            "number": str(r[1]) if r[1] else "",
-                            "amount_gross": float(r[2]) if r[2] else 0.0,
-                            "currency": str(r[3]) if r[3] else "PLN",
-                            "status": str(r[4]) if r[4] else "PENDING_REVIEW",
-                            "contractor_nip": str(r[5]) if r[5] else "",
-                            "created_at": str(r[6]) if r[6] else "",
-                        }
-                    )
-                return decisions
-            finally:
-                await anyio.to_thread.run_sync(mgr.close)
+            rows = cursor.fetchall() if cursor else []
+            return [
+                {
+                    "invoice_id": str(r[0]),
+                    "number": str(r[1]) if r[1] else "",
+                    "amount_gross": float(r[2]) if r[2] else 0.0,
+                    "currency": str(r[3]) if r[3] else "PLN",
+                    "status": str(r[4]) if r[4] else "PENDING_REVIEW",
+                    "contractor_nip": str(r[5]) if r[5] else "",
+                    "created_at": str(r[6]) if r[6] else "",
+                }
+                for r in rows
+            ]
         except Exception as exc:
             logger.debug("[DailyBriefing] pending decisions unavailable: %s", exc)
             return []
 
     async def _count_today_auto_posted(self, user_id: str, today: str) -> int:
-        """Count invoices auto-approved today.
-
-        DuckDB (sync) jest wołany przez anyio.to_thread.run_sync()
-        aby nie blokować pętli async.
-        """
+        """Count invoices auto-approved today."""
         try:
-            from nexus_ai.core.config import AppConfig
-            from nexus_ai.db.analytics import DuckDBManager
-
-            cfg = AppConfig()
-            mgr = DuckDBManager(
-                db_path=cfg.duckdb_path, sqlite_path=cfg.sqlite_path, read_only=True
+            cursor = await self._run_duckdb_query(
+                """
+                SELECT COUNT(*) FROM oltp.invoices
+                WHERE status = 'APPROVED'
+                  AND DATE(updated_at) = DATE(?)
+                """,
+                [today],
             )
-            try:
-                row = await anyio.to_thread.run_sync(
-                    mgr.execute,
-                    """
-                    SELECT COUNT(*) FROM oltp.invoices
-                    WHERE status = 'APPROVED'
-                      AND DATE(updated_at) = DATE(?)
-                    """,
-                    [today],
-                )
-                return int(row[0][0]) if row and row[0] and row[0][0] else 0
-            finally:
-                await anyio.to_thread.run_sync(mgr.close)
+            row = cursor.fetchone() if cursor else None
+            return int(row[0]) if row and row[0] else 0
         except Exception as exc:
             logger.debug("[DailyBriefing] count_today error: %s", exc)
             return 0
@@ -563,26 +546,24 @@ class AsyncNotificationService(AsyncBaseService):
         """Insert a new notification row and return its ID (ASYNC)."""
         conn = await self.get_conn()
 
-        def _sync() -> int:
-            cursor = conn.execute(
-                """INSERT INTO notifications
-                   (user_id, title, message, notification_type,
-                    reference_type, reference_id, is_read, created_at)
-                   VALUES (?, ?, ?, ?, ?, ?, 0, ?)""",
-                (
-                    user_id,
-                    title,
-                    message,
-                    notification_type,
-                    reference_type,
-                    reference_id,
-                    pendulum.now("UTC").isoformat(),
-                ),
-            )
-            conn.commit()
-            return int(cursor.lastrowid)
+        cursor = await execute_db(conn,
+            """INSERT INTO notifications
+               (user_id, title, message, notification_type,
+                reference_type, reference_id, is_read, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, 0, ?)""",
+            (
+                user_id,
+                title,
+                message,
+                notification_type,
+                reference_type,
+                reference_id,
+                pendulum.now("UTC").isoformat(),
+            ),
+        )
+        conn.commit()
+        return int(cursor.lastrowid)
 
-        return await anyio.to_thread.run_sync(_sync)
 
     async def get_user_notifications(
         self,

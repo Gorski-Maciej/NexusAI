@@ -121,6 +121,10 @@ class AsyncBackup:
         )
         return results
 
+    async def _run_backup(self, fn) -> Any:
+        """Execute a synchronous backup operation in a thread."""
+        return await anyio.to_thread.run_sync(fn)
+
     async def backup_single(
         self,
         source_path: str,
@@ -143,9 +147,7 @@ class AsyncBackup:
             Słownik z wynikiem: status, path, size_mb.
         """
         tx_fs = TransactionalFileSystem(self._fs)
-
         logger.info("[BACKUP] Starting backup: %s -> %s", source_path, target_path)
-
         start_time = time.time()
 
         def _sync_backup() -> None:
@@ -155,38 +157,29 @@ class AsyncBackup:
                 if self._sqlcipher_key:
                     key_hex = self._sqlcipher_key.encode("utf-8").hex()
                     src.execute(f"PRAGMA key = x'{key_hex}';")
-
                 import tempfile
-
                 tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
                 tmp_path = tmp.name
                 tmp.close()
-
                 try:
                     tgt = sqlite3.connect(tmp_path, check_same_thread=False)
                     try:
                         if self._sqlcipher_key:
                             key_hex = self._sqlcipher_key.encode("utf-8").hex()
                             tgt.execute(f"PRAGMA key = x'{key_hex}';")
-
-                        # Natywny backup -- deleguje do sqlite3_backup() w C
                         src.backup(tgt, pages=-1)
                     finally:
                         tgt.close()
-
                     with tx_fs.transaction():
                         with tx_fs.open(target_path, "wb") as f:
                             with open(tmp_path, "rb") as src_f:
                                 f.write(src_f.read())
-                    # Auto-commit po wyjściu z transaction()
                 finally:
-                    import os
-
                     os.unlink(tmp_path)
             finally:
                 src.close()
 
-        await anyio.to_thread.run_sync(_sync_backup)
+        await self._run_backup(_sync_backup)
 
         duration = time.time() - start_time
 
@@ -263,7 +256,7 @@ class AsyncBackup:
             finally:
                 os.unlink(tmp_path)
 
-        await anyio.to_thread.run_sync(_sync_backup)
+        await self._run_backup(_sync_backup)
         logger.info("[BACKUP] In-memory backup complete: %s -> memory://", source_path)
 
     def add_database(self, name: str, path: str) -> None:

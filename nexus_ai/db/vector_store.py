@@ -133,14 +133,16 @@ class AsyncVectorStore(AsyncBaseService):
             enable_extensions=True,
         )
 
+    async def _run_vec(self, fn, *args: Any) -> Any:
+        """Execute a synchronous vector store operation in a thread."""
+        return await anyio.to_thread.run_sync(fn, *args)
+
     async def _on_connect(self, conn: sqlite3.Connection) -> None:
         """Hook ładujący sqlite-vec extension przy nowym połączeniu."""
-
-        def _sync() -> None:
+        def _load() -> None:
             sqlite_vec.load(conn)
             conn.execute(f"PRAGMA application_id = {VECTOR_DB_APP_ID};")
-
-        await anyio.to_thread.run_sync(_sync)
+        await self._run_vec(_load)
 
     # ── [FAZA 2] Unified Schema Registry ────────────────────────────────
 
@@ -326,7 +328,7 @@ class AsyncVectorStore(AsyncBaseService):
             return [dict(r) for r in cursor.fetchall()]
 
         try:
-            return await anyio.to_thread.run_sync(_sync_search)
+            return await self._run_vec(_sync_search)
         except Exception:
             return await self._fallback_search(
                 query_blob, query_vector, limit, distance_threshold, distance_fn
@@ -359,7 +361,7 @@ class AsyncVectorStore(AsyncBaseService):
             except Exception:
                 return []
 
-        return await anyio.to_thread.run_sync(_sync)
+        return await self._run_vec(_sync)
 
     # ── Usuwanie wektorów ───────────────────────────────────────────────
 
@@ -383,11 +385,10 @@ class AsyncVectorStore(AsyncBaseService):
 
         def _sync() -> int:
             cursor = conn.execute(f"DELETE FROM {table_name} WHERE {where_str}", params)
-            deleted = cursor.rowcount
             conn.commit()
-            return deleted
+            return cursor.rowcount
 
-        return await anyio.to_thread.run_sync(_sync)
+        return await self._run_vec(_sync)
 
     async def __aenter__(self) -> AsyncVectorStore:
         return self

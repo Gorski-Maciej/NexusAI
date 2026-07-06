@@ -181,7 +181,7 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 
 ### Sekcja 20e — Changelog
 - Plik: [`docs/CHANGELOG.md`](CHANGELOG.md)
-- Zawartość: Historia wersji (1.0.0 → 3.0.0-dev), daty, autorzy.
+- Zawartość: Historia wersji (1.0.0 → 7.3.0), daty, autorzy.
 
 ---
 
@@ -204,7 +204,7 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 | Gdzie jest definiowany EventStore? | [`EVENTS.md`](EVENTS.md#3-asynceventstore) — append-only SQLite + Parquet |
 | Gdzie są udokumentowane widoki UI? | [`FRONTEND.md`](FRONTEND.md#8-widoki) — 7 widoków, nawigacja, diagram przepływu |
 | Jak działa instalator Windows? | [`INSTALLER.md`](INSTALLER.md#2-dependency-downloader) — binarki, modele, OTA updater |
-| Co nowego w 2.3.1-dev? | [`CHANGELOG.md`](CHANGELOG.md) |
+| Co nowego? | [`CHANGELOG.md`](CHANGELOG.md) |
 | Dokumentacja prawna? | [`BIBLIOGRAPHY.md`](BIBLIOGRAPHY.md) |
 | Rynek i konkurencja? | [`RELATED.md`](RELATED.md#1-podobneporównywalne-systemy) |
 
@@ -377,5 +377,5 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 
 ---
 
-> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 6.0.0-draft — "Silent Partner"
+> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 7.3.0 — "Enterprise Optimization v3.0 — anyio.to_thread.run_sync Consolidation"
 > **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-06 · **Weryfikator:** Technical Lead

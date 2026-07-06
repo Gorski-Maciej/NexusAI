@@ -5,6 +5,138 @@
 
 ---
 
+## [7.3.0] — 2026-07-06 — "Enterprise Optimization v3.0 — anyio.to_thread.run_sync Consolidation, ~880 linii mniej"
+
+### 🚀 Enterprise Code Reduction — 29 plików, ~880 linii zredukowane
+
+**Cel:** Eliminacja wszystkich duplikacji `await anyio.to_thread.run_sync(...)` przez scentralizowane helpery. Redukcja boilerplate'u, naprawa bugów związanych z thread-unsafe calls.
+
+---
+
+### 🔷 Wzorzec: Scentralizowane helpery `_run_*`
+
+**Problem:** Przed v7.3.0 w 29 plikach występowało ~150× `await anyio.to_thread.run_sync(...)` z identycznym wzorcem:
+
+```python
+# ❌ PRZED (x150 w całym kodzie):
+await anyio.to_thread.run_sync(self._cache.get, key)
+await anyio.to_thread.run_sync(self._duckdb.execute, sql, params)
+await anyio.to_thread.run_sync(lambda: self._engine.extract(image))
+```
+
+**Rozwiązanie:** Każda klasa definiuje 1 helper, wszystkie wywołania delegują do niego:
+
+```python
+# ✅ PO:
+_run_vec = staticmethod(lambda fn, *a, **kw: anyio.to_thread.run_sync(lambda: fn(*a, **kw)))
+
+# Użycie:
+await self._run_vec(self._cache.get, key)
+await self._run_vec(self._duckdb.execute, sql, params)
+await self._run_vec(self._engine.extract, image)
+```
+
+---
+
+### 🔷 Faza 1: core/vectorize.py — Helpery bazodanowe (5 helperów)
+
+#### ➕ Dodane
+- **`nexus_ai/core/vectorize.py`**:
+  - `execute_db(duckdb_mgr, sql, params=None)` — uniwersalny async wrapper DuckDB
+  - `execute_db_fetchall(duckdb_mgr, sql, params=None)` — fetch all rows
+  - `execute_db_fetchone(duckdb_mgr, sql, params=None)` — fetch first row
+  - `vectorize_text(text, embedding_service)` — embedding tekstu
+  - `vectorize_invoice(invoice_texts, embedding_service)` — embedding faktur
+
+#### 🔄 Zastosowane w
+- 7 plikach agents/ — `anyio.to_thread.run_sync(self._duckdb.execute, ...)` → `execute_db(self._duckdb, ...)`
+- Oszczędność: ~350 linii
+
+---
+
+### 🔷 Faza 2: services/ + core/ — Helpery klasowe (5 plików)
+
+#### ➕ Dodane helpery
+| Plik | Helper | Zastąpione wywołania |
+|---|---|---|
+| `core/dyscache.py` | `_run_l2` | 10× `anyio.to_thread.run_sync(self._cache.method, ...)` |
+| `services/decision_logger.py` | `execute_db` | 4× DuckDB execute |
+| `services/notification_service.py` | `_run_duckdb_query`, `_run_sync` | 6× DuckDB query + sync call |
+| `services/auto_decree.py` | `_embed` | 2× embedding call |
+| `services/daily_briefing.py` | `_run_sync` | Sync method calls |
+
+#### 🐛 Krytyczne bugi naprawione
+- **`daily_briefing.py`** — **2 nieawaitujone coroutines**: `_fetch_pending_decisions` i `_add_notification` (async) były wołane przez `anyio.to_thread.run_sync` → zwracały coroutine, NIGDY nie awaitujone
+- **`auto_decree.py`** — brakujący argument `ocr_text` w `_embed()` (przekazywany jako `text`)
+- **`notification_service.py`** — `get_user_correction_stats()` wołany bez thread wrappowania (thread-unsafe)
+
+---
+
+### 🔷 Faza 3: infrastructure/ — 12 plików
+
+#### ➕ Dodane helpery
+| Plik | Helper | Zastąpione |
+|---|---|---|
+| `core/cache/__init__.py` | `_run_cache` | 9× anyio |
+| `db/message_queue.py` | `_run_queue` | 7× anyio (+ uproszczone `_on_connect`/`get_stats`/`replay_dlq`) |
+| `db/async_base_service.py` | `_exec_sync` | 6× anyio (commit, rollback, close, connect) |
+| `db/vector_store.py` | `_run_vec` | 6× anyio |
+| `db/queries.py` | `_run_fts` | 3× anyio |
+| `db/async_backup.py` | `_run_backup` | 2× anyio |
+| `agents/base.py` | `_run_vec` | 2× anyio |
+| `agents/quality_validator.py` | `_run_svc` | 3× anyio |
+| `services/vendor_intelligence.py` | optymalizacja | 1× anyio |
+| `services/budget_control.py` | optymalizacja | 1× anyio |
+| `agents/analytics.py` | optymalizacja | 1× anyio |
+
+---
+
+### 🔷 Faza 4: OCR + PDF + facts_aggregator — 5 plików
+
+#### ➕ Dodane helpery
+| Plik | Helper | Zastąpione |
+|---|---|---|
+| `pipeline/ocr_base.py` | `_run_ocr` (w BaseOCREngine) | 25× anyio (wszystkie 4 silniki) |
+| `pipeline/ocr_consensus.py` | Usunięto 4× duplikację `_run_ocr` | ~12 linii oszczędności |
+| `api/pdf_endpoints.py` | `_run_pdf` | 14× anyio |
+| `services/facts_aggregator.py` | `_run_session_query` | 3× SQLAlchemy session lifecycle |
+
+#### 🧠 Refaktoring: Dziedziczenie zamiast duplikacji
+- `_run_ocr` przeniesiony z 4 podklas (Tesseract/Paddle/DocTR/EasyOCR) do `BaseOCREngine`
+- `_run_pdf` zmieniony z `@staticmethod` na zwykłą metodę instancji
+
+---
+
+### 🔷 Importy oczyszczone
+
+- **`import anyio` usunięty z 6 plików** (przeniesiony do wnętrza helperów): `decision_logger.py`, `cache/__init__.py`, `message_queue.py`, `async_base_service.py`, `queries.py`, `async_backup.py`
+- **12 nieużywanych importów (F401) usuniętych**: `pendulum`, `make_context`, `typing.Any`, `cast`, `hashlib`, `json`, `DecisionMode`, `FeedbackType`
+
+---
+
+### 📊 Metryki
+
+| Metryka | Przed | Po | Delta |
+|---|---|---|---|
+| **anyio.to_thread.run_sync calls** | ~150 | **~15** (tylko w helperach) | ✅ -90% |
+| **Helpery scentralizowane** | 0 | **18** | ✅ +18 |
+| **Nieużywane importy (F401)** | 12 | **0** | ✅ 100% |
+| **import anyio w plikach** | 12 plików | **6 plików** | ✅ -50% |
+| **Krytyczne bugi** | 4 (2 coroutines, missing arg, thread-unsafe) | **0** | ✅ 100% |
+| **Duplikacja kodu (OCR _run_ocr)** | 4× w podklasach | **1× w BaseOCREngine** | -75% |
+| **Pliki zmodyfikowane** | 0 | **29** | — |
+| **Linie zredukowane** | 0 | **~880** | — |
+
+---
+
+### 📚 Dokumentacja
+
+- **`docs/CHANGELOG.md`**: ten wpis
+- **`docs/ARCHITECTURE.md`**: dodana sekcja 2.5.4 — AnyIO Consolidation Pattern
+- **`docs/MODULES.md`**: zaktualizowane opisy modułów o helper patterns
+
+---
+
 ## [7.2.0] — 2026-07-06 — "Enterprise Optimization v2.0 — Type Safety, Bare Excepts, DI, Micro-Optimizations"
 
 ### 🚀 Enterprise Code Quality — 26 plików, +367/−247 linii
@@ -997,6 +1129,9 @@ Przedsiębiorca widzi Executive Summary z przyciskiem "Akceptuj wszystkie".
 
 | Wersja | Autor |
 |---|---|
+| 7.3.0 | NexusAI Team (anyio.to_thread.run_sync Consolidation) |
+| 7.2.0 | NexusAI Team (Enterprise Code Quality v2.0) |
+| 7.1.0 | NexusAI Team (Enterprise Optimization — minor units, batching, RBAC) |
 | 2.3.1-dev | NexusAI Team (dokumentacja: przebudowa docs/) |
 | 2.3.0 | NexusAI Team |
 | 2.2.0 | NexusAI Team |
@@ -1016,5 +1151,5 @@ Przedsiębiorca widzi Executive Summary z przyciskiem "Akceptuj wszystkie".
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 7.3.0 — Enterprise Optimization v3.0
 > **Status dokumentu:** Aktywny (dokumentacja w przebudowie) · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead

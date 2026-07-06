@@ -188,18 +188,16 @@ class DailyBriefingService:
         else:
             briefing = self._fallback_briefing(user_id, today, now)
 
-        # Wzbogać o pending decisions z NotificationService
+        # Wzbogać o pending decisions z NotificationService (już async)
         if self._notification:
             try:
-                decisions = await anyio.to_thread.run_sync(
-                    self._notification._fetch_pending_decisions, user_id
-                )
+                decisions = await self._notification._fetch_pending_decisions(user_id)
                 briefing.decisions = decisions
                 briefing.pending_review = len(decisions)
             except Exception as exc:
                 logger.debug("[DailyBriefing] decisions fetch skipped: %s", exc)
 
-        # Wzbogać o correction rate z DecisionLogger
+        # Wzbogać o correction rate z DecisionLogger (sync → thread)
         if self._logger:
             try:
                 stats = await anyio.to_thread.run_sync(self._logger.get_user_correction_stats)
@@ -283,8 +281,7 @@ class DailyBriefingService:
         message = msgspec_dumps(briefing.to_dict(), ensure_ascii=False, default=str)
 
         try:
-            notification_id = await anyio.to_thread.run_sync(
-                self._notification._add_notification,
+            notification_id = await self._notification._add_notification(
                 user_id=briefing.user_id,
                 title=title,
                 message=message,

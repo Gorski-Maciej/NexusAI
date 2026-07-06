@@ -98,18 +98,12 @@ class AsyncSQLiteQueue(AsyncBaseService):
     async def _on_connect(self, conn: sqlite3.Connection) -> None:
         """Hook tworzący schemat kolejki przy pierwszym połączeniu."""
         if not getattr(self, "_schema_checked", False):
-
-            def _sync() -> None:
+            def _check() -> bool:
                 cursor = conn.execute(
                     "SELECT name FROM sqlite_master WHERE type='table' AND name='mq_messages'"
                 )
-                row = cursor.fetchone()
-                if row is None:
-                    # Need to call _ensure_schema which uses self methods
-                    return False
-                return True
-
-            exists = await anyio.to_thread.run_sync(_sync)
+                return cursor.fetchone() is not None
+            exists = await self._run_queue(_check)
             if not exists:
                 await self._ensure_schema()
             self._schema_checked = True
@@ -185,6 +179,10 @@ class AsyncSQLiteQueue(AsyncBaseService):
 
         return await anyio.to_thread.run_sync(_sync_batch)
 
+    async def _run_queue(self, fn, *args: Any) -> Any:
+        """Execute a synchronous queue operation in a thread."""
+        return await anyio.to_thread.run_sync(fn, *args)
+
     # ── Dequeue ──────────────────────────────────────────────────────
 
     async def dequeue(
@@ -252,7 +250,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
                 return messages[0] if messages else None
             return messages
 
-        return await anyio.to_thread.run_sync(_sync_dequeue)
+        return await self._run_queue(_sync_dequeue)
 
     # ── Ack / Nack ───────────────────────────────────────────────────
 
@@ -310,7 +308,7 @@ class AsyncSQLiteQueue(AsyncBaseService):
             conn.commit()
             return True
 
-        return await anyio.to_thread.run_sync(_sync_nack)
+        return await self._run_queue(_sync_nack)
 
     # ── Stats ─────────────────────────────────────────────────────────
 
@@ -320,15 +318,12 @@ class AsyncSQLiteQueue(AsyncBaseService):
 
         def _sync() -> dict[str, int]:
             cursor = conn.execute("SELECT status, COUNT(*) as cnt FROM mq_messages GROUP BY status")
-            rows = cursor.fetchall()
-            dlq_cursor = conn.execute("SELECT COUNT(*) FROM mq_dead_letter")
-            dlq_row = dlq_cursor.fetchone()
-
-            stats: dict[str, int] = {str(r[0]): int(r[1]) for r in rows}
+            stats: dict[str, int] = {str(r[0]): int(r[1]) for r in cursor.fetchall()}
+            dlq_row = conn.execute("SELECT COUNT(*) FROM mq_dead_letter").fetchone()
             stats["dead_letter"] = int(dlq_row[0]) if dlq_row else 0
             return stats
 
-        return await anyio.to_thread.run_sync(_sync)
+        return await self._run_queue(_sync)
 
     async def replay_dlq(self) -> int:
         """Przenieś wszystkie wiadomości z DLQ z powrotem do kolejki (ASYNC)."""
@@ -336,29 +331,21 @@ class AsyncSQLiteQueue(AsyncBaseService):
         now = time.time()
 
         def _sync() -> int:
-            cursor = conn.execute("SELECT id FROM mq_dead_letter")
-            rows = cursor.fetchall()
-
+            rows = conn.execute("SELECT id FROM mq_dead_letter").fetchall()
             if not rows:
                 return 0
-
             ids = [str(r[0]) for r in rows]
-
+            placeholders = ", ".join("?" * len(ids))
             conn.execute(
                 """INSERT OR IGNORE INTO mq_messages
                    (id, queue, payload, priority, status, retry_count, max_retries, created_at, updated_at)
                    SELECT id, queue, payload, priority, 'pending', 0, 3, created_at, ?
-                   FROM mq_dead_letter""",
-                (now,),
-            )
-
-            placeholders = ", ".join("?" * len(ids))
+                   FROM mq_dead_letter""", (now,))
             conn.execute(f"DELETE FROM mq_dead_letter WHERE id IN ({placeholders})", ids)
             conn.commit()
-
             return len(ids)
 
-        return await anyio.to_thread.run_sync(_sync)
+        return await self._run_queue(_sync)
 
 
 # ── Alias dla kompatybilności wstecznej ─────────────────────────────────

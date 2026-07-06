@@ -89,6 +89,10 @@ class PDFController(Controller):
 
     tags = ("pdf",)
 
+    async def _run_pdf(self, fn, *args, **kwargs):
+        """Execute a sync PDFium operation in a thread."""
+        return await anyio.to_thread.run_sync(lambda: fn(*args, **kwargs))
+
     # ═══════════════════════════════════════════════════════════════════════
     # Renderowanie strony do PNG (podstawowe)
     # ═══════════════════════════════════════════════════════════════════════
@@ -125,7 +129,7 @@ class PDFController(Controller):
         """
         pdf_path = _resolve_document_path(document_id)
 
-        png_bytes = await anyio.to_thread.run_sync(
+        png_bytes = await self._run_pdf(
             render_page_to_png_bytes,
             pdf_path,
             page_num,
@@ -180,7 +184,7 @@ class PDFController(Controller):
         """
         pdf_path = _resolve_document_path(document_id)
 
-        jpeg_bytes = await anyio.to_thread.run_sync(
+        jpeg_bytes = await self._run_pdf(
             render_page_to_jpeg_bytes,
             pdf_path,
             page_num,
@@ -237,7 +241,7 @@ class PDFController(Controller):
         """
         pdf_path = _resolve_document_path(document_id)
 
-        pil_image = await anyio.to_thread.run_sync(
+        pil_image = await self._run_pdf(
             render_page_to_pil_enhanced,
             pdf_path,
             page_num,
@@ -298,7 +302,7 @@ class PDFController(Controller):
         """
         pdf_path = _resolve_document_path(document_id)
 
-        images = await anyio.to_thread.run_sync(
+        images = await self._run_pdf(
             render_all_pages_to_memory,
             pdf_path,
             dpi,
@@ -357,7 +361,7 @@ class PDFController(Controller):
         """
         pdf_path = _resolve_document_path(document_id)
 
-        info = await anyio.to_thread.run_sync(get_pdf_info, pdf_path)
+        info = await self._run_pdf(get_pdf_info, pdf_path)
 
         return Response(
             content=msgspec.json.encode(info),
@@ -396,7 +400,7 @@ class PDFController(Controller):
         pdf_path = _resolve_document_path(document_id)
 
         if with_positions:
-            ranges = await anyio.to_thread.run_sync(
+            ranges = await self._run_pdf(
                 extract_text_ranges,
                 pdf_path,
                 page_num,
@@ -412,7 +416,7 @@ class PDFController(Controller):
                 media_type="application/json",
             )
 
-        text = await anyio.to_thread.run_sync(
+        text = await self._run_pdf(
             extract_text_from_page,
             pdf_path,
             page_num,
@@ -450,7 +454,7 @@ class PDFController(Controller):
         """
         pdf_path = _resolve_document_path(document_id)
 
-        tables = await anyio.to_thread.run_sync(
+        tables = await self._run_pdf(
             detect_table_regions,
             pdf_path,
             page_num,
@@ -491,7 +495,7 @@ class PDFController(Controller):
         """
         pdf_path = _resolve_document_path(document_id)
 
-        signatures = await anyio.to_thread.run_sync(
+        signatures = await self._run_pdf(
             verify_pdf_signatures,
             pdf_path,
         )
@@ -542,7 +546,7 @@ class PDFController(Controller):
         """
         pdf_path = _resolve_document_path(document_id)
 
-        fields = await anyio.to_thread.run_sync(
+        fields = await self._run_pdf(
             get_pdf_form_fields,
             pdf_path,
         )
@@ -595,7 +599,7 @@ class PDFController(Controller):
         """
         pdf_path = _resolve_document_path(document_id)
 
-        pdf_bytes = await anyio.to_thread.run_sync(
+        pdf_bytes = await self._run_pdf(
             save_pdf_with_filled_fields,
             pdf_path,
             data,

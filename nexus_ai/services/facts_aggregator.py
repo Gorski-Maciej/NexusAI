@@ -269,56 +269,71 @@ class FactsAggregator:
             logger.warning("[FactsAggregator] failed to create DB session: %s", exc)
             return None
 
+    async def _run_session_query(self, sql: str, params: dict[str, Any] | None = None) -> Any:
+        """Execute a SQLAlchemy text query in a thread."""
+        session = self._get_session()
+        if session is None:
+            return None
+        try:
+            return await anyio.to_thread.run_sync(lambda: session.execute(text(sql), params or {}))
+        finally:
+            session.close()
+
     async def _fetch_contractor_data(self, nip: str) -> dict[str, Any] | None:
         """Pobierz dane kontrahenta z SQLite — pojedyncze CTE zamiast 2 osobnych zapytań ORM."""
-        session = self._get_session()
-        if session is None: return None
+        result = await self._run_session_query(
+            """WITH contractor_data AS (
+                    SELECT id, name, nip, vat_status FROM contractors WHERE nip = :nip LIMIT 1),
+                invoice_stats AS (
+                    SELECT COUNT(*) AS invoice_count FROM invoices WHERE contractor_nip = :nip)
+                SELECT (SELECT COUNT(*) FROM contractor_data) > 0 AS is_known,
+                       COALESCE((SELECT name FROM contractor_data), '') AS name,
+                       COALESCE((SELECT vat_status FROM contractor_data), 'unknown') AS vat_status,
+                       (SELECT invoice_count FROM invoice_stats) AS invoice_count""",
+            {"nip": nip},
+        )
+        if result is None:
+            return None
         try:
-            row = await anyio.to_thread.run_sync(lambda: session.execute(text("""
-                        WITH contractor_data AS (
-                            SELECT id, name, nip, vat_status FROM contractors WHERE nip = :nip LIMIT 1),
-                        invoice_stats AS (
-                            SELECT COUNT(*) AS invoice_count FROM invoices WHERE contractor_nip = :nip)
-                        SELECT (SELECT COUNT(*) FROM contractor_data) > 0 AS is_known,
-                               COALESCE((SELECT name FROM contractor_data), '') AS name,
-                               COALESCE((SELECT vat_status FROM contractor_data), 'unknown') AS vat_status,
-                               (SELECT invoice_count FROM invoice_stats) AS invoice_count"""), {"nip": nip}).fetchone())
-            if row is None: return None
+            row = result.fetchone()
+            if row is None:
+                return None
             count = int(row[3])
             return {"known": bool(row[0]), "name": str(row[1] or ""), "nip": nip, "invoice_count": count, "trust_score": min(count / 10.0, 1.0), "vat_status": str(row[2] or "unknown")}
         except Exception as exc:
             logger.warning("[FactsAggregator] contractor fetch failed: %s", exc)
             return None
-        finally:
-            session.close()
 
     async def _fetch_recent_invoices(self, nip: str, exclude_invoice_id: str = "") -> list[dict[str, Any]]:
         """Pobierz ostatnie 5 faktur dla kontrahenta z SQLite."""
-        session = self._get_session()
-        if session is None: return []
+        result = await self._run_session_query(
+            "SELECT id, number, amount_net, amount_gross, status, issue_date, processing_status FROM invoices WHERE contractor_nip = :nip AND id != :exclude_id ORDER BY created_at DESC LIMIT 5",
+            {"nip": nip, "exclude_id": exclude_invoice_id},
+        )
+        if result is None:
+            return []
         try:
-            rows = await anyio.to_thread.run_sync(lambda: session.execute(text(
-                "SELECT id, number, amount_net, amount_gross, status, issue_date, processing_status FROM invoices WHERE contractor_nip = :nip AND id != :exclude_id ORDER BY created_at DESC LIMIT 5"),
-                {"nip": nip, "exclude_id": exclude_invoice_id}).fetchall())
+            rows = result.fetchall()
             return [{"id": str(r[0]), "number": str(r[1] or ""), "amount_net": float(r[2] or 0), "amount_gross": float(r[3] or 0), "category": str(r[6] or ""), "status": str(r[4] or ""), "date": str(r[5] or "")} for r in rows]
         except Exception as exc:
             logger.warning("[FactsAggregator] recent invoices fetch failed: %s", exc)
             return []
-        finally:
-            session.close()
 
     async def _fetch_user_corrections(self, nip: str) -> list[dict[str, Any]]:
         """Pobierz wzorce korekt użytkownika dla kontrahenta."""
         from nexus_ai.core.msgspec_utils import msgspec_loads
-        session = self._get_session()
-        if session is None: return []
+        result = await self._run_session_query(
+            "SELECT id, correction_payload, created_at FROM active_learning_patterns WHERE contractor_id = :nip ORDER BY created_at DESC LIMIT 10",
+            {"nip": nip},
+        )
+        if result is None:
+            return []
         try:
-            rows = await anyio.to_thread.run_sync(lambda: session.execute(text(
-                "SELECT id, correction_payload, created_at FROM active_learning_patterns WHERE contractor_id = :nip ORDER BY created_at DESC LIMIT 10"),
-                {"nip": nip}).fetchall())
+            rows = result.fetchall()
             corrections = []
             for r in rows:
-                try: payload = msgspec_loads(str(r[1]))
+                try:
+                    payload = msgspec_loads(str(r[1]))
                 except Exception as exc:
                     logger.debug("[FactsAggregator] correction payload decode failed: %s", exc)
                     payload = {"raw": str(r[1])}
@@ -327,8 +342,6 @@ class FactsAggregator:
         except Exception as exc:
             logger.warning("[FactsAggregator] user corrections fetch failed: %s", exc)
             return []
-        finally:
-            session.close()
 
     async def _worker_fetch(self, name: str, sheet: FactSheet, results: dict[str, Any]) -> None:
         """Dispatcher dla równoległego pobierania danych przez TaskGroup. Wyjątki nie przerywają innych workerów."""

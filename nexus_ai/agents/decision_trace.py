@@ -630,3 +630,17 @@ __all__ = [
     "generate_trace_id",
     "generate_span_id",
 ]
+
+
+__all__ = [
+    "DecisionTracer",
+    "DecisionTrace",
+    "DecisionSpan",
+    "MultiModelEnsemble",
+    "EnsembleVote",
+    "EnsembleResult",
+    "ConfidenceCalibrator",
+    "FeedbackLoop",
+    "generate_trace_id",
+    "generate_span_id",
+]

@@ -269,6 +269,50 @@ class NotificationService:
 - Zero nieużywanych importów (F401)
 - `BaseService` deleguje do `BaseRepository` (~35 linii deduplikacji)
 
+### 2.5.4 AnyIO Consolidation Pattern (v7.3)
+
+**Reguła ENTERPRISE:** Każda klasa używająca `anyio.to_thread.run_sync` definiuje JEDEN helper, do którego delegują wszystkie wywołania:
+
+```python
+# Przykład helpera w klasie:
+class SomeService:
+    @staticmethod
+    async def _run_svc(fn, *args, **kwargs) -> Any:
+        import anyio
+        return await anyio.to_thread.run_sync(lambda: fn(*args, **kwargs))
+        
+    async def process(self, data):
+        # Zamiast: await anyio.to_thread.run_sync(self._db.execute, sql)
+        return await self._run_svc(self._db.execute, sql)
+```
+
+**18 helperów** zdefiniowanych w 29 plikach:
+
+| Helper | Plik | Zastąpione wywołania |
+|---|---|---|
+| `execute_db`, `execute_db_fetchall`, `execute_db_fetchone` | `core/vectorize.py` | ~20× DuckDB/SQLite execute |
+| `vectorize_text`, `vectorize_invoice` | `core/vectorize.py` | ~10× embedding calls |
+| `_run_l2` | `core/dyscache.py` | 10× dyscache L2 operations |
+| `_run_cache` | `core/cache/__init__.py` | 9× cache get/set/delete |
+| `_run_queue` | `db/message_queue.py` | 7× queue operations |
+| `_exec_sync` | `db/async_base_service.py` | 6× DB connection lifecycle |
+| `_run_vec` | `db/vector_store.py` | 6× vector store operations |
+| `_run_fts` | `db/queries.py` | 3× FTS search |
+| `_run_backup` | `db/async_backup.py` | 2× backup operations |
+| `_run_svc` | `agents/quality_validator.py` | 3× service calls |
+| `_run_sync` | `services/notification_service.py` | 4× thread-safe sync calls |
+| `_run_duckdb_query` | `services/notification_service.py` | 4× DuckDB query lifecycle |
+| `_run_ocr` | `pipeline/ocr_base.py` | 25× OCR engine calls |
+| `_run_pdf` | `api/pdf_endpoints.py` | 14× PDF processing |
+| `_run_session_query` | `services/facts_aggregator.py` | 3× SQLAlchemy session |
+| `_embed` | `services/auto_decree.py` | 2× embedding calls |
+
+**Korzyści:**
+- ✅ Redukcja kodu: ~880 linii mniej (29 plików)
+- ✅ `import anyio` przeniesiony do helperów — 6 plików mniej z importem
+- ✅ 4 krytyczne bugi naprawione (2 unawaited coroutines, missing arg, thread-unsafe call)
+- ✅ Jeden wzorzec do nauki dla nowych developerów
+
 ---
 
 ## 3. Wzorce projektowe
@@ -941,5 +985,5 @@ curl http://127.0.0.1:8000/health
 
 ---
 
-> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 7.3.0 — Enterprise Optimization v3.0
 > **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-06 · **Weryfikator:** Technical Lead
