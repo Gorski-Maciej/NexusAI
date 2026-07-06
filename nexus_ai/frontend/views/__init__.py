@@ -8,6 +8,7 @@ from nexus_ai.frontend.views.invoice_list_view import InvoiceListView
 from nexus_ai.frontend.views.partner_hub import PartnerHubView
 from nexus_ai.frontend.views.task_monitor import TaskMonitorView
 from nexus_ai.frontend.views.ui_triage import UITriageView
+from nexus_ai.frontend.views.executive_dashboard import ExecutiveDashboardView, build_demo_dashboard
 
 __all__ = [
     "DashboardView",
@@ -18,4 +19,7 @@ __all__ = [
     "DailyBriefingView",
     "PartnerHubView",
     "UITriageView",
+    # GENIALNY POMYSŁ v6.0: Silent Partner
+    "ExecutiveDashboardView",
+    "build_demo_dashboard",
 ]

@@ -87,6 +87,12 @@ class AgentTopic(StrEnum):
     UI_FEED_ACTION = "ui.feed.action"
     """Odpowiedź użytkownika na kartę decyzyjną."""
 
+    # ══════════════════════════════════════════════════════════════════
+    # UI Executive Summary — GENIALNY POMYSŁ v6.0: Silent Partner
+    # ══════════════════════════════════════════════════════════════════
+    UI_EXECUTIVE_SUMMARY = "ui.executive.summary"
+    """Executive Summary dla przedsiębiorcy — Silent Partner v6.0."""
+
 
 # ── Strumienie JetStream ────────────────────────────────────────────────
 
@@ -129,6 +135,16 @@ JETSTREAM_STREAMS: dict[str, tuple[list[str], str, int]] = {
         ["system.config.updated"],
         "30d",
         2,
+    ),
+    # ── GENIALNY POMYSŁ v6.0: Silent Partner ──
+    "ui": (
+        [
+            AgentTopic.UI_FEED_PENDING,
+            AgentTopic.UI_FEED_ACTION,
+            AgentTopic.UI_EXECUTIVE_SUMMARY,
+        ],
+        "7d",
+        3,
     ),
 }
 """Konfiguracja strumieni JetStream dla 5 agentów (zgodnie z aa3fvcx.txt)."""

@@ -5,6 +5,88 @@
 
 ---
 
+## [6.0.0-draft] — 2026-07-06 — "Silent Partner — Cichy Wspólnik"
+
+### 🧠 GENIALNY POMYSŁ v6.0: Silent Partner — odwrócenie paradygmatu
+
+**Push → Pull:** Agent NIE PYTA o decyzje — PODEJMUJE je wszystkie (100%).
+Przedsiębiorca widzi Executive Summary z przyciskiem "Akceptuj wszystkie".
+
+#### ➕ Dodane
+- **`nexus_ai/agents/strategy_engine.py`** (~330 linii) — Continuous Strategy Engine v6.0
+  - `StrategyEngine` — 4 tryby strategiczne: Cash Protect, Growth, Tax Optimal, Efficiency
+  - 5 wymiarów kontekstu (Learning by Context): Cash Flow Phase, Tax Period, Vendor Season, Growth Phase, Macro Context
+  - `analyze_context()` — automatyczna analiza 5 wymiarów na podstawie danych finansowych
+  - `select_strategic_mode()` — wybór optymalnego trybu z priorytetami (user > cash flow > macro > tax)
+  - `should_auto_post()` — decyzja AUTO_POST na podstawie strategii + trustu
+  - `generate_strategic_recommendations()` — 0-2 rekomendacje strategiczne (liquidity, efficiency, risk)
+  - `calculate_silent_rate()` — kluczowa metryka v6.0 (cel ≥95%)
+  - `calculate_time_saved()` — oszczędność czasu przedsiębiorcy
+  - Adaptacyjne progi per tryb strategiczny (STRATEGY_THRESHOLDS)
+  - Modyfikatory okresu podatkowego (TAX_PERIOD_MODIFIERS)
+
+- **`nexus_ai/agents/executive_summary.py`** (~230 linii) — Executive Summary Generator v6.0
+  - `ExecutiveSummaryGenerator` — kolekcjonuje decyzje i buduje podsumowanie dnia
+  - `add_auto_posted()` / `add_verified()` / `add_item_to_review()` — kolekcjonowanie pozycji
+  - `build_summary()` — generowanie pełnego Executive Summary z greeting, trendem, oszczędnością czasu
+  - `reset()` — reset na nowy dzień z zachowaniem poprzedniego stanu dla trendu
+  - Automatyczne określanie DashboardState (NORMAL/ATTENTION/ALERT/EMPTY)
+  - Trend vs poprzedni okres, Silent Rate, time saved
+
+- **`nexus_ai/frontend/views/executive_dashboard.py`** (~370 linii) — Executive Dashboard View
+  - `ExecutiveDashboardView` — Flet widget z 3-stanowym widokiem
+  - Przycisk "Akceptuj wszystkie" — domyślna akcja (80% przypadków)
+  - Secondary buttons: "Przejrzyj szczegóły", "Pokaż strategię na dziś"
+  - Summary Card: faktury, kwoty, oszczędność czasu, Silent Rate progress bar, trend
+  - Strategic Recommendations section z impact color coding
+  - "3-Second Rule" timer — licznik czasu interakcji
+  - `build_demo_dashboard()` — demo summary dla trybu offline
+  - Dark theme glassmorphism UI
+
+#### 🔄 Rozszerzone
+- **`nexus_ai/agents/models.py`** — nowe struktury danych v6.0:
+  - `StrategicMode` enum — CASH_PROTECT, GROWTH, TAX_OPTIMAL, EFFICIENCY
+  - `CashFlowPhase` enum — SURPLUS, DEFICIT, NEUTRAL
+  - `DashboardState` enum — NORMAL, ATTENTION, ALERT, EMPTY
+  - `ContextDimension` struct — 5 wymiarów kontekstu strategicznego
+  - `StrategicRecommendation` struct — strategiczne rekomendacje z opcjami
+  - `ExecutiveSummaryItem` struct — pojedynczy element podsumowania
+  - `ExecutiveSummary` struct — pełne podsumowanie z metrykami
+  - `AgentContext` rozszerzony o `strategic_mode` i `silent_mode`
+
+- **`nexus_ai/agents/orchestrator.py`** — Strategic Pipeline + Silent Mode:
+  - `StrategyEngine` + `ExecutiveSummaryGenerator` w `__init__`
+  - `silent_mode` property (get/set) + `silent_stats` tracking
+  - `get_silent_rate()` — Silent Rate metryka
+  - `process_invoice()` rozszerzony o Executive Summary collection
+  - `build_executive_summary()` — generowanie i publikacja na NATS
+  - `accept_all()` — 1 klik = wszystkie decyzje zatwierdzone
+  - `set_strategic_mode()` — zmiana trybu strategicznego
+  - `toggle_silent_mode()` — przełącznik Silent Partner
+  - `get_strategy_summary()` — pełne podsumowanie strategii
+
+- **`nexus_ai/agents/proactive_workflow.py`** — 3 nowe workflow v6.0:
+  - `EXECUTIVE_SUMMARY_GENERATION` — codziennie 06:00, generuje Executive Summary
+  - `STRATEGY_REFRESH` — co 6h, odświeża 5 wymiarów kontekstu
+  - `SILENT_AUTO_POST` — co 15 min, wykonuje AUTO_POST dla pending decyzji
+
+- **`nexus_ai/agents/topics.py`** — `UI_EXECUTIVE_SUMMARY` topic
+- **`nexus_ai/agents/__init__.py`** — eksport wszystkich nowych klas
+- **`nexus_ai/frontend/views/__init__.py`** — eksport ExecutiveDashboardView
+
+### 📚 Dokumentacja
+- **`docs/AGENTS.md`**: v5.5 → v6.0, dodana sekcja 1.5g (Silent Partner), zaktualizowany nagłówek i stopka
+- **`docs/CHANGELOG.md`**: ten wpis
+- **`docs/GENIALNY_POMYSL_v6_SILENT_PARTNER.md`**: pełen koncept (już istnieje)
+
+### 📊 Statystyki
+- **3 nowe pliki**: `strategy_engine.py` (~330 linii), `executive_summary.py` (~230 linii), `executive_dashboard.py` (~370 linii)
+- **5 zmodyfikowanych**: `models.py`, `orchestrator.py`, `proactive_workflow.py`, `topics.py`, `agents/__init__.py`
+- **2 zmodyfikowane docs**: `AGENTS.md`, `CHANGELOG.md`
+- **~1100 linii nowego kodu**
+
+---
+
 ## [5.5.0] — 2026-07-06 — "dyscache L1+L2 + stamina Circuit Breaker + Full Mesh"
 
 ### 🚀 Usprawnienia infrastruktury

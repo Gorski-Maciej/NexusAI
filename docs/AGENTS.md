@@ -1,4 +1,6 @@
-# 🤖 System Agentów AI NexusAI — Specyfikacja Enterprise (v5.5)
+# 🤖 System Agentów AI NexusAI — Specyfikacja Enterprise (v6.0)
+
+> **"Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Silent Partner v6.0"**
 
 > **"Autonomiczne Biuro Księgowe — 5 Agentów, 13 Modeli, Decision Protocol v5.4"**
 >
@@ -276,6 +278,91 @@ analytics.anomaly_detected  → Orchestrator: REVIEW_REQUIRED
 - **AgentQualityValidator**: publikuje `quality.tax_error`, `quality.fraud_detected`, `analytics.anomaly_detected`; aktualizuje Trust Score po każdej walidacji
 - **AgentOrchestrator**: używa `PredictiveTaskRouter` do dynamicznego DAG, `get_threshold_adjustments()` do adaptacyjnych progów
 - **AgentFixedAssets**: deterministyczny — nie wymaga integracji Mesh
+
+### 1.5g GENIALNY POMYSŁ v6.0: Silent Partner — "Cichy Wspólnik"
+
+**Przełom:** Odwraca paradygmat o 180° — z "Agent pyta → Człowiek odpowiada" (Push) na "Agent robi → Człowiek przegląda" (Pull).
+
+```
+Push (v5.x):                    Pull (v6.0):
+  Agent → "Zdecyduj!"            Agent → "Zrobiłem. Sprawdź jak chcesz."
+  Człowiek → klika               Człowiek → przegląda w 2 min
+  Agent → wykonuje               Agent → robi dalej
+  Człowiek → następna karta      Człowiek → prowadzi biznes
+```
+
+Agent NIE PYTA o decyzje — **PODEJMUJE je wszystkie** (100%). Następnie PREZENTUJE efekt w formie **Executive Summary**. Przedsiębiorca:
+- Może zaakceptować wszystko jednym kliknięciem (80% przypadków)
+- Może skorygować konkretną pozycję (15% przypadków)
+- Może zatrzymać i przeanalizować (5% przypadków)
+
+**Trzy perspektywy, jeden koncept:**
+
+| Perspektywa | Problem v5.x | Rozwiązanie v6.0 |
+|---|---|---|
+| **UX/Interfejs** | Feed kart wymagających akcji | Executive Dashboard z Accept-All |
+| **Agent Intelligence** | Uczy się preferencji (taktyka) | Uczy się strategii (kontekst) |
+| **Biznes** | Oszczędza czas na operacjach | Partner w prowadzeniu biznesu |
+
+**Cztery tryby strategiczne (zamiast DecisionMode):**
+
+| Tryb strategiczny | Działanie agenta | Gdy agent ma wątpliwość |
+|---|---|---|
+| 💰 **Cash Protect** | Maksymalizuj płynność, rozkładaj koszty | Pyta: "Czy to wydatek krytyczny?" |
+| 📈 **Growth** | Inwestuj, przyspieszaj amortyzację | Pyta: "Czy to zwiększy przychody?" |
+| ⚖️ **Tax Optimal** | Minimalizuj PIT/CIT, rozkładaj dochody | Pyta: "Która opcja podatkowa?" |
+| 🎯 **Efficiency** | Najszybsza ścieżka, zero zbędnych kroków | Pyta: "Czy pominiemy walidację?" |
+
+**Pięć wymiarów kontekstu strategicznego (Learning by Context):**
+
+| Wymiar | Co oznacza | Jak wpływa na decyzje |
+|---|---|---|
+| **Cash Flow Phase** | Wpływy > wydatki vs wydatki > wpływy | Więcej AUTO_POST gdy płynność dobra |
+| **Tax Period** | Początek/koniec kwartału, VAT deadline | Więcej SUGGEST przy deadline'ach |
+| **Vendor Season** | Sezonowość kontrahentów | Niższy próg dla sezonowych |
+| **Growth Phase** | Inwestycja vs konserwacja | Preferencje kosztowe |
+| **Macro Context** | Stopy procentowe, inflacja, kursy | Sugestie optymalizacji |
+
+**Executive Dashboard — stany UI:**
+
+| Stan | Co widzi użytkownik | Domyślna akcja |
+|---|---|---|
+| 🔵 **Normal** | Podsumowanie + "Akceptuj wszystkie" | 1 klik → wszystko zaksięgowane |
+| 🟡 **Attention** | 1-2 pozycje oznaczone kolorem | Może kliknąć "Akceptuj" lub "Sprawdź" |
+| 🔴 **Alert** | Pilna sprawa z priorytetem | Agent prosi o decyzję |
+| ⚪ **Empty** | "Wszystko zaksięgowane. Idź na kawę ☕" | Brak akcji |
+
+**Metryki sukcesu:**
+
+| Metryka | Cel v6.0 | v5.5 |
+|---|---|---|
+| **Silent Rate** | ≥ 95% | 73% (Autonomy Score) |
+| **Faktur na 1 interakcję** | 200+ | 20 |
+| **Czas dzienny** | < 30s | 3-5 min |
+| **Strategic Queries Ratio** | ≥ 80% | 0% (wszystkie taktyczne) |
+| **Accept-All Rate** | ≥ 80% | N/A (brak koncepcji) |
+
+**Implementacja:**
+- **Pliki:**
+  - `nexus_ai/agents/strategy_engine.py` — Continuous Strategy Engine (~300 linii)
+  - `nexus_ai/agents/executive_summary.py` — Executive Summary Generator (~200 linii)
+  - `nexus_ai/frontend/views/executive_dashboard.py` — Executive Dashboard (~350 linii)
+- **Rozszerzenia:**
+  - `nexus_ai/agents/models.py` — StrategicMode, ContextDimension, ExecutiveSummary, DashboardState
+  - `nexus_ai/agents/orchestrator.py` — Strategic Pipeline, Silent Mode, Accept-All, build_executive_summary()
+  - `nexus_ai/agents/proactive_workflow.py` — 3 nowe workflow: EXECUTIVE_SUMMARY_GENERATION, STRATEGY_REFRESH, SILENT_AUTO_POST
+  - `nexus_ai/agents/topics.py` — `ui.executive.summary`
+
+**Integracja z istniejącymi systemami:**
+
+| System v5.x | Rola w v6.0 |
+|---|---|
+| Action Cards (v5.1) | Tylko dla alertów krytycznych (🔴) |
+| Progressive Autonomy (v5.2) | Learning by Context — zamiast preferencji, uczy strategii |
+| KnowledgeMesh (v5.3) | Wymiana kontekstu strategicznego między agentami |
+| Decision Protocol (v5.4) | Tylko dla transakcji > 100k PLN |
+| Proactive Workflow (v5.0) | Silent Mode — wszystkie workflow 24/7 |
+| dyscache (v5.5) | Cache dla Executive Summary |
 
 ### 1.5f GENIALNY POMYSŁ v5.4: Decision Protocol + Unified Learning Protocol
 
@@ -565,5 +652,5 @@ Po 10 korektach tego samego typu → automatyczna aktualizacja reguł OPA/Rego.
 
 ---
 
-> **Ostatnia aktualizacja:** 2026-07-06 · **Wersja:** 5.5.0 — "dyscache L1+L2 + stamina Circuit Breaker + Full Mesh"
-> **Podstawa:** `docs/aa3fvcx.txt` + `RAPORT_TECHNOLOGII_NEXUSAI.txt`
+> **Ostatnia aktualizacja:** 2026-07-06 · **Wersja:** 6.0.0-draft — "Silent Partner — Cichy Wspólnik"
+> **Podstawa:** `docs/aa3fvcx.txt` + `RAPORT_TECHNOLOGII_NEXUSAI.txt` + `docs/GENIALNY_POMYSL_v6_SILENT_PARTNER.md`

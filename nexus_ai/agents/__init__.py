@@ -41,13 +41,18 @@ from nexus_ai.agents.models import (
     AssetClassification,
     BayesianTrustScore,
     CashFlowForecast,
+    CashFlowPhase,
     CognitiveProofBlock,
     ConfidenceVote,
+    ContextDimension,
     CrossValidationResult,
+    DashboardState,
     DataExtractionRequest,
     DataExtractionResult,
     DecisionMode,
     DecisionVerdict,
+    ExecutiveSummary,
+    ExecutiveSummaryItem,
     ExperienceRule,
     FeedbackType,
     LearningConfig,
@@ -63,6 +68,8 @@ from nexus_ai.agents.models import (
     QualityCheckRequest,
     QualityCheckResult,
     RouteDecision,
+    StrategicMode,
+    StrategicRecommendation,
     TaxCalculation,
     TrustScore,
     VendorRiskScore,
@@ -116,6 +123,9 @@ from nexus_ai.agents.decision_trace import (
     MultiModelEnsemble,
 )
 from nexus_ai.agents.telemetry_store import AgentTelemetryStore
+# GENIALNY POMYSŁ v6.0: Silent Partner
+from nexus_ai.agents.strategy_engine import StrategyEngine
+from nexus_ai.agents.executive_summary import ExecutiveSummaryGenerator
 
 __all__ = [
     # Struktury danych
@@ -181,6 +191,16 @@ __all__ = [
     "EnsembleVote",
     "FeedbackLoop",
     "MultiModelEnsemble",
+    # GENIALNY POMYSŁ v6.0: Silent Partner ("Cichy Wspólnik")
+    "CashFlowPhase",
+    "ContextDimension",
+    "DashboardState",
+    "ExecutiveSummary",
+    "ExecutiveSummaryGenerator",
+    "ExecutiveSummaryItem",
+    "StrategicMode",
+    "StrategicRecommendation",
+    "StrategyEngine",
     # GENIALNY POMYSŁ: Dynamiczny Podręcznik Błędów
     "DynamicErrorHandbook",
     "HandbookExample",

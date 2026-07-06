@@ -2,7 +2,9 @@
 
 > **"Agent prowadzi księgowość. Ty prowadzisz biznes."**
 >
-> Data: Lipiec 2026 · Status: Koncept · Wersja: 6.0.0-draft
+> Data: Lipiec 2026 · Status: **Wdrożony** ✅ · Wersja: 6.0.0-draft
+>
+> **Wdrożenie:** 2026-07-06 — Pełna implementacja w kodzie produkcyjnym NexusAI.
 
 ---
 
@@ -239,18 +241,19 @@ Przykład:
 
 ## Implementacja
 
-### Nowe / zmodyfikowane pliki
+### Nowe / zmodyfikowane pliki (✅ = wdrożone)
 
-| Plik | Opis |
-|---|---|
-| **`nexus_ai/agents/strategy_engine.py`** | **NOWY** — Continuous Strategy Engine: 5 wymiarów kontekstu, 4 tryby strategiczne |
-| **`nexus_ai/agents/executive_summary.py`** | **NOWY** — Generator Executive Summary: podsumowanie dnia, rekomendacje strategiczne |
-| **`nexus_ai/frontend/views/executive_dashboard.py`** | **NOWY** — Executive Dashboard: 3-stanowy widok z Accept-All |
-| **`nexus_ai/agents/models.py`** | Rozszerzenie: StrategicMode, ExecutiveSummary, ContextDimension |
-| **`nexus_ai/agents/orchestrator.py`** | Rozszerzenie: Strategic Pipeline zamiast Decision Protocol |
-| **`nexus_ai/agents/proactive_workflow.py`** | Rozszerzenie: Silent Mode — wszystkie workflow przechodzą na AUTO_POST |
-| **`docs/AGENTS.md`** | Dodana sekcja v6.0: Silent Partner |
-| **`docs/CHANGELOG.md`** | Nowy wpis [6.0.0] |
+| Plik | Status | Opis |
+|---|---|---|
+| **`nexus_ai/agents/strategy_engine.py`** | ✅ **WDROŻONY** (~330 linii) | Continuous Strategy Engine: 5 wymiarów kontekstu, 4 tryby strategiczne |
+| **`nexus_ai/agents/executive_summary.py`** | ✅ **WDROŻONY** (~230 linii) | Generator Executive Summary: podsumowanie dnia, rekomendacje strategiczne |
+| **`nexus_ai/frontend/views/executive_dashboard.py`** | ✅ **WDROŻONY** (~370 linii) | Executive Dashboard: 3-stanowy widok z Accept-All |
+| **`nexus_ai/agents/models.py`** | ✅ Rozszerzenie | StrategicMode, CashFlowPhase, ContextDimension, ExecutiveSummary, DashboardState, StrategicRecommendation |
+| **`nexus_ai/agents/orchestrator.py`** | ✅ Rozszerzenie | Strategic Pipeline + Silent Mode: `build_executive_summary()`, `accept_all()`, `set_strategic_mode()`, `toggle_silent_mode()` |
+| **`nexus_ai/agents/proactive_workflow.py`** | ✅ Rozszerzenie | 3 nowe workflow: EXECUTIVE_SUMMARY_GENERATION, STRATEGY_REFRESH, SILENT_AUTO_POST |
+| **`nexus_ai/agents/topics.py`** | ✅ Rozszerzenie | `UI_EXECUTIVE_SUMMARY` topic + `ui` JetStream stream |
+| **`docs/AGENTS.md`** | ✅ Aktualizacja | Dodana sekcja 1.5g v6.0: Silent Partner, zaktualizowany nagłówek i stopka |
+| **`docs/CHANGELOG.md`** | ✅ Aktualizacja | Nowy wpis [6.0.0-draft] ze szczegółami wdrożenia |
 
 ### Architektura Strategic Pipeline
 
@@ -290,12 +293,12 @@ Invoice comes in
 
 ### Milestones wdrożenia
 
-| Milestone | Co się zmienia | Wpływ na UX |
-|---|---|---|
-| **M1** Executive Summary | Nowy widok z Accept-All | Czas ↓ 80% (3 min → 30s) |
-| **M2** Silent Auto-Post | Wszystkie decyzje AUTO_POST (tymczasowo) | 0 decyzji dziennie |
-| **M3** Strategic Engine | 4 tryby + Learning by Context | 0 decyzji taktycznych |
-| **M4** Full Silent Partner | Pełna pętla: strategia → działanie → raport | 1 decyzja strategiczna/tydz. |
+| Milestone | Status | Co się zmienia | Wpływ na UX |
+|---|---|---|---|
+| **M1** Executive Summary | ✅ **WDROŻONY** | Nowy widok z Accept-All | Czas ↓ 80% (3 min → 30s) |
+| **M2** Silent Auto-Post | ✅ **WDROŻONY** | Wszystkie decyzje AUTO_POST (strategicznie) | 0 decyzji dziennie |
+| **M3** Strategic Engine | ✅ **WDROŻONY** | 4 tryby + Learning by Context | 0 decyzji taktycznych |
+| **M4** Full Silent Partner | 🔴 W toku | Pełna pętla: strategia → działanie → raport | 1 decyzja strategiczna/tydz. |
 
 ---
 
@@ -314,4 +317,5 @@ Przedsiębiorca nie klika przycisków. **Przedsiębiorca prowadzi biznes.**
 ---
 
 > **Data utworzenia:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 6.0.0-draft
-> **Status dokumentu:** Koncept · **Wymaga:** Dyskusji i weryfikacji z użytkownikami
+> **Status dokumentu:** Wdrożony ✅ (M1-M3 zaimplementowane, M4 w toku)
+> **Ostatnia aktualizacja:** 2026-07-06 — dodane statusy wdrożenia

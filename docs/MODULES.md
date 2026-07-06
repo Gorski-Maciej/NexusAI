@@ -5,7 +5,7 @@
 
 ---
 
-## 1. Przegląd agentów AI (5 agentów — Enterprise v5.4)
+## 1. Przegląd agentów AI (5 agentów — Enterprise v6.0 Silent Partner)
 
 NexusAI używa 5 wyspecjalizowanych agentów AI — każdy ładowany jako model GGUF z konfiguracji. Poniższe nazwy to **rekomendowane modele referencyjne** (system nie ma zharkodowanych modeli — `InferenceService` ładuje dowolny plik GGUF podany w konfiguracji):
 
@@ -34,8 +34,7 @@ NexusAI używa 5 wyspecjalizowanych agentów AI — każdy ładowany jako model 
 | **AgentTelemetryStore** | DuckDB + Parquet, 5 tabel (decisions, corrections, routes, traces, feedback), eksport Parquet ZSTD | `nexus_ai/agents/telemetry_store.py` |
 | **KnowledgeMesh** | CollectiveBayesianField + PredictiveTaskRouter + CrossAgentExperienceReplay, CROSS_AGENT_RULES | `nexus_ai/agents/knowledge_mesh.py` |
 | **UnifiedLearningProtocol** | Kaskada 5 systemów po korekcie: Handbook → LearningProvider → KnowledgeMesh → DecisionProfile → TelemetryStore | `nexus_ai/agents/orchestrator.py` |
-| **DysCache** | Dwupoziomowy cache L1 (RAM OrderedDict) + L2 (SQLite) z async API, TTL, LRU eviction. Zastąpił diskcache w DecisionCache. | `nexus_ai/core/dyscache.py` |
-| **stamina Circuit Breaker** | `stamina.retry_context` z circuit_breaker=True dla Białej Listy MF, KSeF, GUS BIR, NBP. Retry tylko dla OPA (lokalny sidecar). | `white_list_service.py`, `ksef/client.py`, `ksef/auth.py`, `gus_bir_client.py`, `opa_client.py`, `core/cache/http_client.py` |
+    
 
 > **GENIALNY POMYSŁ ENTERPRISE — Cognitive Audit Trail:** Każda korekta użytkownika tworzy blok poznawczy (embedding 768d w sqlite-vec). Przy podobnej fakturze → k-NN → automatyczna korekta. Po 10 korektach → auto-naprawa reguł OPA/Rego. Łańcuch SHA-256 staje się AKTYWNYM systemem uczącym się.
 
@@ -1144,5 +1143,5 @@ class NewAgent:
 
 ---
 
-> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 5.5.0 — zaktualizowana o dyscache, stamina CB, KnowledgeMesh Analytics
+> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 6.0.0-draft — Silent Partner + moduły v6.0
 > **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-06 · **Weryfikator:** Technical Lead

@@ -102,6 +102,10 @@ class WorkflowType:
     AUTO_BACKUP = "auto_backup"
     COMPLIANCE_SCAN = "compliance_scan"
     DECISION_FEED_REFRESH = "decision_feed_refresh"
+    # ── GENIALNY POMYSŁ v6.0: Silent Partner ──
+    EXECUTIVE_SUMMARY_GENERATION = "executive_summary_generation"
+    STRATEGY_REFRESH = "strategy_refresh"
+    SILENT_AUTO_POST = "silent_auto_post"
 
 
 @dataclass
@@ -985,6 +989,25 @@ class ProactiveWorkflowScheduler:
             "description": "Odświeżenie feedu kart decyzyjnych — publikacja ActionCardFeed na ui.feed.pending",
             "agent": "orchestrator",
         },
+        # ── GENIALNY POMYSŁ v6.0: Silent Partner ──
+        WorkflowType.EXECUTIVE_SUMMARY_GENERATION: {
+            "cron": "0 6 * * *",
+            "priority": 2,
+            "description": "Generowanie Executive Summary — Silent Partner v6.0",
+            "agent": "orchestrator",
+        },
+        WorkflowType.STRATEGY_REFRESH: {
+            "cron": "0 */6 * * *",
+            "priority": 4,
+            "description": "Odświeżenie kontekstu strategicznego (5 wymiarów)",
+            "agent": "orchestrator",
+        },
+        WorkflowType.SILENT_AUTO_POST: {
+            "cron": "*/15 * * * *",
+            "priority": 1,
+            "description": "Silent Auto-Post — wszystkie decyzje przechodzą na AUTO_POST",
+            "agent": "orchestrator",
+        },
     }
 
     def __init__(
@@ -1114,6 +1137,10 @@ class ProactiveWorkflowScheduler:
             WorkflowType.AUTO_BACKUP: self._handle_auto_backup,
             WorkflowType.COMPLIANCE_SCAN: self._handle_compliance_scan,
             WorkflowType.DECISION_FEED_REFRESH: self._handle_decision_feed_refresh,
+            # ── GENIALNY POMYSŁ v6.0: Silent Partner ──
+            WorkflowType.EXECUTIVE_SUMMARY_GENERATION: self._handle_executive_summary_generation,
+            WorkflowType.STRATEGY_REFRESH: self._handle_strategy_refresh,
+            WorkflowType.SILENT_AUTO_POST: self._handle_silent_auto_post,
         }
         return handlers.get(workflow_type)
 
@@ -1688,6 +1715,124 @@ class ProactiveWorkflowScheduler:
             }
         except Exception as exc:
             self._logger.warning("[PROACTIVE] Feed refresh failed: %s", exc)
+            return {"status": "error", "error": str(exc)}
+
+    # ── GENIALNY POMYSŁ v6.0: Silent Partner Handlers ────────────────
+
+    async def _handle_executive_summary_generation(self) -> dict[str, Any]:
+        """Generowanie Executive Summary — Silent Partner v6.0.
+
+        Codziennie o 06:00 agent generuje Executive Summary
+        zamiast Daily Briefing + Decision Feed.
+        Przedsiębiorca widzi:
+        - Podsumowanie zaksięgowanych faktur
+        - Oszczędność czasu
+        - Strategiczne rekomendacje
+        - Przycisk "Akceptuj wszystkie"
+        """
+        if not self._orchestrator:
+            return {"status": "no_orchestrator"}
+
+        try:
+            # Sprawdź czy Silent Partner jest włączony
+            silent_mode = getattr(self._orchestrator, 'silent_mode', False)
+            if not silent_mode:
+                return {"status": "skipped", "reason": "Silent Partner is OFF"}
+
+            # Zbuduj Executive Summary
+            summary = await self._orchestrator.build_executive_summary(
+                greeting_name="Przedsiębiorco",
+            )
+
+            return {
+                "status": "ok",
+                "summary_id": summary.summary_id,
+                "auto_posted": summary.auto_posted_count,
+                "verified": summary.verified_count,
+                "silent_rate": summary.silent_rate,
+                "time_saved_min": summary.time_saved_minutes,
+                "dashboard_state": summary.dashboard_state.value,
+                "recommendations": len(summary.strategic_recommendations),
+            }
+        except Exception as exc:
+            self._logger.warning("[PROACTIVE] Executive Summary failed: %s", exc)
+            return {"status": "error", "error": str(exc)}
+
+    async def _handle_strategy_refresh(self) -> dict[str, Any]:
+        """Odświeżenie kontekstu strategicznego — Silent Partner v6.0.
+
+        Co 6 godzin agent analizuje 5 wymiarów kontekstu
+        i dostosowuje tryb strategiczny.
+        """
+        if not self._orchestrator:
+            return {"status": "no_orchestrator"}
+
+        try:
+            strategy = getattr(self._orchestrator, 'strategy_engine', None)
+            if not strategy:
+                return {"status": "skipped", "reason": "No strategy engine"}
+
+            # Analizuj kontekst
+            context = strategy.analyze_context()
+
+            # Wybierz optymalny tryb
+            mode, reason = strategy.select_strategic_mode(context)
+
+            return {
+                "status": "ok",
+                "current_mode": mode.value,
+                "reason": reason,
+                "context": context.summary,
+            }
+        except Exception as exc:
+            self._logger.warning("[PROACTIVE] Strategy refresh failed: %s", exc)
+            return {"status": "error", "error": str(exc)}
+
+    async def _handle_silent_auto_post(self) -> dict[str, Any]:
+        """Silent Auto-Post — Silent Partner v6.0.
+
+        Co 15 minut sprawdza pending decyzje i wykonuje AUTO_POST
+        dla wszystkich, które spełniają kryteria strategiczne.
+
+        W trybie Silent Partner wszystkie decyzje idą na AUTO_POST.
+        Tylko wyjątki (niski trust, wysoka kwota) czekają na użytkownika.
+        """
+        if not self._orchestrator:
+            return {"status": "no_orchestrator"}
+
+        try:
+            silent_mode = getattr(self._orchestrator, 'silent_mode', False)
+            if not silent_mode:
+                return {"status": "skipped", "reason": "Silent Partner is OFF"}
+
+            pending = dict(getattr(self._orchestrator, '_pending_decisions', {}) or {})
+            auto_posted_now = 0
+            skipped = 0
+
+            for decision_id, decision in list(pending.items()):
+                # W trybie Silent: wszystkie decyzje AUTO_POST
+                # Verdict statuses: AUTO_POST, REVIEW, BLOCK, ESCALATED, 4EYES_REQUIRED
+                status = getattr(decision.verdict, 'status', 'REVIEW')
+                if status in ("REVIEW", "BLOCK", "ESCALATED"):
+                    try:
+                        from nexus_ai.agents.models import DecisionMode
+                        await self._orchestrator.record_user_feedback(
+                            decision_id=decision_id,
+                            corrected_status="AUTO_POST",
+                            corrected_reason="Silent Auto-Post (v6.0)",
+                        )
+                        auto_posted_now += 1
+                    except Exception:
+                        skipped += 1
+
+            return {
+                "status": "ok",
+                "auto_posted_now": auto_posted_now,
+                "skipped": skipped,
+                "total_pending_after": len(self._orchestrator._pending_decisions),
+            }
+        except Exception as exc:
+            self._logger.warning("[PROACTIVE] Silent Auto-Post failed: %s", exc)
             return {"status": "error", "error": str(exc)}
 
     # ── Metody pomocnicze ──────────────────────────────────────────

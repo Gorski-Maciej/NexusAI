@@ -50,12 +50,16 @@ from nexus_ai.agents.models import (
     AnalyticsQuery,
     AnalyticsResult,
     ConfidenceVote,
+    ContextDimension,
+    DashboardState,
     DataExtractionRequest,
     DataExtractionResult,
     DecisionMode,
+    ExecutiveSummary,
     FeedbackType,
     QualityCheckRequest,
     QualityCheckResult,
+    StrategicMode,
     TrustScore,
     VotingResult,
     make_context,
@@ -73,6 +77,15 @@ from nexus_ai.agents.topics import AgentTopic
 from nexus_ai.core.inference import ModelManager
 
 logger = get_logger("nexus.agents.orchestrator")
+
+
+# ── GENIALNY POMYSŁ v6.0: Silent Partner ──────────────────────────
+
+SILENT_PARTNER_ENABLED: bool = True
+"""Czy Silent Partner v6.0 jest włączony. Gdy True, wszystkie workflow → AUTO_POST."""
+
+SILENT_PARTNER_VERSION: str = "6.0.0-draft"
+"""Wersja konceptu Silent Partner."""
 
 
 # ── Wagi głosowania (Bayesian, aktualizowane) ──────────────────────────
@@ -140,6 +153,18 @@ class AgentOrchestrator(BaseAgent):
         self._calibrator = ConfidenceCalibrator()
         self._feedback = FeedbackLoop()
         self._telemetry = AgentTelemetryStore()
+        # ── GENIALNY POMYSŁ v6.0: Silent Partner ──
+        from nexus_ai.agents.strategy_engine import StrategyEngine
+        from nexus_ai.agents.executive_summary import ExecutiveSummaryGenerator
+        self._strategy_engine = StrategyEngine(config=config)
+        self._executive_summary = ExecutiveSummaryGenerator(orchestrator=self)
+        self._silent_mode = config.get("silent_mode", True) if config else True
+        self._silent_stats: dict[str, Any] = {
+            "total_decisions": 0,
+            "auto_posted": 0,
+            "accept_all_count": 0,
+            "time_saved_total_minutes": 0.0,
+        }
 
     def register_agent(self, name: str, agent: BaseAgent) -> None:
         """Zarejestruj podległego agenta i propaguj KnowledgeMesh."""
@@ -162,12 +187,13 @@ class AgentOrchestrator(BaseAgent):
         await self._proactive_scheduler.start()
         mesh_stats = self._knowledge_mesh.get_stats() if self._knowledge_mesh else {"initialized": False}
         logger.info(
-            "[ORCH] Orchestrator ready | models: %s | agents: %s | handbook: %d examples | mesh: %s | proactive workflows: %d",
+            "[ORCH] Orchestrator ready | models: %s | agents: %s | handbook: %d examples | mesh: %s | proactive workflows: %d | silent_mode=%s",
             self._models,
             list(self._sub_agents.keys()),
             self._error_handbook.count,
             mesh_stats,
             len(self._proactive_scheduler.WORKFLOW_SCHEDULE),
+            self._silent_mode,
         )
 
     async def stop(self) -> None:
@@ -209,6 +235,34 @@ class AgentOrchestrator(BaseAgent):
     def telemetry(self) -> AgentTelemetryStore:
         return self._telemetry
 
+    # ── GENIALNY POMYSŁ v6.0: Silent Partner Properties ─────
+
+    @property
+    def strategy_engine(self):
+        """Continuous Strategy Engine v6.0."""
+        return self._strategy_engine
+
+    @property
+    def executive_summary(self):
+        """Executive Summary Generator v6.0."""
+        return self._executive_summary
+
+    @property
+    def silent_mode(self) -> bool:
+        """Czy Silent Partner v6.0 jest aktywny."""
+        return self._silent_mode
+
+    @silent_mode.setter
+    def silent_mode(self, value: bool) -> None:
+        """Włącz/wyłącz Silent Partner v6.0."""
+        self._silent_mode = value
+        logger.info("[ORCH] Silent Partner: %s", "ON" if value else "OFF")
+
+    @property
+    def silent_stats(self) -> dict[str, Any]:
+        """Statystyki Silent Partner."""
+        return dict(self._silent_stats)
+
     def get_feedback_summary(self) -> dict[str, Any]:
         """Pobierz podsumowanie pętli feedbacku."""
         return self._feedback.get_summary()
@@ -236,6 +290,17 @@ class AgentOrchestrator(BaseAgent):
         """
         return self._decision_profile.get_autonomy_score()
 
+    def get_silent_rate(self) -> float:
+        """Pobierz aktualny Silent Rate v6.0 (cel: ≥95%).
+
+        Silent Rate = auto_posted / total × 100%
+        """
+        stats = self._silent_stats
+        total = stats.get("total_decisions", 0)
+        if total == 0:
+            return 100.0
+        return (stats.get("auto_posted", 0) / total) * 100.0
+
     def get_decision_profile_summary(self) -> dict[str, Any]:
         """Pobierz podsumowanie profilu decyzyjnego."""
         return self._decision_profile.get_summary()
@@ -253,6 +318,11 @@ class AgentOrchestrator(BaseAgent):
     async def process_invoice(self, invoice_data: dict[str, Any]) -> AgentDecision:
         """Przetwórz fakturę przez pełny pipeline agentów.
 
+        GENIALNY POMYSŁ v6.0 Silent Partner — Strategic Pipeline:
+        - W trybie Silent: wszystkie decyzje AUTO_POST
+        - Tylko wyjątki (niski trust, wysoka kwota) trafiają do SUGGEST
+        - Każda decyzja dodawana do ExecutiveSummary
+
         Enterprise v5.4:
         1. DecisionTrace — OTel tracing całej decyzji
         2. KnowledgeMesh Predictive Routing
@@ -264,7 +334,9 @@ class AgentOrchestrator(BaseAgent):
         8. AgentTelemetryStore
         """
         decision_id = uuid.uuid4().hex[:16]
-        logger.info("[ORCH] Processing invoice %s", decision_id)
+        logger.info("[ORCH] Processing invoice %s | silent=%s | mode=%s",
+                    decision_id, self._silent_mode,
+                    self._strategy_engine.current_mode.value)
 
         # ── Decision Trace (v5.4) ────────────────────────────────
         vendor_nip_raw = invoice_data.get("nip", "unknown")
@@ -471,12 +543,28 @@ class AgentOrchestrator(BaseAgent):
                     final_trust_score, calibrated_cs)
         # Użyj skalibrowanego trustu do decyzji
         final_trust_score = calibrated_cs
-        status, reason = self._determine_zone(
-            final_trust_score,
-            quality_result,
-            four_eyes_needed,
-            gross_amount,
-        )
+
+        # ── GENIALNY POMYSŁ v6.0: Strategiczna decyzja w Silent Mode ──
+        if self._silent_mode:
+            should_auto, strategic_mode, strategy_reason = self._strategy_engine.should_auto_post(
+                trust_score=final_trust_score,
+                amount=gross_amount_num,
+                is_routine=(gross_amount_num < 50000),
+                vendor_is_trusted=(extraction_result.confidence > 0.85),
+            )
+            if should_auto:
+                status = "AUTO_POST"
+                reason = f"Silent Partner: {strategy_reason}"
+            else:
+                status = "REVIEW" if strategic_mode.value != "ask_user" else "BLOCK"
+                reason = f"Silent Partner: {strategy_reason}"
+        else:
+            status, reason = self._determine_zone(
+                final_trust_score,
+                quality_result,
+                four_eyes_needed,
+                gross_amount,
+            )
 
         # ── 8a. Mapuj strefę na DecisionMode ─────────────────────────
         zone_to_mode = {
@@ -529,6 +617,40 @@ class AgentOrchestrator(BaseAgent):
 
         # ── 12. Zachowaj dla eskalacji ─────────────────────────────
         self._pending_decisions[decision_id] = decision
+
+        # ── 16. GENIALNY POMYSŁ v6.0: Executive Summary ──
+        # Dodaj każdą decyzję do Executive Summary (zbieranie dla dashboardu)
+        vendor_name = extraction_result.extracted_data.get("vendor_name", "")
+        gross_amount_num = gross_amount if isinstance(gross_amount, (int, float)) else 0.0
+
+        if status == "AUTO_POST":
+            self._executive_summary.add_auto_posted(
+                title=f"Faktura od {vendor_name or vendor_nip}",
+                amount=gross_amount_num,
+                detail=f"{extraction_result.extracted_data.get('invoice_number', 'N/A')} — {gross_amount_num:,.2f} PLN",
+                decision_id=decision_id,
+            )
+            self._silent_stats["auto_posted"] += 1
+            self._silent_stats["time_saved_total_minutes"] += 2.5  # 2.5 min na decyzję
+        else:
+            self._executive_summary.add_verified(
+                title=f"Faktura od {vendor_name or vendor_nip}",
+                amount=gross_amount_num,
+                detail=f"Wymagana weryfikacja — {extraction_result.extracted_data.get('invoice_number', 'N/A')}",
+                decision_id=decision_id,
+            )
+
+        # ── v6.0: Jeśli wysoka kwota, dodaj też do items_to_review ──
+        if isinstance(gross_amount, (int, float)) and gross_amount > 50000:
+            self._executive_summary.add_item_to_review(
+                title=f"🔍 Wysoka kwota: {vendor_name or vendor_nip}",
+                detail=f"{gross_amount:,.2f} PLN — warto przejrzeć",
+                decision_id=decision_id,
+                amount=gross_amount,
+                status="pending",
+            )
+
+        self._silent_stats["total_decisions"] += 1
 
         # ── 15. GENIALNY POMYSŁ v5.2: Obserwuj decyzję — Progressive Autonomy ──
         # AUTO_POST: od razu uczymy się (brak interakcji użytkownika)
@@ -1466,6 +1588,152 @@ Przedstaw to w zwięzły, zrozumiały sposób (2-3 zdania po polsku):"""
         except Exception as exc:
             logger.warning("[ORCH] Communication failed: %s", exc)
             return None
+
+    # ── GENIALNY POMYSŁ v6.0: Silent Partner — Executive Summary & Accept-All ──
+
+    async def build_executive_summary(
+        self,
+        greeting_name: str = "",
+    ) -> ExecutiveSummary:
+        """Zbuduj Executive Summary dla przedsiębiorcy.
+
+        GENIALNY POMYSŁ v6.0:
+        Agent prezentuje efekt swojej pracy w formie Executive Summary.
+        Przedsiębiorca może zaakceptować wszystko jednym kliknięciem.
+
+        Returns:
+            ExecutiveSummary gotowe do konsumpcji przez ExecutiveDashboard.
+        """
+        # Analizuj kontekst strategiczny
+        self._strategy_engine.analyze_context(
+            cash_balance=self._executive_summary._auto_posted_amount,
+            pending_receivables=0.0,
+            pending_payables=0.0,
+        )
+
+        # Generuj rekomendacje strategiczne
+        silent_rate = self.get_silent_rate()
+        recommendations = self._strategy_engine.generate_strategic_recommendations(
+            cash_balance=self._executive_summary._auto_posted_amount,
+            recent_auto_post_count=self._silent_stats.get("auto_posted", 0),
+            correction_rate=1.0 - (silent_rate / 100.0) if silent_rate < 100 else 0.0,
+        )
+
+        # Zbuduj summary
+        summary = self._executive_summary.build_summary(
+            strategic_recommendations=recommendations,
+            greeting_name=greeting_name,
+        )
+
+        # Publikuj na NATS dla UI
+        ctx = make_context(
+            task_id=f"exec-summary-{uuid.uuid4().hex[:8]}",
+            source=self.name,
+            target="ui",
+            priority=3,
+            strategic_mode=self._strategy_engine.current_mode,
+            silent_mode=self._silent_mode,
+        )
+        await self.publish(AgentTopic.UI_EXECUTIVE_SUMMARY, summary, ctx)
+
+        logger.info(
+            "[ORCH] 📊 Executive Summary published | %d auto + %d verified | "
+            "silent_rate=%.1f%% | saved=%.0f min | state=%s",
+            summary.auto_posted_count,
+            summary.verified_count,
+            summary.silent_rate,
+            summary.time_saved_minutes,
+            summary.dashboard_state.value,
+        )
+
+        return summary
+
+    async def accept_all(self) -> dict[str, Any]:
+        """Akceptuj wszystkie decyzje — GENIALNY POMYSŁ v6.0.
+
+        Przedsiębiorca klika 1 przycisk → wszystkie decyzje zatwierdzone.
+        To jest DOMYŚLNA ścieżka (80% przypadków).
+
+        Returns:
+            Wynik akceptacji.
+        """
+        now = pendulum.now("UTC")
+        self._silent_stats["accept_all_count"] += 1
+
+        # Zatwierdź wszystkie pending decyzje
+        accepted_count = 0
+        for decision_id in list(self._pending_decisions.keys()):
+            try:
+                await self.record_user_feedback(
+                    decision_id=decision_id,
+                    corrected_status="AUTO_POST",
+                    corrected_reason="Accept-All (Silent Partner v6.0)",
+                )
+                accepted_count += 1
+            except Exception as exc:
+                logger.warning("[ORCH] Accept-all failed for %s: %s", decision_id, exc)
+
+        # Zresetuj Executive Summary na następny dzień
+        self._executive_summary.reset()
+
+        logger.info(
+            "[ORCH] ✅ Accept-All | %d decisions confirmed | #%d accept-all",
+            accepted_count, self._silent_stats["accept_all_count"],
+        )
+
+        return {
+            "status": "ok",
+            "accepted_count": accepted_count,
+            "accept_all_count": self._silent_stats["accept_all_count"],
+            "timestamp": now.isoformat(),
+            "silent_rate": self.get_silent_rate(),
+        }
+
+    def set_strategic_mode(self, mode: StrategicMode) -> dict[str, Any]:
+        """Ustaw tryb strategiczny — GENIALNY POMYSŁ v6.0.
+
+        Agent pyta o STRATEGIĘ, nie o taktykę.
+
+        Args:
+            mode: Nowy tryb strategiczny.
+
+        Returns:
+            Podsumowanie zmiany.
+        """
+        old_mode = self._strategy_engine.current_mode
+        self._strategy_engine.set_user_strategic_mode(mode)
+
+        logger.info(
+            "[ORCH] Strategic mode changed | %s → %s",
+            old_mode.value, mode.value,
+        )
+
+        return {
+            "status": "ok",
+            "previous_mode": old_mode.value,
+            "new_mode": mode.value,
+            "thresholds": self._strategy_engine.mode_thresholds,
+            "context": self._strategy_engine.current_context.summary,
+        }
+
+    def toggle_silent_mode(self) -> dict[str, Any]:
+        """Przełącz Silent Partner v6.0 ON/OFF."""
+        self._silent_mode = not self._silent_mode
+        return {
+            "status": "ok",
+            "silent_mode": self._silent_mode,
+            "message": f"Silent Partner: {'WŁĄCZONY' if self._silent_mode else 'WYŁĄCZONY'}",
+        }
+
+    def get_strategy_summary(self) -> dict[str, Any]:
+        """Pobierz podsumowanie strategii Silent Partner."""
+        strategy = self._strategy_engine.get_strategy_summary()
+        return {
+            **strategy,
+            "silent_mode": self._silent_mode,
+            "silent_rate": self.get_silent_rate(),
+            "silent_stats": dict(self._silent_stats),
+        }
 
     async def process_task(self, task_data: dict[str, Any]) -> None:
         """Przetwórz zadanie z kolejki.

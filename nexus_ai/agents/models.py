@@ -41,6 +41,175 @@ class DecisionMode(enum.StrEnum):
 
 
 # ═════════════════════════════════════════════════════════════════════════
+# GENIALNY POMYSŁ v6.0: Silent Partner — Strategic Mode & Context
+# ═════════════════════════════════════════════════════════════════════════
+
+
+class StrategicMode(enum.StrEnum):
+    """Tryb strategiczny agenta — GENIALNY POMYSŁ v6.0 "Cichy Wspólnik".
+
+    Zamiast pytać o każdą decyzję taktyczną ("którą stawkę VAT?"),
+    agent pyta o STRATEGIĘ raz na kwartał, a działa taktycznie zawsze.
+
+    - CASH_PROTECT: Maksymalizuj płynność, rozkładaj koszty.
+    - GROWTH: Inwestuj, przyspieszaj amortyzację.
+    - TAX_OPTIMAL: Minimalizuj PIT/CIT, rozkładaj dochody.
+    - EFFICIENCY: Najszybsza ścieżka, zero zbędnych kroków.
+    """
+
+    CASH_PROTECT = "cash_protect"
+    GROWTH = "growth"
+    TAX_OPTIMAL = "tax_optimal"
+    EFFICIENCY = "efficiency"
+
+
+class CashFlowPhase(enum.StrEnum):
+    """Faza przepływów pieniężnych."""
+
+    SURPLUS = "surplus"       # Wpływy > wydatki
+    DEFICIT = "deficit"       # Wydatki > wpływy
+    NEUTRAL = "neutral"       # Zbalansowane
+
+
+class DashboardState(enum.StrEnum):
+    """Stan Executive Dashboard — GENIALNY POMYSŁ v6.0."""
+
+    NORMAL = "normal"      # 🔵 Podsumowanie + "Akceptuj wszystkie"
+    ATTENTION = "attention"  # 🟡 1-2 pozycje oznaczone
+    ALERT = "alert"         # 🔴 Pilna sprawa
+    EMPTY = "empty"         # ⚪ "Wszystko zaksięgowane. Idź na kawę ☕"
+
+
+class ContextDimension(Struct, kw_only=True):
+    """Pięć wymiarów kontekstu strategicznego — Learning by Context (LbC).
+
+    GENIALNY POMYSŁ v6.0:
+    Zamiast uczyć się CO przedsiębiorca robi, agent uczy się
+    W JAKIM KONTEKŚCIE podejmuje decyzje.
+    """
+
+    cash_flow_phase: CashFlowPhase = CashFlowPhase.NEUTRAL
+    """Aktualna faza przepływów pieniężnych."""
+    tax_period: str = "mid_quarter"
+    """Okres podatkowy: start_quarter, mid_quarter, end_quarter, vat_deadline, year_end."""
+    vendor_season: str = "normal"
+    """Sezonowość kontrahenta: normal, high_season, low_season, first_time."""
+    growth_phase: str = "maintenance"
+    """Faza rozwoju firmy: startup, growth, maintenance, scaling."""
+    macro_context: dict[str, Any] = field(default_factory=dict)
+    """Kontekst makroekonomiczny: stopy procentowe, inflacja, kursy walut."""
+
+    @property
+    def summary(self) -> str:
+        """Podsumowanie kontekstu w języku naturalnym."""
+        parts = [
+            f"Cash flow: {self.cash_flow_phase.value}",
+            f"Tax period: {self.tax_period}",
+            f"Vendor season: {self.vendor_season}",
+            f"Growth: {self.growth_phase}",
+        ]
+        return " | ".join(parts)
+
+
+class StrategicRecommendation(Struct, kw_only=True):
+    """Strategiczna rekomendacja agenta — GENIALNY POMYSŁ v6.0.
+
+    Agent NIE pyta o taktykę ("VAT 23% czy 8%?").
+    Agent pyta o STRATEGIĘ ("Oszczędzamy czy inwestujemy?").
+    """
+
+    rec_id: str
+    """Unikalne ID rekomendacji."""
+    category: str
+    """Kategoria: liquidity, investment, tax, efficiency, risk."""
+    title: str
+    """Krótki tytuł (max 80 znaków)."""
+    description: str
+    """Opis sytuacji i rekomendacji."""
+    impact: str = "medium"
+    """Wpływ: high, medium, low."""
+    potential_savings: float = 0.0
+    """Potencjalne oszczędności w PLN."""
+    options: list[dict[str, Any]] = field(default_factory=list)
+    """2-3 opcje strategiczne do wyboru."""
+    context_drivers: list[str] = field(default_factory=list)
+    """Które wymiary kontekstu wpływają na tę rekomendację."""
+    created_at: str = ""
+    """ISO timestamp utworzenia."""
+
+
+class ExecutiveSummaryItem(Struct, kw_only=True):
+    """Pojedynczy element Executive Summary."""
+
+    item_type: str
+    """Typ: invoice_posted, vendor_verified, payment_scheduled, alert, recommendation."""
+    title: str
+    """Krótki opis pozycji."""
+    detail: str = ""
+    """Szczegóły."""
+    amount: float = 0.0
+    """Kwota (jeśli dotyczy)."""
+    currency: str = "PLN"
+    """Waluta."""
+    status: str = "auto"
+    """Status: auto, verified, pending, alert."""
+    decision_id: str = ""
+    """Referencja do decyzji (jeśli dotyczy)."""
+
+
+class ExecutiveSummary(Struct, kw_only=True):
+    """Executive Summary — GENIALNY POMYSŁ v6.0 "Cichy Wspólnik".
+
+    Agent prezentuje efekt swojej pracy w formie Executive Summary.
+    Przedsiębiorca może:
+    - Zaakceptować wszystko jednym kliknięciem (80% przypadków)
+    - Skorygować konkretną pozycję (15% przypadków)
+    - Zatrzymać i przeanalizować (5% przypadków)
+    """
+
+    summary_id: str
+    """Unikalne ID podsumowania."""
+    generated_at: str
+    """ISO timestamp wygenerowania."""
+    greeting: str = ""
+    """Powitanie (np. "Dzień dobry, Michał! Agent przepracował noc.")."""
+    items: list[ExecutiveSummaryItem] = field(default_factory=list)
+    """Lista wszystkich pozycji."""
+    auto_posted_count: int = 0
+    """Liczba automatycznie zaksięgowanych faktur."""
+    auto_posted_amount: float = 0.0
+    """Łączna kwota automatycznie zaksięgowanych faktur."""
+    verified_count: int = 0
+    """Liczba faktur z weryfikacją."""
+    time_saved_minutes: float = 0.0
+    """Oszczędność czasu przedsiębiorcy w minutach."""
+    trend_pct: float = 0.0
+    """Trend vs poprzedni okres (w %)."""
+    items_to_review: int = 0
+    """Liczba pozycji do opcjonalnego wglądu."""
+    strategic_recommendations: list[StrategicRecommendation] = field(default_factory=list)
+    """Strategiczne rekomendacje (opcjonalne, 0-2)."""
+    dashboard_state: DashboardState = DashboardState.NORMAL
+    """Stan dashboardu."""
+    silent_rate: float = 0.0
+    """Silent Rate = auto_posted / total (cel ≥95%)."""
+    currency: str = "PLN"
+    """Domyślna waluta."""
+
+    @property
+    def total_processed(self) -> int:
+        """Łączna liczba przetworzonych dokumentów."""
+        return self.auto_posted_count + self.verified_count
+
+    @property
+    def requires_attention(self) -> bool:
+        """Czy podsumowanie wymaga uwagi użytkownika."""
+        return self.items_to_review > 0 or self.dashboard_state in (
+            DashboardState.ATTENTION, DashboardState.ALERT
+        )
+
+
+# ═════════════════════════════════════════════════════════════════════════
 # Confidentiality & Voting — Mechanizmy decyzyjne
 # ═════════════════════════════════════════════════════════════════════════
 
@@ -358,6 +527,11 @@ class AgentContext(Struct, kw_only=True):
     """Tryb decyzyjny (AUTO_POST / SUGGEST / ASK_USER)."""
     trace_id: str = ""
     """OpenTelemetry trace ID."""
+    # ── GENIALNY POMYSŁ v6.0: Silent Partner ──
+    strategic_mode: StrategicMode = StrategicMode.EFFICIENCY
+    """Tryb strategiczny (CASH_PROTECT / GROWTH / TAX_OPTIMAL / EFFICIENCY)."""
+    silent_mode: bool = True
+    """Czy agent działa w trybie Silent (v6.0: domyślnie True)."""
 
 
 # ═════════════════════════════════════════════════════════════════════════

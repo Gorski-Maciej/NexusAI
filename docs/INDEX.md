@@ -339,8 +339,9 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 | 37 | **`docs/BUILD_CONFIG.md`** | **6n. Build Config** | **NOWY** | ✅ |
 
 | 38 | **`docs/AGENTS.md`** | **10a. Agenci AI** | **NOWY — v3.0** | ✅ |
+| 39 | **`docs/GENIALNY_POMYSL_v6_SILENT_PARTNER.md`** | **10b. Silent Partner v6.0** | **NOWY — v6.0** | ✅ |
 
-**Razem: 38 plików dokumentacji.**
+**Razem: 39 plików dokumentacji.**
 
 ---
 
@@ -376,5 +377,5 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead
+> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 6.0.0-draft — "Silent Partner"
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-06 · **Weryfikator:** Technical Lead
