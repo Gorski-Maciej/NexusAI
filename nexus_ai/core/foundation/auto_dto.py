@@ -14,7 +14,7 @@ from decimal import Decimal
 from typing import Any
 
 from msgspec import Struct
-from sqlalchemy import Boolean, Float, Integer, Numeric, String
+from sqlalchemy import Boolean, DateTime, Enum, Float, Integer, Numeric, String, TypeDecorator
 from sqlmodel import SQLModel
 
 _DTO_CACHE: dict[str, type[Struct]] = {}
@@ -46,8 +46,12 @@ def _py_type_from_sa_col(col: Any) -> Any:
         return float
     if isinstance(col_type, (Boolean,)):
         return bool
-    if isinstance(col_type, (Numeric,)):
-        return Decimal
+    if isinstance(col_type, (Numeric, DateTime)):
+        return Decimal if isinstance(col_type, Numeric) else str  # DateTime -> ISO string
+    if isinstance(col_type, (Enum,)):
+        return str  # Enum -> string value
+    if isinstance(col_type, (TypeDecorator,)):
+        return str  # Custom TypeDecorator (e.g. PendulumDateTime) -> ISO string
     if col_type.python_type:
         return col_type.python_type
     return Any

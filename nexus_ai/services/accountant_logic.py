@@ -8,7 +8,7 @@ from nexus_ai.db.analytics import DuckDBManager
 
 
 class AccountSuggestion(Struct):
-    __slots__ = ()
+    """Sugestia kont księgowych dla faktury."""
     account_wn: str
     account_ma: str
     reason: str

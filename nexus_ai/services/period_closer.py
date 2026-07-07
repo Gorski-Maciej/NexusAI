@@ -49,116 +49,80 @@ class PeriodCloser:
         self._retained_earnings = retained_earnings_account or 82000  # Wynik finansowy
         self._default_ledger = default_ledger
 
-    def close_expense_accounts(
+    def _close_accounts(
         self,
-        expense_accounts: list[dict[str, Any]],
+        accounts: list[dict[str, Any]],
         *,
         period_id: str,
         source_document_id: uuid.UUID | None = None,
+        namespace_suffix: str = "",
+        closing_flag: int = 0,
+        user_data_32: int = 0,
+        is_debit_account: bool = True,
     ) -> bool:
-        """Zamknij konta kosztowe na koniec okresu.
-
-        na koncie kosztowym i przenosi saldo na retained_earnings.
+        """Zamknij konta (kosztowe lub przychodowe) na koniec okresu.
 
         Args:
-            expense_accounts: Lista kont do zamknięcia:
-                [{"account_id": int, "ledger": int, "code": int}, ...]
-            period_id: ID okresu (np. "2026-06").
+            accounts: Lista kont do zamknięcia.
+            period_id: ID okresu.
             source_document_id: UUID dokumentu źródłowego.
+            namespace_suffix: Sufiks dla UUID namespace.
+            closing_flag: CLOSING_DEBIT lub CLOSING_CREDIT.
+            user_data_32: 0=expense, 1=revenue.
+            is_debit_account: True jeśli konto jest po stronie debetowej.
 
         Returns:
             True jeśli wszystkie closing transfery się powiodły.
         """
-        if not expense_accounts:
+        if not accounts:
             return True
 
-        doc_id = source_document_id or uuid.uuid5(uuid.NAMESPACE_URL, f"period-close:{period_id}")
+        prefix = f"period-close-{namespace_suffix}" if namespace_suffix else "period-close"
+        doc_id = source_document_id or uuid.uuid5(uuid.NAMESPACE_URL, f"{prefix}:{period_id}")
 
         transfers = []
-        for i, acct in enumerate(expense_accounts):
-            is_last = i == len(expense_accounts) - 1
+        for i, acct in enumerate(accounts):
+            is_last = i == len(accounts) - 1
             transfer_id = _generate_tb_id()
+            debit_id = acct["account_id"] if is_debit_account else self._retained_earnings
+            credit_id = self._retained_earnings if is_debit_account else acct["account_id"]
 
             transfer = tb.Transfer(
                 id=transfer_id,
-                debit_account_id=acct["account_id"],  # Konto kosztowe (debet)
-                credit_account_id=self._retained_earnings,  # Wynik finansowy
-                amount=tb.AMOUNT_MAX,  # Całe saldo
+                debit_account_id=debit_id,
+                credit_account_id=credit_id,
+                amount=tb.AMOUNT_MAX,
                 pending_id=0,
                 user_data_128=doc_id.int,
                 user_data_64=int(period_id.replace("-", "")),
-                user_data_32=0,
+                user_data_32=user_data_32,
                 timeout=0,
                 ledger=acct.get("ledger", self._default_ledger),
                 code=acct.get("code", TRANSFER_CODE["TRANSFER_INTERNAL"]),
-                flags=tb.TransferFlags.CLOSING_DEBIT | (0 if is_last else tb.TransferFlags.LINKED),
+                flags=closing_flag | (0 if is_last else tb.TransferFlags.LINKED),
                 timestamp=0,
             )
             transfers.append(transfer)
 
         results = self._tb_client.create_transfers(transfers)
         all_ok = all(r.status == 0 for r in results)
-
         if not all_ok:
-            logger.error(
-                "[PERIOD-CLOSER] Expense closing failed for period=%s: %s",
-                period_id,
-                [r.status for r in results],
-            )
-
+            logger.error("[PERIOD-CLOSER] Closing failed for period=%s: %s", period_id, [r.status for r in results])
         return all_ok
+
+    def close_expense_accounts(
+        self, expense_accounts: list[dict[str, Any]], *, period_id: str, source_document_id: uuid.UUID | None = None,
+    ) -> bool:
+        return self._close_accounts(expense_accounts, period_id=period_id, source_document_id=source_document_id,
+                                     namespace_suffix="expense", closing_flag=tb.TransferFlags.CLOSING_DEBIT,
+                                     user_data_32=0, is_debit_account=True)
 
     def close_revenue_accounts(
-        self,
-        revenue_accounts: list[dict[str, Any]],
-        *,
-        period_id: str,
-        source_document_id: uuid.UUID | None = None,
+        self, revenue_accounts: list[dict[str, Any]], *, period_id: str, source_document_id: uuid.UUID | None = None,
     ) -> bool:
-        """Zamknij konta przychodowe na koniec okresu.
-
-        na koncie przychodowym.
-        """
-        if not revenue_accounts:
-            return True
-
-        doc_id = source_document_id or uuid.uuid5(
-            uuid.NAMESPACE_URL, f"period-close-revenue:{period_id}"
-        )
-
-        transfers = []
-        for i, acct in enumerate(revenue_accounts):
-            is_last = i == len(revenue_accounts) - 1
-            transfer_id = _generate_tb_id()
-
-            transfer = tb.Transfer(
-                id=transfer_id,
-                debit_account_id=self._retained_earnings,  # Wynik finansowy
-                credit_account_id=acct["account_id"],  # Konto przychodowe (kredyt)
-                amount=tb.AMOUNT_MAX,  # Całe saldo
-                pending_id=0,
-                user_data_128=doc_id.int,
-                user_data_64=int(period_id.replace("-", "")),
-                user_data_32=1,  # user_data_32=1 oznacza revenue close
-                timeout=0,
-                ledger=acct.get("ledger", self._default_ledger),
-                code=acct.get("code", TRANSFER_CODE["TRANSFER_INTERNAL"]),
-                flags=tb.TransferFlags.CLOSING_CREDIT | (0 if is_last else tb.TransferFlags.LINKED),
-                timestamp=0,
-            )
-            transfers.append(transfer)
-
-        results = self._tb_client.create_transfers(transfers)
-        all_ok = all(r.status == 0 for r in results)
-
-        if not all_ok:
-            logger.error(
-                "[PERIOD-CLOSER] Revenue closing failed for period=%s: %s",
-                period_id,
-                [r.status for r in results],
-            )
-
-        return all_ok
+        return self._close_accounts(revenue_accounts, period_id=period_id, source_document_id=source_document_id,
+                                     namespace_suffix="revenue", closing_flag=tb.TransferFlags.CLOSING_CREDIT,
+                                     user_data_32=1, is_debit_account=False)
 
     def close_full_period(
         self,

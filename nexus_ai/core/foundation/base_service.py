@@ -70,12 +70,8 @@ class BaseService[T: SQLModel, CreateDTO: Struct, UpdateDTO: Struct]:
         return self._session.get(self._model, id_)
 
     def list(self, limit: int = 100, offset: int = 0, order_by: str = "id", **filters: Any) -> list[T]:
-        """Pobierz rekordy z limitem, offsetem, sortowaniem i filtrami."""
-        stmt = select(self._model)
-        for key, value in filters.items():
-            if hasattr(self._model, key) and value is not None:
-                stmt = stmt.where(getattr(self._model, key) == value)
-        return list(self._session.execute(stmt.order_by(order_by).limit(limit).offset(offset)).scalars().all())
+        """Pobierz rekordy z limitem, offsetem, sortowaniem i filtrami. Deleguje do BaseRepository.find()."""
+        return self._repository.find(limit=limit, offset=offset, order_by=order_by, **filters)
 
     def update(self, id_: str, data: UpdateDTO | dict[str, Any]) -> T | None:
         """Zaktualizuj rekord po ID z DTO lub dict."""

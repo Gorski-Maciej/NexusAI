@@ -37,27 +37,11 @@ import pendulum
 
 # ── Domain error hierarchy ────────────────────────────────────────────
 class DomainError(ValueError):
-    """Base dla wszystkich błędów domenowych (zamiast 4 osobnych klas)."""
+    """Base dla wszystkich błędów domenowych z kodem błędu."""
 
-
-class CurrencyMismatchError(DomainError):
-    """Rzucany gdy próbujemy operować na różnych walutach."""
-
-    def __init__(self, a: str, b: str) -> None:
-        super().__init__(f"Cannot operate on different currencies: {a} vs {b}")
-        self.code = "CURRENCY_MISMATCH"
-
-
-class InvalidIBANError(DomainError):
-    """Rzucany gdy IBAN jest nieprawidłowy."""
-
-
-class InvalidNIPError(DomainError):
-    """Rzucany gdy NIP jest nieprawidłowy."""
-
-
-class InvalidPESELError(DomainError):
-    """Rzucany gdy PESEL jest nieprawidłowy."""
+    def __init__(self, message: str, code: str = "DOMAIN_ERROR") -> None:
+        super().__init__(message)
+        self.code = code
 
 
 class Money(msgspec.Struct, frozen=True, kw_only=True):
@@ -82,12 +66,12 @@ class Money(msgspec.Struct, frozen=True, kw_only=True):
 
     def __add__(self, other: Money) -> Money:
         if self.currency != other.currency:
-            raise CurrencyMismatchError(self.currency, other.currency)
+            raise DomainError(f"Cannot operate on different currencies: {self.currency} vs {other.currency}", code="CURRENCY_MISMATCH")
         return Money(amount=self.amount + other.amount, currency=self.currency)
 
     def __sub__(self, other: Money) -> Money:
         if self.currency != other.currency:
-            raise CurrencyMismatchError(self.currency, other.currency)
+            raise DomainError(f"Cannot operate on different currencies: {self.currency} vs {other.currency}", code="CURRENCY_MISMATCH")
         return Money(amount=self.amount - other.amount, currency=self.currency)
 
     def __mul__(self, factor: Decimal | int | float) -> Money:
@@ -221,10 +205,10 @@ class NIP(msgspec.Struct, frozen=True, kw_only=True):
     def __post_init__(self) -> None:
         normalized = "".join(ch for ch in self.value if ch.isdigit())
         if len(normalized) != 10:
-            raise InvalidNIPError(f"NIP must be exactly 10 digits, got {len(normalized)}: {self.value}")
+            raise DomainError(f"NIP must be exactly 10 digits, got {len(normalized)}: {self.value}", code="INVALID_NIP")
         checksum = sum(int(d) * w for d, w in zip(normalized[:9], self._WEIGHTS, strict=True)) % 11
         if checksum == 10 or checksum != int(normalized[9]):
-            raise InvalidNIPError(f"Invalid NIP checksum: {self.value}")
+            raise DomainError(f"Invalid NIP checksum: {self.value}", code="INVALID_NIP")
         # Normalize value (remove non-digits)
         object.__setattr__(self, "value", normalized)
 
@@ -291,13 +275,13 @@ class IBAN(msgspec.Struct, frozen=True, kw_only=True):
     def __post_init__(self) -> None:
         normalized = self.value.replace(" ", "").upper()
         if len(normalized) < 15 or len(normalized) > 34:
-            raise InvalidIBANError(f"IBAN length must be 15-34 chars: {len(normalized)}")
+            raise DomainError(f"IBAN length must be 15-34 chars: {len(normalized)}", code="INVALID_IBAN")
         if not normalized[:2].isalpha():
-            raise InvalidIBANError(f"IBAN must start with country code: {normalized}")
+            raise DomainError(f"IBAN must start with country code: {normalized}", code="INVALID_IBAN")
         rearranged = normalized[4:] + normalized[:4]
         numeric = "".join(str(ord(c) - 55) if c.isalpha() else c for c in rearranged)
         if int(numeric) % 97 != 1:
-            raise InvalidIBANError(f"Invalid IBAN checksum: {self.value}")
+            raise DomainError(f"Invalid IBAN checksum: {self.value}", code="INVALID_IBAN")
         # Normalize value (uppercase, no spaces)
         object.__setattr__(self, "value", normalized)
 
@@ -370,11 +354,11 @@ class PESEL(msgspec.Struct, frozen=True, kw_only=True):
     def __post_init__(self) -> None:
         normalized = "".join(ch for ch in self.value if ch.isdigit())
         if len(normalized) != 11:
-            raise InvalidPESELError(f"PESEL must be exactly 11 digits, got {len(normalized)}")
+            raise DomainError(f"PESEL must be exactly 11 digits, got {len(normalized)}", code="INVALID_PESEL")
         checksum = sum(int(d) * w for d, w in zip(normalized[:10], self._WEIGHTS, strict=True))
         expected = (10 - (checksum % 10)) % 10
         if expected != int(normalized[10]):
-            raise InvalidPESELError(f"Invalid PESEL checksum: {self.value}")
+            raise DomainError(f"Invalid PESEL checksum: {self.value}", code="INVALID_PESEL")
 
     def get_gender(self) -> str:
         """Zwróć płeć ('male' lub 'female') na podstawie 10. cyfry."""
@@ -666,10 +650,7 @@ __all__ = [
     "SWIFT",
     "AccountCode",
     "BusinessKind",
-    "CurrencyMismatchError",
-    "InvalidIBANError",
-    "InvalidNIPError",
-    "InvalidPESELError",
+    "DomainError",
     "InvoiceNumber",
     "KSeFMetadata",
     "Money",

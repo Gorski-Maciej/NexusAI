@@ -24,6 +24,7 @@ Enterprise features:
 from __future__ import annotations
 
 import json
+import re
 import uuid
 from typing import Any
 
@@ -1317,7 +1318,6 @@ Czy ta decyzja jest poprawna? Odpowiedz TAK lub NIE i uzasadnij."""
     @staticmethod
     def _parse_trust_score(text: str) -> float:
         """Wyciągnij Trust Score z odpowiedzi modelu."""
-        import re
         match = re.search(r"TRUST:\s*([0-9.]+)", text, re.IGNORECASE)
         if match:
             try:
@@ -1329,7 +1329,6 @@ Czy ta decyzja jest poprawna? Odpowiedz TAK lub NIE i uzasadnij."""
     @staticmethod
     def _parse_status(text: str) -> str:
         """Wyciągnij status z odpowiedzi modelu."""
-        import re
         match = re.search(r"STATUS:\s*(\w+)", text, re.IGNORECASE)
         if match:
             status = match.group(1).upper()

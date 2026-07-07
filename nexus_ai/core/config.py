@@ -525,5 +525,4 @@ if _profile_path.exists():
     except Exception as exc:
         logger.debug("[Config] Import-time load skipped: %s", exc)
 
-# ── Backward compat alias ────────────────────────────────────────────────
-deep_merge_alias = deep_merge
+

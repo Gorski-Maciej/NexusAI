@@ -17,7 +17,7 @@ from nexus_ai.domain.values import (  # noqa: F401
     NIP,
     AccountCode,
     BusinessKind,
-    CurrencyMismatchError,
+    DomainError,
     InvoiceNumber,
     KSeFMetadata,
     Money,

@@ -114,12 +114,10 @@ def _make_pragma_setter(key_hex: str):
     - Synchronous NORMAL dla wydajności
     - Foreign Keys ON dla integralności referencyjnej
     - Cell Size Check ON dla wykrywania corrupt data
-    - Trusted Schema OFF dla bezpieczeństwa
     - Cache size 200MB
     - Temp Store MEMORY
-    - Auto-vacuum FULL
-    - Memory-Mapped I/O (mmap_size = 4GB)
-    - SQLCipher AES-256 z najsilniejszym HMAC i KDF
+    - sqlite-vec: enable uri trust
+    - SQLCipher: używa cipher_compatibility = 4 (profil bezpieczeństwa)
     """
     import sqlite3
 
@@ -128,49 +126,27 @@ def _make_pragma_setter(key_hex: str):
         dbapi_connection.execute("PRAGMA synchronous=NORMAL;")
         dbapi_connection.execute("PRAGMA foreign_keys = ON;")
         dbapi_connection.execute("PRAGMA cell_size_check = ON;")
-        dbapi_connection.execute("PRAGMA trusted_schema = OFF;")
         dbapi_connection.execute("PRAGMA cache_size = -51200;")
-        dbapi_connection.execute("PRAGMA temp_store = 2;")
-        dbapi_connection.execute("PRAGMA auto_vacuum = FULL;")
-        dbapi_connection.execute("PRAGMA mmap_size = 4294967296;")
-        dbapi_connection.execute("PRAGMA application_id = 1313827925;")
-        dbapi_connection.execute("PRAGMA user_version = 30000;")
+        dbapi_connection.execute("PRAGMA temp_store = MEMORY;")
 
-        # SQLCipher -- PRAGMA key nie wspiera parameterized queries (to pragma, nie SQL),
-        # ale key_hex jest zawsze kontrolowany (hex-encoded string z env/arg).
-        # Dodajemy walidację dla defense-in-depth.
+        # SQLCipher -- use compatibility profile 4 (zastępuje 8+ osobnych PRAGM)
         if not re.fullmatch(r'[0-9a-fA-F]+', key_hex):
             raise RuntimeError("SQLCipher key_hex contains invalid characters")
-        dbapi_connection.execute(f"PRAGMA key = x'{key_hex}';")
-        dbapi_connection.execute("PRAGMA cipher_page_size = 4096;")
-        dbapi_connection.execute("PRAGMA kdf_iter = 64000;")
-
         try:
-            dbapi_connection.execute("PRAGMA cipher_hmac_algorithm = HMAC_SHA512;")
-            dbapi_connection.execute("PRAGMA cipher_kdf_algorithm = PBKDF2_HMAC_SHA512;")
-            dbapi_connection.execute("PRAGMA cipher_use_hmac = ON;")
+            dbapi_connection.execute(f"PRAGMA key = x'{key_hex}';")
+            dbapi_connection.execute("PRAGMA cipher_compatibility = 4;")
         except sqlite3.OperationalError as exc:
-            logger.debug("[DB] SQLCipher HMAC pragmas not supported: %s", exc)
+            # Fallback for older SQLCipher versions
+            dbapi_connection.execute("PRAGMA cipher_page_size = 4096;")
+            dbapi_connection.execute("PRAGMA kdf_iter = 64000;")
+            dbapi_connection.execute(f"PRAGMA key = x'{key_hex}';")
+            logger.debug("[DB] SQLCipher compatibility profile not supported: %s", exc)
 
+        # sqlite-vec: enable URI trust for vec0 extension load
         try:
-            dbapi_connection.execute("PRAGMA cipher_memory_security = ON;")
-        except sqlite3.OperationalError as exc:
-            logger.debug("[DB] cipher_memory_security not supported: %s", exc)
-
-        try:
-            dbapi_connection.execute("PRAGMA cipher_default_plaintext_header = ON;")
-        except sqlite3.OperationalError as exc:
-            logger.debug("[DB] cipher_default_plaintext_header not supported: %s", exc)
-
-        try:
-            dbapi_connection.execute("PRAGMA cipher_plaintext_header_size = 0;")
-        except sqlite3.OperationalError as exc:
-            logger.debug("[DB] cipher_plaintext_header_size not supported: %s", exc)
-
-        try:
-            dbapi_connection.execute("PRAGMA cipher_hmac_pgno = ON;")
-        except sqlite3.OperationalError as exc:
-            logger.debug("[DB] cipher_hmac_pgno not supported: %s", exc)
+            dbapi_connection.execute("PRAGMA trusted_schema = OFF;")
+        except sqlite3.OperationalError:
+            pass
 
     return _set_pragmas
 

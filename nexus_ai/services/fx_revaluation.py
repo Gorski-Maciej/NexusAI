@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
 from typing import TYPE_CHECKING, Any
 
@@ -67,7 +66,7 @@ def post_realized_fx_difference(
 
     if invoice_type == "SALES":
         is_gain = fx_delta > 0
-    else:  # PURCHASE
+    else:
         is_gain = fx_delta < 0
 
     if is_gain:
@@ -81,11 +80,8 @@ def calculate_unrealized_fx_deltas(
     """Calculate unrealized FX deltas entirely in DuckDB SQL (native DECIMAL).
 
     Uses DuckDB's native DECIMAL arithmetic (no Float64 drift) for
-    enterprise-grade financial precision. Eliminates Polars Decimal
-    experimental API and zero-copy Arrow overhead.
+    enterprise-grade financial precision.
     """
-    import polars as pl
-
     # Compute unrealized deltas entirely in DuckDB SQL (native DECIMAL, no Float64 drift)
     result_set = duckdb.execute(
         """

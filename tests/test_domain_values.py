@@ -12,11 +12,8 @@ from decimal import Decimal
 import pytest
 
 from nexus_ai.domain.values import (
-    CurrencyMismatchError,
+    DomainError,
     IBAN,
-    InvalidIBANError,
-    InvalidNIPError,
-    InvalidPESELError,
     Money,
     NIP,
     PESEL,
@@ -60,7 +57,7 @@ class TestMoney:
     def test_add_different_currency_raises(self) -> None:
         a = Money(amount=Decimal("100.00"), currency="PLN")
         b = Money(amount=Decimal("50.00"), currency="EUR")
-        with pytest.raises(CurrencyMismatchError):
+        with pytest.raises(DomainError, match="CURRENCY_MISMATCH"):
             a + b
 
     def test_sub_same_currency(self) -> None:
@@ -169,7 +166,7 @@ class TestNIP:
         ],
     )
     def test_invalid_nip_raises(self, invalid_nip: str) -> None:
-        with pytest.raises(InvalidNIPError):
+        with pytest.raises(DomainError, match="INVALID_NIP"):
             NIP(value=invalid_nip)
 
 
@@ -215,7 +212,7 @@ class TestIBAN:
         ],
     )
     def test_invalid_iban_raises(self, invalid_iban: str) -> None:
-        with pytest.raises(InvalidIBANError):
+        with pytest.raises(DomainError, match="INVALID_IBAN"):
             IBAN(value=invalid_iban)
 
 
@@ -264,7 +261,7 @@ class TestPESEL:
         ],
     )
     def test_invalid_pesel_raises(self, invalid_pesel: str) -> None:
-        with pytest.raises(InvalidPESELError):
+        with pytest.raises(DomainError, match="INVALID_PESEL"):
             PESEL(value=invalid_pesel)
 
 

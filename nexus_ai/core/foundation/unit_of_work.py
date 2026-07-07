@@ -60,22 +60,6 @@ class UnitOfWork:
         self._session.rollback()
         self._repos.clear()
 
-    def __enter__(self) -> UnitOfWork:
-        return self
-
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
-        exc_tb: TracebackType | None,
-    ) -> bool:
-        if exc_type is None:
-            self.commit()
-        else:
-            self.rollback()
-            logger.warning("[UOW] Transaction rolled back: %s", exc_val)
-        return False
-
     async def __aenter__(self) -> UnitOfWork:
         return self
 

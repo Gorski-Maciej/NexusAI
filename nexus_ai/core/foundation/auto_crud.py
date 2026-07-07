@@ -15,9 +15,10 @@ Usage:
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Callable
 
 from litestar import Controller, delete, get, post, put
+from litestar.exceptions import NotFoundException
 from msgspec import Struct, to_builtins
 from sqlmodel import SQLModel
 
@@ -61,98 +62,48 @@ def auto_crud(
     resolved_create = create_dto or auto_dto_from_model(model, "Create", exclude={"id", "created_at", "updated_at"})
     resolved_update = update_dto or resolved_create
 
-    # Serwis -- closure
-    def _get_service(self, session: Any) -> BaseService:
-        svc = service_class or BaseService
-        return svc(session, model)
+    members: dict[str, Any] = {"_model": model, "_service_class": service_class or BaseService}
 
-    members: dict[str, Any] = {"_get_service": _get_service}
-
-    # --- GET /{path} ---
-    if "list" not in exclude_endpoints:
-        async def list_endpoint(self, request: Any, session: Any,
-                                 limit: int = 50, offset: int = 0) -> dict:
-            svc = self._get_service(session)  # type: ignore[attr-defined]
+    # --- Helper do tworzenia handlerów end-pointów ---
+    def _make_handler(action: str, needs_id: bool = False, needs_data: bool = False, desc: str = ""):
+        async def handler(self, *args, session=None, **kw):
+            svc = (self._service_class if hasattr(self, '_service_class') else BaseService)(session, self._model)
+            if needs_id:
+                id_ = args[0] if args else kw.get('id_', '')
+                if not needs_data:
+                    result = await getattr(svc, action)(id_)
+                else:
+                    data = args[1] if len(args) > 1 else kw.get('data', kw.get('data_kw'))
+                    result = await getattr(svc, action)(id_, data)
+                if result is None:
+                    raise NotFoundException(detail=f"{model_name} not found: {id_}")
+                if action == 'delete':
+                    return {"status": "ok", "id": id_, "deleted": True}
+                return to_builtins(result)
+            if needs_data:
+                data = args[0] if args else kw.get('data', kw.get('data_kw'))
+                return to_builtins(await getattr(svc, action)(data))
+            # list
+            limit = kw.get('limit', 50)
+            offset = kw.get('offset', 0)
             items = await svc.list(limit=limit, offset=offset)
             total = await svc.count()
             return {"items": [to_builtins(i) for i in items], "total": total, "limit": limit, "offset": offset}
-        list_endpoint.__name__ = "list"
-        list_endpoint.__qualname__ = f"{model_name}Controller.list"
-        members["list"] = get(
-            path="/",
-            summary=f"List {model_name}",
-            description=f"List all {model_name} records with pagination.",
-            operation_id=f"list{model_name}",
-        )(list_endpoint)
+        handler.__name__ = action
+        handler.__qualname__ = f"{model_name}Controller.{action}"
+        return handler
 
-    # --- GET /{path}/{id} ---
+    # --- Endpointy ---
+    if "list" not in exclude_endpoints:
+        members["list"] = get(path="/", summary=f"List {model_name}", operation_id=f"list{model_name}")(_make_handler("list"))
     if "get" not in exclude_endpoints:
-        async def get_endpoint(self, id_: str, session: Any) -> dict | None:
-            svc = self._get_service(session)  # type: ignore[attr-defined]
-            entity = await svc.get(id_)
-            if entity is None:
-                from litestar.exceptions import NotFoundException
-                raise NotFoundException(detail=f"{model_name} not found: {id_}")
-            return to_builtins(entity)
-        get_endpoint.__name__ = "get"
-        get_endpoint.__qualname__ = f"{model_name}Controller.get"
-        members["get"] = get(
-            path="/{id_:str}",
-            summary=f"Get {model_name}",
-            description=f"Get a {model_name} by ID.",
-            operation_id=f"get{model_name}",
-        )(get_endpoint)
-
-    # --- POST /{path} ---
+        members["get"] = get(path="/{id_:str}", summary=f"Get {model_name}", operation_id=f"get{model_name}")(_make_handler("get", needs_id=True))
     if "create" not in exclude_endpoints:
-        async def create_endpoint(self, data: resolved_create, session: Any) -> dict:  # type: ignore[valid-type]
-            svc = self._get_service(session)  # type: ignore[attr-defined]
-            entity = await svc.create(data)
-            return to_builtins(entity)
-        create_endpoint.__name__ = "create"
-        create_endpoint.__qualname__ = f"{model_name}Controller.create"
-        members["create"] = post(
-            path="/",
-            summary=f"Create {model_name}",
-            description=f"Create a new {model_name}.",
-            operation_id=f"create{model_name}",
-        )(create_endpoint)
-
-    # --- PUT /{path}/{id} ---
+        members["create"] = post(path="/", summary=f"Create {model_name}", operation_id=f"create{model_name}")(_make_handler("create", needs_data=True))
     if "update" not in exclude_endpoints:
-        async def update_endpoint(self, id_: str, data: resolved_update, session: Any) -> dict | None:  # type: ignore[valid-type]
-            svc = self._get_service(session)  # type: ignore[attr-defined]
-            entity = await svc.update(id_, data)
-            if entity is None:
-                from litestar.exceptions import NotFoundException
-                raise NotFoundException(detail=f"{model_name} not found: {id_}")
-            return to_builtins(entity)
-        update_endpoint.__name__ = "update"
-        update_endpoint.__qualname__ = f"{model_name}Controller.update"
-        members["update"] = put(
-            path="/{id_:str}",
-            summary=f"Update {model_name}",
-            description=f"Update a {model_name} by ID.",
-            operation_id=f"update{model_name}",
-        )(update_endpoint)
-
-    # --- DELETE /{path}/{id} ---
+        members["update"] = put(path="/{id_:str}", summary=f"Update {model_name}", operation_id=f"update{model_name}")(_make_handler("update", needs_id=True, needs_data=True))
     if "delete" not in exclude_endpoints:
-        async def delete_endpoint(self, id_: str, session: Any) -> dict:
-            svc = self._get_service(session)  # type: ignore[attr-defined]
-            ok = await svc.delete(id_)
-            if not ok:
-                from litestar.exceptions import NotFoundException
-                raise NotFoundException(detail=f"{model_name} not found: {id_}")
-            return {"status": "ok", "id": id_, "deleted": True}
-        delete_endpoint.__name__ = "delete"
-        delete_endpoint.__qualname__ = f"{model_name}Controller.delete"
-        members["delete"] = delete(
-            path="/{id_:str}",
-            summary=f"Delete {model_name}",
-            description=f"Delete a {model_name} by ID.",
-            operation_id=f"delete{model_name}",
-        )(delete_endpoint)
+        members["delete"] = delete(path="/{id_:str}", summary=f"Delete {model_name}", operation_id=f"delete{model_name}")(_make_handler("delete", needs_id=True))
 
     full_path = f"/{prefix}{path}" if prefix else f"/{path}"
     controller = type(

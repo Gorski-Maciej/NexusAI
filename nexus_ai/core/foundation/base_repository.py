@@ -49,10 +49,7 @@ class BaseRepository[T: SQLModel]:
 
     def create(self, **kwargs: Any) -> T:
         """Create and persist a new entity from keyword arguments."""
-        entity = self._model(**kwargs)
-        self._session.add(entity)
-        self._session.flush()
-        return entity
+        return self.add(self._model(**kwargs))
 
     # ── Read ──
 
@@ -70,12 +67,19 @@ class BaseRepository[T: SQLModel]:
 
     def find(
         self,
-        limit: int = 100,
+        limit: int | None = 100,
         offset: int = 0,
         order_by: str = "id",
         **filters: Any,
     ) -> list[T]:
-        """Find entities with pagination, sorting, and filters."""
+        """Find entities with pagination, sorting, and filters.
+
+        Args:
+            limit: Max rows. None = no LIMIT clause (wszystkie rekordy).
+            offset: Pominięte rekordy.
+            order_by: Kolumna sortowania (prefix "-" = DESC).
+            **filters: Kolumna = wartość.
+        """
         stmt = select(self._model)
         for key, value in filters.items():
             if hasattr(self._model, key) and value is not None:
@@ -83,16 +87,15 @@ class BaseRepository[T: SQLModel]:
         order_col = getattr(self._model, order_by, self._model.id)
         if order_by.startswith("-"):
             order_col = getattr(self._model, order_by[1:], self._model.id).desc()
-        stmt = stmt.order_by(order_col).limit(limit).offset(offset)
+        stmt = stmt.order_by(order_col)
+        if limit is not None:
+            stmt = stmt.limit(limit)
+        stmt = stmt.offset(offset)
         return list(self._session.execute(stmt).scalars().all())
 
     def find_all(self, **filters: Any) -> list[T]:
-        """Find all entities matching filters (no pagination)."""
-        stmt = select(self._model)
-        for key, value in filters.items():
-            if hasattr(self._model, key) and value is not None:
-                stmt = stmt.where(getattr(self._model, key) == value)
-        return list(self._session.execute(stmt).scalars().all())
+        """Find all entities matching filters (no pagination, no LIMIT)."""
+        return self.find(limit=None, **filters)
 
     # ── Update ──
 

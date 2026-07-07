@@ -14,7 +14,6 @@ Aggregates:
 
 from __future__ import annotations
 
-import os
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -25,7 +24,7 @@ import msgspec
 import pendulum
 
 from nexus_ai.db.models import InvoiceStatus
-from nexus_ai.domain.values import AccountCode, Money, MoneyNet, NIP, TaxPeriod, VatRate
+from nexus_ai.domain.values import AccountCode, Money, MoneyNet, NIP, TaxPeriod, VatRate, DomainError
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -34,16 +33,22 @@ from nexus_ai.domain.values import AccountCode, Money, MoneyNet, NIP, TaxPeriod,
 
 
 def uuid7() -> uuid.UUID:
-    """Generate a UUIDv7 (timestamp-based, sortable, 48-bit timestamp + random)."""
-    timestamp_ms = int(time.time_ns() // 1_000_000)
-    random_bytes = os.urandom(10)
-    uuid_bytes = bytearray(16)
-    uuid_bytes[0:6] = timestamp_ms.to_bytes(6, byteorder="big")
-    uuid_bytes[6] = (random_bytes[0] & 0x0F) | 0x70  # version 7
-    uuid_bytes[7] = random_bytes[1]
-    uuid_bytes[8] = (random_bytes[2] & 0x3F) | 0x80  # variant 10
-    uuid_bytes[9:16] = random_bytes[3:10]
-    return uuid.UUID(bytes=bytes(uuid_bytes))
+    """Generate a UUIDv7 (timestamp-based, sortable) for Python 3.13.
+
+    Uses uuid4() as entropy source, overwriting the timestamp and
+    version/variant nibbles — preserves all 122 random bits.
+
+    Format:
+        |unix_ts_ms (48b)|ver 0x7 (4b)|rand_a (12b)|var 0x8 (2b)|rand_b (62b)|
+    """
+    timestamp_ms = int(time.time() * 1000)
+    b = bytearray(uuid.uuid4().bytes)
+    # 48-bit timestamp (big-endian)
+    for i in range(6):
+        b[i] = (timestamp_ms >> (40 - i * 8)) & 0xFF
+    b[6] = (b[6] & 0x0F) | 0x70  # version 7 (preserve lower nibble rand_a)
+    b[8] = (b[8] & 0x3F) | 0x80  # variant 10xx (preserve lower 6 bits rand_b)
+    return uuid.UUID(bytes=bytes(b))
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -257,79 +262,39 @@ class InvoiceAggregate:
         self.version += 1
         self.updated_at = pendulum.now("UTC")
 
-    def approve(self, decision_id: str = "", auto_approved: bool = False, confidence: float = 0.0) -> None:
-        """Zatwierdź fakturę."""
-        self._transition(InvoiceStatus.APPROVED)
-        self._events.append(InvoiceApproved(
+    def _emit(self, event_cls: type[DomainEvent], status: InvoiceStatus, **kwargs) -> None:
+        """Helper: wykonaj transition + dodaj event."""
+        self._transition(status)
+        self._events.append(event_cls(
             event_id=uuid7().hex,
             timestamp=pendulum.now("UTC").isoformat(),
             aggregate_id=self.id,
-            decision_id=decision_id,
-            auto_approved=auto_approved,
-            confidence=confidence,
+            **kwargs,
         ))
+
+    def approve(self, decision_id: str = "", auto_approved: bool = False, confidence: float = 0.0) -> None:
+        self._emit(InvoiceApproved, InvoiceStatus.APPROVED, decision_id=decision_id, auto_approved=auto_approved, confidence=confidence)
 
     def reject(self, reason: str = "", rejected_by: str = "system") -> None:
-        """Odrzuć fakturę."""
-        self._transition(InvoiceStatus.REJECTED)
-        self._events.append(InvoiceRejected(
-            event_id=uuid7().hex,
-            timestamp=pendulum.now("UTC").isoformat(),
-            aggregate_id=self.id,
-            reason=reason,
-            rejected_by=rejected_by,
-        ))
+        self._emit(InvoiceRejected, InvoiceStatus.REJECTED, reason=reason, rejected_by=rejected_by)
 
     def send_to_review(self, reason: str = "", confidence: float = 0.0) -> None:
-        """Przekaż do manualnej weryfikacji."""
-        self._transition(InvoiceStatus.PENDING_REVIEW)
-        self._events.append(InvoiceSentToReview(
-            event_id=uuid7().hex,
-            timestamp=pendulum.now("UTC").isoformat(),
-            aggregate_id=self.id,
-            reason=reason,
-            confidence=confidence,
-        ))
+        self._emit(InvoiceSentToReview, InvoiceStatus.PENDING_REVIEW, reason=reason, confidence=confidence)
 
     def mark_paid(self, payment_amount: Money | None = None) -> None:
-        """Oznacz jako opłaconą."""
-        self._transition(InvoiceStatus.PAID)
-        self._events.append(InvoiceMarkedPaid(
-            event_id=uuid7().hex,
-            timestamp=pendulum.now("UTC").isoformat(),
-            aggregate_id=self.id,
-            payment_date=pendulum.now("UTC").isoformat(),
-            payment_amount_minor=payment_amount.to_minor() if payment_amount is not None else None,
-        ))
+        self._emit(InvoiceMarkedPaid, InvoiceStatus.PAID, payment_date=pendulum.now("UTC").isoformat(),
+                   payment_amount_minor=payment_amount.to_minor() if payment_amount is not None else None)
 
     def block(self, reason: str = "", fraud_score: float = 0.0) -> None:
-        """Zablokuj fakturę."""
-        self._transition(InvoiceStatus.BLOCKED)
-        self._events.append(InvoiceBlocked(
-            event_id=uuid7().hex,
-            timestamp=pendulum.now("UTC").isoformat(),
-            aggregate_id=self.id,
-            reason=reason,
-            fraud_score=fraud_score,
-        ))
+        self._emit(InvoiceBlocked, InvoiceStatus.BLOCKED, reason=reason, fraud_score=fraud_score)
 
     def block_fraud(self, reason: str = "", fraud_score: float = 0.0) -> None:
-        """Zablokuj z podejrzeniem fraudu."""
-        self._transition(InvoiceStatus.BLOCKED_FRAUD_SUSPICION)
-        self._events.append(InvoiceBlocked(
-            event_id=uuid7().hex,
-            timestamp=pendulum.now("UTC").isoformat(),
-            aggregate_id=self.id,
-            reason=reason,
-            fraud_score=fraud_score,
-        ))
+        self._emit(InvoiceBlocked, InvoiceStatus.BLOCKED_FRAUD_SUSPICION, reason=reason, fraud_score=fraud_score)
 
     def mark_processing(self) -> None:
-        """Rozpocznij przetwarzanie."""
         self._transition(InvoiceStatus.PROCESSING)
 
     def mark_failed(self) -> None:
-        """Oznacz jako niepowodzenie."""
         self._transition(InvoiceStatus.FAILED)
 
     # ── Queries ───────────────────────────────────────────────────────
@@ -426,9 +391,8 @@ class ContractorAggregate:
     def formatted_nip(self) -> str:
         """NIP w formacie XXX-XXX-XX-XX."""
         try:
-            n = NIP(value=self.nip)
-            return n.formatted
-        except Exception:
+            return NIP(value=self.nip).formatted
+        except DomainError:
             return self.nip
 
     def update_vat_status(self, status: str | None) -> None:
