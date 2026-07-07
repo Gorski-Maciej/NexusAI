@@ -20,7 +20,7 @@
 ### 1.2 System operacyjny
 
 - **Linux x86_64** — Ubuntu 22.04 LTS / Debian 12 (testowane).
-- **Linux aarch64** — Raspberry Pi 5 / Mac M1-4 (eksperymentalne).
+- **Linux aarch64** — Raspberry Pi 5 / Mac M1-4 / Termux (eksperymentalne — patrz [TROUBLESHOOTING.md](TROUBLESHOOTING.md#aarch64-i-termux)).
 - **Windows x64** — Windows 10+.
 
 > **macOS:** obecnie nie jest w pełni wspierany (brak natywnego instalatora Inno Setup). Można uruchomić dewelopersko przez pixi, ale instalator produkcyjny jest tylko dla Windows/Linux.
@@ -28,10 +28,10 @@
 ### 1.3 Narzędzia systemowe
 
 - **`pixi`** — menedżer środowiska (zastępuje ręczne `pip install`, `apt install`, `cargo install`).
-- **System C toolchain** — `gcc`/`clang` dla budowania natywnych modułów Python.
+- **System C toolchain** — `gcc`/`clang` (**tylko dla opcjonalnego build produkcyjnego**; nie wymagany dla podstawowego uruchomienia).
 - `git`, `curl`, `unzip` — standardowe narzędzia developerskie.
 
-> **DevTip:** Dzięki temu, że `pixi` zarządza **Pythonem (3.13t), Rustem, Tesseractem, OpenCV, mimalloc, SQLCipher** w jednym pliku `pixi.toml`, nie musisz nic instalować globalnie. Wszystko jest w izolowanym środowisku `.pixi/`.
+> **DevTip:** Dzięki temu, że `pixi` zarządza **Pythonem (3.13t) i SQLCipher** w jednym pliku `pixi.toml`, nie musisz nic instalować globalnie. Wszystko jest w izolowanym środowisku `.pixi/`. Rust i OCR są opcjonalne.
 
 ---
 
@@ -67,7 +67,7 @@ cd NexusAI
 pixi install
 ```
 
-> **Co się dzieje?** Pixi pobiera Pythona 3.13t (free-threaded), Rust ≥1.78, Tesseract ≥5.3, OpenCV ≥4.9, mimalloc ≥2.1, SQLCipher, OPA ≥0.6x, **wszystkie pakiety z `pyproject.toml`** oraz `nexus-crypto` z lokalnego katalogu i kompiluje go przez maturin. Pierwsze uruchomienie trwa 3–5 minut (kompilacja Rust). Kolejne są już cache'owane.
+> **Co się dzieje?** Pixi pobiera Pythona 3.13t (free-threaded), SQLCipher, OPA ≥0.6x i **wszystkie pakiety z `pyproject.toml`**. `nexus-crypto` jest instalowany jako pakiet pure-Python — **bez kompilacji Rusta**! Pierwsze uruchomienie trwa ~2 minuty. Kolejne są cache'owane. OCR i Rust dostępne opcjonalnie przez `pixi install --environment ocr`.
 
 ### Krok 4 (2 min) — Wykonaj migracje
 
@@ -181,7 +181,7 @@ Powinno wyświetlić raport `X passed in Y.Ys`. Pełne info: [`TESTING.md`](TEST
 | Diagnostyka systemu | `pixi run doctor` |
 | Pobierz modele AI | `pixi run download-models` |
 | Sprawdź modele AI | `pixi run check-models` |
-| Build Rust (nexus-crypto) | `pixi run build-rust` |
+| Build Rust (nexus-crypto, opcjonalny) | `pixi run build-rust` |
 | Build produkcyjny .exe (Nuitka) | `pixi run build-nuitka` |
 | Profiluj proces (py-spy) | `pixi run profile` |
 | Wyczyść artefakty | `pixi run clean` |
@@ -205,8 +205,14 @@ source ~/.bashrc   # lub restart terminala
 
 ### 5.2 „Failed to compile nexus-crypto"
 
-> Przyczyna: brak `gcc`/`clang` lub `maturin`.
+> NexusAI domyślnie używa **pure-Python fallbacku** dla `nexus-crypto` — kompilacja Rusta nie jest wymagana! Ten błąd pojawia się tylko przy próbie build produkcyjnego.
 
+**Rozwiązanie 1 (zalecane):** Użyj pure-Python fallbacku (domyślne):
+```bash
+pixi install  # nie wymaga Rusta, używa nexus_ai/rust/nexus_crypto/
+```
+
+**Rozwiązanie 2:** Jeśli potrzebujesz natywnej wydajności Rusta:
 ```bash
 # Ubuntu/Debian
 sudo apt install build-essential gcc
@@ -216,10 +222,8 @@ sudo dnf install gcc make
 
 # macOS
 xcode-select --install
-```
 
-Potem:
-```bash
+# Potem
 pixi run build-rust
 ```
 
@@ -292,5 +296,5 @@ Pełna sekcja: [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md).
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-07 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-07 · **Weryfikator:** NexusAI Team

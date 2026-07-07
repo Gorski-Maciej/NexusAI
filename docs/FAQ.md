@@ -22,14 +22,20 @@ NexusAI przejmuje 90% rutynowej pracy (przepisywanie faktur, weryfikacja kontrah
 
 ## Pytania techniczne
 
+### Czy NexusAI wymaga Rusta do działania?
+**NIE.** Domyślnie `nexus-crypto` używa **pure-Python fallbacku** (`nexus_ai/rust/nexus_crypto/`) opartego na bibliotekach `cryptography`, `argon2-cffi` i `pyjwt`. Rust jest potrzebny tylko dla produkcyjnego build .exe (Nuitka).
+
+### Czy mogę uruchomić NexusAI bez OCR?
+Tak. Pipeline OCR (Tesseract, PaddleOCR, docTR, EasyOCR) jest opcjonalny — dostępny przez `pixi install --environment ocr`. Podstawowa funkcjonalność (API, baza danych, AI agenci) działa bez OCR.
+
 ### Jakie są wymagania sprzętowe?
 Minimum: 4 rdzenie CPU, 4 GB RAM, 5 GB dysku. Zalecane: 8 rdzeni, **6 GB RAM**, 10 GB SSD. GPU nie jest wymagane.
 
 ### Na jakich systemach działa?
 - Windows 10+ (x64)
-- Linux (Ubuntu 22.04+, Debian 12+)
+- Linux (Ubuntu 22.04+, Debian 12+) — x86_64 zalecane
 - macOS (dewelopersko)
-- Raspberry Pi 5 (eksperymentalnie)
+- Raspberry Pi 5 / aarch64 / Termux (eksperymentalnie — patrz [TROUBLESHOOTING.md](TROUBLESHOOTING.md#aarch64-i-termux))
 
 ### Dlaczego Python, a nie Java/C#?
 Python 3.13 z wyłączonym GIL (free-threaded) oferuje prawdziwą wielowątkowość przy zachowaniu prostoty kodu. Krytyczne moduły (kryptografia, parsowanie XML) są w Rust.
@@ -126,5 +132,5 @@ Tak. Pobierz model GGUF, dodaj konfigurację w `config/base.toml`, utwórz klas�
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-07 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-07 · **Weryfikator:** NexusAI Team

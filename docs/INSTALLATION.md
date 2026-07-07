@@ -21,7 +21,7 @@
 | OS | Wsparcie |
 |---|---|
 | **Linux x86_64** | ✅ Pełne (Ubuntu 22.04+, Debian 12+) |
-| **Linux aarch64** | ⚠️ Eksperymentalne (Raspberry Pi 5, Apple Silicon) |
+| **Linux aarch64** | ⚠️ Eksperymentalne (Raspberry Pi 5, Apple Silicon, Termux) — patrz [TROUBLESHOOTING.md](TROUBLESHOOTING.md#aarch64-i-termux) |
 | **Windows x64** | ✅ Pełne (Windows 10+) |
 | **macOS** | ⚠️ Deweloperskie (brak instalatora Inno Setup) |
 
@@ -99,11 +99,12 @@ pixi install
 **Co się dzieje:**
 1. Pixi tworzy izolowane środowisko `.pixi/`
 2. Instaluje Python 3.13t (free-threaded) z conda-forge
-3. Instaluje Rust ≥1.78, Tesseract ≥5.3, OpenCV ≥4.9, mimalloc ≥2.1
-4. Instaluje wszystkie pakiety PyPI z `pyproject.toml`
-5. Kompiluje `nexus-crypto` (Rust + PyO3) przez maturin
+3. Instaluje wszystkie pakiety PyPI z `pyproject.toml`
+4. Instaluje `nexus-crypto` jako pakiet pure-Python (bez kompilacji Rusta!)
 
-> ⏱️ Pierwsze uruchomienie: 3-5 minut (kompilacja Rust). Kolejne: < 10 sekund (cache).
+> ⏱️ Pierwsze uruchomienie: ~2 minuty. Kolejne: < 10 sekund (cache).
+>
+> **Uwaga:** Rust, Tesseract, OpenCV i OCR są opcjonalne — dostępne przez `pixi install --environment ocr`. Moduł kryptograficzny `nexus-crypto` działa jako pure-Python fallback bez potrzeby kompilacji Rusta.
 
 ### Krok 4: Migracje bazy danych
 
@@ -239,6 +240,29 @@ Instalator Inno Setup zawiera:
 
 ---
 
+## 4a. Instalacja z OCR (opcjonalnie)
+
+Jeśli potrzebujesz pełnego pipeline OCR (4 silniki: Tesseract, PaddleOCR, docTR, EasyOCR):
+
+```bash
+pixi install --environment ocr
+```
+
+To doda Tesseract, OpenCV i wszystkie zależności OCR do środowiska.
+
+## 4b. Kompilacja Rusta (opcjonalnie, tylko dla build produkcyjnego)
+
+Domyślnie `nexus-crypto` działa jako pure-Python. Jeśli potrzebujesz natywnej wydajności Rusta:
+
+```bash
+# Zainstaluj Rust (jeśli nie masz)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Odkomentuj linie `rust` w sekcji [dependencies] pixi.toml, następnie:
+pixi install
+pixi run build-rust
+```
+
 ## 5. Weryfikacja instalacji
 
 ```bash
@@ -266,5 +290,5 @@ curl http://127.0.0.1:9090/metrics | head
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-07 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-07 · **Weryfikator:** NexusAI Team

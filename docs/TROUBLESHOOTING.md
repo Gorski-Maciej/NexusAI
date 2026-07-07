@@ -119,9 +119,17 @@ which pixi
 
 ### 2.2 `Failed to compile nexus-crypto` (Rust/PyO3)
 
-**Przyczyna:** Brak `gcc`/`clang` lub `maturin`.
+> **Nie panikuj!** NexusAI domyślnie używa **pure-Python fallbacku** dla `nexus-crypto`. Kompilacja Rusta **nie jest wymagana**.
 
-**Rozwiązanie:**
+**Przyczyna:** Próba build produkcyjnego bez zainstalowanego toolchainu Rust.
+
+**Rozwiązanie 1 (zalecane):** Użyj domyślnego pure-Python fallbacku:
+```bash
+# To NIE wymaga Rusta — nexus-crypto działa jako pure-Python
+pixi install
+```
+
+**Rozwiązanie 2:** Zainstaluj Rust dla natywnej wydajności:
 ```bash
 # Ubuntu/Debian
 sudo apt install build-essential gcc cmake
@@ -130,6 +138,8 @@ sudo apt install build-essential gcc cmake
 sudo dnf install gcc make cmake
 
 # Następnie
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
 pixi run build-rust
 ```
 
@@ -445,16 +455,83 @@ pixi run seed
 pixi run dev
 ```
 
+## 10. Problemy z platformą aarch64 / Termux
+
+### 10.1 "NexusAI nie uruchamia się na Raspberry Pi / Termux / Apple Silicon"
+
+**Przyczyna:** Aplikacja była projektowana dla x86_64. Na aarch64 niektóre pakiety (msgspec 0.18, starsze sqlmodel) nie kompilują się poprawnie.
+
+**Rozwiązanie:**
+```bash
+# 1. Użyj pure-Python nexus-crypto (domyślne)
+pixi install
+
+# 2. Upewnij się, że używasz kompatybilnych wersji pakietów:
+pip install 'msgspec>=0.19' 'sqlmodel>=0.0.22' 'pydantic>=2.0'
+
+# 3. Sprawdź, czy import działa:
+python -c "from nexus_crypto import decrypt, encrypt, sha256; print('OK')"
+```
+
+### 10.2 "Brakuje 2+ GB RAM"
+
+**Przyczyna:** Modele AI (GGUF) wymagają minimum 4 GB RAM.
+
+**Rozwiązanie:**
+- Użyj mniejszych kwantyzacji (Q2_K zamiast Q4_K_M)
+- Ogranicz liczbę jednocześnie załadowanych modeli
+- Na Termux rozważ użycie zewnętrznego serwera LLM
+
+### 10.3 "Błąd kompilacji pakietów natywnych"
+
+**Przyczyna:** aarch64 + Python 3.13 mogą nie mieć pre-built wheels dla wszystkich pakietów.
+
+**Rozwiązanie:**
+```bash
+sudo apt install build-essential python3-dev
+# lub dla Termux:
+pkg install clang python python-dev binutils
+```
+
+> **Uwaga:** Pełne wsparcie dla aarch64 jest w fazie eksperymentalnej. Zalecana platforma to Linux x86_64 (Ubuntu 22.04+).
+
+## 11. Problemy z nexus-crypto Python fallback
+
+### 11.1 "ImportError: cannot import name 'decrypt' from 'nexus_crypto'"
+
+**Przyczyna:** Konflikt instalacji — stary plik `.py` koliduje z nowym pakietem.
+
+**Rozwiązanie:**
+```bash
+# Usuń starą instalację i zainstaluj ponownie
+pip uninstall -y nexus-crypto
+rm -rf .venv/lib/python*/site-packages/nexus_crypto*
+pip install --no-build-isolation -e ./nexus_ai/rust
+
+# Sprawdź, czy działa:
+python -c "from nexus_crypto import decrypt, encrypt, sha256; print('OK')"
+```
+
+### 11.2 "TypeError: Struct base classes cannot define __init__"
+
+**Przyczyna:** Nowe wersje `msgspec` nie pozwalają na `__slots__` w klasach dziedziczących po `Struct`.
+
+**Rozwiązanie:**
+```bash
+# Zainstaluj kompatybilne wersje:
+pip install 'msgspec>=0.19' 'sqlmodel>=0.0.22'
+```
+
 ---
 
 ## 🔗 Zobacz również
 
-- [Instalacja i konfiguracja](INSTALLATION.md) — poprawny setup środowiska
+- [Instalacja i konfiguracja](INSTALLATION.md) — poprawny setup środowiska, sekcja o pure-Python fallback
 - [Wdrożenie](DEPLOYMENT.md) — backup i przywracanie
 - [Baza danych](DATABASE.md) — integralność bazy, migracje
 - [Agenci AI](AGENTS.md) — modele, problemy z OCR/AI
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** NexusAI Team
+> **Data aktualizacji:** 2026-07-07 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-07 · **Weryfikator:** NexusAI Team

@@ -5,7 +5,7 @@ import sys
 import types
 from pathlib import Path
 
-from sqlmodel import text
+from sqlalchemy import text
 from sqlmodel import create_engine
 
 

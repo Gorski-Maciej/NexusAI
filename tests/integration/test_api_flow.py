@@ -99,7 +99,7 @@ class TestDatabaseIntegration:
 
     async def test_create_contractor(self, db_session, sample_contractor: dict) -> None:
         """Verify contractor was created in the database."""
-        from sqlmodel import text
+        from sqlalchemy import text
 
         result = await db_session.execute(
             text("SELECT name, nip FROM contractors WHERE id = :id"),
@@ -111,7 +111,7 @@ class TestDatabaseIntegration:
 
     async def test_create_invoice(self, db_session, sample_invoice: dict) -> None:
         """Verify invoice was created with correct data."""
-        from sqlmodel import text
+        from sqlalchemy import text
 
         result = await db_session.execute(
             text("SELECT number, status, amount_net, amount_gross FROM invoices WHERE id = :id"),
@@ -126,7 +126,7 @@ class TestDatabaseIntegration:
 
     async def test_invoice_outbox_event(self, db_session, sample_invoice: dict) -> None:
         """Test outbox event creation for invoice (via seed_data)."""
-        from sqlmodel import text
+        from sqlalchemy import text
 
         # Add an outbox event manually — simulating what the API does
         import uuid
@@ -168,7 +168,7 @@ class TestDatabaseIntegration:
 
     async def test_user_persistence(self, db_session, sample_user: dict) -> None:
         """Verify user was persisted with correct role."""
-        from sqlmodel import text
+        from sqlalchemy import text
 
         result = await db_session.execute(
             text("SELECT username, role, is_active FROM users WHERE id = :id"),
@@ -182,7 +182,7 @@ class TestDatabaseIntegration:
 
     async def test_invoice_audit_log(self, db_session, sample_invoice: dict) -> None:
         """Test audit log entry creation."""
-        from sqlmodel import text
+        from sqlalchemy import text
         import uuid
         import pendulum
 
@@ -214,7 +214,7 @@ class TestDatabaseIntegration:
 
     async def test_multiple_invoices_create_by_seed(self, db_session) -> None:
         """Simulate bulk seeding of invoices (as done by seed_data.py)."""
-        from sqlmodel import text
+        from sqlalchemy import text
         import uuid
         import pendulum
 
@@ -256,7 +256,7 @@ class TestDatabaseIntegration:
 
     async def test_fx_rate_crud(self, db_session) -> None:
         """Test basic FX rate CRUD operations."""
-        from sqlmodel import text
+        from sqlalchemy import text
         import uuid
         import pendulum
 

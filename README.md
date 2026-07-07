@@ -6,7 +6,7 @@
 [![Status](https://img.shields.io/badge/status-beta-yellow.svg)](docs/INTRODUCTION.md#status-projektu)
 [![Python](https://img.shields.io/badge/python-3.13t_free--threaded-3776AB.svg)](https://www.python.org/)
 [![Litestar](https://img.shields.io/badge/Litestar-2.12%2B-ED1C24.svg)](https://litestar.dev/)
-[![Rust](https://img.shields.io/badge/rust-1.78%2B-000000.svg)](https://www.rust-lang.org/)
+[![Rust](https://img.shields.io/badge/rust-1.78%2B_optional-888888.svg)](https://www.rust-lang.org/)
 [![License](https://img.shields.io/badge/license-Proprietary-blue.svg)](LICENSE.txt)
 [![Docs](https://img.shields.io/badge/docs-readthedocs-2980b9.svg)](docs/INDEX.md)
 
@@ -39,7 +39,7 @@ Pełna instrukcja krok po kroku: [`docs/QUICKSTART.md`](docs/QUICKSTART.md).
 | 🔍 **OCR ensemble (4 silniki)** | Tesseract + PaddleOCR + docTR + EasyOCR z konsensusem głosowania i Nadzorcą AI. Wyższe **recall** niż pojedynczy VLM. |
 | 🤖 **5 Agentów AI (lokalnych)** | Orkiestrator (Granite 3.2 3B), Ekstrakcji Danych, Analityczny, Walidator Jakości, Środków Trwałych. 13 modeli GGUF. Cognitive Audit Trail, 4-Eyes Principle, Bayesian Trust Score. [Pełna specyfikacja →](docs/AGENTS.md) |
 | 📜 **Pełna zgodność KSeF** | Generowanie XML wg schematu `FA_VAT(2)`, walidacja XSD, wysyłka do API KSeF MF. |
-| 🔐 **Własny moduł kryptograficzny (Rust)** | AEAD ChaCha20-Poly1305, Argon2id KDF, SHA-256, mlock sekretów — w pakiecie `nexus-crypto` (PyO3). |
+| 🔐 **Własny moduł kryptograficzny (Rust+Pure Python)** | AEAD ChaCha20-Poly1305, Argon2id KDF, SHA-256, mlock sekretów — w pakiecie `nexus-crypto`. **Domyślnie używa pure-Python fallbacku** (Rust opcjonalny dla wydajności produkcyjnej). |
 | 🗄️ **4 silniki danych** | SQLite+SQLCipher (OLTP zaszyfrowany), DuckDB (OLAP), TigerBeetle (double-entry ledger), NATS JetStream (event bus + KV/Object Store). |
 | 🪟 **Aplikacja desktopowa** | Flet (Flutter) — natywny UI, Material Design 3, offline-first. |
 | 🚀 **Pojedynczy `.exe`** | Nuitka + Inno Setup → jeden plik binarny z wkompilowanym `mimalloc` (5–15% mniej RAM). |
@@ -100,7 +100,7 @@ graph LR
     A --> F[TigerBeetle]
     A --> G[NATS JetStream]
     A --> H[llama-cpp-python GGUF]
-    A --> I[Rust nexus-crypto]
+    A --> I[nexus-crypto<br/>Python fallback]
     A --> J[Flet UI]
     K[Nuitka] --> L[Standalone .exe]
 ```
@@ -118,7 +118,7 @@ Pełne uzasadnienie wyborów w [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#klu
 | Dysk | 5 GB | 10 GB SSD |
 | System | Linux x86_64, Windows 10, macOS 12+ | Linux Ubuntu 22.04 LTS |
 | Python | 3.13 free-threaded (3.13t) | Dostarczany przez pixi |
-| Rust | 1.78+ | Dostarczany przez pixi |
+| Rust | **Niewymagany** (opcjonalny) | nexus-crypto działa jako pure-Python; Rust tylko dla produkcyjnego build .exe |
 
 ---
 

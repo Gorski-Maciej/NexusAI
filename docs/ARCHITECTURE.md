@@ -589,20 +589,22 @@ sequenceDiagram
 - ✅ NATS jako przygotowanie do rozproszenia (wymiana UNIX socket → TCP)
 - ❌ Trudniejsze testowanie izolowanych modułów (ale modularny podział to ułatwia)
 
-### ADR-007: Własny moduł kryptograficzny w Rust (nexus-crypto)
+### ADR-007: Własny moduł kryptograficzny (nexus-crypto) — Rust + Pure Python fallback
 
-**Data:** 2025-03-01  
+**Data:** 2025-03-01 (zaktualizowane: 2026-07-07)  
 **Status:** Zaakceptowane
 
 **Kontekst:** Potrzebujemy minimum 3 algorytmów (AEAD, Argon2id, SHA-256) w maksymalnie bezpiecznej i lekkiej formie.
 
-**Decyzja:** Własny moduł Rust + PyO3 zamiast zewnętrznych bibliotek.
+**Decyzja:** Własny moduł w Rust + PyO3 z **pure-Python fallbackiem** (`nexus_ai/rust/nexus_crypto/`). Domyślnie używany jest fallback Python — Rust potrzebny tylko dla produkcyjnego build .exe (Nuitka).
 
 **Konsekwencje:**
 - ✅ Minimalna powierzchnia ataku (tylko potrzebne algorytmy)
-- ✅ Natywna prędkość Rusta
+- ✅ **Bez wymogu Rusta** — pure-Python fallback używa `cryptography`, `argon2-cffi`, `pyjwt`
+- ✅ Natywna prędkość Rusta dostępna opcjonalnie dla build produkcyjnego
 - ✅ Pełna kontrola nad łańcuchem dostaw
-- ❌ Wymaga kompilacji Rust przy buildzie
+- ✅ Działa na wszystkich platformach (x86_64, aarch64, Termux)
+- ❌ Python fallback jest ~2-5× wolniejszy od natywnego Rusta (nieodczuwalne przy <1000 operacji/dzień)
 
 ### ADR-008: Flet (Flutter) zamiast Electron/React dla interfejsu desktopowego
 
@@ -712,7 +714,7 @@ stateDiagram-v2
 | Technologia | Rola | Dlaczego to (nie alternatywa) |
 |---|---|---|
 | **Python 3.13t** | Główny język | Free-threaded = brak GIL, prawdziwa wielowątkowość, 30-40% mniej RAM |
-| **Rust ≥1.78** | Natywne moduły (PyO3) | Bezpieczeństwo pamięci, ekstremalna wydajność dla crypto i parserów XML |
+| **Rust ≥1.78** | Natywne moduły (PyO3) — opcjonalny | Bezpieczeństwo pamięci, ekstremalna wydajność dla crypto i parserów XML. **Domyślnie używany pure-Python fallback.** |
 | **Litestar ≥2.8** | Framework API | 10-20% szybszy od FastAPI, natywne msgspec, mniej zależności |
 | **Granian ≥1.0** | Serwer ASGI | W Rust — 25-40% mniej RAM niż Uvicorn, UNIX socket, metryki wbudowane |
 | **SQLite + SQLCipher** | OLTP | Jeden plik = zero administracji, AES-256 = zgodność RODO |
@@ -725,7 +727,7 @@ stateDiagram-v2
 | **Flet ≥0.28** | Desktop UI | Silnik Flutter, Material Design 3, Python-only |
 | **Nuitka ≥1.8** | Kompilacja | Python → standalone .exe, mimalloc wkompilowany |
 | **mimalloc ≥2.1** | Alokator pamięci | 5-15% mniej RAM, statycznie wkompilowany |
-| **nexus-crypto (Rust)** | Kryptografia | AEAD + Argon2id + SHA-256, minimalny kod, statycznie kompilowany |
+| **nexus-crypto** | Kryptografia | AEAD + Argon2id + SHA-256, minimalny kod. **Pure-Python fallback** (`nexus_ai/rust/nexus_crypto/`) jako domyślny; Rust+PyO3 opcjonalny. |
 | **OPA ≥0.6x** | Silnik reguł | Rego — deklaratywne polityki podatkowe |
 | **stamina ≥0.1** | Resilience | Async-native retry + circuit breaker |
 | **hishel ≥0.1** | HTTP cache | Inteligentny cache respektujący Cache-Control |

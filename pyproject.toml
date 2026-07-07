@@ -221,11 +221,10 @@ exclude = [
     "*.pyd",
 ]
 
-# ── Maturin — Rust/PyO3 native extensions ────────────────────────────────────
-[tool.hatch.build.hooks.maturin]
-
-[tool.hatch.build.hooks.maturin.metadata]
-# Automatyczna kompilacja Rust przy każdym wheel build
+# ── Maturin — disabled (nexus-crypto uses pure-Python fallback) ────────────
+# [tool.hatch.build.hooks.maturin]
+# [tool.hatch.build.hooks.maturin.metadata]
+# # Automatyczna kompilacja Rust przy każdym wheel build
 
 # ── Nuitka — build przez pixi tasks ──────────────────────────────────────────
 # NuitkaBuildHook (hooks.py) usunięty — build przez:

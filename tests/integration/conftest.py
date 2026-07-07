@@ -41,7 +41,7 @@ def anyio_backend():
     """
     return "asyncio"
 from sqlalchemy.orm import sessionmaker
-from sqlmodel import Session, create_engine, text
+from sqlalchemy import Session, create_engine, text
 
 # Ensure Code/ is on sys.path
 import sys
@@ -211,7 +211,7 @@ def db_session(db_session_factory):
 def sample_user(db_session: Session) -> dict:
     """Create a sample user and return its data."""
     from api.auth_service import hash_password
-    from sqlmodel import text
+    from sqlalchemy import text
 
     user_id = "test-user-001"
     username = "testuser"
@@ -242,7 +242,7 @@ def sample_user(db_session: Session) -> dict:
 @pytest.fixture
 def sample_contractor(db_session: Session) -> dict:
     """Create a sample contractor and return its data."""
-    from sqlmodel import text
+    from sqlalchemy import text
     import pendulum
     import uuid
 
@@ -274,7 +274,7 @@ def sample_contractor(db_session: Session) -> dict:
 @pytest.fixture
 def sample_invoice(db_session: Session, sample_contractor: dict) -> dict:
     """Create a sample invoice linked to a contractor."""
-    from sqlmodel import text
+    from sqlalchemy import text
     import pendulum
     import uuid
 

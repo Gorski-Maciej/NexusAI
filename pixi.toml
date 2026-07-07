@@ -42,18 +42,14 @@ platforms = ["linux-64", "linux-aarch64", "win-64"]   # win-64 dla Nuitka + Inno
 [dependencies]
 python = { version = "3.13.*", build = "*_cp313t" }  # Free-threaded (3.13t, bez GIL) — -30-40% RAM, prawdziwa wielowątkowość
 
-# ── OCR i przetwarzanie obrazów ─────────────────────────────────────────────
-tesseract = ">=5.3.0"                    # OCR — ekstrakcja tekstu z faktur
-libopencv = ">=4.9.0"                    # OpenCV — preprocessing obrazów
-
 # ── Database ─────────────────────────────────────────────────────────────────
 pkg-config = ">=0.29.2"
 
-# ── mimalloc — Microsoft memory allocator (5-15% mniej RAM) ────────────────
-mimalloc = ">=2.1.0"                    # Microsoft mimalloc — 5-15% mniej RAM
+# ── mimalloc — optional memory allocator (5-15% mniej RAM) ────────────────
+# mimalloc = ">=2.1.0"  # Optional: disabled for aarch64 compatibility
 
-# ── Rust toolchain (dla Maturin / PyO3 / nexus-crypto) ──────────────────────
-rust = ">=1.78.0"
+# ── Rust toolchain — optional, only needed for build-rust tasks ─────────────
+# rust = ">=1.78.0"  # Disabled: nexus-crypto now has a pure-Python fallback
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Zależności PyPI — tylko runtime
@@ -96,10 +92,10 @@ tigerbeetle = ">=0.16.0"
 lxml = ">=5.1.0"
 xsdata = ">=24.0.0"           # XSD → Python code generation (KSeF)
 pillow = ">=10.0.0"
-pypdfium2 = ">=4.0.0"          # PDF → image conversion via PDFium engine
-paddleocr = ">=2.8.0"          # PaddleOCR — drugi silnik OCR
-python-doctr = ">=0.9.0"         # docTR — trzeci silnik OCR
-easyocr = ">=1.7.0"            # EasyOCR — czwarty silnik OCR
+# pypdfium2 — moved to [feature.ocr]
+# paddleocr — moved to [feature.ocr]
+# python-doctr — moved to [feature.ocr]
+# easyocr — moved to [feature.ocr]
 
 # ── Analytics / OLAP ────────────────────────────────────────────────────────
 duckdb = ">=1.0.0"
@@ -167,8 +163,8 @@ NEXUS_GRANIAN_RUNTIME_BLOCKING_THREADS = "4"
 NEXUS_GRANIAN_GRACEFUL_SHUTDOWN = "30"
 NEXUS_GRANIAN_PID_FILE = "/tmp/nexus-api.pid"
 
-# ── mimalloc — dynamiczne przeładowanie alokatora przez LD_PRELOAD ───────────
-LD_PRELOAD = "$CONDA_PREFIX/lib/libmimalloc.so"
+# ── mimalloc — optional (may not be available on all platforms) ─────────────
+# LD_PRELOAD = "$CONDA_PREFIX/lib/libmimalloc.so"
 MIMALLOC_LARGE_OS_PAGES = "1"
 MIMALLOC_RESERVE_HUGE_OS_PAGES = "1"
 MIMALLOC_EAGER_COMMIT_DELAY = "0"
@@ -655,7 +651,7 @@ cmake = ">=3.28.0"         # Potrzebne do kompilacji natywnych rozszerzeń Pytho
 # ── Testowanie ──────────────────────────────────────────────────────────────
 pytest = ">=8.0.0"
 
-crosshair = ">=0.1.0"             # SMT-driven property testing (zastąpił hypothesis)
+crosshair = ">=0.0.1"             # SMT-driven property testing (zastąpił hypothesis)
 schemathesis = ">=3.0.0"          # Property-based API testing (OpenAPI)
 locust = ">=2.0.0"               # Load testing w Pythonie
 py-spy = ">=0.3.0"               # Sampling profiler (bez GIL)
@@ -691,6 +687,24 @@ inputs = [
     "nexus_ai/rust/pyproject.toml",
 ]
 outputs = ["nexus_ai/rust/target/wheels/nexus_crypto-*.whl"]
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Feature: ocr — opcjonalne silniki OCR (ciężkie zależności)
+# ══════════════════════════════════════════════════════════════════════════════
+# Używaj:   pixi install --environment ocr     # instaluj runtime + OCR
+# Domyślnie OCR nie jest instalowane (oszczędność RAM, unikanie konfliktów)
+# ══════════════════════════════════════════════════════════════════════════════
+
+[feature.ocr.dependencies]
+tesseract = ">=5.3.0"
+libopencv = ">=4.9.0"
+
+[feature.ocr.pypi-dependencies]
+pypdfium2 = ">=4.0.0"
+opencv-python = "<5.0.0,>=4.5.0"
+paddleocr = ">=2.8.0"
+python-doctr = ">=0.9.0"
+easyocr = ">=1.7.0"
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Environments
