@@ -1,10 +1,10 @@
 # 📑 Plan OPA — Indeks Dokumentacji
 
-> **Status:** Kompletny — v5.0  
-> **Data:** 2026-07-07  
+> **Status:** Kompletny — v6.0  
+> **Data:** 2026-07-10  
 > **Zespół:** NexusAI
-> **Reguły łącznie:** 240  
-> **Dokumenty:** 23 (Docs + 00-21)
+> **Reguły łącznie:** ~3 320 (240 korporacyjnych + ~3 080 JDG)  
+> **Dokumenty:** 35 (Docs + 00-21 + 22-34)
 
 ---
 
@@ -33,13 +33,37 @@ Plan OPA/
 ├── 17_IMPLEMENTATION_ROADMAP.md       # 🗺️ Roadmap wdrożenia: 13 faz, kamienie milowe, macierz ryzyka
 ├── 18_OPA_API_REFERENCE.md           # 🔌 Pełna dokumentacja API OPA REST (endpointy, Python client, logging)
 ├── 19_DEPLOYMENT_GUIDE.md             # 🚀 Przewodnik wdrożenia OPA w produkcji
-├── 20_MASTER_RULES_REFERENCE.md      # 📚 Kompletny spis 228 reguł — priorytety, pseudokod, cross-reference
-└── 21_DEEP_DOCS_ANALYSIS.md           # 🔬 Deep Docs Analysis — 12 nowych reguł (P320-P331) z analizy wszystkic
+├── 20_MASTER_RULES_REFERENCE.md      # 📚 Kompletny spis 240 reguł — priorytety, pseudokod, cross-reference
+├── 21_DEEP_DOCS_ANALYSIS.md           # 🔬 Deep Docs Analysis — 12 nowych reguł (P320-P331) z analizy wszystkich
+│
+│   ═══════════════════════════════════════════════════════════════════
+│   ║  SEKCJA JDG — Jednoosobowa Działalność Gospodarcza              ║
+│   ║  ~3 080 reguł | 30 pakietów | 100+ domen prawnych               ║
+│   ═══════════════════════════════════════════════════════════════════
+│
+├── 22_JDG_ENTERPRISE_PLAN.md          # 🏢 JDG Plan bazowy (~145 reguł)
+├── 23_JDG_EXPANSION_SUPPLEMENT.md     # 📋 JDG Rozbudowa (~69 reguł)
+├── 24_JDG_COMPLETE_INDEX.md           # 📑 JDG Indeks kompletny
+├── 25_JDG_DEEP_LEGAL_AUDIT.md         # ⚖️ JDG Głęboki audyt prawny
+├── 26_JDG_COMPREHENSIVE_EXPANSION.md  # 📋 JDG Kompleksowa ekspansja
+├── 27_JDG_ENTERPRISE_DEEP_EXPANSION.md # 🏢 JDG Głęboka ekspansja ENTERPRISE
+├── 28_JDG_ENTERPRISE_MASTER_SYNTHESIS.md # 🏛️ JDG Master Synthesis (~372 reguł)
+├── 29_JDG_DEEP_ANALYSIS_GAPS.md       # 🔍 JDG Głęboka analiza luk (~402 reguł)
+├── 30_JDG_MASSIVE_EXPANSION.md        # 📋 JDG Masywna ekspansja (~1 462 reguł)
+├── 31_JDG_3000_RULES.md               # 📊 JDG System 3 000+ reguł
+├── 32_JDG_ENTERPRISE_DEFINITIVE_PLAN.md # 🏗️ JDG Plan architektoniczny (50→30 pakietów)
+├── 33_JDG_MASSIVE_RULE_CATALOG.md     # 📚 JDG Katalog ~3 055 mikro-reguł
+├── 34_JDG_DEFINITIVE_REGO_PLAN.md     # ★ JDG DEFINITYWNY Plan ENTERPRISE v10.0
+│
+├── DocsJDG/                           # 📂 Źródła prawne JDG i inspiracje
+└── policies/                          # 📂 Reguły Rego (pliki .rego w pakiecie tax/ i jdg/)
 ```
 
 ---
 
 ## Mapa dokumentów — co gdzie znajdziesz
+
+### Dokumenty bazowe (00-21) — Reguły korporacyjne (240 reguł)
 
 | Dokument | Zawartość | Dla kogo |
 |---|---|---|
@@ -63,7 +87,25 @@ Plan OPA/
 | `18_OPA_API_REFERENCE.md` | Pełna dokumentacja API OPA REST: endpoint `/v1/data/tax/*`, format werdyktu (Verdict Schema), Python AsyncClient (httpx z retry/circuit breaker), Decision Logging (format JSON, konfiguracja batching), Bundle API (struktura, OCI registry), Status API (Prometheus metrics), HTTP error codes, TLS/Auth. Przykłady request/response dla każdego endpointu | Backend Developer, DevOps |
 | `19_DEPLOYMENT_GUIDE.md` | Przewodnik wdrożenia produkcyjnego: Docker/docker-compose (dev + prod), Kubernetes Deployment/Service/ConfigMap, CI/CD (GitHub Actions: validate → build → publish → deploy), OCI Bundle z revision tagowaniem + rollback, Load testing (Locust), Circuit Breaker (Python), SLA targets (500 req/s, <1ms P50, 99.99% up), Prometheus alerts (error rate, latency, stale bundle), Grafana dashboard, Disaster Recovery, Checklist produkcyjny (15 punktów) | DevOps, SRE, Tech Lead |
 | `20_MASTER_RULES_REFERENCE.md` | **Kompletny spis 240 reguł w jednym dokumencie**: szybki indeks priorytetowy, wszystkie pakiety z pseudokodem Rego (✅ zaimplementowane / 🟡 w planie), cross-reference 62 podstaw prawnych, status implementacji (69/240 zaimplementowanych). Zoptymalizowany jako podręcznik programisty OPA | Developer OPA, Tech Lead, Reviewer |
-| `21_DEEP_DOCS_ANALYSIS.md` | **Głęboka analiza Docs vs 228 reguł**: thinker-with-files-gemini przeanalizował 200+ artykułów z 14 ustaw i zidentyfikował 12 absolutnie ostatnich luk (P320-P331): UoR podwójny zapis, zamknięcie ksiąg, rezerwy, elementy dowodu, struktura bilansu, koszt wytworzenia; CIT złe długi wierzyciela; VAT-R; Ordynacja zabezpieczenia/ulgi; KP BHP; PIT małe umowy. **240 reguł łącznie** | Developer OPA, Reviewer |
+| `21_DEEP_DOCS_ANALYSIS.md` | **Głęboka analiza Docs vs 240 reguł**: thinker-with-files-gemini przeanalizował 200+ artykułów z 14 ustaw i zidentyfikował 12 absolutnie ostatnich luk (P320-P331): UoR podwójny zapis, zamknięcie ksiąg, rezerwy, elementy dowodu, struktura bilansu, koszt wytworzenia; CIT złe długi wierzyciela; VAT-R; Ordynacja zabezpieczenia/ulgi; KP BHP; PIT małe umowy. **240 reguł łącznie** | Developer OPA, Reviewer |
+
+### Dokumenty JDG (22-34) — Reguły dla jednoosobowej działalności gospodarczej (~3 080 reguł)
+
+| Dokument | Zawartość | Dla kogo |
+|---|---|---|
+| `22_JDG_ENTERPRISE_PLAN.md` | Plan bazowy JDG: architektura, pakiety, priorytety, ~80 szczegółowych reguł | Architekt, Tech Lead |
+| `23_JDG_EXPANSION_SUPPLEMENT.md` | Rozbudowa JDG: PIT formy, KUP, zaliczki, ryczałt, karta (~69 reguł) | Developer OPA |
+| `24_JDG_COMPLETE_INDEX.md` | Indeks kompletny JDG — mapa wszystkich dokumentów i reguł | Tech Lead, Deweloper |
+| `25_JDG_DEEP_LEGAL_AUDIT.md` | Głęboki audyt prawny — zgodność z ustawami i rozporządzeniami | Radca prawny, Auditor |
+| `26_JDG_COMPREHENSIVE_EXPANSION.md` | Kompleksowa ekspansja: ZUS, składka zdrowotna, PKPiR, ewidencje | Developer OPA |
+| `27_JDG_ENTERPRISE_DEEP_EXPANSION.md` | Głęboka ekspansja ENTERPRISE: zawieszenie, sukcesja, przekształcenie | Developer OPA |
+| `28_JDG_ENTERPRISE_MASTER_SYNTHESIS.md` | Master Synthesis — scalenie wcześniejszych dokumentów (~372 reguł) | Architekt, Tech Lead |
+| `29_JDG_DEEP_ANALYSIS_GAPS.md` | Głęboka analiza luk (~402 reguł): KKS, GAAR, MPP, CESOP, estoński CIT | Developer OPA, Auditor |
+| `30_JDG_MASSIVE_EXPANSION.md` | Masywna dekompozycja (~1 462 reguł): artykuł po artykule | Developer OPA |
+| `31_JDG_3000_RULES.md` | System 3 000+ reguł — kompletna referencja | Developer OPA, Reviewer |
+| `32_JDG_ENTERPRISE_DEFINITIVE_PLAN.md` | Plan architektoniczny (50→30 pakietów), struktura input, parametry dynamiczne | Architekt, Tech Lead |
+| `33_JDG_MASSIVE_RULE_CATALOG.md` | Katalog ~3 055 mikro-reguł z dekompozycją artykuł po artykule | Developer OPA |
+| **`34_JDG_DEFINITIVE_REGO_PLAN.md`** | **★ DEFINITYWNY Plan ENTERPRISE v10.0** — autorytatywny dokument referencyjny: 30 pakietów, ~60 szczegółowo opisanych reguł, first-match-wins chain, struktura input (~180 pól), katalog thresholdów (~120 parametrów), multi-pass architecture, macierze interakcji | Architekt, Tech Lead, Developer OPA |
 
 ---
 
@@ -243,27 +285,28 @@ Plan OPA/
 | **VAT miejsce świadczenia** — B2B usługi, próbki handlowe | ✅ 100% | 2 | NOWE |
 | **Podatki lokalne szczegółowe** — opłata targowa, od psów | ✅ 100% | 2 | NOWE |
 
-**Łącznie: 240 reguł w 47+ domenach prawnych. ~99.8% pokrycia polskiego prawa podatkowego, księgowego i gospodarczego. 23 dokumenty techniczne.**
+**Łącznie: ~3 320 reguł w 100+ domenach prawnych. ~99.8% pokrycia polskiego prawa podatkowego, księgowego i gospodarczego. 35 dokumentów technicznych.**
 
 ---
 
 ## Następne kroki (rekomendowane)
 
+### Kroki ogólne
+
 1-2. **✅ JUŻ ZROBIONE** — Faza 1 (compliance) i Faza 2 (crossborder) w `nexus_ai/tax/rules.rego`
 3. **Implementacja Multi-Pass:** Refaktoryzacja z single-chain na Multi-Pass Evaluation (ADR-001)
 4. **Implementacja Fazy 3:** Migracja thresholdów — `input.thresholds.*` zamiast hardcoded
-5. **✅ JUŻ ZROBIONE** — Fazy 4-6: CIT/PIT, ulgi, księgowość, ZUS + Deep Docs P320-P331 (pseudokod w `06_COMPLETE_RULES_SUPPLEMENT.md` i `21_DEEP_DOCS_ANALYSIS.md`)
-6. **Implementacja Fazy 7-8:** PPK, Akcyza, IFRS, AML, KŚT, JPK, Leasing (pseudokod w `07_ADVANCED_RULES_EXPANSION.md`)
-7. **Implementacja Fazy 9:** VAT odliczenia, Praca, BDO, NGO, UoR, PKPiR (pseudokod w `09_LEGAL_DEEP_DIVE_RULES.md`)
-8. **Wdrożenie przewodnika:** Struktura plików, helpers, testy, bundle wg `10_OPA_IMPLEMENTATION_GUIDE.md`
-9. **Testy:** Rozszerzenie `tests/rego/` o testy dla wszystkich 191 reguł
-10. **Wdrożenie integracji danych:** Bundle API + Push Data dla kursów NBP i Białej Listy MF (wg `12_DATA_INTEGRATION_PATTERNS.md`)
-11. **Implementacja Fazy 10-11:** VAT obowiązek podatkowy, zaliczki, Ordynacja terminy, UoR sprawozdania, Prawo energetyczne, Transport (pseudokod w `11_ENTERPRISE_FINAL_EXPANSION.md`)
-12. **Implementacja Fazy 12:** CIT/PIT KUP wyłączenia, PCC, SD, prawo dewizowe, akcyza szczegółowa, KP, MSSF 2, UoR zmiany (pseudokod w `14_SPECIALIZED_TAX_RULES.md`)
-13. **Wdrożenie test framework:** Struktura testów wg kubescape (success/failed) + CI pipeline (wg `13_KUBESCAPE_PATTERNS_DEEP_DIVE.md`)
-14. **Integracja serwisów:** Migracja RiskGuard/SemanticGuard/FraudGraphScanner do OPA (wg `15_SERVICE_INTEGRATION_MAP.md`)
-15. **Implementacja Fazy 12-13:** CIT/PIT KUP, PCC, SD, dewizy, akcyza, KP, MSSF2, UoR + absolutnie ostatnie reguły (pseudokod w `14_SPECIALIZED_TAX_RULES.md` i `16_FINAL_FRONTIER_RULES.md`)
-16. **Wdrożenie wg roadmap:** Rozpocznij od M1: MVP (Faza 0-2, 50 reguł, 3 tygodnie) zgodnie z `17_IMPLEMENTATION_ROADMAP.md`
-17. **Konfiguracja pipeline CI/CD:** GitHub Actions dla `opa check --strict` + `opa test` + `opa fmt --check` wg `19_DEPLOYMENT_GUIDE.md` §4
-18. **Integracja Python↔OPA:** Implementacja `OpaClient` z retry, circuit breaker i decision logging wg `18_OPA_API_REFERENCE.md` §4
-19. **Master Reference:** Pełny spis 240 reguł z pseudokodem w `20_MASTER_RULES_REFERENCE.md` — używaj jako podręcznika podczas implementacji (69/240 zaimplementowanych ✅)
+5. **✅ JUŻ ZROBIONE** — Fazy 4-6: CIT/PIT, ulgi, księgowość, ZUS + Deep Docs P320-P331
+6-19. [Pozostałe fazy — patrz poprzednia wersja indeksu]
+
+### Kroki JDG — Plan ENTERPRISE
+
+20. **Implementacja Faza 0 JDG (MVP):** Risk + Routing + Compliance + Crossborder + VAT podstawowy (~70 reguł, 2 tyg) — wg `34_JDG_DEFINITIVE_REGO_PLAN.md` §9
+21. **Implementacja Faza 1 JDG (CORE):** PIT formy + KUP + zaliczki + ZUS + Business cycle (~80 reguł, 3 tyg)
+22. **Implementacja Faza 2 JDG (ADVANCED):** Ulgi + Leasing + Korekty + Przedawnienia + KSeF/JPK (~70 reguł, 3 tyg)
+23. **Implementacja Faza 3 JDG (ENTERPRISE):** KKS/GAAR + Podatki lokalne + VAT szczegółowy + Pracodawca + Międzynarodowe (~80 reguł, 4 tyg)
+24. **Implementacja Faza 4 JDG (DEEP):** Krypto + CESOP + ViDA + AI Act + MDR + Conflict resolution (~72 reguł, 4 tyg)
+25. **Wdrożenie JDG thresholds:** Migracja ~120 parametrów do DuckDB + mechanizm hot-reload przez NATS
+26. **Testy JDG:** Testy dla wszystkich ~3 080 reguł — priorytetyzacja wg `33_JDG_MASSIVE_RULE_CATALOG.md`
+27. **Integracja Python↔OPA JDG:** Implementacja `JdgOpaClient` z retry, circuit breaker i decision logging
+28. **Master Reference:** Pełny spis 240 reguł z pseudokodem w `20_MASTER_RULES_REFERENCE.md` — używaj jako podręcznika podczas implementacji (69/240 zaimplementowanych ✅)
