@@ -1,0 +1,11 @@
+{
+  "name": "jdg-overlay-v2027",
+  "version": "2026.07.11",
+  "overlays_version": "base-2026.07.11",
+  "tax_year": 2027,
+  "effective_from": "2027-01-01",
+  "effective_to": "2027-12-31",
+  "description": "Overlay JDG dla roku podatkowego 2027 — placeholder na przyszłe zmiany.",
+  "changes": [],
+  "files": []
+}

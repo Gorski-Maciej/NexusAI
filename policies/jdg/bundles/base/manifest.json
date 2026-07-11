@@ -1,0 +1,27 @@
+{
+  "name": "jdg-base",
+  "version": "2026.07.11",
+  "revision": "294-canonical-rules",
+  "description": "Bazowy bundle reguł JDG — wszystkie 294 reguły po deduplikacji (38c).",
+  "tax_years": ["2025", "2026", "2027"],
+  "packages": [
+    "jdg.main", "jdg.risk", "jdg.routing", "jdg.compliance",
+    "jdg.crossborder", "jdg.vat.substantive", "jdg.vat.deductions",
+    "jdg.vat.procedures", "jdg.pit.forms", "jdg.pit.kup",
+    "jdg.pit.advances_returns", "jdg.pit.exemptions", "jdg.pit.transitions",
+    "jdg.allowances", "jdg.zus", "jdg.accounting", "jdg.business",
+    "jdg.corrections", "jdg.liability", "jdg.representation",
+    "jdg.local_taxes", "jdg.ksef_jpk", "jdg.international",
+    "jdg.employer", "jdg.environmental", "jdg.restructuring",
+    "jdg.temporal", "jdg.digital", "jdg.retention", "jdg.fallback",
+    "jdg.helpers", "jdg.metadata"
+  ],
+  "dependencies": {
+    "data.thresholds": "DuckDB-loaded at startup",
+    "input": "API request payload"
+  },
+  "opa": {
+    "min_version": "v0.60.0",
+    "strict_mode": true
+  }
+}

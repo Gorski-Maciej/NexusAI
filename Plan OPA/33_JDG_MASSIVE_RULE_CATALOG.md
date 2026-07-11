@@ -172,7 +172,7 @@ Każda reguła w tym katalogu zawiera:
 |:--:|-------|---------|----------|-----------------|
 | P1870 | conflict_vat_vs_pit_exemption | vat_exemption: SUBJECT AND pit_form != "" | domain_conflict_resolved: true | — |
 | P1871 | conflict_kup_vs_vat_deduction | kus: none AND vat_deduction > 0 AND REPRESENTATION | vat_deduction_override: 0 | — |
-| P1872 | conflict_suspension_vs_zus | business_status: SUSPENDED AND zus_social_due: true | zus_social_due: false, zus_health_due: false | — |
+| P1872 | conflict_suspension_vs_zus | business_status: SUSPENDED AND zus_social_due: true | zus_social_due: false, zus_health_due: true ⚠️ (zdrowotna NADAL należna!) | — |
 | P1873 | conflict_lump_sum_vs_kup | tax_form: LUMP_SUM AND kus: full | kus_qualification: none | — |
 | P1874 | conflict_succession_vs_personal_liability | in_succession: true AND liability: UNLIMITED_PERSONAL | liability_scope: SUCCESSION_MANAGER | — |
 

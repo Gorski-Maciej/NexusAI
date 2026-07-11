@@ -2,10 +2,21 @@
 # NexusAI JDG Policies — Rule Metadata
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# Metadane dla wszystkich reguł JDG — wersjonowanie, severity, remediation.
-# Używane przez wszystkie pakiety poprzez `import data.jdg.metadata`.
-#
+# METADATA
+# title: Rule Metadata Registry — Versioning, Severity, Remediation
+# description: |
+#   Centralny rejestr metadanych dla wszystkich reguł JDG. Zawiera:
+#   - rules_metadata: mapowanie rule_id → {version, severity, remediation, references}
+#   - policy_version: wersja całego pakietu JDG (YYYY.MM.DD)
+#   - Helpers: get_rule_metadata(), get_rule_severity(), all_registered_rules()
+#   Używany przez wszystkie pakiety poprzez `import data.jdg.metadata`.
+# architecture: Single Source of Truth (SSoT) dla metadanych reguł
+# legal_basis: N/A (metadata — nie zawiera reguł podatkowych)
+# edge_cases:
+#   - Niezarejestrowane rule_id → get_rule_metadata zwraca {}
+#   - policy_version aktualizowane przy każdym release
 # package: jdg.metadata
+# deprecated: false
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.metadata

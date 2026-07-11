@@ -1202,7 +1202,7 @@ Przykłady:
 |:--:|-------------|---------|----------|
 | `jdg.zus.suspension.r1` | `zus_suspension_cessation_of_obligation` | Zawieszenie JDG -> ustaje obowiazek oplacania skladek ZUS od nastepnego dnia | Ustanie |
 | `jdg.zus.suspension.r2` | `zus_suspension_min_30_days` | Zawieszenie co najmniej 30 dni -> brak skladek ZUS za caly okres | Warunek |
-| `jdg.zus.suspension.r3` | `zus_suspension_health_insurance` | Skladka zdrowotna: zwolnienie w okresie zawieszenia (jesli brak przychodu) | Zwolnienie |
+| `jdg.zus.suspension.r3` | `zus_suspension_health_insurance` | Skladka zdrowotna: NADAL nalezna w okresie zawieszenia! (Art. 36a SUS — tylko spoleczne=0) | Nalezna |
 | `jdg.zus.suspension.r4` | `zus_suspension_health_income_during` | Przychod w okresie zawieszenia (do pelnej skladki) -> obowiazek oplacenia | Wyjatek |
 | `jdg.zus.suspension.r5` | `zus_suspension_voluntary_continuation` | Mozliwosc kontynuacji ubezpieczenia emerytalno-rentowego w okresie zawieszenia | Opcja |
 | `jdg.zus.suspension.r6` | `zus_suspension_return_obligation` | Wznowienie -> obowiazek ZUS od dnia wznowienia | Wznowienie |

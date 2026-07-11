@@ -817,11 +817,13 @@ Adaptowane z planu ogólnego — progi confidence per forma opodatkowania JDG.
 
 Reguły crossborder pozostają bez zmian względem planu ogólnego — transakcje transgraniczne są identyczne dla JDG i spółek.
 
-- P40: `eu_reverse_charge` — Art. 17 ust. 1 pkt 3 VAT
-- P41: `eu_import_services` — Art. 28b VAT
-- P42: `wdt_intracommunity_supply` — Art. 42 VAT
-- P45: `import_non_eu` — Art. 17 ust. 1 pkt 1 VAT
-- P48: `export_goods` — Art. 41 ust. 4-11 VAT
+> ⚠️ **[DEPRECATED — Doc 22 → Doc 23]** Reguły P40, P41, P42, P45, P48 z Doc 22 są zastąpione przez bardziej szczegółowe odpowiedniki w Doc 23: P43-P49, P190-P191, P232 (`23_JDG_EXPANSION_SUPPLEMENT.md` §3). Wersje kanoniczne: Doc 23.
+
+- ~~P40: `eu_reverse_charge`~~ → **[DEPRECATED]** — zastąpione przez P43 (Doc 23)
+- ~~P41: `eu_import_services`~~ → **[DEPRECATED]** — zastąpione przez P44 (Doc 23)
+- ~~P42: `wdt_intracommunity_supply`~~ → **[DEPRECATED]** — zastąpione przez P46 (Doc 23)
+- ~~P45: `import_non_eu`~~ → **[DEPRECATED]** — zastąpione przez P47 (Doc 23)
+- ~~P48: `export_goods`~~ → **[DEPRECATED]** — zastąpione przez P49 (Doc 23)
 
 ---
 
@@ -877,13 +879,17 @@ Bez zmian względem planu ogólnego — stawki VAT są identyczne niezależnie o
   - Wymaga `jdg_entrepreneur.ceidg_entry_date` do obliczenia proporcji dla nowych firm
 - **Priorytet:** 58
 
-#### P60: `vat_bad_debt_relief`
+#### P60: `vat_bad_debt_relief` 🔴 [DEPRECATED]
 
-- **Cel biznesowy:** Ulga na złe długi — korekta VAT po 150 dniach
-- **Przesłanki:** `input.invoice.is_paid == false` AND `input.invoice.days_overdue >= input.thresholds.jdg.limits.bad_debt_days_vat`
-- **Rezultat:** `bad_debt_relief_eligible: true`
-- **Podstawa prawna:** Art. 89a ustawy o VAT
-- **Priorytet:** 60
+> ⚠️ **[DEPRECATED — Doc 22 → Doc 23]** Zastąpione przez P189 `bad_debt_relief_creditor` (`23_JDG_EXPANSION_SUPPLEMENT.md` §8).
+> P189 jest bardziej szczegółowa (5 przesłanek vs 2, jawny kierunek faktury, 3 rezultaty).
+> **UWAGA:** P189 wymaga aktualizacji terminu: 150 dni (nie 90) dla wierzyciela VAT.
+
+- ~~**Cel biznesowy:** Ulga na złe długi — korekta VAT po 150 dniach~~
+- ~~**Przesłanki:** `input.invoice.is_paid == false` AND `input.invoice.days_overdue >= input.thresholds.jdg.limits.bad_debt_days_vat`~~
+- ~~**Rezultat:** `bad_debt_relief_eligible: true`~~
+- ~~**Podstawa prawna:** Art. 89a ustawy o VAT~~
+- ~~**Priorytet:** 60~~
 
 #### P65: `gtu_mapping_by_category`
 
@@ -895,29 +901,36 @@ Bez zmian względem planu ogólnego — stawki VAT są identyczne niezależnie o
 
 ### 3.5.2 `jdg.vat.tax_point` — Moment obowiązku podatkowego
 
-#### P230: `vat_tax_point_continuous_service`
+#### P230: `vat_tax_point_continuous_service` 🔴 [DEPRECATED]
 
-- **Cel biznesowy:** Moment obowiązku dla usług ciągłych (abonamenty, najem). Częste w JDG IT (SaaS, hosting).
-- **Przesłanki:** `input.invoice.is_continuous_service == true`
-- **Rezultat:** `tax_point: "END_OF_PERIOD"`
-- **Podstawa prawna:** Art. 19a ust. 3 VAT
-- **Priorytet:** 230
+> ⚠️ **[DEPRECATED — Doc 22 → Doc 28a]** Zastąpione przez R0546-R0559 (`28a_JDG_EDGE_CASES_FULL.md` Grupa A — VAT Edge Cases).
+> Reguły Doc 28a mają pełny 10-polowy format ENTERPRISE z przykładami ± i 4 edge cases na regułę.
 
-#### P231: `vat_tax_point_advance_invoice`
+- ~~**Cel biznesowy:** Moment obowiązku dla usług ciągłych (abonamenty, najem). Częste w JDG IT (SaaS, hosting).~~
+- ~~**Przesłanki:** `input.invoice.is_continuous_service == true`~~
+- ~~**Rezultat:** `tax_point: "END_OF_PERIOD"`~~
+- ~~**Podstawa prawna:** Art. 19a ust. 3 VAT~~
+- ~~**Priorytet:** 230~~
 
-- **Cel biznesowy:** Moment obowiązku dla faktur zaliczkowych
-- **Przesłanki:** `input.invoice.invoice_type == "ADVANCE"`
-- **Rezultat:** `tax_point: "PAYMENT_DATE"`
-- **Podstawa prawna:** Art. 19a ust. 8 VAT
-- **Priorytet:** 231
+#### P231: `vat_tax_point_advance_invoice` 🔴 [DEPRECATED]
 
-#### P235: `vat_cash_accounting_jdg` ★ NOWA REGUŁA JDG ★
+> ⚠️ **[DEPRECATED — Doc 22 → Doc 28a]** Zastąpione przez R0546-R0559 (`28a_JDG_EDGE_CASES_FULL.md` Grupa A).
 
-- **Cel biznesowy:** Metoda kasowa VAT dla małych podatników JDG — obowiązek podatkowy w dacie zapłaty, nie wystawienia faktury. Opcja dostępna dla JDG o obrotach < 2M EUR.
-- **Przesłanki:** `input.jdg_entrepreneur.is_small_taxpayer == true` AND `input.jdg_entrepreneur.is_vat_payer == true` AND `input.invoice.vat_cash_accounting == true`
-- **Rezultat:** `vat_cash_accounting: true`, `tax_point: "PAYMENT_DATE"`
-- **Podstawa prawna:** Art. 21 ustawy o VAT (metoda kasowa dla małych podatników)
-- **Priorytet:** 235
+- ~~**Cel biznesowy:** Moment obowiązku dla faktur zaliczkowych~~
+- ~~**Przesłanki:** `input.invoice.invoice_type == "ADVANCE"`~~
+- ~~**Rezultat:** `tax_point: "PAYMENT_DATE"`~~
+- ~~**Podstawa prawna:** Art. 19a ust. 8 VAT~~
+- ~~**Priorytet:** 231~~
+
+#### P235: `vat_cash_accounting_jdg` ★ NOWA REGUŁA JDG ★ 🔴 [DEPRECATED]
+
+> ⚠️ **[DEPRECATED — Doc 22 → Doc 28a]** Zastąpione przez R0546-R0559 (`28a_JDG_EDGE_CASES_FULL.md` Grupa A).
+
+- ~~**Cel biznesowy:** Metoda kasowa VAT dla małych podatników JDG~~
+- ~~**Przesłanki:** `input.jdg_entrepreneur.is_small_taxpayer == true` AND `input.jdg_entrepreneur.is_vat_payer == true` AND `input.invoice.vat_cash_accounting == true`~~
+- ~~**Rezultat:** `vat_cash_accounting: true`, `tax_point: "PAYMENT_DATE"`~~
+- ~~**Podstawa prawna:** Art. 21 ustawy o VAT (metoda kasowa dla małych podatników)~~
+- ~~**Priorytet:** 235~~
 
 ---
 
@@ -1303,13 +1316,16 @@ To SERCE JDG — składki społeczne i zdrowotne są fundamentalnie różne od p
 - **Podstawa prawna:** Art. 18, 18a, 22 ustawy o SUS
 - **Priorytet:** 700
 
-#### P701: `zus_sickness_voluntary_jdg`
+#### P701: `zus_sickness_voluntary_jdg` 🔴 [DEPRECATED]
 
-- **Cel biznesowy:** Składka chorobowa dla JDG jest DOBROWOLNA. ★ SPECYFIKA JDG ★
-- **Przesłanki:** `input.jdg_entrepreneur.zus_sickness_voluntary == false`
-- **Rezultat:** `zus_sickness_rate: "0.00"` (nie nalicza się)
-- **Podstawa prawna:** Art. 11 ust. 2 ustawy o SUS (dobrowolność ubezpieczenia chorobowego dla JDG)
-- **Priorytet:** 701
+> ⚠️ **[DEPRECATED — Doc 22 → Doc 28]** Zastąpione przez R0346 `zus_sickness_voluntary` (`28_JDG_ULTIMATE_GRANULARITY.md` — indeks główny Doc 28, nie Doc 28a edge cases).
+> R0346 jest bardziej szczegółowa (pełny 10-polowy format ENTERPRISE).
+
+- ~~**Cel biznesowy:** Składka chorobowa dla JDG jest DOBROWOLNA. ★ SPECYFIKA JDG ★~~
+- ~~**Przesłanki:** `input.jdg_entrepreneur.zus_sickness_voluntary == false`~~
+- ~~**Rezultat:** `zus_sickness_rate: "0.00"` (nie nalicza się)~~
+- ~~**Podstawa prawna:** Art. 11 ust. 2 ustawy o SUS (dobrowolność ubezpieczenia chorobowego dla JDG)~~
+- ~~**Priorytet:** 701~~
 
 ### 3.8.2 `jdg.zus.start_relief` — Ulga na start (P740)
 
@@ -1412,11 +1428,16 @@ To SERCE JDG — składki społeczne i zdrowotne są fundamentalnie różne od p
 
 ### 3.9.1 `jdg.accounting.pkpir` — PKPiR (P800-P819)
 
-#### P800: `pkpir_column_mapping`
+#### P800: `pkpir_column_mapping` 🔴 [DEPRECATED]
 
-- **Cel biznesowy:** Mapowanie wydatku na odpowiednią kolumnę PKPiR (16 kolumn). ★ SPECYFIKA JDG ★
-- **Przesłanki:** `input.jdg_entrepreneur.uses_pkpir == true`
-- **Rezultat:** `pkpir_column: <numer 1-16>`
+> ⚠️ **[DEPRECATED — Doc 22 → Doc 28a]** Zastąpione przez R0372-R0399 (`28a_JDG_EDGE_CASES_FULL.md` — 28 reguł pełnej księgowości JDG).
+> Doc 28a ma radykalnie więcej reguł (28 vs 3) pokrywających: kolumny, amortyzację, leasing, FX, FIFO, RMK, home office.
+
+- ~~**Cel biznesowy:** Mapowanie wydatku na odpowiednią kolumnę PKPiR (16 kolumn). ★ SPECYFIKA JDG ★~~
+- ~~**Przesłanki:** `input.jdg_entrepreneur.uses_pkpir == true`~~
+- ~~**Rezultat:** `pkpir_column: <numer 1-16>`~~
+
+> ℹ️ **Tabela mapowania PKPiR (16 kolumn) poniżej — zachowana jako materiał referencyjny,** nie podlega deprecjacji — jest to dokumentacja struktury danych, nie reguła decyzyjna.
 
 **Tabela mapowania PKPiR (16 kolumn):**
 
@@ -1442,21 +1463,25 @@ To SERCE JDG — składki społeczne i zdrowotne są fundamentalnie różne od p
 - **Podstawa prawna:** Rozporządzenie MF w sprawie prowadzenia PKPiR (Dz.U. 2025)
 - **Priorytet:** 800
 
-#### P801: `pkpir_revenue_recognition`
+#### P801: `pkpir_revenue_recognition` 🔴 [DEPRECATED]
 
-- **Cel biznesowy:** Moment rozpoznania przychodu w PKPiR — data wystawienia faktury lub data otrzymania zapłaty (metoda kasowa lub memoriałowa)
-- **Przesłanki:** `input.jdg_entrepreneur.uses_pkpir == true`
-- **Rezultat:** `pkpir_revenue_date: issue_date` lub `payment_date`
-- **Podstawa prawna:** § 20-21 rozporządzenia PKPiR
-- **Priorytet:** 801
+> ⚠️ **[DEPRECATED — Doc 22 → Doc 28a]** Zastąpione przez R0372-R0399 (`28a_JDG_EDGE_CASES_FULL.md`).
 
-#### P802: `pkpir_expense_recognition`
+- ~~**Cel biznesowy:** Moment rozpoznania przychodu w PKPiR~~
+- ~~**Przesłanki:** `input.jdg_entrepreneur.uses_pkpir == true`~~
+- ~~**Rezultat:** `pkpir_revenue_date: issue_date` lub `payment_date`~~
+- ~~**Podstawa prawna:** § 20-21 rozporządzenia PKPiR~~
+- ~~**Priorytet:** 801~~
 
-- **Cel biznesowy:** Moment ujęcia kosztu w PKPiR — data wystawienia faktury (memoriałowo)
-- **Przesłanki:** `input.invoice.direction == "PURCHASE"` AND `input.jdg_entrepreneur.uses_pkpir == true`
-- **Rezultat:** `pkpir_expense_date: input.invoice.issue_date`
-- **Podstawa prawna:** § 20 rozporządzenia PKPiR
-- **Priorytet:** 802
+#### P802: `pkpir_expense_recognition` 🔴 [DEPRECATED]
+
+> ⚠️ **[DEPRECATED — Doc 22 → Doc 28a]** Zastąpione przez R0372-R0399 (`28a_JDG_EDGE_CASES_FULL.md`).
+
+- ~~**Cel biznesowy:** Moment ujęcia kosztu w PKPiR~~
+- ~~**Przesłanki:** `input.invoice.direction == "PURCHASE"` AND `input.jdg_entrepreneur.uses_pkpir == true`~~
+- ~~**Rezultat:** `pkpir_expense_date: input.invoice.issue_date`~~
+- ~~**Podstawa prawna:** § 20 rozporządzenia PKPiR~~
+- ~~**Priorytet:** 802~~
 
 ### 3.9.2 `jdg.accounting.lump_sum_evidence` — Ewidencja ryczałtowca (P820-P829)
 
@@ -1488,24 +1513,26 @@ To SERCE JDG — składki społeczne i zdrowotne są fundamentalnie różne od p
 
 ### 3.9.4 `jdg.accounting.depreciation` — Amortyzacja JDG (P840-P849)
 
-#### P840: `depreciation_linear_jdg`
+#### P840: `depreciation_linear_jdg` 🔴 [DEPRECATED]
 
-- **Cel biznesowy:** Amortyzacja liniowa środków trwałych JDG — stawki z KŚT. Możliwość jednorazowej amortyzacji dla małych podatników do 50 000 EUR rocznie.
-- **Przesłanki:** `input.invoice.expense_type == "FIXED_ASSET"` AND metoda = liniowa
-- **Rezultat:** `depreciation_method: "LINEAR"`, `depreciation_rate` z KŚT (identycznie jak dla spółek)
-- **Podstawa prawna:** Art. 22a-22o PIT (dla JDG — PIT, nie CIT!)
-- **Priorytet:** 840
+> ⚠️ **[DEPRECATED — Doc 22 → Doc 28a]** Zastąpione przez R0379-R0389 (`28a_JDG_EDGE_CASES_FULL.md` — 11 reguł amortyzacji).
+> Doc 28a pokrywa: liniową, degresywną, KŚT grupy, ulepszenia, sprzedaż.
 
-#### P842: `depreciation_one_off_jdg`
+- ~~**Cel biznesowy:** Amortyzacja liniowa środków trwałych JDG~~
+- ~~**Przesłanki:** `input.invoice.expense_type == "FIXED_ASSET"` AND metoda = liniowa~~
+- ~~**Rezultat:** `depreciation_method: "LINEAR"`, `depreciation_rate` z KŚT~~
+- ~~**Podstawa prawna:** Art. 22a-22o PIT~~
+- ~~**Priorytet:** 840~~
 
-- **Cel biznesowy:** Jednorazowa amortyzacja dla małych podatników JDG — limit 50 000 EUR w roku podatkowym. ★ SPECYFIKA JDG ★
-- **Przesłanki:** 
-  - `input.jdg_entrepreneur.is_small_taxpayer == true`
-  - `input.invoice.amount_net <= równowartość 50 000 EUR`
-  - `input.invoice.expense_type == "FIXED_ASSET"`
-- **Rezultat:** `depreciation_method: "ONE_OFF"`, `depreciation_rate: "1.00"`
-- **Podstawa prawna:** Art. 22k ust. 7 PIT
-- **Priorytet:** 842
+#### P842: `depreciation_one_off_jdg` 🔴 [DEPRECATED]
+
+> ⚠️ **[DEPRECATED — Doc 22 → Doc 28a]** Zastąpione przez R0379-R0389 (`28a_JDG_EDGE_CASES_FULL.md`).
+
+- ~~**Cel biznesowy:** Jednorazowa amortyzacja dla małych podatników JDG~~
+- ~~**Przesłanki:** `input.jdg_entrepreneur.is_small_taxpayer == true`...~~
+- ~~**Rezultat:** `depreciation_method: "ONE_OFF"`, `depreciation_rate: "1.00"`~~
+- ~~**Podstawa prawna:** Art. 22k ust. 7 PIT~~
+- ~~**Priorytet:** 842~~
 
 ### 3.9.5 `jdg.accounting.private_mixed` — Wydatki mieszane JDG (P850-P859)
 
@@ -1597,17 +1624,17 @@ To SERCE JDG — składki społeczne i zdrowotne są fundamentalnie różne od p
 - **Podstawa prawna:** Art. 22-25 Prawa przedsiębiorców
 - **Priorytet:** 912
 
-#### P914: `business_suspension_zus`
+#### P914: `business_suspension_zus` 🔴 [DEPRECATED]
 
-- **Cel biznesowy:** Podczas zawieszenia JDG: brak obowiązku opłacania składek ZUS społecznych (za okres zawieszenia). Składka zdrowotna też nie jest należna za okres zawieszenia. ★ SPECYFIKA JDG ★
-- **Przesłanki:** `input.jdg_entrepreneur.business_status == "SUSPENDED"`
-- **Rezultat:** 
-  - `zus_social_due: false`
-  - `zus_health_due: false`
-  - `zus_social_rate: "0.00"`
-  - `zus_health_rate: "0.00"`
-- **Podstawa prawna:** Art. 36a ustawy o SUS
-- **Priorytet:** 914
+> ⚠️ **[DEPRECATED — Doc 22 → Doc 28a]** Zastąpione przez R0582 `edge_zus_declaration_zero_on_suspension` (`28a_JDG_EDGE_CASES_FULL.md` Grupa F).
+> **P914 był BŁĘDNY** (twierdził, że zdrowotna=0 podczas zawieszenia). R0582 jest poprawna: zdrowotna NADAL należna.
+> Poprawka wdrożona w `policies/jdg/business.rego`: `zus_health_due: true`, `zus_health_rate` delegowane do pakietu ZUS przez `object.union`.
+
+- ~~**Cel biznesowy:** Podczas zawieszenia JDG: brak obowiązku opłacania składek ZUS społecznych.~~
+- ~~**Przesłanki:** `input.jdg_entrepreneur.business_status == "SUSPENDED"`~~
+- ~~**Rezultat:** `zus_social_due: false`, `zus_health_due: true` **(poprawione!)**, `zus_health_rate: <z pakietu zus>`~~
+- ~~**Podstawa prawna:** Art. 36a ustawy o SUS (społeczne=0, ALE zdrowotna NADAL należna)~~
+- ~~**Priorytet:** 914~~
 
 ### 3.10.3 `jdg.business.succession` — Sukcesja (P920-P929)
 

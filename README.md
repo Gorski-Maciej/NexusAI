@@ -36,6 +36,7 @@ Pełna instrukcja krok po kroku: [`docs/QUICKSTART.md`](docs/QUICKSTART.md).
 | Funkcja | Opis |
 |---|---|
 | 🧾 **Księgowanie autonomiczne** | 5 Agentów AI analizuje fakturę i podejmuje decyzję: **AUTO_POST** (≥0.92), **SUGGEST** (≥0.75), lub **ASK_USER** (<0.75). Jeden poziom automatyzacji. |
+| ⚖️ **OPA/Rego Rule Engine** | **294 reguły kanoniczne** JDG w architekturze Multi-Pass. Pokrycie: PIT, VAT, ZUS, KSeF, JPK, ulgi, crossborder. 32 pliki `.rego` z `# METADATA`, Temporal Bundle Routing, 175 testów granicznych. |
 | 🔍 **OCR ensemble (4 silniki)** | Tesseract + PaddleOCR + docTR + EasyOCR z konsensusem głosowania i Nadzorcą AI. Wyższe **recall** niż pojedynczy VLM. |
 | 🤖 **5 Agentów AI (lokalnych)** | Orkiestrator (Granite 3.2 3B), Ekstrakcji Danych, Analityczny, Walidator Jakości, Środków Trwałych. 13 modeli GGUF. Cognitive Audit Trail, 4-Eyes Principle, Bayesian Trust Score. [Pełna specyfikacja →](docs/AGENTS.md) |
 | 📜 **Pełna zgodność KSeF** | Generowanie XML wg schematu `FA_VAT(2)`, walidacja XSD, wysyłka do API KSeF MF. |

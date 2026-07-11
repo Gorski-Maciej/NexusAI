@@ -2,6 +2,24 @@
 # NexusAI JDG Policies — Tax Allowances (P600-P635)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
+# METADATA
+# title: Tax Allowances — Reliefs, IP Box, Crypto, Bad Debt PIT
+# description: |
+#   PAS 6 Multi-Pass. First-Match-Wins else-chain. Ulgi: B+R (P600),
+#   IKZE (P605), IP Box 5% (P610), CSR/sponsoring 150% (P612),
+#   terminal płatniczy 200% (P614), złe długi PIT wierzyciel (P618),
+#   abolicyjna (P620), związki zawodowe 840 PLN (P622), krypto 19% (P630).
+# architecture: Multi-Pass PAS 6 (ADR-001)
+# legal_basis: Art. 26-30ca PIT, ustawa o IKZE, ustawa o ryczałcie
+# edge_cases:
+#   - P600: Centrum B+R → 200%, standard → 100%
+#   - P605: IKZE limit roczny 14 083-16 956 PLN, tylko skala/liniowy
+#   - P618: >90 dni + !is_paid + receivable_not_sold
+#   - P622: związki NIE dla liniowego! (tylko skala i ryczałt)
+# package: jdg.allowances
+# deprecated: false
+# ═══════════════════════════════════════════════════════════════════════════════
+#
 # Reguły ulg podatkowych dla JDG (jednoosobowa działalność gospodarcza):
 #   - Ulga B+R (P600) — 100%/200% kosztów kwalifikowanych
 #   - Ulga IKZE (P605) — odliczenie wpłat na IKZE od dochodu

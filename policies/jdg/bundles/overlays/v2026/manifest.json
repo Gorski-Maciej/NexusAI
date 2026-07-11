@@ -1,0 +1,33 @@
+{
+  "name": "jdg-overlay-v2026",
+  "version": "2026.07.11",
+  "overlays_version": "base-2026.07.11",
+  "tax_year": 2026,
+  "effective_from": "2026-01-01",
+  "effective_to": "2026-12-31",
+  "description": "Overlay JDG dla roku podatkowego 2026 — tylko zmienione reguły.",
+  "changes": [
+    {
+      "type": "MODIFY",
+      "rule": "jdg.pit.forms.tax_scale_bracket",
+      "description": "Próg podatkowy 120000 → 130000 PLN (propozycja MF)",
+      "status": "PLANNED",
+      "legal_basis": "Projekt ustawy o PIT 2026"
+    },
+    {
+      "type": "MODIFY",
+      "rule": "jdg.zus.health_scale",
+      "description": "Składka zdrowotna 9% → 8.5% (propozycja)",
+      "status": "PLANNED",
+      "legal_basis": "Projekt ustawy zdrowotnej 2026"
+    },
+    {
+      "type": "MODIFY",
+      "rule": "jdg.business.unregistered_activity_limit_exceeded",
+      "description": "Limit nieewidencjonowanej: 50% → 75% min. wynagrodzenia",
+      "status": "PLANNED",
+      "legal_basis": "Nowelizacja Prawa przedsiębiorców"
+    }
+  ],
+  "files": []
+}

@@ -2,24 +2,33 @@
 # NexusAI JDG Policies — Common Helpers
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# Wspólne funkcje pomocnicze dla wszystkich pakietów JDG.
-# Używane przez wszystkie pakiety poprzez `import data.jdg.helpers`.
-#
+# METADATA
+# title: JDG Common Helpers — Reusable Utility Functions
+# description: |
+#   Wspólne funkcje pomocnicze dla wszystkich pakietów JDG.
+#   Używane przez wszystkie pakiety poprzez `import data.jdg.helpers`.
+#   Zawiera: threshold helpers, tax form detection, field confidence,
+#   routing reason builders, currency/date helpers, MPP detection,
+#   warning builders.
+# architecture: B2 Decoupled Thresholds — używa data.thresholds (nie input.thresholds)
+#   dla lepszego cache'owania OPA i mniejszych payloadów API.
+# priority: N/A (helper library, nie reguła decyzyjna)
 # package: jdg.helpers
+# deprecated: false
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.helpers
 
 # ── Threshold Helpers ─────────────────────────────────────────────────────────
 
-# Bezpieczny odczyt progu z input.thresholds.jdg.limits
+# Bezpieczny odczyt progu z data.thresholds.jdg.limits
 get_jdg_limit(key, fallback) = value {
-    value := object.get(input.thresholds.jdg.limits, key, fallback)
+    value := object.get(data.thresholds.jdg.limits, key, fallback)
 }
 
-# Bezpieczny odczyt stawki z input.thresholds.jdg.rates
+# Bezpieczny odczyt stawki z data.thresholds.jdg.rates
 get_jdg_rate(key, fallback) = rate {
-    rate := object.get(input.thresholds.jdg.rates, key, fallback)
+    rate := object.get(data.thresholds.jdg.rates, key, fallback)
 }
 
 # ── Tax Form Detection ────────────────────────────────────────────────────────
@@ -53,7 +62,7 @@ is_tax_card {
 
 # Sprawdza czy confidence pola jest poniżej progu JDG
 jdg_fc_below_threshold(fc_field, threshold_key) {
-    object.get(input.confidence, fc_field, 1.0) < object.get(input.thresholds.jdg.fc_thresholds, threshold_key, 0.0)
+    object.get(input.confidence, fc_field, 1.0) < object.get(data.thresholds.jdg.fc_thresholds, threshold_key, 0.0)
     object.get(input.confidence, fc_field, 1.0) > 0
 }
 
@@ -72,20 +81,20 @@ build_jdg_routing_reason(tax_form, field_name, confidence, threshold) = reason {
 
 # Konwertuje kwotę brutto na EUR używając kursu z thresholds
 jdg_amount_eur = eur {
-    eur := input.invoice.amount_gross / object.get(input.thresholds.jdg.rates, "eur_pln", 4.5)
+    eur := input.invoice.amount_gross / object.get(data.thresholds.jdg.rates, "eur_pln", 4.5)
 }
 
 # ── Date Helpers ───────────────────────────────────────────────────────────────
 
 # Sprawdza czy data transakcji mieści się w okresie obowiązywania reguły JDG
 jdg_is_valid_period(date_str) {
-    date_str >= object.get(input.thresholds.jdg, "valid_from", "2000-01-01")
-    not object.get(input.thresholds.jdg, "valid_to", null)
+    date_str >= object.get(data.thresholds.jdg, "valid_from", "2000-01-01")
+    not object.get(data.thresholds.jdg, "valid_to", null)
 }
 
 jdg_is_valid_period(date_str) {
-    date_str >= object.get(input.thresholds.jdg, "valid_from", "2000-01-01")
-    date_str <= object.get(input.thresholds.jdg, "valid_to", "2099-12-31")
+    date_str >= object.get(data.thresholds.jdg, "valid_from", "2000-01-01")
+    date_str <= object.get(data.thresholds.jdg, "valid_to", "2099-12-31")
 }
 
 # ── MPP / Split Payment Helpers ────────────────────────────────────────────────

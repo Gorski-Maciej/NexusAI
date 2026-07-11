@@ -1114,7 +1114,7 @@ W dokumencie używam notacji **P500a–P500d** dla zwięzłości.
 | **P912c** | suspension_kup_lease_continuation | Kontynuacja leasingu |
 | **P912d** | suspension_kup_rent_continuation | Kontynuacja czynszu |
 | **P914a** | suspension_zus_social_zero | ZUS społeczne = 0 |
-| **P914b** | suspension_zus_health_zero | ZUS zdrowotna = 0 |
+| **P914b** | ~~suspension_zus_health_zero~~ → `suspension_zus_health_due` | ⚠️ POPRAWIONE: ZUS zdrowotna NADAL należna podczas zawieszenia |
 | **P914c** | suspension_zus_notification | Zawiadomienie ZUS |
 | **P916a** | resumption_within_24_months | Wznowienie w ciągu 24 miesięcy |
 | **P916b** | resumption_zus_renewal | Przywrócenie ZUS |

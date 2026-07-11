@@ -5,7 +5,22 @@
 > **Autor:** Zespół NexusAI  
 > **Plik bazowy:** `Plan OPA/22_JDG_ENTERPRISE_PLAN.md` (~145 reguł, P0-P1099)  
 > **Plik uzupełniający:** `Plan OPA/23_JDG_EXPANSION_SUPPLEMENT.md` (niniejszy)  
-> **Uwaga:** Nowe priorytety: P43-P49 (crossborder luki), P59-P63 (zwolnienia VAT), P185-P191 (VAT szczegółowy), P232 (VAT-UE), P588 (interakcje zwolnień PIT), P590-P599 (zmiana formy), P601-P615 (ulgi), P730-P739 (forma↔składki), P860-P869 (leasing), P1100-P1149 (korekty), P1150-P1199 (przedawnienia), P1200-P1219 (reprezentacja)  
+> **Uwaga:** Nowe priorytety: P43-P49 (crossborder luki), P59-P63 (zwolnienia VAT), P185-P191 (VAT szczegółowy), P232 (VAT-UE), P588 (interakcje zwolnień PIT), P590-P599 (zmiana formy), P601-P615 (ulgi), P730-P739 (forma↔składki), P860-P869 (leasing), P1100-P1149 (korekty), P1150-P1199 (przedawnienia), P1200-P1219 (reprezentacja)
+>
+> ⚠️ **DEPRECATION NOTICE (zgodnie z `38b_JDG_DEDUP_REPORT.md`):**  
+> Następujące reguły w tym dokumencie są oznaczone jako **[DEPRECATED]** — ich kanoniczne wersje znajdują się w Doc 22 (dla P59) lub Doc 28a (dla pozostałych):
+>
+> | [DEPRECATED] | Zastąpiona przez | Dokument | Powód |
+> |-------------|-------------------|:--------:|-------|
+> | **P59** `subject_exemption_startup_proportion` | P58 `vat_exemption_subject_jdg` (rozszerzona) | Doc 22 | Wchłonięta jako sub-reguła/edge case P58 |
+> | **P734** `lump_sum_health_tier_lockstep` | P724 `zus_health_lump_sum_jdg` (rozszerzona) | Doc 22 | Wchłonięta jako edge case P724 |
+> | **P738** `scale_health_deduction_prohibition` | P720 `zus_health_scale_jdg` | Doc 22 | Redundantna — P720 już stwierdza brak odliczenia |
+> | **P730** `health_contribution_rate_matrix` | P720/P722/P724/P736 | Doc 22 | Pozostaje jako helper/macierz, nie jako reguła decyzyjna |
+> | **P1100-P1114** (8 reguł korekt) | R0420-R0435 (16 reguł) | Doc 28a | Doc 28a bardziej kompletny (16 vs 8 reguł) |
+> | **P1150-P1166** (9 reguł przedawnień) | R0436-R0449 (14 reguł) | Doc 28a | Doc 28a bardziej kompletny (14 vs 9 reguł) |
+> | **P1200-P1212** (7 reguł reprezentacji) | R0450-R0459 (10 reguł) | Doc 28a | Doc 28a bardziej szczegółowy (10 vs 7 reguł) |
+>
+> **Łącznie w Doc 23: 28 reguł [DEPRECATED].** Pozostałe reguły (P43-P49, P61-P63, P185-P191, P232, P588, P590-P596, P601-P615, P732, P736, P860-P868) pozostają kanoniczne.
 
 ---
 

@@ -2,12 +2,22 @@
 # NexusAI JDG — Main Orchestrator (Multi-Pass First-Match-Wins)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# Główny plik decyzyjny JDG. Orkiestruje ewaluację wszystkich 29 pakietów
-# w architekturze Multi-Pass zgodnej z Doc 34, Sekcja 1.3.
-#
-# 30 pakietów = 29 plików reguł + ten główny orchestrator.
-#
+# METADATA
+# title: JDG Main Orchestrator — Multi-Pass Evaluation Engine
+# description: |
+#   Główny plik decyzyjny JDG. Orkiestruje ewaluację wszystkich 29 pakietów
+#   w architekturze Multi-Pass zgodnej z Doc 34, Sekcja 1.3.
+#   30 pakietów = 29 plików reguł + ten główny orchestrator.
+#   Używa object.union() do scalania werdyktów z kolejnością: najniższy
+#   priorytet wewnątrz, najwyższy na zewnątrz (overrides).
+# architecture: Multi-Pass OPA (ADR-001)
+# legal_basis: N/A (orchestrator — nie zawiera reguł podatkowych)
+# edge_cases:
+#   - Jeśli RISK lub ROUTING zwrócą BLOCK_AND_ALERT, dalsze passy abortowane
+#   - object.union nadpisuje klucze bez ostrzeżenia — kolejność mergowania jest krytyczna
+# priority: N/A (orchestrator)
 # package: jdg.main
+# deprecated: false
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.main
