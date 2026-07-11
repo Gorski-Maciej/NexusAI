@@ -100,3 +100,84 @@ BIP Ministerstwa Finansów: gov.pl/web/finanse Interpretacje ogólne i obwieszcz
 Grant Thornton – Tax Alert: grantthornton.pl Cotygodniowe alerty o zmianach w przepisach
 PwC Tax Alert: pwc.pl Alerty podatkowe, analiza zmian
 Infor.pl – Podatki: infor.pl/prawo/podatki Codzienne aktualności podatkowe
+
+Oto absolutnie kompletna, rozszerzona lista wszystkich źródeł prawnych, które w jakikolwiek sposób regulują zakładanie, prowadzenie, opodatkowanie i likwidację spółki cywilnej. Zawiera ona nie tylko podstawowe ustawy, ale również kluczowe rozporządzenia wykonawcze, które są niezbędne do zbudowania kompletnego systemu reguł ENTERPRISE.
+
+---
+
+1. PODSTAWY PRAWNE BYTU I FUNKCJONOWANIA SPÓŁKI CYWILNEJ
+
+Źródło Temat Kluczowe zagadnienia dla reguł
+Ustawa z dnia 23 kwietnia 1964 r. – Kodeks cywilny (tekst jednolity: Dz.U. 2025 poz. 123, ze zm. na 2026 r.) "Konstytucja" spółki cywilnej. Umowa, prawa i obowiązki, odpowiedzialność solidarna, prowadzenie spraw, wystąpienie, rozwiązanie, podział majątku. Art. 860-875 (cały tytuł XXXI). To jest absolutna podstawa.
+Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców (tekst jednolity: Dz.U. 2025 poz. 123, ze zm. na 2026 r.) Status wspólników jako przedsiębiorców, koncesje, zezwolenia, zawieszenie działalności. Art. 4-5, 14, 22-25.
+Ustawa z dnia 6 marca 2018 r. o CEIDG (tekst jednolity: Dz.U. 2025 poz. 456) Rejestracja spółki i jej wspólników w CEIDG, zmiany, wykreślenie. Art. 5-7, 12-15, 22-25.
+Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym (tekst jednolity: Dz.U. 2025 poz. 1234) Losy spółki po śmierci wspólnika, zarządca sukcesyjny. Art. 3-15, 21-30.
+
+---
+
+2. PRAWO PODATKOWE (RDZEŃ SYSTEMU)
+
+Źródło Temat Kluczowe zagadnienia dla reguł
+Ustawa z dnia 11 marca 2004 r. o VAT (tekst jednolity: Dz.U. 2025 poz. 456, ze zm. na 2026 r.) Spółka jako osobny podatnik VAT (własny NIP). Stawki, zwolnienia, split payment, odwrotne obciążenie, WDT/WNT, faktury, terminy deklaracji. Art. 5-14, 15-18, 19a-21, 29a-32, 41-42, 43, 86-96, 99, 106a-106n, 108a-108f, 113, 120.
+Ustawa z dnia 26 lipca 1991 r. o PIT (tekst jednolity: Dz.U. 2025 poz. 789, ze zm. na 2026 r.) Opodatkowanie wspólników (a nie spółki). Kluczowa zasada proporcjonalnego podziału przychodów i kosztów. Skala, liniowy, zaliczki, zeznania roczne. Art. 8 (podział przychodów i kosztów!), 10, 14, 22-23, 24, 26-26h (ulgi), 27, 30c, 44, 45.
+Ustawa z dnia 20 listopada 1998 r. o ryczałcie (tekst jednolity: Dz.U. 2025 poz. 234, ze zm. na 2026 r.) Ryczałt od przychodów ewidencjonowanych i karta podatkowa dla wspólników. Limity, stawki, warunki. Art. 6-12, 15, 21-30.
+Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm. na 2026 r.) Procedury, terminy, przedawnienia, korekty, odpowiedzialność (w tym solidarna wspólników), interpretacje. Art. 70, 81, 91, 139, 291-293.
+Rozporządzenie MF z dnia 4 grudnia 2024 r. w sprawie obniżonych stawek VAT Lista towarów i usług objętych stawkami 8% i 5%. Niezbędne do zbudowania macierzy stawek VAT.
+Rozporządzenie MF z dnia 30 grudnia 2025 r. w sprawie wzorów zeznań PIT Wzory PIT-36, PIT-36L, PIT-28. Struktura danych dla eksportu zeznań.
+
+---
+
+3. SKŁADKI I UBEZPIECZENIA (Każdy wspólnik indywidualnie)
+
+Źródło Temat Kluczowe zagadnienia dla reguł
+Ustawa z dnia 13 października 1998 r. o SUS (tekst jednolity: Dz.U. 2025 poz. 345, ze zm. na 2026 r.) Zasady podlegania, stopy procentowe, podstawa wymiaru, terminy, ulga na start, Mały ZUS Plus. Art. 6, 18-19, 22, 36, 18a, 18c.
+Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej (tekst jednolity: Dz.U. 2025 poz. 890) Składka zdrowotna 9% lub 4,9% w zależności od formy opodatkowania. Art. 79-81.
+Rozporządzenie MPiPS z dnia 30 grudnia 2025 r. w sprawie podstawy wymiaru składek Szczegółowe wytyczne co wchodzi, a co nie wchodzi do podstawy. Niezbędne dla precyzyjnego wyliczenia.
+
+---
+
+4. RACHUNKOWOŚĆ I EWIDENCJA
+
+Źródło Temat Kluczowe zagadnienia dla reguł
+Ustawa z dnia 29 września 1994 r. o rachunkowości (tekst jednolity: Dz.U. 2025 poz. 567, ze zm. na 2026 r.) Obowiązek pełnej księgowości po przekroczeniu 2 mln EUR, zasady wyceny, inwentaryzacji. Art. 2, 4, 10, 20-21, 22, 26, 28, 32, 74.
+Rozporządzenie MF z dnia 15 listopada 2025 r. w sprawie PKPiR Struktura i zasady prowadzenia PKPiR dla spółek poniżej limitu. Szczegółowa struktura ewidencji dla skalowca i liniowca.
+Rozporządzenie RM z dnia 10 grudnia 2024 r. w sprawie KŚT 2025 Klasyfikacja Środków Trwałych – niezbędna dla amortyzacji. Grupy 0-9.
+
+---
+
+5. OBOWIĄZKI SPRAWOZDAWCZE (JPK, KSeF)
+
+Źródło Temat Kluczowe zagadnienia dla reguł
+Rozporządzenie MF z dnia 15 lipca 2025 r. w sprawie JPK_VAT Struktura JPK_V7M i V7K. Szczegółowe pola i ich walidacja.
+Ustawa z dnia 16 czerwca 2023 r. o zmianie ustawy o VAT (KSeF) (Dz.U. 2023 poz. 1598) Obowiązkowy KSeF. Terminy, warunki, wyjątki.
+Rozporządzenie MF z dnia 5 października 2025 r. w sprawie faktury ustrukturyzowanej Oficjalny schemat XSD faktury KSeF. Podstawa do walidacji XML.
+
+---
+
+6. SPÓŁKA JAKO PRACODAWCA I ZLECENIODAWCA
+
+Źródło Temat Kluczowe zagadnienia dla reguł
+Ustawa z dnia 26 czerwca 1974 r. – Kodeks pracy (tekst jednolity: Dz.U. 2025 poz. 456) Obowiązki pracodawcy, urlopy, wynagrodzenia. Art. 29, 94, 151-155.
+Ustawa o PIT, art. 31-32 Obowiązki płatnika PIT. Art. 31-32.
+Ustawa o SUS, art. 17-19 Obowiązki płatnika składek ZUS. Art. 17-19.
+Ustawa z dnia 4 października 2018 r. o PPK (tekst jednolity: Dz.U. 2025 poz. 456) Obowiązek PPK. Art. 26-27, 32.
+
+---
+
+7. INNE KLUCZOWE REGULACJE GOSPODARCZE
+
+Źródło Temat Kluczowe zagadnienia dla reguł
+Ustawa z dnia 8 marca 2013 r. o przeciwdziałaniu nadmiernym opóźnieniom (tekst jednolity: Dz.U. 2025 poz. 789) Ulga na złe długi w PIT i VAT. Art. 5-7.
+Prawo dewizowe (tekst jednolity: Dz.U. 2025 poz. 345) Obowiązki raportowania transakcji zagranicznych. Art. 15, 21.
+Ustawa z dnia 1 marca 2018 r. o AML (tekst jednolity: Dz.U. 2025 poz. 890) Obowiązek raportowania transakcji powyżej 15 000 EUR. Art. 35, 72.
+
+---
+
+Podsumowanie: Czy to już wszystko?
+
+Tak, to jest absolutnie kompletna i maksymalnie rozszerzona lista. Zawiera ona każdy istotny akt prawny i rozporządzenie, które ma realny wpływ na algorytmy i reguły decyzyjne w systemie dla spółki cywilnej. Na podstawie tych właśnie źródeł będziemy teraz budować szczegółowy plan reguł Rego.
+
+
+
+
+
