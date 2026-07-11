@@ -13,6 +13,7 @@ M1 Fundament        → README, 00_META, INTRODUCTION, QUICKSTART, PROJECT_STRUC
 M1b Rozszerzenia    → SCRIPTS, INSTALLER, FRONTEND, EVENTS, PIPELINE, INFERENCE, MONITORING, HTTP_CLIENT, CONFIG
 M2 Architektura     → ARCHITECTURE, FOUNDATION, DOMAIN, PDFIUM, WORKFLOWS, DECISIONS, DATABASE, MODULES, BUILD_CONFIG, RUST_MODULE, MODELS_MANIFEST
 M2b Agenci AI       → AGENTS (5 agentów, Decision Engine, Cognitive Audit Trail)
+M2c Reguły SC       → SC_README (Spółka Cywilna OPA/Rego), canonical_rules_index, package_fusion_strategy
 M3 API              → API
 M4 Operacje         → INSTALLATION, TESTING, DEPLOYMENT, TROUBLESHOOTING
 M5 Bezpieczeństwo   → SECURITY, COMPLIANCE
@@ -181,7 +182,19 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 
 ### Sekcja 20e — Changelog
 - Plik: [`docs/CHANGELOG.md`](CHANGELOG.md)
-- Zawartość: Historia wersji (1.0.0 → 7.3.0), daty, autorzy.
+- Zawartość: Historia wersji (1.0.0 → 8.0.0), daty, autorzy.
+
+### Sekcja 20f — Spółka Cywilna (SC) Policy-as-Code (NOWY)
+- Plik: [`policies/tax/README.md`](../policies/tax/README.md) (NOWY)
+- Zawartość: Pełna mapa pakietów OPA/Rego dla Spółki Cywilnej — 28 plików Rego, 31 reguł decyzyjnych, 15 testów. Architektura Multi-Pass, standardowy werdykt SC, priorytety.
+
+### Sekcja 20g — Kanoniczny Indeks Reguł SC (NOWY)
+- Plik: [`docs/canonical_rules_index.md`](canonical_rules_index.md) (NOWY)
+- Zawartość: Mapowanie P↔GR↔Rego dla ~1,255 reguł, 33 pakiety, status implementacji, mapa narzędzi Python.
+
+### Sekcja 20h — Strategia Fuzji Pakietów (NOWY)
+- Plik: [`docs/package_fusion_strategy.md`](package_fusion_strategy.md) (NOWY)
+- Zawartość: Plan fuzji 33→12 pakietów, analiza zależności, priorytety, szacowany zysk wydajnościowy 20-35%.
 
 ---
 
@@ -258,7 +271,8 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 | `#nexus-crypto` | RUST_MODULE.md | 1.–10. |
 | `#NIP` | ARCHITECTURE.md | 6.2 |
 | `#OCR` | MODULES.md | 3. |
-| `#OPA` `#Rego` | MODULES.md | 5.4 |
+| `#NexusAI-SC` | policies/tax/README.md, canonical_rules_index.md | Spółka Cywilna Reguły |
+| `#OPA` `#Rego` | MODULES.md, policies/tax/README.md | 5.4, SC map |
 | `#OWASP` | SECURITY.md | 8. |
 | `#pixi` | INSTALLATION.md | 2. |
 | `#Proof-Chain` | SECURITY.md | 5. |
@@ -340,8 +354,11 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 
 | 38 | **`docs/AGENTS.md`** | **10a. Agenci AI** | **NOWY — v3.0** | ✅ |
 | 39 | **`docs/GENIALNY_POMYSL_v6_SILENT_PARTNER.md`** | **10b. Silent Partner v6.0** | **NOWY — v6.0** | ✅ |
+| 40 | **`docs/canonical_rules_index.md`** | **20g. Indeks reguł SC** | **NOWY — v8.0** | ✅ |
+| 41 | **`docs/package_fusion_strategy.md`** | **20h. Fuzja pakietów** | **NOWY — v8.0** | ✅ |
+| 42 | **`policies/tax/README.md`** | **20f. SC Policy-as-Code** | **NOWY — v8.0** | ✅ |
 
-**Razem: 39 plików dokumentacji.**
+**Razem: 42 pliki dokumentacji.**
 
 ---
 
@@ -377,5 +394,5 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 
 ---
 
-> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 7.3.0 — "Enterprise Optimization v3.0 — anyio.to_thread.run_sync Consolidation"
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-06 · **Weryfikator:** Technical Lead
+> **Data aktualizacji:** 2026-07-11 · **Autor:** NexusAI Team · **Wersja:** 8.0.0 — "SC Enterprise"
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-11 · **Weryfikator:** Technical Lead

@@ -5,6 +5,108 @@
 
 ---
 
+## [8.0.0] — 2026-07-11 — "SC Enterprise — Spółka Cywilna Policy-as-Code System"
+
+### 🏛️ Spółka Cywilna (SC) — Kompletny System Reguł OPA/Rego ENTERPRISE
+
+**Cel:** Wdrożenie pełnego systemu reguł decyzyjnych dla Spółki Cywilnej w architekturze Policy-as-Code. SC jako unikalna forma prawna — dualizm podatkowy (VAT spółki + PIT wspólników per Art. 8 PIT), odpowiedzialność solidarna (Art. 864 KC), możliwość różnych form opodatkowania per wspólnik.
+
+---
+
+### 🔷 9 Strategicznych Ulepszeń (z `38_STRATEGIC_IMPROVEMENTS.md`)
+
+#### 🔬 Genius Improvements
+| # | Nazwa | Implementacja |
+|---|-------|---------------|
+| 1 | **ScTemporalSandbox** | `policies/tax/temporal.rego` — automatyczny dobór thresholds wg daty transakcji + audyt temporalny |
+| 2 | **ScPartnerMirror** | `policies/tax/partner_mirror.rego` — separacja danych RODO (PartnerPrivateVerdict) vs solidarność (PartnershipRiskMirror) |
+| 3 | **ScLegalGraph** | `tools/sc_legal_graph.py` (421 linii) — analizator grafu zależności reguł z detekcją konfliktów |
+
+#### ⚡ Enterprise Optimizations
+| # | Nazwa | Implementacja |
+|---|-------|---------------|
+| 1 | **ScPackageFusion** | `docs/package_fusion_strategy.md` — strategia fuzji 33→12 pakietów |
+| 2 | **ScThresholdPrecompute** | `policies/data/thresholds_sc.rego` — prekompilowane progi w bundle OPA |
+| 3 | **ScVerdictStreaming** | `tools/sc_verdict_streaming.py` (283 linie) — batch processing faktur z progres barem |
+
+#### 💡 Powerful Ideas
+| # | Nazwa | Implementacja |
+|---|-------|---------------|
+| 1 | **ScWhatIf Engine** | `policies/tax/what_if.rego` — tryb symulacyjny "co by było gdyby" |
+| 2 | **ScAnomalyGuard** | `policies/tax/anomaly.rego` — 5 reguł detekcji anomalii (z-score, vendor, partner ratio, seasonal, ML) |
+| 3 | **ScRegulatoryRadar** | `tools/regulatory_radar.py` (309 linii) — automatyczny monitoring zmian legislacyjnych |
+
+---
+
+### 🔷 8 Mechanizmów Integracyjnych SC
+
+#### ➕ Nowe pakiety Rego
+| Plik | Pakiet | Odpowiedzialność | Reguł |
+|------|--------|------------------|:-----:|
+| `main_sc.rego` | `tax.main_sc` | Główny orchestrator Multi-Pass SC (22 pakiety) | 149 L |
+| `sc_fallback.rego` | `tax.sc_fallback` | SC-specific fallback z 6 stanami cyklu życia | 6 reguł |
+| `sc_partnership.rego` | `tax.sc_partnership` | Cykl życia: powstanie, zmiany, rozwiązanie, sukcesja, zawieszenie | 7 reguł |
+| `sc_liability.rego` | `tax.sc_liability` | Odpowiedzialność solidarna, regres, egzekucja, małżonek | 5 reguł |
+| `sc_ksef_jpk.rego` | `tax.sc_ksef_jpk` | KSeF e-faktury, JPK_V7, Biała Lista, limity gotówkowe | 6 reguł |
+| `_helpers_sc.rego` | `tax.helpers_sc` | SC-specific helpers: iteracja partners[], Art. 8 PIT split, joint liability | 232 L |
+| `vat/deductions.rego` | `tax.vat.deductions` | VAT deductions stub | 1 reguła |
+| `vat/procedures.rego` | `tax.vat.procedures` | VAT procedures stub | 1 reguła |
+
+#### ➕ Narzędzia Python
+| Plik | Odpowiedzialność | Linii |
+|------|------------------|:-----:|
+| `tools/sc_context_enricher.py` | Pre-processor walidacji i wzbogacania input SC | 382 |
+
+#### ➕ Testy
+| Plik | Testów |
+|------|:-----:|
+| `policies/tests/sc_main_test.rego` | 15 testów integracyjnych (orchestrator, fallback, partnership, liability, KSeF, anomaly, temporal, what-if, mirror) |
+
+#### ➕ Dokumentacja
+| Plik | Opis |
+|------|------|
+| `docs/canonical_rules_index.md` | Kanoniczny indeks ~1,255 reguł z mapowaniem P↔GR↔Rego |
+| `docs/package_fusion_strategy.md` | Strategia fuzji pakietów 33→12 |
+| `Plan OPA/38_SPOLKA_CYWILNA_STRATEGIC_IMPROVEMENTS.md` | Analiza strategiczna 7 wymiarów + 3×3 kreatywnych propozycji |
+| `policies/tax/README.md` | Mapa pakietów SC (NOWY) |
+
+#### 🔄 Zaktualizowane pliki
+| Plik | Zmiana |
+|------|--------|
+| `policies/tax/_helpers.rego` | +45 linii helperów SC (temporal, anomaly, what-if, mirror, precompute) |
+| `policies/tax/_metadata.rego` | +23 wpisy metadanych dla reguł SC (severity, remediation, framework) |
+| `policies/bundle.sh` | +pakiety SC w budowaniu bundle |
+| `docs/CHANGELOG.md` | ten wpis |
+| `docs/INDEX.md` | +indeks SC, tagi, pakiety |
+| `docs/ARCHITECTURE.md` | +sekcja SC: orchestrator, partner mirror, joint liability |
+
+---
+
+### 📊 Metryki
+
+| Metryka | Wartość |
+|---------|:------:|
+| **Nowe pliki Rego** | 10 |
+| **Nowe pakiety Rego** | 8 (main_sc, sc_fallback, sc_partnership, sc_liability, sc_ksef_jpk, helpers_sc, vat/deductions, vat/procedures) |
+| **Nowe narzędzia Python** | 5 (context_enricher, legal_graph, regulatory_radar, verdict_streaming, + package_fusion doc) |
+| **Nowe reguły decyzyjne** | 31 (7 partnership + 5 liability + 6 ksef + 5 anomaly + 6 fallback + 1 temporal + 1 mirror) |
+| **Pliki zmodyfikowane** | 5 (_helpers, _metadata, bundle.sh, CHANGELOG, INDEX, ARCHITECTURE) |
+| **Testy integracyjne** | 15 |
+| **Linii nowego/poprawionego kodu** | ~2,500 (Rego: ~1,500 + Python: ~900 + Docs: ~100) |
+| **Pokrycie strategiczne** | 9/9 ulepszeń + 8/8 mechanizmów integracyjnych |
+
+---
+
+### 📚 Dokumentacja
+
+- **`docs/CHANGELOG.md`**: ten wpis
+- **`docs/INDEX.md`**: zaktualizowany o pakiety SC, indeks tagów
+- **`docs/ARCHITECTURE.md`**: dodana sekcja 5.6 — SC (Spółka Cywilna) Architecture
+- **`docs/canonical_rules_index.md`**: kanoniczny indeks reguł
+- **`policies/tax/README.md`**: mapa pakietów SC
+
+---
+
 ## [7.3.0] — 2026-07-06 — "Enterprise Optimization v3.0 — anyio.to_thread.run_sync Consolidation, ~880 linii mniej"
 
 ### 🚀 Enterprise Code Reduction — 29 plików, ~880 linii zredukowane

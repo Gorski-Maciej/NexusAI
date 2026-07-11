@@ -56,14 +56,23 @@ fi
 echo -e "${BLUE}[3/3]${NC} Building OPA bundle..."
 BUNDLE_FILE="${OUTPUT_DIR}/${BUNDLE_NAME}-${TAG}.tar.gz"
 
+# Build bundle with tax policies + SC thresholds data + SC-specific packages
 opa build \
     --bundle ./tax \
+    --bundle ./data \
     --output "$BUNDLE_FILE" \
     --revision "$REVISION" \
     2>&1
 
 echo -e "       ${GREEN}✓ Bundle created: ${BUNDLE_FILE}${NC}"
 echo -e "       Size: $(du -h "$BUNDLE_FILE" | cut -f1)"
+echo -e "       Packages included: tax/risk, tax/routing, tax/compliance, tax/crossborder,"
+echo -e "                         tax/vat/*, tax/pit/*, tax/zus/*, tax/accounting/*,"
+echo -e "                         tax/temporal, tax/anomaly, tax/what_if, tax/partner_mirror,"
+echo -e "                         tax/main_sc, tax/sc_fallback, tax/sc_partnership,"
+echo -e "                         tax/sc_liability, tax/sc_ksef_jpk,"
+echo -e "                         tax/_helpers, tax/_helpers_sc, tax/_metadata,"
+echo -e "                         data/sc/thresholds"
 
 # ── Optional: Push to OCI Registry ───────────────────────────────────────────
 if [[ "${2:-}" == "--push" ]] && [[ -n "${3:-}" ]]; then

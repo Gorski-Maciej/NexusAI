@@ -651,6 +651,106 @@ Pełna specyfikacja: [`docs/AGENTS.md`](AGENTS.md)
 
 ---
 
+## 5a. Spółka Cywilna (SC) — Policy-as-Code Architecture (v8.0)
+
+### 5a.1 Unikalna specyfika SC
+
+Spółka Cywilna to najbardziej złożona forma prawna w polskim systemie podatkowym:
+
+| Aspekt | SC | JDG | CIT |
+|--------|:--:|:---:|:---:|
+| **Podatnik VAT** | Spółka (jeden NIP) | Przedsiębiorca | Spółka |
+| **Podatnik PIT** | Każdy wspólnik osobno (Art. 8 PIT) | Przedsiębiorca | — (CIT) |
+| **Odpowiedzialność** | Solidarna (Art. 864 KC) | Indywidualna | Kapitałowa |
+| **Formy opodatkowania** | Różne per wspólnik | Jedna | Jedna (CIT) |
+| **Zmiany składu** | Partner addition/removal | — | Udziały |
+| **Sukcesja** | Spadkobiercy (Art. 872 KC) | Spadkobiercy | Dziedziczenie |
+
+**Kluczowa implikacja architektoniczna:** VAT jest spółki (pojedynczy werdykt), PIT jest KAŻDEGO wspólnika osobno (per-partner). Silnik OPA musi obsługiwać dualizm podatkowy z iteracją po `partners[]` i podziałem proporcjonalnym (Art. 8 PIT).
+
+### 5a.2 SC Multi-Pass Orchestrator
+
+```
+INPUT ──► PASS 0: RISK ─────► PASS 1: ROUTING ──► PASS 2: COMPLIANCE ──►
+              │ (BLOCK→abort)     │ (BLOCK→abort)     │
+              ▼                   ▼                   ▼
+         risk_verdict         routing_verdict     compliance_verdict
+
+         PASS 3: CROSSBORDER ─► PASS 4: TEMPORAL ─► PASS 5: VAT (spółka) ─►
+              │                    │                    │
+              ▼                    ▼                    ▼
+         cross_verdict        temporal_verdict     vat_verdict
+
+         PASS 6: ANOMALY ────► PASS 7: MIRROR ────► PASS 8: WHAT_IF ────►
+              │                    │                    │
+              ▼                    ▼                    ▼
+         anomaly_verdict      mirror_verdict       simulation_verdict
+
+         PASS 9: SC_FALLBACK ─► FINAL_VERDICT + SC_CONTEXT
+              │
+              ▼
+         sc_fallback_verdict (zawsze pasuje — gwarantuje werdykt)
+```
+
+Implementacja: `policies/tax/main_sc.rego` — 22 pakiety scalane przez zagnieżdżone `object.union()`, 149 linii.
+
+### 5a.3 ScPartnerMirror — Separacja RODO vs Solidarność
+
+Unikalny wzorzec dla SC: werdykt jest dzielony na dwie części:
+
+- **PartnerPrivateVerdict** — pełne dane podatkowe TYLKO jednego wspólnika (PIT, ZUS, ulgi). Widoczny tylko dla tego wspólnika (RODO Art. 5 — minimalizacja danych).
+- **PartnershipRiskMirror** — zagregowane, zanonimizowane ryzyka (ZUS overdue count, tax form distribution, joint liability exposure). Widoczne dla WSZYSTKICH wspólników (Art. 864 KC — odpowiedzialność solidarna).
+
+Implementacja: `policies/tax/partner_mirror.rego`.
+
+### 5a.4 Joint Liability (Art. 864 KC)
+
+Wszyscy wspólnicy odpowiadają solidarnie całym swoim majątkiem za zobowiązania SC. Reguły implementują:
+
+- **Egzekucja**: Wierzyciel może egzekwować dług od dowolnego wspólnika (Art. 366 KC)
+- **Regres**: Wspólnik który spłacił dług ma roszczenie zwrotne do pozostałych proporcjonalnie do udziałów (Art. 376 KC)
+- **Małżonek**: Ograniczona odpowiedzialność — tylko majątek wspólny + wymagana zgoda (Art. 41 KRO)
+- **Post-dissolution**: Odpowiedzialność trwa po rozwiązaniu SC (Art. 875 KC)
+
+Implementacja: `policies/tax/sc_liability.rego` — 5 reguł.
+
+### 5a.5 SC Lifecycle States
+
+```
+            ┌──────────┐
+            │  ACTIVE   │◄──────────── Wznowienie
+            └────┬─────┘
+     ┌──────────┼──────────┐
+     ▼          ▼          ▼
+┌─────────┐ ┌────────┐ ┌──────────┐
+│DISSOLVED│ │SUSPEND.│ │SUCCESSION│
+│(Art.874)│ │(max 24m)│ │(Art.872) │
+└────┬────┘ └────────┘ └────┬─────┘
+     │                       │
+     ▼                       ▼
+ [Likwidacja]           [Spadkobiercy
+  majątku]               wchodzą w prawa]
+```
+
+Każdy stan ma osobny fallback w `sc_fallback.rego` z właściwym `_routing` i `_warnings`.
+
+### 5a.6 SC vs JDG — Porównanie architektoniczne
+
+| Cecha | JDG | SC |
+|-------|-----|----|
+| **Orchestrator** | `main_jdg.rego` (100 L) | `main_sc.rego` (149 L) |
+| **Pakiety** | 29 | 22+ |
+| **Helpery** | `_helpers_jdg.rego` | `_helpers_sc.rego` + `_helpers.rego` |
+| **Fallback** | `fallback.rego` (2 stany) | `sc_fallback.rego` (6 stanów) |
+| **Specyfika** | Pojedynczy przedsiębiorca | Wielu wspólników, solidarna |
+| **Dane wejściowe** | `input.jdg_entrepreneur` | `input.partners[]` + `input.partnership` |
+| **VAT** | JDG = podatnik | SC = podatnik (jeden NIP) |
+| **PIT** | JDG = podatnik | Każdy wspólnik osobno per Art. 8 |
+
+Pełna specyfikacja: [`policies/tax/README.md`](../policies/tax/README.md)
+
+---
+
 ## 6. Model domeny
 
 ### 6.1 Agregaty
@@ -987,5 +1087,5 @@ curl http://127.0.0.1:8000/health
 
 ---
 
-> **Data aktualizacji:** 2026-07-06 · **Autor:** NexusAI Team · **Wersja:** 7.3.0 — Enterprise Optimization v3.0
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-06 · **Weryfikator:** Technical Lead
+> **Data aktualizacji:** 2026-07-11 · **Autor:** NexusAI Team · **Wersja:** 8.0.0 — SC Enterprise
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-11 · **Weryfikator:** Technical Lead

@@ -86,6 +86,81 @@ is_valid_period(date) {
     date <= object.get(input.thresholds, "valid_to", "2099-12-31")
 }
 
+# Sprawdza czy transakcja jest w okresie przejściowym (ScTemporalSandbox)
+is_temporal_transition {
+    some period in object.get(data.sc.thresholds, "_temporal_periods", [])
+    period.valid_to
+    object.get(input.thresholds, "_transition_active", false)
+}
+
+# ── Anomaly Helpers (ScAnomalyGuard) ──────────────────────────────────────────
+
+# Oblicza Z-score dla kwoty faktury
+zscore(amount, avg, stddev) := z {
+    stddev > 0
+    z := (amount - avg) / stddev
+}
+
+zscore(amount, avg, stddev) := 0 {
+    stddev <= 0
+}
+
+# Sprawdza czy wartość to anomaly (>3 sigma)
+is_anomaly_zscore(z) { z > 3.0 }
+
+# Oblicza dysproporcję kosztów wspólnika (ScAnomalyGuard partner cost ratio)
+partner_cost_disparity(partner_costs, total_costs, share_pct, factor) {
+    total_costs > 0
+    partner_costs / total_costs > (share_pct / 100) * factor
+}
+
+# ── What-If Helpers (ScWhatIf Engine) ─────────────────────────────────────────
+
+# Wykrywa tryb symulacyjny
+is_simulation_mode {
+    input._mode == "SIMULATION"
+}
+
+# Nadpisuje dane wspólnika dla symulacji (wymaga OPA >= v0.44 dla object.union)
+simulate_partner(original, params) := modified {
+    modified := object.union(original, {
+        "tax_form": object.get(params, "new_tax_form", original.tax_form),
+        "share_percent": object.get(params, "new_share_percent", original.share_percent),
+        "zus_status": object.get(params, "new_zus_status", original.zus_status)
+    })
+}
+
+# ── Partner Mirror Helpers (ScPartnerMirror) ──────────────────────────────────
+
+# Oblicza poziom ryzyka zagregowanego
+aggregate_risk_level(partners) := "CRITICAL" {
+    zus_overdue := count({p.id | p := partners[_]; p.zus_social_paid < p.zus_social_due})
+    tax_overdue := count({p.id | p := partners[_]; object.get(p, "tax_overdue", false)})
+    zus_overdue >= count(partners) / 2
+    tax_overdue > 0
+}
+
+aggregate_risk_level(partners) := "HIGH" {
+    count({p.id | p := partners[_]; p.zus_social_paid < p.zus_social_due}) > 0
+}
+
+aggregate_risk_level(partners) := "MEDIUM" {
+    count({p.id | p := partners[_]; object.get(p, "suspended", false)}) > 0
+}
+
+aggregate_risk_level(partners) := "LOW" { true }
+
+# ── Threshold Precompute Helpers (ScThresholdPrecompute) ──────────────────────
+
+# Bezpieczny odczyt prekompilowanych thresholds z data.sc
+sc_threshold_limit(key, fallback) := val {
+    val := object.get(data.sc.thresholds.limits, key, fallback)
+}
+
+sc_threshold_rate(key, fallback) := val {
+    val := object.get(data.sc.thresholds.rates, key, fallback)
+}
+
 # ── Routing Helpers ───────────────────────────────────────────────────────────
 
 # Buduje czytelny reason dla routingu
