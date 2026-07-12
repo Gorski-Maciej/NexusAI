@@ -1,38 +1,52 @@
 # 📚 NexusAI JDG — Kompletny Indeks Reguł OPA/Rego ENTERPRISE
 
-> **Status:** Master Index JDG v2.0 — zaktualizowany po głębokim audycie prawnym  
-> **Data:** 2026-07-08  
+> **Status:** Master Index JDG v3.0 — zsynchronizowany z mapą kanoniczną 38c ⚠️  
+> **Data:** 2026-07-12  
 > **Plik:** `Plan OPA/24_JDG_COMPLETE_INDEX.md`  
+> **⚠️ MAPA KANONICZNA:** `Plan OPA/38c_JDG_CANONICAL_MAP.md` — **definitywne źródło prawdy** (779 unikalnych reguł)  
 > **Dokumenty źródłowe:**  
 > — `Plan OPA/22_JDG_ENTERPRISE_PLAN.md` — plan bazowy (~145 reguł)  
 > — `Plan OPA/23_JDG_EXPANSION_SUPPLEMENT.md` — rozbudowa (~69 reguł)  
-> — `Plan OPA/25_JDG_DEEP_LEGAL_AUDIT.md` — głęboki audyt prawny (46 luk, 12 krytycznych)  
-> — `Plan OPA/DocsJDG` — źródła prawne JDG (zaktualizowane: +KKS, +PCC, +podatki lokalne)  
-> **Łącznie:** ~214 reguł istniejących + 46 proponowanych | 28 pakietów + 2 proponowane | 55+ domen prawnych    
+> — `Plan OPA/25_JDG_DEEP_LEGAL_AUDIT.md` — głęboki audyt prawny (46 luk)  
+> — `Plan OPA/28a_JDG_EDGE_CASES_FULL.md` — edge cases ENTERPRISE (~254 R-ID)  
+> — `Plan OPA/42_JDG_DEEP_GAP_DISCOVERY.md` — deep gaps (55 reguł)  
+> — `Plan OPA/43_JDG_KKS_MASSIVE_DECOMPOSITION.md` — dekompozycja KKS (230 reguł)  
+> — `Plan OPA/45_JDG_HYPER_GRANULARITY.md` — hyper-granularity (~700 R-ID)  
+> — `Plan OPA/48_JDG_STRATEGIC_IMPROVEMENTS_V2.md` — 9 inicjatyw v2.0 (wdrożone ✅)  
+> — `Plan OPA/49_JDG_IMPLEMENTATION_SUMMARY.md` — podsumowanie wdrożenia  
+> — `Plan OPA/DocsJDG` — źródła prawne JDG  
+> **Łącznie:** ~214 reguł (22+23) + ~779 kanonicznych (38c) | 🔴 47 zdeprecjonowanych | 28+ pakietów    
 
 ---
 
-## Pokrycie 10 Obszarów Rozbudowy (Status)
+## Pokrycie 10+ Obszarów Rozbudowy (Status zsynchronizowany z 38c)
 
-| # | Obszar | Dokument | Reguły | Status |
-|---|--------|----------|:------:|--------|
-| 1 | Ulgi i odliczenia | 22 (P600,P610,P623) + 23 (P601-P615) | 13 | ✅ PEŁNE |
-| 2 | Składki ZUS i zdrowotne | 22 (P700-P742) + 23 (P730-P738) | 17 | ✅ PEŁNE |
-| 3 | Zawieszenie i wznowienie | 22 (P910-P919) | 5 | ✅ PEŁNE |
-| 4 | Sukcesja przedsiębiorstwa | 22 (P920-P929) | 3 | ✅ PEŁNE |
-| 5 | Zmiana formy opodatkowania | 23 (P590-P596) | 7 | ✅ PEŁNE |
-| 6 | Eksport i import usług | 22 (P40-P48) + 23 (P43-P49,P190-P191,P232) | 13 | ✅ PEŁNE |
-| 7 | Korekty deklaracji i faktur | 23 (P1100-P1114) | 8 | ✅ PEŁNE |
-| 8 | Przedawnienia i odpowiedzialność | 23 (P1150-P1166) | 9 | ✅ PEŁNE |
-| 9 | Reprezentacja i pełnomocnictwa | 23 (P1200-P1212) | 7 | ✅ PEŁNE |
-| 10 | Interakcje forma↔składki | 23 (P730-P738) | 5 | ✅ PEŁNE |
+| # | Obszar | Dokumenty | Reguły kanoniczne | Status |
+|---|--------|-----------|:------:|--------|
+| 1 | Ulgi i odliczenia | 22+23+42 | 28 | ✅ PEŁNE (38c) |
+| 2 | Składki ZUS i zdrowotne | 22+23+42 | 27 | ✅ PEŁNE (38c) |
+| 3 | Zawieszenie i wznowienie | 22+28a (R0582 ✅) | 5+ | ✅ POPRAWIONE (38c: P914 🔴→R0582) |
+| 4 | Sukcesja przedsiębiorstwa | 22 | 8 | ✅ PEŁNE |
+| 5 | Zmiana formy opodatkowania | 23 | 8 | ✅ PEŁNE |
+| 6 | Eksport i import usług | 22+23 (kanoniczne: Doc 23) | 8 | ✅ PEŁNE (38c: P40-P48 🔴→P43-P49) |
+| 7 | Korekty deklaracji i faktur | 23+28a (kanoniczne: Doc 28a) | 16 | ✅ PEŁNE (38c: P1100-P1114 🔴→R0420-R0435) |
+| 8 | Przedawnienia i odpowiedzialność | 23+28a (kanoniczne: Doc 28a) | 14 | ✅ PEŁNE (38c: P1150-P1166 🔴→R0436-R0449) |
+| 9 | Reprezentacja i pełnomocnictwa | 23+28a (kanoniczne: Doc 28a) | 10 | ✅ PEŁNE (38c: P1200-P1212 🔴→R0450-R0459) |
+| 10 | Interakcje forma↔składki | 23 (P730 🔧, P734/P738 🔴) | 4 | ✅ PEŁNE |
+| 11 | KKS — przestępstwa i wykroczenia | 42+43 | 252 | ✅ NOWE (38c) |
+| 12 | Głębokie luki (PKPiR, KŚT, RODO, PCC) | 42 | 55 | ✅ NOWE (38c) |
+| 13 | Hyper-granularity (MDR, Danina, WIS, Kontrole) | 45 | ~700 R-ID | ✅ NOWE |
 
 ---
 
 ## Kompletny Spis Wszystkich Reguł JDG (posortowany priorytetem)
 
-| Priorytet | rule_id | Pakiet | Dokument | Obszar |
-|:---------:|---------|--------|:--------:|--------|
+> ⚠️ **UWAGA:** Reguły oznaczone 🔴 **[DEPRECATED]** zostały zastąpione przez wersje kanoniczne w `38c_JDG_CANONICAL_MAP.md`.  
+> Nie implementować reguł zdeprecjonowanych — używać wersji kanonicznych.
+> Pełna lista deprecjacji: 17 z Doc 22 + 28 z Doc 23 + 2 z Doc 28a = **47 reguł zdeprecjonowanych**.
+
+| Priorytet | rule_id | Pakiet | Dokument | Obszar | Status |
+|:---------:|---------|--------|:--------:|--------|:------:|
 | **P0** | `fraud_graph_match` | `jdg.risk` | 22 | Fraud |
 | **P1** | `counterparty_trust_low` | `jdg.risk` | 22 | Risk |
 | **P2** | `anomaly_amount` | `jdg.risk` | 22 | Risk |
@@ -50,16 +64,16 @@
 | **P21** | `whitelist_account_mismatch` | `jdg.compliance.whitelist` | 22 | Compliance |
 | **P25** | `split_payment_mandatory` | `jdg.compliance.mpp` | 22 | Compliance |
 | **P35** | `cash_transaction_over_limit` | `jdg.compliance.cash_limit` | 22 | Compliance |
-| **P40** | `eu_reverse_charge` | `jdg.crossborder` | 22 | VAT transgraniczny |
-| **P41** | `eu_import_services` | `jdg.crossborder` | 22 | VAT transgraniczny |
-| **P42** | `wdt_intracommunity_supply` | `jdg.crossborder` | 22 | VAT transgraniczny |
+| **P40** | `eu_reverse_charge` | `jdg.crossborder` | 22 | VAT transgraniczny | 🔴 [DEPRECATED] → P43 (Doc 23) |
+| **P41** | `eu_import_services` | `jdg.crossborder` | 22 | VAT transgraniczny | 🔴 [DEPRECATED] → P44 (Doc 23) |
+| **P42** | `wdt_intracommunity_supply` | `jdg.crossborder` | 22 | VAT transgraniczny | 🔴 [DEPRECATED] → P46 (Doc 23) |
 | **P43** | `vat_ue_registration_mandatory` | `jdg.crossborder` | 23 | **Eksport/import (6)** |
 | **P44** | `vat_r_ue_filing_deadline` | `jdg.crossborder` | 23 | **Eksport/import (6)** |
-| **P45** | `import_non_eu` | `jdg.crossborder` | 22 | VAT transgraniczny |
-| **P46** | `intracommunity_acquisition_detailed` | `jdg.crossborder` | 23 | **Eksport/import (6)** |
+| **P45** | `import_non_eu` | `jdg.crossborder` | 22 | VAT transgraniczny | 🔴 [DEPRECATED] → P47 (Doc 23) |
+| **P46** | `intracommunity_acquisition_detailed` | `jdg.crossborder` | 23 | **Eksport/import (6)** | ✅ Kanoniczne z Doc 23 |
 | **P47** | `import_services_non_eu` | `jdg.crossborder` | 23 | **Eksport/import (6)** |
-| **P48** | `export_goods` | `jdg.crossborder` | 22 | VAT transgraniczny |
-| **P49** | `triangular_transaction_rules` | `jdg.crossborder` | 23 | **Eksport/import (6)** |
+| **P48** | `export_goods` | `jdg.crossborder` | 22 | VAT transgraniczny | 🔴 [DEPRECATED] → P49 (Doc 23) |
+| **P49** | `triangular_transaction_rules` | `jdg.crossborder` | 23 | **Eksport/import (6)** | ✅ Kanoniczne z Doc 23 |
 | **P50** | `vat_margin_scheme` | `jdg.vat.substantive` | 22 | VAT |
 | **P52** | `vat_rate_fuel_pl` | `jdg.vat.substantive` | 22 | VAT |
 | **P53** | `vat_rate_food_pl` | `jdg.vat.substantive` | 22 | VAT |
@@ -67,8 +81,8 @@
 | **P55** | `vat_exemption_education` | `jdg.vat.substantive` | 22 | VAT |
 | **P56** | `vat_exemption_healthcare` | `jdg.vat.substantive` | 22 | VAT |
 | **P58** | `vat_exemption_subject_jdg` | `jdg.vat.substantive` | 22 | VAT |
-| **P59** | `subject_exemption_startup_proportion` | `jdg.vat.exemptions` | 23 | **Zwolnienia (10)** |
-| **P60** | `vat_bad_debt_relief` | `jdg.vat.substantive` | 22 | VAT |
+| **P59** | `subject_exemption_startup_proportion` | `jdg.vat.exemptions` | 23 | **Zwolnienia (10)** | 🔴 [DEPRECATED] → P58 edge case (Doc 22) |
+| **P60** | `vat_bad_debt_relief` | `jdg.vat.substantive` | 22 | VAT | 🔴 [DEPRECATED] → P189 (Doc 23, 150 dni) |
 | **P61** | `object_exemption_pkd` | `jdg.vat.exemptions` | 23 | **Zwolnienia (10)** |
 | **P62** | `vat_exemption_financial` | `jdg.vat.exemptions` | 23 | **Zwolnienia (10)** |
 | **P63** | `vat_exemption_insurance` | `jdg.vat.exemptions` | 23 | **Zwolnienia (10)** |
@@ -80,10 +94,10 @@
 | **P189** | `bad_debt_relief_creditor` | `jdg.vat.deduction` | 23 | **VAT szczegółowy (8)** |
 | **P190** | `wnt_intra_community_detailed` | `jdg.crossborder` | 23 | **Eksport/import (6)** |
 | **P191** | `import_vat_deduction_timing` | `jdg.crossborder` | 23 | **Eksport/import (6)** |
-| **P230** | `vat_tax_point_continuous_service` | `jdg.vat.tax_point` | 22 | VAT |
-| **P231** | `vat_tax_point_advance_invoice` | `jdg.vat.tax_point` | 22 | VAT |
+| **P230** | `vat_tax_point_continuous_service` | `jdg.vat.tax_point` | 22 | VAT | 🔴 [DEPRECATED] → R0546-R0559 (Doc 28a) |
+| **P231** | `vat_tax_point_advance_invoice` | `jdg.vat.tax_point` | 22 | VAT | 🔴 [DEPRECATED] → R0546-R0559 (Doc 28a) |
 | **P232** | `vat_ue_quarterly_summary` | `jdg.vat.declarations` | 23 | **Eksport/import (6)** |
-| **P235** | `vat_cash_accounting_jdg` | `jdg.vat.tax_point` | 22 | VAT |
+| **P235** | `vat_cash_accounting_jdg` | `jdg.vat.tax_point` | 22 | VAT | 🔴 [DEPRECATED] → R0546-R0559 (Doc 28a) |
 | **P500** | `pit_form_scale` | `jdg.pit.form_scale` | 22 | PIT |
 | **P501** | `pit_scale_bracket_determination` | `jdg.pit.form_scale` | 22 | PIT |
 | **P502** | `pit_scale_joint_filing` | `jdg.pit.form_scale` | 22 | PIT |
@@ -136,26 +150,26 @@
 | **P615** | `loss_carry_forward_jdg` | `jdg.pit.advances` | 23 | **Ulgi (1)** |
 | **P623** | `relief_thermo_jdg` | `jdg.allowances.thermo` | 22 | Ulgi |
 | **P700** | `zus_social_standard_jdg` | `jdg.zus.social` | 22 | ZUS |
-| **P701** | `zus_sickness_voluntary_jdg` | `jdg.zus.social` | 22 | ZUS |
+| **P701** | `zus_sickness_voluntary_jdg` | `jdg.zus.social` | 22 | ZUS | 🔴 [DEPRECATED] → R0346 (Doc 28a) |
 | **P720** | `zus_health_scale_jdg` | `jdg.zus.health` | 22 | ZUS |
 | **P722** | `zus_health_linear_jdg` | `jdg.zus.health` | 22 | ZUS |
 | **P724** | `zus_health_lump_sum_jdg` | `jdg.zus.health` | 22 | ZUS |
-| **P730** | `health_contribution_rate_matrix` | `jdg.zus.interactions` | 23 | **Interakcje (10)** |
+| **P730** | `health_contribution_rate_matrix` | `jdg.zus.interactions` | 23 | **Interakcje (10)** | 🔧 HELPER — nie reguła decyzyjna |
 | **P732** | `form_change_contribution_trigger` | `jdg.zus.interactions` | 23 | **Interakcje (10)** |
-| **P734** | `lump_sum_health_tier_lockstep` | `jdg.zus.interactions` | 23 | **Interakcje (10)** |
+| **P734** | `lump_sum_health_tier_lockstep` | `jdg.zus.interactions` | 23 | **Interakcje (10)** | 🔴 [DEPRECATED] → P724 edge case |
 | **P736** | `tax_card_health_fixed` | `jdg.zus.interactions` | 23 | **Interakcje (10)** |
-| **P738** | `scale_health_deduction_prohibition` | `jdg.zus.interactions` | 23 | **Interakcje (10)** |
+| **P738** | `scale_health_deduction_prohibition` | `jdg.zus.interactions` | 23 | **Interakcje (10)** | 🔴 [DEPRECATED] → P720 |
 | **P740** | `zus_start_relief_jdg` | `jdg.zus.start_relief` | 22 | ZUS |
 | **P741** | `zus_maly_plus_jdg` | `jdg.zus.maly_plus` | 22 | ZUS |
 | **P742** | `zus_preferential_jdg` | `jdg.zus.preferential` | 22 | ZUS |
-| **P800** | `pkpir_column_mapping` | `jdg.accounting.pkpir` | 22 | Księgowość |
-| **P801** | `pkpir_revenue_recognition` | `jdg.accounting.pkpir` | 22 | Księgowość |
-| **P802** | `pkpir_expense_recognition` | `jdg.accounting.pkpir` | 22 | Księgowość |
+| **P800** | `pkpir_column_mapping` | `jdg.accounting.pkpir` | 22 | Księgowość | 🔴 [DEPRECATED] → R0372-R0399 (Doc 28a) |
+| **P801** | `pkpir_revenue_recognition` | `jdg.accounting.pkpir` | 22 | Księgowość | 🔴 [DEPRECATED] → R0372-R0399 (Doc 28a) |
+| **P802** | `pkpir_expense_recognition` | `jdg.accounting.pkpir` | 22 | Księgowość | 🔴 [DEPRECATED] → R0372-R0399 (Doc 28a) |
 | **P820** | `lump_sum_evidence_entry` | `jdg.accounting.lump_sum_evidence` | 22 | Księgowość |
 | **P830** | `vat_evidence_purchase` | `jdg.accounting.vat_evidence` | 22 | Księgowość |
 | **P832** | `vat_evidence_sale` | `jdg.accounting.vat_evidence` | 22 | Księgowość |
-| **P840** | `depreciation_linear_jdg` | `jdg.accounting.depreciation` | 22 | Księgowość |
-| **P842** | `depreciation_one_off_jdg` | `jdg.accounting.depreciation` | 22 | Księgowość |
+| **P840** | `depreciation_linear_jdg` | `jdg.accounting.depreciation` | 22 | Księgowość | 🔴 [DEPRECATED] → R0379-R0389 (Doc 28a) |
+| **P842** | `depreciation_one_off_jdg` | `jdg.accounting.depreciation` | 22 | Księgowość | 🔴 [DEPRECATED] → R0379-R0389 (Doc 28a) |
 | **P850** | `private_mixed_home_office` | `jdg.accounting.private_mixed` | 22 | Księgowość |
 | **P852** | `private_mixed_car` | `jdg.accounting.private_mixed` | 22 | Księgowość |
 | **P860** | `operating_lease_full_kup` | `jdg.accounting.leasing` | 23 | **Leasing (9)** |
@@ -168,7 +182,7 @@
 | **P904** | `ceidg_vendor_verification` | `jdg.business.ceidg` | 22 | Cykl życia |
 | **P910** | `business_suspension_valid` | `jdg.business.suspension` | 22 | Cykl życia |
 | **P912** | `business_suspension_kup_restrictions` | `jdg.business.suspension` | 22 | Cykl życia |
-| **P914** | `business_suspension_zus` | `jdg.business.suspension` | 22 | Cykl życia |
+| **P914** | `business_suspension_zus` | `jdg.business.suspension` | 22 | Cykl życia | 🔴 [DEPRECATED] → R0582 (Doc 28a ⚠️ POPRAWIONA!) |
 | **P920** | `succession_continuity` | `jdg.business.succession` | 22 | Cykl życia |
 | **P922** | `succession_tax_obligations` | `jdg.business.succession` | 22 | Cykl życia |
 | **P924** | `succession_vat_continuity` | `jdg.business.succession` | 22 | Cykl życia |
@@ -184,32 +198,37 @@
 | **P992** | `retention_pkpir_5y` | `jdg.retention` | 22 | Retencja |
 | **P1000** | `domestic_fallback_jdg` | `jdg.fallback` | 22 | Fallback |
 | **P1099** | `no_match_jdg` | `jdg.fallback` | 22 | Fallback |
-| **P1100** | `correction_invoice_in_minus` | `jdg.corrections` | 23 | **Korekty (7)** |
-| **P1102** | `correction_invoice_in_plus` | `jdg.corrections` | 23 | **Korekty (7)** |
-| **P1104** | `vat_declaration_correction` | `jdg.corrections` | 23 | **Korekty (7)** |
-| **P1106** | `pit_advance_correction` | `jdg.corrections` | 23 | **Korekty (7)** |
-| **P1108** | `jpk_v7_correction_code` | `jdg.corrections` | 23 | **Korekty (7)** |
-| **P1110** | `correction_deadline_restrictions` | `jdg.corrections` | 23 | **Korekty (7)** |
-| **P1112** | `statute_barred_correction_block` | `jdg.corrections` | 23 | **Korekty (7)** |
-| **P1114** | `correction_during_audit_block` | `jdg.corrections` | 23 | **Korekty (7)** |
-| **P1150** | `tax_statute_of_limitations_5y` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** |
-| **P1152** | `zus_statute_of_limitations_5y` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** |
-| **P1154** | `statute_suspension_during_audit` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** |
-| **P1156** | `statute_interruption_events` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** |
-| **P1158** | `entrepreneur_personal_liability` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** |
-| **P1160** | `successor_liability` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** |
-| **P1162** | `joint_liability_spouse` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** |
-| **P1164** | `late_payment_interest_calculation` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** |
-| **P1166** | `penalty_interest_rate` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** |
-| **P1200** | `power_of_attorney_pps1` | `jdg.representation` | 23 | **Reprezentacja (9)** |
-| **P1202** | `general_proxy_upl1` | `jdg.representation` | 23 | **Reprezentacja (9)** |
-| **P1204** | `commercial_proxy_prokura` | `jdg.representation` | 23 | **Reprezentacja (9)** |
-| **P1206** | `attorney_authorization_scope` | `jdg.representation` | 23 | **Reprezentacja (9)** |
-| **P1208** | `proxy_validity_period` | `jdg.representation` | 23 | **Reprezentacja (9)** |
-| **P1210** | `proxy_revocation_effects` | `jdg.representation` | 23 | **Reprezentacja (9)** |
-| **P1212** | `representation_tax_audit` | `jdg.representation` | 23 | **Reprezentacja (9)** |
+| **P1100** | `correction_invoice_in_minus` | `jdg.corrections` | 23 | **Korekty (7)** | 🔴 [DEPRECATED] → R0420-R0435 (Doc 28a, 16 reguł) |
+| **P1102** | `correction_invoice_in_plus` | `jdg.corrections` | 23 | **Korekty (7)** | 🔴 [DEPRECATED] → R0420-R0435 (Doc 28a) |
+| **P1104** | `vat_declaration_correction` | `jdg.corrections` | 23 | **Korekty (7)** | 🔴 [DEPRECATED] → R0420-R0435 (Doc 28a) |
+| **P1106** | `pit_advance_correction` | `jdg.corrections` | 23 | **Korekty (7)** | 🔴 [DEPRECATED] → R0420-R0435 (Doc 28a) |
+| **P1108** | `jpk_v7_correction_code` | `jdg.corrections` | 23 | **Korekty (7)** | 🔴 [DEPRECATED] → R0420-R0435 (Doc 28a) |
+| **P1110** | `correction_deadline_restrictions` | `jdg.corrections` | 23 | **Korekty (7)** | 🔴 [DEPRECATED] → R0420-R0435 (Doc 28a) |
+| **P1112** | `statute_barred_correction_block` | `jdg.corrections` | 23 | **Korekty (7)** | 🔴 [DEPRECATED] → R0420-R0435 (Doc 28a) |
+| **P1114** | `correction_during_audit_block` | `jdg.corrections` | 23 | **Korekty (7)** | 🔴 [DEPRECATED] → R0420-R0435 (Doc 28a) |
+| **P1150** | `tax_statute_of_limitations_5y` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** | 🔴 [DEPRECATED] → R0436-R0449 (Doc 28a, 14 reguł) |
+| **P1152** | `zus_statute_of_limitations_5y` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** | 🔴 [DEPRECATED] → R0436-R0449 (Doc 28a) |
+| **P1154** | `statute_suspension_during_audit` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** | 🔴 [DEPRECATED] → R0436-R0449 (Doc 28a) |
+| **P1156** | `statute_interruption_events` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** | 🔴 [DEPRECATED] → R0436-R0449 (Doc 28a) |
+| **P1158** | `entrepreneur_personal_liability` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** | 🔴 [DEPRECATED] → R0436-R0449 (Doc 28a) |
+| **P1160** | `successor_liability` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** | 🔴 [DEPRECATED] → R0436-R0449 (Doc 28a) |
+| **P1162** | `joint_liability_spouse` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** | 🔴 [DEPRECATED] → R0436-R0449 (Doc 28a) |
+| **P1164** | `late_payment_interest_calculation` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** | 🔴 [DEPRECATED] → R0436-R0449 (Doc 28a) |
+| **P1166** | `penalty_interest_rate` | `jdg.statute_liability` | 23 | **Przedawnienia (8)** | 🔴 [DEPRECATED] → R0436-R0449 (Doc 28a) |
+| **P1200** | `power_of_attorney_pps1` | `jdg.representation` | 23 | **Reprezentacja (9)** | 🔴 [DEPRECATED] → R0450-R0459 (Doc 28a, 10 reguł) |
+| **P1202** | `general_proxy_upl1` | `jdg.representation` | 23 | **Reprezentacja (9)** | 🔴 [DEPRECATED] → R0450-R0459 (Doc 28a) |
+| **P1204** | `commercial_proxy_prokura` | `jdg.representation` | 23 | **Reprezentacja (9)** | 🔴 [DEPRECATED] → R0450-R0459 (Doc 28a) |
+| **P1206** | `attorney_authorization_scope` | `jdg.representation` | 23 | **Reprezentacja (9)** | 🔴 [DEPRECATED] → R0450-R0459 (Doc 28a) |
+| **P1208** | `proxy_validity_period` | `jdg.representation` | 23 | **Reprezentacja (9)** | 🔴 [DEPRECATED] → R0450-R0459 (Doc 28a) |
+| **P1210** | `proxy_revocation_effects` | `jdg.representation` | 23 | **Reprezentacja (9)** | 🔴 [DEPRECATED] → R0450-R0459 (Doc 28a) |
+| **P1212** | `representation_tax_audit` | `jdg.representation` | 23 | **Reprezentacja (9)** | 🔴 [DEPRECATED] → R0450-R0459 (Doc 28a) |
 
 **Razem: 141 reguł** indeksowanych (P0-P1212). Pozostałe ~73 reguły uniwersalne z planu ogólnego (VAT, crossborder, compliance szczegółowe) są adaptowane bez zmiany priorytetów.
+
+> 🟣 **Statystyka deprecjacji (zgodna z 38c):**  
+> — Z Doc 22: **16 reguł zdeprecjonowanych w tej tabeli** (P40-P42, P45, P48, P60, P230, P231, P235, P701, P800-P802, P840, P842, P914) + **P841** (poza tabelą, → R0379-R0389) = **17 łącznie w Doc 22**  
+> — Z Doc 23: **28 reguł zdeprecjonowanych** (P59, P734, P738, P1100-P1114, P1150-P1166, P1200-P1212)  
+> — Łącznie: **47 reguł** — NIE implementować, używać zamienników kanonicznych z 38c
 
 ---
 
@@ -327,7 +346,9 @@ policies/jdg/
 ---
 
 > **Następny krok:** Implementacja Fazy 0 + Fazy A (6 reguł krytycznych z audytu: P0_b, P4, P9, P36, P39, P184, P524, P572, P743).  
-> **Dokumenty źródłowe:** `22_JDG_ENTERPRISE_PLAN.md` | `23_JDG_EXPANSION_SUPPLEMENT.md` | `25_JDG_DEEP_LEGAL_AUDIT.md` | `DocsJDG`
+> **Dokumenty źródłowe:** `22_JDG_ENTERPRISE_PLAN.md` | `23_JDG_EXPANSION_SUPPLEMENT.md` | `25_JDG_DEEP_LEGAL_AUDIT.md` | `DocsJDG`  
+> **⭐ Mapa kanoniczna:** `38c_JDG_CANONICAL_MAP.md` — **779 unikalnych reguł** (definitywne źródło prawdy)  
+> **🚀 Wdrożone inicjatywy v2.0:** `48_JDG_STRATEGIC_IMPROVEMENTS_V2.md` (9 inicjatyw) + `49_JDG_IMPLEMENTATION_SUMMARY.md` (podsumowanie)
 
 ---
 

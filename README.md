@@ -36,7 +36,7 @@ Pełna instrukcja krok po kroku: [`docs/QUICKSTART.md`](docs/QUICKSTART.md).
 | Funkcja | Opis |
 |---|---|
 | 🧾 **Księgowanie autonomiczne** | 5 Agentów AI analizuje fakturę i podejmuje decyzję: **AUTO_POST** (≥0.92), **SUGGEST** (≥0.75), lub **ASK_USER** (<0.75). Jeden poziom automatyzacji. |
-| ⚖️ **OPA/Rego Rule Engine** | **~779 reguł kanonicznych** JDG (zintegrowanych z Docs 22-43) w architekturze Dual-Layer Multi-Pass. Pokrycie: PIT, VAT, ZUS, KSeF, JPK, KKS, ulgi, crossborder, RODO, AML, KŚT, PKPiR, PCC, sukcesja. 32+ plików `.rego` z `# METADATA`, Temporal Bundle Routing, 175+ testów granicznych. |
+| ⚖️ **OPA/Rego Rule Engine** | **~779 reguł kanonicznych** JDG (zintegrowanych z Docs 22-43) w architekturze Dual-Layer Multi-Pass. Pokrycie: PIT, VAT, ZUS, KSeF, JPK, KKS, ulgi, crossborder, RODO, AML, KŚT, PKPiR, PCC, sukcesja. 32+ plików `.rego` z `# METADATA`, Temporal Bundle Routing, 175+ testów granicznych + 23 testy modułów v2.0. **9 inicjatyw strategicznych v2.0 wdrożonych** (Immutable Audit Trail, Rego Linter, Legal Explainer, DuckDB WASM PoC, Orthogonal Array Testing, Telemetry Fail-Fast, Federated KUP Benchmark, Tax Ruling Drafter, Liquidity Oracle). |
 | 🔍 **OCR ensemble (4 silniki)** | Tesseract + PaddleOCR + docTR + EasyOCR z konsensusem głosowania i Nadzorcą AI. Wyższe **recall** niż pojedynczy VLM. |
 | 🤖 **5 Agentów AI (lokalnych)** | Orkiestrator (Granite 3.2 3B), Ekstrakcji Danych, Analityczny, Walidator Jakości, Środków Trwałych. 13 modeli GGUF. Cognitive Audit Trail, 4-Eyes Principle, Bayesian Trust Score. [Pełna specyfikacja →](docs/AGENTS.md) |
 | 📜 **Pełna zgodność KSeF** | Generowanie XML wg schematu `FA_VAT(2)`, walidacja XSD, wysyłka do API KSeF MF. |

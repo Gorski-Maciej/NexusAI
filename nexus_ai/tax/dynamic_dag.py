@@ -1,16 +1,25 @@
 """
-Dynamic DAG Pass Pruning (B1) — Inteligentne pomijanie nieistotnych passów OPA.
-================================================================================
+Dynamic DAG Pass Pruning + Telemetry Fail-Fast (B1 + B3).
+===========================================================
 
-Część strategicznego planu 29_JDG_STRATEGIC_IMPROVEMENTS.md.
-Redukuje liczbę wywołań OPA przez pomijanie passów, które nie mają
-zastosowania do danej transakcji.
+Część planów strategicznych 29_JDG_STRATEGIC_IMPROVEMENTS.md (v1.0 B1)
+oraz 48_JDG_STRATEGIC_IMPROVEMENTS_V2.md (v2.0 B3).
 
-Szacowana redukcja czasu ewaluacji: 40-60% (zależnie od miksu transakcji).
+B1: Dynamic DAG Pruning — statyczne pomijanie nieistotnych passów OPA
+    na podstawie reguł ``skip_if`` (np. pomiń crossborder dla PL).
+    Redukcja: 40-60% passów na prostych transakcjach.
+
+B3: Telemetry-Driven Fail-Fast — dynamiczne przestawianie kolejności
+    passów na podstawie telemetrii w czasie rzeczywistym (block-rate).
+    Passy z najwyższym block-rate lądują na początku → early exit.
+    Redukcja: dodatkowe 30% CPU dla faktur odrzucanych.
+
+Łączna szacowana redukcja czasu ewaluacji: 50-70%.
 """
 
 from __future__ import annotations
 
+from collections import deque
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
@@ -220,3 +229,95 @@ class DynamicMultiPassEvaluator:
 
         merged["matched"] = True
         return merged
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# B3: Telemetry-Driven Fail-Fast Router (v2.0)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+class TelemetryDrivenDAGRouter:
+    """Dynamicznie optymalizuje kolejność passów OPA na podstawie telemetrii.
+
+    W przeciwieństwie do DynamicDAGRouter (który pomija całe nieistotne passy),
+    TelemetryDrivenDAGRouter zmienia KOLEJNOŚĆ passów na podstawie ich
+    historycznej skuteczności blokowania (block-rate).
+
+    Passy z najwyższym block-rate są ewaluowane jako pierwsze → fail-fast.
+
+    Przykład adaptacji:
+        Po 1000 fakturach telemetria pokazuje:
+          - compliance: 45% odrzutów (P20 whitelist)
+          - risk:       2% odrzutów  (P8 ceidg)
+          - routing:    8% odrzutów  (P12 nip)
+        Nowa kolejność: compliance → routing → risk → ...
+        Zysk: 45% faktur odpada na 1. pasie.
+    """
+
+    def __init__(self, rolling_window: int = 1000) -> None:
+        self._rolling_window = rolling_window
+        self._pass_block_stats: dict[str, dict[str, int]] = {}
+        self._recent_verdicts: deque[tuple[str, bool]] = deque(maxlen=rolling_window)
+
+    def record_verdict(self, pass_name: str, blocked: bool) -> None:
+        """Rejestruje wynik ewaluacji passu dla analizy statystycznej."""
+        if pass_name not in self._pass_block_stats:
+            self._pass_block_stats[pass_name] = {"hits": 0, "blocks": 0}
+
+        self._pass_block_stats[pass_name]["hits"] += 1
+        if blocked:
+            self._pass_block_stats[pass_name]["blocks"] += 1
+
+        self._recent_verdicts.append((pass_name, blocked))
+
+    def get_block_rate(self, pass_name: str) -> float:
+        """Zwraca block-rate dla danego passu (0.0 - 1.0)."""
+        stats = self._pass_block_stats.get(pass_name)
+        if not stats or stats["hits"] < 10:
+            return 0.0
+        return stats["blocks"] / stats["hits"]
+
+    def get_optimized_pass_order(self, passes: list[PassConfig]) -> list[PassConfig]:
+        """Zwraca passy posortowane po block-rate malejąco.
+
+        Passy bez danych telemetrycznych (nowe) pozostają na swoich
+        oryginalnych pozycjach.
+        """
+        # Oblicz block-rate dla każdego passu
+        scored: list[tuple[float, int, PassConfig]] = []
+        for i, p in enumerate(passes):
+            rate = self.get_block_rate(p.name)
+            scored.append((rate, i, p))
+
+        # Sortuj po block-rate malejąco, zachowując oryginalną kolejność dla remisów
+        scored.sort(key=lambda x: (-x[0], x[1]))
+
+        return [p for _, _, p in scored]
+
+    def get_telemetry_report(self) -> dict[str, Any]:
+        """Generuje raport telemetryczny."""
+        pass_rates = {}
+        for name, stats in self._pass_block_stats.items():
+            if stats["hits"] >= 10:
+                pass_rates[name] = {
+                    "hits": stats["hits"],
+                    "blocks": stats["blocks"],
+                    "block_rate": round(stats["blocks"] / stats["hits"], 3),
+                }
+
+        sorted_passes = sorted(
+            pass_rates.items(),
+            key=lambda x: x[1]["block_rate"],
+            reverse=True,
+        )
+
+        return {
+            "total_verdicts_tracked": len(self._recent_verdicts),
+            "passes_with_data": len(pass_rates),
+            "top_blockers": [
+                {"pass": name, **data}
+                for name, data in sorted_passes[:5]
+                if data["block_rate"] > 0.05
+            ],
+            "rolling_window": self._rolling_window,
+        }

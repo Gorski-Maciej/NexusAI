@@ -1176,9 +1176,15 @@ async def test_full_pipeline_fuel_pl():
 > **Następny dokument:** `Plan OPA/20_MASTER_RULES_REFERENCE.md` — Kompletny spis 240 reguł z pseudokodem i cross-reference  
 > **Następny dokument:** `Plan OPA/21_DEEP_DOCS_ANALYSIS.md` — Deep Docs Analysis — 12 nowych reguł (P320-P331)  
 >  
-> **── SEKCJA JDG (Dokumenty 22-43) ──**  
+> **── SEKCJA JDG (Dokumenty 22-49) ──**  
 > **Mapa kanoniczna JDG:** `Plan OPA/38c_JDG_CANONICAL_MAP.md` — **~779 reguł kanonicznych** (zintegrowane Docs 22-43)  
 > **Dual-Layer Architecture:** `Plan OPA/41_JDG_MEGA_MATRIX_7000_RULES.md` — Target ~7,000 reguł Micro  
 > **Deep Gap Discovery:** `Plan OPA/42_JDG_DEEP_GAP_DISCOVERY.md` — 55 nowych reguł z 9 niepokrytych obszarów  
 > **KKS Mass Decomposition:** `Plan OPA/43_JDG_KKS_MASSIVE_DECOMPOSITION.md` — 230 reguł KKS (z ~5% → ~75% pokrycia)  
-> **Pełny indeks JDG:** `Plan OPA/04_INDEX.md` — Kompletna mapa wszystkich dokumentów
+> **Advanced Gaps:** `Plan OPA/44_JDG_ADVANCED_GAPS.md` — Zaawansowane luki prawne  
+> **Hyper-Granularity:** `Plan OPA/45_JDG_HYPER_GRANULARITY.md` — ~700 reguł atomowych (MDR, Danina, WIS, Kontrole, FX...)  
+> **Quality Audit:** `Plan OPA/46_JDG_QUALITY_AUDIT.md` — Bezwzględny audyt jakości 214 reguł  
+> **Complete Index (zsynchronizowany):** `Plan OPA/24_JDG_COMPLETE_INDEX.md` — 47 reguł 🔴 DEPRECATED  
+> **Strategia v2.0 (wdrożona ✅):** `Plan OPA/48_JDG_STRATEGIC_IMPROVEMENTS_V2.md` — 9 inicjatyw ENTERPRISE  
+> **Podsumowanie wdrożenia:** `Plan OPA/49_JDG_IMPLEMENTATION_SUMMARY.md` — 8 modułów Python + 23 testy  
+> **Pełny indeks:** `Plan OPA/04_INDEX.md` — Kompletna mapa wszystkich dokumentów

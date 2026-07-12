@@ -6,6 +6,17 @@ Zgodne z aa3fvcx.txt -- trzy warstwy:
   - Nexus-TaxEngine (Rust) -- natywny orkiestrator matematyki na groszach
   - DuckDB -- trwały magazyn reguł
 
+Moduły strategiczne v2.0 (48_JDG_STRATEGIC_IMPROVEMENTS_V2.md):
+  - rego_linter.py          -> A2: Rego AST Linter — wykrywanie hardcoded values
+  - immutable_audit.py      -> A1: Merkle Tree + HMAC dla werdyktów OPA
+  - legal_explainer.py      -> A3: Generator uzasadnień podatkowych
+  - orthogonal_array_tester.py -> B2: Macierzowe testy kombinatoryczne
+  - dynamic_dag.py          -> B1+B3: DAG Pruning + Telemetry Fail-Fast
+  - liquidity_oracle.py     -> C3: Wyrocznia Płynności — symulacje kasowe
+  - opa_wasm_poc.py         -> B1: DuckDB WASM OPA Proof of Concept
+  - federated_kup_benchmark.py -> C1: Sfederowany benchmarking KUP
+  - tax_ruling_drafter.py   -> C2: Generator wniosków KIS/WIS
+
 Usunięte moduły legacy (zastąpione przez OPA/Rego + Rust):
   - rule_store.py           -> OPA + DuckDB bezpośrednio
   - context_interpreter.py  -> ContextBuilder w Rust (nexus_tax_engine)
@@ -56,44 +67,48 @@ from nexus_ai.core.opa_client import (
     OpaPolicyNotFound,
 )
 
-# ── Audit -- Rust-native SHA-256 chain (zastępuje usunięte tax/audit.py) ─────
-from nexus_ai.rust import (
-    DecisionTraceLogger,
-    verify_chain_integrity,
+# ── v2.0 Strategic Modules (48_JDG_STRATEGIC_IMPROVEMENTS_V2.md) ──────────
+from nexus_ai.tax.rego_linter import RegoLinter, run_linter
+from nexus_ai.tax.immutable_audit import (
+    ImmutableVerdictSigner,
+    SignedVerdict,
+    build_audit_record,
 )
-from nexus_ai.services.opa_policy_generator import (
-    OpaPolicyGenerator,
+from nexus_ai.tax.legal_explainer import (
+    LegalExplainerEngine,
+    explain_verdict,
 )
-
-
-def ensure_audit_schema(conn) -> None:
-    """Create decision_traces table (zastępuje ensure_schema z tax/audit.py)."""
-    from nexus_ai.core.msgspec_utils import msgspec_dumps as _d
-
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS decision_traces (
-            trace_id VARCHAR PRIMARY KEY,
-            transaction_id VARCHAR NOT NULL,
-            rule_id VARCHAR,
-            context_json VARCHAR NOT NULL,
-            verdict_json VARCHAR,
-            calculation_input VARCHAR,
-            calculation_output VARCHAR,
-            invariants_result VARCHAR,
-            risk_verdict VARCHAR,
-            decision_trace VARCHAR,
-            trace_json VARCHAR,
-            previous_hash VARCHAR NOT NULL,
-            current_hash VARCHAR NOT NULL,
-            timestamp VARCHAR NOT NULL
-        )
-    """)
-    for col, col_type in [("decision_trace", "VARCHAR"), ("trace_json", "VARCHAR")]:
-        try:
-            conn.execute(f"ALTER TABLE decision_traces ADD COLUMN IF NOT EXISTS {col} {col_type}")
-        except Exception:
-            pass
-
+from nexus_ai.tax.orthogonal_array_tester import (
+    generate_test_matrix,
+    all_pairs,
+    ALL_PARAMETERS,
+)
+from nexus_ai.tax.liquidity_oracle import (
+    LiquidityOracle,
+    LiquidityReport,
+    run_quarterly_oracle,
+)
+from nexus_ai.tax.dynamic_dag import (
+    DynamicDAGRouter,
+    DynamicMultiPassEvaluator,
+    PassConfig,
+    TelemetryDrivenDAGRouter,
+)
+from nexus_ai.tax.opa_wasm_poc import (
+    compile_to_wasm,
+    benchmark_rest_api,
+    duckdb_wasm_integration_guide,
+)
+from nexus_ai.tax.federated_kup_benchmark import (
+    FederatedKUPPeerBenchmark,
+    KUPPeerScore,
+    KUPBenchmarkEntry,
+)
+from nexus_ai.tax.tax_ruling_drafter import (
+    TaxRulingDrafter,
+    DraftedRuling,
+    draft_ruling_for_triage,
+)
 
 # ── Legacy: Rust-native PriorityEngine i TemporalManager z nexus_crypto ─────
 from nexus_crypto import (
@@ -308,4 +323,32 @@ __all__ = [
     # Temporal Manager (legacy)
     "TemporalManager",
     "TemporalRule",
+    # ── v2.0 Strategic modules ──
+    "RegoLinter",
+    "run_linter",
+    "ImmutableVerdictSigner",
+    "SignedVerdict",
+    "build_audit_record",
+    "LegalExplainerEngine",
+    "explain_verdict",
+    "generate_test_matrix",
+    "all_pairs",
+    "ALL_PARAMETERS",
+    "LiquidityOracle",
+    "LiquidityReport",
+    "run_quarterly_oracle",
+    "DynamicDAGRouter",
+    "DynamicMultiPassEvaluator",
+    "PassConfig",
+    "TelemetryDrivenDAGRouter",
+    # B1 + C1 + C2
+    "compile_to_wasm",
+    "benchmark_rest_api",
+    "duckdb_wasm_integration_guide",
+    "FederatedKUPPeerBenchmark",
+    "KUPPeerScore",
+    "KUPBenchmarkEntry",
+    "TaxRulingDrafter",
+    "DraftedRuling",
+    "draft_ruling_for_triage",
 ]
