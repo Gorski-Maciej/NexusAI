@@ -1,10 +1,12 @@
 # 📑 Plan OPA — Indeks Dokumentacji
 
-> **Status:** Kompletny — v6.0  
-> **Data:** 2026-07-10  
-> **Zespół:** NexusAI
-> **Reguły łącznie:** ~3 320 (240 korporacyjnych + ~3 080 JDG)  
-> **Dokumenty:** 35 (Docs + 00-21 + 22-34)
+> **Status:** Kompletny — v7.0  
+> **Data:** 2026-07-12  
+> **Zespół:** NexusAI  
+> **Reguły kanoniczne JDG:** ~779 (zintegrowane Docs 22-43 w `38c_JDG_CANONICAL_MAP.md`)  
+> **Target ENTERPRISE:** ~7,000 reguł Micro (Dual-Layer Architecture, ~3,080 zdekomponowanych)  
+> **Reguły łącznie (korporacyjne + JDG):** ~3,320 (240 korp. + ~3,080 JDG)  
+> **Dokumenty:** 45 (Docs + 00-21 + 22-43)
 
 ---
 
@@ -54,6 +56,19 @@ Plan OPA/
 ├── 32_JDG_ENTERPRISE_DEFINITIVE_PLAN.md # 🏗️ JDG Plan architektoniczny (50→30 pakietów)
 ├── 33_JDG_MASSIVE_RULE_CATALOG.md     # 📚 JDG Katalog ~3 055 mikro-reguł
 ├── 34_JDG_DEFINITIVE_REGO_PLAN.md     # ★ JDG DEFINITYWNY Plan ENTERPRISE v10.0
+├── 35_SPOLKA_CYWILNA_ADVANCED_GAPS.md # 🏢 Spółka cywilna — zaawansowane luki
+├── 36_SPOLKA_CYWILNA_ULTIMATE_GAPS.md # 🏢 Spółka cywilna — ultimate gaps
+├── 37_SPOLKA_CYWILNA_ULTIMATE_GRANULARITY.md # 🏢 Spółka cywilna — maksymalna granularność
+├── 38_SPOLKA_CYWILNA_STRATEGIC_IMPROVEMENTS.md # 🏢 Spółka cywilna — strategiczne ulepszenia
+├── 38_JDG_QUALITY_AUDIT.md            # 🔍 JDG Audyt jakości
+├── 38a_JDG_CRITICAL_GAPS_CLOSURE.md   # 🔧 JDG Zamknięcie krytycznych luk
+├── 38b_JDG_DEDUP_REPORT.md            # 📊 JDG Raport deduplikacji
+├── 38c_JDG_CANONICAL_MAP.md           # 🗺️ JDG Mapa Kanoniczna — ~779 reguł ★★★
+├── 39_JDG_COMPREHENSIVE_TEN_AREAS_EXPANSION.md # 📋 JDG Ekspansja 10 obszarów (~140 reguł)
+├── 40_JDG_DEEP_GAP_FINAL_FRONTIER.md  # 🏁 JDG Final Frontier — 20 reguł
+├── 41_JDG_MEGA_MATRIX_7000_RULES.md   # 🏛️ JDG MEGA MATRIX — Dual-Layer ~7,000 reguł ★★★
+├── 42_JDG_DEEP_GAP_DISCOVERY.md       # 🔬 JDG Deep Gap Discovery — 55 nowych reguł ★
+├── 43_JDG_KKS_MASSIVE_DECOMPOSITION.md # ⚖️ JDG KKS — 230 reguł (5%→75% pokrycia) ★
 │
 ├── DocsJDG/                           # 📂 Źródła prawne JDG i inspiracje
 └── policies/                          # 📂 Reguły Rego (pliki .rego w pakiecie tax/ i jdg/)
@@ -89,7 +104,7 @@ Plan OPA/
 | `20_MASTER_RULES_REFERENCE.md` | **Kompletny spis 240 reguł w jednym dokumencie**: szybki indeks priorytetowy, wszystkie pakiety z pseudokodem Rego (✅ zaimplementowane / 🟡 w planie), cross-reference 62 podstaw prawnych, status implementacji (69/240 zaimplementowanych). Zoptymalizowany jako podręcznik programisty OPA | Developer OPA, Tech Lead, Reviewer |
 | `21_DEEP_DOCS_ANALYSIS.md` | **Głęboka analiza Docs vs 240 reguł**: thinker-with-files-gemini przeanalizował 200+ artykułów z 14 ustaw i zidentyfikował 12 absolutnie ostatnich luk (P320-P331): UoR podwójny zapis, zamknięcie ksiąg, rezerwy, elementy dowodu, struktura bilansu, koszt wytworzenia; CIT złe długi wierzyciela; VAT-R; Ordynacja zabezpieczenia/ulgi; KP BHP; PIT małe umowy. **240 reguł łącznie** | Developer OPA, Reviewer |
 
-### Dokumenty JDG (22-34) — Reguły dla jednoosobowej działalności gospodarczej (~3 080 reguł)
+### Dokumenty JDG (22-43) — Reguły dla jednoosobowej działalności gospodarczej (~3 080 reguł, ~779 kanonicznych)
 
 | Dokument | Zawartość | Dla kogo |
 |---|---|---|
@@ -106,6 +121,15 @@ Plan OPA/
 | `32_JDG_ENTERPRISE_DEFINITIVE_PLAN.md` | Plan architektoniczny (50→30 pakietów), struktura input, parametry dynamiczne | Architekt, Tech Lead |
 | `33_JDG_MASSIVE_RULE_CATALOG.md` | Katalog ~3 055 mikro-reguł z dekompozycją artykuł po artykule | Developer OPA |
 | **`34_JDG_DEFINITIVE_REGO_PLAN.md`** | **★ DEFINITYWNY Plan ENTERPRISE v10.0** — autorytatywny dokument referencyjny: 30 pakietów, ~60 szczegółowo opisanych reguł, first-match-wins chain, struktura input (~180 pól), katalog thresholdów (~120 parametrów), multi-pass architecture, macierze interakcji | Architekt, Tech Lead, Developer OPA |
+| `38_JDG_QUALITY_AUDIT.md` | Audyt jakości JDG — przegląd spójności i kompletności | Auditor, Tech Lead |
+| `38a_JDG_CRITICAL_GAPS_CLOSURE.md` | Zamknięcie krytycznych luk — poprawki po audycie | Developer OPA |
+| `38b_JDG_DEDUP_REPORT.md` | Raport deduplikacji — identyfikacja 47 zdublowanych reguł | Auditor |
+| **`38c_JDG_CANONICAL_MAP.md`** | **🗺️ MAPA KANONICZNA — ~779 reguł** ★★★ Definitywne mapowanie wszystkich reguł z Docs 22-43, Dual-Layer Architecture, statystyki domenowe, P-ID cross-reference | Architekt, Tech Lead, Developer OPA |
+| `39_JDG_COMPREHENSIVE_TEN_AREAS_EXPANSION.md` | Ekspansja 10 obszarów (~140 reguł): KSeF, JPK, PCC, sukcesja, RODO, AML | Developer OPA |
+| `40_JDG_DEEP_GAP_FINAL_FRONTIER.md` | Final Frontier — 20 reguł w 10 ostatnich obszarach | Developer OPA |
+| **`41_JDG_MEGA_MATRIX_7000_RULES.md`** | **🏛️ MEGA MATRIX** ★★★ — Dual-Layer Architecture, mapowanie 550+ artykułów, target ~7,000 reguł Micro, macierz Macro→Micro, 4-fazowy plan wdrożenia | Architekt, Tech Lead |
+| `42_JDG_DEEP_GAP_DISCOVERY.md` | **🔬 Deep Gap Discovery** ★ — 55 nowych reguł z 9 obszarów (0-20% pokrycia): PKPiR 8r, obniżone stawki VAT 6r, KKS 12r, ustawa zasiłkowa 7r, KŚT 5r, RODO 4r, MPiPS 4r, UoR inwentaryzacja 5r, PCC 4r | Developer OPA, Auditor |
+| `43_JDG_KKS_MASSIVE_DECOMPOSITION.md` | **⚖️ KKS Mass Decomposition** ★ — 230 reguł KKS (z ~5% → ~75% pokrycia): czynny żal (28r), sankcje (77r), przestępstwa (80r), wykroczenia (45r). Pełne pokrycie Art. 16-83 KKS | Developer OPA, Radca prawny |
 
 ---
 
@@ -285,7 +309,7 @@ Plan OPA/
 | **VAT miejsce świadczenia** — B2B usługi, próbki handlowe | ✅ 100% | 2 | NOWE |
 | **Podatki lokalne szczegółowe** — opłata targowa, od psów | ✅ 100% | 2 | NOWE |
 
-**Łącznie: ~3 320 reguł w 100+ domenach prawnych. ~99.8% pokrycia polskiego prawa podatkowego, księgowego i gospodarczego. 35 dokumentów technicznych.**
+**Łącznie: ~3 320 reguł w 100+ domenach prawnych. ~99.8% pokrycia polskiego prawa podatkowego, księgowego i gospodarczego. ~779 reguł kanonicznych JDG (zintegrowane Docs 22-43). 44 dokumenty techniczne.**
 
 ---
 
@@ -299,14 +323,18 @@ Plan OPA/
 5. **✅ JUŻ ZROBIONE** — Fazy 4-6: CIT/PIT, ulgi, księgowość, ZUS + Deep Docs P320-P331
 6-19. [Pozostałe fazy — patrz poprzednia wersja indeksu]
 
-### Kroki JDG — Plan ENTERPRISE
+### Kroki JDG — Plan ENTERPRISE (zaktualizowany 2026-07-12)
 
-20. **Implementacja Faza 0 JDG (MVP):** Risk + Routing + Compliance + Crossborder + VAT podstawowy (~70 reguł, 2 tyg) — wg `34_JDG_DEFINITIVE_REGO_PLAN.md` §9
-21. **Implementacja Faza 1 JDG (CORE):** PIT formy + KUP + zaliczki + ZUS + Business cycle (~80 reguł, 3 tyg)
-22. **Implementacja Faza 2 JDG (ADVANCED):** Ulgi + Leasing + Korekty + Przedawnienia + KSeF/JPK (~70 reguł, 3 tyg)
-23. **Implementacja Faza 3 JDG (ENTERPRISE):** KKS/GAAR + Podatki lokalne + VAT szczegółowy + Pracodawca + Międzynarodowe (~80 reguł, 4 tyg)
-24. **Implementacja Faza 4 JDG (DEEP):** Krypto + CESOP + ViDA + AI Act + MDR + Conflict resolution (~72 reguł, 4 tyg)
-25. **Wdrożenie JDG thresholds:** Migracja ~120 parametrów do DuckDB + mechanizm hot-reload przez NATS
-26. **Testy JDG:** Testy dla wszystkich ~3 080 reguł — priorytetyzacja wg `33_JDG_MASSIVE_RULE_CATALOG.md`
-27. **Integracja Python↔OPA JDG:** Implementacja `JdgOpaClient` z retry, circuit breaker i decision logging
-28. **Master Reference:** Pełny spis 240 reguł z pseudokodem w `20_MASTER_RULES_REFERENCE.md` — używaj jako podręcznika podczas implementacji (69/240 zaimplementowanych ✅)
+20. **✅ JUŻ ZROBIONE — Integracja Docs 22-43:** Mapa kanoniczna `38c_JDG_CANONICAL_MAP.md` — **~779 reguł** ★★★
+21. **✅ JUŻ ZROBIONE — Dual-Layer Architecture:** `41_JDG_MEGA_MATRIX_7000_RULES.md` — mapowanie Macro→Micro, target ~7,000
+22. **✅ JUŻ ZROBIONE — Deep Gap Discovery:** `42_JDG_DEEP_GAP_DISCOVERY.md` — 55 reguł z 9 niepokrytych obszarów
+23. **✅ JUŻ ZROBIONE — KKS Mass Decomposition:** `43_JDG_KKS_MASSIVE_DECOMPOSITION.md` — 230 reguł KKS
+24. **Implementacja Faza 0 JDG (MVP):** Risk + Routing + Compliance + Crossborder + VAT podstawowy (~70 reguł, 2 tyg) — wg `34_JDG_DEFINITIVE_REGO_PLAN.md` §9
+25. **Implementacja Faza 1 JDG (CORE):** PIT formy + KUP + zaliczki + ZUS + Business cycle (~80 reguł, 3 tyg)
+26. **Implementacja Faza 2 JDG (ADVANCED):** Ulgi + Leasing + Korekty + Przedawnienia + KSeF/JPK (~70 reguł, 3 tyg)
+27. **Implementacja Faza 3 JDG (ENTERPRISE):** KKS/GAAR + Podatki lokalne + VAT szczegółowy + Pracodawca + Międzynarodowe (~80 reguł, 4 tyg)
+28. **Implementacja Faza 4 JDG (DEEP):** Krypto + CESOP + ViDA + AI Act + MDR + Conflict resolution (~72 reguł, 4 tyg)
+29. **Wdrożenie JDG thresholds:** Migracja ~120 parametrów do DuckDB + mechanizm hot-reload przez NATS
+30. **Testy JDG:** Testy dla wszystkich ~779 reguł kanonicznych — priorytetyzacja wg `38c_JDG_CANONICAL_MAP.md`
+31. **Integracja Python↔OPA JDG:** Implementacja `JdgOpaClient` z retry, circuit breaker i decision logging
+32. **Master Reference:** Pełny spis ~779 reguł z pseudokodem w `38c_JDG_CANONICAL_MAP.md` — używaj jako podręcznika podczas implementacji

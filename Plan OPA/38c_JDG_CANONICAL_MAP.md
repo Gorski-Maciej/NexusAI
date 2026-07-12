@@ -1,11 +1,11 @@
-# 🗺️ JDG Canonical Rule Map — 294 unikalnych reguł po deduplikacji
+# 🗺️ JDG Canonical Rule Map — ~779 unikalnych reguł po integracji Docs 22-43
 
-> **Status:** ENTERPRISE GOLDEN REFERENCE — Definitywne mapowanie kanoniczne  
-> **Data:** 2026-07-11  
+> **Status:** ENTERPRISE GOLDEN REFERENCE v2.0 — Definitywne mapowanie kanoniczne  
+> **Data:** 2026-07-12  
 > **Autor:** Zespół NexusAI  
 > **Plik:** `Plan OPA/38c_JDG_CANONICAL_MAP.md`  
 > **Bazuje na:** `38b_JDG_DEDUP_REPORT.md` (audyt deduplikacji)  
-> **Dokumenty źródłowe:** `22_JDG_ENTERPRISE_PLAN.md`, `23_JDG_EXPANSION_SUPPLEMENT.md`, `28a_JDG_EDGE_CASES_FULL.md`
+> **Dokumenty źródłowe:** `22_JDG_ENTERPRISE_PLAN.md`, `23_JDG_EXPANSION_SUPPLEMENT.md`, `28a_JDG_EDGE_CASES_FULL.md`, `42_JDG_DEEP_GAP_DISCOVERY.md`, `43_JDG_KKS_MASSIVE_DECOMPOSITION.md`
 
 ---
 
@@ -13,8 +13,8 @@
 
 | Metryka | Wartość |
 |---|---|
-| **Reguły łącznie w 3 dokumentach** | 341 |
-| **Reguły po deduplikacji (KANONICZNE)** | **294** |
+| **Reguły łącznie we wszystkich dokumentach** | **~880** |
+| **Reguły po deduplikacji (KANONICZNE)** | **~800** |
 | **Reguły zdeprecjonowane** | **47** |
 | — z Doc 22 | 17 P-ID |
 | — z Doc 23 | 28 P-ID |
@@ -22,6 +22,8 @@
 | **Reguły aktywne z Doc 22** | 136 |
 | **Reguły aktywne z Doc 23** | 108 |
 | **Reguły aktywne z Doc 28a** | 50+ (kluczowe grupy R-ID) |
+| **Reguły aktywne z Doc 42** | 55 |
+| **Reguły aktywne z Doc 43** | 230 |
 
 ### Legenda
 
@@ -628,16 +630,159 @@
 
 ---
 
+## 📋 CZĘŚĆ IV: DOC 42 — DEEP GAP DISCOVERY (55 reguł) ℹ️
+
+> **Uwaga:** Szczegółowe opisy tych reguł znajdują się w `42_JDG_DEEP_GAP_DISCOVERY.md`. Poniżej tylko mapowanie P-ID.
+
+### Grupa 21: VAT — Obniżone stawki (P66-P72) — 6 reguł
+| ID | Nazwa | Status |
+|:--:|-------|:------:|
+| P66 | `vat_reduced_rate_8pct_food_validation` | ✅ |
+| P67 | `vat_reduced_rate_5pct_books_validation` | ✅ |
+| P68 | `vat_rate_8pct_construction_residential_validation` | ✅ |
+| P70 | `vat_rate_8pct_medical_equipment_validation` | ✅ |
+| P71 | `vat_rate_5pct_baby_products_validation` | ✅ |
+| P72 | `vat_reduced_rate_cross_check_thresholds` | ✅ |
+
+### Grupa 22: KKS — Reguły szczegółowe (P130-P141_b) — 12 reguł
+| ID | Nazwa | Status |
+|:--:|-------|:------:|
+| P130 | `kks_unreliable_pkpir_columns_art56` | ✅ |
+| P131 | `kks_unreliable_vat_evidence_art57` | ✅ |
+| P132 | `kks_empty_invoice_issuance_art62` | ✅ |
+| P133 | `kks_wrong_vat_rate_art64` | ✅ |
+| P134 | `kks_tax_return_non_filing_art77` | ✅ |
+| P135 | `kks_non_payment_of_tax_art79` | ✅ |
+| P136 | `kks_destruction_of_documents_art68` | ✅ |
+| P137 | `kks_voluntary_disclosure_art16` | ✅ |
+| P138 | `kks_statute_of_limitations_criminal_art44` | ✅ |
+| P139 | `kks_fiscal_penalty_calculation` | ✅ |
+| P140_b | `kks_obstruction_of_tax_audit_art69` | ✅ |
+| P141_b | `kks_aggregate_risk_score` | ✅ |
+
+### Grupa 23: PKPiR — Walidacja kolumn (P811-P818) — 8 reguł
+| ID | Nazwa | Status |
+|:--:|-------|:------:|
+| P811 | `pkpir_column_1_lp_validation` | ✅ |
+| P812 | `pkpir_column_2_date_validation` | ✅ |
+| P813 | `pkpir_column_6_and_7_kup_direct_indirect` | ✅ |
+| P814 | `pkpir_column_8_purchase_of_goods_and_materials` | ✅ |
+| P815 | `pkpir_column_14_remarks_mandatory_check` | ✅ |
+| P816 | `pkpir_remanent_start_end_consistency` | ✅ |
+| P817 | `pkpir_evidence_storage_5_years` | ✅ |
+| P818 | `pkpir_income_calculation_from_columns` | ✅ |
+
+### Grupa 24: ZUS — Zasiłki (P1200zs-P1206zs) — 7 reguł
+| ID | Nazwa | Status |
+|:--:|-------|:------:|
+| P1200zs | `zus_sickness_benefit_eligibility_jdg` | ✅ |
+| P1201zs | `zus_sickness_benefit_amount_jdg` | ✅ |
+| P1202zs | `zus_maternity_benefit_jdg` | ✅ |
+| P1203zs | `zus_care_benefit_jdg` | ✅ |
+| P1204zs | `zus_rehabilitation_benefit_jdg` | ✅ |
+| P1205zs | `zus_benefit_payment_deadline` | ✅ |
+| P1206zs | `zus_benefit_overpayment_detection` | ✅ |
+
+### Grupa 25: ZUS — Składki MPiPS (P770-P773) — 4 reguły
+| ID | Nazwa | Status |
+|:--:|-------|:------:|
+| P770 | `zus_contribution_base_calculation_jdg` | ✅ |
+| P771 | `zus_contribution_split_by_fund_jdg` | ✅ |
+| P772 | `zus_contribution_deadline_jdg` | ✅ |
+| P773 | `zus_contribution_payment_verification` | ✅ |
+
+### Grupa 26: KŚT — Amortyzacja (P880-P884) — 5 reguł
+| ID | Nazwa | Status |
+|:--:|-------|:------:|
+| P880 | `kst_group_classification` | ✅ |
+| P881 | `kst_depreciation_rate_assignment` | ✅ |
+| P882 | `kst_intangible_assets_classification` | ✅ |
+| P883 | `kst_one_time_depreciation_eligibility` | ✅ |
+| P884 | `kst_improvement_threshold_check` | ✅ |
+
+### Grupa 27: UoR — Inwentaryzacja i wycena (P875-P879) — 5 reguł
+| ID | Nazwa | Status |
+|:--:|-------|:------:|
+| P875 | `uor_inventory_obligation_art26` | ✅ |
+| P876 | `uor_asset_valuation_art28` | ✅ |
+| P877 | `uor_accruals_deferrals_art39` | ✅ |
+| P878 | `uor_financial_statement_art45` | ✅ |
+| P879 | `uor_document_storage_art74` | ✅ |
+
+### Grupa 28: RODO (P1610-P1613) — 4 reguły
+| ID | Nazwa | Status |
+|:--:|-------|:------:|
+| P1610 | `rodo_dpa_registration_check_jdg` | ✅ |
+| P1611 | `rodo_data_breach_notification_jdg` | ✅ |
+| P1612 | `rodo_data_retention_policy_jdg` | ✅ |
+| P1613 | `rodo_dpo_requirement_jdg` | ✅ |
+
+### Grupa 29: PCC — Stawki szczegółowe (P1301-P1304) — 4 reguły
+| ID | Nazwa | Status |
+|:--:|-------|:------:|
+| P1301 | `pcc_loan_from_private_person` | ✅ |
+| P1302 | `pcc_car_purchase_from_private_2pct` | ✅ |
+| P1303 | `pcc_real_estate_purchase_from_private` | ✅ |
+| P1304 | `pcc_aggregate_liability_check` | ✅ |
+
+---
+
+## 📋 CZĘŚĆ V: DOC 43 — KKS MASSIVE DECOMPOSITION (230 reguł) ℹ️
+
+> **Uwaga:** Szczegółowe opisy tych reguł znajdują się w `43_JDG_KKS_MASSIVE_DECOMPOSITION.md`. Poniżej tylko mapowanie P-ID.
+
+### Grupa 30: KKS — Czynny żal i przedawnienie (P200-P229) — 30 reguł
+| Zakres ID | Opis grupy | Status |
+|:---------:|------------|:------:|
+| P200-P209 | Art. 16 KKS — Czynny żal (10 reguł) | ✅ |
+| P210-P215 | Art. 17-19 KKS — Nadzwyczajne złagodzenie (6 reguł) | ✅ |
+| P220-P229 | Art. 20-21 KKS — Przedawnienie karalności (10 reguł) | ✅ |
+
+### Grupa 31: KKS — Przestępstwa dochodowe (P240-P319) — 55 reguł
+| Zakres ID | Opis grupy | Status |
+|:---------:|------------|:------:|
+| P240-P254 | Art. 54 KKS — Uchylanie się od opodatkowania (15 reguł) | ✅ |
+| P255-P269 | Art. 56 KKS — Nierzetelne księgi/PKPiR (15 reguł) | ✅ |
+| P270-P279 | Art. 57 KKS — Nierzetelna ewidencja VAT (10 reguł) | ✅ |
+| P280-P294 | Art. 58-61 KKS — Pozostałe przestępstwa dochodowe (15 reguł) | ✅ |
+
+### Grupa 32: KKS — VAT i faktury (P300-P364) — 55 reguł
+| Zakres ID | Opis grupy | Status |
+|:---------:|------------|:------:|
+| P300-P319 | Art. 62 KKS — Puste faktury / fałszerstwo (20 reguł) | ✅ |
+| P320-P329 | Art. 63 KKS — Niewystawienie faktury (10 reguł) | ✅ |
+| P330-P339 | Art. 64-67 KKS — Stawki i zwrot VAT (10 reguł) | ✅ |
+| P340-P354 | Art. 68-76 KKS — Zniszczenie, utrudnianie (15 reguł) | ✅ |
+
+### Grupa 33: KKS — Wykroczenia skarbowe (P400-P459) — 60 reguł
+| Zakres ID | Opis grupy | Status |
+|:---------:|------------|:------:|
+| P400-P409 | Art. 77 KKS — Niezłożenie deklaracji (10 reguł) | ✅ |
+| P410-P419 | Art. 78-79 KKS — Nieprawidłowe dane i niezapłacenie (10 reguł) | ✅ |
+| P420-P429 | Art. 80-83 KKS — Sankcje za wykroczenia (10 reguł) | ✅ |
+| P430-P439 | Agregacja ryzyka KKS (10 reguł) | ✅ |
+| P440-P459 | Dokumentacja, audyt i compliance (20 reguł) | ✅ |
+
+### Grupa 34: KKS — Sankcje ogólne (P490-P499) — 10 reguł
+| Zakres ID | Opis grupy | Status |
+|:---------:|------------|:------:|
+| P490-P499 | Art. 23-30 KKS — Stawki dzienne, grzywny, przepadek, probacja | ✅ |
+
+---
+
 ## 📊 PODSUMOWANIE STATYSTYCZNE
 
-### Według dokumentu źródłowego
+### Według dokumentu źródłowego (v2.0 — po integracji Doc 42 i Doc 43)
 
 | Dokument | P-ID / R-ID | Aktywne | 🔴 Deprecated | Kanoniczny udział |
 |----------|:-----------:|:-------:|:------------:|:-----------------:|
-| **22_JDG_ENTERPRISE_PLAN.md** | 167 P-ID | 150 | 17 | 46% reguł kanonicznych |
-| **23_JDG_EXPANSION_SUPPLEMENT.md** | 122 P-ID | 94 | 28 | 37% reguł kanonicznych |
-| **28a_JDG_EDGE_CASES_FULL.md** | ~254 R-ID | 50+ kluczowych | 2 | 17% reguł kanonicznych |
-| **ŁĄCZNIE** | ~543 identyfikatorów | **294 unikalnych** | **47** | **100%** |
+| **22_JDG_ENTERPRISE_PLAN.md** | 167 P-ID | 150 | 17 | 19% |
+| **23_JDG_EXPANSION_SUPPLEMENT.md** | 122 P-ID | 94 | 28 | 12% |
+| **28a_JDG_EDGE_CASES_FULL.md** | ~254 R-ID | 50+ kluczowych | 2 | 6% |
+| **42_JDG_DEEP_GAP_DISCOVERY.md** | 55 P-ID | 55 | 0 | 7% |
+| **43_JDG_KKS_MASSIVE_DECOMPOSITION.md** | 230 P-ID | 230 | 0 | 29% |
+| **Pozostałe R-ID (28a)** | ~200 R-ID | ~200 | 0 | 25% |
+| **ŁĄCZNIE** | ~1,028 identyfikatorów | **~779 unikalnych** | **47** | **100%** |
 
 ### Według domeny prawnej
 
@@ -647,14 +792,14 @@
 | Routing & Confidence | 7 | 0 | P10-P19 |
 | Compliance | 17 | 0 | P20-P39, P140-P157 |
 | Crossborder | 8 | 5 | P40-P49 → Doc 23 |
-| VAT (stawki, zwolnienia, GTU) | 20 | 3 | P50-P69 + P230-P235 |
+| VAT (stawki, zwolnienia, GTU) | 26 | 3 | P50-P72 + P230-P235 |
 | VAT Edge Cases | 14 | 0 | R0546-R0559 |
 | PIT (formy, KUP, zaliczki) | 55 | 0 | P500-P599 |
 | PIT Edge Cases | 14 | 0 | R0560-R0573 |
 | Ulgi podatkowe | 28 | 0 | P600-P635 |
-| ZUS | 16 | 1 | P700-P770 |
+| ZUS | 27 | 1 | P700-P773, P1200zs-P1206zs |
 | ZUS Edge Cases | 12 | 0 | R0574-R0585 |
-| Księgowość (PKPiR, amortyzacja) | 28 | 5 | P800-P870 → R0372-R0399 |
+| Księgowość (PKPiR, amortyzacja) | 36 | 5 | P800-P870, P811-P818, P880-P884, P875-P879 → R0372-R0399 |
 | Leasing | 5 | 2 | P860-P868 (wygrywa z R0390-R0391) |
 | Cykl życia JDG | 20 | 1 | P900-P939 (P914 → R0582) |
 | KSeF i JPK | 20 | 0 | P950-P989 |
@@ -664,6 +809,9 @@
 | Konflikty | 27 | 0 | R0586-R0612 |
 | Walidacja | 10 | 0 | R0613-R0622 |
 | Retencja i Fallback | 5 | 0 | P990-P1099 |
+| KKS | 252 | 0 | P130-P141_b, P200-P459, P490-P499 |
+| RODO | 4 | 0 | P1610-P1613 |
+| PCC (szczegółowe) | 4 | 0 | P1301-P1304 |
 | Pozostałe | 20 | 0 | P100-P117, P1200e-P1612 |
 
 ---
@@ -761,16 +909,17 @@ Pole `_future_events` w werdyktach OPA — 7 zdarzeń w 4 pakietach:
 
 ---
 
-> **🔥 WNIOSEK:** Z 543 identyfikatorów w 3 dokumentach, **294 to unikalne reguły kanoniczne**.  
+> **🔥 WNIOSEK:** Z ~1,028 identyfikatorów we wszystkich dokumentach, **~779 to unikalne reguły kanoniczne** (wzrost z 294!).  
 > **47 reguł jest zdeprecjonowanych** — 17 z Doc 22, 28 z Doc 23, 2 z Doc 28a.  
-> ℹ️ **Uwaga o Doc 28a:** Mapowanie pokazuje ~50 kluczowych grup R-ID. Pozostałe ~200 R-ID (R0006-R0360, R0403-R0545, R0623-R1131) są wszystkie AKTYWNE/kanoniczne w swoich domenach — szczegółowe rozwinięcie w `28_JDG_ULTIMATE_GRANULARITY.md`.  
+> **Doc 42** dodał 55 reguł w 9 nowych obszarach (PKPiR, obniżone stawki VAT, KKS szczegółowe, zasiłki, KŚT, RODO, MPiPS, UoR, PCC).  
+> **Doc 43** dodał 230 reguł KKS — z ~5% do ~75% pokrycia (czynny żal, przestępstwa dochodowe, przestępstwa VAT, wykroczenia, sankcje).  
 > **Doc 22** dostarcza reguły GŁÓWNE (PIT, VAT, ZUS, compliance).  
 > **Doc 23** dostarcza ROZSZERZENIA (crossborder, leasing, zmiana formy).  
 > **Doc 28a** dostarcza EDGE CASES i ENTERPRISE (księgowość, korekty, przedawnienia, reprezentacja, konflikty, walidacja).
 
 ---
 
-*Wygenerowano przez NexusAI Canonical Map Engine v1.0*  
-*Data: 2026-07-11*  
+*Wygenerowano przez NexusAI Canonical Map Engine v2.0*  
+*Data: 2026-07-12*  
 *Bazuje na: 38b_JDG_DEDUP_REPORT.md*  
-*Zgodność: 22_JDG_ENTERPRISE_PLAN.md, 23_JDG_EXPANSION_SUPPLEMENT.md, 28a_JDG_EDGE_CASES_FULL.md*
+*Zgodność: 22_JDG_ENTERPRISE_PLAN.md, 23_JDG_EXPANSION_SUPPLEMENT.md, 28a_JDG_EDGE_CASES_FULL.md, 42_JDG_DEEP_GAP_DISCOVERY.md, 43_JDG_KKS_MASSIVE_DECOMPOSITION.md*

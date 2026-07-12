@@ -1,10 +1,12 @@
 # 🏛️ Plan Reguł OPA/Rego dla NexusAI — Silnik Decyzyjny ENTERPRISE
 
-> **Status:** Plan Architektoniczny v1.0  
-> **Data:** 2026-07-07  
+> **Status:** Plan Architektoniczny v2.0  
+> **Data:** 2026-07-12  
 > **Autor:** Zespół NexusAI  
 > **Zakres:** Wyłącznie katalog `Plan OPA/` w repozytorium  
-> **Źródła prawne:** `Plan OPA/Docs` — kompletny wykaz ustaw, rozporządzeń i interpretacji
+> **Źródła prawne:** `Plan OPA/Docs` i `Plan OPA/DocsJDG` — kompletny wykaz ustaw, rozporządzeń i interpretacji  
+> **Reguły kanoniczne JDG:** ~779 (zintegrowane z Docs 22-43, mapa kanoniczna `38c_JDG_CANONICAL_MAP.md`)  
+> **Target ENTERPRISE:** ~7,000 reguł Micro (Dual-Layer Architecture — `41_JDG_MEGA_MATRIX_7000_RULES.md`)
 
 ---
 
@@ -1171,4 +1173,12 @@ async def test_full_pipeline_fuel_pl():
 > **Następny dokument:** `Plan OPA/17_IMPLEMENTATION_ROADMAP.md` — Roadmap wdrożenia: 13 faz, M1-M4, macierz ryzyka  
 > **Następny dokument:** `Plan OPA/18_OPA_API_REFERENCE.md` — Dokumentacja API OPA REST dla NexusAI  
 > **Następny dokument:** `Plan OPA/19_DEPLOYMENT_GUIDE.md` — Przewodnik wdrożenia: Docker, K8s, CI/CD, monitoring  
-> **Następny dokument:** `Plan OPA/20_MASTER_RULES_REFERENCE.md` — Kompletny spis 228 reguł z pseudokodem i cross-reference
+> **Następny dokument:** `Plan OPA/20_MASTER_RULES_REFERENCE.md` — Kompletny spis 240 reguł z pseudokodem i cross-reference  
+> **Następny dokument:** `Plan OPA/21_DEEP_DOCS_ANALYSIS.md` — Deep Docs Analysis — 12 nowych reguł (P320-P331)  
+>  
+> **── SEKCJA JDG (Dokumenty 22-43) ──**  
+> **Mapa kanoniczna JDG:** `Plan OPA/38c_JDG_CANONICAL_MAP.md` — **~779 reguł kanonicznych** (zintegrowane Docs 22-43)  
+> **Dual-Layer Architecture:** `Plan OPA/41_JDG_MEGA_MATRIX_7000_RULES.md` — Target ~7,000 reguł Micro  
+> **Deep Gap Discovery:** `Plan OPA/42_JDG_DEEP_GAP_DISCOVERY.md` — 55 nowych reguł z 9 niepokrytych obszarów  
+> **KKS Mass Decomposition:** `Plan OPA/43_JDG_KKS_MASSIVE_DECOMPOSITION.md` — 230 reguł KKS (z ~5% → ~75% pokrycia)  
+> **Pełny indeks JDG:** `Plan OPA/04_INDEX.md` — Kompletna mapa wszystkich dokumentów
