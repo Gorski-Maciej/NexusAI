@@ -311,3 +311,262 @@ else := {
     input.invoice.procedure == "VAT_REFUND"
     input.invoice.vat_refund_type == "ACCELERATED"
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P193-P201: WNT, Import Usług, Reverse Charge — Dedukcje VAT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# P193: wnt_deduction_same_period — WNT: odliczenie w tym samym okresie co VAT należny
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.wnt_same_period",
+    "package": "jdg.vat.deductions", "priority": 193,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "WNT_DEDUCTION", "vat_exemption": "",
+    "vat_deduction_percent": 100, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 86 ust. 2 pkt 4 VAT",
+    "_warnings": ["WNT — odliczenie VAT naliczonego w tym samym okresie co VAT należny (Art. 86 ust. 10b pkt 1 VAT). JPK_V7: pole K_41."]
+} {
+    input.invoice.direction == "PURCHASE"
+    input.invoice.procedure in {"WNT", "INTRA_EU_PURCHASE"}
+    input.invoice.has_vat_invoice == true
+}
+
+# P194: wnt_deduction_3months — WNT: odliczenie w ciągu 3 miesięcy
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.wnt_3months",
+    "package": "jdg.vat.deductions", "priority": 194,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "WNT_DEDUCTION_3M", "vat_exemption": "",
+    "vat_deduction_percent": 100, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "WNT — odliczenie po okresie powstania obowiązku, w ciągu 3 miesięcy",
+    "_legal_basis": "Art. 86 ust. 10b pkt 2 VAT",
+    "_warnings": ["WNT — odliczenie VAT w ciągu 3 miesięcy od powstania obowiązku podatkowego (korekta JPK_V7 wstecz)"]
+} {
+    input.invoice.direction == "PURCHASE"
+    input.invoice.procedure in {"WNT", "INTRA_EU_PURCHASE"}
+    input.invoice.months_since_wnt_obligation <= 3
+    input.invoice.wnt_deducted_same_period == false
+}
+
+# P195: wnt_deduction_expired — WNT: termin odliczenia bezpowrotnie minął
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.wnt_expired",
+    "package": "jdg.vat.deductions", "priority": 195,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "WNT_DEDUCTION_EXPIRED", "vat_exemption": "",
+    "vat_deduction_percent": 0, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "BLOCK_AND_ALERT", "_routing_reason": "WNT — przekroczony 3-miesięczny termin odliczenia VAT",
+    "_legal_basis": "Art. 86 ust. 10b pkt 2 VAT",
+    "_warnings": ["WNT — termin odliczenia VAT minął (>3 miesiące). Odliczenie NIEMOŻLIWE. Rozważ czynny żal."]
+} {
+    input.invoice.procedure in {"WNT", "INTRA_EU_PURCHASE"}
+    input.invoice.months_since_wnt_obligation > 3
+}
+
+# P196: import_services_deduction — Import usług: odliczenie VAT naliczonego
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.import_services",
+    "package": "jdg.vat.deductions", "priority": 196,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "IMPORT_SERVICES_DEDUCTION", "vat_exemption": "",
+    "vat_deduction_percent": 100, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 86 ust. 2 pkt 4 VAT",
+    "_warnings": ["IMPORT USŁUG — odliczenie VAT naliczonego w tym samym okresie. JPK_V7: K_43 (UE) / K_44 (spoza UE)."]
+} {
+    input.invoice.direction == "PURCHASE"
+    input.invoice.procedure in {"IMPORT_OF_SERVICES", "IMPORT_SERVICES_EU", "IMPORT_SERVICES_NON_EU"}
+    input.invoice.place_of_supply == "PL"
+}
+
+# P197: import_goods_deduction — Import towarów: odliczenie VAT z SAD
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.import_goods_sad",
+    "package": "jdg.vat.deductions", "priority": 197,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "IMPORT_GOODS_DEDUCTION", "vat_exemption": "",
+    "vat_deduction_percent": 100, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 86 ust. 2 pkt 2 VAT",
+    "_warnings": ["IMPORT TOWARÓW — odliczenie VAT na podstawie dokumentu celnego SAD. Kurs Tabela C NBP."]
+} {
+    input.invoice.direction == "PURCHASE"
+    input.invoice.procedure == "IMPORT_CUSTOMS"
+    input.invoice.has_customs_document == true
+}
+
+# P198: reverse_charge_deduction — Odwrotne obciążenie: VAT należny = VAT naliczony
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.reverse_charge_deduction",
+    "package": "jdg.vat.deductions", "priority": 198,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "REVERSE_CHARGE_DEDUCTION", "vat_exemption": "",
+    "vat_deduction_percent": 100, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 86 ust. 2 pkt 4 VAT",
+    "_warnings": ["ODWROTNE OBCIĄŻENIE — VAT należny = VAT naliczony (efekt neutralny). Odliczenie w tym samym okresie."]
+} {
+    input.invoice.direction == "PURCHASE"
+    input.invoice.procedure in {"REVERSE_CHARGE_DOMESTIC", "REVERSE_CHARGE_CONSTRUCTION", "REVERSE_CHARGE_WASTE", "REVERSE_CHARGE_METALS", "REVERSE_CHARGE_CO2"}
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P199-P204: Rozszerzone Bad Debt + VAT-ZT + Sankcje
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# P199: bad_debt_creditor_correction_required — Ulga złe długi: warunki szczegółowe
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.bad_debt_creditor_correction",
+    "package": "jdg.vat.deductions", "priority": 199,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "BAD_DEBT_CREDITOR_CORRECTION", "vat_exemption": "",
+    "vat_deduction_percent": 0, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 89a ust. 1-2 VAT",
+    "_warnings": [sprintf("ULGA NA ZŁE DŁUGI: %.2f PLN VAT do korekty (wierzyciel). JPK_V7: pozycja K_45. Pamiętaj o zawiadomieniu dłużnika przed korektą!", [vat_to_correct])]
+} {
+    input.invoice.direction == "SALE"
+    input.invoice.is_paid == false
+    input.invoice.days_overdue >= 150
+    input.invoice.debtor_notified == true
+    input.invoice.debtor_is_vat_payer == true
+    # Oblicz VAT z faktury (netto × stawka) — vat_amount nie jest ustawiane przez substantive.rego
+    amount_net := object.get(input.invoice, "amount_net", 0)
+    vat_rate_str := object.get(input.invoice, "vat_rate", "0.23")
+    vat_to_correct := amount_net * to_number(vat_rate_str)
+    vat_to_correct > 0
+}
+
+# P200: bad_debt_reversal_on_payment — Obowiązek odwrócenia ulgi przy zapłacie
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.bad_debt_reversal_on_payment",
+    "package": "jdg.vat.deductions", "priority": 200,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "BAD_DEBT_REVERSAL", "vat_exemption": "",
+    "vat_deduction_percent": 0, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Ulga na złe długi — dłużnik zapłacił, OBOWIĄZEK odwrócenia",
+    "_legal_basis": "Art. 89a ust. 4 VAT",
+    "_warnings": ["ODWRÓCENIE ULGI ZŁE DŁUGI — dłużnik uregulował należność. Zwiększ VAT należny w bieżącym okresie o kwotę wcześniej skorygowaną."]
+} {
+    input.invoice.direction == "SALE"
+    input.invoice.bad_debt_correction_applied == true
+    input.invoice.is_paid == true
+    input.invoice.payment_date != ""
+}
+
+# P201: bad_debt_creditor_bankruptcy — Ulga złe długi: upadłość dłużnika
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.bad_debt_bankruptcy",
+    "package": "jdg.vat.deductions", "priority": 201,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "BAD_DEBT_BANKRUPTCY", "vat_exemption": "",
+    "vat_deduction_percent": 0, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 89a ust. 2 pkt 1-3 VAT",
+    "_warnings": ["ULGA ZŁE DŁUGI — dłużnik w upadłości/likwidacji. Możliwa korekta VAT bez zawiadomienia dłużnika (Art. 89a ust. 2 pkt 3 VAT)."]
+} {
+    input.invoice.days_overdue >= 150
+    input.invoice.is_paid == false
+    input.invoice.debtor_in_bankruptcy == true
+}
+
+# P202: vat_zt_deduction_correction — Korekta odliczeń w VAT-ZT
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.vat_zt_deduction_correction",
+    "package": "jdg.vat.deductions", "priority": 202,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "VAT_ZT_DEDUCTION_CORRECTION", "vat_exemption": "",
+    "vat_deduction_percent": 0, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Korekta VAT-ZT — weryfikacja odliczeń historycznych",
+    "_legal_basis": "Art. 86 ust. 10-13 VAT",
+    "_warnings": ["KOREKTA VAT-ZT ODLICZEŃ — sprawdź czy odliczenia w okresach historycznych były prawidłowe. Korekta +/- w bieżącej deklaracji."]
+} {
+    input.jdg_entrepreneur.vat_zt_required == true
+    input.invoice.is_vat_deducted == true
+}
+
+# P203: vat_sanction_deduction_block — Blokada odliczeń przy sankcji VAT
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.sanction_deduction_block",
+    "package": "jdg.vat.deductions", "priority": 203,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "VAT_SANCTION_BLOCK", "vat_exemption": "",
+    "vat_deduction_percent": 0, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Blokada odliczeń VAT — podatnik objęty sankcją",
+    "_legal_basis": "Art. 108a ust. 5 VAT, Art. 96 ust. 3 VAT",
+    "_warnings": ["BLOKADA ODLICZEŃ VAT — sankcja 30%%. Odliczenie NIEMOŻLIWE dla faktur bez MPP przy obowiązku."]
+} {
+    input.invoice.split_payment_mandatory_breached == true
+}
+
+# P204: cross_border_deduction_summary — Podsumowanie odliczeń transgranicznych
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.cross_border_summary",
+    "package": "jdg.vat.deductions", "priority": 204,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "CROSS_BORDER_SUMMARY", "vat_exemption": "",
+    "vat_deduction_percent": 0, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "jpk_v7_cross_border_wnt": wnt_total,
+    "jpk_v7_cross_border_import_services_eu": import_eu_total,
+    "jpk_v7_cross_border_import_services_non_eu": import_non_eu_total,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 86 ust. 2 pkt 4 VAT",
+    "_warnings": [sprintf("PODSUMOWANIE TRANSGRANICZNE: WNT=%.2f PLN, Import usług UE=%.2f PLN, Import usług spoza UE=%.2f PLN. JPK_V7: pola K_41-K_44.", [wnt_total, import_eu_total, import_non_eu_total])]
+} {
+    input.jdg_entrepreneur.is_vat_payer == true
+    is_period_end := object.get(input.invoice, "is_period_end", false)
+    is_period_end == true
+    wnt_total := object.get(input.invoice, "wnt_total", 0)
+    import_eu_total := object.get(input.invoice, "import_services_eu_total", 0)
+    import_non_eu_total := object.get(input.invoice, "import_services_non_eu_total", 0)
+}

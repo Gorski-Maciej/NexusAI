@@ -7,6 +7,12 @@ Wykrywa i rozwiązuje konflikty między passami OPA, zamiast cicho nadpisywać
 klucze przez object.union().
 
 Eliminuje błędy typu P914 (VAT błędnie zakładał brak zdrowotnej w zawieszeniu).
+
+Sprint: Cross-Domain Conflict Resolution (R0586-R0612):
+- IP Box vs B+R — wzajemnie wykluczające się ulgi
+- Representation vs Marketing — NKUP vs KUP klasyfikacja
+- Car VAT vs KUP — asymetria 50% vs 75%
+- Bad Debt timing — VAT 150 dni vs PIT 90 dni
 """
 
 from __future__ import annotations
@@ -30,6 +36,7 @@ class Domain(Enum):
     ACCOUNTING = "accounting"
     ZUS = "zus"
     BUSINESS = "business"
+    CONFLICTS = "conflicts"
 
 
 # ── Conflict Severity ─────────────────────────────────────────────────────────
@@ -167,6 +174,172 @@ class SemanticConflictResolver:
                 message="Business (P914) nadpisuje ZUS: zawieszenie → społeczne=0",
                 prefer_domain=Domain.BUSINESS,
             ),
+
+            # ── IP Box vs B+R ───────────────────────────────────────────────────
+            # UWAGA: Obie domeny to ALLOWANCES, więc sprawdzamy TEN SAM werdykt
+            # pod kątem jednoczesnego wystąpienia IP Box i B+R.
+            ConflictRule(
+                name="ip_box_vs_rd_same_income",
+                domains=(Domain.ALLOWANCES, Domain.ALLOWANCES),
+                condition=lambda allowances_a, allowances_b: (
+                    # Sprawdzamy czy w JEDNYM werdykcie allowances występują obie ulgi
+                    allowances_a.get("relief_type") == "IP_BOX"
+                    and allowances_a.get("rd_relief_claimed") is True
+                ),
+                resolution="PREFER_DOMAIN_A",
+                severity=Severity.CRITICAL,
+                message="IP Box (5%) i B+R (100-200%) nie mogą być stosowane "
+                        "do tego samego dochodu — wybierz jedną ulgę (Art. 30ca ust. 3 PIT)",
+                prefer_domain=Domain.ALLOWANCES,
+            ),
+            ConflictRule(
+                name="ip_box_no_nexus_indicator",
+                domains=(Domain.ALLOWANCES, Domain.CONFLICTS),
+                condition=lambda allowances, conflicts: (
+                    allowances.get("relief_type") == "IP_BOX"
+                    and conflicts.get("nexus_indicator_calculated") is False
+                ),
+                resolution="PREFER_DOMAIN_B",
+                severity=Severity.CRITICAL,
+                message="IP Box wymaga wskaźnika Nexus (Art. 30ca ust. 4 PIT) — brak wskaźnika = odmowa",
+                prefer_domain=Domain.CONFLICTS,
+            ),
+            ConflictRule(
+                name="ip_box_rd_double_counting",
+                domains=(Domain.ALLOWANCES, Domain.CONFLICTS),
+                condition=lambda allowances, conflicts: (
+                    allowances.get("relief_type") == "IP_BOX"
+                    and conflicts.get("rd_costs_in_ip_box", 0) > 0
+                    and conflicts.get("rd_costs_deducted_separately") is True
+                ),
+                resolution="PREFER_DOMAIN_B",
+                severity=Severity.HIGH,
+                message="Koszty B+R nie mogą być podwójnie odliczane w IP Box i uldze B+R",
+                prefer_domain=Domain.CONFLICTS,
+            ),
+
+            # ── Representation vs Marketing ──────────────────────────────────────
+            ConflictRule(
+                name="representation_vs_marketing_nkup",
+                domains=(Domain.PIT, Domain.ACCOUNTING),
+                condition=lambda pit, accounting: (
+                    pit.get("kus_qualification") == "none"
+                    and accounting.get("kus_qualification") == "full"
+                    and pit.get("rule_id", "").startswith("jdg.pit.kup.representation")
+                ),
+                resolution="PREFER_DOMAIN_A",
+                severity=Severity.HIGH,
+                message="Wydatek sklasyfikowany jako reprezentacja (NKUP) — "
+                        "PIT ma pierwszeństwo przed księgowością",
+                prefer_domain=Domain.PIT,
+            ),
+            ConflictRule(
+                name="representation_limit_exceeded",
+                domains=(Domain.PIT, Domain.CONFLICTS),
+                condition=lambda pit, conflicts: (
+                    conflicts.get("repr_total", 0) > 0
+                    and conflicts.get("repr_pct", 0) > 0.25
+                ),
+                resolution="PREFER_DOMAIN_B",
+                severity=Severity.WARNING,
+                message="Koszty reprezentacji > 0.25% przychodu — ryzyko kontroli skarbowej",
+                prefer_domain=Domain.CONFLICTS,
+            ),
+
+            # ── Car VAT vs KUP ───────────────────────────────────────────────────
+            ConflictRule(
+                name="car_vat_vs_kup_asymmetry",
+                domains=(Domain.VAT, Domain.PIT),
+                condition=lambda vat, pit: (
+                    vat.get("vat_deduction_percent", 100) == 50
+                    and pit.get("kus_percent", 100) == 75
+                ),
+                resolution="ACCEPT_ASYMMETRY",
+                severity=Severity.INFO,
+                message="Auto bez ewidencji: VAT 50% vs KUP 75% — asymetria "
+                        "prawidłowa (różne podstawy prawne: Art. 86a VAT vs Art. 23 PIT)",
+            ),
+            ConflictRule(
+                name="car_no_log_100pct_vat_blocked",
+                domains=(Domain.VAT, Domain.ACCOUNTING),
+                condition=lambda vat, accounting: (
+                    vat.get("vat_deduction_percent", 100) > 50
+                    and accounting.get("has_mileage_log") is False
+                ),
+                resolution="PREFER_DOMAIN_B",
+                severity=Severity.CRITICAL,
+                message="Odliczenie 100% VAT bez ewidencji przebiegu — NIEDOZWOLONE (Art. 86a VAT)",
+                prefer_domain=Domain.ACCOUNTING,
+            ),
+
+            # ── Bad Debt VAT vs PIT Timing ───────────────────────────────────────
+            ConflictRule(
+                name="bad_debt_timing_vat_vs_pit",
+                domains=(Domain.VAT, Domain.PIT),
+                condition=lambda vat, pit: (
+                    vat.get("bad_debt_relief_eligible") is True
+                    and pit.get("relief_type") == "BAD_DEBT_PIT_CREDITOR"
+                    and vat.get("days_overdue", 0) >= 90
+                    and vat.get("days_overdue", 0) < 150
+                ),
+                resolution="ACCEPT_TIMING_DIFFERENCE",
+                severity=Severity.INFO,
+                message="Złe długi: PIT dostępny po 90 dniach, VAT po 150 dniach "
+                        "— różne progi prawidłowe (Art. 26i PIT vs Art. 89a VAT)",
+            ),
+            ConflictRule(
+                name="bad_debt_creditor_vat_not_pit",
+                domains=(Domain.VAT, Domain.PIT),
+                condition=lambda vat, pit: (
+                    vat.get("bad_debt_relief_eligible") is True
+                    and pit.get("relief_type") != "BAD_DEBT_PIT_CREDITOR"
+                    and vat.get("days_overdue", 0) >= 150
+                ),
+                resolution="PREFER_DOMAIN_A",
+                severity=Severity.HIGH,
+                message="Wierzyciel skorygował VAT (złe długi) ale nie PIT — "
+                        "sprawdź czy PIT też się należy (Art. 26i PIT)",
+                prefer_domain=Domain.VAT,
+            ),
+            ConflictRule(
+                name="bad_debt_debtor_both_corrections",
+                domains=(Domain.VAT, Domain.PIT),
+                condition=lambda vat, pit: (
+                    vat.get("debtor_vat_correction_required") is True
+                    and pit.get("pit_income_increase_required") is False
+                ),
+                resolution="PREFER_DOMAIN_A",
+                severity=Severity.HIGH,
+                message="Dłużnik: OBOWIĄZEK korekty VAT ORAZ zwiększenia dochodu PIT "
+                        "(Art. 89b VAT + Art. 26i ust. 9 PIT)",
+                prefer_domain=Domain.VAT,
+            ),
+            ConflictRule(
+                name="bad_debt_sold_to_collector",
+                domains=(Domain.VAT, Domain.PIT),
+                condition=lambda vat, pit: (
+                    vat.get("receivable_sold_to_collector") is True
+                    or pit.get("receivable_sold_to_collector") is True
+                ),
+                resolution="DENY_BAD_DEBT_RELIEF",
+                severity=Severity.CRITICAL,
+                message="Wierzytelność sprzedana — ulga na złe długi NIEDOZWOLONA "
+                        "(Art. 89a ust. 7 VAT, Art. 26i ust. 6 PIT)",
+            ),
+
+            # ── FX Rate Source Conflict ──────────────────────────────────────────
+            ConflictRule(
+                name="fx_rate_source_nbp_a_vs_c",
+                domains=(Domain.ACCOUNTING, Domain.VAT),
+                condition=lambda accounting, vat: (
+                    accounting.get("fx_source_table") == "A"
+                    and accounting.get("is_customs_transaction") is True
+                ),
+                resolution="PREFER_CUSTOMS_TABLE_C",
+                severity=Severity.WARNING,
+                message="Transakcja celna — powinna używać Tabeli C NBP, "
+                        "nie Tabeli A (inne kursy)",
+            ),
         ]
 
     def resolve(
@@ -210,6 +383,9 @@ class SemanticConflictResolver:
                     passes = self._apply_preference(passes, rule, domain_b, domain_a)
                 elif rule.resolution == "CAP_VALUE":
                     passes = self._apply_cap(passes, domain_a, domain_b)
+                # Informational resolution types — no structural change, logged only
+                # ACCEPT_ASYMMETRY, DENY_BAD_DEBT_RELIEF, ACCEPT_TIMING_DIFFERENCE,
+                # PREFER_CUSTOMS_TABLE_C — handled by upstream Rego conflicts.rego
 
                 conflicts_log.append(conflict_entry)
 
@@ -218,6 +394,7 @@ class SemanticConflictResolver:
             Domain.RISK, Domain.ROUTING, Domain.COMPLIANCE,
             Domain.CROSSBORDER, Domain.VAT, Domain.PIT,
             Domain.ALLOWANCES, Domain.ACCOUNTING, Domain.ZUS, Domain.BUSINESS,
+            Domain.CONFLICTS,
         ]
 
         merged: dict[str, Any] = {}

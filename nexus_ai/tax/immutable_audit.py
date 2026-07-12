@@ -10,18 +10,107 @@ Korzeń drzewa jest podpisywany ECDSA, tworząc niepodważalny ślad audytu.
 Zgodność z eIDAS i art. 74 UoR — werdykt jest matematycznie związany
 z wersją reguł obowiązujących w dniu transakcji.
 
+─── RODO Art. 17 (Prawo do bycia zapomnianym) ───
+Phase 5: Legal Hardening Sprint.
+Problem: Merkle Tree jest niemutowalny — nie można usunąć wpisu.
+Rozwiązanie: Salted Hashing + KMS (Key Management Service).
+- Każdy tenant ma unikalny salt w KMS (HashiCorp Vault / lokalny).
+- Hash w Merkle Tree = SHA256(PESEL/NIP + salt).
+- Usunięcie salt z KMS zrywa powiązanie — dane technicznie "zapomniane".
+- Merkle node pozostaje (integralność), ale nie da się powiązać z osobą.
+
 Usage:
     signer = ImmutableVerdictSigner(private_key_pem)
     signed = signer.sign_verdict(verdict, input_hash, bundle_hash, thresholds_hash)
     is_valid = signer.verify(signed, public_key_pem)
+
+    # RODO Art. 17
+    auditor = ImmutableAuditWithRODO()
+    auditor.process_audit_record(payload, tenant_id)
+    auditor.forget_tenant(tenant_id)  # Usuwa salt — prawo do zapomnienia
 """
 
 from __future__ import annotations
 
 import hashlib
+import os
+import secrets
 import time
 from dataclasses import dataclass, field
 from typing import Any
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# RODO Art. 17: Salted Hashing + KMS (Phase 5 P0)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+class TenantSaltKMS:
+    """Key Management Service dla saltów tenantów (RODO Art. 17).
+
+    Przechowuje unikalne solty per tenant w pamięci (development)
+    lub w HashiCorp Vault (production).
+
+    Usunięcie salt = prawo do bycia zapomnianym.
+
+    TODO(Phase5): Persist salts to HashiCorp Vault or encrypted DuckDB.
+    In-memory only for development — process restart loses all salts
+    and makes existing Merkle Tree entries unverifiable for UODO audit.
+    """
+
+    def __init__(self) -> None:
+        self._salts: dict[str, str] = {}
+        self._forgotten: set[str] = set()
+        self._deletion_log: list[dict[str, Any]] = []
+
+    def generate_salt(self, tenant_id: str) -> str:
+        """Generuje kryptograficznie bezpieczny salt dla tenanta.
+
+        Jeśli salt już istnieje — zwraca istniejący (idempotentność).
+        Jeśli tenant został zapomniany — NIE generuje nowego salt.
+        """
+        if tenant_id in self._forgotten:
+            return ""
+        if tenant_id in self._salts:
+            return self._salts[tenant_id]
+        salt = secrets.token_hex(32)
+        self._salts[tenant_id] = salt
+        return salt
+
+    def get_salt(self, tenant_id: str) -> str | None:
+        """Zwraca salt dla tenanta (bez generowania nowego)."""
+        return self._salts.get(tenant_id)
+
+    def delete_salt(self, tenant_id: str) -> bool:
+        """Usuwa salt — realizacja RODO Art. 17 (prawo do zapomnienia).
+
+        Po usunięciu salt:
+        - Merkle node nadal istnieje (zachowana integralność łańcucha)
+        - Hash w Merkle Tree nie może być powiązany z tenantem
+        - Dane technicznie "zapomniane"
+
+        Returns:
+            True jeśli salt istniał i został usunięty.
+        """
+        if tenant_id in self._salts:
+            del self._salts[tenant_id]
+            self._forgotten.add(tenant_id)
+            self._deletion_log.append({
+                "tenant_id": tenant_id,
+                "deleted_at": time.time(),
+                "reason": "RODO Art. 17 — prawo do bycia zapomnianym",
+            })
+            return True
+        return False
+
+    def is_forgotten(self, tenant_id: str) -> bool:
+        """Sprawdza czy tenant został zapomniany."""
+        return tenant_id in self._forgotten
+
+    @property
+    def deletion_log(self) -> list[dict[str, Any]]:
+        """Log usunięć saltów (dowód dla audytu UODO)."""
+        return list(self._deletion_log)
 
 
 @dataclass
@@ -181,6 +270,102 @@ class ImmutableVerdictSigner:
             return False
 
         return signer.verify(signed)
+
+
+class ImmutableAuditWithRODO:
+    """Rozszerzenie ImmutableVerdictSigner o RODO Art. 17 (Phase 5 P0).
+
+    Używa TenantSaltKMS do anonimizacji danych osobowych (PESEL, NIP)
+    przed zapisaniem w Merkle Tree.
+
+    Weryfikacja przez UODO:
+    1. Inspektor sprawdza: czy salt dla tenant_id istnieje?
+    2. Jeśli NIE → dane zostały skutecznie zapomniane ✓
+    3. Jeśli TAK → inspektor może zweryfikować powiązanie
+    4. Log usunięć stanowi dowód zgodności z Art. 17
+    """
+
+    def __init__(
+        self,
+        signer: ImmutableVerdictSigner | None = None,
+        kms: TenantSaltKMS | None = None,
+    ) -> None:
+        self._signer = signer or ImmutableVerdictSigner()
+        self._kms = kms or TenantSaltKMS()
+
+    def anonymize_pii(self, value: str, tenant_id: str) -> str:
+        """Anonimizuje dane osobowe przez salted hashing.
+
+        NIE przechowujemy PESEL/NIP w cleartext — tylko HASH.
+        Hash = SHA256(wartość + salt).
+
+        Jeśli tenant został zapomniany — zwraca pusty string.
+        """
+        # Sprawdź czy tenant został zapomniany PRZED wygenerowaniem soli
+        if self._kms.is_forgotten(tenant_id):
+            return ""
+        salt = self._kms.generate_salt(tenant_id)
+        if not salt:
+            return ""
+        return hashlib.sha256((value + salt).encode()).hexdigest()
+
+    def process_audit_record(
+        self,
+        payload: dict[str, Any],
+        tenant_id: str,
+    ) -> dict[str, Any]:
+        """Przetwarza rekord audytu z anonimizacją RODO.
+
+        Args:
+            payload: Dane wejściowe (może zawierać PESEL, NIP).
+            tenant_id: Identyfikator tenanta.
+
+        Returns:
+            Zanonimizowany rekord gotowy do Merkle Tree.
+        """
+        # Wygeneruj lub pobierz salt
+        salt = self._kms.generate_salt(tenant_id)
+
+        # Anonimizuj wrażliwe pola
+        anonymized = dict(payload)
+        for sensitive_field in ("pesel", "nip", "regon", "id_number"):
+            if sensitive_field in anonymized:
+                original = str(anonymized[sensitive_field])
+                anonymized[sensitive_field] = hashlib.sha256(
+                    (original + salt).encode()
+                ).hexdigest()
+
+        input_hash = self._signer.hash_input(anonymized)
+
+        return {
+            "anonymized_payload": anonymized,
+            "input_hash": input_hash,
+            "tenant_id_anonymized": hashlib.sha256(
+                (tenant_id + salt).encode()
+            ).hexdigest(),
+        }
+
+    def forget_tenant(self, tenant_id: str) -> bool:
+        """Realizuje RODO Art. 17 — prawo do bycia zapomnianym.
+
+        Usuwa salt z KMS, zrywając powiązanie między Merkle Tree
+        a konkretnym tenantem.
+
+        Returns:
+            True jeśli tenant został skutecznie zapomniany.
+        """
+        result = self._kms.delete_salt(tenant_id)
+        if result:
+            import logging
+            logging.getLogger(__name__).info(
+                f"[RODO] Tenant {tenant_id} forgotten (Art. 17) — salt deleted"
+            )
+        return result
+
+    @property
+    def kms(self) -> TenantSaltKMS:
+        """Dostęp do KMS (dla audytu UODO)."""
+        return self._kms
 
 
 def build_audit_record(

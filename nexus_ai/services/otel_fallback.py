@@ -28,7 +28,6 @@ logger = get_logger("nexus.otel")
 
 
 class BufferedSpan(Struct):
-    __slots__ = ()
     trace_id: str
     name: str
     start_ts: str

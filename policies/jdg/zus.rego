@@ -34,6 +34,7 @@ default decide := {
 decide := {
     "matched": true, "rule_id": "jdg.zus.start_relief",
     "package": "jdg.zus", "priority": 740,
+    "immutable_verdict": true,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -66,6 +67,7 @@ decide := {
 else := {
     "matched": true, "rule_id": "jdg.zus.maly_plus",
     "package": "jdg.zus", "priority": 741,
+    "immutable_verdict": true,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -99,6 +101,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.zus.preferential",
     "package": "jdg.zus", "priority": 742,
+    "immutable_verdict": true,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -130,6 +133,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.zus.social_standard",
     "package": "jdg.zus", "priority": 700,
+    "immutable_verdict": true,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -163,6 +167,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.zus.health_scale",
     "package": "jdg.zus", "priority": 720,
+    "immutable_verdict": true,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "SCALE", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -182,6 +187,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.zus.health_linear",
     "package": "jdg.zus", "priority": 722,
+    "immutable_verdict": true,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "LINEAR", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -202,6 +208,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.zus.health_lump_sum",
     "package": "jdg.zus", "priority": 724,
+    "immutable_verdict": true,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "LUMP_SUM", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -232,6 +239,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.zus.concurrent_employment",
     "package": "jdg.zus", "priority": 743,
+    "immutable_verdict": true,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -257,4 +265,189 @@ else := {
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
     health_rate = "0.09" { pit_form == "PIT_SCALE" }
     health_rate = "0.049" { pit_form == "LINEAR" }
+}
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  P1200zs-P1206zs — ZASIŁKI ZUS (Sickness, Maternity, Care, Accident)     ║
+# ║  Ustawa o świadczeniach pieniężnych z ubezpieczenia społecznego           ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# ══════ P1200zs: zus_sickness_benefit — Zasiłek chorobowy 80% / 100% ══════
+else := {
+    "matched": true, "rule_id": "jdg.zus.sickness_benefit",
+    "package": "jdg.zus", "priority": 1200,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "zus_benefit_type": "SICKNESS", "zus_benefit_rate": benefit_rate,
+    "zus_benefit_eligible": true, "zus_waiting_period_days": waiting_days,
+    "zus_benefit_max_days": 182,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 6-18 Ustawy o świadczeniach pieniężnych z ubezpieczenia społecznego",
+    "_warnings": [sprintf("ZASIŁEK CHOROBOWY — stawka %s%% podstawy wymiaru. Okres oczekiwania: %d dni. Max 182 dni (270 dni przy gruźlicy/ciąży)", [benefit_pct, waiting_days])]
+} {
+    input.jdg_entrepreneur.zus_sickness_voluntary == true
+    sickness_days := object.get(input.jdg_entrepreneur, "zus_sickness_days", 0)
+    sickness_days > 0
+
+    # 80% standard, 100% przy wypadku przy pracy / ciąży
+    is_accident := object.get(input.jdg_entrepreneur, "zus_sickness_accident_related", false)
+    is_pregnancy := object.get(input.jdg_entrepreneur, "zus_sickness_pregnancy_related", false)
+
+    benefit_rate = "1.00" { is_accident == true }
+    benefit_rate = "1.00" { is_pregnancy == true }
+    benefit_rate = "0.80" { is_accident == false; is_pregnancy == false }
+
+    benefit_pct = "100" { benefit_rate == "1.00" }
+    benefit_pct = "80" { benefit_rate == "0.80" }
+
+    # Okres oczekiwania: 30 dni dla JDG (ubezpieczenie dobrowolne)
+    waiting_days = 30 {
+        object.get(input.jdg_entrepreneur, "zus_sickness_insurance_months", 0) < 3
+    }
+    waiting_days = 0 {
+        object.get(input.jdg_entrepreneur, "zus_sickness_insurance_months", 0) >= 3
+    }
+}
+
+# ══════ P1201zs: zus_maternity_benefit — Zasiłek macierzyński ══════
+else := {
+    "matched": true, "rule_id": "jdg.zus.maternity_benefit",
+    "package": "jdg.zus", "priority": 1201,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "zus_benefit_type": "MATERNITY", "zus_benefit_rate": "1.00",
+    "zus_benefit_eligible": true, "zus_maternity_weeks": maternity_weeks,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 29-31 Ustawy o świadczeniach pieniężnych z ubezpieczenia społecznego",
+    "_warnings": [sprintf("ZASIŁEK MACIERZYŃSKI — 100%% podstawy przez %d tygodni. JDG musi być objęta ubezpieczeniem chorobowym min. 90 dni", [maternity_weeks])]
+} {
+    input.jdg_entrepreneur.zus_sickness_voluntary == true
+    input.jdg_entrepreneur.zus_maternity_claim == true
+
+    child_count := object.get(input.jdg_entrepreneur, "zus_maternity_children", 1)
+    maternity_weeks = 20 { child_count == 1 }
+    maternity_weeks = 31 { child_count == 2 }
+    maternity_weeks = 33 { child_count == 3 }
+    maternity_weeks = 35 { child_count == 4 }
+    maternity_weeks = 37 { child_count >= 5 }
+}
+
+# ══════ P1202zs: zus_care_benefit — Zasiłek opiekuńczy ══════
+else := {
+    "matched": true, "rule_id": "jdg.zus.care_benefit",
+    "package": "jdg.zus", "priority": 1202,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "zus_benefit_type": "CARE", "zus_benefit_rate": "0.80",
+    "zus_benefit_eligible": true, "zus_care_max_days": care_max_days,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 32-35 Ustawy o świadczeniach pieniężnych z ubezpieczenia społecznego",
+    "_warnings": [sprintf("ZASIŁEK OPIEKUŃCZY — 80%% podstawy. Max %d dni w roku. Opieka nad dzieckiem do 14 lat lub innym członkiem rodziny", [care_max_days])]
+} {
+    input.jdg_entrepreneur.zus_sickness_voluntary == true
+    input.jdg_entrepreneur.zus_care_claim == true
+
+    care_type := object.get(input.jdg_entrepreneur, "zus_care_type", "")
+    care_max_days = 60 { care_type == "CHILD_UNDER_14" }
+    care_max_days = 14 { care_type == "OTHER_FAMILY_MEMBER" }
+    care_max_days = 30 { care_type == "DISABLED_CHILD_UNDER_18" }
+}
+
+# ══════ P1203zs: zus_rehabilitation_benefit — Świadczenie rehabilitacyjne ══════
+else := {
+    "matched": true, "rule_id": "jdg.zus.rehabilitation_benefit",
+    "package": "jdg.zus", "priority": 1203,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "zus_benefit_type": "REHABILITATION", "zus_benefit_rate": rehab_rate,
+    "zus_benefit_eligible": true, "zus_rehab_max_months": 12,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 18 Ustawy o świadczeniach pieniężnych z ubezpieczenia społecznego",
+    "_warnings": [sprintf("ŚWIADCZENIE REHABILITACYJNE — %s%% podstawy przez max 12 miesięcy. Po wyczerpaniu zasiłku chorobowego (182 dni)", [rehab_pct])]
+} {
+    input.jdg_entrepreneur.zus_sickness_voluntary == true
+    input.jdg_entrepreneur.zus_rehabilitation_claim == true
+
+    rehab_month := object.get(input.jdg_entrepreneur, "zus_rehab_month", 1)
+    rehab_rate = "0.90" { rehab_month <= 3 }
+    rehab_rate = "0.75" { rehab_month > 3; rehab_month <= 9 }
+    rehab_rate = "0.60" { rehab_month > 9 }
+    rehab_pct = "90" { rehab_month <= 3 }
+    rehab_pct = "75" { rehab_month > 3; rehab_month <= 9 }
+    rehab_pct = "60" { rehab_month > 9 }
+}
+
+# ══════ P1204zs: zus_accident_benefit — Zasiłek wypadkowy 100% ══════
+else := {
+    "matched": true, "rule_id": "jdg.zus.accident_benefit",
+    "package": "jdg.zus", "priority": 1204,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "zus_benefit_type": "ACCIDENT", "zus_benefit_rate": "1.00",
+    "zus_benefit_eligible": true, "zus_accident_from_day_1": true,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 6-9 Ustawy o ubezpieczeniu społecznym z tytułu wypadków przy pracy",
+    "_warnings": ["ZASIŁEK WYPADKOWY — 100%% podstawy od 1 dnia niezdolności! Wypadek przy pracy / w drodze do pracy. Wymagany protokół powypadkowy"]
+} {
+    input.jdg_entrepreneur.zus_sickness_voluntary == true
+    input.jdg_entrepreneur.zus_accident_at_work == true
+}
+
+# ══════ P1205zs: zus_funeral_grant — Zasiłek pogrzebowy ══════
+else := {
+    "matched": true, "rule_id": "jdg.zus.funeral_grant",
+    "package": "jdg.zus", "priority": 1205,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "zus_benefit_type": "FUNERAL", "zus_benefit_amount": funeral_amount,
+    "zus_benefit_eligible": true, "zus_funeral_deadline_days": 12,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 77-81 Ustawy o emeryturach i rentach z FUS",
+    "_warnings": [sprintf("ZASIŁEK POGRZEBOWY — %.2f PLN. Złóż wniosek w ciągu 12 miesięcy od śmierci. Przysługuje osobie, która pokryła koszty pogrzebu", [funeral_amount])]
+} {
+    input.jdg_entrepreneur.zus_funeral_claim == true
+    # Kwota zasiłku pogrzebowego: 4000 PLN (2024)
+    funeral_amount := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "funeral_grant_amount", 4000)
+}
+
+# ══════ P1206zs: zus_benefit_coordination — Koordynacja zasiłków ══════
+else := {
+    "matched": true, "rule_id": "jdg.zus.benefit_coordination",
+    "package": "jdg.zus", "priority": 1206,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "zus_benefit_type": "COORDINATION", "zus_active_benefits_count": active_count,
+    "zus_benefit_conflict_detected": has_conflict,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Koordynacja zasiłków — sprawdź czy nie ma konfliktu okresów",
+    "_legal_basis": "Art. 41-43 Ustawy o świadczeniach pieniężnych z ubezpieczenia społecznego",
+    "_warnings": [sprintf("KOORDYNACJA ZASIŁKÓW — %d aktywnych świadczeń. %s. Zasiłki nie kumulują się — przysługuje jedno świadczenie (wyższe)", [active_count, conflict_info])]
+} {
+    active_benefits := object.get(input.jdg_entrepreneur, "zus_active_benefits", [])
+    active_count := count(active_benefits)
+    active_count >= 1
+
+    has_conflict := active_count > 1
+    conflict_info = "KONFLIKT: wiele świadczeń w tym samym okresie — wybierz wyższe" { has_conflict == true }
+    conflict_info = "Brak konfliktów — jedno świadczenie aktywne" { has_conflict == false }
 }
