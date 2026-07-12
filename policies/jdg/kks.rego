@@ -1503,3 +1503,62 @@ else := {
 else := { "matched": true, "rule_id": "jdg.kks.publication_of_verdict_p496", "package": "jdg.kks", "priority": 496, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_public_verdict_possible": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Ryzyko publikacji wyroku", "_legal_basis": "Art. 30 KKS", "_warnings": ["Publikacja wyroku w prasie — środek karny za poważne przestępstwa skarbowe"] } {
     object.get(input.jdg_entrepreneur, "kks_total_shortfall_pln", 0) > 1000000
 }
+
+# P497: aggregate_penalty_multiple_offenses — Kara łączna za wiele przestępstw (Art. 24 KKS)
+else := {
+    "matched": true, "rule_id": "jdg.kks.aggregate_penalty_p497",
+    "package": "jdg.kks", "priority": 497,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_aggregate_penalty": true, "kks_offense_count": offense_count,
+    "kks_max_aggregate_daily_rates": 1080,
+    "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Kara łączna za wiele przestępstw — art. 24 KKS",
+    "_legal_basis": "Art. 24 § 1-3 KKS",
+    "_warnings": [sprintf("KARA ŁĄCZNA za %d przestępstw skarbowych — do 1080 stawek dziennych + możliwe pozbawienie wolności do 15 lat", [offense_count])]
+} {
+    offense_count := object.get(input.jdg_entrepreneur, "kks_offenses_count", 0)
+    offense_count > 1
+}
+
+# P498: penalty_payment_plan — Rozłożenie grzywny na raty (Art. 27 KKS)
+else := {
+    "matched": true, "rule_id": "jdg.kks.penalty_payment_plan_p498",
+    "package": "jdg.kks", "priority": 498,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_payment_plan_eligible": true, "kks_max_installments": 12,
+    "kks_fine_total": fine_total,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Wniosek o rozłożenie grzywny na raty — art. 27 KKS",
+    "_legal_basis": "Art. 27 § 1 KKS",
+    "_warnings": [sprintf("Rozłożenie grzywny %.2f PLN na max 12 rat. Wniosek do sądu w ciągu 7 dni od uprawomocnienia wyroku", [fine_total])]
+} {
+    fine_total := object.get(input.jdg_entrepreneur, "kks_fine_total_pln", 0)
+    fine_total > 5000
+    input.jdg_entrepreneur.kks_voluntary_disclosure_filed == true
+}
+
+# P499: penalty_execution_timeline — Oś czasu wykonania kary (Art. 25-27 KKS)
+else := {
+    "matched": true, "rule_id": "jdg.kks.penalty_execution_timeline_p499",
+    "package": "jdg.kks", "priority": 499,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_penalty_timeline": true, "kks_payment_deadline_days": 30,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Niezapłacona grzywna KKS — ryzyko kary zastępczej",
+    "_legal_basis": "Art. 25-27, Art. 46-53 KKS",
+    "_warnings": [sprintf("Wykonanie kary KKS — 30 dni na zapłatę %.2f PLN. Brak = kara zastępcza pozbawienia wolności. 1 dzień = 1-2 stawki dzienne", [fine_unpaid])]
+} {
+    verdict_date := object.get(input.jdg_entrepreneur, "kks_verdict_date", "")
+    verdict_date != ""
+    fine_unpaid := object.get(input.jdg_entrepreneur, "kks_fine_unpaid_pln", 0)
+    fine_unpaid > 0
+}

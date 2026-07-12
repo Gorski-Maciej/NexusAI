@@ -241,3 +241,461 @@ else := { "matched": true, "rule_id": "jdg.edge_cases.deadline_annual_health_may
 else := { "matched": true, "rule_id": "jdg.edge_cases.deadline_pit11_employee_feb28", "package": "jdg.edge_cases", "priority": 670, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "deadline": "FEBRUARY_28", "deadline_type": "PIT11", "_routing": "", "_routing_reason": "", "_legal_basis": "Art. 39 PIT", "_warnings": ["PIT-11 dla pracowników — termin 28 lutego. Obowiązek płatnika!"] } { object.get(input.jdg_entrepreneur, "pit11_due", false) == true }
 
 else := { "matched": true, "rule_id": "jdg.edge_cases.deadline_statute_limitations_5yr", "package": "jdg.edge_cases", "priority": 672, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "deadline": "5_YEARS", "deadline_type": "STATUTE_LIMITATIONS", "_routing": "", "_routing_reason": "", "_legal_basis": "Art. 70 OrdPU", "_warnings": ["Przedawnienie zobowiązań — 5 lat od końca roku kalendarzowego. Sprawdź terminy!"] } { object.get(input.jdg_entrepreneur, "statute_limitations_approaching", false) == true }
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  GRUPA F: R0623-R0645 — LIMITY I PROGI KWOTOWE (23 reguły)                ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# R0623: limit_vat_exemption_200k — Limit zwolnienia podmiotowego VAT 200 000 PLN
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_vat_exemption_200k",
+    "package": "jdg.edge_cases", "priority": 623,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "VAT_EXEMPTION", "limit_value": 200000, "limit_currency": "PLN",
+    "current_ytd": ytd_sales, "remaining_headroom": 200000 - ytd_sales,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 113 ust. 1 VAT",
+    "_warnings": [sprintf("Limit VAT 200k: YTD %.2f PLN, pozostało %.2f PLN. Przekroczenie = obowiązek rejestracji VAT + VAT od nadwyżki", [ytd_sales, 200000 - ytd_sales])]
+} {
+    input.jdg_entrepreneur.vat_status == "EXEMPT_SUBJECT"
+    ytd_sales := object.get(input.jdg_entrepreneur, "sales_ytd_vat_exempt", 0)
+    ytd_sales > 100000
+}
+
+# R0624: limit_lump_sum_2m_eur — Limit ryczałtu 2 000 000 EUR
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_lump_sum_2m_eur",
+    "package": "jdg.edge_cases", "priority": 624,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "LUMP_SUM", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "LUMP_SUM_THRESHOLD", "limit_value": 2000000, "limit_currency": "EUR",
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Przekroczenie limitu ryczałtu 2M EUR — utrata prawa",
+    "_legal_basis": "Art. 6 ust. 1 ustawy o ryczałcie",
+    "_warnings": [sprintf("RYCZAŁT: przychód %.2f EUR zbliża się do limitu 2 000 000 EUR. Po przekroczeniu = utrata prawa od następnego miesiąca, przejście na skalę PIT", [revenue_eur])]
+} {
+    input.jdg_entrepreneur.tax_form == "LUMP_SUM"
+    revenue_eur := object.get(input.jdg_entrepreneur, "annual_revenue_eur", 0)
+    revenue_eur > 1500000
+}
+
+# R0625: limit_small_taxpayer_2m_eur — Mały podatnik 2 000 000 EUR
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_small_taxpayer_2m_eur",
+    "package": "jdg.edge_cases", "priority": 625,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "SMALL_TAXPAYER", "limit_value": 2000000, "limit_currency": "EUR",
+    "is_small_taxpayer": revenue_eur <= 2000000,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 2 pkt 25 VAT",
+    "_warnings": [sprintf("Mały podatnik: %.2f EUR / 2 000 000 EUR. Status: %s", [revenue_eur, ("TAK" | "NIE")])]
+} {
+    revenue_eur := object.get(input.jdg_entrepreneur, "annual_revenue_eur", 0)
+    revenue_eur > 1000000
+}
+
+# R0626: limit_full_accounting_2m_eur — Próg pełnej księgowości
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_full_accounting_2m_eur",
+    "package": "jdg.edge_cases", "priority": 626,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "FULL_ACCOUNTING", "limit_value": 2000000, "limit_currency": "EUR",
+    "full_accounting_required": revenue_eur > 2000000,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Przekroczenie progu pełnej księgowości — obowiązek ksiąg rachunkowych",
+    "_legal_basis": "Art. 24a PIT",
+    "_warnings": [sprintf("PRÓG PEŁNEJ KSIĘGOWOŚCI: %.2f EUR > 2 000 000 EUR. Obowiązek prowadzenia ksiąg rachunkowych (UoR) od następnego roku!", [revenue_eur])]
+} {
+    revenue_eur := object.get(input.jdg_entrepreneur, "annual_revenue_eur", 0)
+    revenue_eur > 2000000
+}
+
+# R0627: limit_cash_transaction_15k — Limit gotówki B2B 15 000 PLN
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_cash_transaction_15k",
+    "package": "jdg.edge_cases", "priority": 627,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "NKUP", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "CASH_TRANSACTION", "limit_value": 15000,
+    "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Gotówka B2B >15k PLN — NKUP + sankcja 20%",
+    "_legal_basis": "Art. 22p PIT",
+    "_warnings": ["PŁATNOŚĆ GOTÓWKĄ >15 000 PLN B2B — cała kwota NKUP! Dodatkowo sankcja 20%. Używaj przelewu."]
+} {
+    input.invoice.payment_method == "CASH"
+    input.invoice.direction == "PURCHASE"
+    input.invoice.amount_gross > 15000
+    input.vendor.is_company == true
+}
+
+# R0628: limit_mpp_15k — MPP obowiązkowy >15 000 PLN
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_mpp_15k",
+    "package": "jdg.edge_cases", "priority": 628,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "MPP_MANDATORY", "limit_value": 15000,
+    "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Brak MPP przy transakcji >15k PLN — sankcja 30% VAT",
+    "_legal_basis": "Art. 108a VAT",
+    "_warnings": [sprintf("MPP WYMAGANY — faktura %.2f PLN > 15 000 PLN. Użyj komunikatu przelewu MPP. Brak = solidarna odpowiedzialność + 30%% VAT!", [amount_gross])]
+} {
+    input.invoice.mpp_required == true
+    input.invoice.mpp_used == false
+    amount_gross := object.get(input.invoice, "amount_gross", 0)
+    amount_gross > 15000
+}
+
+# R0629: limit_tax_free_amount_30k — Kwota wolna od podatku 30 000 PLN
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_tax_free_30k",
+    "package": "jdg.edge_cases", "priority": 629,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "SCALE", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "TAX_FREE_AMOUNT", "limit_value": 30000,
+    "tax_free_applied": annual_income <= 30000,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 27 ust. 1 PIT",
+    "_warnings": [sprintf("Kwota wolna 30 000 PLN — dochód %.2f PLN. Podatek tylko od nadwyżki ponad 30k", [annual_income])]
+} {
+    input.jdg_entrepreneur.tax_form == "SCALE"
+    annual_income := object.get(input.jdg_entrepreneur, "annual_taxable_income", 0)
+    annual_income > 0
+}
+
+# R0630: limit_pit_scale_threshold_120k — Próg skali PIT 120 000 PLN (12%→32%)
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_pit_scale_120k",
+    "package": "jdg.edge_cases", "priority": 630,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "SCALE", "pit_rate": "", "pit_bracket": "32%", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "PIT_SCALE_THRESHOLD", "limit_value": 120000,
+    "bracket_exceeded": annual_income > 120000,
+    "tax_first_bracket": 120000 * 0.12 - 30000,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 27 ust. 1 PIT",
+    "_warnings": [sprintf("PRÓG SKALI PIT 120k: dochód %.2f PLN → nadwyżka opodatkowana 32%%. Podatek: 10 800 PLN (I próg) + 32%% × %.2f PLN", [annual_income, annual_income - 120000])]
+} {
+    input.jdg_entrepreneur.tax_form == "SCALE"
+    annual_income := object.get(input.jdg_entrepreneur, "annual_taxable_income", 0)
+    annual_income > 120000
+}
+
+# R0631: limit_car_depreciation_150k — Limit KUP auto spalinowe 150 000 PLN
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_car_depreciation_150k",
+    "package": "jdg.edge_cases", "priority": 631,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "partial", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "CAR_KUP_SPALINOWE", "limit_value": 150000,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Auto spalinowe >150k — nadwyżka NKUP",
+    "_legal_basis": "Art. 23 ust. 1 pkt 47a PIT",
+    "_warnings": [sprintf("AUTO SPALINOWE: wartość %.2f PLN > limit 150 000 PLN. Nadwyżka %.2f PLN = NKUP. Amortyzacja tylko od 150k.", [car_value, car_value - 150000])]
+} {
+    car_value := object.get(input.invoice, "car_value_pln", 0)
+    car_value > 150000
+    object.get(input.invoice, "car_type", "") == "COMBUSTION"
+}
+
+# R0632: limit_car_electric_225k — Limit KUP auto EV 225 000 PLN
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_car_electric_225k",
+    "package": "jdg.edge_cases", "priority": 632,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "partial", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "CAR_KUP_EV", "limit_value": 225000,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Auto EV >225k — nadwyżka NKUP",
+    "_legal_basis": "Art. 23 ust. 1 pkt 47b PIT",
+    "_warnings": [sprintf("AUTO ELEKTRYCZNE: wartość %.2f PLN > limit 225 000 PLN. Nadwyżka %.2f PLN = NKUP.", [car_value, car_value - 225000])]
+} {
+    car_value := object.get(input.invoice, "car_value_pln", 0)
+    car_value > 225000
+    object.get(input.invoice, "car_type", "") == "ELECTRIC"
+}
+
+# R0633: limit_health_linear_deduction_12900 — Max odliczenie zdrowotnej liniowy
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_health_linear_12900",
+    "package": "jdg.edge_cases", "priority": 633,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "LINEAR", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "HEALTH_DEDUCTION_LINEAR", "limit_value": 12900,
+    "health_paid": health_paid, "deductible": deduct,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 30c ust. 2 PIT",
+    "_warnings": [sprintf("Liniowy: zapłacona zdrowotna %.2f PLN, max odliczenie 12 900 PLN. Odliczasz %.2f PLN", [health_paid, deduct])]
+} {
+    input.jdg_entrepreneur.tax_form == "LINEAR"
+    health_paid := object.get(input.jdg_entrepreneur, "zus_health_paid_ytd", 0)
+    health_paid > 10000
+    deduct = health_paid { health_paid <= 12900 }
+    deduct = 12900 { health_paid > 12900 }
+}
+
+# R0634: limit_rd_relief_capped — Ulga B+R max 100% dochodu
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_rd_relief_capped",
+    "package": "jdg.edge_cases", "priority": 634,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "RD_RELIEF_CAP", "limit_value_pct": 100,
+    "rd_costs": rd_costs, "taxable_income": income,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 26e ust. 7 PIT",
+    "_warnings": [sprintf("Ulga B+R: koszty %.2f PLN, dochód %.2f PLN. Max odliczenie = dochód. Nadwyżka przechodzi na 6 lat.", [rd_costs, income])]
+} {
+    rd_costs := object.get(input.jdg_entrepreneur, "rd_costs_annual", 0)
+    income := object.get(input.jdg_entrepreneur, "annual_taxable_income", 0)
+    rd_costs > 0
+    income > 0
+}
+
+# R0635: limit_donation_6pct — Darowizny max 6% dochodu
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_donation_6pct",
+    "package": "jdg.edge_cases", "priority": 635,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "DONATION_LIMIT", "limit_value_pct": 6,
+    "donation_limit_pln": floor(income * 0.06 * 100) / 100,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 26 ust. 1 pkt 9 PIT",
+    "_warnings": [sprintf("Darowizny: limit 6%% dochodu = %.2f PLN. Nadwyżka PRZEPADA — nie przechodzi na kolejne lata.", [floor(income * 0.06 * 100) / 100])]
+} {
+    income := object.get(input.jdg_entrepreneur, "annual_taxable_income", 0)
+    donation_total := object.get(input.jdg_entrepreneur, "donation_total_annual", 0)
+    donation_total > income * 0.06
+}
+
+# R0636: limit_thermo_53k — Ulga termomodernizacyjna max 53 000 PLN
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_thermo_53k",
+    "package": "jdg.edge_cases", "priority": 636,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "THERMO_RELIEF", "limit_value": 53000,
+    "thermo_costs": thermo_costs,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 26h PIT",
+    "_warnings": [sprintf("Termomodernizacja: wydatki %.2f PLN, max ulga 53 000 PLN. Limit dotyczy wszystkich budynków łącznie.", [thermo_costs])]
+} {
+    thermo_costs := object.get(input.jdg_entrepreneur, "thermo_costs_annual", 0)
+    thermo_costs > 40000
+}
+
+# R0637: limit_prototype_300k — Ulga na prototyp max 300 000 PLN
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_prototype_300k",
+    "package": "jdg.edge_cases", "priority": 637,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "PROTOTYPE_RELIEF", "limit_value": 300000,
+    "prototype_costs": proto_costs,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 26eb PIT",
+    "_warnings": [sprintf("Prototyp: koszty %.2f PLN, max ulga 300 000 PLN rocznie. Nadwyżka nie przechodzi na kolejne lata.", [proto_costs])]
+} {
+    proto_costs := object.get(input.jdg_entrepreneur, "prototype_costs_annual", 0)
+    proto_costs > 200000
+}
+
+# R0638: limit_expansion_1m — Ulga na ekspansję max 1 000 000 PLN
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_expansion_1m",
+    "package": "jdg.edge_cases", "priority": 638,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "EXPANSION_RELIEF", "limit_value": 1000000,
+    "expansion_costs": expansion_costs,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 26ec PIT",
+    "_warnings": [sprintf("Ekspansja: koszty %.2f PLN, max ulga 1 000 000 PLN. Dotyczy nowych rynków zbytu.", [expansion_costs])]
+} {
+    expansion_costs := object.get(input.jdg_entrepreneur, "expansion_costs_annual", 0)
+    expansion_costs > 500000
+}
+
+# R0639: limit_pit0_combined_85528 — PIT-0 łączny limit 85 528 PLN
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_pit0_combined_85528",
+    "package": "jdg.edge_cases", "priority": 639,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "PIT0_COMBINED", "limit_value": 85528,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Łączny limit PIT-0 przekroczony",
+    "_legal_basis": "Art. 21 ust. 1 pkt 148-154 PIT",
+    "_warnings": [sprintf("PIT-0: łączna kwota zwolnień %.2f PLN przekracza limit 85 528 PLN. Nadwyżka opodatkowana.", [pit0_total])]
+} {
+    pit0_total := object.get(input.jdg_entrepreneur, "pit0_total_exempt", 0)
+    pit0_total > 85528
+}
+
+# R0640: limit_loss_50pct_annual — Strata max 50% rocznie
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_loss_50pct_annual",
+    "package": "jdg.edge_cases", "priority": 640,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "LOSS_CARRY_50PCT", "limit_value_pct": 50,
+    "max_loss_deduction": floor(loss_amount * 0.5 * 100) / 100,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 9 ust. 3 PIT",
+    "_warnings": [sprintf("Strata %.2f PLN — max 50%% (%.2f PLN) do odliczenia w jednym roku. Reszta w kolejnych latach (FIFO, max 5 lat).", [loss_amount, floor(loss_amount * 0.5 * 100) / 100])]
+} {
+    loss_amount := object.get(input.jdg_entrepreneur, "loss_carry_amount", 0)
+    current_income := object.get(input.jdg_entrepreneur, "annual_taxable_income", 0)
+    loss_amount > 0
+    current_income > 0
+}
+
+# R0641: limit_loss_one_time_5m — Jednorazowe odliczenie straty 5 000 000 PLN
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_loss_one_time_5m",
+    "package": "jdg.edge_cases", "priority": 641,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "LOSS_ONE_TIME_5M", "limit_value": 5000000,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 9 ust. 3a-3b PIT (COVID-19 special)",
+    "_warnings": [sprintf("Jednorazowe odliczenie straty: %.2f PLN (max 5 000 000 PLN). Specjalny mechanizm COVID — dotyczy strat za 2020-2022.", [one_time_loss])]
+} {
+    one_time_loss := object.get(input.jdg_entrepreneur, "loss_one_time_deduction", 0)
+    one_time_loss > 1000000
+}
+
+# R0642: limit_cash_register_exemption_20k — Kasa fiskalna zwolnienie 20 000 PLN
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_cash_register_20k",
+    "package": "jdg.edge_cases", "priority": 642,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "CASH_REGISTER_EXEMPTION", "limit_value": 20000,
+    "b2c_revenue": b2c_rev, "cash_register_required": b2c_rev > 20000,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Przekroczenie limitu zwolnienia z kasy fiskalnej",
+    "_legal_basis": "Rozporządzenie MF ws. zwolnień z kasy fiskalnej",
+    "_warnings": [sprintf("KASA FISKALNA: sprzedaż B2C %.2f PLN > 20 000 PLN. Obowiązek instalacji kasy fiskalnej w ciągu 2 miesięcy!", [b2c_rev])]
+} {
+    b2c_rev := object.get(input.jdg_entrepreneur, "b2c_revenue_ytd", 0)
+    b2c_rev > 20000
+    object.get(input.jdg_entrepreneur, "has_cash_register", false) == false
+}
+
+# R0643: limit_unregistered_activity_50pct — Działalność nieewidencjonowana
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_unregistered_50pct",
+    "package": "jdg.edge_cases", "priority": 643,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "UNREGISTERED_ACTIVITY", "limit_value_pct": 50,
+    "monthly_limit": floor(min_wage * 0.5 * 100) / 100,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Przekroczenie limitu działalności nieewidencjonowanej",
+    "_legal_basis": "Art. 5 Prawa przedsiębiorców",
+    "_warnings": [sprintf("Działalność nieewidencjonowana: przychód %.2f PLN > 50%% min. wynagrodzenia (%.2f PLN). Obowiązek rejestracji CEIDG!", [monthly_rev, floor(min_wage * 0.5 * 100) / 100])]
+} {
+    monthly_rev := object.get(input.jdg_entrepreneur, "monthly_revenue", 0)
+    min_wage := object.get(object.get(data.thresholds, "jdg", {}), "minimum_wage_gross", 4300)
+    monthly_rev > min_wage * 0.5
+    input.jdg_entrepreneur.ceidg_registered == false
+}
+
+# R0644: limit_giif_reporting_15k_eur — Raport GIIF >15 000 EUR
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_giif_15k_eur",
+    "package": "jdg.edge_cases", "priority": 644,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "GIIF_REPORTING", "limit_value": 15000, "limit_currency": "EUR",
+    "giif_report_required": true,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Transakcja >15k EUR — obowiązek raportu GIIF",
+    "_legal_basis": "Art. 72 ustawy AML",
+    "_warnings": [sprintf("AML: transakcja %.2f EUR > 15 000 EUR. Obowiązek zgłoszenia do GIIF w ciągu 7 dni. Brak = kara do 1 000 000 PLN!", [amount_eur])]
+} {
+    input.invoice.currency == "EUR"
+    amount_eur := object.get(input.invoice, "amount_gross", 0)
+    amount_eur > 15000
+}
+
+# R0645: limit_cesop_reporting_25k_eur — Raport CESOP >25 000 EUR
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.limit_cesop_25k_eur",
+    "package": "jdg.edge_cases", "priority": 645,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "limit_name": "CESOP_REPORTING", "limit_value": 25000, "limit_currency": "EUR",
+    "cesop_report_required": true,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Płatności transgraniczne >25k EUR — obowiązek CESOP",
+    "_legal_basis": "Rozporządzenie 2020/284 (CESOP)",
+    "_warnings": [sprintf("CESOP: kwartalne płatności transgraniczne %.2f EUR > 25 000 EUR. Obowiązek raportu CESOP do KAS.", [cross_border_total])]
+} {
+    input.invoice.is_cross_border_payment == true
+    cross_border_total := object.get(input.jdg_entrepreneur, "cross_border_payments_quarterly_eur", 0)
+    cross_border_total > 25000
+}

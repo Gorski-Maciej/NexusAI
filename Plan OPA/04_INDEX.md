@@ -1,12 +1,13 @@
 # 📑 Plan OPA — Indeks Dokumentacji
 
-> **Status:** Kompletny — v7.0  
+> **Status:** Kompletny — v9.0 (FINALNY)  
 > **Data:** 2026-07-12  
 > **Zespół:** NexusAI  
 > **Reguły kanoniczne JDG:** ~779 (zintegrowane Docs 22-43 w `38c_JDG_CANONICAL_MAP.md`)  
+> **Reguły zaimplementowane (matched:true):** **435** w **38 plikach Rego** (11 588 linii)  
 > **Target ENTERPRISE:** ~7,000 reguł Micro (Dual-Layer Architecture, ~3,080 zdekomponowanych)  
 > **Reguły łącznie (korporacyjne + JDG):** ~3,320 (240 korp. + ~3,080 JDG)  
-> **Dokumenty:** 45 (Docs + 00-21 + 22-43)
+> **Dokumenty:** 67 plików Plan OPA (.md) + aktualny audyt w `52_AUDYT_JAKOSCI_REGUL.md`
 
 ---
 
@@ -68,10 +69,20 @@ Plan OPA/
 ├── 40_JDG_DEEP_GAP_FINAL_FRONTIER.md  # 🏁 JDG Final Frontier — 20 reguł
 ├── 41_JDG_MEGA_MATRIX_7000_RULES.md   # 🏛️ JDG MEGA MATRIX — Dual-Layer ~7,000 reguł ★★★
 ├── 42_JDG_DEEP_GAP_DISCOVERY.md       # 🔬 JDG Deep Gap Discovery — 55 nowych reguł ★
-├── 43_JDG_KKS_MASSIVE_DECOMPOSITION.md # ⚖️ JDG KKS — 230 reguł (5%→75% pokrycia) ★
+├── 43_JDG_KKS_MASSIVE_DECOMPOSITION.md # ⚖️ JDG KKS — 230 reguł (5%→65% pokrycia) ★
+│
+│   ═══════════════════════════════════════════════════════════════════
+│   ║  DOKUMENTY OPERACYJNE — Audyt, Plan, Podsumowanie               ║
+│   ═══════════════════════════════════════════════════════════════════
+│
+├── 48_JDG_STRATEGIC_IMPROVEMENTS_V2.md # 🎯 JDG Strategiczne Inicjatywy v2.0
+├── 49_JDG_IMPLEMENTATION_SUMMARY.md    # 📊 JDG Podsumowanie Wdrożenia v2.1 ★
+├── 50_JDG_BRAKUJACE_PUNKTY_PRAWNE.md   # ⚖️ JDG Brakujące Punkty Prawne (V.01-V.350)
+├── 51_MISSING_GAP_IMPLEMENTATION_PLAN.md # 🏗️ JDG Plan Implementacji Braków v2.0 ★
+├── 52_AUDYT_JAKOSCI_REGUL.md           # 🔍 JDG Audyt Jakości Reguł v2.0 ★
 │
 ├── DocsJDG/                           # 📂 Źródła prawne JDG i inspiracje
-└── policies/                          # 📂 Reguły Rego (pliki .rego w pakiecie tax/ i jdg/)
+└── policies/                          # 📂 Reguły Rego (38 plików, 435 reguł, 11 588 linii)
 ```
 
 ---
@@ -129,7 +140,12 @@ Plan OPA/
 | `40_JDG_DEEP_GAP_FINAL_FRONTIER.md` | Final Frontier — 20 reguł w 10 ostatnich obszarach | Developer OPA |
 | **`41_JDG_MEGA_MATRIX_7000_RULES.md`** | **🏛️ MEGA MATRIX** ★★★ — Dual-Layer Architecture, mapowanie 550+ artykułów, target ~7,000 reguł Micro, macierz Macro→Micro, 4-fazowy plan wdrożenia | Architekt, Tech Lead |
 | `42_JDG_DEEP_GAP_DISCOVERY.md` | **🔬 Deep Gap Discovery** ★ — 55 nowych reguł z 9 obszarów (0-20% pokrycia): PKPiR 8r, obniżone stawki VAT 6r, KKS 12r, ustawa zasiłkowa 7r, KŚT 5r, RODO 4r, MPiPS 4r, UoR inwentaryzacja 5r, PCC 4r | Developer OPA, Auditor |
-| `43_JDG_KKS_MASSIVE_DECOMPOSITION.md` | **⚖️ KKS Mass Decomposition** ★ — 230 reguł KKS (z ~5% → ~75% pokrycia): czynny żal (28r), sankcje (77r), przestępstwa (80r), wykroczenia (45r). Pełne pokrycie Art. 16-83 KKS | Developer OPA, Radca prawny |
+| `43_JDG_KKS_MASSIVE_DECOMPOSITION.md` | **⚖️ KKS Mass Decomposition** ★ — 230 reguł KKS (z ~5% → ~66% pokrycia): czynny żal (28r), sankcje (77r), przestępstwa (80r), wykroczenia (45r). **Zaimplementowano 152/230 w `kks.rego`** (włącznie z P497-P499) | Developer OPA, Radca prawny |
+| **`48_JDG_STRATEGIC_IMPROVEMENTS_V2.md`** | **🎯 Strategiczne Inicjatywy v2.0** — 9 inicjatyw: Immutable Audit, Rego Linter, Legal Explainer, WASM OPA, Orthogonal Array Testing, Telemetry DAG, Federated KUP, Tax Ruling Drafter, Liquidity Oracle | Architekt, Tech Lead |
+| **`49_JDG_IMPLEMENTATION_SUMMARY.md`** | **📊 Podsumowanie Wdrożenia v3.0** ★ — 9/9 inicjatyw v2.0 + 14/14 Phase 5 = 23/23 wdrożonych. 435 reguł Rego w 38 plikach. Cross-reference z audytem 52. | Tech Lead, PM |
+| **`50_JDG_BRAKUJACE_PUNKTY_PRAWNE.md`** | **⚖️ Brakujące Punkty Prawne** — 1935 punktów prawnych (V.01-V.350). V.01-V.49 = 100% pokryte w Rego. V.060-V.350 = szkielety Klasy B do wypełnienia z ISAP. | Radca prawny, Developer OPA |
+| **`51_MISSING_GAP_IMPLEMENTATION_PLAN.md`** | **🏗️ Plan Implementacji Braków v3.0** ★ — 4 sprinty: KKS sankcje szczegółowe (78r), Edge Cases (110r), accounting migracja (56r), VAT 200k rozszerzenie. Metryki: 435→705 reguł. | Tech Lead, Developer OPA |
+| **`52_AUDYT_JAKOSCI_REGUL.md`** | **🔍 Audyt Jakości Reguł v3.0** ★ — Kompletny audyt: 435 reguł w 38 plikach. Phase 5 = 100%. KKS = 152/230 (66%). Edge Cases = 90/200 (45%). CV < 0.5 we wszystkich plikach. Cross-reference z 3 dokumentami źródłowymi. | Auditor, Tech Lead |
 
 ---
 
@@ -309,7 +325,7 @@ Plan OPA/
 | **VAT miejsce świadczenia** — B2B usługi, próbki handlowe | ✅ 100% | 2 | NOWE |
 | **Podatki lokalne szczegółowe** — opłata targowa, od psów | ✅ 100% | 2 | NOWE |
 
-**Łącznie: ~3 320 reguł w 100+ domenach prawnych. ~99.8% pokrycia polskiego prawa podatkowego, księgowego i gospodarczego. ~779 reguł kanonicznych JDG (zintegrowane Docs 22-43). 44 dokumenty techniczne.**
+**Zaimplementowano: 435 reguł Rego w 38 plikach (11 588 linii). ~779 reguł kanonicznych JDG (zintegrowane Docs 22-43 w `38c_JDG_CANONICAL_MAP.md`). 67 dokumentów Plan OPA. Phase 5 = 100% (14/14). Audyt jakości zaktualizowany w `52_AUDYT_JAKOSCI_REGUL.md`.**
 
 ---
 
@@ -335,6 +351,17 @@ Plan OPA/
 27. **Implementacja Faza 3 JDG (ENTERPRISE):** KKS/GAAR + Podatki lokalne + VAT szczegółowy + Pracodawca + Międzynarodowe (~80 reguł, 4 tyg)
 28. **Implementacja Faza 4 JDG (DEEP):** Krypto + CESOP + ViDA + AI Act + MDR + Conflict resolution (~72 reguł, 4 tyg)
 29. **Wdrożenie JDG thresholds:** Migracja ~120 parametrów do DuckDB + mechanizm hot-reload przez NATS
-30. **Testy JDG:** Testy dla wszystkich ~779 reguł kanonicznych — priorytetyzacja wg `38c_JDG_CANONICAL_MAP.md`
+30. **Testy JDG:** Testy dla wszystkich ~409 zaimplementowanych reguł — priorytetyzacja wg `52_AUDYT_JAKOSCI_REGUL.md`
 31. **Integracja Python↔OPA JDG:** Implementacja `JdgOpaClient` z retry, circuit breaker i decision logging
-32. **Master Reference:** Pełny spis ~779 reguł z pseudokodem w `38c_JDG_CANONICAL_MAP.md` — używaj jako podręcznika podczas implementacji
+32. **Master Reference:** Pełny spis ~779 reguł kanonicznych w `38c_JDG_CANONICAL_MAP.md` + audyt w `52_AUDYT_JAKOSCI_REGUL.md`
+
+### ✅ JUŻ ZREALIZOWANE (podsumowanie implementacji)
+
+33. **✅ 409 reguł Rego** w 38 plikach (11 071 linii) — audyt potwierdzony
+34. **✅ Phase 5 — 100%** (14/14: 9 Python + 5 Rego) — potwierdzone w audycie 52
+35. **✅ KKS 152 reguły** (66% z 230) — wszystkie grupy P200-P499, włącznie z P497-P499 (kara łączna, raty, egzekucja)
+36. **✅ Edge Cases 90 reguł** (R0546-R0645) — VAT/PIT/ZUS + Grupa F limitów
+37. **✅ Conflicts 27 reguł** (R0586-R0612) — konflikty międzydomenowe
+38. **✅ Validation 8 reguł** (R0613-R0622) — NIP/REGON/ciągłość faktur
+39. **✅ VAT P140** — paragon ≤450 PLN Art.106e ust.5 pkt 3
+40. **✅ Dokumentacja zaktualizowana** — 49, 51, 52, 04_INDEX
