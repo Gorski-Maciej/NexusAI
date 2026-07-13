@@ -1,0 +1,932 @@
+================================================================================
+NEXUSAI JDG — PEŁNE POKRYCIE PRAWNE MODUŁU OPA/REGO
+Dokument autorytatywny (Single Source of Truth) dla 7000 reguł JDG
+================================================================================
+
+System:              NexusAI JDG — moduł OPA/Rego dla jednoosobowej
+                     działalności gospodarczej
+Wersja:              1.0 (zgodna z Plan OPA v3.0 / Dual-Layer Enterprise)
+Data:                2026-07-13
+Zakres:              Wyłącznie JDG, pomijając spółki osobowe/kapitałowe
+Źródła (TYLKO Plan OPA/):
+  [22]   22_JDG_ENTERPRISE_PLAN.md
+  [23]   23_JDG_EXPANSION_SUPPLEMENT.md
+  [25]   25_JDG_DEEP_LEGAL_AUDIT.md
+  [28a]  28a_JDG_EDGE_CASES_FULL.md
+  [31]   31_JDG_3000_RULES.md
+  [33]   33_JDG_MASSIVE_RULE_CATALOG.md
+  [38a-c] 38_JDG_CANONICAL_MAP (a: gaps closure, b: dedup, c: map)
+  [40]   40_JDG_DEEP_GAP_FINAL_FRONTIER.md
+  [41]   41_JDG_MEGA_MATRIX_7000_RULES.md
+  [42]   42_JDG_DEEP_GAP_DISCOVERY.md
+  [43]   43_JDG_KKS_MASSIVE_DECOMPOSITION.md
+  [44]   44_JDG_ADVANCED_GAPS.md
+  [45]   45_JDG_HYPER_GRANULARITY.md
+  [46]   46_JDG_QUALITY_AUDIT.md
+  [48]   48_JDG_STRATEGIC_IMPROVEMENTS_V2.md
+  [49]   49_JDG_IMPLEMENTATION_SUMMARY.md
+  [50]   50_JDG_BRAKUJACE_PUNKTY_PRAWNE.md  (AUTORYTATYWNA LISTA 1935 PKT)
+  [51]   51_MISSING_GAP_IMPLEMENTATION_PLAN.md
+  [52]   52_AUDYT_JAKOSCI_REGUL.md
+
+================================================================================
+1. EXECUTIVE SUMMARY — OCENA POKRYCIA
+================================================================================
+
+Plan OPA opisuje 3 830 unikalnych identyfikatorów reguł (2 598 P-ID Macro +
+1 232 R-ID Edge). Docelowa architektura Dual-Layer z pliku [41] definiuje
+~7 000 reguł (125 Macro Fast-Tier + ~6 875 Micro Deep-Tier). Wymogiem
+prawnym jest pokrycie 1 935 punktów prawnych (art. + ust. + pkt + lit.)
+z 13 polskich aktów prawnych (kategorie I–XIII wg [50]).
+
+Stan implementacji wg [49] i [52]:
+  - Reguł zaimplementowanych w policies/jdg/ : 435
+  - Reguł kanonicznych aktywnych (po deduplikacji z 38b) : ~779
+  - Reguł 🔴 [DEPRECATED] (do usunięcia): 47
+  - Pokrycie 1 935 punktów prawnych: 56% (reguły kanoniczne)
+  - Pokrycie z dekompozycją Micro: szkielety Klasa B (~1 700)
+  - Hardcoded magic numbers w Rego (do extraction): 265
+
+WNIOSEK: Aby moduł JDG osiągnął pełne pokrycie prawne, konieczne jest
+dowieżienie Dual-Layer (41), wypełnienie Klasy B z ISAP, usunięcie 47
+DEPRECATED i naprawa 265 hardcoded constants.
+
+================================================================================
+2. ARCHITEKTURA 7000 REGUŁ — DUAL-LAYER (Plan [41])
+================================================================================
+
+Moduł JDG opiera się na dwuwarstwowej architekturze:
+
+WARSTWA 1: MACRO (Fast-Tier) — ~125–150 reguł
+  - Identyfikatory: P-ID w formacie P<numer> (np. P0_b, P4, P58, P189)
+  - Decyzje biznesowe na poziomie wysokim (< 5 ms latency)
+  - Wybór ścieżki decyzyjnej (VAT/PIT/ZUS/KKS)
+  - Determinuje qualifikację: BLOCK_AND_ALERT / TRIAGE_QUEUE / DECISION
+  - Reguły zawsze zwracają matched:true z _legal_basis i routing
+
+WARSTWA 2: MICRO (Deep-Tier) — ~6 850 reguł
+  - Identyfikatory: jdg.<ustawa>.a<numer>.r<numer> (np. jdg.vat.a5.r1)
+  - Wywoływane na żądanie reguł Macro (lazy evaluation)
+  - Parsują każdy artykuł, ustęp, punkt i literę ustawy
+  - Współczynnik dekompozycji: ~12–13 reguł Micro per 1 artykuł ustawy
+
+Klasyfikacja reguł ([41], [50]):
+
+  KLASA A — GOTOWE / PEŁNA ENUMERACJA
+    Zaimplementowane w policies/jdg/, pokryte w 100%, testy E2E przechodzą.
+    Przykłady: P0_b, P4, P6, P9 (ryzyko), P58 (VAT ex), P500-P520 (PIT),
+    P700-P743 (ZUS), P200-P499 (KKS), R0436-R0499 (ordynacja+korekty),
+    R0546-R0599 (edge cases), R0346-R0399 (księgowość/edge).
+
+  KLASA B — SZKIELETY (Kluczowe luki)
+    Wygenerowane punktowo w [50] (np. V.060–V.350). Zawierają ID OPA
+    i przypisanie do artykułu (np. jdg.vat.a11.u1.p1 ↔ Macro: P0511),
+    ale wymagają zasilenia faktyczną treścią brzmienia i logiki
+    sprawdzającej z ISAP. ~1 700 pozycji.
+
+  KLASA C — PLANOWANE (Final Frontier)
+    Całkowicie nowe obszary wyszczególnione w [40], [44]: MDR/DAC6
+    (P1800+), Danina Solidarnościowa (P1810+), Kontrole Podatkowe
+    (P1830+), Ceny Transferowe TPR (P1930+), CFC, Exit Tax (P1741),
+    E-doręczenia (R1235), SUP (P1770).
+
+================================================================================
+3. 13 AKTÓW PRAWNYCH — PEŁNA MAPA POKRYCIA (wg [50])
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────
+I. USTAWA o VAT — 350 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+Kluczowe artykuły i mapowanie na reguły OPA z Plan OPA:
+
+  Art.   5 ust. 1 (definicja dostawy towarów)
+    Reguła: jdg.vat.a5.r1         Macro: P0501
+    Edge:   --
+
+  Art.  17 ust. 1 pkt 5 (reverse charge — usługi budowlane)
+    Reguła: jdg.vat.a17.r5         Macro: P0517
+    Edge:   P118 (kanon z 22)
+
+  Art.  28b (moment powstania obowiązku — usługi ciągłe)
+    Reguła: jdg.vat.a28b.r1        Macro: P0528
+    Edge:   P230, P231, P235 w [DEPRECATED] → zastąpione R0546-R0559
+            (z 28a; kaskada momentu)
+
+  Art.  41 (stawki podstawowe: 23%, 8%, 5%, 0%)
+    Reguła: jdg.vat.a41.r1         Macro: P0541
+    Edge:   P541–P549 — stawki PKD/PKWiU
+
+  Art.  43 (zwolnienia przedmiotowe)
+    Reguła: jdg.vat.a43.r1         Macro: P0543
+    Edge:   ld 43.1.1–43.1.40      Klasa B (szkielety)
+
+  Art.  86 (odliczenie VAT naliczonego)
+    Reguła: jdg.vat.a86.r1         Macro: P0586
+    Edge:   Proporcja P580 (sprzedaż opodatkowana vs zwolniona)
+            P582, P584 (korekta roczna proporcji)
+
+  Art.  87 ust. 1 (termin zwrotu — 25 dni)
+    Reguła: jdg.vat.a87.r1         Macro: P0587
+    Edge:   P589 (60 dni), P588 (180 dni z kontrolą)
+
+  Art.  89a (złe długi — wierzyciel, korekta in plus)
+    Reguła: jdg.vat.a89a.r1        Macro: P189
+    ⚠️ UWAGA: W [38c] widnieje limit 150 dni, ale po SLIM VAT 3/2025
+       limit wynosi 90 dni. Sprzeczność wymaga naprawy (Rozdz. 7).
+
+  Art.  89b (złe długi — dłużnik, korekta in minus)
+    Reguła: jdg.vat.a89b.r1        Macro: P184
+    Edge:   P60 [DEPRECATED] → P184
+
+  Art. 100 (deklaracje VAT-UE, VAT-UEK)
+    Reguła: jdg.vat.a100.r1        Macro: P05100
+    Edge:   progi kwotowe
+
+  Art. 106e ust. 5 pkt 3 (paragon ≤ 450 zł z NIP-em)
+    Reguła: jdg.vat.a106e.r10      Macro: P140
+
+  Art. 106na (JPK_VAT i ewidencja elektroniczna)
+    Reguła: jdg.vat.a106na.r1      Macro: P106n
+
+  Art. 108a (ulga na złe długi — warunki wspólne)
+    Reguła: jdg.vat.a108a.r1       Macro: P108
+
+  Art. 113 (zwolnienie podmiotowe do 200 000 zł)
+    Reguła: jdg.vat.a113.r1        Macro: P58
+    Edge:   P58 + P59 (wyłączona proporcja) — alternatywa else w P58
+            Tabela P0591–P0599 — wyłączenia podmiotowe
+
+LUKI VAT:
+  - V.060–V.350: brak enumeracji wyłączeń w art. 43 (lista 40 pkt)
+  - Klasa B: szczegóły miejsca świadczenia (art. 28-28c)
+  - Klasa B: szczegóły zwolnień rolników ryczałtowych (art. 115-119)
+
+DEPRECATED:  P40, P41, P42, P45, P48 (crossborder → P43-P49);
+             P60 (złe długi → P189 z korektą 90 dni);
+             P230, P231, P235 (moment → R0546-R0559 z 28a)
+
+────────────────────────────────────────────────────────────────────────────
+II. USTAWA o PIT — 320 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+Kluczowe artykuły i mapowanie:
+
+  Art.  10 ust. 1 pkt 3 (źródła: pozarolnicza działalność gospodarcza)
+    Reguła: jdg.pit.a10.r3         Macro: P500–P509 (klasyfikacja form)
+
+  Art.  14 (przychody z działalności)
+    Reguła: jdg.pit.a14.r1         Macro: P502
+    Edge:   P508 — wyłączenia (art. 14 ust. 3) — numeracja rekorekta
+            (zalecana → P504)
+
+  Art.  21 ust. 1 pkt 1 (zwolnienia przedmiotowe)
+    Reguła: jdg.pit.a21.r1         Macro: P521
+
+  Art.  22 (koszty uzyskania przychodu)
+    Reguła: jdg.pit.a22.r1         Macro: P560
+    Edge:   P562 (mixed use), P572 (moment KUP direct vs loss carry)
+
+  Art.  22 ust. 5 (moment potrącania KUP direct)
+    Reguła: jdg.pit.a22.r5         Macro: P572
+    ⚠️ UWAGA: W [38a] mapowanie P572 na "kup_direct_vs_indirect_timing"
+       koliduje z 38c wartością "kup_loss_carry_forward". Wymaga
+       rozstrzygnięcia (Rozdz. 7).
+
+  Art.  23 (NKUP — pełna lista)
+    Reguła: jdg.pit.a23.r1         Macro: P573
+    Edge:   P5731–P5739 — enumeracja art. 23 ust. 1
+
+  Art.  27 (skala podatkowa 12% / 32%)
+    Reguła: jdg.pit.a27.r1         Macro: P500
+    Edge:   kwota wolna, progi progresywne
+
+  Art.  30c (liniowy 19%)
+    Reguła: jdg.pit.a30c.r1        Macro: P510
+    Edge:   P512 (limit 200 tys. PLN), P514 (płatnik zaliczki)
+
+  Art.  30ca (ryczałt dla najmu/prywatnego — 8,5% / 12,5%)
+    Reguła: jdg.pit.a30ca.r1       Macro: P530
+
+  Art.  30da (Exit Tax — przeniesienie aktywów za granicę)
+    Reguła: jdg.pit.a30da.r1       Macro: P1741  [KLASA C]
+    Status: PLANOWANE w [40], brak implementacji
+
+  Art.  30f (CFC — zagraniczna kontrolowana spółka)
+    Reguła: jdg.pit.a30f.r1        Macro: P1740  [KLASA C]
+    Status: PLANOWANE w [40]
+
+LUKI PIT:
+  - Exit Tax (art. 30da) — brak reguł Micro
+  - CFC (art. 30f) — brak reguł Micro
+  - Indywidualne KUP non-standard (art. 22 ust. 6-15): szkielety Klasy B
+  - Amortyzacja szczegółowa (art. 22a-22x): R0379-R0389 częściowo
+
+DEPRECATED:  P508 (notacja kolizyjna → P504)
+
+────────────────────────────────────────────────────────────────────────────
+III. ORDYNACJA PODATKOWA — 180 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+Kluczowe artykuły i mapowanie:
+
+  Art. 16 (zasada praworządności — materialne prawa podatnika)
+    Reguła: jdg.ord.a16.r1         Macro: P16
+    Edge:   P1611-P1619 — wywodzenie braku mocy wstecznej
+
+  Art. 70 (przedawnienie zobowiązań)
+    Reguła: jdg.ord.a70.r1         Macro: R0436-R0449 (z 28a)
+    Edge:   R0436 (5 lat podstawowe), R0438 (3 lata — oszustwa),
+            R0440 (zawieszenie i przerwanie)
+    [DEPRECATED]: P1150–P1166 (9 reguł przedawnień) → R0436-R0449
+
+  Art. 81 (umorzenie, odroczenie, rozłożenie)
+    Reguła: jdg.ord.a81.r1         Macro: P0811
+    Edge:   P0812-P0819 (wniosek, kryteria)
+
+  Art. 86 (korekty deklaracji)
+    Reguła: jdg.ord.a86.r1         Macro: R0420-R0435 (z 28a)
+    Edge:   16 reguł enterprise — wersje wiążące
+    [DEPRECATED]: P1100–P1114 (8 reguł korekt) → R0420-R0435
+
+  Art. 117ba (Biała Lista — weryfikacja rachunku)
+    Reguła: jdg.ord.a117ba.r1      Macro: P21
+    Edge:   P2101 (data weryfikacji), P2102 (odpowiedzialność)
+
+  Art. 119a (GAAR — klauzula obejścia prawa)
+    Reguła: jdg.ord.a119a.r1       Macro: P9
+
+  Pełnomocnictwa (art. 281a-283)
+    Reguła: jdg.ord.a281a.r1       Macro: R0450-R0459 (z 28a)
+    [DEPRECATED]: P1200-P1212 (7 reguł pełnomocnictw) → R0450-R0459
+
+LUKI OP:
+  - Procedury kontroli podatkowej (art. 281-293) — Klasa C (P1830-P1844)
+  - Wszczęcie i przebieg postępowania (art. 159-179) — szczątkowe
+  - Tytuły wykonawcze (art. 32 ust. 1) — Klasa C
+
+────────────────────────────────────────────────────────────────────────────
+IV. KKS — KODEKS KARNY SKARBOWY — 160 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+Kluczowe artykuły i mapowanie (z [43]):
+
+  Art.  9 ust. 1 (tożsamość przestępstwa)
+    Reguła: jdg.kks.a9.r1          Macro: P9 (odpowiedzialność karna)
+
+  Art. 16 ust. 1 (czynny żal)
+    Reguła: jdg.kks.a16.r1         Macro: P200–P209 (9 reguł)
+    Edge:   P201 (termin 7 dni), P202 (pouczenie US), P203 (czyn nowy),
+            P204 (koszt kwalifikacji), P205 (SLA)
+
+  Art. 16 ust. 5 (czynny żal po wszczęciu postępowania — nieskuteczny)
+    Reguła: jdg.kks.a16.r5         Macro: P206
+
+  Art. 54 (podanie nieprawdy w deklaracji — ukrycie dochodu)
+    Reguła: jdg.kks.a54.r1         Macro: P4
+    Edge:   P4.1-P4.9 — enumeracja form ukrycia
+
+  Art. 56 (nierzetelne księgi rachunkowe)
+    Reguła: jdg.kks.a56.r1         Macro: P6
+    Edge:   P6.1-P6.9 — definicje braków formalnych
+
+  Art. 62 (wystawienie pustej faktury / „szara strefa")
+    Reguła: jdg.kks.a62.r7         Macro: P0_b
+    Edge:   P0_b.1 — falsyfikacja treści, P0_b.2 — brak dostawy
+
+  Art. 77 § 1 (nieterminowe złożenie deklaracji)
+    Reguła: jdg.kks.a77.r1         Macro: P400 (P6_b)
+    Edge:   P400.1-P400.9 — gradacja kar
+
+Karalność łączna (art. 85-87):
+    Reguła: jdg.kks.a85.r1         Macro: P497
+    Reguła: jdg.kks.a86.r1         Macro: P498
+    Reguła: jdg.kks.a87.r1         Macro: P499
+
+LUKI KKS:
+  - Art. 54-83 (szczegóły sankcji): brakuje ~78 reguł detalicznych
+  - Klasa C: Konfiskata powiązana, egzekucja powiązana z innymi karami
+
+DEPRECATED:  brak (KKS zbudowany od zera)
+
+────────────────────────────────────────────────────────────────────────────
+V. USTAWA o SUS (ZUS) — 120 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+Kluczowe artykuły:
+
+  Art. 6 ust. 1 pkt 4 (JDG jako tytuł ubezpieczenia)
+    Reguła: jdg.sus.a6.r1          Macro: P700
+
+  Art. 9 ust. 1 (zbieranie tytułów — etat + JDG)
+    Reguła: jdg.sus.a9.r1          Macro: P743
+    Edge:   P743.1-P743.7 — warianty zbiegów
+
+  Art. 11 ust. 1 (osoby współpracujące — zgłoszenie)
+    Reguła: jdg.sus.a11.r1         Macro: P711
+
+  Art. 18 ust. 1 (składka standardowa — 60% prognozy)
+    Reguła: jdg.sus.a18.r1         Macro: P700
+    Edge:   R0346 (z 28a) — harmonogram roczny
+
+  Art. 18a ust. 1 (Ulga na start — 6 m-cy zwolnienia)
+    Reguła: jdg.sus.a18a.r1        Macro: P740
+    Edge:   P740.1-P740.6 — warianty
+
+  Art. 18c (Mały ZUS Plus)
+    Reguła: jdg.sus.a18c.r1        Macro: P741
+    Edge:   P741.1-P741.6 — progi przychodu
+
+  Art. 36a ust. 1 (zawieszenie JDG a składki)
+    Reguła: jdg.sus.a36a.r1        Macro: R0582
+    Detail: Zawieszenie = brak składek społecznych, ALE składka zdrowotna
+            dalej należna (ryczałtowo 9%/4.9%). To logika w R0582.
+    [DEPRECATED]: P914 (błędna logika: brak zdrowotnej po zawieszeniu)
+                  → zastąpiona przez R0582
+
+  Art. 38 (przypadki wygaśnięcia tytułu)
+    Reguła: jdg.sus.a38.r1         Macro: R0582-modyfikator
+
+  Prawa do zasiłków (chorobowe, macierzyńskie, opiekuńcze):
+    Reguła: jdg.sus.zasilek.r1     Macro: P1200zs–P1206zs
+
+  Składka zdrowotna (forma ryczałtowa):
+    Reguła: jdg.zdrowotna.a79.r1   Macro: P720
+    Reguła: jdg.zdrowotna.a81.r9   Macro: P722 (liniowy 4.9%)
+    Edge:   R0573 (0% odliczenia w skali po Polskim Ładzie)
+    [DEPRECATED]: P738 (blokada odliczenia) → P720 i R0573;
+                  P734 (zdrowotne ryczałtowe) → P724
+
+LUKI SUS/ZUS:
+  - Szczegóły zasiłków (art. 19-29): braki w P1200zs+
+  - Sezonowość i zbiegi z etatem: Klasa C (P1952)
+  - Wyrównania roczne zdrowotnej (przy zmianie formy wstecz): braki
+
+────────────────────────────────────────────────────────────────────────────
+VI. USTAWA O RYCZAŁCIE — 90 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+Kluczowe artykuły:
+
+  Art.  4 ust. 1 (definicja ryczałtu)
+    Reguła: jdg.ryczalt.a4.r1      Macro: P520
+
+  Art.  6 (limit przychodu 2 mln EUR / 9 312 000 zł + warianty)
+    Reguła: jdg.ryczalt.a6.r1      Macro: P523
+
+  Art.  8 (wyłączenia z ryczałtu — lista)
+    Reguła: jdg.ryczalt.a8.r1      Macro: P524
+    Edge:   P524.1-P524.9 — handlarze, lekarze, adwokaci...
+
+  Art. 12 (stawki per PKWiU: 2%, 3%, 5,5%, 8,5%, 12%, 12,5%, 15%, 17%)
+    Reguła: jdg.ryczalt.a12.r1     Macro: P521
+    Edge:   P521.2 — stawka 2% (handel), P521.17 — 17% (wolne zawody)
+
+LUKI RYCZAŁT:
+  - Zmiana wariantu w trackie roku — Klasa B
+
+DEPRECATED:  P734 → P724 (zdrowotne)
+
+────────────────────────────────────────────────────────────────────────────
+VII. PRAWO PRZEDSIĘBIORCÓW — 80 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+Kluczowe artykuły:
+
+  Art.  3 ust. 1 (definicja przedsiębiorcy)
+    Reguła: jdg.pp.a3.r1           Macro: P3
+
+  Art.  4 (definicja działalności gospodarczej)
+    Reguła: jdg.pp.a4.r1           Macro: P4-PP (zachowawcza)
+
+  Art.  5 (działalność nieewidencjonowana — art. 5 ust. 1)
+    Reguła: jdg.pp.a5.r1           Macro: P930
+    Edge:   P930.1 — granica 50% dochodu (kryterium stałości)
+
+  Art. 22 (zawieszenie działalności)
+    Reguła: jdg.pp.a22.r1          Macro: P910
+    Edge:   P912 (zakres zwolnienia z VAT), P914 [DP] → R0582
+
+  Art. 34 (CEIDG — wniosek o zmianę wpisu)
+    Reguła: jdg.pp.a34.r1          Macro: P900
+    Edge:   P902 (data zdarzenia), P904 (obowiązek 7 dni)
+
+LUKI PP:
+  - Czasowe delegacje i optymalizacja sezonowa — Klasa C
+
+DEPRECATED:  brak
+
+────────────────────────────────────────────────────────────────────────────
+VIII. UoR + PKPiR (rachunkowość JDG) — 100 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+Kluczowe artykuły (na granicy UoR + rozporządzenia PKPiR):
+
+  Art. 22 ust. 1 UoR (rzetelność, zasada ostrożności)
+    Reguła: jdg.uor.a22.r1         Macro: R0372–R0399 (z 28a)
+
+  PKPiR (Rozporządzenie § 1-25):
+    Reguła: jdg.uor.pkpir.r*       Macro: R0372–R0399
+    Rozpis: Kolumny 1-16 PKPiR (data, dowód, opis, przychód,
+            KUP-rozpoznanie, NKUP, amortyzacja, remanent, ...)
+
+  Amortyzacja (art. 22a-22x UoR/PIT):
+    Reguła: jdg.uor.amortyzacja.r* Macro: R0379-R0389 (z 28a)
+    [DEPRECATED]: P840, P841, P842 → R0379-R0389
+
+  KŚT (Klasyfikacja Środków Trwałych):
+    Reguła: jdg.uor.kst.r*          Macro: P860-P868 (z 23)
+    Status: 5 reguł z Doc 23. WERSJE WIĄŻĄCE wg 38a nad R0390/R0391
+    [DEPRECATED]: R0390, R0391 → P860-P868
+
+  Kasa fiskalna, ewidencja VAT:
+    Reguła: jdg.uor.kasa.r*         Macro: R0571-R0575
+
+LUKI UoR:
+  - accounting.rego ma 56 reguł PKPiR w stanie PASS-THROUGH
+    (matched: false). To dług technologiczny P1 do naprawy.
+  - Pełne 16 kolumn PKPiR jako osobne werdyky Rego — brakuje
+  - 110 edge cases z 28a wymaga pokrycia w R0372-R0399
+
+DEPRECATED:  P800, P801, P802 → R0372-R0378 (księgowość enterprise);
+             P840, P841, P842 → R0379-R0389 (amortyzacja);
+             R0390, R0391 → P860-P868 (KŚT, leasing)
+
+────────────────────────────────────────────────────────────────────────────
+IX. PCC + PODATKI LOKALNE + AKCYZA — 225 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+Kluczowe artykuły:
+
+PCC (Ustawa o podatku od czynności cywilnoprawnych):
+  Art.  1 ust. 1 (definicja PCC)
+  Art.  2 (zwolnienia — szczegółowa lista)
+  Art.  3 (transfer wierzytelności — 1%)
+  Art.  4 (umowa pożyczki — 0,5%)
+  Art.  6 (pojazdy — 2%)
+  Art.  7 (nieruchomości — 2%)
+  Reguły: P1301–P1304 (szczegóły)
+
+Podatki lokalne (Ustawa o podatkach i opłatach lokalnych):
+  Art.  5 (podatek od nieruchomości)
+    Reguła: P1310 — nieruchomości lokalne
+  Art.  9 (podatek od środków transportowych)
+    Reguła: P1320 — pojazdy
+  Art.  13 (opłata targowa)
+  Art. 14 (opłata miejscowa)
+  Art. 16 (od przedsiębiorców)
+
+Akcyza (Ustawa o podatku akcyzowym):
+  Art.  2 (wyroby akcyzowe — szczegółowa lista)
+  Art. 26 (OBB - obowiązek dokumentowania)
+  Art. 99 (obrót wyrobami akcyzowymi — powiązany z JDG)
+  Reguły: P1401–P1409 (handel paliwami, alkoholem)
+
+LUKI PCC/Lokalne/Akcyza:
+  - Specyfika kryptowalut i PCC (Klasa B)
+  - Akcyza od energii odnawialnej (Klasa B)
+  - local_taxes.rego: tylko 4 reguły, brak pełnego pokrycia 225 pkt
+
+DEPRECATED:  brak
+
+────────────────────────────────────────────────────────────────────────────
+X. CROSS-BORDER + TP + CFC + ViDA — 80 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+Kluczowe artykuły:
+
+PIT Art. 30f (CFC):          Planowane w [40] — P1740
+PIT Art. 30da (Exit Tax):    Planowane w [40] — P1741
+
+Ordynacja Podatkowa Art. 86 (MDR/DAC6):
+  Art. 86r-86w MDR (raportowanie schematów)
+  Planowane: P1800–P1809 (Klasa C)
+
+Ordynacja Podatkowa Art. 116-119 (Ceny Transferowe, TPR):
+  TPR Master/Local File
+  Planowane: P1930+ (Klasa C)
+
+Raje podatkowe (art. 11a CIT/PIT):
+  Reguły: P43-P49 (z Doc 23 — 7 reguł enterprise)
+  [DEPRECATED]: P40, P41, P42, P45, P48 → P43-P49
+
+Konwencje MLI (Multilateral Instrument):
+  Reguły: P190-P191 (z Doc 23)
+
+LUKI Cross-Border:
+  - Ceny Transferowe (TPR) — brak reguł Mikro
+  - DAC6/MDR — tylko szkielety P1800-P1809
+  - ViDA (VAT in the Digital Age) — brak
+
+DEPRECATED:  P40, P41, P42, P45, P48 → P43-P49
+
+────────────────────────────────────────────────────────────────────────────
+XI. CEIDG / SUKCESJA / PPK — 60 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+CEIDG (Ustawa o Centralnej Ewidencji i Informacji o Działalności Gosp.):
+  Art.  5 (zgłoszenie do CEIDG)
+    Reguła: P900 → jdg.ceidg.a5.r1
+  Art. 12 (zmiany wpisu)
+    Reguła: P902 → jdg.ceidg.a12.r1
+  Art. 15 (zawieszenie w CEIDG)
+    Reguła: P8 → jdg.ceidg.a15.r1
+
+Zarząd Sukcesyjny (Ustawa o zarządzie sukcesyjnym):
+  Art.  3 (zarządca sukcesyjny)
+    Reguła: P920 → jdg.sukcesja.a3.r1
+  Art. 12 (obowiązki zarządcy)
+    Reguła: P922 → jdg.sukcesja.a12.r1
+  Art. 14 (kontynuacja działalności)
+    Reguła: P924 → jdg.sukcesja.a14.r1
+
+PPK (Ustawa o pracowniczych planach kapitałowych):
+  Reguły: P1701-P1709 (Klasa C)
+
+LUKI CEIDG/Sukcesja/PPK:
+  - Terminy SD-Z2 przy podziale rodzinnego przedsiębiorstwa
+  - Pełne pokrycie PPK (art. 6-30) — szkielety
+
+DEPRECATED:  brak
+
+────────────────────────────────────────────────────────────────────────────
+XII. ZDROWOTNA + ZASIŁKOWA — 50 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+Ustawa o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych:
+
+  Art. 79 ust. 1 (obowiązek składki zdrowotnej)
+    Reguła: P720
+  Art. 81 ust. 9 (podstawa liniowy 4.9%)
+    Reguła: P722 → jdg.zdrowotna.a81.r9
+  Art. 81 ust. 2 pkt 2 (ryczałtowe 9% przychodu)
+    Reguła: P720 → jdg.zdrowotna.a81.r2
+
+Ustawa zasiłkowa:
+  Macierzyński (art. 29-30)
+  Chorobowy (art. 19-23)
+  Opiekuńczy (art. 32-33)
+  Reguły: P1200zs-P1206zs
+
+Edge 0% odliczenia w skali (od 2022):
+  Reguła: R0573 (Polski Ład 9% odliczenia)
+
+LUKI Zdrowotna/Zasiłkowa:
+  - Korekty wyrównawcze rocznych deklaracji zdrowotnych na granicy zmian
+    form (Kwadrans kwartału art. 81 ust. 2-9)
+  - Zasiłki powracającego ze wstrzymania (Klasa C)
+
+DEPRECATED:  P738 → P720+R0573
+
+────────────────────────────────────────────────────────────────────────────
+XIII. AML V / RODO / BDO / SUP / KOBiZE — 120 punktów prawnych
+────────────────────────────────────────────────────────────────────────────
+
+AML V (Ustawa o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu):
+  Reguła: P1731 (procedura dla powiązanych PKD)
+  Reguła: P1731-SAR (procedura raportowania SAR)
+  Status: AML_Compliance.py + Rego
+
+RODO (Rozporządzenie o Ochronie Danych Osobowych):
+  Art. 6 (podstawa prawna przetwarzania)
+  Art. 32 (bezpieczeństwo)
+  Reguły: P1610-P1613 (weryfikacja zgód, retencja, audyt)
+
+BDO (Ustawa o BDO - baza danych o odpadach):
+  Reguły: P1400-P1404 (wpis, raport roczny, sprawozdanie)
+
+SUP (System Udostępniania Przestrzeni Publicznej - ustawa o doręczeniach elektronicznych):
+  E-doręczenia i fikcja doręczenia 14 dni:
+    Reguła: R1235 (edelivery.fiction) — PLANOWANE w [40]
+    Reguła: P1870 — SUP zgłoszenia
+
+KOBiZE (Krajowy Ośrodek Wsparcia Rolnictwa - pozwolenia wodnoprawne):
+  Reguły: P1500-P1509 (Klasa B)
+
+LUKI AML/RODO/BDO/SUP/KOBiZE:
+  - E-doręczenia 14-dni (fikcja) — KLASA C
+  - Pełne pokrycie AML dla JDG w powiązanych PKD — szkielety
+  - BDO dla JDG w segmencie odpadowym — szkielety
+
+DEPRECATED:  brak
+
+================================================================================
+4. LISTA 47 REGUŁ 🔴 [DEPRECATED] DO USUNIĘCIA (wg [38b])
+================================================================================
+
+REJESTR DEPRECATED z 38b:
+
+────────────────────────────
+RELACJA                     REGUŁY DEPRECATED     │  ZASTĘPNIK (KANON)
+────────────────────────────┼─────────────────────┼──────────────────────────
+Z Doc 22 (Plan bazowy):     │                      │
+                            │  P40,P41,P42,P45,P48 │  P43-P49 (z Doc 23)
+                            │  P60                 │  P189 (korekta złych długów)
+                            │  P230,P231,P235      │  R0546-R0559 (moment VAT, z 28a)
+                            │  P701                │  R0346 (chorobowe, z 28a)
+                            │  P800,P801,P802      │  R0372-R0399 (księgowość, z 28a)
+                            │  P840,P841,P842      │  R0379-R0389 (amortyzacja, z 28a)
+                            │  P914                │  R0582 (zawieszenie a zdrowotna)
+Z Doc 23 (Expansion):       │                      │
+                            │  P59                 │  (else w P58 — proporcja)
+                            │  P734                │  P724 (zdrowotne)
+                            │  P738                │  P720+R0573 (odliczenia 9%)
+                            │  P1100-P1114 (8 reg.)│  R0420-R0435 (korekty z 28a)
+                            │  P1150-P1166 (9 reg.)│  R0436-R0449 (przedawnienia z 28a)
+                            │  P1200-P1212 (7 reg.)│  R0450-R0459 (pełnomocnictwa z 28a)
+                            │  P730                │  (helper — usunięte z listy decyzyjnej)
+Z Doc 28a (Edge Cases):     │                      │
+                            │  R0390,R0391         │  P860-P868 (KŚT, leasing z Doc 23)
+
+ŁĄCZNIE: 17 (z Doc 22) + 28 (z Doc 23) + 2 (z Doc 28a) = 47 reguł DEPRECATED (zgodnie z 38b)
+  Szczegółowy rozkład:
+    Doc 22: P40,P41,P42,P45,P48 (5) + P60(1) + P230,P231,P235(3) + P701(1)
+            + P800,P801,P802(3) + P840,P841,P842(3) + P914(1) = 17
+    Doc 23: P59(1) + P730(1) + P734(1) + P738(1) + P1100-1114(8)
+            + P1150-1166(9) + P1200-1212(7) = 28
+    Doc 28a: R0390,R0391 (2)
+    ŁĄCZNIE: 17 + 28 + 2 = 47 reguł.
+
+═══════════════════════════════════════════════════════════════════════════════
+Dodatkowo zarekomendowane w [38a] do rozważenia deprecjacji:
+  - P508 (notacja kolizyjna) → P504
+  - P572 (wznowienie dekompozycji kup_direct_vs_indirect_timing)
+═══════════════════════════════════════════════════════════════════════════════
+
+================================================================================
+5. SPRZECZNOŚCI W DOKUMENTACJI (do rozstrzygnięcia)
+================================================================================
+
+5.1. P189 — termin ulgi na złe długi VAT
+     ┌─────────────────────────────────────────────────────────────────┐
+     │ PROBLEM: W [38c] widnieje limit 150 dni. SLIM VAT 3/2025       │
+     │          obniżył termin do 90 dni. Kluczowa sprzeczność.       │
+     │ ROZWIĄZANIE: W drodze wyjątku, kanoniczna wartość to 90 dni   │
+     │              (od 01.07.2025). Wcześniejsze wersje w P189       │
+     │              muszą zawierać temporalny warunek valid_from.      │
+     │ RYZYKO:     Wdrożenie z 150 dni = ryzyko procesowe KAS.       │
+     └─────────────────────────────────────────────────────────────────┘
+
+5.2. P572 — KUP direct vs loss carry-forward
+     ┌─────────────────────────────────────────────────────────────────┐
+     │ PROBLEM: [38a] mapuje P572 na "kup_direct_vs_indirect_timing" │
+     │          (moment potrącenia kosztu).                            │
+     │          [38c] ma wartość "kup_loss_carry_forward" (strata).   │
+     │ ROZWIĄZANIE: P572 musi być SEMANTYCZNIE PRZEBUDOWANA.          │
+     │              Rekomendacja: P572 → stricte KUP direct timing,  │
+     │              a loss carry = osobna reguła P573_loss_carry.      │
+     └─────────────────────────────────────────────────────────────────┘
+
+5.3. P914 vs R0582 — zawieszenie a składka zdrowotna
+     ┌─────────────────────────────────────────────────────────────────┐
+     │ PROBLEM: P914 (Doc 22) błędnie zakładał brak składki zdrowotnej│
+     │          w zawieszeniu. Prawidłowo: zdrowotna = NADAL ryczałt. │
+     │ ROZWIĄZANIE: [38b] potwierdza usunięcie P914 → logika R0582.   │
+     │ STATUS:     Rozstrzygnięte — ale sam P914 musi być usunięty    │
+     │              z policy bundle.                                   │
+     └─────────────────────────────────────────────────────────────────┘
+
+5.4. P1100-P1114 vs R0420-R0435 — korekty OP
+     ┌─────────────────────────────────────────────────────────────────┐
+     │ PROBLEM: [22] definiuje 8 reguł korekt, [28a] — 16 reguł       │
+     │          enterprise. Sprzeczność w szczegółowości.              │
+     │ ROZWIĄZANIE: [38c] = R0420-R0435 wiążące. P1100-P1114 wycofane.│
+     └─────────────────────────────────────────────────────────────────┘
+
+5.5. P1150-P1166 vs R0436-R0449 — przedawnienia
+     ┌─────────────────────────────────────────────────────────────────┐
+     │ PROBLEM: [22] 9 reguł przedawnień, [28a] 14 reguł edge.        │
+     │ ROZWIĄZANIE: R0436-R0449 wiążące. P1150-P1166 wycofane.         │
+     └─────────────────────────────────────────────────────────────────┘
+
+5.6. R0390/R0391 vs P860-P868 — KŚT i leasing
+     ┌─────────────────────────────────────────────────────────────────┐
+     │ PROBLEM: W [28a] słabsze pokrycie leasingu operacyjnego/finans.│
+     │ ROZWIĄZANIE: P860-P868 (Doc 23) wiążące (5 reguł).             │
+     └─────────────────────────────────────────────────────────────────┘
+
+5.7. P508 vs P504 — notacja (koszty wyłączone Art. 14 ust. 3)
+     ┌─────────────────────────────────────────────────────────────────┐
+     │ PROBLEM: P508 = przychody wyłączone Art. 14 ust. 3 PIT.        │
+     │          P500-P509 to numeracja skal/liniowy. Kolizja semantycz.│
+     │ ROZWIĄZANIE: P504 (rekomendowane). P508 → DEPRECATED.          │
+     └─────────────────────────────────────────────────────────────────┘
+
+================================================================================
+6. KLASYFIKACJA 1935 PUNKTÓW PRAWNYCH — STATUS POKRYCIA
+================================================================================
+
+KATEGORIA  │ PKT    │ KLASA A      │ KLASA B     │ KLASA C
+  (Akt)    │ ŁĄCZN. │ (GOTOWE)     │ (SZKIELETY) │ (PLANOWANE)
+───────────┼────────┼──────────────┼─────────────┼──────────────
+I.   VAT      │ 350    │ ~150 (43%)   │  200 (57%)  │    0 (0%)
+II.  PIT      │ 320    │ ~80  (25%)   │  215 (67%)  │   25 (8%)
+III. OP       │ 180    │ ~50  (28%)   │   60 (33%)  │   70 (39%)
+IV.  KKS      │ 160    │ ~110 (69%)   │   50 (31%)  │    0 (0%)
+V.   SUS/ZUS  │ 120    │ ~50  (42%)   │   50 (42%)  │   20 (16%)
+VI.  Ryczałt  │  90    │ ~25  (28%)   │   65 (72%)  │    0 (0%)
+VII. PP       │  80    │ ~30  (38%)   │   50 (62%)  │    0 (0%)
+VIII. UoR     │ 100    │ ~25  (25%)   │   75 (75%)  │    0 (0%)
+IX.  PCC+Lok. │ 225    │ ~5   (2%)    │  200 (89%)  │   20 (9%)
+X.   Cross-b. │  80    │ ~15  (19%)   │   20 (25%)  │   45 (56%)
+XI.  CEIDG/S. │  60    │ ~25  (42%)   │   30 (50%)  │    5 (8%)
+XII. Zdrowot. │  50    │ ~20  (40%)   │   25 (50%)  │    5 (10%)
+XIII. AML+V   │ 120    │ ~10  (8%)    │   70 (58%)  │   40 (34%)
+───────────┼────────┼──────────────┼─────────────┼──────────────
+RAZEM        │ 1935   │ ~595 (31%)   │ 1110 (57%)  │  230 (12%)
+
+WNIOSEK: Gotowe (Klasa A) to 31% — 1/3 pokrycia. 57% jest w formie
+szkieletów gotowych do zasilenia z ISAP. 12% wymaga planowania
+i nowych reguł (w tym całe katalogi: MDR, CFC, Exit Tax, e-doręczenia).
+
+================================================================================
+7. STRATEGIA IMPLEMENTACJI — KOLEJNOŚĆ SPRINTÓW
+================================================================================
+
+Sprint 0 (FOUNDATION):
+  - Utworzenie /DocsJDG/ w repo z aktami prawnymi (VAT, PIT, OP, KKS,
+    SUS, ryczałt, UoR, PCC, lokalne, CEIDG) w formie Markdown+JSON.
+  - Konfiguracja ISAP crawler (RAG do zasilania Klasy B).
+
+────────────────────────────
+P1 — KRYTYCZNE (Sprinty 1-3, tygodnie 1-6)
+────────────────────────────
+  1. Usunięcie 47 reguł 🔴 DEPRECATED z policy bundle.
+  2. Migracja accounting.rego z matched:false → matched:true (56 reguł).
+  3. Hardcoded constants: 265 → data.thresholds.* (pełna eksternalizacja).
+  4. Dopięcie KKS Art. 54-83 (~78 reguł szczegółowych kar).
+  5. Wdrożenie P1800-P1809 (MDR/DAC6) i P1810 (Danina Solidarnościowa).
+  6. Ci=E2E tests: min. 200 scenariuszy per krytyczny P-ID.
+────────────────────────────
+P2 — WYSOKI (Sprinty 4-8, tygodnie 7-16)
+────────────────────────────
+  7. Wypełnienie Klasy B (~1 700 szkieletów V.060-V.350) z ISAP.
+  8. Implementacja Dual-Layer: Macro Fast-Tier (≤5 ms) + Micro Deep-Tier.
+  9. Rozbudowa local_taxes.rego (4 → ~80 reguł).
+  10. Implementacja 110 edge cases z Doc 28a.
+  11. Wdrożenie CFK (P1740), Exit Tax (P1741), TPR Master/Local (P1930+).
+  12. SUP + e-doręczenia (R1235, P1870).
+  13. AML V pełne pokrycie PKD powiązanych (P1731+).
+────────────────────────────
+P3 — ŚREDNI (Sprinty 9-12, tygodnie 17-24)
+────────────────────────────
+  14. Wyceny kryptowalut i NFT (P1700-P1701).
+  15. Kalendarz płatności przedsiębiorcy (P1910-P1915).
+  16. BDO/SUP/KOBiZE pełne pokrycie (P1400-P1509).
+  17. Rozszerzenie R0720 (odliczenia zdrowotnej 9%).
+  18. Wyrównania roczne zdrowotnej (P1950-P1959).
+  19. Ceny transferowe — część specjalistyczna (P1930+).
+  20. Performance: Rego benchmarking < 5 ms p95 dla Macro.
+────────────────────────────
+P4 — CI/CD I DOJRZAŁOŚĆ (Sprinty 13-15, tygodnie 25-30)
+────────────────────────────
+  21. Automatyczna walidacja temporalności w CI.
+  22. Testy property-based (orthogonal array tester) per kategoria.
+  23. Audyt 53 (Quality Audit v2) i raport pokrycia prawnego.
+  24. Polityka auto-deprecjacji starych wersji (gating by valid_to).
+
+================================================================================
+8. DEFINITION OF DONE (DOD) — dla każdej reguły Rego
+================================================================================
+
+Każda reguła wdrożona w policies/jdg/ MUSI spełniać:
+
+[ ] 1. matched:true zamiast matched:false (PASS-THROUGH ZABRONIONY).
+[ ] 2. Zawiera _legal_basis (art. + ust. + pkt + lit.) w werdykcie.
+[ ] 3. Wszystkie liczby/potencjalnie zmienne wartości — z data.thresholds.*.
+[ ] 4. Ma wpis w temporal registry (valid_from / valid_to).
+[ ] 5. ID jest zgodne z mapą kanoniczną (38c) — nie jest 🔴 DEPRECATED.
+[ ] 6. Posiada test E2E w tests/test_edge_cases_*.py lub analogicznym.
+[ ] 7. Reguła Routing: BLOCK_AND_ALERT / TRIAGE_QUEUE / DECISION.
+[ ] 8. Pierwszeństwo: First-Match-Wins (else chain w main_jdg.rego).
+
+================================================================================
+9. INDEKS SUMARYCZNY — STATYSTYKI
+================================================================================
+
+DOKUMENTACJA (Plan OPA/):
+  Pliki .md                       :   67 szt.
+  Unikalne P-ID (Macro)           : 2598 ID
+  Unikalne R-ID (Edge)            : 1232 ID
+  ŁĄCZNIE ID                      : 3830 ID
+  Reguły kanoniczne aktywne (38c) : ~779 szt.
+  Reguły 🔴 DEPRECATED (38b)      :   47 szt.
+
+DOCELOWA ARCHITEKTURA ([41]):
+  Macro Fast-Tier (Dual-Layer)    : 125–150 szt.
+  Micro Deep-Tier (Dual-Layer)    : ~6 850 szt.
+  ŁĄCZNIE                         : ~7000 szt.
+
+PUNKTY PRAWNE DO POKRYCIA ([50]):
+  Aktywne (Klasa A)               : ~595  szt. ( 31%)
+  Szkielety (Klasa B)             : 1110  szt. ( 57%)
+  Planowane (Klasa C)             :  230  szt. ( 12%)
+  ŁĄCZNIE                         : 1935  szt.
+
+WSPÓŁCZYNNIK DEKOMPOZYCJI:
+  Mikro-reguł per 1 artykuł       : ~12–13
+
+WYSZUKIWANIE PEŁNYCH LIST:
+  Pełne wykazy 1935 punktów — plik "Plan OPA/50_JDG_BRAKUJACE_PUNKTY_PRAWNE.md"
+  Pełna mapa kanoniczna — plik   "Plan OPA/38c_JDG_CANONICAL_MAP.md"
+  Pełna dekompozycja 7000 —       "Plan OPA/41_JDG_MEGA_MATRIX_7000_RULES.md"
+  Pełna architektura zależności — "Plan OPA/49_JDG_IMPLEMENTATION_SUMMARY.md"
+
+================================================================================
+10. INDEKS KLASYCZNY P-ID — WYBRANE KLUCZOWE (z 38c)
+================================================================================
+
+  P0_b    Puste faktury / oszustwa (KKS Art. 62 § 7)
+  P4      Ukryty dochód / nieprawda w deklaracji (KKS Art. 54)
+  P6      Nierzetelne księgi (KKS Art. 56)
+  P9      GAAR — klauzula obejścia (OP Art. 119a)
+  P21     Biała Lista (OP Art. 117ba)
+  P43-P49 Crossborder (z Doc 23, nowe)
+  P58     Zwolnienie podmiotowe VAT (Art. 113)
+  P58+P59 Proporcja (P59 jest else, nie osobną regułą)
+  P58-P 140 Paragon ≤450 z NIP (VAT Art. 106e ust. 5 pkt 3)
+  P108    Warunki ulgi złe długi (VAT Art. 108a)
+  P184    Korekta in minus u dłużnika (VAT Art. 89b) — 90 dni karencji
+  P189    Korekta in plus u wierzyciela (VAT Art. 89a) — 90/150 dni
+  P190-P191 Konwencje MLI
+  P200-P209 Czynny żal (KKS Art. 16) — 9 reguł
+  P400 (P6_b) Nieterminowe deklaracje (KKS Art. 77 § 1)
+  P497-P499 Karalność łączna (KKS Art. 85-87)
+  P500-P509 Skala PIT (Art. 27) + klasyfikacja form
+  P504 (P508 [D]) Wyłączenia przychodowe (PIT Art. 14 ust. 3)
+  P510     Liniowy 19% (PIT Art. 30c)
+  P520     Ryczałt od przychodów ewidencjonowanych (Ustawa Art. 4 i 6)
+  P521     Stawki per PKWiU (Ustawa Art. 12)
+  P523     Limit 2 mln EUR (Ustawa Art. 6)
+  P530     Ryczałt z najmu 8,5%/12,5% (PIT Art. 30ca)
+  P560     KUP podstawowe (PIT Art. 22)
+  P562     Mixed-use / proporcja KUP
+  P572     KUP moment direct (PIT Art. 22 ust. 5) — WYMAGA REBUDOWY
+  P573     NKUP (PIT Art. 23)
+  P700     Składka społeczna standard (SUS Art. 18)
+  P711     Osoby współpracujące (SUS Art. 11)
+  P720     Zdrowotna ryczałtowa (Art. 81 ust. 2 pkt 2)
+  P722     Zdrowotna liniowy (Art. 81 ust. 9 — 4.9%)
+  P740     Ulga na start 6 m-cy (SUS Art. 18a)
+  P741     Mały ZUS Plus (SUS Art. 18c)
+  P743     Zbiegi etat+JDG (SUS Art. 9)
+  P860-P868 KŚT — leasing operacyjny/finansowy (z Doc 23)
+  P900-P904 CEIDG zgłoszenie (PP Art. 34; CEIDG Art. 5, 12)
+  P910     Zawieszenie JDG (PP Art. 22)
+  P920-P924 Zarządca sukcesyjny (Ustawa Art. 3, 12, 14)
+  P930     Działalność nieewidencjonowana (PP Art. 5)
+  P1731    Procedura AML/SAR dla powiązanych PKD
+  P1740    CFC (PIT Art. 30f) [KLASA C]
+  P1741    Exit Tax (PIT Art. 30da) [KLASA C]
+  P1800-P1809 MDR/DAC6 (OP Art. 86r) [KLASA C]
+  P1810+   Danina Solidarnościowa [KLASA C]
+  P1830-P1844 Kontrola podatkowa [KLASA C]
+  P1870    E-doręczenia [KLASA C]
+  P1910-P1915 Kalendarz płatności [KLASA C]
+  P1930+   Ceny Transferowe / TPR [KLASA C]
+  P1950-P1959 Wyrównania roczne zdrowotnej [KLASA C]
+
+EDGE / R-ID z 28a (ważniejsze):
+  R0346       Chorobowe
+  R0372-R0378 PKPiR (księgowość enterprise)
+  R0379-R0389 Amortyzacja
+  R0420-R0435 Korekty OP (Art. 86)
+  R0436-R0449 Przedawnienia (Art. 70)
+  R0450-R0459 Pełnomocnictwa
+  R0546-R0559 Moment VAT (Art. 28b)
+  R0571-R0575 Kasa fiskalna, ewidencja VAT
+  R0573       Odliczenia 9% Polskiego Ładu (0% w skali)
+  R0582       Zawieszenie a składka zdrowotna (Art. 36a SUS)
+  R1235       E-doręczenia — fikcja 14 dni [KLASA C]
+
+================================================================================
+11. PODSUMOWANIE KOŃCOWE
+================================================================================
+
+Moduł JDG w OPA/Rego dla NexusAI ma dokumentacyjną mapę pełnego
+pokrycia 1 935 punktów prawnych z 13 aktów prawnych w 3 kategoriach:
+Klasa A (595 gotowych, 31% pokrycia), Klasa B (1 110 szkieletów do
+zasilenia z ISAP) i Klasa C (230 planowanych, m.in. MDR, CFC, Exit
+Tax, e-doręczenia, TPR). Architektura Dual-Layer (Macro Fast-Tier +
+Micro Deep-Tier) z [41] definiuje ~7 000 reguł docelowych.
+
+W Plan OPA istnieją 47 reguł 🔴 [DEPRECATED] zmapowanych w [38b],
+które wymagają usunięcia z policy bundle przed wejściem do wersji
+produkcyjnej. Zidentyfikowano 7 sprzeczności w dokumentacji
+(rozdział 5), z których najpoważniejsza to P189 (90 vs 150 dni)
+wymagająca korekty temporalnej po SLIM VAT 3/2025.
+
+Pełne pokrycie prawne modułu JDG wymaga: (1) usunięcia 47 DEPRECATED,
+(2) wypełnienia ~1 110 szkieletów Klasy B z ISAP, (3) implementacji
+~230 reguł Klasy C, (4) wdrożenia Dual-Layer architektury, (5) eksternalizacji
+265 hardcoded constants do data.thresholds.*. Strategia implementacji
+(rozdział 7) definiuje 4 fazy (P1/P2/P3/P4) na 30 sprintów.
+
+Single Source of Truth: Plan OPA/38c (mapa kanoniczna) +
+Plan OPA/50 (lista 1935 punktów) + Plan OPA/41 (Dual-Layer 7000) +
+Plan OPA/49 (implementation summary).
+
+═══════  KONIEC DOKUMENTU  ═══════
+Wersja: 1.0 — 2026-07-13
+Następna rewizja: po Sprint 1 (usunięcie DEPRECATED + naprawa P189)
+═══════════════════════════════════════════════════════════════════════

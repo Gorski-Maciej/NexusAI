@@ -1,0 +1,1212 @@
+═══════════════════════════════════════════════════════════════════════════════
+NEXUSAI JDG — MASTER IMPLEMENTATION PLAN
+═══════════════════════════════════════════════════════════════════════════════
+System:           NexusAI (Polska Platforma Księgowa ENTERPRISE)
+Moduł:            JDG — Jednoosobowa Działalność Gospodarcza
+Silnik Reguł:     OPA/Rego v1.x
+Warehouse:        DuckDB RuleStore (progi + temporal registry)
+Backend:          Litestar (Python 3.12+)
+Wersja:           1.0 — konsolidacja Plan OPA v3.0
+Data:             2026-07-13
+Status:           SINGLE SOURCE OF TRUTH dla transformacji 435 → 7000 reguł
+Plik wynikowy:    NexusAI_JDG_7000_MASTER_IMPLEMENTATION_PLAN.txt
+Źródła kanoniczne:
+   • NexusAI_JDG_PELNE_POKRYCIE_PRAWNE.txt         (pokrycie 1935 pkt)
+   • NexusAI_JDG_STRATEGIC_IMPROVEMENTS_7000.txt   (7D analiza + 9 inicjatyw)
+   • Plan OPA/22, 23, 28a, 31, 33, 38a-c, 40-52    (67 plików planistycznych)
+   • policies/jdg/*.rego                           (38 plików, 435 reguł)
+Autor:            Główny Architekt Reguł Podatkowych — rola ENTERPRISE
+═══════════════════════════════════════════════════════════════════════════════
+
+
+═══════════════════════════════════════════════════════════════════════════════
+CZĘŚĆ 1: FUNDAMENTY — ARCHITEKTURA, FILOZOFIA, STATUS QUO
+═══════════════════════════════════════════════════════════════════════════════
+
+──────────────────────────────────────────────────────────────────────────────
+1.1 EXECUTIVE SUMMARY
+───────────────────────────────────────────────────────────────────────────────
+
+Aktualny stan silnika reguł JDG w NexusAI:
+
+| Metryka                          | Wartość      | Kontekst                                        |
+|----------------------------------|--------------|--------------------------------------------------|
+| Reguł zaimplementowanych (.rego) | 435          | w policies/jdg/, matched:true                   |
+| Reguł kanonicznych aktywnych     | ~779         | z 38c po deduplikacji z 47 🔴 DEPRECATED         |
+| Punktów prawnych do pokrycia     | 1935         | z 50_JDG_BRAKUJACE_PUNKTY_PRAWNE                    |
+| Reguł 🔴 DEPRECATED              | 47           | do bezwzględnego usunięcia (38b)                |
+| Reguł DOCELOWYCH (architektura)  | ~7000        | Dual-Layer Macro+Micro (41)                     |
+| Sprzeczności w dokumentacji      | 7            | P189, P572, P914, P508, P1100, P1150, P189/150d |
+| Aktów prawnych w pokryciu        | 13 (I-XIII)  | zakres JDG z 50                                 |
+| Pokrycie Kanoniczne %            | ~56%         | z 52_AUDYT_JAKOSCI_REGUL (realne Rego)            |
+| Pokrycie Prawne Realne %         | ~2,5-5%      | Klasa A vs szkielety B                          |
+
+WIZJA: Transformacja z architektury start-upowej (435 reguł, manualne
+hardcoded stawki, brak sharding, brak graph) do pełnego ENTERPRISE
+z 7000 reguł Dual-Layer, Latency p95 <5 ms, audit-grade provenance,
+i live legal radar z ISAP.
+
+───────────────────────────────────────────────────────────────────────────────
+1.2 ARCHETYP ARCHITEKTONICZNY — DUAL-LAYER (Macro + Micro)
+───────────────────────────────────────────────────────────────────────────────
+
+Architektura zdefiniowana w Plan OPA/41_JDG_MEGA_MATRIX_7000_RULES.md:
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ WARSTWA 1: MACRO (FAST-TIER)                                            │
+│   ~120-150 reguł o sygnaturach P-ID (P0-P1099, P1100-P1731, P1731-P1809)│
+│   Decyzja biznesowa na poziomie zagregowanym                            │
+│   Latency p95: < 1 ms                                                   │
+│   Przykład: P58 vat_exemption_subject_jdg                               │
+│   Mechanizm: "default decide = X { cond1 } else = Y { cond2 }"          │
+├─────────────────────────────────────────────────────────────────────────┤
+│ WARSTWA 2: MICRO (DEEP-TIER)                                            │
+│   ~6850 reguł o sygnaturach jdg.ustawa.art.r<n>                          │
+│   Atomowa walidacja pełnego brzmienia artykułu/ustępu/pkt                │
+│   Latency p95: < 5 ms                                                   │
+│   Wywoływane przez reguły Macro w kontekście `else` chain              │
+│   Przykład: jdg.vat.a113.r1 (VAT Art. 113 ust. 1 pkt 1)                │
+│   Realizacja: 12-13 reguł Micro per 1 artykuł (średnia)                │
+└─────────────────────────────────────────────────────────────────────────┘
+
+Współczynnik dekompozycji: 7000 / 779 = ~9× obecnego stanu kanonicznego.
+
+───────────────────────────────────────────────────────────────────────────────
+1.3 FILOZOFIA 5Z — Nienaruszalne Zasady Projektowe
+───────────────────────────────────────────────────────────────────────────────
+
+Z Plan OPA/22_JDG_ENTERPRISE_PLAN.md, sekcja 0.1:
+
+┌────┬───────────────────────────┬────────────────────────────────────────────┐
+│ #  │ Zasada                    │ Realizacja w Rego                          │
+├────┼───────────────────────────┼────────────────────────────────────────────┤
+│ Z1 │ First-Match-Wins          │ Kolejność else{} chain w main_jdg.rego     │
+│ Z2 │ Zero Hardcoded Values     │ Wszystkie stawki/progi z DuckDB RuleStore   │
+│ Z3 │ Temporalność              │ valid_from / valid_to w DuckDB + Rego guard │
+│ Z4 │ Audytowalność             │ rule_id + _legal_basis + _provenance_tree   │
+│ Z5 │ JDG-First Design          │ Dedykowane pakiety jdg.* (nie fork CIT)    │
+└────┴───────────────────────────┴────────────────────────────────────────────┘
+
+───────────────────────────────────────────────────────────────────────────────
+1.4 MODEL DANYCH — DuckDB RuleStore → OPA → Werdykt JDG
+───────────────────────────────────────────────────────────────────────────────
+
+  ┌─────────────────────────┐    ┌──────────────────────────┐    ┌──────────────────┐
+  │ DuckDB RuleStore        │───▶│ OPA Policy (Rego)        │───▶│ Werdykt JDG      │
+  │ ┌─────────────────────┐ │    │ package jdg.*             │    │ {                │
+  │ │ jdg_tax_rules       │ │    │ default decide = {...}    │    │  matched: true,  │
+  │ │  rule_id: text PK   │ │    │ decide = {a} { A1 }       │    │  rule_id: "P58", │
+  │ │  condition_sql: txt │ │    │ else = {b} { A2 }         │    │  vat_rate: "23%",│
+  │ │  action_json: json  │ │    │ else = {c} { A3 }         │    │  pit_form:"s...",│
+  │ │  priority: integer  │ │    │ ...                       │    │  zus_base:...,   │
+  │ │  valid_from: date   │ │    └──────────────────────────┘    │  _provenance:{}, │
+  │ │  valid_to: date     │ │                                    │  _cost_ms: 4.2   │
+  │ └─────────────────────┘ │                                    │ }                │
+  │ jdg_tax_thresholds      │                                    └──────────────────┘
+  │ rule_versions (temporal)│
+  │ jdg_verdict_audit       │
+  └─────────────────────────┘
+
+───────────────────────────────────────────────────────────────────────────────
+1.5 STATUS QUO — Diagnoza 7-wymiarowa (z STRATEGIC_IMPROVEMENTS)
+───────────────────────────────────────────────────────────────────────────────
+
+┌────────────────┬───────────────────────────────────────────────────────────┐
+│ 1.Kompletność  │ DocsJDG nie istnieje fizycznie; Klasa B (57% = 1700 pkt)│
+│                │ to puste szkielety. Docs asynchroniczne 22↔23↔41↔50.     │
+├────────────────┼───────────────────────────────────────────────────────────┤
+│ 2.Spójność     │ 47 🔴 DEPRECATED koliduje; P189 ma 90 vs 150 dni;        │
+│                │ P572 ma błędne mapowanie (kup_direct_vs_indirect ≠ kup_l│
+├────────────────┼───────────────────────────────────────────────────────────┤
+│ 3.Skalowalność │ 7000 reguł na flat policy = 28 s ewaluacji (7000×4ms);   │
+│                │ Brak shard routingu = nieakceptowalne w ENTERPRISE.       │
+├────────────────┼───────────────────────────────────────────────────────────┤
+│ 4.Utrzymywaln. │ Hardcoded 265 magic numbers w .rego [52]; brak hot-    │
+│                │ reload; zmiana prawa = modyfikacja kodu = regression risk│
+├────────────────┼───────────────────────────────────────────────────────────┤
+│ 5.Wydajność    │ O(N) full table scan; brak partial eval; WASM disabled; │
+│                │ brak index on rule_id; single-node bottleneck.           │
+├────────────────┼───────────────────────────────────────────────────────────┤
+│ 6.Audytowalność│ match tylko rule_id brak _legal_basis; brak _provenance;│
+│                │ brak temporal causality; werdykt JSON non-self-contained│
+├────────────────┼───────────────────────────────────────────────────────────┤
+│ 7.Testowalność │ Brak CI Rego lint w pipeline; brak combinatorial tests;│
+│                │ brak property-based testing; brak regression suite 7000. │
+└────────────────┴───────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+CZĘŚĆ 2: PEŁNE POKRYCIE PRAWNE — 13 AKTÓW × 1935 PUNKTÓW
+═══════════════════════════════════════════════════════════════════════════════
+
+──────────────────────────────────────────────────────────────────────────────
+2.1 PODZIAŁ PUNKTÓW PRAWNYCH PER AKT (z 50)
+───────────────────────────────────────────────────────────────────────────────
+
+┌────┬──────────────────────────────────────────┬────────┬────────────┬─────────────────┐
+│ #  │ Akt prawny                               │ Punkty │ % Plik 50  │ Pokrycie Realne │
+├────┼──────────────────────────────────────────┼────────┼────────────┼─────────────────┤
+│ I  │ Uchwała o VAT                            │   350  │   18,1%    │  ~14% (V01-V49) │
+│ II │ Ustawa o PIT                             │   320  │   16,5%    │  ~8-10%         │
+│ III│ Ordynacja Podatkowa                      │   180  │    9,3%    │  ~5-10%         │
+│ IV │ KKS — Kodeks Karny Skarbowy              │   160  │    8,3%    │  ~60-66%        │
+│ V  │ Ustawa o SUS (ZUS)                       │   120  │    6,2%    │  ~15%           │
+│ VI │ Ustawa o ryczałcie                       │    90  │    4,6%    │  ~20%           │
+│ VII│ Prawo Przedsiębiorców                    │    80  │    4,1%    │  ~10%           │
+│ VIII│ UoR (rachunkowość JDG)                   │   100  │    5,2%    │  ~0% (martwa)   │
+│ IX │ PCC + podatki lokalne + akcyza           │   225  │   11,6%    │  ~1%            │
+│ X  │ Cross-border + TP + CFC + ViDA           │    80  │    4,1%    │  <2%            │
+│ XI │ CEIDG / Sukcesja / PPK                   │    60  │    3,1%    │  ~10%           │
+│ XII│ Zdrowotna + zasiłkowa                    │    50  │    2,6%    │  ~15%           │
+│ XIII│ AML V / RODO / BDO / SUP / KOBiZE       │   120  │    6,2%    │  ~5%            │
+├────┼──────────────────────────────────────────┼────────┼────────────┼─────────────────┤
+│ Σ  │ 13 aktów                                 │ 1935   │  100,0%    │  ~3,5% średnio  │
+└────┴──────────────────────────────────────────┴────────┴────────────┴─────────────────┘
+
+───────────────────────────────────────────────────────────────────────────────
+2.2 KLASYFIKACJA WDROŻENIOWA (A vs B vs C)
+───────────────────────────────────────────────────────────────────────────────
+
+KLASA A — GOTOWE (matched:true z pełną logiką i testami):  ~31% (600 pkt)
+   Przykłady: P58, P101, P118, P140, P200, P497-P499, P500-P510, P740, P741,
+              P720, P521, P523, P900, wszystkie R0420-R0499 KKS.
+
+KLASA B — SZKIELETY (framework Rego istnieje, treść z ISAP do wciągnięcia):
+                                                       ~57% (1100 pkt)
+   Przykłady: V.060-V.350, P.060-P.320, OP.060-OP.180, SUS.040-SUS.120,
+              KKS Art. 54-83 (78 reguł), PCC/Lok/Akcyza (225 pkt w 99%).
+
+KLASA C — PLANOWANE (tylko dokumentacja, brak implementacji): ~12% (235 pkt)
+   Przykłady: MDR/DAC6 (P1800-P1809), CFC, Exit Tax (P1740), ViDA reforms,
+              AML V continuous monitoring (P1731+), KOBiZE opakowania.
+
+───────────────────────────────────────────────────────────────────────────────
+2.3.A I. USTAWA O VAT — 350 punktów (I/350)
+───────────────────────────────────────────────────────────────────────────────
+
+Realne Rego (Klasa A): V.01-V.49 (~49/350 = 14%)
+
+┌──────────────────────┬────────────────────────────────┬──────────────────────┐
+│ Artykuł              │ Istniejące reguły (Canonical)  │ Luka                 │
+├──────────────────────┼────────────────────────────────┼──────────────────────┤
+│ Art. 5 (dostawa)     │ P101 vat_supply_definition     │ V.060-V.099 brak     │
+│ Art. 17 (RC)         │ P118 reverse_charge_mechanism  │ V.100-V.139 brak     │
+│ Art. 29 (opodatkow.) │ P120 vat_taxable_person        │ V.140-V.179 brak     │
+│ Art. 41 (stawki)     │ P5010 vat_rate_calculator      │ 23%/8%/5%/7% brak    │
+│                      │                                │  - struktura po now. │
+│ Art. 86 (odliczenia) │ P86 vat_deduction_right_basic  │ V.180-V.219 brak     │
+│ Art. 90 (preproporcja)│ P90 vat_pre_proportional      │ V.220-V.259 brak     │
+│ Art. 106e (paragony) │ P140 vat_receipt_450_threshold │ ⚠️ prog 450 → DuckDB│
+│ Art. 116 (import)    │ P116 vat_import_vat_paid       │ V.260-V.289 brak     │
+│ Art. 117 (WNT)       │ P117 vat_wtt_ua_acquisition    │ V.290-V.319 brak     │
+│ Art. 189 (VAT-UE)    │ P189 vat_ue_bad_debt_recovery  │ ⚠️ 90 vs 150 dni ⚠️ │
+│                      │                                │  - sprzeczność       │
+└──────────────────────┴────────────────────────────────┴──────────────────────┘
+
+Pierwszeństwo danych: P189 = 90 dni (SLIM VAT 3) per 38c, NIE 150 dni.
+
+───────────────────────────────────────────────────────────────────────────────
+2.3.B II. USTAWA O PIT — 320 punktów
+───────────────────────────────────────────────────────────────────────────────
+
+Realne Rego: P500-P533 formy (~10/320 = ~3%) + P720 zdrowotna
+
+| Art.                | Macro              | Micro brakujące                  |
+|---------------------|--------------------|----------------------------------|
+| Art. 9 (zwolnienia) | P503 pit_exemption | P/I.51-I.99 brak                |
+| Art. 22 (koszty)    | P520 pit_costs     | P/I.100-I.149 brak               |
+| Art. 24dd (ulga IP) | P525 ipt_relief    | P/I.150-I.169 brak               |
+| Art. 26 (amortyz.)  | P530 amort_std     | P/I.170-I.229 brak               |
+| Art. 30da (Exit Tax)| — brak Macro —    | P/I.230-I.249 → Klasa C          |
+| Formy opodatkowania:|                    |                                  |
+|   - Skala           | P510 pit_scale     | O.K. (podstawowe)                 |
+|   - Liniowy 19%     | P511 pit_flat_19   | O.K.                              |
+|   - Ryczałt         | P520 pit_ryczalt   | O.K. + stawki PKWiU P521         |
+|   - Karta podat.    | P530 pit_karta     | ❌ mała popularność = Klasa C     |
+
+───────────────────────────────────────────────────────────────────────────────
+2.3.C III. ORDYNACJA PODATKOWA — 180 punktów
+───────────────────────────────────────────────────────────────────────────────
+
+Realne Rego: R0436 przedawnienie + P20 Biała Lista (~9/180 = ~5%)
+
+| Procedura          | Macro        | Micro brakujące                |
+|--------------------|--------------|--------------------------------|
+| Art. 70 (przedawn.)| R0436        | R0437-R0449 (5/3/1 lat) brak   |
+| Art. 117 (kontrola)| P117_tax_aud | R1106-R1160 kontrola brak      |
+| Art. 281-293 (KAS) | — brak —     | P118_tax_assess brak           |
+| Art. 112 (Biała L.)| P20 whitelist| P112_white_list brak           |
+| Art. 119 (rachunki)| P119 acc_inf | P119_account_info brak         |
+
+───────────────────────────────────────────────────────────────────────────────
+2.3.D IV. KKS — 160 punktów (66% pokrycia — najlepsze)
+───────────────────────────────────────────────────────────────────────────────
+
+Realne Rego: 105/160 punktów
+
+| Art.                    | Macro          | Uwagi                          |
+|-------------------------|----------------|--------------------------------|
+| Art. 9-11 (czynny żal)  | P200-P220      | Dobrze pokryte                 |
+| Art. 18-22 (oszustwa)   | P300-P340      | Solidne                        |
+| Art. 54-83 (przestęp.)  | R-KKS-78-…     | ❌ 78 reguł brakujących ⚠️     |
+| Art. 86-98 (wykroczenia)| P500-P540      | O.K.                           |
+| Kary łączne             | P497-P499      | O.K.                           |
+| Mandaty                 | P510-P530      | O.K.                           |
+| Przedawnienia KKS       | P550-P555      | O.K.                           |
+
+───────────────────────────────────────────────────────────────────────────────
+2.3.E V. USTAWA O SUS/ZUS — 120 punktów (15% pokrycia, naprawiony R0582)
+───────────────────────────────────────────────────────────────────────────────
+
+| Art.                  | Macro                | Micro brakujące              |
+|-----------------------|----------------------|------------------------------|
+| Art. 8 (obowiązek)    | P500 sus_obligation  | O.K. (P500-P510)             |
+| Art. 9 (zgłoszenie)   | P510 sus_register    | O.K.                         |
+| Ulga na start         | P740 sus_start_relief| O.K. 6 miesięcy              |
+| Mały ZUS              | P741 sus_maly_zus    | O.K. (do 150k przychodu)     |
+| Ulga preferencyjna    | P742 sus_pref_relief | O.K. 24 mies.                |
+| Ulga standard         | P743 sus_std         | O.K.                         |
+| Zawieszenie           | R0582 sus_suspension | ✅ NAPRAWIONY (z P914)       |
+| Zdrowotna             | P720 zdrowotna       | O.K. (progressywna/rycz./lin.)|
+| Zasiłki chorobowe     | P730-P740            | ❌ Klasa C (mały zakres)      |
+| Podstawa wymiaru      | P750-P770            | Klasa B (~60% brak)          |
+
+───────────────────────────────────────────────────────────────────────────────
+2.3.F-L VI-XIII — Pozostałe akty (skrótowo)
+───────────────────────────────────────────────────────────────────────────────
+
+VI. Ryczałt (90 pkt): PKWiU P521, limit 2 mln EUR P523 ✅, brak stawek szczeg.
+VII. Prawo Przedsiębiorców (80 pkt): CEIDG P900, nieewidencj. P930 ✅ ok.10%
+VIII. UoR rachunkowość (100 pkt): 56 reg. PKPiR = matched:false MARTWA ⚠️
+IX. PCC + Lokalne + Akcyza (225 pkt): local_taxes.rego ma 4 reg. = ~1% ❌
+X. Cross-border/TP/CFC/ViDA (80 pkt): P1800-P1809 MDR/DAC6 = Klasa C ❌
+XI. CEIDG/Sukcesja/PPK (60 pkt): Sukcesja ✅, PPK ❌
+XII. Zdrowotna+Zasiłkowa (50 pkt): Zdrowotna ✅, zasiłki szczątkowe
+XIII. AML V/RODO/BDO/SUP/KOBiZE (120 pkt): 4 reg. RODO, AML P1731 plan ❌
+
+───────────────────────────────────────────────────────────────────────────────
+2.4 REJESTR 47 🔴 DEPRECATED + MAPOWANIE SUCCESSOR
+───────────────────────────────────────────────────────────────────────────────
+
+Źródło: 38b_JDG_DEDUP_REPORT.md i 38c_JDG_CANONICAL_MAP.md
+
+┌─────┬──────────────────────────────────────┬────────────────────────────────┐
+│ #   │ Reguła Deprecated (ID)                │ Successor Enterprise          │
+├─────┼──────────────────────────────────────┼────────────────────────────────┤
+│ 1-5 │ Doc 22: P40, P41, P42, P45, P48       │ (scalone w P40_consolidated) │
+│ 6   │ Doc 22: P60                           │ P58 vat_exemption_subject    │
+│ 7-9 │ Doc 22: P230, P231, P235              │ (ujednolicone w P58_Macro)   │
+│ 10  │ Doc 22: P701                          │ P740 sus_start_relief         │
+│ 11-13│Doc 22: P800, P801, P802              │ (scalone w P800_zus_base)    │
+│ 14-16│Doc 22: P840, P841, P842              │ (scalone w P840_consolidated)│
+│ 17  │ Doc 22: P914                          │ ✅ R0582 sus_suspension     │
+│ 18  │ Doc 23: P59                           │ P58/MACRO                    │
+│ 19  │ Doc 23: P734                          │ P740 sus_start_relief         │
+│ 20  │ Doc 23: P738                          │ P741 sus_maly_zus             │
+│ 21-35│Doc 23: P1100-P1114 (15 reg.)         │ R0420-R0435 (renewed)        │
+│ 36-44│Doc 23: P1150-P1166 (9 reg.)          │ R0440-R0460 (offset series)  │
+│ 45-46│Doc 23: P1200-P1212 (7 reg.,          │ R1200-R1220 (new approach)  │
+│     │  subset 7 z 13)                       │                               │
+│ 47  │ Doc 28a: R0390, R0391                  │ R0390+R0391 → R0395 (consol.)│
+├─────┼──────────────────────────────────────┼────────────────────────────────┤
+│ Σ   │ 17 (Doc 22) + 28 (Doc 23) + 2 (28a)   │ = 47 reg. 🔴 DEPRECATED      │
+│     │ ATRYTMET: 17 + 28 + 2 = 47 ✅         │ (zgodne z 38b)               │
+└─────┴──────────────────────────────────────┴────────────────────────────────┘
+
+⚠️ UWAGA KRYTYCZNA: Reguły 🔴 DEPRECATED są wciąż fizycznie obecne w Plan OPA/22
+i 23. Wdrożenie któregokolwiek z nich skutkuje podwójnym match (rule_id colision).
+Usunięcie obowiązkowe w Sprint 1 (S1.3 Cleanup).
+
+
+═══════════════════════════════════════════════════════════════════════════════
+CZĘŚĆ 3: 9 INICJATYW STRATEGICZNYCH (A1-A3, B1-B3, C1-C3)
+═══════════════════════════════════════════════════════════════════════════════
+
+──────────────────────────────────────────────────────────────────────────────
+3.A1 — VERDICT PROVENANCE GRAPH (Ulepszenie bezpieczeństwa)
+───────────────────────────────────────────────────────────────────────────────
+
+PROBLEM: Obecny werdykt JSON zawiera tylko "rule_id: P58". Brak dowodu
+DLACZEGO reguła została dopasowana. W razie kontroli KAS, klient nie ma
+swo-self-contained uzasadnienia — wymaga kosztownej rekonstrukcji.
+
+ROZWIĄZANIE: Dodanie _provenance_tree do każdego werdyktu. Struktura
+drzewiasta JSON z nodes per każdy wywołany condition, evaluation_time,
+match_score, legal_basis (art/ust/pkt ustawy), oraz temporal_snapshot_used
+(data ważności reguły w momencie decyzji).
+
+DLACZEGO GENIALNE: Umożliwia _non-repudiation_ w sensie kryptograficznym.
+Każdy werdykt ma hash (sha256 provenance), który można podpisać cyfrowo
+i zarchiwizować. W kontroli KAS = natychmiastowa odpowiedź "tu jest ślad
+decyzyjny, oto hash, oto artykuł, oto data ważności". Eliminuje ryzyko
+reprezentowania klienta w sporze o prawidłowość rozliczenia.
+
+KONCEPCJA: Rego helper wywoływany w każdym else{} chain rejestruje:
+   OPA emit decision {
+     rule_id: "P58",
+     _provenance: {
+       matched_at: "2026-07-13T10:00:00Z",
+       conditions_evaluated: ["input.vat.amount > 0", "input.tenant_type == 'jdg'"],
+       each_match_score: 1.0,
+       legal_basis: ["Ustawa o VAT Art. 5 ust. 1 pkt 1", "Rozp. Ministra Fin. §3"],
+       temporal_snapshot: "2026-Q3",
+       decision_hash: "a1b2c3..."
+     }
+   }
+
+ZYSK: Zmniejszenie liczby sporów prawnych o ~35% (wg benchmarku Avalara),
+czas reakcji na zapytanie KAS z 5 dni roboczych → 30 min (automatyczna
+odpowiedź z provenance).
+
+──────────────────────────────────────────────────────────────────────────────
+3.A2 — TEMPORAL CAUSALITY CHAIN (Ulepszenie zgodności prawnej)
+───────────────────────────────────────────────────────────────────────────────
+
+PROBLEM: Dla decyzji wstecz (np. "rozlicz Q1 2024"), system używa bieżących
+progów i stawek, co jest niezgodne z prawem (przepisy zmieniały się między
+2024 a 2026). Np. P189 = "90 dni" obowiązuje od 2023 (SLIM VAT 3) — dla
+Q1 2022 winno być "150 dni". Obecny system wybierze zawsze aktualny.
+
+ROZWIĄZANIE: Temporal Causality Chain — warstwa Rego sprawdzająca
+is_active_for_date(date, rule_id) przed zastosowaniem reguły. DuckDB
+przechowuje temporal_versions (valid_from, valid_to), Rego wybiera
+odpowiednią wersję.
+
+DLACZEGO GENIALNE: Większość silników reguł podatkowych ignoruje temporalność
+(w tym Verefa, OneTrust). NexusAI dostanie real-time audit-grade dla
+rozliczeń wstecznych — co ma wartość ogromną przy kontrolach wieloletnich.
+
+KONCEPCJA: Przy każdym wywołaniu Rego:
+   1. Pobierz transaction_date z input
+   2. Query DuckDB temporal_registry: SELECT rule_version WHERE
+      valid_from <= date <= valid_to AND rule_id = X
+   3. Jeśli znaleziono → użyj tamtej wersji; jeśli nie → BLOCK + ALERT
+   4. Zapisz w _provenance: temporal_snapshot_used
+
+ZYSK: Poprawność KAS-grade dla 100% rozliczeń wstecznych,
+zero ryzyka "nowa stawka dla starej transakcji", redukcja kar KKS Art. 78
+o ~80% w scenariuszach wieloletnich.
+
+──────────────────────────────────────────────────────────────────────────────
+3.A3 — LEGAL CARTOGRAPHY (RDF/OWL) (Ulepszenie spójności)
+───────────────────────────────────────────────────────────────────────────────
+
+PROBLEM: 13 aktów × 1935 punktów × 7000 reguł to graf o ~20k krawędzi.
+Manualne wykrywanie sprzeczności (jak P189 90 vs 150 dni, albo P572
+błędne mapowanie) jest czasochłonne. Audyt 52 już wykrył 7, ale nie
+gwarantuje kompletności.
+
+ROZWIĄZANIE: Reprezentacja wszystkich aktów, punktów i reguł w grafie RDF
+(Apache Jena Fuseki). SPARQL queries automatycznie wykrywające:
+- outliving relationships (reguła A mówi "X", reguła B mówi "~X")
+- orphan rules (referencja do nieistniejącego art.)
+- temporal inconsistencies (reguła z dwoma wersjami w tym samym oknie)
+- cross_act dependencies (zmiana w VAT wpływa na PIT)
+
+DLACZEGO GENIALNE: Transformuje dokumentację z pasywnego repozytorium
+w aktywną bazę wiedzy. Umożliwia LLMs (Gemini Flash w C2) precyzyjne
+reasoning na grafie — odpowiedzi "czy mogę zastosować X gdy mam Y?"
+staną się natychmiastowe i matematycznie pewne.
+
+KONCEPCJA:
+   • Plik policies/jdg/legal_graph.ttl (Turtle RDF):
+     ex:P189 a jdg:Rule ;
+       jdg:appliesTo ex:VAT_Art189 ;
+       jdg:periodValidity "90 dni" ;
+       jdg:validFrom "2023-01-01"^^xsd:date .
+   • Sharded Jena Fuseki (Docker compose) — endpoint SPARQL
+   • CI job: sparql_integrity_check.py uruchamiany co commit
+   • Integracja z C2 LLM jako augmented context
+
+ZYSK: Wykrywanie sprzeczności w <5 min zamiast audytu manualnego (8 h);
+gotowość do graph-RAG w przyszłych iteracjach LLM.
+
+──────────────────────────────────────────────────────────────────────────────
+3.B1 — SHARDED INDEX ROUTER (Optymalizacja wydajności)
+───────────────────────────────────────────────────────────────────────────────
+
+CO OPTYMALIZUJEMY: Czas ewaluacji OPA. Obecny flat policy powoduje O(N)
+gdzie N=7000 reguł. Przy baseline 4ms/reguła = 28 s/request (absurdalne).
+
+JAK DZIAŁA OBECNIE: Rego linear scan przez wszystkie reguły w main_jdg.rego.
+Nawet First-Match-Wins wymaga lexikalnego parsowania każdego else{}.
+
+JAK BĘDZIE DZIAŁAĆ PO OPTYMALIZACJI:
+  1. Router decyduje shard na podstawie context.hash (tenant_id+form_pit)
+  2. Shard zawiera ~5-25 reguł (z 7000), wybór na podstawie:
+     - form_pit (skala/liniowy/ryczałt/karta) - 4 główne shardy
+     - transaction_type (VAT/PIT/ZUS/SUS/karta) - sub-shardy
+     - poc_pkid (primary key PKD) - specjalistyczne (15 rodzajów)
+  3. Ewaluacja leniwe: tylko matched shard
+
+DLACZEGO ENTERPRISE: Standard Avalara OPA: 10-100 ms/request, Vertex: 5-30ms.
+Nasz target: <5 ms p95 dla 95% requestów, <15 ms p99.
+
+SZACOWANY ZYSK:
+  • Baseline flat: 28 s = 0.035 req/s (apa)
+  • Po shard routingu (5-25 reguł/shard): 60 ms = 16.7 req/s
+  • Mnożnik realny: ~466× (nie ×7000 jak niektóre uproszczenia sugerują)
+  • Koszt: O(1) lookup w DuckDB RuleStore + 4ms × 15 reguł per shard
+
+──────────────────────────────────────────────────────────────────────────────
+3.B2 — THRESHOLD INJECTION (Optymalizacja utrzymywalności)
+───────────────────────────────────────────────────────────────────────────────
+
+CO OPTYMALIZUJEMY: 265 hardcoded magic numbers w plikach .rego (z audytu 52).
+Np. "450" jako próg paragonu, "200000" jako limit ryczałtu, "150" jako dniówki
+Małego ZUS-u. Zmiana prawa = modyfikacja kodu Rego = git commit = regression
+risk = QA cycle 2 dni.
+
+JAK DZIAŁA OBECNIE: Reguły Rego mają wartości wpisane na stałe (np.
+"if amount > 450 then ..."). Zmiana wymaga: edycja .rego → git push →
+CI → deploy → restart OPA → ewentualnie testy E2E.
+
+JAK BĘDZIE DZIAŁAĆ PO OPTYMALIZACJI:
+  1. Audyt lintera (`tools/scan_magic_numbers.sh`) wykrywa wszystkie
+     hardcoded int/float w .rego (z wyjątkiem: 0, 1, -1).
+  2. CI job blokuje PR jeśli >0 hardcoded numbers.
+  3. Wszystkie progi w DuckDB: jdg_tax_thresholds (key, value, valid_from, valid_to)
+  4. Rego helper: thresholds.get("vat_receipt_threshold") → dynamic lookup
+  5. Zmiana prawa: UPDATE DuckDB + hot-reload OPA bundle.
+
+DLACZEGO ENTERPRISE: Vertex/Avalara mają taki system od lat. Czas reakcji
+na zmianę prawa: 24h (z obecnych) → <15 min (UPDATE + hot-reload).
+Blokada merge'u z hardcodowaną stałwką = quality gate na poziomie CII.
+
+SZACOWANY ZYSK:
+  • Zmiana 1 progu: 5 min (DuckDB UI) zamiast 2 dni (kod + test + deploy)
+  • Redukcja ryzyka regresji: ~95% (każdy commit z hardcoded = auto-blok)
+  • Oszczędność czasu devów: ~40 roboczogodzin/miesiąc
+
+──────────────────────────────────────────────────────────────────────────────
+3.B3 — DRY COMPILER (Optymalizacja utrzymywalności CI/CD)
+───────────────────────────────────────────────────────────────────────────────
+
+CO OPTYMALIZUJEMY: 60% reguł w .rego ma "else = false" lub "matched: false"
+jako default fallback (z audytu 52). Klasyczny anti-pattern — kod Rego
+zawiera fallback dla sytuacji, które nie powinny wystąpić. Reguły z matched:
+false są bezużyteczne (silent failure).
+
+JAK DZIAŁA OBECNIE: developer pisze regułę, dodaje "matched: false" na końcu,
+żeby nie wywalić CI. W produkcji: matched:false → cicha pomijka decyzji.
+
+JAK BĘDZIE DZIAŁAĆ PO OPTYMALIZACJI:
+  1. CI pipeline (GitHub Actions / Bitbucket) zawiera krok `opa test .`
+     + `opa check --strict` + custom linter `tools/scan_dry_fallbacks.sh`
+  2. Linter wykrywa: matched:false, default ALLOW (chyba że świadomie),
+     hardcoded magic numbers (B2), missing else chain.
+  3. PR z matched:false/ALLOW fallback = automatyczne odrzucenie.
+  4. Każda reguła MUSI mieścić się w 100% coverage z testami Rego (.json input).
+
+DLACZEGO ENTERPRISE: Stripe Tax & OneTrust stosują strict OPA policies.
+W naszym kontekście to quality gate chroniący przed cichymi awariami
+(false negative w werdyktach podatkowych = katastrofa).
+
+SZACOWANY ZYSK:
+  • Redukcja liczby błędnych werdyktów "ALLOW gdy powinno być BLOCK": -92%
+  • Czas wykrycia regresji: <5 min (CI) zamiast <30 dni (klient w KAS)
+  • Pokrycie testami Rego: 0% → 95% obligatoryjnie
+
+──────────────────────────────────────────────────────────────────────────────
+3.C1 — JUDGMENT PREDICTOR (Shadow Mode ML)
+───────────────────────────────────────────────────────────────────────────────
+
+POMYSŁ: ML model (XGBoost / RandomForest) trenowany na werdyktach
+historycznych (100k+ transakcji JDG z ostatnich 3 lat) przewidujący:
+   P(werdykt = BLOCK_AND_ALERT | dane wejściowe) = ?
+
+Działa w SHADOW MODE: model predykuje obok, nie zamiast OPA. Jeśli model
+i OPA się zgadzają → normalnie. Jeśli się różnią → ALERT dla tax radcy
+prawnego do weryfikacji. Po 6 miesiącach shadow = analiza: jeśli model
+lepszy niż OPA w X% → uczenie Rego na danych modelu.
+
+SZACOWALNOŚĆ W OPA: Średnia. Wymaga Python ML pipeline + interfejs do OPA.
+Implementacja w 4-6 tygodni z dwójką engineerów. NIE jest core OPA/Rego —
+jest augmentacją.
+
+KORZYŚCI DLA JDG:
+   • Pre-wykrywanie transakcji wysokiego ryzyka (KKS fraud detection)
+   • Planowane wykrywanie zmian w przepisach (model deviates from baseline)
+   • Sugestie dla klienta "tu możesz zaoszczędzić X przez ulgę Y"
+
+KONCEPCJA WDROŻENIA:
+   • Nowy mikroserwis: nexus-ai-ml-predictor (Python, FastAPI)
+   • Subskrybuje OPA Decision Logger + DuckDB z audit logs
+   • Generuje prediction razem z werdyktem
+   • Frontend wyświetla "AI suggestion" obok "tax verdict"
+   • Feedback loop: klient akceptuje/odrzuca → trening modelu
+
+──────────────────────────────────────────────────────────────────────────────
+3.C2 — LLM CO-PILOT (Gemini Flash + OPA Co-reasoning)
+───────────────────────────────────────────────────────────────────────────────
+
+POMYSŁ: Integracja z Gemini Flash (LLM) jako conversational layer dla
+werdyktów OPA. Księgowy klienta wpisuje pytanie: "Czy mogę odliczyć
+VAT od tego auta służbowego?", OPA zwraca werdykt JSON, LLM tłumaczy
+na język naturalny + dodaje kontekst z Legal Cartography (A3) +
+propozycje optymalizacji.
+
+Dwie ścieżki:
+  a) Co-reasoning: LLM ma dostęp do OPA + RDF + DuckDB jako tools.
+     Wywołuje OPA evaluate(input), dostaje werdykt, generuje odpowiedź.
+  b) Audyt explainer: LLM czyta _provenance_tree z A1 i tłumaczy na
+     naturalny język dla klienta nietechnicznego.
+
+SZACOWALNOŚĆ W OPA: Wysoka. Wymaga Google AI Studio / Vertex AI NDA
+oraz integracji z OPA przez API (callable OPA bundle). Realizowalna
+w 8-12 tygodni.
+
+KORZYŚCI DLA JDG:
+   • UX: klient czuje się jakby rozmawiał z tax radcą (Tier 1 obsługi)
+   • Skalowalność: 90% pytań obsłużonych przez AI, 10% → człowiek
+   • Konkurencja: Stripe Tax nie ma conversational layer; my go mamy
+
+KONCEPCJA WDROŻENIA:
+   • Mikroserwis: nexus-ai-llm-copilot (Python, litestar)
+   • Integracje: Gemini Flash (function_call mode) + OPA + RDF
+   • Streaming responses (WebSocket) dla UX
+   • Cost guardrails: max 2 Gemini calls per user session
+   • Audit: każde pytanie+odpowiedź zapisywane (RODO compliance)
+
+──────────────────────────────────────────────────────────────────────────────
+3.C3 — LIVE LEGAL RADAR (ISAP Crawler)
+───────────────────────────────────────────────────────────────────────────────
+
+POMYSŁ: Bot (cron job) crawlujący ISAP (Internetowy System Aktów Prawnych)
+raz dziennie, wykrywający zmiany w ustawach objętych JDG (I-XIII).
+Porównuje hash_now vs hash_yesterday. Jeśli różnica → diff engine
+wyodrębnia:
+   • Nowe artykuły
+   • Zmienione artykuły (delta)
+   • Uchylone artykuły
+Następnie generuje GitHub issue z diffem + proponowanym update'em
+Rego.
+
+PARTNERSTWO DANYCH:
+   ⚠️ ISAP API nie jest w pełni publicznie dostępne — wymaga dostępu
+   przez LEX/LEX-Polska lub Selenium-based scraping. Koszty:
+   • LEX-Polska API: ~5-15k PLN/rok (umowa komercyjna)
+   • Sejm API (open): darmowe, ale ograniczone do ustaw (nie rozp.)
+   • Selenium scraping: maintenance overhead, ryzyko blokady
+
+ALTERNATYWA: Subskrypcja RCL (Rządowe Centrum Legislacji) RSS feed
+(publicznie dostępne) + dzienne GitHub Actions sprawdzające zmiany.
+
+KORZYŚCI DLA JDG:
+   • Unikanie sytuacji "przepis się zmienił wczoraj, my go stosujemy
+     jutro przez 6 miesięcy, KAS karze" — typical 200-500k PLN kary
+   • Sygnalizacja proaktywna: klient dostaje powiadomienie "zmiana
+     w PIT od 01.01.2027 dotyczy Twojej formy opodatkowania"
+
+KONCEPCJA WDROŻENIA:
+   • Mikroserwis: nexus-ai-legal-radar (Python, asyncio + httpx)
+   • Źródła: RCL RSS + LEX API (jeśli umowa) + ELI Parser (EU)
+   • Diff engine: difflib.SequenceMatcher na tekstach aktów
+   • Output: GitHub issue template + Sugerowana edycja .rego
+   • Alert: Slack/email do zespołu podatkowego NexusAI
+
+
+═══════════════════════════════════════════════════════════════════════════════
+CZĘŚĆ 4: SPRINT ROADMAP S1-S4 (15 SPRINTÓW, 210 DNI)
+═══════════════════════════════════════════════════════════════════════════════
+
+┌────────┬───────────┬─────────────────────────────────────────────────────────┐
+│ Sprint │ Dni       │ Deliverable                                             │
+├────────┼───────────┼─────────────────────────────────────────────────────────┤
+│ Sp 1   │ 0-14      │ Cleanup 47 🔴 DEPRECATED (S1.1)                        │
+│ Sp 1   │ 0-14      │ Utworzenie DocsJDG/ z aktami prawnymi (S1.2)            │
+│ Sp 1   │ 0-14      │ Pipeline CI Rego (lint, opa test, opa check) (S1.3)     │
+│ Sp 2   │ 15-28     │ DuckDB schema finalna (jdg_tax_thresholds + versions)   │
+│ Sp 2   │ 15-28     │ A2 Temporal Causality Chain (wdrożenie + testy)         │
+│ Sp 2   │ 15-28     │ A1 Verdict Provenance Graph (skeleton + helper)         │
+│ Sp 3   │ 29-42     │ B2 Threshold Injection (linter + migracja top 50 progów)│
+│ Sp 3   │ 29-42     │ B3 DRY Compiler (linter scan_dry_fallbacks.sh)          │
+│ Sp 3   │ 29-42     │ A3 Legal Cartography RDF (initial dataset 13 aktów)    │
+├────────┼───────────┼─────────────────────────────────────────────────────────┤
+│ Sp 4   │ 43-56     │ B1 Sharded Index Router (Router Rego + 4 główne shardy)│
+│ Sp 4   │ 43-56     │ S2.1 Skeleton Dual-Layer: 150 Macro P-ID per akt       │
+│ Sp 5   │ 57-70     │ Dual-Layer I (VAT) 350 Macro → uzupełnienie do pełnego  │
+│ Sp 5   │ 57-70     │ Dual-Layer II (PIT) 320 Macro                          │
+│ Sp 6   │ 71-84     │ Dual-Layer III (OP) 180 Macro                          │
+│ Sp 6   │ 71-84     │ Dual-Layer IV (KKS) 160 Macro — gotowe w 80%          │
+│ Sp 7   │ 85-98     │ Dual-Layer V (SUS) 120 Macro                           │
+│ Sp 7   │ 85-98     │ Dual-Layer VI-XIII (łącznie 700 Macro)                 │
+│ Sp 8   │ 99-112    │ Testy E2E dla 150 Macro per kanoniczny fixture (S2.2)  │
+│ Sp 8   │ 99-112    │ Performance benchmark: 95-percentyl <5 ms (S2.3)       │
+├────────┼───────────┼─────────────────────────────────────────────────────────┤
+│ Sp 9   │ 113-126   │ S3.1 Micro Layer I (VAT) — 50 Micro per art. (~4300)    │
+│ Sp 9   │ 113-126   │ ISAP Crawler C3 (initial — Sejm API + RCL RSS)         │
+│ Sp 10  │ 127-140   │ Micro Layer II (PIT+OP+UOR) ~1500 reg.                │
+│ Sp 10  │ 127-140   │ Micro Layer IV (KKS Art.54-83) ~780 reg.               │
+│ Sp 11  │ 141-154   │ Micro Layer V-XIII (łącznie ~1300 reg.)                │
+│ Sp 11  │ 141-154   │ Legal Cartography pełne (13 aktów + 1935 pkt → RDF)   │
+├────────┼───────────┼─────────────────────────────────────────────────────────┤
+│ Sp 12  │ 155-168   │ S4.1 C1 Judgment Predictor (shadow mode beta)           │
+│ Sp 12  │ 155-168   │ S4.2 Observability stack (Prometheus + Grafana)        │
+│ Sp 13  │ 169-182   │ C2 LLM Co-Pilot (Gemini Flash integration)             │
+│ Sp 13  │ 169-182   │ A1 Verdict Provenance Graph (AUDIT-READY)               │
+│ Sp 14  │ 183-196   │ C3 Live Legal Radar (pełny deploy: LEX API + RCL)      │
+│ Sp 14  │ 183-196   │ S4.3 Security audit (penetration + adversarial Rego)    │
+│ Sp 15  │ 197-210   │ S4.4 GA (General Availability) + onboarding 10 klientów│
+│ Sp 15  │ 197-210   │ S4.5 Postmortem + plan v2.0                             │
+└────────┴───────────┴─────────────────────────────────────────────────────────┘
+
+Definicja Done dla każdego sprintu: każdy deliverable ma test E2E +
+dokumentację aktualizowaną + reviewer signoff + merge do main.
+
+TEMPO: 2 tygodnie / sprint, 5 sprintów / kwartał, 4 kwartały = 15 sprintów.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+CZĘŚĆ 5: ASSETS KONKRETNE (Sample Schemas)
+═══════════════════════════════════════════════════════════════════════════════
+
+──────────────────────────────────────────────────────────────────────────────
+5.1 DUCKDB SCHEMA — jdg_tax_thresholds
+───────────────────────────────────────────────────────────────────────────────
+
+-- Tabela progów i stawek (zastępuje 265 hardcoded numbers)
+CREATE TABLE jdg_tax_thresholds (
+    threshold_id        VARCHAR PRIMARY KEY,  -- np. 'vat_receipt_450_limit'
+    description         TEXT NOT NULL,        -- 'Limit kwoty na paragonie VAT'
+    value_numeric       NUMERIC,              -- 450.00 (euro, PLN, dni, %)
+    value_unit          VARCHAR,              -- 'PLN', 'EUR', 'DAYS', 'PERCENT'
+    legal_basis         TEXT,                 -- 'Ustawa o VAT Art. 106e ust. 3'
+    valid_from          DATE NOT NULL,        -- temporal registry
+    valid_to            DATE,                 -- NULL = current
+    scope_tenant_type   VARCHAR,              -- 'jdg', 'cit', 'all'
+    scope_pit_form      VARCHAR,              -- 'skala'/'liniowy'/NULL
+    scope_pkpid         VARCHAR,              -- PKD główne (np. '62.01.Z')
+    source_url          TEXT,                 -- link do ISAP/RCL
+    last_modified       TIMESTAMP DEFAULT now(),
+    modified_by         VARCHAR
+);
+
+CREATE INDEX idx_thresholds_lookup ON jdg_tax_thresholds
+    (threshold_id, valid_from, valid_to);
+
+-- Przykładowe dane początkowe (top 50 progów migracja B2)
+INSERT INTO jdg_tax_thresholds VALUES
+('vat_receipt_450_limit',     'Limit paragonu VAT',         450.00,  'PLN',     'VAT Art.106e ust.3', '2018-01-01', NULL, 'jdg', NULL, NULL, 'https://isap.sejm.gov.pl/isap.nsf/download.xsp?id=...', now(), 'system'),
+('ryczalt_2mln_limit',        'Limit ryczałtu',             2000000, 'EUR',     'PIT Art.20 ust.1',   '2006-01-01', NULL, 'jdg', 'ryczalt', NULL, 'https://isap.sejm.gov.pl/...', now(), 'system'),
+('maly_zus_150k_limit',       'Limit Małego ZUS',           150000,  'PLN',     'SUS Art.9 ust.1',    '2019-02-01', NULL, 'jdg', NULL, NULL, 'https://isap.sejm.gov.pl/...', now(), 'system'),
+('vat_bad_debt_90_days',      'VAT złe długi (P189 SLIM3)', 90,      'DAYS',    'VAT Art.89a ust.1a', '2023-01-01', NULL, 'jdg', NULL, NULL, 'https://isap.sejm.gov.pl/...', now(), 'system'),
+('pit_amply_cost_10000',      'Limit jednorazowej amort.',  10000,   'PLN',     'PIT Art.22d ust.1',  '2018-01-01', NULL, 'jdg', NULL, NULL, 'https://isap.sejm.gov.pl/...', now(), 'system');
+
+──────────────────────────────────────────────────────────────────────────────
+5.2 DUCKDB SCHEMA — rule_versions (Temporal Registry)
+───────────────────────────────────────────────────────────────────────────────
+
+CREATE TABLE rule_versions (
+    version_id          SERIAL PRIMARY KEY,
+    rule_id             VARCHAR NOT NULL,    -- np. 'P189'
+    rule_version        INTEGER NOT NULL,    -- 1, 2, 3...
+    rego_location       TEXT NOT NULL,       -- 'policies/jdg/vat.rego:42'
+    rule_body_hash      VARCHAR NOT NULL,    -- sha256 treści reguły
+    legal_change_summary TEXT,               -- 'SLIM VAT 3: 150→90 dni'
+    valid_from          DATE NOT NULL,
+    valid_to            DATE,
+    superseded_by       INTEGER REFERENCES rule_versions(version_id),
+    UNIQUE(rule_id, rule_version)
+);
+
+CREATE INDEX idx_rule_versions_active ON rule_versions (rule_id, valid_from, valid_to)
+    WHERE valid_to IS NULL;
+
+-- Przykład: P189 ma 2 wersje
+INSERT INTO rule_versions VALUES
+(1, 'P189', 1, 'policies/jdg/vat.rego:42', 'sha256:abc...', 'Przed SLIM VAT 3', '2017-01-01', '2022-12-31', 2, now(), 'system'),
+(2, 'P189', 2, 'policies/jdg/vat.rego:45', 'sha256:def...', 'SLIM VAT 3: 150→90 dni', '2023-01-01', NULL, NULL, now(), 'system');
+
+──────────────────────────────────────────────────────────────────────────────
+5.3 SHARDED ROUTER — Rego (B1)
+───────────────────────────────────────────────────────────────────────────────
+
+package jdg.router
+
+# Decyduje shard na podstawie kontekstu
+default shard_route = "shard_default"
+
+shard_route = shard_name {
+    input.context.tenant_type == "jdg"
+    input.context.pit_form == "skala"
+    input.context.transaction_type == "vat"
+    shard_name := "shard_jdg_vat_skala"
+}
+
+shard_route = shard_name {
+    input.context.tenant_type == "jdg"
+    input.context.pit_form == "ryczalt"
+    input.context.transaction_type == "vat"
+    shard_name := "shard_jdg_vat_ryczalt"
+}
+
+shard_route = shard_name {
+    input.context.tenant_type == "jdg"
+    input.context.transaction_type == "kks"
+    shard_name := "shard_jdg_kks_fraud"
+}
+
+# Fallback: O(n) scan wszystkich shardów (last resort)
+shard_route = "shard_default" {
+    not shard_route_specific
+}
+
+# Reguła główna wybiera odpowiedni shard z pakietów
+import data.jdg.shards.skalny_vat
+import data.jdg.shards.ryczalt_vat
+import data.jdg.shards.kks_fraud
+import data.jdg.shards.default
+
+main_jdg_decision = result {
+    shard := shard_route
+    result := evaluate_shard(shard)
+}
+
+evaluate_shard(shard) = result {
+    shard == "shard_jdg_vat_skala";   result := data.jdg.shards.skalny_vat.decision
+}
+evaluate_shard(shard) = result {
+    shard == "shard_jdg_vat_ryczalt"; result := data.jdg.shards.ryczalt_vat.decision
+}
+evaluate_shard(shard) = result {
+    shard == "shard_jdg_kks_fraud";   result := data.jdg.shards.kks_fraud.decision
+}
+evaluate_shard(shard) = result {
+    shard == "shard_default";          result := data.jdg.shards.default.decision
+}
+
+──────────────────────────────────────────────────────────────────────────────
+5.4 OPENAPI SCHEMA — /jdg/decide endpoint
+───────────────────────────────────────────────────────────────────────────────
+
+openapi: 3.0.3
+info:
+  title: NexusAI JDG Decision API
+  version: 1.0.0
+paths:
+  /jdg/decide:
+    post:
+      summary: Evaluate JDG transaction against 7000 rules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionRequest'
+      responses:
+        '200':
+          description: Verdict with provenance tree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerdictResponse'
+        '400':
+          description: Invalid input
+        '409':
+          description: Rule conflict (try with different input)
+        '422':
+          description: No matching rule (BLOCK_AND_ALERT required)
+
+components:
+  schemas:
+    DecisionRequest:
+      required: [transaction_date, context, payload]
+      properties:
+        transaction_date:
+          type: string
+          format: date
+          description: ISO 8601 yyyy-mm-dd dla temporal lookup
+        context:
+          $ref: '#/components/schemas/JdgContext'
+        payload:
+          type: object
+          additionalProperties: true
+
+    JdgContext:
+      required: [tenant_id, tenant_type, pit_form]
+      properties:
+        tenant_id:       { type: string, example: "tnt_abc123" }
+        tenant_type:     { type: string, enum: [jdg, cit, other] }
+        pit_form:        { type: string, enum: [skala, liniowy, ryczalt, karta] }
+        transaction_type: { type: string, enum: [vat, pit, zus, kks, ...] }
+        pkpid_main:      { type: string, description: "PKD główne (62.01.Z)" }
+
+    VerdictResponse:
+      required: [matched, rule_id, _provenance, _cost_ms]
+      properties:
+        matched:           { type: boolean }
+        rule_id:           { type: string, example: "P58" }
+        action:            { type: string, enum: [BLOCK_AND_ALERT, TRIAGE_QUEUE, ALLOW] }
+        vat_rate:          { type: string, enum: [23, 8, 5, 7, zw] }
+        pit_form_applied:  { type: string }
+        zus_base_calc:     { type: number }
+        _provenance:
+          $ref: '#/components/schemas/ProvenanceTree'
+        _cost_ms:          { type: number, description: "Eval time (ms)" }
+
+    ProvenanceTree:
+      required: [matched_at, conditions_evaluated, decision_hash]
+      properties:
+        matched_at:
+          type: string
+          format: date-time
+        conditions_evaluated:
+          type: array
+          items:
+            type: object
+            properties:
+              condition_id:    { type: string }
+              match_score:     { type: number, minimum: 0, maximum: 1 }
+              legal_basis:     { type: array, items: { type: string } }
+              temporal_version: { type: integer }
+        legal_basis_summary:
+          type: array
+          items: { type: string }
+        decision_hash:
+          type: string
+          description: SHA-256 of full verdict+provenance
+
+──────────────────────────────────────────────────────────────────────────────
+5.5 PROVENANCE TREE — JSON sample output
+───────────────────────────────────────────────────────────────────────────────
+
+{
+  "matched": true,
+  "rule_id": "P58",
+  "action": "BLOCK_AND_ALERT",
+  "vat_rate": "zw",
+  "pit_form_applied": "skala",
+  "zus_base_calc": 0.00,
+  "_provenance": {
+    "matched_at": "2026-07-13T10:15:32.123Z",
+    "conditions_evaluated": [
+      {
+        "condition_id": "P58.condition.1",
+        "match_score": 1.0,
+        "legal_basis": [
+          "Ustawa o VAT Art. 5 ust. 1 pkt 1",
+          "Rozp. Ministra Fin. z 2017 §3 ust. 2"
+        ],
+        "temporal_version": 2,
+        "evaluation_time_us": 234
+      },
+      {
+        "condition_id": "P58.condition.2",
+        "match_score": 0.95,
+        "legal_basis": ["Ustawa o VAT Art. 113 ust. 1"],
+        "temporal_version": 3,
+        "evaluation_time_us": 156
+      }
+    ],
+    "legal_basis_summary": [
+      "Ustawa o VAT z 1993 nr 26 poz. 137",
+      "Rozp. MF z 2017 poz. 1234",
+      "SLIM VAT 3 (2023-01-01)"
+    ],
+    "temporal_snapshot_used": "2026-Q3",
+    "rule_version_applied": 7,
+    "decision_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "_cost_ms": 4.2,
+  "_shard_routed": "shard_jdg_vat_skala"
+}
+
+──────────────────────────────────────────────────────────────────────────────
+5.6 ISAP CRAWLER — Python schema (C3)
+───────────────────────────────────────────────────────────────────────────────
+
+# nexus_ai/services/crawlers/isap_crawler.py
+import asyncio
+import httpx
+import hashlib
+from datetime import datetime
+
+class IsapCrawler:
+    """Crawls ISAP (via Sejm API + RCL RSS) for legal changes affecting 13 acts."""
+
+    ACTS_TO_MONITOR = [
+        ("vat",     "https://isap.sejm.gov.pl/api/act/vat"),
+        ("pit",     "https://isap.sejm.gov.pl/api/act/pit"),
+        ("op",      "https://isap.sejm.gov.pl/api/act/op"),
+        ("kks",     "https://isap.sejm.gov.pl/api/act/kks"),
+        ("sus",     "https://isap.sejm.gov.pl/api/act/sus"),
+        # ...razem 13
+    ]
+
+    def __init__(self, db_session, gh_client):
+        self.db = db_session      # DuckDB connection
+        self.gh = gh_client        # GitHub API client
+
+    async def crawl_daily_diff(self):
+        """Run once per day; detect changes vs yesterday."""
+        diffs = []
+        async with httpx.AsyncClient(timeout=30) as client:
+            for act_name, url in self.ACTS_TO_MONITOR:
+                # 1. Fetch today's version
+                response = await client.get(url, headers={"Accept": "application/json"})
+                today_text = response.text
+                today_hash = hashlib.sha256(today_text.encode()).hexdigest()
+
+                # 2. Fetch yesterday's hash from DuckDB
+                yesterday_hash = await self.db.fetch_one(
+                    f"SELECT hash FROM isap_history WHERE act_name=? ORDER BY crawled_at DESC LIMIT 1",
+                    [act_name]
+                )
+
+                # 3. Compare
+                if today_hash != yesterday_hash:
+                    diff = await self.diff_engine(act_name, yesterday_hash, today_text)
+                    diffs.append((act_name, diff))
+
+                # 4. Save today's hash
+                await self.db.execute(
+                    "INSERT INTO isap_history VALUES (?, ?, ?, ?)",
+                    [act_name, today_hash, today_text[:500], datetime.now()]
+                )
+
+        # 5. Generate GitHub issues for changes
+        for act_name, diff in diffs:
+            await self.gh.create_issue(
+                title=f"⚠️ Zmiana w {act_name.upper()} — {datetime.now()}",
+                body=f"## Diff\n```diff\n{diff}\n```\n\n## Suggested Rego update\n[Auto-generated diff]\n",
+                labels=["legal-change", "auto-detected"]
+            )
+
+    async def diff_engine(self, act_name, old_hash, new_text):
+        """Compare old vs new; return unified diff."""
+        old = await self.db.fetch_one(
+            "SELECT text FROM isap_history WHERE hash=?",
+            [old_hash]
+        )
+        return "\n".join(
+            difflib.unified_diff(
+                old.splitlines(),
+                new_text.splitlines(),
+                lineterm="",
+                n=3
+            )
+        )
+
+
+═══════════════════════════════════════════════════════════════════════════════
+CZĘŚĆ 6: METRYKI + ROI
+═══════════════════════════════════════════════════════════════════════════════
+
+──────────────────────────────────────────────────────────────────────────────
+6.1 DEFINITION OF DONE (Każda Reguła Przechodzi te Kryteria)
+───────────────────────────────────────────────────────────────────────────────
+
+┌────┬──────────────────────────────────────────────────────────────────────┐
+│ #  │ Kryterium DoD                                                       │
+├────┼──────────────────────────────────────────────────────────────────────┤
+│ D1 │ Reguła ZAWSZE kończy się matched:true (nie matched:false fallback) │
+│ D2 │ Wszystkie parametry liczbowe (stawki, progi, dni) z DuckDB,         │
+│    │ zero hardcoded numbers w .rego (>0 w PR = auto-blocked)            │
+│ D3 │ temporal_version_id ustawiony (wynik z rule_versions),             │
+│    │ nie pomijany temporal lookup                                       │
+│ D4 │ Testy Rego (.json fixtures) — minimum 5 per regułę                 │
+│    │ (happy path + 4 edge cases)                                         │
+│ D5 │ _legal_basis w werdykcie — minimum 1 odwołanie do art. ustawy      │
+│ D6 │ Decision action ∈ {BLOCK_AND_ALERT, TRIAGE_QUEUE, ALLOW}            │
+│    │ nigdy nie-default                                                  │
+│ D7 │ Code review + code-reviewer-minimax-m3 signoff                     │
+│ D8 │ LIVE w production bundle (opa run --server validated)               │
+│ D9 │ Provenance tree wygenerowany (A1) + decision_hash                  │
+│ D10│ Performance budget: <5 ms per rule, <30 ms per request             │
+└────┴──────────────────────────────────────────────────────────────────────┘
+
+──────────────────────────────────────────────────────────────────────────────
+6.2 KPI (Definicja Sukcesu)
+───────────────────────────────────────────────────────────────────────────────
+
+┌────────────────────────────┬─────────────────────┬─────────────────────────┐
+│ KPI                         │ Target              │ Benchmark               │
+├────────────────────────────┼─────────────────────┼─────────────────────────┤
+│ Latency p95 per request     │ < 5 ms (sharded)    │ Avalara: 10-30 ms      │
+│ Latency p99 per request     │ < 15 ms             │ Vertex: 50-100 ms      │
+│ Throughput                  │ ≥ 250 req/s/node    │ Stripe Tax: 100 req/s  │
+│ Pokrycie kanoniczne (1935pkt)│ 100% Macro          │ Realnie: 0%→100%       │
+│ Pokrycie Micro (6850)       │ Phase 2: >80%       │ Enterprise: 90%+       │
+│ Test coverage               │ 95%+ per regułę     │ Stripe: 80%            │
+│ Czas reakcji na zmianę prawa│ <15 min             │ Avalara: 24 h          │
+│ False positive (allow→block)│ <2%                 │ Industry avg: 5-15%    │
+│ False negative (block→allow)│ <0.5%               │ Industry avg: 2-5%     │
+│ Sprzeczności wewn. w .rego  │ 0                   │ Audyt 52 wykrył 7+     │
+│ Hardcoded magic numbers     │ 0                   │ Obecne: 265            │
+│ Audit log completeness      │ 100% (każdy verdict)│ Obecne: tylko rule_id  │
+│ Czas onboardingu nowej reguły│ <2 dni             │ Obecne: 5 dni          │
+└────────────────────────────┴─────────────────────┴─────────────────────────┘
+
+──────────────────────────────────────────────────────────────────────────────
+6.3 ROI — 218 mln PLN/rok (SZACUNEK STRATEGICZNY)
+───────────────────────────────────────────────────────────────────────────────
+
+⚠️ DISCLAIMER DANYCH OPERACYJNYCH:
+   Wartości ROI są SZACUNKAMI STRATEGICZNYMI opartymi na benchmarkach
+   Avalara/Vertex w analogicznych rynkach oraz publicznych danych
+   o wielkości polskiego rynku JDG (~2,1 mln podmiotów wg GUS 2024).
+   Do walidacji po F1 (Sprint 1) z rzeczywistymi danymi operacyjnymi
+   NexusAI. Liczba 12 000 klientów to placeholder strategic — do
+   zastąpienia faktyczną liczbą aktywnych tenantów.
+   Wartości procentowe pokrycia prawa (31% gotowe / 57% szkielety /
+   12% planowane) pochodzą bezpośrednio z Plan OPA/50 i Plan OPA/49.
+   Liczba 265 hardcoded integers pochodzi z audytu lintera [52];
+
+┌──────────────────────────────────────┬──────────────┬─────────────────────┐
+│ Składnik ROI                         │ PLN/rok      │ Źródło/Założenie    │
+├──────────────────────────────────────┼──────────────┼─────────────────────┤
+│ Unikanie kar KKS (fraud detection)   │  ~60 mln     │ 500 klientów ×      │
+│                                      │              │ śr. kara 120k PLN   │
+│ Optymalizacja podatkowa (ulgi,IP Box)│  ~80 mln     │ 12k klientów ×      │
+│                                      │              │ śr. oszczędność     │
+│                                      │              │ 6.7k PLN/r          │
+│ Redukcja błędów w JPK_V7/VAT-UE      │  ~25 mln     │ 400 przypadków ×    │
+│                                      │              │ śr. 62k PLN kara    │
+│ Zmniejszenie czasu pracy księgowych  │  ~35 mln     │ 12k × 2h/rok ×      │
+│                                      │              │ stawka 75 PLN/h     │
+│ Oszczędność kancelarii prawnych      │  ~18 mln     │ 8k spraw × 2250 PLN │
+├──────────────────────────────────────┼──────────────┼─────────────────────┤
+│ Σ RAZEM                              │ ~218 mln/r   │ confidence: medium  │
+└──────────────────────────────────────┴──────────────┴─────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+CZĘŚĆ 7: ZASOBY + RYZYKA + MITIGACJE
+═══════════════════════════════════════════════════════════════════════════════
+
+──────────────────────────────────────────────────────────────────────────────
+7.1 ZESPÓŁ I ROLE
+───────────────────────────────────────────────────────────────────────────────
+
+┌────┬───────────────────────────┬────────────────────────┬─────────────────────┐
+│ #  │ Rola                       │ FTE                    │ Odpowiedzialność    │
+├────┼───────────────────────────┼────────────────────────┼─────────────────────┤
+│ 1  │ Lead Rego Developer        │ 1.0 FTE               │ Architektura Rego   │
+│    │ Senior 5+ years OPA        │ (przez 15 sprintów)   │ + code review       │
+│ 2  │ Rego Developer #2          │ 1.0 FTE               │ Implementacja reguł│
+│ 3  │ Rego Developer #3          │ 0.5 FTE (S1-S4) → 1.0│ Dual-Layer Micro    │
+│    │                           │ (S5-S15)              │                     │
+│ 4  │ ML/AI Engineer (Python)    │ 0.5 FTE (S12-S15)     │ C1 Judgment Predict.│
+│    │                           │                       │ + C2 LLM Co-Pilot   │
+│ 5  │ Legal SME / Tax Radca      │ 0.5 FTE (S1-S15)      │ Walidacja reguł +   │
+│    │ Prawny                     │                       │ ISAP crawling       │
+│ 6  │ SRE / DevOps               │ 0.5 FTE (S1-S15)      │ CI/CD, observability│
+│    │                           │                       │ + WASM compilation  │
+│ 7  │ Product Manager            │ 0.3 FTE (S1-S15)      │ ROI tracking +       │
+│    │                           │                       │ client feedback      │
+├────┼───────────────────────────┼────────────────────────┼─────────────────────┤
+│ Σ  │                           │ 4.3 FTE łącznie        │                     │
+└────┴───────────────────────────┴────────────────────────┴─────────────────────┘
+
+Koszt zespołu przez 15 sprintów (~210 dni): ~700-900 tys. PLN
+(przy stawkach senior PL).
+
+──────────────────────────────────────────────────────────────────────────────
+7.2 RYZYKA P0-P3
+───────────────────────────────────────────────────────────────────────────────
+
+┌────┬───────────────────────────────────────────────────────┬──────────────────┐
+│ #  │ Ryzyko                                               │ Prawd. × Impact │
+├────┼───────────────────────────────────────────────────────┼──────────────────┤
+│ P0 │ Usunięcie 47 DEPRECATED psuje legacy clients        │ Średnia × Wysoki│
+│    │ (kancelarie prawne z API zależnym od P1100-P1114).   │                  │
+│    │ MITYGACJA: Dual-run 6 mies. — shadow exekucja,      │                  │
+│    │ porównanie werdyktów legacy vs new, stopniowy cutover │                  │
+├────┼───────────────────────────────────────────────────────┼──────────────────┤
+│ P1 │ Niespójność DuckDB RuleStore vs ISAP                 │ Średnia × Średni │
+│    │ (progi z 2024 vs nowe z 2026 — temporal consistency) │                  │
+│    │ MITYGACJA: CI job assertuje że każdy próg ma ISAP    │                  │
+│    │ source_url + last_modified < 7 dni od wydania       │                  │
+├────┼───────────────────────────────────────────────────────┼──────────────────┤
+│ P2 │ Halucynacje LLM w C2 (Gemini Flash)                 │ Wysoka × Średni │
+│    │ MITYGACJA: Strict contextual injection z provenance │                  │
+│    │ tree (A1) + max 2 LLM calls/session + audyt human   │                  │
+│    │ dla 10% ruchu (random sampling)                     │                  │
+├────┼───────────────────────────────────────────────────────┼──────────────────┤
+│ P3 │ ISAP API/LEX-Polska rate-limits / koszty            │ Wysoka × Niski  │
+│    │ (Subscription ~15k PLN/rok) + niedostępność przy    │                  │
+│    │ crawl masowym                                       │                  │
+│    │ MITYGACJA: Multi-source (Sejm API+RCL+LEX fallback)│                  │
+│    │ + caching 24 h + exponential backoff                │                  │
+├────┼───────────────────────────────────────────────────────┼──────────────────┤
+│ P4 │ 7000 reguł nie mieści się w OPA bundle (>2 MB       │ Średnia × Średni │
+│    │ WASM limit)                                         │                  │
+│    │ MITYGACJA: Sharded bundles per shard_name          │                  │
+│    │ (B1) + lazy loading per request                     │                  │
+├────┼───────────────────────────────────────────────────────┼──────────────────┤
+│ P5 │ Brak DocsJDG → brak źródła prawnego dla 1700 pkt     │ Pewna × Wysoki │
+│    │ Klasa B (57% szkielety)                              │                  │
+│    │ MITYGACJA: Sprint 1.2 tworzy DocsJDG/ z ISAP crawl │                  │
+│    │ + dump PDF → txt → per-art chunks                   │                  │
+└────┴───────────────────────────────────────────────────────┴──────────────────┘
+
+──────────────────────────────────────────────────────────────────────────────
+7.3 DEPENDENCIES / BLOCKERS
+───────────────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────┬──────────┬──────────────────────────────┐
+│ Zewnętrzna zależność                  │ Status   │ Wpływ na plan                │
+├──────────────────────────────────────┼──────────┼──────────────────────────────┤
+│ Dokumenty źródłowe (DocsJDG/)         │ ❌ BRAK  │ Blokuje S1.2                 │
+│ LEX/LEX-Polska API subscription       │ ❌ umowa │ Wymagana przed C3 (S14)      │
+│ Google AI Studio NDA (Gemini Flash)   │ ❌ umowa │ Wymagana przed C2 (S13)     │
+│ DuckDB production license            │ ✅ open  │ OK (Apache 2.0)              │
+│ Litestar framework                    │ ✅ open  │ OK                           │
+│ OPA v0.59+ bundle size                │ ✅ open  │ OK ale limit 2 MB (P4)       │
+│ GitHub Actions minutes                │ ✅ plan  │ 2000 min/mies. limit         │
+│ Senior Rego dev (1.0 FTE 210 dni)    │ ⚠️ rynek │ Czas rekrutacji 2-3 mies.   │
+└──────────────────────────────────────┴──────────┴──────────────────────────────┘
+
+──────────────────────────────────────────────────────────────────────────────
+7.4 HARMONOGRAM DLA INICJATYW - Interdependencies
+───────────────────────────────────────────────────────────────────────────────
+
+Sprint 1 ─ Cleanup ─────────────────────────────────┐
+Sprint 2 ┐ Temporal (A2) ───┐                        │
+         │                  │                        │
+Sprint 3 │ Thresholds (B2) ─┤ ─ CI/CD (B3) ─────────┤
+         │ Dry Compiler     │                        │
+         │                  ▼                        │
+Sprint 4 ┤ Router (B1) ──── Sharded Performance ──── ┤
+         │                  │                        │
+Sprint 5-7 ┤ Dual-Layer Macro (skela wdrożenie) ─── │
+           │                                          │
+Sprint 8   ┤ E2E + Benchmarks ───────────────────── │
+           │                                          │
+Sprint 9-11┤ Micro Layer (6850 reg.) ─────────────  │
+           │ Legal Cartography (A3) ──────          │
+           │ ISAP Crawler (C3) start ───────        │
+           │                                          │
+Sprint 12-15┤ Enterprise AI: Predictor (C1) ──────  │
+            │ LLM Co-Pilot (C2) ─────────────────  │
+            │ Legal Radar (C3) full ───────────── │
+            │ GA + 10 klientów ──────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+PODSUMOWANIE WYKONAWCZE
+═══════════════════════════════════════════════════════════════════════════════
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ DELIVERABLE STATUS                                                            │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ ✅ Plik NexusAI_JDG_7000_MASTER_IMPLEMENTATION_PLAN.txt utworzony            │
+│ ✅ 7 części: Fundamenty + 1935 pkt + 9 inicjatyw + S1-S4 + Assets + ROI+ Zasoby│
+│ ✅ Pełna konsolidacja: PELNE_POKRYCIE + STRATEGIC_IMPROVEMENTS + Plan OPA/    │
+│ ✅ Konkretne assets: DDL DuckDB × 2 + Rego Schema + OpenAPI + JSON + Python │
+│ ✅ ROI: 218 mln PLN/rok z disclaimerami źródeł                              │
+│ ✅ Ryzyka: 6 (P0-P5) z mitigacjami                                          │
+│ ✅ Zespół: 4.3 FTE × 210 dni = ~700-900 tys. PLN                           │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+TEN PLIK JEST SINGLE SOURCE OF TRUTH dla transformacji 435 → 7000 reguł.
+Wszelkie implementacje Rego, decyzje architektoniczne i planowanie sprintów
+powinny być weryfikowane względem tego dokumentu.
+
+Wersja: 1.0 (2026-07-13)
+Kolejna rewizja (v1.1): po zakończeniu Sprint 1 (Cleanup) + Sprint 2 (Temporal)
+
+═══════════════════════════════════════════════════════════════════════════════
+KONIEC DOKUMENTU
+═══════════════════════════════════════════════════════════════════════════════
