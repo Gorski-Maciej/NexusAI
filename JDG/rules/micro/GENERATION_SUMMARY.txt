@@ -1,0 +1,26 @@
+NexusAI JDG — Micro Rule Generation Summary
+Date: 2026-07-13
+Total rules: 2875
+Files: 21
+
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/akcyza/akcyza.rego: 32 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/aml/aml.rego: 44 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/ceidg/ceidg.rego: 34 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/crossborder/crossborder.rego: 72 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/jpk/jpk.rego: 35 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/kks/kks.rego: 375 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/ksef/ksef.rego: 79 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/ord/ord.rego: 318 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/pcc/pcc.rego: 89 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/pit/pit.rego: 521 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/pp/pp.rego: 92 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/rodo/rodo.rego: 40 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/ryczalt/ryczalt.rego: 97 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/srodowisko/srodowisko.rego: 48 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sukcesja/sukcesja.rego: 38 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus.rego: 122 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/transport/transport.rego: 44 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/uor/uor.rego: 124 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/vat/vat.rego: 571 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa.rego: 38 rules
+  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna.rego: 62 rules

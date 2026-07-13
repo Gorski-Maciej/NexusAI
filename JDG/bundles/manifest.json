@@ -1,0 +1,31 @@
+{
+  "_auto_generated": true,
+  "_generator": "JDG/tools/generate_manifest.py",
+  "_warning": "DO NOT EDIT MANUALLY — regenerate with: python JDG/tools/generate_manifest.py",
+  "revision": "auto-generated",
+  "roots": ["jdg"],
+  "metadata": {
+    "name": "NexusAI JDG Rules Bundle",
+    "version": "3.0.0",
+    "description": "Kompletny zestaw reguł OPA dla Jednoosobowej Działalności Gospodarczej",
+    "rules_count": 633,
+    "files_count": 38,
+    "opa_version": "v0.60+",
+    "canonical_map": "38c_JDG_CANONICAL_MAP.md",
+    "coverage_pct": 81,
+    "domains": [
+      "kks", "vat", "pit", "zus", "accounting", "edge_cases",
+      "crossborder", "conflicts", "compliance", "allowances",
+      "risk", "routing", "validation", "rodo", "mpips",
+      "local_taxes", "business", "employer", "liability",
+      "representation", "corrections", "restructuring",
+      "ksef_jpk", "retention", "temporal", "digital",
+      "environmental", "international", "fallback"
+    ]
+  },
+  "services": {
+    "thresholds": {
+      "url": "http://thresholds-service:8080/v1/data/thresholds/jdg"
+    }
+  }
+}

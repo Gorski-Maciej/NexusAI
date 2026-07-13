@@ -21,7 +21,7 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.accounting
 import data.jdg.helpers
-default decide := {"matched":false,"rule_id":"jdg.accounting.no_match","package":"jdg.accounting","priority":899}
+default decide := {"matched":true,"rule_id":"jdg.accounting.no_match","package":"jdg.accounting","priority":899,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","ceidg_registration_required":false,"_routing":"","_routing_reason":"","_legal_basis":"N/A — no accounting rule matched","_warnings":["Brak dopasowania reguły księgowej — transakcja nie wymaga specjalnego traktowania PKPiR/KŚT/UoR"]}
 
 pkpir_map := {
     "GOODS_REVENUE":10, "OTHER_REVENUE":11, "GOODS_PURCHASE":12,
