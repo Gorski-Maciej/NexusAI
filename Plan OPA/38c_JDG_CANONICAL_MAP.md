@@ -24,6 +24,7 @@
 | **Reguły aktywne z Doc 28a** | 50+ (kluczowe grupy R-ID) |
 | **Reguły aktywne z Doc 42** | 55 |
 | **Reguły aktywne z Doc 43** | 230 |
+| **Reguły z `valid_from`/`valid_to`** | **15** (zob. [§ TEMPORAL VALIDITY REGISTRY](#-temporal-validity-registry)) |
 
 ### Legenda
 
@@ -33,6 +34,60 @@
 | 🔴 | **[DEPRECATED]** — zastąpiona, nie implementować |
 | 🔀 | **MERGE** — wchłonięta jako edge case w innej regule |
 | 🔧 | **HELPER** — funkcja pomocnicza, nie reguła decyzyjna |
+
+---
+
+## 📅 TEMPORAL VALIDITY REGISTRY
+
+> **Cel:** Mapowanie per-reguła dat obowiązywania `valid_from` / `valid_to`. Mirrored in Rego as `data.jdg.metadata.temporal_validity` i eksploatowane przez helper `data.jdg.helpers.is_active(rule_id, date_str)`.
+>
+> **Konwencja:** Data w formacie ISO `YYYY-MM-DD`. Porównanie leksykograficzne w Rego (string sort === chronologic). `valid_to == null` (lub `∞`) = obowiązuje do odwołania. Reguła bez wpisu w tej tabeli = **ALWAYS ACTIVE** (wariant A — bezpieczny dla wstecznej kompatybilności).
+>
+> **Źródła prawne:** Polski Ład (Ustawa 29.10.2021, Art. 81 ust. 2 ust. o świadczeniach + Art. 36a SUS), KSeF (Ustawa 16.06.2023, Art. 106na-106nq VAT), SLIM VAT 3 (Ustawa 26.05.2023, Art. 89a VAT), Mały ZUS Plus (Art. 18c SUS), Ulga na start (Art. 18a SUS).
+
+| # | rule_id (Rego) | ID kanoniczne | valid_from | valid_to | reason | Rego file |
+|:-:|---|:-:|:-:|:-:|---|---|
+| 1 | `jdg.business.suspension_zus` | **P914** 🔴 | **2022-04-01** | ∞ | ZUS społeczne=0, ALE zdrowotna=NADAL należna (zmiana Art.36a SUS przez Polski Ład). DEPRECATED → R0582 | `policies/jdg/business.rego` |
+| 2 | `jdg.edge_cases.zus_declaration_zero_on_suspension` | **R0582** ✅ | **2022-04-01** | ∞ | Kanoniczna wersja P914 — zawieszenie: społeczne=0, zdrowotna=NADAL należna (Art. 36a SUS) | `policies/jdg/edge_cases.rego` |
+| 3 | `jdg.zus.health_scale` | **P720** ✅ | **2022-01-01** | ∞ | Polski Ład: 9% od dochodu, NIE podlega odliczeniu od PIT na skali (Art. 81 ust. 2 ust. o świadczeniach) | `policies/jdg/zus.rego` |
+| 4 | `jdg.zus.health_linear` | **P722** ✅ | **2022-01-01** | ∞ | Polski Ład: 4.9% od dochodu, odliczenie max 12900 PLN/rok (Art. 30c ust. 2 PIT) | `policies/jdg/zus.rego` |
+| 5 | `jdg.zus.health_lump_sum` | **P724** ✅ | **2022-01-01** | ∞ | Polski Ład: składka ryczałtowa w 3 progach (60k/300k przeciętnego wynagrodzenia) | `policies/jdg/zus.rego` |
+| 6 | `jdg.edge_cases.pit_health_contrib_scale_9pct_no_deduction` | **R0573** ✅ | **2022-01-01** | ∞ | Polski Ład: zdrowotna 9% NIE odlicza się od PIT na skali | `policies/jdg/edge_cases.rego` |
+| 7 | `jdg.edge_cases.pit_linear_health_underpayment` | **R0563** ✅ | **2022-01-01** | ∞ | Polski Ład: limit odliczenia zdrowotnej liniowy 12900 PLN/rok | `policies/jdg/edge_cases.rego` |
+| 8 | `jdg.edge_cases.pit_lump_sum_health_progressive` | **R0564** ✅ | **2022-01-01** | ∞ | Polski Ład: progi zdrowotnej dla ryczałtu w 3 progach | `policies/jdg/edge_cases.rego` |
+| 9 | `jdg.validation.ksef_upo_required` | **R0620** ✅ | **2026-02-01** | ∞ | KSeF obowiązkowy B2B; wymagane UPO dla faktur B2B (Art. 106na VAT) | `policies/jdg/validation.rego` |
+| 10 | `jdg.edge_cases.sanction_ksef_missing_100pct` | **R0647** ✅ | **2026-02-01** | ∞ | Sankcja 100% VAT (max 500k) za brak faktury w KSeF (Art. 106nq VAT) | `policies/jdg/edge_cases.rego` |
+| 11 | `jdg.edge_cases.deadline_ksef_offline_7_days` | **R0666** ✅ | **2026-02-01** | ∞ | Awaria KSeF: 7 dni na przesłanie faktur (Art. 106ne VAT) | `policies/jdg/edge_cases.rego` |
+| 12 | `jdg.zus.start_relief` | **P740** ✅ | **2018-04-01** | ∞ | Ulga na start (6 mies.) — Art. 18a ustawy o SUS (wprowadzona nowelizacją 2018) | `policies/jdg/zus.rego` |
+| 13 | `jdg.zus.maly_plus` | **P741** ✅ | **2019-04-01** | ∞ | Mały ZUS Plus (36 mies.) — Art. 18c ustawy o SUS (wprowadzony 2019-04-01) | `policies/jdg/zus.rego` |
+| 14 | `jdg.zus.preferential` | **P742** ✅ | **2018-04-01** | ∞ | Preferencyjny ZUS (24 mies.) — Art. 18a ustawy o SUS | `policies/jdg/zus.rego` |
+| 15 | `jdg.edge_cases.sanction_bad_debt_debtor_30pct` | **R0652** ✅ | **2023-07-01** | ∞ | Sankcja 30% VAT za brak korekty po 90 dniach (Art. 89b VAT po SLIM VAT 3) | `policies/jdg/edge_cases.rego` |
+
+### Przykłady użycia registry w runtime
+
+```rego
+# Rego — w dowolnym pakiecie JDG
+import data.jdg.helpers
+
+# Sprawdź czy reguła obowiązuje dla konkretnej daty:
+is_active("jdg.zus.health_scale", "2026-03-15")          # → TRUE  (Polski Ład nadal obowiązuje)
+is_active("jdg.zus.health_scale", "2021-12-31")          # → FALSE (przed Polskim Ładem)
+is_active("jdg.business.ceidg_registration_check", "2026-03-15")  # → TRUE (brak wpisu = always active)
+is_active("jdg.edge_cases.deadline_ksef_offline_7_days", "2026-01-15")  # → FALSE (przed KSeF)
+is_active("jdg.edge_cases.deadline_ksef_offline_7_days", "2026-03-01")  # → TRUE (po KSeF)
+
+# Wrapper czytający datę z inputu:
+is_active_now("jdg.validation.ksef_upo_required")         # używa input.evaluation_date lub input.invoice.transaction_date
+```
+
+### Workflow maintenance'u
+
+Nowa reguła temporalna → 3 kroki:
+1. Dodaj wpis do `temporal_validity := { ... }` w `policies/jdg/_metadata_jdg.rego`
+2. Dodaj wpis do powyższej tabeli w tym dokumencie (38c)
+3. Użyj `is_active(rule_id, date_str)` w ciele pakietu Rego, który ma zawierać regułę
+
+> **Uwaga:** Daty w tabeli są kanoniczne dla runtime i dokumentacji — nie edytuj ich w innych dokumentach (`22`, `23`, `28a`) bez aktualizacji tego rejestru + Rego.
 
 ---
 
