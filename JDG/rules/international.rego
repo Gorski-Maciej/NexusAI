@@ -64,10 +64,10 @@ else := {
     input.jdg_entrepreneur.days_abroad > 180
 }
 
-# ══════ P29: tp_safe_harbour_low_value — Safe harbour 5% TP ══════
+# ══════ P102: tp_safe_harbour_low_value — Safe harbour 5% TP ══════
 else := {
     "matched":true,"rule_id":"jdg.international.tp_safe_harbour_low_value",
-    "package":"jdg.international","priority":29,
+    "package":"jdg.international","priority":102,
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,

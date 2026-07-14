@@ -77,10 +77,10 @@ else := {
     helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
 }
 
-# ══════ P25_b: split_payment_voluntary_safe_harbor — Dobrowolny MPP ══════
+# ══════ P26: split_payment_voluntary_safe_harbor — Dobrowolny MPP ══════
 else := {
     "matched":true,"rule_id":"jdg.compliance.split_payment_voluntary_safe_harbor",
-    "package":"jdg.compliance","priority":25,
+    "package":"jdg.compliance","priority":26,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
