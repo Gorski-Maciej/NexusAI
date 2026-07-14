@@ -101,6 +101,29 @@ else := {
     input.vendor.country == "PL"
 }
 
+# ══ P67: vat_books_5pct_validation — Książki/e-booki 5% (Doc 42: walidacja CN) ══
+else := {
+    "matched":true,"rule_id":"jdg.vat.substantive.books_5pct_validation",
+    "package":"jdg.vat.substantive","priority":67,
+    "vat_rate":"0.05","rounding_level":"position",
+    "gtu_code":"GTU_01","procedure":"",
+    "vat_exemption":"","pit_form":"","pit_rate":"",
+    "pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "books_5pct_valid":true,"books_cn_validated":true,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Rozp. MF z 4.12.2024 r., Załącznik nr 2 + Art. 41 ust. 2a VAT",
+    "_warnings":["Książka/e-book 5% VAT — ISBN/digital ID potwierdzony. Wyłączenia: podręczniki akademickie (0%), treści dla dorosłych (23%)"]
+} {
+    input.invoice.category_code in {"BOOKS","EBOOKS","AUDIOBOOKS"}
+    input.vendor.country == "PL"
+    input.invoice.has_isbn_or_digital_id == true
+    not input.invoice.is_academic_textbook
+    not input.invoice.is_adult_content
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # P54: vat_rate_books — Książki → 5%
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -340,6 +363,53 @@ else := {
 } {
     input.invoice.category_code == "POSTAL"
     input.vendor.country == "PL"
+}
+
+# ══ P68: vat_construction_8pct_validation — Budownictwo mieszkaniowe 8% ══
+else := {
+    "matched":true,"rule_id":"jdg.vat.substantive.construction_8pct_validation",
+    "package":"jdg.vat.substantive","priority":68,
+    "vat_rate":"0.08","rounding_level":"position",
+    "gtu_code":"GTU_08","procedure":"",
+    "vat_exemption":"","pit_form":"","pit_rate":"",
+    "pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "construction_rate_valid":true,"construction_area_exceeded":false,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 41 ust. 12-12c VAT + Rozp. MF z 4.12.2024 r.",
+    "_warnings":["Budownictwo mieszkaniowe 8% VAT — domy ≤300 m², mieszkania ≤150 m². Garaże wolnostojące/lokale użytkowe = 23%"]
+} {
+    input.invoice.category_code == "CONSTRUCTION_RESIDENTIAL"
+    input.invoice.building_type in {"RESIDENTIAL_HOUSE","RESIDENTIAL_FLAT","SOCIAL_HOUSING"}
+    input.vendor.country == "PL"
+    area := object.get(input.invoice,"building_area_m2",0)
+    not (input.invoice.building_type == "RESIDENTIAL_HOUSE" and area > 300)
+    not (input.invoice.building_type == "RESIDENTIAL_FLAT" and area > 150)
+}
+
+# ══ P70: vat_medical_equipment_8pct_validation — Sprzęt medyczny 8% ══
+else := {
+    "matched":true,"rule_id":"jdg.vat.substantive.medical_equipment_8pct_validation",
+    "package":"jdg.vat.substantive","priority":70,
+    "vat_rate":"0.08","rounding_level":"position",
+    "gtu_code":"","procedure":"",
+    "vat_exemption":"","pit_form":"","pit_rate":"",
+    "pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "medical_device_valid":true,"medical_ce_marked":true,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Rozp. MF z 4.12.2024 r., Załącznik nr 1, poz. 87-105",
+    "_warnings":["Sprzęt medyczny 8% VAT — certyfikat CE + zgłoszenie URPL. Wyłączenie: fitness/wellness (23%), używany (procedura marży)"]
+} {
+    input.invoice.category_code == "MEDICAL_EQUIPMENT"
+    input.invoice.is_medical_device == true
+    input.invoice.has_ce_marking == true
+    input.vendor.country == "PL"
+    not input.invoice.is_used_goods
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -972,6 +1042,27 @@ eu_countries := {
     "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
     "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
     "PL", "PT", "RO", "SK", "SI", "ES", "SE"
+}
+
+# ══ P72: vat_reduced_rate_cross_check — Cross-check obniżonych stawek (Doc 42) ══
+else := {
+    "matched":true,"rule_id":"jdg.vat.substantive.reduced_rate_cross_check",
+    "package":"jdg.vat.substantive","priority":72,
+    "vat_rate":"","rounding_level":"",
+    "gtu_code":"","procedure":"",
+    "vat_exemption":"","pit_form":"","pit_rate":"",
+    "pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "reduced_rate_audit":true,"reduced_rate_warning":true,
+    "reduced_rate_audit_threshold":0.85,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Udział obniżonych stawek >85% sprzedaży — ryzyko Art. 64 KKS",
+    "_legal_basis":"Art. 64 KKS (niewłaściwa stawka VAT) + procedury audytowe",
+    "_warnings":["CROSS-CHECK STAWEK — udział 8%/5%/0% >85% obrotu. Zweryfikuj CN/PKWiU dla każdej kategorii. Ryzyko błędnej klasyfikacji!"]
+} {
+    reduced_share := object.get(input.jdg_entrepreneur,"reduced_rate_sales_share",0)
+    reduced_share > 0.85
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

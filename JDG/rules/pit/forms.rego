@@ -206,6 +206,106 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# P524: lump_sum_statutory_exclusions — Wyłączenia z ryczałtu (apteki, kantory, części)
+# Doc 26 §III: Bezwzględna blokada ryczałtu dla branż ustawowo wyłączonych
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.forms.lump_sum_exclusions",
+    "package": "jdg.pit.forms", "priority": 524,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_annual_return_type": "PIT-36",
+    "kus_qualification": "full", "kus_percent": 100,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "lump_sum_not_allowed": true,
+    "lump_sum_exclusion_reason": exclusion_reason,
+    "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Branża wyłączona z ryczałtu — wymagana skala lub liniowy",
+    "_legal_basis": "Art. 8 ust. 1-2 ustawy o ryczałcie (Dz.U. 2025 poz. 234)",
+    "_warnings": [sprintf("Branża wyłączona z ryczałtu (%s) — NIE możesz używać ryczałtu! Automatycznie: skala podatkowa.", [exclusion_reason])]
+} {
+    input.jdg_entrepreneur.tax_form == "LUMP_SUM"
+    pkd := object.get(input.jdg_entrepreneur, "pkd_main", "")
+
+    # Katalog PKD wyłączonych z ryczałtu (Art. 8 ust. 1-2)
+    excluded_pkd := {"47.73.Z", "64.99.Z", "45.31.Z", "45.32.Z", "46.12.Z", "66.19.Z", "69.10.Z"}
+    pkd in excluded_pkd
+
+    exclusion_reason = "Apteka" { pkd == "47.73.Z" }
+    exclusion_reason = "Kantor/dział. finansowa" { pkd == "64.99.Z" }
+    exclusion_reason = "Handel częściami samochodowymi" { pkd in {"45.31.Z", "45.32.Z"} }
+    exclusion_reason = "Pośrednictwo w handlu paliwami" { pkd == "46.12.Z" }
+    exclusion_reason = "Doradztwo finansowe" { pkd == "66.19.Z" }
+    exclusion_reason = "Usługi prawne" { pkd == "69.10.Z" }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P525: lump_sum_loss_of_right — Utrata ryczałtu w trakcie roku
+# Doc 26 §III: Automatyczna utrata: >2M EUR, zmiana PKD, były pracodawca
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.forms.lump_sum_loss_of_right",
+    "package": "jdg.pit.forms", "priority": 525,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_annual_return_type": "PIT-36",
+    "kus_qualification": "full", "kus_percent": 100,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "lump_sum_right_lost": true,
+    "requires_multiple_annual_returns": true,
+    "loss_reason": loss_reason,
+    "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Utrata prawa do ryczałtu — przejście na skalę",
+    "_legal_basis": "Art. 20 ustawy o ryczałcie",
+    "_warnings": [sprintf("UTRATA RYCZAŁTU — %s. Od dnia utraty obowiązuje skala podatkowa. Złożysz PIT-28 za okres ryczałtu + PIT-36 za okres skali.", [loss_reason])]
+} {
+    input.jdg_entrepreneur.tax_form == "LUMP_SUM"
+
+    # Utrata z powodu byłego pracodawcy (Art. 8 ust. 2)
+    has_ex_employer := object.get(input.jdg_entrepreneur, "former_employer_services", false)
+
+    # Utrata z powodu zmiany PKD na wyłączone
+    pkd := object.get(input.jdg_entrepreneur, "pkd_main", "")
+    excluded_pkd := {"47.73.Z", "64.99.Z", "45.31.Z", "45.32.Z", "46.12.Z"}
+    pkd_changed_to_excluded := pkd in excluded_pkd
+
+    loss_cause = "Były pracodawca" { has_ex_employer == true }
+    loss_cause = "Zmiana PKD na wyłączone" { pkd_changed_to_excluded == true }
+    loss_reason = loss_cause
+
+    has_ex_employer == true
+}
+
+# ══════ P526: lump_sum_election_deadline — Termin oświadczenia o ryczałcie ══════
+# Doc 26 §III: Oświadczenie do 20. dnia miesiąca po pierwszym przychodzie (nowa JDG)
+# lub do 20 stycznia (kontynuacja). Brak oświadczenia → skala podatkowa.
+else := {
+    "matched": true, "rule_id": "jdg.pit.forms.lump_sum_election_deadline",
+    "package": "jdg.pit.forms", "priority": 526,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_annual_return_type": "PIT-36",
+    "kus_qualification": "full", "kus_percent": 100,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "lump_sum_election_invalid": true,
+    "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Oświadczenie o ryczałcie niezłożone w terminie — obowiązek przejścia na skalę",
+    "_legal_basis": "Art. 9 ust. 1-4 ustawy o ryczałcie (Dz.U. 2025 poz. 234)",
+    "_warnings": ["Oświadczenie o wyborze ryczałtu NIE zostało złożone w terminie! Składa się je do 20. dnia miesiąca po pierwszym przychodzie (nowa JDG) lub do 20 stycznia (kontynuacja). Automatycznie: skala podatkowa."]
+} {
+    input.jdg_entrepreneur.tax_form == "LUMP_SUM"
+    input.jdg_entrepreneur.lump_sum_election_filed == false
+    first_revenue_earned := object.get(input.jdg_entrepreneur, "first_revenue_earned", true)
+    first_revenue_earned == true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # P530: pit_form_tax_card — Karta podatkowa
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {

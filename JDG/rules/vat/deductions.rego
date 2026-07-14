@@ -39,9 +39,35 @@ default decide := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# P39: vat_r_registration_status — Blokada faktur VAT bez rejestracji VAT-R
+# ═══════════════════════════════════════════════════════════════════════════════
+# Doc 26 §II: Blokada wystawiania faktur z VAT przez JDG bez VAT-R
+# ⚠️ Musi być PRZED P183 — sprawdzenie rejestracji przed odliczeniami
+decide := {
+    "matched":true,"rule_id":"jdg.vat.deductions.vat_r_registration_block",
+    "package":"jdg.vat.deductions","priority":39,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "procedure":"VAT_R_BLOCK","vat_exemption":"",
+    "vat_deduction_percent":0,"pit_form":"","pit_rate":"",
+    "pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "vat_r_filing_required":true,
+    "_routing":"BLOCK_AND_ALERT",
+    "_routing_reason":"Brak rejestracji VAT-R — nie można wystawiać faktur z VAT",
+    "_legal_basis":"Art. 96 ust. 1, 4-5 VAT",
+    "_warnings":["Brak rejestracji VAT-R — nie możesz wystawiać faktur z VAT. Złóż VAT-R przed pierwszą czynnością opodatkowaną."]
+} {
+    input.invoice.direction == "SALE"
+    input.invoice.vat_taxable == true
+    input.jdg_entrepreneur.is_vat_payer == false
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # P183: vat_blocked_categories — Kategorie wyłączone z odliczenia VAT
 # ═══════════════════════════════════════════════════════════════════════════════
-decide := {
+else := {
     "matched": true, "rule_id": "jdg.vat.deductions.blocked_categories",
     "package": "jdg.vat.deductions", "priority": 183,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",

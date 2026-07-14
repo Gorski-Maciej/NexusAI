@@ -112,6 +112,49 @@ else := {
     input.invoice.amount_gross >= 15000
 }
 
+# ══════ P36: vat_simplified_receipt — Paragon z NIP jako faktura uproszczona ══════
+# Doc 26 §II: Paragon z NIP do 450 PLN brutto = faktura uproszczona → można odliczyć VAT
+else := {
+    "matched":true,"rule_id":"jdg.compliance.vat_simplified_receipt",
+    "package":"jdg.compliance","priority":36,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "vat_deduction_allowed":true,"receipt_treated_as_invoice":true,
+    "_routing":"","_routing_reason":"Paragon z NIP do 450 PLN jako faktura uproszczona",
+    "_legal_basis":"Art. 106e ust. 5 pkt 3 VAT",
+    "_warnings":["Paragon z NIP — odliczenie VAT możliwe do kwoty 450 PLN brutto"]
+} {
+    input.invoice.direction == "PURCHASE"
+    input.invoice.invoice_type == "RECEIPT"
+    input.invoice.has_nip == true
+    input.jdg_entrepreneur.is_vat_payer == true
+    amount_gross := object.get(input.invoice,"amount_gross",0)
+    amount_gross <= 450
+    amount_gross > 0
+} else := {
+    "matched":true,"rule_id":"jdg.compliance.vat_simplified_receipt_over_limit",
+    "package":"jdg.compliance","priority":36,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "vat_deduction_allowed":false,
+    "_routing":"BLOCK_AND_ALERT",
+    "_routing_reason":"Paragon powyżej 450 PLN — brak prawa do odliczenia VAT",
+    "_legal_basis":"Art. 106e ust. 5 pkt 3 VAT",
+    "_warnings":["Paragon powyżej 450 PLN brutto NIE jest fakturą uproszczoną — brak prawa do odliczenia VAT"]
+} {
+    input.invoice.direction == "PURCHASE"
+    input.invoice.invoice_type == "RECEIPT"
+    input.invoice.has_nip == true
+    amount_gross := object.get(input.invoice,"amount_gross",0)
+    amount_gross > 450
+}
+
 # ══════ P145: cash_register_b2c_exemption — Zwolnienie z kasy fiskalnej ══════
 else := {
     "matched":true,"rule_id":"jdg.compliance.cash_register_b2c_exemption",

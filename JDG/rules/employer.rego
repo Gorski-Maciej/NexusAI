@@ -115,20 +115,41 @@ else := {
     input.employment.has_copyright_transfer == true
 }
 
-# ══ P1212e: employer_ppk_contributions — Pracownicze Plany Kapitałowe ══
+# ══ P1212e: employer_ppk_auto_enrollment — PPK auto-zapis + składki ══
 else := {
-    "matched":true,"rule_id":"jdg.employer.ppk_contributions",
+    "matched":true,"rule_id":"jdg.employer.ppk_auto_enrollment",
     "package":"jdg.employer","priority":1212,
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"PPK_EMPLOYER","zus_health_rate":"",
     "business_status":"","employment_tax_obligation":"PPK_REPORTING",
-    "_routing":"","_routing_reason":"",
-    "_legal_basis":"Ustawa o PPK",
-    "_warnings":["PPK — wpłata podstawowa pracodawcy 1.5% + pracownik 2.0% (możliwość obniżenia do 0.5%). Składki PPK nie wlicza się do podstawy ZUS!"]
+    "ppk_employer_pct":1.5,"ppk_employee_pct":2.0,"ppk_auto_enrolled":true,
+    "_routing":"","_routing_reason":"PPK auto-zapis — employee ≥3 months, opt-out window 30+7 days",
+    "_legal_basis":"Art. 31-32 ustawy o PPK",
+    "_warnings":["PPK — wpłata podstawowa pracodawcy 1.5% + pracownik 2.0% (możliwość obniżenia do 0.5%). Składki PPK nie wlicza się do podstawy ZUS! Auto-zapis po 3 mies. zatrudnienia. Okno opt-out: 30 dni + 7 dni na rezygnację."]
 } {
     input.employment.ppk_enabled == true
+    input.employment.employee_count >= 1
+    not input.employment.ppk_employee_opted_out
+}
+
+# ══ P1213e: employer_ppk_opt_out — PPK rezygnacja pracownika (opt-out) ══
+else := {
+    "matched":true,"rule_id":"jdg.employer.ppk_opt_out",
+    "package":"jdg.employer","priority":1213,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"PPK_EMPLOYER","zus_health_rate":"",
+    "business_status":"","employment_tax_obligation":"PPK_REPORTING",
+    "ppk_employer_pct":1.5,"ppk_employee_pct":0.0,"ppk_opt_out":true,
+    "_routing":"","_routing_reason":"PPK opt-out — pracownik zrezygnował, składka pracownika 0%",
+    "_legal_basis":"Art. 32 ust. 3-4 ustawy o PPK",
+    "_warnings":["PPK opt-out — pracownik złożył rezygnację. Pracodawca nadal wpłaca 1.5%. Co 4 lata ponowny auto-zapis!"]
+} {
+    input.employment.ppk_enabled == true
+    input.employment.ppk_employee_opted_out == true
 }
 
 # ══ P1214e: employer_pit4r_monthly — PIT-4R obowiązek miesięczny ══
@@ -166,4 +187,61 @@ else := {
     input.employment.has_employees == true
     input.calendar.month == 1
     input.calendar.day_of_month >= 20
+}
+
+# ══ P1218e: employer_peron_contribution — PFRON ≥25 pracowników ══
+else := {
+    "matched":true,"rule_id":"jdg.employer.peron_contribution",
+    "package":"jdg.employer","priority":1218,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","employment_tax_obligation":"PFRON_MONTHLY",
+    "peron_quota_pct":6,"peron_threshold_employees":25,
+    "peron_disabled_employed":0,"peron_contribution_due_pln":0,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"PFRON — ≥25 pracowników, obowiązek wpłat lub zatrudnienia 6% ON",
+    "_legal_basis":"Art. 21 ustawy o rehabilitacji zawodowej i społecznej oraz zatrudnianiu osób niepełnosprawnych",
+    "_warnings":["PFRON — ≥25 pracowników. Wymagane 6% zatrudnienia osób niepełnosprawnych LUB miesięczna wpłata na PFRON. Deklaracja DEK-I-a do 20-go."]
+} {
+    input.employment.employee_count >= 25
+    input.employment.has_employees == true
+    not input.employment.purchases_from_zpch_this_period
+}
+
+# ══ P1219e: employer_peron_exemption_zpch — PFRON ulga ZPCh ══
+else := {
+    "matched":true,"rule_id":"jdg.employer.peron_exemption_zpch",
+    "package":"jdg.employer","priority":1219,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","employment_tax_obligation":"PFRON_EXEMPTION_ZPCH",
+    "peron_exemption_type":"ZPCH_PURCHASE","peron_contribution_reduction_pct":100,
+    "_routing":"","_routing_reason":"PFRON — ulga za zakupy od ZPCh (zakład pracy chronionej)",
+    "_legal_basis":"Art. 22 ustawy o rehabilitacji",
+    "_warnings":["PFRON ulga ZPCh — zakup od zakładu pracy chronionej. Wymagana faktura VAT z adnotacją ZPCh. Ulga pomniejsza wpłatę na PFRON."]
+} {
+    input.employment.employee_count >= 25
+    input.employment.purchases_from_zpch_this_period == true
+}
+
+# ══ P1220e: employer_small_mandate_flat_tax — Małe zlecenie ≤200 PLN ryczałt ══
+else := {
+    "matched":true,"rule_id":"jdg.employer.small_mandate_flat_tax",
+    "package":"jdg.employer","priority":1220,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"17%_RYCZAŁT","pit_bracket":"","pit_annual_return_type":"PIT-8AR",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","employment_tax_obligation":"SMALL_MANDATE_FLAT",
+    "small_mandate_threshold_pln":200,"small_mandate_rate_pct":17,
+    "_routing":"","_routing_reason":"Małe zlecenie ≤200 PLN — ryczałt 17% bez KUP, bez ZUS",
+    "_legal_basis":"Art. 30 ust. 1 pkt 5a PIT",
+    "_warnings":["Małe zlecenie ≤200 PLN — ryczałt 17%. BRAK KUP! BRAK składek ZUS (jeśli jedyny tytuł). PIT-8AR rocznie. Suma umów do jednego zleceniobiorcy ≤200 PLN miesięcznie dla tej stawki."]
+} {
+    input.employment.contract_type == "CIVIL_LAW"
+    input.employment.contract_amount_gross <= 200
+    not input.employment.has_other_insurance_title
 }

@@ -44,7 +44,83 @@ decide := {
     input.invoice.procedure == "WNT"
 }
 
+# ══════ P42_c: wdt_documentation_evidence — Wymóg dokumentów WDT ══════
+# ⚠️ Musi być PRZED P42 (ogólne WDT) — bardziej szczegółowa reguła
+else := {
+    "matched":true,"rule_id":"jdg.crossborder.wdt_no_docs",
+    "package":"jdg.crossborder","priority":42,
+    "vat_rate":"0.23","rounding_level":"position","gtu_code":"",
+    "procedure":"WDT_INVALID","vat_exemption":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"BLOCK_AND_ALERT",
+    "_routing_reason":"Brak dokumentów potwierdzających wywóz WDT",
+    "_legal_basis":"Art. 42 ust. 1 pkt 1-2 VAT",
+    "_warnings":["WDT BEZ dokumentów potwierdzających wywóz — stawka 0% NIEDOZWOLONA! Stawka krajowa 23%."]
+} {
+    input.invoice.procedure == "WDT"
+    input.invoice.has_transport_docs == false
+}
+
+# ══════ P42b: wdt_vat_refund_accelerated — WDT przyśpieszony zwrot 25 dni ══════
+# Doc 26 §VI: Wszystkie faktury zakupowe opłacone przelewem → zwrot VAT w 25 dni
+# ⚠️ Musi być PRZED P42 (ogólne WDT) — bardziej szczegółowa reguła
+else := {
+    "matched":true,"rule_id":"jdg.crossborder.wdt_refund_accelerated",
+    "package":"jdg.crossborder","priority":53,
+    "vat_rate":"0.00","rounding_level":"total","gtu_code":"",
+    "procedure":"WDT","vat_exemption":"",
+    "vat_refund_deadline_days":25,
+    "vat_refund_accelerated":true,
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"","_routing_reason":"WDT — przyśpieszony zwrot VAT w 25 dni",
+    "_legal_basis":"Art. 87 ust. 6 pkt 1 VAT",
+    "_warnings":["WDT — przyśpieszony zwrot VAT w 25 dni (wszystkie faktury zakupowe opłacone przelewem bankowym)"]
+} {
+    input.invoice.procedure == "WDT"
+    input.invoice.direction == "SALE"
+    input.jdg_entrepreneur.is_vat_payer == true
+    all_purchases_paid_by_transfer := object.get(input.jdg_entrepreneur, "all_purchases_paid_by_transfer", false)
+    all_purchases_paid_by_transfer == true
+}
+
+# ══════ P143: platform_app_store_b2b_export — App Store/Google Play export B2B ══════
+# Doc 26 §VI: Sprzedaż app przez platformy do UE — reverse charge, VAT nabywcy
+# ⚠️ Musi być PRZED P42 (ogólne WDT) — usługi cyfrowe ≠ towary
+else := {
+    "matched":true,"rule_id":"jdg.crossborder.platform_app_store_export",
+    "package":"jdg.crossborder","priority":55,
+    "vat_rate":"0.00","rounding_level":"total","gtu_code":"",
+    "procedure":"EXPORT_SERVICES_B2B","vat_exemption":"",
+    "vat_ue_summary_required":true,
+    "platform_type":platform_type,
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"","_routing_reason":"App Store/Google Play — eksport usług B2B do UE",
+    "_legal_basis":"Art. 28b VAT (miejsce świadczenia = siedziba nabywcy B2B)",
+    "_warnings":[sprintf("%s — eksport usług B2B do UE. VAT rozlicza nabywca (reverse charge). Obowiązek VAT-UE.", [platform_type])]
+} {
+    input.invoice.direction == "SALE"
+    input.invoice.category_code in {"IT_SERVICES", "SOFTWARE_DEVELOPMENT", "SAAS", "MOBILE_APP"}
+    input.vendor.is_b2b_buyer == true
+    input.vendor.country in eu_countries
+    input.vendor.country != "PL"
+    platform := object.get(input.invoice, "distribution_platform", "")
+    platform in {"APP_STORE", "GOOGLE_PLAY", "MICROSOFT_STORE", "STEAM", "EPIC_GAMES"}
+    platform_type = "App Store/Google Play" { platform in {"APP_STORE", "GOOGLE_PLAY"} }
+    platform_type = "Microsoft Store" { platform == "MICROSOFT_STORE" }
+    platform_type = "Steam/Epic Games" { platform in {"STEAM", "EPIC_GAMES"} }
+}
+
 # ══════ P42: wdt_intracommunity_supply — WDT 0% VAT ══════
+# Catch-all dla sprzedaży B2B do UE (ostatnia w grupie WDT), głównie towary
 else := {
     "matched":true,"rule_id":"jdg.crossborder.wdt_intracommunity_supply",
     "package":"jdg.crossborder","priority":42,
@@ -101,6 +177,35 @@ else := {
     input.invoice.procedure == "EXPORT"
 }
 
+# ══════ P144: platform_import_services — Import usług z platform (Upwork/Fiverr) ══════
+# Doc 26 §VI: Prowizje platform freelancerskich — import usług, reverse charge
+# ⚠️ Musi być PRZED P41 (ogólny import usług) — bardziej szczegółowa reguła
+else := {
+    "matched":true,"rule_id":"jdg.crossborder.platform_import_services",
+    "package":"jdg.crossborder","priority":56,
+    "vat_rate":"0.00","rounding_level":"total","gtu_code":"",
+    "procedure":"IMPORT_SERVICES_REVERSE_CHARGE","vat_exemption":"",
+    "import_from_platform":true,
+    "platform_provider":platform_name,
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"","_routing_reason":"Import usług z platformy — reverse charge VAT",
+    "_legal_basis":"Art. 17 ust. 1 pkt 4 VAT, Art. 28b VAT",
+    "_warnings":[sprintf("%s — prowizje/platforma. Import usług spoza PL. JDG rozlicza VAT w PL (reverse charge). Obowiązek podatkowy = data wykonania usługi.", [platform_name])]
+} {
+    input.invoice.direction == "PURCHASE"
+    platform := object.get(input.invoice, "vendor_platform", "")
+    platform in {"UPWORK", "FIVERR", "FREELANCER", "TOPTAL", "GURU"}
+    platform_name = "Upwork" { platform == "UPWORK" }
+    platform_name = "Fiverr" { platform == "FIVERR" }
+    platform_name = "Freelancer" { platform == "FREELANCER" }
+    platform_name = "Toptal" { platform == "TOPTAL" }
+    platform_name = "Guru" { platform == "GURU" }
+    platform_name = "Platforma freelancerska"
+}
+
 # ══════ P41: eu_import_services — Import usług z UE ══════
 else := {
     "matched":true,"rule_id":"jdg.crossborder.eu_import_services",
@@ -121,26 +226,32 @@ else := {
     input.invoice.type == "SERVICE"
 }
 
-# ══════ P42_c: wdt_documentation_evidence — Wymóg dokumentów WDT ══════
+# ══════ P49b: triangular_simplified — Procedura uproszczona trójstronna ══════
+# Doc 26 §VI: 3 podmioty z 3 krajów UE, towar bezpośrednio od I do III
+# ⚠️ Musi być PRZED P49 (ogólne trójstronne) — bardziej szczegółowa reguła
 else := {
-    "matched":true,"rule_id":"jdg.crossborder.wdt_no_docs",
-    "package":"jdg.crossborder","priority":42,
-    "vat_rate":"0.23","rounding_level":"position","gtu_code":"",
-    "procedure":"WDT_INVALID","vat_exemption":"",
+    "matched":true,"rule_id":"jdg.crossborder.triangular_simplified",
+    "package":"jdg.crossborder","priority":54,
+    "vat_rate":"0.00","rounding_level":"total","gtu_code":"",
+    "procedure":"TRIANGULAR_SIMPLIFIED","vat_exemption":"",
+    "vat_ue_summary_required":true,
+    "triangular_simplified_valid":true,
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
     "business_status":"",
-    "_routing":"BLOCK_AND_ALERT",
-    "_routing_reason":"Brak dokumentów potwierdzających wywóz WDT",
-    "_legal_basis":"Art. 42 ust. 1 pkt 1-2 VAT",
-    "_warnings":["WDT BEZ dokumentów potwierdzających wywóz — stawka 0% NIEDOZWOLONA! Stawka krajowa 23%."]
+    "_routing":"","_routing_reason":"Transakcja trójstronna — procedura uproszczona",
+    "_legal_basis":"Art. 135-138 VAT",
+    "_warnings":["Transakcja trójstronna uproszczona — JDG jako drugi podmiot nie rejestruje VAT w kraju przeznaczenia. Faktura musi zawierać adnotację o procedurze uproszczonej."]
 } {
-    input.invoice.procedure == "WDT"
-    input.invoice.has_transport_docs == false
+    input.invoice.procedure == "TRIANGULAR"
+    input.invoice.triangular_simplified == true
+    input.jdg_entrepreneur.triangular_role == "INTERMEDIARY"
+    input.invoice.vat_ue_annotation_present == true
 }
 
 # ══════ P49: triangular_transaction — Transakcja trójstronna ══════
+# Catch-all dla transakcji trójstronnych
 else := {
     "matched":true,"rule_id":"jdg.crossborder.triangular_transaction",
     "package":"jdg.crossborder","priority":49,
@@ -315,3 +426,5 @@ else := {
     pe_country != "PL"
     pe_country != ""
 }
+
+

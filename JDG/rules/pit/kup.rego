@@ -203,6 +203,41 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# P572: kup_direct_vs_indirect_timing — KUP bezpośrednie vs pośrednie
+# Doc 26 §III: DIRECT = rok przychodu, INDIRECT = data poniesienia
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.kup.direct_vs_indirect",
+    "package": "jdg.pit.kup", "priority": 572,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "full", "kus_percent": 100,
+    "kup_timing": kup_timing,
+    "kus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 22 ust. 5-5c PIT",
+    "_warnings": [sprintf("KUP %s — potrącenie w %s", [kup_timing, timing_note])]
+} {
+    input.invoice.direction == "PURCHASE"
+    expense_type := object.get(input.invoice, "expense_type", "")
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+
+    # Wyklucz składki ZUS — obsługiwane przez P561 i P568
+    expense_type not in {"ZUS_SOCIAL_ENTREPRENEUR", "ZUS_HEALTH_ENTREPRENEUR"}
+
+    # DIRECT: Koszty bezpośrednio związane z przychodem (COGS, materiały, towary)
+    is_direct = true { expense_type in {"COGS", "MATERIALS_DIRECT", "GOODS_FOR_RESALE"} }
+    is_direct = false { expense_type not in {"COGS", "MATERIALS_DIRECT", "GOODS_FOR_RESALE"} }
+
+    kup_timing = "REVENUE_YEAR" { is_direct == true }
+    kup_timing = "INVOICE_YEAR" { is_direct == false }
+    timing_note = "roku osiągnięcia odpowiadającego przychodu" { is_direct == true }
+    timing_note = "dacie poniesienia (data faktury)" { is_direct == false }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # P561: kup_zus_social_deductible — Składki ZUS społeczne → KUP
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {

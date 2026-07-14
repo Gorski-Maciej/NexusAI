@@ -7,7 +7,8 @@
 # description: |
 #   Rozbudowany silnik KKS — 200+ reguł w 4 grupach:
 #   - P200-P229: Czynny żal i przedawnienie karalności (30 reguł, Art. 16-19, 44, 51 KKS)
-#   - P240-P339: Przestępstwa skarbowe (100 reguł, Art. 54-62, 76, 83 KKS)
+#   - P240-P399: Przestępstwa skarbowe (160 reguł, Art. 54-76, 83 KKS)
+#   - P365-P399: Zabezpieczenia majątkowe i pomost przestępstwo→wykroczenie (35 reguł, Art. 22-31, 77-83 KKS)
 #   - P400-P459: Wykroczenia skarbowe (60 reguł, Art. 60-61, 77-83 KKS)
 #   - P460-P499: Sankcje, zabezpieczenia, postępowanie (40 reguł, Art. 22-53 KKS)
 # architecture: First-Match-Wins else-chain, priorytety P200-P499
@@ -32,6 +33,233 @@ default decide := {
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  GRUPA 0: P130-P141_b — SPECYFICZNE PRZESTĘPSTWA SKARBOWE (Doc 42)       ║
+# ║  Art. 16, 44, 56, 57, 62, 64, 68, 69, 77, 79 KKS — 12 reguł            ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# P130: kks_unreliable_pkpir_art56 — Nierzetelne PKPiR (kolumny 6-9)
+decide := {
+    "matched":true,"rule_id":"jdg.kks.unreliable_pkpir_art56",
+    "package":"jdg.kks","priority":130,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "kks_offense_type":"UNRELIABLE_BOOKS","kks_penalty_severity":"HIGH",
+    "kks_max_daily_rates":240,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Nierzetelne PKPiR — Art. 56 KKS",
+    "_legal_basis":"Art. 56 § 1-4 KKS",
+    "_warnings":["NIERZETELNE PKPiR — celowe zaniżenie przychodów (kol. 9) lub zawyżenie KUP (kol. 6-7). Kara: do 240 stawek dziennych + pozbawienie wolności!"]
+} {
+    input.invoice.books_entries_falsified == true
+}
+
+# P131: kks_unreliable_vat_evidence_art57 — Nierzetelna ewidencja VAT
+else := {
+    "matched":true,"rule_id":"jdg.kks.unreliable_vat_evidence_art57",
+    "package":"jdg.kks","priority":131,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "kks_offense_type":"UNRELIABLE_VAT","kks_penalty_severity":"HIGH",
+    "kks_omitted_sales_count":0,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Nierzetelna ewidencja VAT — Art. 57 KKS",
+    "_legal_basis":"Art. 57 § 1 KKS",
+    "_warnings":["NIERZETELNA EWIDENCJA VAT — pominięcie faktur sprzedaży lub fikcyjne faktury zakupowe. Niezgodność JPK_V7 z rzeczywistością!"]
+} {
+    input.invoice.vat_records_unreliable == true
+}
+
+# P132: kks_empty_invoice_art62 — Pusta faktura (wystawienie)
+else := {
+    "matched":true,"rule_id":"jdg.kks.empty_invoice_art62",
+    "package":"jdg.kks","priority":132,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"none","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "kks_offense_type":"EMPTY_INVOICE","kks_penalty_severity":"CRITICAL",
+    "kks_max_imprisonment_years":25,"kks_is_empty_invoice":true,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Pusta faktura — Art. 62 § 2 KKS (kara do 25 lat!)",
+    "_legal_basis":"Art. 62 § 2 KKS",
+    "_warnings":["PUSTA FAKTURA — dokumentująca czynność która nie miała miejsca! Kara: 6 mies. do 8 lat (do 25 lat dla znacznej wartości). Natychmiast zgłoś czynny żal!"]
+} {
+    input.invoice.is_empty_invoice == true
+    input.invoice.amount_gross > 0
+}
+
+# P133: kks_wrong_vat_rate_art64 — Niewłaściwa stawka VAT
+else := {
+    "matched":true,"rule_id":"jdg.kks.wrong_vat_rate_art64",
+    "package":"jdg.kks","priority":133,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "kks_offense_type":"WRONG_VAT_RATE","kks_penalty_severity":"MEDIUM",
+    "kks_wrong_rate_detected":true,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Niewłaściwa stawka VAT — Art. 64 KKS",
+    "_legal_basis":"Art. 64 KKS",
+    "_warnings":["NIEWŁAŚCIWA STAWKA VAT — celowe stosowanie obniżonej stawki. Konieczna korekta JPK_V7 i dopłata różnicy. Próg odpowiedzialności: 5000 PLN uszczuplenia."]
+} {
+    object.get(input.invoice,"vat_rate_too_low",false) == true
+}
+
+# P134: kks_tax_return_non_filing_art77 — Niezłożenie deklaracji
+else := {
+    "matched":true,"rule_id":"jdg.kks.tax_return_non_filing_art77",
+    "package":"jdg.kks","priority":134,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "kks_offense_type":"DECLARATION_NOT_FILED","kks_penalty_severity":"HIGH",
+    "kks_declaration_overdue":true,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Niezłożenie deklaracji — Art. 77 KKS",
+    "_legal_basis":"Art. 77 § 1-3 KKS",
+    "_warnings":["NIEZŁOŻENIE DEKLARACJI — VAT-7/JPK_V7M, PIT-36/PIT-36L/PIT-28. Grzywna do 180 stawek dziennych!"]
+} {
+    input.invoice.declaration_missing == true
+}
+
+# P135: kks_non_payment_of_tax_art79 — Niezapłacenie podatku
+else := {
+    "matched":true,"rule_id":"jdg.kks.non_payment_of_tax_art79",
+    "package":"jdg.kks","priority":135,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "kks_offense_type":"TAX_UNPAID","kks_penalty_severity":"HIGH",
+    "kks_unpaid_tax":true,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Niezapłacenie podatku — Art. 79 KKS",
+    "_legal_basis":"Art. 79 KKS",
+    "_warnings":["NIEZAPŁACENIE PODATKU — zaległość podatkowa >500 PLN. Odsetki karne + odpowiedzialność karna-skarbowa!"]
+} {
+    arrears := object.get(input.invoice,"tax_arrears_pln",0)
+    arrears > 500
+}
+
+# P136: kks_destruction_of_docs_art68 — Niszczenie/ukrywanie dokumentów
+else := {
+    "matched":true,"rule_id":"jdg.kks.destruction_of_docs_art68",
+    "package":"jdg.kks","priority":136,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"none","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "kks_offense_type":"DESTROYED_DOCUMENTS","kks_penalty_severity":"CRITICAL",
+    "kks_documents_destroyed":true,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Zniszczenie dokumentów — Art. 68 KKS + Art. 86 Ordynacji",
+    "_legal_basis":"Art. 68 KKS + Art. 86 Ordynacji podatkowej",
+    "_warnings":["ZNISZCZENIE DOKUMENTÓW — luki w numeracji faktur, brak dokumentów za okres przechowywania (5 lat). Przestępstwo skarbowe!"]
+} {
+    doc_count := object.get(input.jdg_entrepreneur,"documents_destroyed_count",0)
+    doc_count > 0
+    not input.jdg_entrepreneur.documents_hidden_from_authorities
+}
+
+# P137: kks_voluntary_disclosure_art16 — Czynny żal (warunki skuteczności)
+else := {
+    "matched":true,"rule_id":"jdg.kks.voluntary_disclosure_art16",
+    "package":"jdg.kks","priority":137,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "kks_voluntary_disclosure":true,"kks_immunity_possible":true,
+    "kks_disclosure_deadline":"BEFORE_AUDIT",
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Czynny żal — zawiadomienie KAS przed kontrolą + wpłata w 7 dni",
+    "_legal_basis":"Art. 16 § 1-3 KKS",
+    "_warnings":["CZYNNY ŻAL — złóż zawiadomienie przed wykryciem przez organ. Wskaż wszystkie okoliczności. Wpłać należność w 7 dni. Nieskuteczny po wszczęciu kontroli!"]
+} {
+    input.jdg_entrepreneur.kks_voluntary_disclosure_filed == true
+    not input.invoice.kks_flag
+}
+
+# P138: kks_statute_of_limitations_art44 — Przedawnienie karalności
+else := {
+    "matched":true,"rule_id":"jdg.kks.statute_of_limitations_art44",
+    "package":"jdg.kks","priority":138,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "kks_statute_barred":true,"kks_crime_statute_years":5,"kks_misd_statute_years":3,
+    "kks_max_statute_years":10,
+    "_routing":"","_routing_reason":"Przedawnienie karalności — Art. 44 KKS",
+    "_legal_basis":"Art. 44 § 1-5 KKS",
+    "_warnings":["PRZEDAWNIENIE KARALNOŚCI — przestępstwo skarbowe: 5 lat + max 10 lat. Wykroczenie skarbowe: 3 lata + max 5 lat. Bieg przerywa każda czynność organu!"]
+} {
+    object.get(input.jdg_entrepreneur,"kks_time_barred",false) == true
+}
+
+# P139: kks_fiscal_penalty_calculation — Kalkulacja kary grzywny
+else := {
+    "matched":true,"rule_id":"jdg.kks.fiscal_penalty_calculation",
+    "package":"jdg.kks","priority":139,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "kks_offense_type":"PENALTY_CALC","kks_penalty_severity":"VARIES",
+    "kks_daily_rate_value_pln":"1/30_min_wage",
+    "_routing":"","_routing_reason":"Kalkulacja kary grzywny — Art. 23, 48 KKS",
+    "_legal_basis":"Art. 23 § 1-3 + Art. 48 KKS",
+    "_warnings":["KALKULACJA KARY: stawka dzienna = 1/30 minimalnego wynagrodzenia do 400-krotności. Grzywna = liczba stawek × stawka dzienna. Max: 720 stawek × 400-krotność = do 33 552 000 PLN."]
+} {
+    object.get(input.jdg_entrepreneur,"kks_penalty_calculation_needed",false) == true
+}
+
+# P140_b: kks_obstruction_of_tax_audit_art69 — Utrudnianie kontroli
+else := {
+    "matched":true,"rule_id":"jdg.kks.obstruction_of_tax_audit_art69",
+    "package":"jdg.kks","priority":140,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "kks_offense_type":"OBSTRUCTION","kks_penalty_severity":"HIGH",
+    "kks_obstruction_detected":true,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Utrudnianie kontroli — Art. 69 KKS",
+    "_legal_basis":"Art. 69 § 1-3 KKS",
+    "_warnings":["UTRUDNIANIE KONTROLI PODATKOWEJ — odmowa udostępnienia dokumentów, nieusprawiedliwiona nieobecność, uniemożliwienie oględzin. Kara: grzywna lub pozbawienie wolności!"]
+} {
+    input.jdg_entrepreneur.kks_obstruction_of_proceedings == true
+}
+
+# P141_b: kks_aggregate_risk_score — Agregacja ryzyka KKS
+else := {
+    "matched":true,"rule_id":"jdg.kks.aggregate_risk_score",
+    "package":"jdg.kks","priority":141,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "kks_aggregate_risk":true,
+    "kks_risk_level":"LOW",
+    "_routing":"","_routing_reason":"Agregacja wszystkich flag KKS — skumulowany wskaźnik ryzyka",
+    "_legal_basis":"Całość KKS — reguła pomocnicza (risk assessment)",
+    "_warnings":["AGREGACJA RYZYKA KKS — sumaryczny wskaźnik ryzyka karnego-skarbowego JDG. Wagi: Art.62 puste faktury=1.0, Art.54 uchylanie=0.9, Art.56 nierzetelne księgi=0.7, Art.57 nierzetelny VAT=0.7, Art.77 niezłożenie=0.4"]
+} {
+    offense_count := object.get(input.jdg_entrepreneur,"kks_offenses_count",0)
+    offense_count > 0
+}
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  GRUPA A: P200-P229 — CZYNNY ŻAL I PRZEDAWNIENIE KARALNOŚCI              ║
 # ║  Art. 16-19, 44, 51 KKS — 30 reguł                                       ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
@@ -39,7 +267,7 @@ default decide := {
 # ──── P200-P205: Czynny żal (Art. 16 KKS) — 6 reguł ───────────────────────────
 
 # P200: voluntary_disclosure_eligible — Warunki czynnego żalu
-decide := {
+else := {
     "matched": true, "rule_id": "jdg.kks.voluntary_disclosure_eligible",
     "package": "jdg.kks", "priority": 200,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
@@ -518,8 +746,8 @@ else := { "matched": true, "rule_id": "jdg.kks.limitation_absolute_bar_p225", "p
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  GRUPA B: P240-P339 — PRZESTĘPSTWA SKARBOWE                              ║
-# ║  Art. 54-62, 76, 83 KKS — 100 reguł                                      ║
+# ║  GRUPA B: P240-P399 — PRZESTĘPSTWA SKARBOWE                              ║
+# ║  Art. 54-76, 83 KKS — 160 reguł                                          ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # ──── P240-P254: Uchylanie się od opodatkowania (Art. 54 KKS) — 15 reguł ──────
@@ -1029,7 +1257,747 @@ else := { "matched": true, "rule_id": "jdg.kks.empty_invoice_conspirator_p314", 
     object.get(input.jdg_entrepreneur, "empty_invoice_conspiracy", false) == true
 }
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# P315-P319: ROZSZERZENIA PUSTYCH FAKTUR (Art. 62 KKS) — 5 reguł
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# P315: empty_invoice_value_bands — Progi wartości pustych faktur
+else := {
+    "matched": true, "rule_id": "jdg.kks.empty_invoice_value_bands_p315",
+    "package": "jdg.kks", "priority": 315,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "none", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_offense_type": "EMPTY_INVOICE", "kks_empty_invoice_value_band": value_band,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Skategoryzowana wartość pustej faktury",
+    "_legal_basis": "Art. 62 § 2 KKS",
+    "_warnings": [sprintf("PUSTA FAKTURA — %s (%s PLN). %s", [value_band, amount, penalty_info])]
+} {
+    amount := object.get(input.invoice, "amount_gross", 0)
+    amount > 0
+    value_band = "MALA_WARTOSC" { amount <= 200000 }
+    value_band = "DUZA_WARTOSC" { amount > 200000; amount <= 1000000 }
+    value_band = "WIELKA_WARTOSC" { amount > 1000000 }
+    penalty_info = "grzywna do 720 stawek" { value_band == "MALA_WARTOSC" }
+    penalty_info = "kara do 5 lat pozbawienia wolnosci" { value_band == "DUZA_WARTOSC" }
+    penalty_info = "kara do 10 lat pozbawienia wolnosci" { value_band == "WIELKA_WARTOSC" }
+}
+
+# P316: empty_invoice_cross_border_detailed — Transgraniczne puste faktury
+else := { "matched": true, "rule_id": "jdg.kks.empty_invoice_cross_border_p316", "package": "jdg.kks", "priority": 316, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "EMPTY_INVOICE", "kks_cross_border_fraud": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Transgraniczny fraud fakturovy", "_legal_basis": "Art. 62 § 2 KKS w zw. z Dyrektywą VAT", "_warnings": ["Transgraniczny schemat pustych faktur — wielojurysdykcyjne ryzyko karne!"] } {
+    object.get(input.invoice, "cross_border_empty_invoice_scheme", false) == true
+    object.get(input.vendor, "country", "") != "PL"
+}
+
+# P317: empty_invoice_electronic_signature_forgery — Fałszowanie podpisu e-faktury
+else := { "matched": true, "rule_id": "jdg.kks.empty_invoice_esignature_forgery_p317", "package": "jdg.kks", "priority": 317, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "EMPTY_INVOICE", "kks_esignature_forgery": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Fałszerstwo podpisu elektronicznego e-faktury", "_legal_basis": "Art. 62 § 1-2 KKS + Art. 270 KK + eIDAS", "_warnings": ["Fałszerstwo podpisu elektronicznego na e-fakturze — przestępstwo skarbowe + karne!"] } {
+    object.get(input.invoice, "digital_signature_forged", false) == true
+    object.get(input.invoice, "is_e_invoice", false) == true
+}
+
+# P318: empty_invoice_ksef_validation — Walidacja autentyczności przez KSeF
+else := { "matched": true, "rule_id": "jdg.kks.empty_invoice_ksef_validation_p318", "package": "jdg.kks", "priority": 318, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "EMPTY_INVOICE", "kks_ksef_validation_failed": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Brak walidacji KSeF — faktura niezweryfikowana", "_legal_basis": "Art. 106na VAT + Art. 62 KKS", "_warnings": ["Faktura bez walidacji KSeF — nie można potwierdzić jej autentyczności. Ryzyko pustej faktury!"] } {
+    object.get(input.invoice, "ksef_validated", true) == false
+    object.get(input.invoice, "ksef_mandatory", false) == true
+}
+
+# P319: empty_invoice_upo_verification — Weryfikacja UPO
+else := { "matched": true, "rule_id": "jdg.kks.empty_invoice_upo_verification_p319", "package": "jdg.kks", "priority": 319, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "EMPTY_INVOICE", "kks_upo_missing": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Brak UPO (Urzędowego Poświadczenia Odbioru) KSeF", "_legal_basis": "Art. 106na-106nq VAT + Art. 62 KKS", "_warnings": ["Brak UPO dla faktury KSeF — faktura może nie istnieć w systemie MF!"] } {
+    object.get(input.invoice, "ksef_upo_received", true) == false
+    object.get(input.invoice, "ksef_mandatory", false) == true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P320-P329: NIEWYSTAWIENIE FAKTURY (Art. 63 KKS) — 10 reguł
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# P320: failure_to_invoice — Niewystawienie faktury mimo obowiązku
+else := { "matched": true, "rule_id": "jdg.kks.failure_to_invoice_p320", "package": "jdg.kks", "priority": 320, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "NO_INVOICE", "kks_penalty_severity": "HIGH", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Niewystawienie faktury — art. 63 KKS", "_legal_basis": "Art. 63 § 1 KKS", "_warnings": ["Niewystawienie faktury mimo obowiązku — wykroczenie skarbowe. Grzywna do 180 stawek dziennych!"] } {
+    object.get(input.invoice, "invoice_missing_but_required", false) == true
+}
+
+# P321: failure_to_invoice_b2b — Niewystawienie faktury B2B na żądanie
+else := { "matched": true, "rule_id": "jdg.kks.failure_to_invoice_b2b_p321", "package": "jdg.kks", "priority": 321, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "NO_INVOICE", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Niewystawienie faktury B2B mimo żądania nabywcy", "_legal_basis": "Art. 63 § 2 KKS w zw. z Art. 106b VAT", "_warnings": ["Niewystawienie faktury B2B w ciągu 15 dni od żądania nabywcy — sankcja KKS!"] } {
+    object.get(input.invoice, "b2b_invoice_refused_to_issue", false) == true
+}
+
+# P322: failure_to_invoice_deadline — Przekroczenie terminu wystawienia faktury
+else := { "matched": true, "rule_id": "jdg.kks.failure_to_invoice_deadline_p322", "package": "jdg.kks", "priority": 322, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "NO_INVOICE", "_routing": "TRIAGE_QUEUE", "_routing_reason": "Przekroczenie terminu na wystawienie faktury >15 dni", "_legal_basis": "Art. 63 KKS w zw. z Art. 106i VAT", "_warnings": ["Przekroczenie terminu wystawienia faktury > 15 dni od wykonania usługi"] } {
+    days_since_delivery := object.get(input.invoice, "days_since_delivery_without_invoice", 0)
+    days_since_delivery > 15
+}
+
+# P323: failure_to_invoice_value_threshold — Niewystawienie faktury powyżej progu
+else := { "matched": true, "rule_id": "jdg.kks.failure_to_invoice_over_threshold_p323", "package": "jdg.kks", "priority": 323, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "NO_INVOICE", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Niewystawienie faktury dla transakcji >15k PLN", "_legal_basis": "Art. 63 KKS", "_warnings": ["Transakcja >15000 PLN bez faktury — wysokie ryzyko sankcji KKS + odsetki!"] } {
+    amount := object.get(input.invoice, "amount_gross", 0)
+    amount > 15000
+    object.get(input.invoice, "invoice_missing_but_required", false) == true
+}
+
+# P324: failure_to_invoice_serial — Seryjne niewystawianie faktur
+else := { "matched": true, "rule_id": "jdg.kks.failure_to_invoice_serial_p324", "package": "jdg.kks", "priority": 324, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "NO_INVOICE", "kks_serial_offender": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Systematyczne niewystawianie faktur — przestępstwo", "_legal_basis": "Art. 63 KKS (uporczywość)", "_warnings": ["Seryjne niewystawianie faktur — zamiast wykroczenia → przestępstwo skarbowe!"] } {
+    missing_count := object.get(input.jdg_entrepreneur, "invoices_missing_count_12m", 0)
+    missing_count >= 5
+}
+
+# P325: failure_to_invoice_cash — Faktura przy transakcjach gotówkowych
+else := { "matched": true, "rule_id": "jdg.kks.failure_to_invoice_cash_p325", "package": "jdg.kks", "priority": 325, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "NO_INVOICE", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Niewystawienie faktury gotówkowej", "_legal_basis": "Art. 63 KKS w zw. z Art. 19a VAT", "_warnings": ["Transakcja gotówkowa bez faktury — podwójna sankcja: KKS + utrata KUP!"] } {
+    object.get(input.invoice, "is_cash_payment", false) == true
+    object.get(input.invoice, "invoice_missing_but_required", false) == true
+}
+
+# P326: invoice_incorrect_data — Faktura z danymi niezgodnymi z rzeczywistością
+else := { "matched": true, "rule_id": "jdg.kks.invoice_incorrect_data_p326", "package": "jdg.kks", "priority": 326, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "NO_INVOICE", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Faktura z nieprawdziwymi danymi", "_legal_basis": "Art. 63 § 2 KKS", "_warnings": ["Faktura zawiera dane niezgodne ze stanem rzeczywistym — sankcja KKS!"] } {
+    object.get(input.invoice, "invoice_contains_false_data", false) == true
+}
+
+# P327: invoice_missing_mandatory_fields — Brak obowiązkowych pól faktury
+else := { "matched": true, "rule_id": "jdg.kks.invoice_missing_fields_p327", "package": "jdg.kks", "priority": 327, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "NO_INVOICE", "_routing": "TRIAGE_QUEUE", "_routing_reason": "Faktura bez obowiązkowych pól — art. 63 KKS", "_legal_basis": "Art. 63 KKS w zw. z Art. 106e VAT", "_warnings": ["Faktura bez obowiązkowych elementów (NIP, data, kwota) — potencjalna sankcja KKS"] } {
+    object.get(input.invoice, "mandatory_fields_missing", false) == true
+}
+
+# P328: invoice_false_nip — Posłużenie się cudzym NIP na fakturze
+else := { "matched": true, "rule_id": "jdg.kks.invoice_false_nip_p328", "package": "jdg.kks", "priority": 328, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "NO_INVOICE", "kks_nip_misuse": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Posłużenie się cudzym NIP na fakturze", "_legal_basis": "Art. 63 KKS + Art. 81 KKS", "_warnings": ["Posłużenie się cudzym NIP na fakturze — przestępstwo skarbowe + kradzież tożsamości podatkowej!"] } {
+    object.get(input.invoice, "uses_third_party_nip", false) == true
+}
+
+# P329: invoice_failure_aggregate — Agregacja naruszeń dot. faktur
+else := { "matched": true, "rule_id": "jdg.kks.invoice_failure_aggregate_p329", "package": "jdg.kks", "priority": 329, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "NO_INVOICE", "kks_invoice_violations_total": total_v, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Liczne naruszenia dot. faktur", "_legal_basis": "Art. 62-63 KKS — agregacja", "_warnings": [sprintf("Agregacja: %d naruszeń związanych z fakturami w 12 mies. — eskalacja do US!", [total_v])] } {
+    total_v := object.get(input.jdg_entrepreneur, "invoice_violations_12m", 0)
+    total_v >= 3
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P330-P339: NIEPRAWIDŁOWA STAWKA I ZWROT VAT (Art. 64-67 KKS) — 10 reguł
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# P330: wrong_vat_rate — Zastosowanie zaniżonej stawki VAT
+else := { "matched": true, "rule_id": "jdg.kks.wrong_vat_rate_p330", "package": "jdg.kks", "priority": 330, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "WRONG_VAT_RATE", "kks_penalty_severity": "MEDIUM", "_routing": "TRIAGE_QUEUE", "_routing_reason": "Zaniżona stawka VAT — art. 64 KKS", "_legal_basis": "Art. 64 KKS", "_warnings": ["Zastosowano zaniżoną stawkę VAT — konieczna korekta JPK_V7 i dopłata różnicy!"] } {
+    object.get(input.invoice, "vat_rate_too_low", false) == true
+}
+
+# P331: wrong_vat_rate_significant — Znaczne zaniżenie stawki VAT
+else := { "matched": true, "rule_id": "jdg.kks.wrong_vat_rate_significant_p331", "package": "jdg.kks", "priority": 331, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "WRONG_VAT_RATE", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Znaczne zaniżenie stawki VAT — art. 64 KKS", "_legal_basis": "Art. 64 KKS (znaczna wartość)", "_warnings": ["Znaczne zaniżenie stawki VAT (różnica >200k PLN) — przestępstwo skarbowe!"] } {
+    object.get(input.invoice, "vat_rate_mismatch_amount", 0) > 200000
+}
+
+# P332: vat_refund_overstatement — Zawyżenie zwrotu VAT
+else := { "matched": true, "rule_id": "jdg.kks.vat_refund_overstatement_p332", "package": "jdg.kks", "priority": 332, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "UNJUSTIFIED_REFUND", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Zawyżenie zwrotu VAT — art. 65 KKS", "_legal_basis": "Art. 65 KKS", "_warnings": ["Zawyżenie zwrotu VAT — nienależna kwota zwrotu. Natychmiast zwróć + czynny żal!"] } {
+    object.get(input.invoice, "vat_refund_overstated", false) == true
+}
+
+# P333: vat_refund_fictitious_export — Fikcyjny eksport dla zwrotu
+else := { "matched": true, "rule_id": "jdg.kks.vat_refund_fictitious_export_p333", "package": "jdg.kks", "priority": 333, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "UNJUSTIFIED_REFUND", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Fikcyjny eksport dla zwrotu VAT — art. 65 KKS", "_legal_basis": "Art. 65 KKS w zw. z Art. 76 KKS", "_warnings": ["Fikcyjny eksport towarów — towary nigdy nie opuściły kraju. Przestępstwo + zwrot nienależnej kwoty!"] } {
+    object.get(input.invoice, "export_documents_falsified", false) == true
+}
+
+# P334: vat_refund_accelerated_fraud — Nadużycie przyspieszonego zwrotu 25 dni
+else := { "matched": true, "rule_id": "jdg.kks.vat_refund_accelerated_fraud_p334", "package": "jdg.kks", "priority": 334, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "UNJUSTIFIED_REFUND", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Nadużycie przyspieszonego zwrotu VAT", "_legal_basis": "Art. 65 KKS w zw. z Art. 87 ust. 6 VAT", "_warnings": ["Nadużycie procedury przyspieszonego zwrotu VAT (25 dni) — fikcyjne faktury dla szybkiego zwrotu!"] } {
+    object.get(input.invoice, "accelerated_refund_abuse", false) == true
+}
+
+# P335: untrue_tax_return — Nieprawda w deklaracji podatkowej
+else := { "matched": true, "rule_id": "jdg.kks.untrue_tax_return_p335", "package": "jdg.kks", "priority": 335, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "TAX_EVASION", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Nieprawda w deklaracji — art. 66 KKS", "_legal_basis": "Art. 66 KKS", "_warnings": ["Podanie nieprawdy w deklaracji podatkowej — przestępstwo skarbowe!"] } {
+    object.get(input.invoice, "tax_return_contains_lies", false) == true
+}
+
+# P336: withholding_tax_failure — Niepobranie podatku u źródła (WHT)
+else := { "matched": true, "rule_id": "jdg.kks.withholding_tax_failure_p336", "package": "jdg.kks", "priority": 336, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "TAX_COLLECTOR_VIOLATION", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Niepobranie podatku u źródła — art. 67 KKS", "_legal_basis": "Art. 67 KKS", "_warnings": ["Niepobranie podatku u źródła od płatności zagranicznej — płatnik odpowiada majątkiem!"] } {
+    object.get(input.jdg_entrepreneur, "wht_not_collected", false) == true
+}
+
+# P337: withholding_tax_non_remittance — Pobranie WHT ale niewpłacenie do US
+else := { "matched": true, "rule_id": "jdg.kks.withholding_tax_non_remittance_p337", "package": "jdg.kks", "priority": 337, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "TAX_COLLECTOR_VIOLATION", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Pobrany WHT ale nieodprowadzony", "_legal_basis": "Art. 67 KKS w zw. z Art. 59 KKS", "_warnings": ["Pobrano podatek u źródła ale nie wpłacono do US — przestępstwo płatnika!"] } {
+    object.get(input.jdg_entrepreneur, "wht_collected_not_remitted", false) == true
+}
+
+# P338: withholding_tax_certificate_fraud — Fałszowanie certyfikatów rezydencji
+else := { "matched": true, "rule_id": "jdg.kks.wht_certificate_fraud_p338", "package": "jdg.kks", "priority": 338, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "FALSE_DOCUMENTS", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Fałszowanie certyfikatu rezydencji podatkowej", "_legal_basis": "Art. 67 KKS + Art. 60 KKS", "_warnings": ["Fałszowanie certyfikatu rezydencji podatkowej — podwójne przestępstwo: KKS + fałszerstwo dokumentu!"] } {
+    object.get(input.invoice, "tax_residence_certificate_forged", false) == true
+}
+
+# P339: vat_calculation_errors_aggregate — Agregacja błędów kalkulacji VAT
+else := { "matched": true, "rule_id": "jdg.kks.vat_calculation_errors_aggregate_p339", "package": "jdg.kks", "priority": 339, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "WRONG_VAT_RATE", "kks_vat_errors_total": total_err, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Liczne błędy w kalkulacji VAT — agregacja", "_legal_basis": "Art. 64-67 KKS — agregacja", "_warnings": [sprintf("%d błędów kalkulacji VAT w 12 mies. — audyt zalecany dla uniknięcia sankcji KKS", [total_err])] } {
+    total_err := object.get(input.jdg_entrepreneur, "vat_calc_errors_12m", 0)
+    total_err >= 3
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P340-P354: ZNISZCZENIE DOKUMENTÓW / UTRUDNIANIE KONTROLI (Art. 68-76 KKS)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# P340: destruction_documents_art68 — Zniszczenie dokumentów podatkowych
+else := { "matched": true, "rule_id": "jdg.kks.destruction_documents_p340", "package": "jdg.kks", "priority": 340, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "DESTROYED_DOCUMENTS", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Zniszczenie dokumentów podatkowych — art. 68 KKS", "_legal_basis": "Art. 68 KKS", "_warnings": ["Zniszczenie/uszkodzenie/ukrycie dokumentów podatkowych — przestępstwo skarbowe!"] } {
+    object.get(input.jdg_entrepreneur, "tax_documents_intentionally_destroyed", false) == true
+}
+
+# P341: destruction_before_retention — Zniszczenie przed upływem 5 lat
+else := { "matched": true, "rule_id": "jdg.kks.destruction_before_retention_p341", "package": "jdg.kks", "priority": 341, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "DESTROYED_DOCUMENTS", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Zniszczenie przed upływem 5-letniego okresu retencji", "_legal_basis": "Art. 68 KKS w zw. z Art. 86 OrdPU", "_warnings": ["Zniszczenie dokumentów przed upływem 5 lat — naruszenie obowiązku przechowywania!"] } {
+    object.get(input.jdg_entrepreneur, "documents_destroyed_before_retention", false) == true
+}
+
+# P342: destruction_during_audit — Zniszczenie dokumentów w trakcie kontroli
+else := { "matched": true, "rule_id": "jdg.kks.destruction_during_audit_p342", "package": "jdg.kks", "priority": 342, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "DESTROYED_DOCUMENTS", "kks_penalty_severity": "CRITICAL", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Zniszczenie dokumentów w trakcie kontroli KAS", "_legal_basis": "Art. 68 KKS + Art. 83 KKS", "_warnings": ["ZNISZCZENIE DOKUMENTÓW W TRAKCIE KONTROLI — kwalifikowana postać! KARA BEZWZGLĘDNA!"] } {
+    object.get(input.jdg_entrepreneur, "documents_destroyed_during_audit", false) == true
+}
+
+# P343: obstruction_audit_art69 — Utrudnianie kontroli podatkowej
+else := { "matched": true, "rule_id": "jdg.kks.obstruction_audit_p343", "package": "jdg.kks", "priority": 343, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "OBSTRUCTION", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Utrudnianie kontroli podatkowej — art. 69 KKS", "_legal_basis": "Art. 69 KKS", "_warnings": ["Utrudnianie lub udaremnianie kontroli podatkowej — przestępstwo skarbowe!"] } {
+    object.get(input.jdg_entrepreneur, "actively_obstructing_audit", false) == true
+}
+
+# P344: obstruction_denial_of_access — Odmowa dostępu do lokalu/dokumentów
+else := { "matched": true, "rule_id": "jdg.kks.obstruction_denial_of_access_p344", "package": "jdg.kks", "priority": 344, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "OBSTRUCTION", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Odmowa dostępu do lokalu/dokumentów — art. 69 KKS", "_legal_basis": "Art. 69 KKS", "_warnings": ["Odmowa dostępu do lokalu lub dokumentów podczas kontroli — można użyć przymusu bezpośredniego!"] } {
+    object.get(input.jdg_entrepreneur, "denied_access_to_auditors", false) == true
+}
+
+# P345: obstruction_false_information — Fałszywe informacje podczas kontroli
+else := { "matched": true, "rule_id": "jdg.kks.obstruction_false_information_p345", "package": "jdg.kks", "priority": 345, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "OBSTRUCTION", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Fałszywe informacje podczas kontroli", "_legal_basis": "Art. 69 KKS w zw. z Art. 83 KKS", "_warnings": ["Udzielanie fałszywych informacji podczas kontroli — dodatkowe sankcje + przedłużenie kontroli!"] } {
+    object.get(input.jdg_entrepreneur, "gave_false_info_during_audit", false) == true
+}
+
+# P346: non_filing_declaration_art70 — Uporczywe nieskładanie deklaracji
+else := { "matched": true, "rule_id": "jdg.kks.non_filing_declaration_p346", "package": "jdg.kks", "priority": 346, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "DECLARATION_NOT_FILED", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Uporczywe nieskładanie deklaracji — art. 70 KKS", "_legal_basis": "Art. 70 KKS", "_warnings": ["Uporczywe nieskładanie deklaracji podatkowych — z wykroczenia → przestępstwo!"] } {
+    missed_periods := object.get(input.jdg_entrepreneur, "declarations_missed_consecutive", 0)
+    missed_periods >= 3
+}
+
+# P347: non_filing_multiple_periods — Nieskładanie deklaracji za wiele okresów
+else := { "matched": true, "rule_id": "jdg.kks.non_filing_multiple_periods_p347", "package": "jdg.kks", "priority": 347, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "DECLARATION_NOT_FILED", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Brak deklaracji za wiele okresów naraz", "_legal_basis": "Art. 70 KKS", "_warnings": [sprintf("Brak deklaracji za %d okresów — poważne naruszenie obowiązków!", [total_missing])] } {
+    total_missing := object.get(input.jdg_entrepreneur, "declarations_missing_total", 0)
+    total_missing >= 6
+}
+
+# P348: non_filing_despite_formal_request — Nieskładanie mimo wezwania
+else := { "matched": true, "rule_id": "jdg.kks.non_filing_despite_request_p348", "package": "jdg.kks", "priority": 348, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "OBSTRUCTION", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Brak reakcji na wezwanie US do złożenia deklaracji", "_legal_basis": "Art. 70 KKS w zw. z Art. 83 KKS", "_warnings": ["Niezłożenie deklaracji mimo formalnego wezwania US — kwalifikowana postać naruszenia!"] } {
+    object.get(input.jdg_entrepreneur, "ignored_formal_request_to_file", false) == true
+}
+
+# P349: business_without_registration_art71 — Prowadzenie działalności bez rejestracji
+else := { "matched": true, "rule_id": "jdg.kks.business_without_registration_p349", "package": "jdg.kks", "priority": 349, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": true, "kks_offense_type": "UNREGISTERED", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Działalność bez wymaganej rejestracji — art. 71 KKS", "_legal_basis": "Art. 71 KKS", "_warnings": ["Prowadzenie działalności bez wymaganej rejestracji CEIDG/VAT — przestępstwo skarbowe!"] } {
+    object.get(input.jdg_entrepreneur, "operating_without_registration", false) == true
+}
+
+# P350: business_despite_ban_art72 — Działalność mimo zakazu sądowego
+else := { "matched": true, "rule_id": "jdg.kks.business_despite_ban_p350", "package": "jdg.kks", "priority": 350, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "BUSINESS_BAN_VIOLATION", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Działalność mimo zakazu sądowego — art. 72 KKS", "_legal_basis": "Art. 72 KKS", "_warnings": ["Prowadzenie działalności mimo sądowego zakazu — przestępstwo + obligatoryjne zamknięcie firmy!"] } {
+    object.get(input.jdg_entrepreneur, "operating_despite_court_ban", false) == true
+}
+
+# P351: illegal_gambling_tax_art73 — Nielegalny hazard a podatki
+else := { "matched": true, "rule_id": "jdg.kks.illegal_gambling_tax_p351", "package": "jdg.kks", "priority": 351, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "ILLEGAL_GAMBLING", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Nielegalny hazard — art. 73 KKS", "_legal_basis": "Art. 73 KKS", "_warnings": ["Dochody z nielegalnego hazardu — podwójne przestępstwo: KKS + ustawa hazardowa!"] } {
+    object.get(input.jdg_entrepreneur, "illegal_gambling_income", false) == true
+}
+
+# P352: excise_duty_evasion_art74 — Uchylanie się od akcyzy
+else := { "matched": true, "rule_id": "jdg.kks.excise_duty_evasion_p352", "package": "jdg.kks", "priority": 352, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "EXCISE_EVASION", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Uchylanie się od akcyzy — art. 74 KKS", "_legal_basis": "Art. 74 KKS", "_warnings": ["Uchylanie się od podatku akcyzowego — przestępstwo skarbowe + konfiskata towarów!"] } {
+    object.get(input.jdg_entrepreneur, "excise_duty_evaded", false) == true
+}
+
+# P353: customs_duty_evasion_art75 — Uchylanie się od cła
+else := { "matched": true, "rule_id": "jdg.kks.customs_duty_evasion_p353", "package": "jdg.kks", "priority": 353, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "CUSTOMS_EVASION", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Uchylanie się od cła — art. 75 KKS", "_legal_basis": "Art. 75 KKS", "_warnings": ["Uchylanie się od należności celnych — przestępstwo skarbowe + konfiskata towarów + kara!"] } {
+    object.get(input.jdg_entrepreneur, "customs_duty_evaded", false) == true
+}
+
+# P354: import_vat_evasion_art76 — Uchylanie się od VAT od importu
+else := { "matched": true, "rule_id": "jdg.kks.import_vat_evasion_p354", "package": "jdg.kks", "priority": 354, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "VAT_EVASION", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Uchylanie się od VAT importowego — art. 76 KKS", "_legal_basis": "Art. 76 KKS", "_warnings": ["Uchylanie się od VAT z tytułu importu towarów — przestępstwo skarbowe!"] } {
+    object.get(input.jdg_entrepreneur, "import_vat_evaded", false) == true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P355-P364: REGUŁY MIĘDZYPRZESTĘPCZE — WZORCE FRAUDU VAT (10 reguł)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# P355: vat_fraud_network_detection — Wykrywanie sieci fraudowych VAT
+else := { "matched": true, "rule_id": "jdg.kks.vat_fraud_network_detection_p355", "package": "jdg.kks", "priority": 355, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "VAT_CAROUSEL", "kks_fraud_network_detected": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Sieć fraudowa VAT wykryta", "_legal_basis": "Art. 62 KKS + Art. 76a KKS", "_warnings": ["Wykryto powiązania z siatką fraudową VAT — transakcja zablokowana. Zgłoszenie do KAS obligatoryjne!"] } {
+    object.get(input.vendor, "fraud_flag", false) == true
+    object.get(input.invoice, "network_links_detected", false) == true
+}
+
+# P356: vat_fraud_temporal_pattern — Analiza czasowa fraudu VAT
+else := { "matched": true, "rule_id": "jdg.kks.vat_fraud_temporal_pattern_p356", "package": "jdg.kks", "priority": 356, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "VAT_CAROUSEL", "_routing": "TRIAGE_QUEUE", "_routing_reason": "Sezonowy/cykliczny wzorzec fraudu VAT", "_legal_basis": "Art. 62 KKS — analiza wzorców", "_warnings": ["Wykryto cykliczny wzorzec transakcji sugerujący fraud VAT — wymagana analiza manualna"] } {
+    object.get(input.invoice, "temporal_fraud_pattern_detected", false) == true
+}
+
+# P357: vat_fraud_geographic_clustering — Geograficzna koncentracja fraudu
+else := { "matched": true, "rule_id": "jdg.kks.vat_fraud_geographic_clustering_p357", "package": "jdg.kks", "priority": 357, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "VAT_CAROUSEL", "_routing": "TRIAGE_QUEUE", "_routing_reason": "Geograficzna koncentracja fraudu VAT", "_legal_basis": "Art. 62 KKS — geografia fraudu", "_warnings": ["Transakcje z regionem wysokiego ryzyka fraudu VAT — dodatkowa weryfikacja wymagana"] } {
+    object.get(input.vendor, "high_risk_region", false) == true
+}
+
+# P358: vat_fraud_industry_specific — Fraud branżowy
+else := { "matched": true, "rule_id": "jdg.kks.vat_fraud_industry_specific_p358", "package": "jdg.kks", "priority": 358, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "VAT_CAROUSEL", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Fraud VAT w branży wysokiego ryzyka", "_legal_basis": "Art. 62 KKS — branże wrażliwe", "_warnings": ["Transakcja w branży wysokiego ryzyka fraudu VAT (paliwa, elektronika, stal) — BLOCKOWANA do weryfikacji!"] } {
+    object.get(input.invoice, "high_risk_industry", false) == true
+}
+
+# P359: vat_fraud_new_business_red_flag — Nowa firma z wysokim obrotem
+else := { "matched": true, "rule_id": "jdg.kks.vat_fraud_new_business_red_flag_p359", "package": "jdg.kks", "priority": 359, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "VAT_CAROUSEL", "_routing": "TRIAGE_QUEUE", "_routing_reason": "Nowy podmiot z podejrzanie wysokim obrotem", "_legal_basis": "Art. 62 KKS — red flag", "_warnings": ["Nowo zarejestrowany kontrahent (<6 mies.) z wysokim obrotem — potencjalny 'missing trader'!"] } {
+    object.get(input.vendor, "is_new", false) == true
+    object.get(input.invoice, "amount_gross", 0) > 50000
+    object.get(input.vendor, "months_since_registration", 99) < 6
+}
+
+# P360: vat_fraud_rapid_deregistration — Szybkie wyrejestrowanie z VAT
+else := { "matched": true, "rule_id": "jdg.kks.vat_fraud_rapid_dereg_p360", "package": "jdg.kks", "priority": 360, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "VAT_CAROUSEL", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Szybkie wyrejestrowanie z VAT po dużych transakcjach", "_legal_basis": "Art. 62 KKS — znikający podatnik", "_warnings": ["Kontrahent wyrejestrowany z VAT krótko po dużych transakcjach — typowe dla 'missing trader'!"] } {
+    object.get(input.vendor, "vat_deregistered_after_transactions", false) == true
+}
+
+# P361: vat_fraud_nip_rotation — Rotacja NIP-ów
+else := { "matched": true, "rule_id": "jdg.kks.vat_fraud_nip_rotation_p361", "package": "jdg.kks", "priority": 361, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "VAT_CAROUSEL", "_routing": "TRIAGE_QUEUE", "_routing_reason": "Rotacja NIP-ów — częste zakładanie i zamykanie JDG", "_legal_basis": "Art. 62 KKS — rotacja podmiotów", "_warnings": ["Częste otwieranie i zamykanie JDG powiązanych z kontrahentem — potencjalny schemat fraudowy"] } {
+    object.get(input.vendor, "nip_rotation_pattern", false) == true
+}
+
+# P362: vat_fraud_bank_account_hopping — Częste zmiany rachunków
+else := { "matched": true, "rule_id": "jdg.kks.vat_fraud_bank_account_hopping_p362", "package": "jdg.kks", "priority": 362, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "VAT_CAROUSEL", "_routing": "TRIAGE_QUEUE", "_routing_reason": "Częste zmiany rachunków bankowych kontrahenta", "_legal_basis": "Art. 62 KKS — AML red flag", "_warnings": ["Kontrahent często zmienia rachunki bankowe — red flag AML + fraud VAT"] } {
+    object.get(input.vendor, "bank_account_hopping", false) == true
+}
+
+# P363: vat_fraud_insolvency_pattern — Strategiczne bankructwo
+else := { "matched": true, "rule_id": "jdg.kks.vat_fraud_insolvency_pattern_p363", "package": "jdg.kks", "priority": 363, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "none", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_type": "VAT_CAROUSEL", "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Strategiczne bankructwo po wyłudzeniu VAT", "_legal_basis": "Art. 62 KKS + Art. 300 KK", "_warnings": ["Strategiczne bankructwo kontrahenta po serii transakcji — typowe dla karuzeli VAT!"] } {
+    object.get(input.vendor, "insolvency_after_large_transactions", false) == true
+}
+
+# P364: vat_section_aggregate_risk — Skumulowane ryzyko sekcji VAT
+else := { "matched": true, "rule_id": "jdg.kks.vat_section_aggregate_risk_p364", "package": "jdg.kks", "priority": 364, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_vat_risk_score": risk_score, "kks_vat_risk_level": risk_level, "_routing": routing_action, "_routing_reason": "Skumulowane ryzyko VAT — agregacja", "_legal_basis": "Art. 62-76 KKS — agregacja sekcji VAT", "_warnings": [sprintf("Skumulowane ryzyko VAT: %s (score: %d). %s", [risk_level, risk_score, action_msg])]
+} {
+    risk_score := object.get(input.jdg_entrepreneur, "kks_vat_aggregate_risk_score", 0)
+    risk_score > 0
+    risk_level = "LOW" { risk_score <= 20 }
+    risk_level = "MEDIUM" { risk_score > 20; risk_score <= 50 }
+    risk_level = "HIGH" { risk_score > 50; risk_score <= 80 }
+    risk_level = "CRITICAL" { risk_score > 80 }
+    routing_action = "" { risk_level == "LOW" }
+    routing_action = "TRIAGE_QUEUE" { risk_level in {"MEDIUM", "HIGH"} }
+    routing_action = "BLOCK_AND_ALERT" { risk_level == "CRITICAL" }
+    action_msg = "Monitoruj" { risk_level == "LOW" }
+    action_msg = "Zalecany audyt wewnętrzny" { risk_level == "MEDIUM" }
+    action_msg = "WYMAGANA weryfikacja manualna" { risk_level == "HIGH" }
+    action_msg = "NATYCHMIASTOWA blokada + zgłoszenie do KAS!" { risk_level == "CRITICAL" }
+}
+
 # ╔══════════════════════════════════════════════════════════════════════════════╗
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P365-P374: ZABEZPIECZENIA MAJĄTKOWE I ODPOWIEDZIALNOŚĆ OSÓB TRZECICH
+# (Art. 22-31 KKS) — 10 reguł
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# P365: asset_seizure_risk — Ryzyko zabezpieczenia majątkowego
+else := {
+    "matched": true, "rule_id": "jdg.kks.asset_seizure_risk_p365",
+    "package": "jdg.kks", "priority": 365,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_asset_seizure_risk": true, "kks_seizure_amount": estimated_tax,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Ryzyko zabezpieczenia majątkowego — art. 22-31 KKS",
+    "_legal_basis": "Art. 22-31 KKS — zabezpieczenie majątkowe",
+    "_warnings": [sprintf("ZABEZPIECZENIE MAJĄTKOWE — ryzyko zajęcia do %.2f PLN. Podstawa: art. 22-31 KKS. Zabezpiecz środki na podatek + karę!", [estimated_tax])]
+} {
+    estimated_tax := object.get(input.jdg_entrepreneur, "kks_total_shortfall_pln", 0)
+    estimated_tax > 10000
+    object.get(input.jdg_entrepreneur, "kks_proceedings_started", false) == true
+}
+
+# P366: property_security_active — Aktywne zabezpieczenie majątkowe
+else := { "matched": true, "rule_id": "jdg.kks.property_security_active_p366", "package": "jdg.kks", "priority": 366, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_security_active": true, "kks_security_type": security_type, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Aktywne zabezpieczenie majątkowe KAS", "_legal_basis": "Art. 22 KKS", "_warnings": [sprintf("AKTYWNE ZABEZPIECZENIE MAJĄTKOWE — %s na kwotę %.2f PLN. Utrudniona sprzedaż majątku!", [security_type, sec_amount])] } {
+    sec_amount := object.get(input.jdg_entrepreneur, "kks_security_amount", 0)
+    sec_amount > 0
+    security_type := object.get(input.jdg_entrepreneur, "kks_security_type", "HIPOTEKA_PRZYMUSOWA")
+}
+
+# P367: bank_account_blocked — Blokada rachunku bankowego
+else := { "matched": true, "rule_id": "jdg.kks.bank_account_blocked_p367", "package": "jdg.kks", "priority": 367, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_bank_blocked": true, "kks_blocked_accounts": blocked, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Blokada rachunku bankowego — art. 23 KKS", "_legal_basis": "Art. 23 § 1 KKS", "_warnings": [sprintf("BLOKADA RACHUNKU — %d kont zablokowanych. Wpłaty od kontrahentów NIEDOSTĘPNE do czasu decyzji sądu!", [blocked])] } {
+    blocked := object.get(input.jdg_entrepreneur, "kks_bank_accounts_blocked", 0)
+    blocked > 0
+}
+
+# P368: mortgage_on_property — Hipoteka przymusowa na nieruchomości
+else := { "matched": true, "rule_id": "jdg.kks.mortgage_on_property_p368", "package": "jdg.kks", "priority": 368, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_mortgage_active": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Hipoteka przymusowa KAS", "_legal_basis": "Art. 23 § 2 KKS w zw. z Art. 34 § 2 OrdPU", "_warnings": ["HIPOTEKA PRZYMUSOWA — nieruchomość obciążona na rzecz Skarbu Państwa. Sprzedaż wymaga zgody US!"] } {
+    object.get(input.jdg_entrepreneur, "kks_mortgage_registered", false) == true
+}
+
+# P369: tax_lien_registered — Zastaw skarbowy
+else := { "matched": true, "rule_id": "jdg.kks.tax_lien_registered_p369", "package": "jdg.kks", "priority": 369, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_lien_active": true, "kks_lien_amount": lien_amt, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Zastaw skarbowy — art. 24 KKS", "_legal_basis": "Art. 24 KKS w zw. z Art. 41 OrdPU", "_warnings": [sprintf("ZASTAW SKARBOWY — %.2f PLN na majątku ruchomym. Rzeczy obciążone zastawem nie mogą być sprzedane!", [lien_amt])] } {
+    lien_amt := object.get(input.jdg_entrepreneur, "kks_tax_lien_amount", 0)
+    lien_amt > 0
+}
+
+# P370: third_party_liability_kks — Odpowiedzialność osób trzecich
+else := { "matched": true, "rule_id": "jdg.kks.third_party_liability_p370", "package": "jdg.kks", "priority": 370, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_third_party_liable": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Odpowiedzialność osób trzecich — art. 24a KKS", "_legal_basis": "Art. 24a KKS", "_warnings": ["ODPOWIEDZIALNOŚĆ OSÓB TRZECICH — współmałżonek / wspólnik / członek zarządu może odpowiadać majątkiem!"] } {
+    object.get(input.jdg_entrepreneur, "kks_third_party_liability_active", false) == true
+}
+
+# P371: successor_liability_kks — Odpowiedzialność następców prawnych
+else := { "matched": true, "rule_id": "jdg.kks.successor_liability_p371", "package": "jdg.kks", "priority": 371, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_successor_liable": true, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Odpowiedzialność następców prawnych — art. 25 KKS", "_legal_basis": "Art. 25 KKS", "_warnings": ["ODPOWIEDZIALNOŚĆ NASTĘPCÓW — spadkobiercy/nabywcy przedsiębiorstwa mogą odpowiadać za zaległości KKS!"] } {
+    object.get(input.jdg_entrepreneur, "in_succession", false) == true
+    object.get(input.jdg_entrepreneur, "kks_total_shortfall_pln", 0) > 0
+}
+
+# P372: business_activity_ban — Zakaz prowadzenia działalności po KKS
+else := { "matched": true, "rule_id": "jdg.kks.business_activity_ban_p372", "package": "jdg.kks", "priority": 372, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_activity_ban_possible": true, "kks_ban_duration_years": ban_yrs, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Zakaz prowadzenia działalności — art. 26 KKS", "_legal_basis": "Art. 26 KKS w zw. z Art. 41 KK", "_warnings": [sprintf("ZAKAZ DZIAŁALNOŚCI — ryzyko orzeczenia zakazu na %d lat. Skazanie za KKS = utrata prawa do prowadzenia JDG!", [ban_yrs])] } {
+    ban_yrs := object.get(input.jdg_entrepreneur, "kks_potential_ban_years", 0)
+    ban_yrs > 0
+}
+
+# P373: public_contracts_ban — Wykluczenie z zamówień publicznych
+else := { "matched": true, "rule_id": "jdg.kks.public_contracts_ban_p373", "package": "jdg.kks", "priority": 373, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_pzp_exclusion": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Wykluczenie z zamówień publicznych", "_legal_basis": "Art. 108-109 PZP + KKS", "_warnings": ["WYKLUCZENIE Z PZP — skazanie za KKS = niemożność ubiegania się o zamówienia publiczne przez 3-5 lat!"] } {
+    object.get(input.jdg_entrepreneur, "kks_criminal_record_active", false) == true
+    object.get(input.jdg_entrepreneur, "bids_for_public_contracts", false) == true
+}
+
+# P374: professional_license_risk — Ryzyko utraty uprawnień zawodowych
+else := { "matched": true, "rule_id": "jdg.kks.professional_license_risk_p374", "package": "jdg.kks", "priority": 374, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_license_risk": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Ryzyko utraty licencji zawodowej", "_legal_basis": "Art. 26 KKS + przepisy korporacyjne", "_warnings": ["RYZYKO UTRATY UPRAWNIEŃ — skazanie za KKS może skutkować odebraniem licencji (doradca podatkowy, adwokat, biegły rewident)!"] } {
+    object.get(input.jdg_entrepreneur, "holds_professional_license", false) == true
+    object.get(input.jdg_entrepreneur, "kks_criminal_record_active", false) == true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P375-P384: AGREGACJA RYZYKA MIĘDZYPRZESTĘPCZEGO (Art. 54-76 KKS) — 10 reguł
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# P375: cross_offense_pattern — Wzorzec międzyprzestępczy
+else := {
+    "matched": true, "rule_id": "jdg.kks.cross_offense_pattern_p375",
+    "package": "jdg.kks", "priority": 375,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_cross_offense_pattern": true, "kks_offense_types_detected": offense_types,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Wzorzec międzyprzestępczy — wiele typów przestępstw",
+    "_legal_basis": "Art. 54-76 KKS — analiza międzyprzestępcza",
+    "_warnings": [sprintf("WZORZEC MIĘDZYPRZESTĘPCZY — %d typów przestępstw skarbowych: %s. Ryzyko eskaluje!", [type_count, offense_types])]
+} {
+    offense_types := object.get(input.jdg_entrepreneur, "kks_detected_offense_types", "")
+    type_count := object.get(input.jdg_entrepreneur, "kks_distinct_offense_count", 0)
+    type_count >= 2
+}
+
+# P376: offense_chain_detection — Łańcuch przestępstw skarbowych
+else := { "matched": true, "rule_id": "jdg.kks.offense_chain_detection_p376", "package": "jdg.kks", "priority": 376, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_offense_chain": true, "kks_chain_length": chain_len, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Łańcuch przestępstw — powiązane czyny", "_legal_basis": "Art. 54-76 KKS — związek przestępstw", "_warnings": [sprintf("ŁAŃCUCH PRZESTĘPSTW — %d powiązanych czynów. Każdy kolejny zaostrza odpowiedzialność. Kara łączna możliwa!", [chain_len])] } {
+    chain_len := object.get(input.jdg_entrepreneur, "kks_offense_chain_length", 0)
+    chain_len >= 3
+}
+
+# P377: multi_year_fraud_pattern — Systematyczny fraud wieloletni
+else := { "matched": true, "rule_id": "jdg.kks.multi_year_fraud_p377", "package": "jdg.kks", "priority": 377, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_multi_year": true, "kks_fraud_years": yrs, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Systematyczny fraud wieloletni", "_legal_basis": "Art. 54-76 KKS — ciągłość przestępstwa", "_warnings": [sprintf("FRAUD WIELOLETNI — %d lat nieprzerwanego naruszenia. Czyn ciągły = zaostrzenie kary + przedawnienie od ostatniego czynu!", [yrs])] } {
+    yrs := object.get(input.jdg_entrepreneur, "kks_fraud_active_years", 0)
+    yrs >= 2
+}
+
+# P378: organized_crime_indicators — Wskaźniki przestępczości zorganizowanej
+else := { "matched": true, "rule_id": "jdg.kks.organized_crime_indicators_p378", "package": "jdg.kks", "priority": 378, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_organized_crime_score": org_score, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Wskaźniki przestępczości zorganizowanej", "_legal_basis": "Art. 19 § 4 KKS — grupa zorganizowana", "_warnings": [sprintf("PRZESTĘPCZOŚĆ ZORGANIZOWANA — score: %d/100. Powiązania z grupą przestępczą, podział ról, transgraniczność. Kwalifikowana odpowiedzialność!", [org_score])] } {
+    org_score := object.get(input.jdg_entrepreneur, "kks_organized_crime_score", 0)
+    org_score >= 50
+}
+
+# P379: money_laundering_nexus — Powiązanie z praniem pieniędzy
+else := { "matched": true, "rule_id": "jdg.kks.money_laundering_nexus_p379", "package": "jdg.kks", "priority": 379, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_aml_nexus": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Powiązanie z praniem pieniędzy", "_legal_basis": "Art. 299 KK + Art. 54-76 KKS", "_warnings": ["PRANIE PIENIĘDZY — transakcje noszą znamiona prania brudnych pieniędzy. Podwójna odpowiedzialność: KKS + KK! Obowiązek zgłoszenia GIIF!"] } {
+    object.get(input.jdg_entrepreneur, "kks_aml_red_flags", false) == true
+}
+
+# P380: tax_crime_evolution — Ewolucja przestępczości podatkowej
+else := { "matched": true, "rule_id": "jdg.kks.tax_crime_evolution_p380", "package": "jdg.kks", "priority": 380, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_evolution_trend": trend, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Ewolucja przestępczości podatkowej", "_legal_basis": "Art. 54-76 KKS — analiza trendu", "_warnings": [sprintf("EWOLUCJA PRZESTĘPCZOŚCI — trend: %s. Eskalacja z drobnych wykroczeń do poważnych przestępstw. Wzorzec typowy dla fraudu!", [trend])] } {
+    trend := object.get(input.jdg_entrepreneur, "kks_offense_evolution_trend", "STABLE")
+    trend in {"ESCALATING", "RAPID_ESCALATION"}
+}
+
+# P381: cumulative_tax_loss — Skumulowana strata Skarbu Państwa
+else := { "matched": true, "rule_id": "jdg.kks.cumulative_tax_loss_p381", "package": "jdg.kks", "priority": 381, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_cumulative_loss": cum_loss, "kks_cumulative_severity": severity, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Skumulowana strata fiskalna", "_legal_basis": "Art. 54-76 KKS — suma uszczupleń", "_warnings": [sprintf("SKUMULOWANA STRATA SP — %.2f PLN (%s). Przekroczono próg wielkiej wartości! Obligatoryjne zawiadomienie KAS.", [cum_loss, severity])] } {
+    cum_loss := object.get(input.jdg_entrepreneur, "kks_cumulative_tax_loss", 0)
+    cum_loss > 100000
+    severity = "DUZA_WARTOSC" { cum_loss <= 1000000 }
+    severity = "WIELKA_WARTOSC" { cum_loss > 1000000 }
+}
+
+# P382: offense_severity_escalation — Eskalacja ciężkości przestępstw
+else := { "matched": true, "rule_id": "jdg.kks.offense_severity_escalation_p382", "package": "jdg.kks", "priority": 382, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_severity_escalated": true, "kks_max_severity": max_sev, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Eskalacja ciężkości przestępstw", "_legal_basis": "Art. 54-76 KKS — gradacja kar", "_warnings": [sprintf("ESKALACJA CIĘŻKOŚCI — od drobnych wykroczeń do %s. Systematyczne pogarszanie profilu. Konieczna interwencja prawna!", [max_sev])] } {
+    max_sev := object.get(input.jdg_entrepreneur, "kks_max_offense_severity", "")
+    max_sev in {"HIGH", "CRITICAL"}
+    object.get(input.jdg_entrepreneur, "kks_offense_count_12m", 0) >= 3
+}
+
+# P383: global_kks_risk_score — Globalny scoring ryzyka KKS
+else := {
+    "matched": true, "rule_id": "jdg.kks.global_kks_risk_score_p383",
+    "package": "jdg.kks", "priority": 383,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_global_score": glob_score, "kks_global_level": glob_level,
+    "kks_at_risk_of_prosecution": at_risk,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Globalny scoring ryzyka KKS — synteza",
+    "_legal_basis": "Art. 54-76 KKS — scoring globalny",
+    "_warnings": [sprintf("GLOBALNY SCORING KKS: %d/100 (%s). %s", [glob_score, glob_level, action])]
+} {
+    glob_score := object.get(input.jdg_entrepreneur, "kks_global_risk_score", 0)
+    glob_score > 0
+    glob_level = "LOW" { glob_score <= 25 }
+    glob_level = "MEDIUM" { glob_score > 25; glob_score <= 50 }
+    glob_level = "HIGH" { glob_score > 50; glob_score <= 75 }
+    glob_level = "CRITICAL" { glob_score > 75 }
+    at_risk = false { glob_score <= 25 }
+    at_risk = true { glob_score > 25 }
+    action = "Monitoruj sytuację" { glob_level == "LOW" }
+    action = "Zalecany audyt wewnętrzny" { glob_level == "MEDIUM" }
+    action = "WYMAGANA interwencja prawnika" { glob_level == "HIGH" }
+    action = "NATYCHMIASTOWE zgłoszenie do KAS + adwokat!" { glob_level == "CRITICAL" }
+}
+
+# P384: risk_to_business_survival — Ryzyko dla przetrwania JDG
+else := { "matched": true, "rule_id": "jdg.kks.risk_to_business_survival_p384", "package": "jdg.kks", "priority": 384, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_business_survival_risk": survival_risk, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Ryzyko dla kontynuacji działalności", "_legal_basis": "Art. 54-76 KKS — ocena wpływu na JDG", "_warnings": [sprintf("RYZYKO DLA JDG — %s. Potencjalna kara + zaległości = %.2f PLN vs roczny przychód %.2f PLN. %s", [survival_risk, total_exposure, annual_revenue, recommendation])] } {
+    total_exposure := object.get(input.jdg_entrepreneur, "kks_total_financial_exposure", 0)
+    annual_revenue := object.get(input.jdg_entrepreneur, "annual_revenue_estimate", 999999999)
+    safety_revenue := max([annual_revenue, 1])
+    exposure_ratio := total_exposure / safety_revenue
+    survival_risk = "LOW" { exposure_ratio <= 0.1 }
+    survival_risk = "MEDIUM" { exposure_ratio > 0.1; exposure_ratio <= 0.3 }
+    survival_risk = "HIGH" { exposure_ratio > 0.3; exposure_ratio <= 0.5 }
+    survival_risk = "CRITICAL" { exposure_ratio > 0.5 }
+    recommendation = "Kontynuuj z ostrożnością" { survival_risk in {"LOW", "MEDIUM"} }
+    recommendation = "ROZWAŻ ZAWIESZENIE — ryzyko egzekucji >30% przychodu" { survival_risk == "HIGH" }
+    recommendation = "ZAMKNIJ JDG — egzekucja przekroczy przychody!" { survival_risk == "CRITICAL" }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P385-P399: POSTĘPOWANIE MANDATOWE I POMOST PRZESTĘPSTWO→WYKROCZENIE
+# (Art. 22-31, 77-83, 44-51 KKS) — 15 reguł
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# P385: mandate_proceedings_eligible — Czy sprawa kwalifikuje się do mandatu
+else := {
+    "matched": true, "rule_id": "jdg.kks.mandate_proceedings_eligible_p385",
+    "package": "jdg.kks", "priority": 385,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_mandate_eligible": true, "kks_mandate_max_amount": mand_max,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 137-149 KKW — postępowanie mandatowe",
+    "_warnings": [sprintf("POSTĘPOWANIE MANDATOWE — kwalifikuje się. Max mandat: %.2f PLN. Sprawca musi wyrazić zgodę na mandat.", [mand_max])]
+} {
+    off_type := object.get(input.invoice, "kks_offense_type", "")
+    off_type in {"DECLARATION_NOT_FILED", "INCORRECT_DATA", "TAX_UNPAID", "NO_INVOICE"}
+    tax_loss := object.get(input.invoice, "tax_shortfall_pln", 0)
+    tax_loss <= 26000
+    mand_max = 5200 { tax_loss <= 5200 }
+    mand_max = 10400 { tax_loss > 5200; tax_loss <= 13000 }
+    mand_max = 26000 { tax_loss > 13000 }
+}
+
+# P386: mandate_amount_calculation — Wyliczenie mandatu karnego
+else := { "matched": true, "rule_id": "jdg.kks.mandate_amount_p386", "package": "jdg.kks", "priority": 386, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_mandate_amount": mand_amt, "kks_mandate_daily_rates": daily_r, "_routing": "", "_routing_reason": "", "_legal_basis": "Art. 48 KKW — wymiar mandatu", "_warnings": [sprintf("MANDAT KARNY — %.2f PLN (%d stawek dziennych × %.2f PLN). Do zapłaty w ciągu 7 dni od uprawomocnienia.", [mand_amt, daily_r, daily_rate_pln])] } {
+    daily_r := object.get(input.jdg_entrepreneur, "kks_mandate_daily_rates", 0)
+    daily_r > 0
+    daily_r <= 20
+    daily_rate_pln := object.get(input.jdg_entrepreneur, "kks_daily_rate_pln", 100)
+    mand_amt := daily_r * daily_rate_pln
+}
+
+# P387: mandate_consent_required — Zgoda na mandat (warunek konieczny)
+else := { "matched": true, "rule_id": "jdg.kks.mandate_consent_required_p387", "package": "jdg.kks", "priority": 387, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_mandate_consent_pending": true, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Mandat wymaga zgody sprawcy", "_legal_basis": "Art. 137 § 2 KKW", "_warnings": ["ZGODA NA MANDAT — bez wyraźnej zgody mandat jest nieskuteczny. Odmowa = skierowanie sprawy do sądu!"] } {
+    object.get(input.jdg_entrepreneur, "kks_mandate_offered", false) == true
+    object.get(input.jdg_entrepreneur, "kks_mandate_consent_given", false) == false
+}
+
+# P388: mandate_refusal_consequences — Konsekwencje odmowy mandatu
+else := { "matched": true, "rule_id": "jdg.kks.mandate_refusal_consequences_p388", "package": "jdg.kks", "priority": 388, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_mandate_refused": true, "kks_court_proceedings_risk": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Odmowa mandatu — sprawa trafia do sądu", "_legal_basis": "Art. 137 § 3 KKW", "_warnings": ["ODMOWA MANDATU — sprawa zostanie skierowana do sądu. Możliwa wyższa kara (do 720 stawek dziennych) + koszty sądowe!"] } {
+    object.get(input.jdg_entrepreneur, "kks_mandate_consent_given", true) == false
+    object.get(input.jdg_entrepreneur, "kks_mandate_offered", false) == true
+}
+
+# P389: mandate_payment_deadline — Termin płatności mandatu
+else := { "matched": true, "rule_id": "jdg.kks.mandate_payment_deadline_p389", "package": "jdg.kks", "priority": 389, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_mandate_paid": false, "kks_mandate_overdue_days": od_days, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Niezapłacony mandat — egzekucja", "_legal_basis": "Art. 140 KKW", "_warnings": [sprintf("MANDAT NIEZAPŁACONY — %d dni po terminie. Grozi egzekucja komornicza + zamiana na pracę społecznie użyteczną!", [od_days])] } {
+    od_days := object.get(input.jdg_entrepreneur, "kks_mandate_days_overdue", 0)
+    od_days > 0
+}
+
+# P390: crime_to_misdemeanor_bridge — Pomost kwalifikacyjny
+else := {
+    "matched": true, "rule_id": "jdg.kks.crime_to_misdemeanor_bridge_p390",
+    "package": "jdg.kks", "priority": 390,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_offense_classification": classification,
+    "kks_reclassified_from": original_class,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "Pomost kwalifikacyjny — ocena czy przestępstwo czy wykroczenie",
+    "_legal_basis": "Art. 53 § 3-4 KKS (wypadek mniejszej wagi)",
+    "_warnings": [sprintf("REKLASYFIKACJA — %s → %s. Art. 53 KKS: czyn może być uznany za wypadek mniejszej wagi. Konsekwencje: %s", [original_class, classification, legal_effect])]
+} {
+    original_class := object.get(input.invoice, "kks_offense_classification", "PRZESTEPSTWO")
+    factors := object.get(input.jdg_entrepreneur, "kks_minor_weight_factors", 0)
+    factors >= 2
+    classification = "WYKROCZENIE" { factors >= 3 }
+    classification = "PRZESTEPSTWO_MNIEJSZEJ_WAGI" { factors == 2 }
+    legal_effect = "kara jak za wykroczenie" { classification == "WYKROCZENIE" }
+    legal_effect = "nadzwyczajne złagodzenie kary" { classification == "PRZESTEPSTWO_MNIEJSZEJ_WAGI" }
+}
+
+# P391: criminal_record_check — Sprawdzenie w KRK
+else := { "matched": true, "rule_id": "jdg.kks.criminal_record_check_p391", "package": "jdg.kks", "priority": 391, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_criminal_record": record, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Krajowy Rejestr Karny — wpływ na recydywę", "_legal_basis": "Art. 19 § 3 KKS — recydywa skarbowa", "_warnings": [sprintf("KRK — %s. %s", [record, impact])] } {
+    prev_convictions := object.get(input.jdg_entrepreneur, "kks_prior_convictions_5y", 0)
+    record = "CZYSZCZY" { prev_convictions == 0 }
+    record = "WCZEŚNIEJ KARANY" { prev_convictions > 0; prev_convictions < 3 }
+    record = "RECYDYWISTA" { prev_convictions >= 3 }
+    impact = "Pierwsze przestępstwo — szansa na warunkowe umorzenie" { record == "CZYSZCZY" }
+    impact = sprintf("%d wcześniejszych skazań — utrudnione warunkowe umorzenie", [prev_convictions]) { record == "WCZEŚNIEJ KARANY" }
+    impact = "Wielokrotny recydywista — obligatoryjne zaostrzenie kary!" { record == "RECYDYWISTA" }
+}
+
+# P392: prosecution_decision_factors — Czynniki decyzji o ściganiu
+else := { "matched": true, "rule_id": "jdg.kks.prosecution_decision_factors_p392", "package": "jdg.kks", "priority": 392, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_prosecution_likelihood": likelihood, "kks_prosecution_factors": factors, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Ocena prawdopodobieństwa ścigania", "_legal_basis": "Art. 54-83 KKS — decyzja prokuratorska", "_warnings": [sprintf("PRAWDOPODOBIEŃSTWO ŚCIGANIA: %s. Czynniki: %s. %s", [likelihood, factors, recommendation])] } {
+    factors := object.get(input.jdg_entrepreneur, "kks_prosecution_factors", "")
+    score := object.get(input.jdg_entrepreneur, "kks_prosecution_score", 0)
+    likelihood = "NISKIE" { score <= 20 }
+    likelihood = "ŚREDNIE" { score > 20; score <= 60 }
+    likelihood = "WYSOKIE" { score > 60; score <= 80 }
+    likelihood = "NIEMAL PEWNE" { score > 80 }
+    recommendation = "Rozważ dobrowolne ujawnienie" { likelihood in {"NISKIE", "ŚREDNIE"} }
+    recommendation = "NATYCHMIAST skonsultuj z adwokatem karnym skarbowym!" { likelihood in {"WYSOKIE", "NIEMAL PEWNE"} }
+}
+
+# P393: cross_tax_type_offenses — Przestępstwa wielopodatkowe
+else := { "matched": true, "rule_id": "jdg.kks.cross_tax_type_offenses_p393", "package": "jdg.kks", "priority": 393, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_cross_tax": true, "kks_tax_types_affected": tax_types, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Przestępstwa wielopodatkowe", "_legal_basis": "Art. 54-76 KKS — zbieg przepisów", "_warnings": [sprintf("WIELOPODATKOWOŚĆ — naruszenia dotyczą: %s. Zbieg przepisów = kumulatywna odpowiedzialność karna za każdy podatek!", [tax_types])] } {
+    tax_types := object.get(input.jdg_entrepreneur, "kks_affected_tax_types", "")
+    count_tax_types := object.get(input.jdg_entrepreneur, "kks_tax_type_count", 0)
+    count_tax_types >= 2
+}
+
+# P394: offense_statute_mapping — Mapowanie na terminy przedawnienia
+else := {
+    "matched": true, "rule_id": "jdg.kks.offense_statute_mapping_p394",
+    "package": "jdg.kks", "priority": 394,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_statute_applies": true, "kks_applicable_years": statute_years,
+    "kks_statute_deadline": deadline_date,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 44, 51 KKS — terminy przedawnienia",
+    "_warnings": [sprintf("PRZEDAWNIENIE — %d lat od czynu (%s). Termin upływa: %s. Status: %s", [statute_years, off_type, deadline_date, status])]
+} {
+    off_type := object.get(input.invoice, "kks_offense_type", "")
+    off_type in {"TAX_EVASION", "EMPTY_INVOICE", "FAKE_INVOICE", "UNRELIABLE_BOOKS", "UNRELIABLE_VAT", "VAT_CAROUSEL", "DECLARATION_NOT_FILED", "INCORRECT_DATA", "TAX_UNPAID"}
+    statute_years = 5 { off_type in {"TAX_EVASION", "EMPTY_INVOICE", "FAKE_INVOICE", "UNRELIABLE_BOOKS", "UNRELIABLE_VAT", "VAT_CAROUSEL"} }
+    statute_years = 3 { off_type in {"DECLARATION_NOT_FILED", "INCORRECT_DATA", "TAX_UNPAID"} }
+    off_date := object.get(input.invoice, "kks_offense_date", "")
+    off_ns := time.parse_ns("2006-01-02", off_date)
+    deadline_ns := off_ns + (statute_years * 365 * 24 * 60 * 60 * 1000000000)
+    deadline_date := time.format(time.add_date(off_ns, statute_years, 0, 0))
+    now_ns := time.now_ns()
+    status = "PRZEDAWNIONE" { now_ns > deadline_ns }
+    status = "W TOKU" { now_ns <= deadline_ns }
+}
+
+# P395: penalty_calculation_input — Dane wejściowe do kalkulacji kary
+else := { "matched": true, "rule_id": "jdg.kks.penalty_calculation_input_p395", "package": "jdg.kks", "priority": 395, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_penalty_input_ready": true, "kks_fine_daily_rates": fine_rates, "kks_imprisonment_range": impr_range, "_routing": "", "_routing_reason": "", "_legal_basis": "Art. 22-31 KKS — dane wsadowe kary", "_warnings": [sprintf("KALKULACJA KARY — grzywna: %d stawek, więzienie: %s. Dochód/mies.: %.2f PLN. Stawka dzienna: %.2f PLN.", [fine_rates, impr_range, monthly_income, daily_rate_pln])] } {
+    fine_rates := object.get(input.jdg_entrepreneur, "kks_recommended_daily_rates", 10)
+    impr_range := object.get(input.jdg_entrepreneur, "kks_imprisonment_range", "brak")
+    monthly_income := object.get(input.jdg_entrepreneur, "kks_monthly_income_estimate", 5000)
+    daily_rate_pln := monthly_income / 30
+    daily_rate_pln >= 50
+}
+
+# P396: pre_misdemeanor_screening — Badanie przed-wykroczeniowe
+else := { "matched": true, "rule_id": "jdg.kks.pre_misdemeanor_screening_p396", "package": "jdg.kks", "priority": 396, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_pre_screening_result": result, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Badanie kwalifikacyjne przed-wykroczeniowe", "_legal_basis": "Art. 53, 77-83 KKS — granica przestępstwo/wykroczenie", "_warnings": [sprintf("BADANIE PRZED-WYKROCZENIOWE — %s. Kwota: %.2f PLN, próg: %.2f PLN. %s", [result, amount, threshold, recommendation])] } {
+    amount := object.get(input.invoice, "tax_shortfall_pln", 0)
+    threshold := object.get(input.jdg_entrepreneur, "kks_crime_threshold_pln", 200000)
+    severity := object.get(input.invoice, "kks_offense_severity", "LOW")
+    result = "WYKROCZENIE" { amount <= threshold; severity in {"LOW", "MEDIUM"} }
+    result = "PRZESTĘPSTWO" { amount > threshold }
+    result = "PRZESTĘPSTWO" { severity in {"HIGH", "CRITICAL"} }
+    recommendation = "Mandat karny wystarczający" { result == "WYKROCZENIE" }
+    recommendation = "Wymagane postępowanie sądowe" { result == "PRZESTĘPSTWO" }
+}
+
+# P397: offense_discovery_path — Ścieżka wykrycia przestępstwa
+else := { "matched": true, "rule_id": "jdg.kks.offense_discovery_path_p397", "package": "jdg.kks", "priority": 397, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_discovered_by": discovered_by, "kks_self_reportable": self_reportable, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Ścieżka wykrycia — wpływ na strategię obrony", "_legal_basis": "Art. 16 KKS — czynny żal", "_warnings": [sprintf("WYKRYCIE — %s. %s", [discovered_by, self_report_advice])] } {
+    discovered_by := object.get(input.jdg_entrepreneur, "kks_discovery_path", "KAS_KONTROLA")
+    self_reportable = true { discovered_by == "SAMOUJAWNIENIE" }
+    self_reportable = true { discovered_by == "BIURO_RACHUNKOWE" }
+    self_reportable = false { discovered_by in {"KAS_KONTROLA", "KAS_CZYNNOSCI", "POLICJA", "PROKURATURA"} }
+    else = false { discovered_by != "" }
+    self_reportable = self_reportable
+    self_report_advice = "Możliwy czynny żal — złóż zawiadomienie NATYCHMIAST przed formalnym wszczęciem!" { self_reportable == true }
+    self_report_advice = "Czynny żal już NIEMOŻLIWY — postępowanie w toku. Skup się na linii obrony." { self_reportable == false }
+}
+
+# P398: legal_defense_validity — Ważność obrony prawnej
+else := {
+    "matched": true, "rule_id": "jdg.kks.legal_defense_validity_p398",
+    "package": "jdg.kks", "priority": 398,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_defense_valid": valid, "kks_defense_type": defense_type,
+    "kks_defense_effect": effect,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 10-11 KKS — kontratypy i obrona",
+    "_warnings": [sprintf("OBRONA PRAWNA — %s: %s. Skutek: %s. %s", [defense_type, valid, effect, recommendation])]
+} {
+    defense_type := object.get(input.jdg_entrepreneur, "kks_defense_strategy", "BRAK")
+    defense_type != "BRAK"
+    valid = "WAŻNA" { defense_type in {"BLAD_CO_DO_PRAWA_USPRAWIEDLIWIONY", "STAN_WYZSZEJ_KONIECZNOSCI", "DZIALANIE_NA_POLECENIE", "INTERPRETACJA_INDYWIDUALNA"} }
+    valid = "SŁABA" { defense_type in {"BLAD_CO_DO_PRAWA_NIEUSPRAWIEDLIWIONY", "NIEWIEDZA", "DORADCA_ZAPEWNIL"} }
+    valid = "NIEWAŻNA" { defense_type in {"IGNOROWANIE_PRZEPISOW"} }
+    else = "NIEWAŻNA" { defense_type != "" }
+    valid = valid
+    effect = "Może prowadzić do uniewinnienia" { valid == "WAŻNA" }
+    effect = "Może złagodzić karę" { valid == "SŁABA" }
+    effect = "Brak skutecznej linii obrony" { valid == "NIEWAŻNA" }
+    recommendation = "Utrzymuj linię obrony" { valid == "WAŻNA" }
+    recommendation = "Rozważ negocjacje z prokuratorem" { valid == "SŁABA" }
+    recommendation = "NATYCHMIAST znajdź adwokata specjalizującego się w KKS!" { valid == "NIEWAŻNA" }
+}
+
+# P399: crime_section_summary — Podsumowanie sekcji przestępczej
+else := {
+    "matched": true, "rule_id": "jdg.kks.crime_section_summary_p399",
+    "package": "jdg.kks", "priority": 399,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_crimes_total": total_crimes, "kks_max_penalty": max_penalty,
+    "kks_min_penalty": min_penalty, "kks_summary_severity": summary_sev,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "PODSUMOWANIE sekcji przestępczej KKS",
+    "_legal_basis": "Art. 54-76 KKS — synteza",
+    "_warnings": [sprintf("PODSUMOWANIE KKS: %d przestępstw skarbowych. Kara: %s — %s. Ryzyko: %s. %s", [total_crimes, min_penalty, max_penalty, summary_sev, final_advice])]
+} {
+    total_crimes := object.get(input.jdg_entrepreneur, "kks_crime_count", 0)
+    total_crimes > 0
+    max_penalty := object.get(input.jdg_entrepreneur, "kks_max_possible_penalty", "nieznana")
+    min_penalty := object.get(input.jdg_entrepreneur, "kks_min_possible_penalty", "nieznana")
+    summary_sev = "NISKIE" { total_crimes <= 2 }
+    summary_sev = "ŚREDNIE" { total_crimes > 2; total_crimes <= 5 }
+    summary_sev = "WYSOKIE" { total_crimes > 5; total_crimes <= 10 }
+    summary_sev = "KRYTYCZNE" { total_crimes > 10 }
+    final_advice = "Rozważ dobrowolne ujawnienie + czynny żal" { summary_sev in {"NISKIE", "ŚREDNIE"} }
+    final_advice = "KONIECZNY adwokat + rozważenie ugody z KAS" { summary_sev == "WYSOKIE" }
+    final_advice = "STAN KRYTYCZNY — natychmiastowe działanie: adwokat + wniosek o dobrowolne poddanie się karze!" { summary_sev == "KRYTYCZNE" }
+}
 # ║  GRUPA C: P400-P459 — WYKROCZENIA SKARBOWE                              ║
 # ║  Art. 60-61, 77-83 KKS — 60 reguł                                        ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝

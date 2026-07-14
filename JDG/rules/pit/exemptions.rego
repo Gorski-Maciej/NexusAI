@@ -24,9 +24,53 @@ default decide := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# P580: pit_exemption_young — Ulga dla młodych (<26 lat) do 85 528 PLN
+# P508: pit_revenue_exclusions — Wyłączenia z przychodów JDG
+# Doc 26 §III: Identyfikacja wpływów NIEstanowiących przychodu z działalności
 # ═══════════════════════════════════════════════════════════════════════════════
 decide := {
+    "matched": true, "rule_id": "jdg.pit.exemptions.revenue_exclusions",
+    "package": "jdg.pit.exemptions", "priority": 508,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "pit_revenue_included": revenue_included,
+    "revenue_classification": revenue_class,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 14 ust. 3 PIT",
+    "_warnings": [warning_msg]
+} {
+    input.invoice.direction == "INCOME"
+    income_source := object.get(input.invoice, "income_source", "")
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+
+    # VAT refund — NIE jest przychodem
+    revenue_included = false { income_source == "VAT_REFUND" }
+    revenue_class = "VAT_REFUND_NOT_REVENUE" { income_source == "VAT_REFUND" }
+    warning_msg = "Zwrot VAT — NIE stanowi przychodu z działalności" { income_source == "VAT_REFUND" }
+
+    # ZUS overpayment refund — NIE jest przychodem (jeśli składki nie były KUP)
+    revenue_included = false { income_source == "ZUS_OVERPAYMENT_REFUND" }
+    revenue_class = "ZUS_REFUND_NOT_REVENUE" { income_source == "ZUS_OVERPAYMENT_REFUND" }
+    warning_msg = "Zwrot nadpłaty ZUS — NIE stanowi przychodu (jeśli składki nie były KUP)" { income_source == "ZUS_OVERPAYMENT_REFUND" }
+
+    # Insurance compensation for lost revenue — JEST przychodem
+    revenue_included = true { income_source == "INSURANCE_COMPENSATION" }
+    revenue_class = "INSURANCE_IS_REVENUE" { income_source == "INSURANCE_COMPENSATION" }
+    warning_msg = "Odszkodowanie za utracone przychody — STANOWI przychód z działalności" { income_source == "INSURANCE_COMPENSATION" }
+
+    # Damages for assets — NIE jest przychodem
+    revenue_included = false { income_source == "DAMAGES_FOR_ASSET" }
+    revenue_class = "DAMAGES_NOT_REVENUE" { income_source == "DAMAGES_FOR_ASSET" }
+    warning_msg = "Odszkodowanie za składniki majątku — NIE stanowi przychodu" { income_source == "DAMAGES_FOR_ASSET" }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P580: pit_exemption_young — Ulga dla młodych (<26 lat) do 85 528 PLN
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
     "matched": true, "rule_id": "jdg.pit.exemptions.young",
     "package": "jdg.pit.exemptions", "priority": 580,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
