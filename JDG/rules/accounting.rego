@@ -1566,3 +1566,27 @@ else := {
     change_pct = 0 { rem_start_val == 0 }
     change_pct = change_val / rem_start_val * 100 { rem_start_val > 0 }
 }
+
+# ══════ P480-P486: ŚRODKI TRWAŁE SZCZEGÓŁY — Doc 36 §17 (7 reguł) ══════
+
+# P480: fixed_asset_kst_group — Klasyfikacja KŚT
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_kst_group","package":"jdg.accounting","priority":480,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","kst_group":kst_grp,"depreciation_rate_pct":dep_rate,"_routing":"","_routing_reason":"","_legal_basis":"KŚT załącznik nr 1","_warnings":[sprintf("KŚT Grupa %d — stawka amortyzacji %.1f%% rocznie.",[kst_grp,dep_rate])]} {kst_grp:=object.get(input.invoice,"kst_group",1);dep_rate=2.5{kst_grp==1};dep_rate=20.0{kst_grp==7};dep_rate=30.0{kst_grp==4};dep_rate=14.0{kst_grp==3};dep_rate=20.0{kst_grp==5}}
+    dep_rate=14.0{not dep_rate}
+
+# P481: fixed_asset_low_value_10k — Jednorazowa amortyzacja ≤10k
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_low_value_10k","package":"jdg.accounting","priority":481,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","depreciation_method":"ONE_OFF","depreciation_pln":asset_value,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22d ust. 1 PIT","_warnings":[sprintf("Środek trwały ≤10 000 PLN — jednorazowa amortyzacja w miesiącu oddania do użytku. Wartość: %.2f PLN.",[asset_value])]} {asset_value:=object.get(input.invoice,"asset_value",0);asset_value>0;asset_value<=10000}
+
+# P482: fixed_asset_de_minimis_100k — Amortyzacja de minimis do 100k
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_de_minimis_100k","package":"jdg.accounting","priority":482,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","depreciation_method":"DE_MINIMIS","de_minimis_limit":100000,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22k ust. 7 PIT","_warnings":["Amortyzacja de minimis — jednorazowo do 100 000 PLN rocznie (mały podatnik + pierwszy rok)."]} {object.get(input.jdg_entrepreneur,"is_small_taxpayer",false)==true;object.get(input.jdg_entrepreneur,"de_minimis_available",false)==true}
+
+# P483: fixed_asset_improvement_10k — Ulepszenie >10k
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_improvement_10k","package":"jdg.accounting","priority":483,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","improvement_increases_value":true,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22g ust. 17 PIT","_warnings":[sprintf("Ulepszenie %.2f PLN > 10 000 PLN — zwiększa wartość początkową środka trwałego. Nie jest kosztem bieżącym!",[improvement_amount])]} {improvement_amount:=object.get(input.invoice,"improvement_amount",0);improvement_amount>10000}
+
+# P484: fixed_asset_used_first_time — Używany ŚT — skrócona amortyzacja
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_used_shortened","package":"jdg.accounting","priority":484,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","shortened_depreciation":true,"max_months":30,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22j PIT","_warnings":["Używany środek trwały — możliwość skróconej amortyzacji (max 30 miesięcy dla ruchomości)."]} {object.get(input.invoice,"asset_is_used",false)==true}
+
+# P485: fixed_asset_sale_income — Sprzedaż ŚT = przychód
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_sale_income","package":"jdg.accounting","priority":485,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","sale_income_taxable":true,"_routing":"","_routing_reason":"","_legal_basis":"Art. 14 ust. 2 PIT","_warnings":["Sprzedaż środka trwałego — przychód podatkowy. Dochód = cena sprzedaży - wartość netto (początkowa - dotychczasowe umorzenie)."]} {input.invoice.direction=="SALE";input.invoice.category=="FIXED_ASSET_SALE"}
+
+# P486: fixed_asset_financial_lease — Leasing finansowy
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_financial_lease","package":"jdg.accounting","priority":486,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","lease_type":"FINANCIAL","kup_components":"DEPRECIATION_AND_INTEREST","_routing":"","_routing_reason":"","_legal_basis":"Art. 23f PIT","_warnings":["Leasing finansowy — KUP = amortyzacja + część odsetkowa raty. NIE cała rata leasingowa!"]} {input.invoice.expense_type=="LEASE";object.get(input.invoice,"lease_type","")=="FINANCIAL"}

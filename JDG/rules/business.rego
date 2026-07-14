@@ -191,3 +191,137 @@ else := {
 } {
     input.jdg_entrepreneur.is_unregistered_activity == true
 }
+
+# ══════ P916: suspension_depreciation_ban — Zakaz amortyzacji w zawieszeniu (Doc 35) ══════
+else := {
+    "matched":true,"rule_id":"jdg.business.suspension_depreciation_ban",
+    "package":"jdg.business","priority":916,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"NKUP","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"SUSPENDED",
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Amortyzacja w zawieszeniu = niedozwolona",
+    "_legal_basis":"Art. 22c pkt 4 PIT",
+    "_warnings":["Zawieszenie JDG → NIE dokonuje się odpisów amortyzacyjnych. Odpisy za okres zawieszenia PRZEPADAJĄ!"]
+} {
+    input.jdg_entrepreneur.business_status == "SUSPENDED"
+    input.invoice.category_code == "DEPRECIATION"
+}
+
+# ══════ P919: suspension_vat_zero — Zerowe deklaracje VAT w zawieszeniu (Doc 35) ══════
+else := {
+    "matched":true,"rule_id":"jdg.business.suspension_vat_zero",
+    "package":"jdg.business","priority":919,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"SUSPENDED",
+    "vat_declaration_required":true,"vat_declaration_type":"ZERO_RETURN",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 99 ust. 7a VAT",
+    "_warnings":["Zawieszenie JDG → obowiązek składania ZEROWYCH deklaracji VAT-7/JPK_V7. Wyjątek: brak obowiązku jeśli brak WNT."]
+} {
+    input.jdg_entrepreneur.business_status == "SUSPENDED"
+    input.jdg_entrepreneur.vat_status == "ACTIVE"
+    object.get(input.jdg_entrepreneur,"has_wnt_transactions",false)==false
+}
+
+# ══════ P922: succession_tax_responsibilities — Rozliczenia podatkowe po śmierci (Doc 35) ══════
+else := {
+    "matched":true,"rule_id":"jdg.business.succession_tax_responsibilities",
+    "package":"jdg.business","priority":922,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"IN_SUCCESSIO",
+    "tax_filing_required":true,"filed_by":"SUCCESSION_MANAGER_OR_HEIRS",
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Zeznania za zmarłego — obowiązek spadkobierców",
+    "_legal_basis":"Art. 97 § 1-2, Art. 100 § 1-2 Ordynacji podatkowej",
+    "_warnings":["ŚMIERĆ JDG → spadkobiercy/zarządca sukcesyjny składają zeznania za zmarłego. PIT-36/PIT-36L + VAT-7 + ZUS DRA za okres do dnia śmierci."]
+} {
+    input.jdg_entrepreneur.in_succession == true
+    object.get(input.jdg_entrepreneur,"succession_tax_filings_done",true)==false
+}
+
+# ══════ P928: succession_inventory_death_date — Remanent na dzień śmierci (Doc 35) ══════
+else := {
+    "matched":true,"rule_id":"jdg.business.succession_inventory_death",
+    "package":"jdg.business","priority":928,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"IN_SUCCESSIO",
+    "inventory_required":true,"inventory_date":"DATE_OF_DEATH",
+    "remnant_tax_rate":0.10,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Remanent na dzień śmierci — 10% podatek",
+    "_legal_basis":"Art. 24 ust. 2 PIT + Art. 14 ust. 2 PIT",
+    "_warnings":["ŚMIERĆ JDG → obowiązek sporządzenia remanentu na dzień śmierci. 10% zryczałtowany podatek od nadwyżki remanentu nad wartością początkową."]
+} {
+    input.jdg_entrepreneur.in_succession == true
+    object.get(input.jdg_entrepreneur,"inventory_remnant_value",0)>0
+    object.get(input.jdg_entrepreneur,"succession_inventory_filed",true)==false
+}
+
+# ══════ P830: tax_form_change_inventory — Remanent przy zmianie formy opodatkowania (Doc 35) ══════
+else := {
+    "matched":true,"rule_id":"jdg.business.tax_form_change_inventory",
+    "package":"jdg.business","priority":830,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","form_change_inventory_required":true,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Zmiana formy opodatkowania — wymagany remanent",
+    "_legal_basis":"Art. 24 ust. 2 PIT, Art. 44 ust. 2 PIT",
+    "_warnings":[sprintf("Zmiana formy z %s na %s → konieczny remanent na 1 stycznia dla prawidłowego ustalenia KUP.",[old_form,new_form])]
+} {
+    old_form:=object.get(input.jdg_entrepreneur,"previous_tax_form","")
+    new_form:=input.jdg_entrepreneur.tax_form
+    old_form!=""
+    old_form!=new_form
+    old_form=="LUMP_SUM"
+    new_form in {"SCALE","LINEAR"}
+}
+
+# ══════ P918: suspension_time_limit — Zawieszenie >6 mies. bez pracowników (Doc 36) ══════
+else := {
+    "matched":true,"rule_id":"jdg.business.suspension_time_warning",
+    "package":"jdg.business","priority":918,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"SUSPENDED",
+    "suspension_months":susp_months,"suspension_risk_deregistration":is_at_risk,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 22 Prawa przedsiębiorców",
+    "_warnings":[sprintf("Zawieszenie %d miesięcy, %d pracowników — %s",[susp_months,emp_count,warn_msg])]
+} {
+    input.jdg_entrepreneur.business_status == "SUSPENDED"
+    susp_months := object.get(input.jdg_entrepreneur,"suspension_months_continuous",0)
+    emp_count := object.get(input.jdg_entrepreneur,"employee_count",0)
+    is_at_risk := (susp_months >= 6 and emp_count == 0)
+    warn_msg := "Ryzyko wykreślenia z CEIDG (>6 mies. bez pracowników)!" { is_at_risk == true }
+    warn_msg := "Zawieszenie w normie" { is_at_risk == false }
+}
+
+# ══════ P832: tax_form_change_kup_correction — Korekta KUP przy zmianie formy (Doc 35) ══════
+else := {
+    "matched":true,"rule_id":"jdg.business.tax_form_change_kup_correction",
+    "package":"jdg.business","priority":832,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","kup_correction_required":true,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Korekta KUP — wydatki poniesione przed zmianą formy",
+    "_legal_basis":"Art. 22 ust. 1 PIT, Art. 24 ust. 1 PIT",
+    "_warnings":["Zmiana formy opodatkowania → korekta KUP. Wydatki poniesione przed zmianą formy, a wykorzystane po zmianie, podlegają korekcie."]
+} {
+    object.get(input.jdg_entrepreneur,"tax_form_changed_this_year",false)==true
+    object.get(input.jdg_entrepreneur,"has_pre_change_expenses",false)==true
+}

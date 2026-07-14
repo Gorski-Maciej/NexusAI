@@ -146,3 +146,91 @@ else := {
 } {
     input.business.introduces_packaging == true
 }
+
+# ══ P540-P544: ESG/CSRD — Doc 36 §23 (5 reguł ENTERPRISE) ══
+
+# P540: esg_csrd_threshold — Próg raportowania CSRD
+else := {
+    "matched":true,"rule_id":"jdg.environmental.csrd_threshold",
+    "package":"jdg.environmental","priority":540,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","csrd_reporting_required":true,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"CSRD — obowiązek raportowania ESG",
+    "_legal_basis":"Dyrektywa CSRD 2022/2464",
+    "_warnings":[sprintf("CSRD — 2 z 3 progów spełnione: %.0f prac., %.0fM EUR aktywa, %.0fM EUR przychody. Obowiązek raportowania ESG od 2025.",[emp,assets,rev])]
+} {
+    emp:=object.get(input.employment,"employee_count",0)
+    assets:=object.get(input.jdg_entrepreneur,"total_assets_eur_m",0)
+    rev:=object.get(input.jdg_entrepreneur,"annual_revenue_eur_m",0)
+    (emp>250 and assets>20) or (emp>250 and rev>40) or (assets>20 and rev>40)
+}
+
+# P541: esg_carbon_footprint — Ślad węglowy
+else := {
+    "matched":true,"rule_id":"jdg.environmental.carbon_footprint_tracking",
+    "package":"jdg.environmental","priority":541,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","carbon_tracking_required":true,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"EU Taxonomy Regulation 2020/852",
+    "_warnings":["Ślad węglowy — raportowanie emisji Scope 1/2/3. Zakres: spalanie paliw (S1), energia elektryczna (S2), łańcuch dostaw (S3). Coroczne raportowanie."]
+} {
+    object.get(input.jdg_entrepreneur,"csrd_reporting_required",false)==true
+}
+
+# P542: esg_supply_chain_due_diligence — Należyta staranność w łańcuchu dostaw
+else := {
+    "matched":true,"rule_id":"jdg.environmental.supply_chain_due_diligence",
+    "package":"jdg.environmental","priority":542,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","supply_chain_dd_required":true,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Dyrektywa CSDDD 2024/1760",
+    "_warnings":["Należyta staranność w łańcuchu dostaw — obowiązek identyfikacji ryzyk ESG u dostawców. Audyt dostawców + raportowanie."]
+} {
+    object.get(input.jdg_entrepreneur,"csrd_reporting_required",false)==true
+}
+
+# P543: esg_greenwashing_flag — Wykrywanie greenwashingu
+else := {
+    "matched":true,"rule_id":"jdg.environmental.greenwashing_flag",
+    "package":"jdg.environmental","priority":543,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","greenwashing_risk":true,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Deklaracje środowiskowe bez certyfikacji",
+    "_legal_basis":"Taksonomia UE + Art. 7 RODO",
+    "_warnings":["GREENWASHING RISK — deklaracje środowiskowe bez certyfikacji. Wymagane potwierdzenie zewnętrzne (ISO 14001, EMAS, ETV). Ryzyko kary UOKiK!"]
+} {
+    object.get(input.jdg_entrepreneur,"environmental_claims_made",false)==true
+    object.get(input.jdg_entrepreneur,"environmental_certification_valid",true)==false
+}
+
+# P544: esg_energy_efficiency_certificate — Świadectwo energetyczne
+else := {
+    "matched":true,"rule_id":"jdg.environmental.energy_efficiency_certificate",
+    "package":"jdg.environmental","priority":544,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","energy_cert_required":true,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Dyrektywa EPBD 2010/31/UE",
+    "_warnings":["Świadectwo charakterystyki energetycznej — wymagane dla budynków JDG przy sprzedaży/najmie. Ważne 10 lat."]
+} {
+    object.get(input.jdg_entrepreneur,"owns_commercial_building",false)==true
+    object.get(input.jdg_entrepreneur,"energy_certificate_valid",true)==false
+}
+

@@ -27,6 +27,7 @@ import data.jdg.kks
 import data.jdg.routing
 import data.jdg.compliance
 import data.jdg.crossborder
+import data.jdg.crossborder.post_brexit
 import data.jdg.vat.substantive
 import data.jdg.vat.deductions
 import data.jdg.vat.procedures
@@ -35,10 +36,12 @@ import data.jdg.pit.kup
 import data.jdg.pit.advances_returns
 import data.jdg.pit.exemptions
 import data.jdg.pit.transitions
+import data.jdg.pit.elearning
 import data.jdg.allowances
 import data.jdg.zus
 import data.jdg.accounting
 import data.jdg.business
+import data.jdg.business.gig_economy
 import data.jdg.corrections
 import data.jdg.conflicts
 import data.jdg.liability
@@ -51,6 +54,7 @@ import data.jdg.environmental
 import data.jdg.restructuring
 import data.jdg.temporal
 import data.jdg.digital
+import data.jdg.api_fallback
 import data.jdg.retention
 import data.jdg.mpips
 import data.jdg.rodo
@@ -144,6 +148,7 @@ final_verdict = safe_merge(risk.decide,
     safe_merge(kks.decide,
     safe_merge(routing.decide,
     safe_merge(compliance.decide,
+    safe_merge(post_brexit.decide,
     safe_merge(crossborder.decide,
     safe_merge(substantive.decide,
     safe_merge(deductions.decide,
@@ -153,10 +158,12 @@ final_verdict = safe_merge(risk.decide,
     safe_merge(advances_returns.decide,
     safe_merge(exemptions.decide,
     safe_merge(transitions.decide,
+    safe_merge(elearning.decide,
     safe_merge(allowances.decide,
     safe_merge(zus.decide,
     safe_merge(accounting.decide,
     safe_merge(business.decide,
+    safe_merge(gig_economy.decide,
     safe_merge(corrections.decide,
     safe_merge(liability.decide,
     safe_merge(representation.decide,
@@ -167,6 +174,7 @@ final_verdict = safe_merge(risk.decide,
     safe_merge(environmental.decide,
     safe_merge(restructuring.decide,
     safe_merge(temporal.decide,
+    safe_merge(api_fallback.decide,
     safe_merge(digital.decide,
     safe_merge(retention.decide,    safe_merge(rodo.decide,
     safe_merge(mpips.decide,

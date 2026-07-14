@@ -258,3 +258,39 @@ else := {
 } {
     object.get(input.document,"tax_proceeding_active",false)==true
 }
+
+# ══════ P1162: statute_interruption_execution — Przerwanie biegu przedawnienia (Doc 35) ══════
+else := {
+    "matched":true,"rule_id":"jdg.liability.statute_interruption_execution",
+    "package":"jdg.liability","priority":1162,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "statute_interrupted":true,"new_statute_deadline_years":5,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Bieg przedawnienia przerwany — nowy 5-letni termin",
+    "_legal_basis":"Art. 70 § 4 Ordynacji podatkowej",
+    "_warnings":["Zastosowanie środka egzekucyjnego → przerwanie biegu przedawnienia. Nowy 5-letni termin od końca roku, w którym zastosowano środek."]
+} {
+    object.get(input.document,"enforcement_action_applied",false)==true
+}
+
+# ══════ P1164: spousal_solidary_liability — Odpowiedzialność solidarna małżonka (Doc 35) ══════
+else := {
+    "matched":true,"rule_id":"jdg.liability.spousal_solidary",
+    "package":"jdg.liability","priority":1164,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "spousal_liability":true,"liability_scope":"JOINT_MARITAL_PROPERTY",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 29 Ordynacji podatkowej",
+    "_warnings":["Współmałżonek odpowiada solidarnie za zaległości JDG — egzekucja z majątku wspólnego. Odpowiedzialność do wartości udziału w majątku wspólnym."]
+} {
+    object.get(input.jdg_entrepreneur,"has_spouse",false)==true
+    object.get(input.jdg_entrepreneur,"has_tax_arrears",false)==true
+    object.get(input.jdg_entrepreneur,"marital_property_regime","")=="JOINT"
+}

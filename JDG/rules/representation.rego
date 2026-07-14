@@ -128,3 +128,36 @@ else := {
 } {
     input.representation.cross_border == true
 }
+
+# ══ P1214: poa_delivery_ppd1 — Pełnomocnictwo do doręczeń PPD-1 (Doc 35) ══
+else := {
+    "matched":true,"rule_id":"jdg.representation.ppd1_delivery",
+    "package":"jdg.representation","priority":1214,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","representation_type":"PPD-1","representation_fee_pln":0,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 146 § 1 Ordynacji podatkowej",
+    "_warnings":["PPD-1 — pełnomocnictwo TYLKO do odbioru korespondencji. Nie uprawnia do reprezentacji merytorycznej przed US!"]
+} {
+    input.representation.poa_type == "delivery_only"
+}
+
+# ══ P1216: joint_procuration — Prokura łączna (Doc 35) ══
+else := {
+    "matched":true,"rule_id":"jdg.representation.joint_procuration",
+    "package":"jdg.representation","priority":1216,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","representation_type":"JOINT_PROCURATION","representation_fee_pln":0,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Prokura łączna — wymaga współdziałania 2 prokurentów",
+    "_legal_basis":"Art. 109⁴ § 1 KSH",
+    "_warnings":["Prokura łączna — wymaga współdziałania co najmniej dwóch prokurentów. Pojedynczy prokurent NIE może działać samodzielnie."]
+} {
+    input.representation.procuration_type == "joint"
+    object.get(input.representation,"procuration_signatures",0) < 2
+}

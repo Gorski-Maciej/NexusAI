@@ -587,6 +587,45 @@ else := {
 # Standalone Helpers (not in else-chain)
 # ═══════════════════════════════════════════════════════════════════════════════
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# P617: income_cap — Suma ulg ≤ dochód (Doc 36)
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true,
+    "rule_id": "jdg.allowances.income_cap_reached",
+    "package": "jdg.allowances",
+    "priority": 617,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": pit_form,
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "relief_type": "INCOME_CAP",
+    "relief_total_claimed": total_reliefs,
+    "relief_total_capped": min([total_reliefs, annual_income]),
+    "relief_excess_forfeited": max([0, total_reliefs - annual_income]),
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": sprintf("Suma ulg (%.2f PLN) przekracza dochód (%.2f PLN)", [total_reliefs, annual_income]),
+    "_legal_basis": "Art. 26 ust. 1 PIT",
+    "_warnings": [sprintf("UWAGA: Suma ulg osobistych (%.2f PLN) > dochód (%.2f PLN). Nadwyżka %.2f PLN PRZEPADA (nie przechodzi na kolejny rok)! Wyjątek: ulga B+R (carry-forward 6 lat).", [total_reliefs, annual_income, max([0, total_reliefs - annual_income])])]
+} {
+    annual_income := object.get(input.jdg_entrepreneur, "annual_income", 0)
+    annual_income > 0
+    total_reliefs := object.get(input.jdg_entrepreneur, "relief_donation_total", 0)
+        + object.get(input.jdg_entrepreneur, "relief_rehabilitation_total", 0)
+        + object.get(input.jdg_entrepreneur, "relief_internet_total", 0)
+        + object.get(input.jdg_entrepreneur, "relief_blood_total", 0)
+        + object.get(input.jdg_entrepreneur, "relief_union_dues_total", 0)
+    total_reliefs > annual_income
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
+    # Only check non-RD reliefs — RD has separate carry-forward (Art. 26e ust. 8)
+    object.get(input.jdg_entrepreneur, "has_rd_relief", false) == false
+}
+
 # ── joint_allowances_limit_info — P616 informational helper ────────────────────
 # Cel biznesowy: Łączny limit ulg — suma odliczeń ≤ dochód
 # Używane przez upstream passy do walidacji, NIE jest regułą decyzyjną

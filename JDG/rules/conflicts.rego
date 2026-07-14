@@ -630,6 +630,38 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# P904: allowances_vs_loss — Ulgi nie mogą być odliczane przy stracie (Doc 36)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# P904: allowances_vs_loss — Strata blokuje ulgi osobiste (poza B+R carry-forward)
+else := {
+    "matched": true,
+    "rule_id": "jdg.conflicts.allowances_vs_loss",
+    "package": "jdg.conflicts",
+    "priority": 904,
+    "cross_domain_conflict": true,
+    "conflict_domains": ["allowances", "pit"],
+    "conflict_severity": "HIGH",
+    "conflict_resolution": "BLOCK_NON_RD_ALLOWANCES",
+    "conflict_message": "JDG wykazuje stratę — ulgi osobiste nie mogą być odliczane (wyjątek: B+R carry-forward 6 lat)",
+    "annual_income": annual_income,
+    "non_rd_allowances_claimed": allowances_claimed,
+    "rd_carry_forward_allowed": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Strata JDG — ulgi osobiste zablokowane",
+    "_legal_basis": "Art. 26 ust. 1 PIT, Art. 26e ust. 8 PIT",
+    "_warnings": [sprintf("STRATA %.2f PLN — ulgi osobiste NIE mogą być odliczane! Wyjątek: ulga B+R (carry-forward 6 lat).", [annual_loss])]
+} {
+    annual_income := object.get(input.jdg_entrepreneur, "annual_income", 0)
+    annual_income <= 0
+    annual_loss := -annual_income
+    allowances_claimed := object.get(input.jdg_entrepreneur, "relief_donation_total", 0) > 0
+        or object.get(input.jdg_entrepreneur, "relief_rehabilitation_total", 0) > 0
+        or object.get(input.jdg_entrepreneur, "relief_internet_total", 0) > 0
+    allowances_claimed == true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # R0611-R0612: Konflikty pozostałe — Amortyzacja, Kursy FX
 # ═══════════════════════════════════════════════════════════════════════════════
 

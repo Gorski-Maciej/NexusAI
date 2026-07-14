@@ -2,30 +2,10 @@
 # NexusAI JDG Policies — Rule Metadata + Temporal Validity
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
-# title: Rule Metadata Registry — Versioning, Temporal Validity, Severity, Remediation
-# description: |
-#   Centralny rejestr metadanych dla wszystkich reguł JDG. Zawiera:
-#   - rules_metadata: mapowanie rule_id → {version, severity, remediation, references}
-#   - temporal_validity: per-rule valid_from / valid_to (Polski Ład, KSeF, ZUS, SLIM VAT 3)
-#   - policy_version: wersja całego pakietu JDG (YYYY.MM.DD)
-#   - Helpers: get_rule_metadata(), get_rule_severity(), is_temporal_rule(),
-#     get_rule_validity(), all_registered_rules(), all_temporal_rules()
-#   Używany przez wszystkie pakiety poprzez `import data.jdg.metadata`.
-#   `import data.jdg.helpers` importuje z powrotem `import data.jdg.metadata`
-#   dla helpers.is_active(rule_id, date_str) — bezpieczne (brak cyklu).
-# architecture: Single Source of Truth (SSoT) dla metadanych reguł
-#   + Temporal Bundle Routing (zgodne z Doc 34 §0.1 Temporalność)
-# legal_basis: N/A (metadata — nie zawiera reguł podatkowych)
-# edge_cases:
-#   - Niezarejestrowane rule_id → get_rule_metadata/validity zwracają {} / null
-#   - Brak wpisu w temporal_validity = reguła ZAWSZE AKTYWNA (wariant A — bezpieczny dla wstecznej kompatybilności)
-#   - valid_to == null = obowiązuje do odwołania (open-ended)
-#   - data ISO YYYY-MM-DD porównywana leksykograficznie (Rego >= dla stringów
-#     działa poprawnie dla formatu ISO — potwierdzone przez istniejący kod
-#     w validation.rego R0620: inv_date >= "2026-02-01")
-# package: jdg.metadata
-# deprecated: false
+# Central metadata registry for all JDG rules.
+# Contains: rules_metadata, temporal_validity, policy_version.
+# Architecture: Single Source of Truth (SSoT).
+# Package: jdg.metadata (imported by helpers, no imports).
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.metadata
@@ -115,17 +95,17 @@ rules_metadata := {
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 # Pobiera metadane dla konkretnej reguły
-get_rule_metadata(rule_id) = metadata {
+get_rule_metadata(rule_id) = metadata if {
     metadata := object.get(rules_metadata, rule_id, {})
 }
 
 # Pobiera severity reguły
-get_rule_severity(rule_id) = severity {
+get_rule_severity(rule_id) = severity if {
     severity := object.get(object.get(rules_metadata, rule_id, {}), "severity", "UNKNOWN")
 }
 
 # Lista wszystkich zarejestrowanych rule_id
-all_registered_rules = keys {
+all_registered_rules = keys if {
     keys := object.keys(rules_metadata)
 }
 
@@ -252,22 +232,22 @@ temporal_validity := {
 # ── Temporal Validity Helpers ────────────────────────────────────────────────
 
 # Czy reguła ma wpis w rejestrze temporalności (jest "temporalna")
-is_temporal_rule(rule_id) {
+is_temporal_rule(rule_id)  if {
     temporal_validity[rule_id]
 }
 
 # Lista wszystkich temporalnych rule_id
-all_temporal_rules = keys {
+all_temporal_rules = keys  if {
     keys := object.keys(temporal_validity)
 }
 
 # Pobiera okres obowiązywania reguły ({} jeśli brak wpisu)
-get_rule_validity(rule_id) = v {
+get_rule_validity(rule_id) = v  if {
     not is_temporal_rule(rule_id)
     v := {}
 }
 
-get_rule_validity(rule_id) = v {
+get_rule_validity(rule_id) = v  if {
     is_temporal_rule(rule_id)
     v := temporal_validity[rule_id]
 }

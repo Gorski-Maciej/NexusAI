@@ -2,21 +2,12 @@
 # NexusAI JDG Policies — Common Helpers
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
-# title: JDG Common Helpers — Reusable Utility Functions
-# description: |
-#   Wspólne funkcje pomocnicze dla wszystkich pakietów JDG.
-#   Używane przez wszystkie pakiety poprzez `import data.jdg.helpers`.
-#   Zawiera: threshold helpers, tax form detection, field confidence,
-#   routing reason builders, currency/date helpers, MPP detection,
-#   warning builders, **temporal gating** (is_active / is_active_now).
-#   Łańcuch import: biznes → helpers → metadata (brak cyklu, metadata ma no imports).
-# architecture: B2 Decoupled Thresholds — używa data.thresholds (nie input.thresholds)
-#   dla lepszego cache'owania OPA i mniejszych payloadów API.
-#   Temporal Validity Registry w metadata jest SSoT dla temporalności reguł.
-# priority: N/A (helper library, nie reguła decyzyjna)
-# package: jdg.helpers
-# deprecated: false
+# Common helpers for all JDG packages.
+# Provides: threshold helpers, tax form detection, field confidence,
+# routing reason builders, currency/date helpers, MPP detection,
+# warning builders, temporal gating (is_active / is_active_now).
+# Architecture: B2 Decoupled Thresholds.
+# Package: jdg.helpers
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.helpers
@@ -26,53 +17,53 @@ import data.jdg.metadata
 # ── Threshold Helpers ─────────────────────────────────────────────────────────
 
 # Bezpieczny odczyt progu z data.thresholds.jdg.limits
-get_jdg_limit(key, fallback) = value {
+get_jdg_limit(key, fallback) = value  if {
     value := object.get(data.thresholds.jdg.limits, key, fallback)
 }
 
 # Bezpieczny odczyt stawki z data.thresholds.jdg.rates
-get_jdg_rate(key, fallback) = rate {
+get_jdg_rate(key, fallback) = rate  if {
     rate := object.get(data.thresholds.jdg.rates, key, fallback)
 }
 
 # ── Tax Form Detection ────────────────────────────────────────────────────────
 
 # Zwraca formę opodatkowania JDG (PIT_SCALE / LINEAR / LUMP_SUM / TAX_CARD)
-jdg_tax_form = form {
+jdg_tax_form = form  if {
     form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
 }
 
 # Czy JDG jest na skali podatkowej?
-is_scale {
+is_scale  if {
     jdg_tax_form == "PIT_SCALE"
 }
 
 # Czy JDG jest na podatku liniowym?
-is_linear {
+is_linear  if {
     jdg_tax_form == "LINEAR"
 }
 
 # Czy JDG jest na ryczałcie?
-is_lump_sum {
+is_lump_sum  if {
     jdg_tax_form == "LUMP_SUM"
 }
 
 # Czy JDG jest na karcie podatkowej?
-is_tax_card {
+is_tax_card  if {
     jdg_tax_form == "TAX_CARD"
 }
 
 # ── Field Confidence Helpers ───────────────────────────────────────────────────
 
 # Sprawdza czy confidence pola jest poniżej progu JDG
-jdg_fc_below_threshold(fc_field, threshold_key) {
+jdg_fc_below_threshold(fc_field, threshold_key)  if {
     object.get(input.confidence, fc_field, 1.0) < object.get(data.thresholds.jdg.fc_thresholds, threshold_key, 0.0)
     object.get(input.confidence, fc_field, 1.0) > 0
 }
 
 # ── Building Routing Reason ────────────────────────────────────────────────────
 
-build_jdg_routing_reason(tax_form, field_name, confidence, threshold) = reason {
+build_jdg_routing_reason(tax_form, field_name, confidence, threshold) = reason  if {
     reason := concat("", [
         "[JDG] ", tax_form, ": ", field_name, " confidence ",
         sprintf("%.2f", [confidence]),
@@ -84,7 +75,7 @@ build_jdg_routing_reason(tax_form, field_name, confidence, threshold) = reason {
 # ── Amount / Currency Helpers ──────────────────────────────────────────────────
 
 # Konwertuje kwotę brutto na EUR używając kursu z thresholds
-jdg_amount_eur = eur {
+jdg_amount_eur = eur  if {
     eur := input.invoice.amount_gross / object.get(data.thresholds.jdg.rates, "eur_pln", 4.5)
 }
 
@@ -93,19 +84,19 @@ jdg_amount_eur = eur {
 # Oblicza liczbę dni między dwiema datami ISO (date2 - date1)
 # Używa time.parse_ns do konwersji na nanosekundy, potem dzieli na dni
 # Przykład: days_between("2026-01-01", "2026-01-15") → 14
-days_between(date1, date2) = days {
+days_between(date1, date2) = days  if {
     t1 := time.parse_ns("2006-01-02", date1)
     t2 := time.parse_ns("2006-01-02", date2)
     days := (t2 - t1) / 86400000000000
 }
 
 # Sprawdza czy data transakcji mieści się w okresie obowiązywania reguły JDG
-jdg_is_valid_period(date_str) {
+jdg_is_valid_period(date_str)  if {
     date_str >= object.get(data.thresholds.jdg, "valid_from", "2000-01-01")
     not object.get(data.thresholds.jdg, "valid_to", null)
 }
 
-jdg_is_valid_period(date_str) {
+jdg_is_valid_period(date_str)  if {
     date_str >= object.get(data.thresholds.jdg, "valid_from", "2000-01-01")
     date_str <= object.get(data.thresholds.jdg, "valid_to", "2099-12-31")
 }
@@ -125,16 +116,16 @@ jdg_is_valid_period(date_str) {
 # Typowe użycie w innym pakiecie Rego:
 #   import data.jdg.helpers
 #   ...
-#   decide := { ... } {
+#   decide := { ... }  if {
 #     is_active("jdg.zus.health_scale", "2026-03-15")   # TRUE (Polski Ład nadal obowiązuje)
 #     is_active("jdg.zus.health_scale", "2021-12-31")  # FALSE (przed Polskim Ładem)
 #     is_active("jdg.business.ceidg_registration_check", "2026-03-15")  # TRUE (brak wpisu)
 #   }
-is_active(rule_id, date_str) {
+is_active(rule_id, date_str)  if {
     not metadata.is_temporal_rule(rule_id)
 }
 
-is_active(rule_id, date_str) {
+is_active(rule_id, date_str)  if {
     validity := metadata.get_rule_validity(rule_id)
     valid_from := object.get(validity, "valid_from", "0000-01-01")
     valid_to := validity.valid_to
@@ -142,7 +133,7 @@ is_active(rule_id, date_str) {
     date_str >= valid_from
 }
 
-is_active(rule_id, date_str) {
+is_active(rule_id, date_str)  if {
     validity := metadata.get_rule_validity(rule_id)
     valid_from := object.get(validity, "valid_from", "0000-01-01")
     valid_to := validity.valid_to
@@ -154,20 +145,20 @@ is_active(rule_id, date_str) {
 # Wygodny wrapper — czy reguła jest aktywna TERAZ (używa daty z input)
 # Szuka daty w kolejności: input.evaluation_date → input.invoice.transaction_date
 # → input.invoice.issue_date → input.jdg_entrepreneur.tax_period_start
-is_active_now(rule_id) {
+is_active_now(rule_id)  if {
     eval_date := object.get(input, "evaluation_date", "")
     eval_date != ""
     is_active(rule_id, eval_date)
 }
 
-is_active_now(rule_id) {
+is_active_now(rule_id)  if {
     not object.get(input, "evaluation_date", "")
     inv_date := object.get(input.invoice, "transaction_date", "")
     inv_date != ""
     is_active(rule_id, inv_date)
 }
 
-is_active_now(rule_id) {
+is_active_now(rule_id)  if {
     not object.get(input, "evaluation_date", "")
     not object.get(input.invoice, "transaction_date", "")
     inv_date := object.get(input.invoice, "issue_date", "")
@@ -193,9 +184,9 @@ jdg_is_mpp_sensitive("ALCOHOL")
 # ── Warning Builders ───────────────────────────────────────────────────────────
 
 # Buduje array ostrzeżeń z opcjonalnym warningiem
-build_warnings(info_msg, warning_msg, condition) = warnings {
+build_warnings(info_msg, warning_msg, condition) = warnings  if {
     condition
     warnings := [info_msg, warning_msg]
-} else = [info_msg] {
+} else = [info_msg]  if {
     warnings := [info_msg]
 }

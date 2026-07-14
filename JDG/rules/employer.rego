@@ -263,3 +263,160 @@ else := {
     input.employment.contract_amount_gross <= 200
     not input.employment.has_other_insurance_title
 }
+
+# ══ P1223: employer_obligations_checklist — Pełna checklista JDG z pracownikami (Doc 35) ══
+else := {
+    "matched":true,"rule_id":"jdg.employer.obligations_checklist",
+    "package":"jdg.employer","priority":1223,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","employment_tax_obligation":"FULL_CHECKLIST",
+    "pit4r_required":true,"pit11_required":true,"pit8ar_required":true,
+    "zus_dra_required":true,"zus_rca_required":true,"ppk_required":true,
+    "bhp_training_required":true,"ohs_exams_required":true,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"JDG z pracownikami — pełna lista obowiązków",
+    "_legal_basis":"Art. 38, 39, 42 PIT + Art. 46-47 SUS + Art. 31-32 PPK + Art. 237³ KP",
+    "_warnings":["JDG z pracownikami — obowiązki: PIT-4R (mies.), PIT-11 (do 28.02), PIT-8AR (do 31.01), ZUS DRA (mies.), ZUS RCA (mies.), PPK (auto-zapis), szkolenia BHP, badania medycyny pracy, PFRON (≥25 os.)."]
+} {
+    input.employment.has_employees == true
+    object.get(input.employment,"employee_count",0)>=1
+    object.get(input.employment,"obligations_checklist_reviewed",true)==false
+}
+
+# ══════ P470-P477: EMPLOYER SZCZEGÓŁY — Doc 36 §16 (8 reguł) ══════
+
+# P470: employer_zus_dra_monthly — ZUS DRA miesięczna
+else := {
+    "matched":true,"rule_id":"jdg.employer.zus_dra_monthly",
+    "package":"jdg.employer","priority":470,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","zus_dra_required":true,"dra_deadline":"10th_or_15th",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 46 SUS",
+    "_warnings":["ZUS DRA — deklaracja rozliczeniowa miesięczna. Termin: 10. (osoby fizyczne) lub 15. (jednostki budżetowe)."]
+} {
+    input.employment.has_employees==true
+}
+
+# P471: employer_zus_rca_reporting — ZUS RCA raport imienny
+else := {
+    "matched":true,"rule_id":"jdg.employer.zus_rca_reporting",
+    "package":"jdg.employer","priority":471,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","zus_rca_required":true,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 40 SUS",
+    "_warnings":["ZUS RCA — raport imienny o składkach za każdego pracownika. Co miesiąc razem z DRA."]
+} {
+    input.employment.has_employees==true
+}
+
+# P472: employer_pit11_annual — PIT-11 do 28 lutego
+else := {
+    "matched":true,"rule_id":"jdg.employer.pit11_annual",
+    "package":"jdg.employer","priority":472,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","pit11_required":true,"pit11_deadline":"FEBRUARY_28",
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"PIT-11 — termin do 28 lutego!",
+    "_legal_basis":"Art. 39 ust. 1 PIT",
+    "_warnings":["PIT-11 — informacja dla pracownika do 28 lutego. Opóźnienie = grzywna!"]
+} {
+    input.employment.has_employees==true
+    input.calendar.month==2
+    input.calendar.day_of_month>=20
+    object.get(input.employment,"pit11_filed",true)==false
+}
+
+# P473: employer_zus_zua_registration — Zgłoszenie pracownika w 7 dni
+else := {
+    "matched":true,"rule_id":"jdg.employer.zus_zua_registration",
+    "package":"jdg.employer","priority":473,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","zua_deadline_days":7,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Nowy pracownik — zgłoś ZUS ZUA w 7 dni!",
+    "_legal_basis":"Art. 36 ust. 1 SUS",
+    "_warnings":["ZUS ZUA — zgłoszenie nowego pracownika do ubezpieczeń w ciągu 7 dni od zatrudnienia. Opóźnienie = kara!"]
+} {
+    object.get(input.employment,"new_employee_pending_registration",false)==true
+}
+
+# P474: employer_ppk_auto_enrollment — PPK auto-zapis
+else := {
+    "matched":true,"rule_id":"jdg.employer.ppk_auto_enrollment",
+    "package":"jdg.employer","priority":474,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ppk_auto_enrolled":true,"ppk_opt_out_window_days":37,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 32 ustawy o PPK",
+    "_warnings":["PPK — automatyczny zapis pracownika po 3 miesiącach. Pracownik może zrezygnować (opt-out) w ciągu 30+7 dni."]
+} {
+    input.employment.has_employees==true
+    object.get(input.employment,"ppk_enabled",false)==true
+    not input.employment.ppk_employee_opted_out
+}
+
+# P475: employer_osh_training — Szkolenie BHP
+else := {
+    "matched":true,"rule_id":"jdg.employer.osh_training_obligation",
+    "package":"jdg.employer","priority":475,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","osh_training_required":true,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 237³ KP",
+    "_warnings":["Szkolenie BHP — wstępne (przed rozpoczęciem pracy) + okresowe. Wymagane dla każdego pracownika. KUP 100%."]
+} {
+    input.employment.has_employees==true
+    object.get(input.employment,"osh_training_overdue",false)==true
+}
+
+# P476: employer_peron_contribution — PFRON ≥25 pracowników
+else := {
+    "matched":true,"rule_id":"jdg.employer.peron_contribution",
+    "package":"jdg.employer","priority":476,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","peron_required":true,"peron_threshold":25,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"PFRON ≥25 pracowników",
+    "_legal_basis":"Art. 21 ustawy PFRON",
+    "_warnings":["PFRON — ≥25 pracowników. Wymagane 6% zatrudnienia ON lub miesięczna wpłata. DEK-I-a do 20-go."]
+} {
+    input.employment.employee_count>=25
+}
+
+# P477: employer_work_fund — Fundusz Pracy, FGŚP, FS
+else := {
+    "matched":true,"rule_id":"jdg.employer.work_fund_obligations",
+    "package":"jdg.employer","priority":477,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"FP_FGSP_FS","zus_health_rate":"",
+    "business_status":"","fp_rate_pct":2.45,"fgsp_rate_pct":0.10,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 104-107 ustawy o promocji zatrudnienia",
+    "_warnings":["Fundusz Pracy 2.45% + FGŚP 0.10% + Fundusz Solidarnościowy. Składki pracodawcy od wynagrodzeń."]
+} {
+    input.employment.has_employees==true
+}

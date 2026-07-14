@@ -428,3 +428,94 @@ else := {
 }
 
 
+
+# ══════ P450-P454: IMPORT USŁUG SZCZEGÓŁOWY — Doc 36 §14 (5 reguł) ══════
+
+# P450: import_services_non_eu_b2b — Import usług spoza UE B2B
+else := {
+    "matched":true,"rule_id":"jdg.crossborder.import_services_non_eu_b2b",
+    "package":"jdg.crossborder","priority":450,
+    "vat_rate":"0.00","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"IMPORT_SERVICES_NON_EU",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","reverse_charge":true,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 17 ust. 1 pkt 4 VAT",
+    "_warnings":["IMPORT USŁUG NON-EU B2B — reverse charge. JDG rozlicza VAT należny i naliczony. NP na fakturze."]
+} {
+    input.vendor.country not in EU_COUNTRIES
+    input.vendor.country!="PL"
+    input.invoice.direction=="PURCHASE"
+    input.invoice.category in {"SERVICES","IT","CONSULTING","MARKETING"}
+    vendor_is_taxable:=object.get(input.vendor,"is_taxable_person",false)
+    vendor_is_taxable==true
+}
+
+# P451: import_services_non_eu_b2c — B2C spoza UE
+else := {
+    "matched":true,"rule_id":"jdg.crossborder.import_services_non_eu_b2c",
+    "package":"jdg.crossborder","priority":451,
+    "vat_rate":"0.23","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"IMPORT_B2C",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 28k-28l VAT",
+    "_warnings":["Import usług B2C spoza UE — VAT należny w PL (23%). Sprawdź czy nie dotyczy Cię OSS/IOSS."]
+} {
+    input.vendor.country not in EU_COUNTRIES
+    input.vendor.country!="PL"
+    input.invoice.direction=="PURCHASE"
+    object.get(input.vendor,"is_taxable_person",true)==false
+}
+
+# P452: import_services_tax_point — Moment powstania obowiązku
+else := {
+    "matched":true,"rule_id":"jdg.crossborder.import_services_tax_point",
+    "package":"jdg.crossborder","priority":452,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","tax_point":"EARLIER_OF_DELIVERY_OR_PAYMENT",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 19a ust. 1 VAT",
+    "_warnings":["Import usług — obowiązek VAT powstaje w dacie wykonania usługi LUB zapłaty (wcześniejsza). JPK_V7 w okresie powstania obowiązku."]
+} {
+    input.invoice.procedure=="IMPORT_SERVICES"
+}
+
+# P453: import_services_fx_rate — Kurs NBP z dnia poprzedzającego
+else := {
+    "matched":true,"rule_id":"jdg.crossborder.import_services_fx_rate",
+    "package":"jdg.crossborder","priority":453,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","fx_source":"NBP_DAY_BEFORE_TAX_POINT",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 31a ust. 1 VAT",
+    "_warnings":["Kurs waluty dla importu usług — NBP z dnia poprzedzającego powstanie obowiązku podatkowego."]
+} {
+    input.invoice.currency!="PLN"
+    input.invoice.procedure=="IMPORT_SERVICES"
+}
+
+# P454: import_services_tax_base — Podstawa opodatkowania = netto
+else := {
+    "matched":true,"rule_id":"jdg.crossborder.import_services_tax_base",
+    "package":"jdg.crossborder","priority":454,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","tax_base":"NET_AMOUNT_DUE_TO_SUPPLIER",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 29a ust. 1 VAT",
+    "_warnings":["Podstawa opodatkowania importu usług = kwota netto należna dostawcy. Nie uwzględniaj własnych kosztów dodatkowych."]
+} {
+    input.invoice.procedure=="IMPORT_SERVICES"
+}

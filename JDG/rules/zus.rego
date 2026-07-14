@@ -267,8 +267,32 @@ else := {
     health_rate = "0.049" { pit_form == "LINEAR" }
 }
 
+# ══════ P1222: zus_concurrent_low_salary — Zbieg etat+JDG (pensja < min) (Doc 36) ══════
+else := {
+    "matched": true, "rule_id": "jdg.zus.concurrent_low_salary",
+    "package": "jdg.zus", "priority": 1222,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "STANDARD_FROM_JDG",
+    "zus_social_due": true, "zus_health_due": true,
+    "zus_health_rate": health_rate,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Pensja z etatu < minimalna — składki społeczne z JDG",
+    "_legal_basis": "Art. 9 ust. 2a ustawy o SUS",
+    "_warnings": [sprintf("Pensja z etatu (%.2f PLN) < minimalna (%.2f PLN) — składki społeczne MUSZĄ być płacone z JDG!", [salary, min_wage])]
+} {
+    input.jdg_entrepreneur.concurrent_employment == true
+    salary := object.get(input.jdg_entrepreneur, "concurrent_employment_salary", 0)
+    min_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "minimum_wage_gross", 4666)
+    salary < min_wage
+    salary > 0
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
+    health_rate := "0.09" { pit_form == "PIT_SCALE" }
+    health_rate := "0.049" { pit_form == "LINEAR" }
+}
+
 # ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  P1200zs-P1206zs — ZASIŁKI ZUS (Sickness, Maternity, Care, Accident)     ║
 # ║  Ustawa o świadczeniach pieniężnych z ubezpieczenia społecznego           ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
