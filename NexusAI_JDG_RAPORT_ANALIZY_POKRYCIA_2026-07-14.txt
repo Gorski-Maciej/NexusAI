@@ -1,0 +1,550 @@
+================================================================================
+                NEXUSAI JDG — RAPORT ANALIZY POKRYCIA
+                  CZY MODUŁ ZASTĄPI KSIĘGOWEGO?
+              CZY REGUŁY POKRYWAJĄ WSZYSTKIE PRZEPISY?
+
+                        RAPORT KRYTYCZNY v1.0
+                        Data: 2026-07-14
+                        Plik: NexusAI_JDG_RAPORT_ANALIZY_POKRYCIA_2026-07-14.txt
+                        Baza: JDG/README.md, MANIFEST.md, COVERAGE_REPORT.md,
+                              docs/ARCHITECTURE.md, bundles/bundle.sh,
+                              Plan OPA/49, 50, 51, 52,
+                              NexusAI_JDG_DROGA_DO_PELNEGO_ZASTAPIENIA,
+                              NexusAI_JDG_PELNE_POKRYCIE_PRAWNE,
+                              NexusAI_JDG_STRATEGIC_IMPROVEMENTS_7000
+================================================================================
+
+SPIS TREŚCI
+------------
+ 1. SZYBKA ODPOWIEDŹ
+ 2. ARCHITEKTURA — CO FAKTYCZNIE ISTNIEJE
+ 3. LICZBY, KTÓRE DEFINIUJĄ RZECZYWISTOŚĆ
+ 4. CO JDG DZIŚ POKRYWA (~60-75% PRACY KSIĘGOWEGO)
+ 5. CO WYMAGA 'PARU KLIKNIĘĆ' PRZEZ PRACODAWCĘ (~20-30%)
+ 6. CO WYMAGA CERTYFIKOWANEGO KSIĘGOWEGO (~10-15%)
+ 7. PUNKT KRYTYCZNY: HYPER RULES SZABLONOWE
+ 8. REALISTYCZNY TIMELINE DO PEŁNEGO ZASTĄPIENIA
+ 9. POKRYCIE PER DOMENA PRAWNA
+10. FINALNA ODPOWIEDŹ NA 4 PYTANIA UŻYTKOWNIKA
+11. REKOMENDACJA WG PROFILU KLIENTA
+12. KLUCZOWE WNIOSKI I RYZYKA
+
+
+================================================================================
+1. SZYBKA ODPOWIEDŹ
+================================================================================
+
+  PYTANIE                                       ODPOWIEDŹ
+  --------------------------------------------- ----------------------
+  Czy JDG zastąpi księgowego?                   Dziś: ~60-75%.
+                                                Za 12 tygodni: 95-98%.
+  Czy reguły pokrywają wszystkie przepisy?      Dla typowej JDG: ~95%.
+                                                Dla nietypowej: <60%.
+  Czy resztę pracodawca ogarnie 'paroma         TAK dla 20-30%.
+  kliknięciami'?                                Certyfikowany księgowy
+                                                potrzebny dla 10-15%.
+  Czy system ma warstwę wykonawczą              TAK — pełna aplikacja
+  (aplikację mobilną/web)?                      enterprise z UI + REST API.
+
+
+================================================================================
+2. ARCHITEKTURA — CO FAKTYCZNIE ISTNIEJE
+================================================================================
+
+JDG NIE jest wyizolowaną biblioteką Rego. Jest zintegrowany z kompletną
+aplikacją enterprise (Litestar + Flet UI + Granian + DuckDB).
+
+WARSTWA REGUŁ (silnik decyzyjny OPA/Rego)
+-----------------------------------------
+  JDG/rules/ — 163 pliki .rego, ~117 866 linii Rego
+  JDG/bundles/bundle.sh — buduje bundle .tar.gz dla OPA Server
+  JDG/bundles/manifest.json — wersja 3.0.0, OPA v0.60+
+  bin/opa — binarka OPA w projekcie
+  policies/jdg/ — alternatywna lokalizacja reguł (system legacy)
+
+WARSTWA APLIKACJI (wykonawcza)
+------------------------------
+  main.py + pixi.toml → pełny startup: pixi run api/worker/dev/doctor
+  nexus_ai/ — główna aplikacja (api/, frontend/, services/, tax/, agents/)
+  nexus_ai/api/routes/ — 34 kontrolery REST (invoices, ksef, tax_policy,
+                          tax_math, risk, triage, billing, audit, itp.)
+  nexus_ai/frontend/ — aplikacja Flet/desktop (UI z kliknięciami)
+  nexus_ai/api/app.py — główna aplikacja Litestar z RBAC, OTel
+
+INTEGRACJE Z URZĘDAMI (wykonują akcje)
+---------------------------------------
+  nexus_ai/services/ksef_service.py       — wystawianie faktur do KSeF
+  nexus_ai/services/ksef_generator.py     — generator JPK_V7
+  nexus_ai/services/white_list_service.py — weryfikacja Białej Listy MF
+  nexus_ai/services/gus_bir_client.py     — GUS BIR (CEIDG)
+  nexus_ai/tax/nbp_client.py              — kursy NBP/EBC z fallback
+  nexus_ai/services/bank_import.py        — import wyciągów bankowych
+  nexus_ai/services/vat_reconciliation.py — uzgodnienie VAT
+  nexus_ai/services/inventory_fifo.py     — FIFO dla magazynu
+  nexus_ai/services/fixed_assets.py       — środki trwałe + amortyzacja
+  nexus_ai/services/fx_revaluation.py     — różnice kursowe
+  nexus_ai/services/period_closer.py      — zamykanie okresów
+  nexus_ai/services/white_list_service.py — sprawdzanie kontrahentów
+
+WARSTWA AI/STRATEGII
+--------------------
+  nexus_ai/agents/ — orkiestrator agentów, telemetry, decision_trace
+  nexus_ai/tax/ — 18 modułów (A1-A3, B1-B3, C1-C3 + Phase 5):
+    A1 immutable_audit.py            — Merkle Tree + HMAC-SHA256
+    A2 rego_linter.py                — wykrywanie hardcoded values
+    A3 legal_explainer.py            — czytelne noty po polsku
+    B1 opa_wasm_poc.py               — DuckDB WASM acceleration
+    B2 orthogonal_array_tester.py    — property-based testing
+    B3 dynamic_dag.py                — telemetry fail-fast
+    C1 federated_kup_benchmark.py    — prywatny benchmark KUP
+    C2 tax_ruling_drafter.py         — szablon wniosku do KIS
+    C3 liquidity_oracle.py           — symulacja memoriał/kasowa
+    + r0582_migration.py, ip_box_heuristic_guard.py, nbp_client.py,
+      aml_compliance.py, rot_guard.py, wasm_gc.py
+
+LOCAL SERVICES (TAX)
+--------------------
+  nexus_ai/services/tax_strategies.py    — symulacje podatkowe
+  nexus_ai/services/tax_simulator.py     — symulator
+  nexus_ai/services/anomaly_detector.py  — anomalia
+  nexus_ai/services/billing_estimator.py — prognozowanie należności
+  nexus_ai/services/cashflow_projection.py — projekcja cashflow
+  nexus_ai/services/fixed_assets.py     — amortyzacja ŚT
+  nexus_ai/services/tax_simulator.py    — symulator podatkowy
+  nexus_ai/services/vat_reconciliation.py — uzgodnienie VAT
+
+WNIOSEK: Użytkownik może FAKTYCZNIE 'kliknąć przycisk' i wystawić
+fakturę KSeF, złożyć JPK_V7, sprawdzić Białą Listę, zamknąć miesiąc.
+
+
+================================================================================
+3. LICZBY, KTÓRE DEFINIUJĄ RZECZYWISTOŚĆ
+================================================================================
+
+Istnieją 4 sprzeczne zestawienia — różnią się, bo liczą różne rzeczy:
+
+  ŹRÓDŁO                                  REGO      PLAN %  UWAGI
+  ---------------------------------------- ----     -----  ---------------------
+  JDG/README.md                            633     779  81%  Marketing material
+  JDG/COVERAGE_REPORT.md (audyt)            44     509   8%  Bezpośredni audyt
+                                                              luk z prawa
+  DROGA_DO_PELNEGO_ZASTAPIENIA (strategia) 204     779  26%  Skan faktycznego
+                                                              kodu matched:true
+  49_JDG_IMPLEMENTATION_SUMMARY (FINAL)    435     779  56%  Według autorów
+  JDG/MANIFEST.md (auto-gen, inflacja)     6368  ?818%    Duplikaty, szkielety,
+                                                              placeholder-y
+
+WNIOSEK: Realna produkcyjnie wartość to 435 reguł w 38 plikach z prawdziwą
+podstawą prawną (wg 49_SUMMARY i 52_AUDYT). Reszta "6 368" w MANIFEST.md to
+template-y i szkielety z R-ID — nie są to kompletne reguły gotowe
+produkcyjnie.
+
+
+================================================================================
+4. CO JDG DZIŚ POKRYWA (~60-75% OPERACYJNEJ PRACY KSIĘGOWEGO)
+================================================================================
+
+Wg DROGA_DO_PELNEGO sekcja 7 (zaktualizowanej o Phase 5):
+
+CODZIENNIE — 85% pokrycia
+-------------------------
++ OCR faktury z confidence scoringiem (PASS 1)
++ Weryfikacja Białej Listy dla przelewów >15 000 (PASS 2)
++ MPP dla kategorii wrażliwych >15 000 (PASS 2)
++ Sprawdzenie statusu kontrahenta w CEIDG (PASS 0 RISK)
++ Wystawianie faktur z prawidłową stawką VAT (PASS 4)
++ Wykrywanie pustych faktur / karuzeli VAT (KKS P62)
+
+MIESIĘCZNIE — 75% pokrycia
+---------------------------
++ ZUS DRA (do 15-go): pełne składki społeczne (19.52%/8%/chorobowa/
+  wypadkowa/FP), Mały ZUS Plus, ulga na start, preferencyjny,
+  zdrowotna 9%/4.9%/progowa
++ Zaliczka PIT (do 20-go): forma skali/liniowy/ryczałt, kwota wolna
+  30 000, próg 120 000, kwotowe odliczenie zdrowotnej
++ JPK_V7 (do 25-go): struktura, GTU_01-13, MPP, kody
+  / deklaracja VAT-R-VAT-Z: P962 (7 dni) — częściowo /procedures.rego
+
+KWARTALNIE — 85% pokrycia
+-------------------------
++ JPK_V7K dla małych podatników (VAT/procedures P232)
++ VAT-UE (transakcje z UE) (crossborder P43, P46)
++ Roczne rozliczenie zdrowotnej (zus.rego P748-P750)
+
+ROCZNIE — 50% pokrycia (główna luka)
+-------------------------------------
++ PIT-36/36L/28 — 85% (pit/advances_returns + exemptions + forms)
++ Inwentaryzacja roczna (UoR) — 0% (P875-P879 szablonów,
+  brak wykonawcy)
++ Remanent końcowy — 70%
++ Zamknięcie ksiąg (P&L, bilans) — BRAK
++ Sprawozdanie finansowe UoR — BRAK (dla >2 mln EUR obligatoryjne)
++ Korekty roczne JPK_V7 — 60%
++ Rozliczenie straty 5-letniej — OK
+
+INCYDENTALNIE — 70% pokrycia
+-----------------------------
++ Zmiana formy opodatkowania (pit/transitions) — 80%
++ Wniosek o interpretację indywidualną (C2 tax_ruling_drafter) — 90%
++ Optymalizacja ulg (B+R, IP Box) — 100% (allowances.rego)
++ Restrukturyzacja (JDG → sp. z o.o.) — 85%
++ Sukcesja — 75%
++ Czynny żal (art. 16 KKS) — powierzchownie
++ Odwołania od decyzji US — BRAK
++ Kontrola KAS — audytowalność OK (Merkle Tree w A1)
+
+
+================================================================================
+5. CO WYMAGA 'PARU KLIKNIĘĆ' PRZEZ PRACODAWCĘ (~20-30%)
+================================================================================
+
+W tych obszarach JDG dostarcza diagnozę/expertyzę, a pracodawca musi
+'kliknąć' w UI:
+
+  ZADANIE                            CO ROBI JDG              CO KLIKA
+  ---------------------------------- ------------------------ -------------------------
+  Wystawienie faktury z MPK          Wybiera stawkę, GTU,     Klika "Wyślij do KSeF"
+                                     procedurę                w UI
+  Złożenie JPK_V7 za miesiąc         Generuje XML z wpisów    Klika "Złóż do US"
+                                     PKPiR                    (lub asystent auto)
+  Złożenie ZUS DRA                   Oblicza składki wg       Klika "Wyślij do ZUS
+                                     statusu                  PUE" (autoryzacja
+                                                                profilem zaufanym)
+  Wystąpienie o interpretację        Generuje szablon         Klika "Wyślij do KIS
+  indywidualną (WIS)                 wniosku                  przez ePUAP" + podpis
+                                                                kwalifikowany
+  Czynny żal KKS art. 16            Wykrywa wykroczenie,     Drukuje, podpisuje,
+                                     generuje pismo           wysyła do US (zachować
+                                                                UPO)
+  Zmiana formy opodatkowania         Wyliczy konsekwencje      Klika "Zmień" w PUE
+                                     PIT                      US/ZUS do 20 stycznia
+  Wybór optymalizacji                Symulacja                Klika "Złóż wniosek"
+  (B+R/IP Box)                       (what_if_arbitrage.py)
+  Rejestracja CEIDG zmiana danych    Wykrywa potrzebę         Klika "Aktualizuj
+                                     (business.rego P902)      CEIDG" przez ePUAP
+
+WNIOSEK: Te 20-30% są obsługiwalne dla pracodawcy z podstawową wiedzą
+księgową. Wymagają tylko dostępu do profilu zaufanego i podstawowej
+uwagi.
+
+
+================================================================================
+6. CO WYMAGA CERTYFIKOWANEGO KSIĘGOWEGO/DORADCY (~10-15%)
+================================================================================
+
+Tutaj nawet po 'kliknięciu' potrzebujesz eksperta:
+
+  ZADANIE                                DLACZEGO NIE WYSTARCZĄ 'KLIKNIĘCIA'
+  -------------------------------------- ---------------------------------
+  Pełna kontrola KAS                     Obecność przedstawiciela, znajomość
+                                         procedury, obrona werdyktu.
+                                         System dostarcza Merkle Tree ale
+                                         trzeba go umieć pokazać.
+  Kontrola celno-skarbowa                Reprezentacja, pisma procesowe,
+                                         znajomość KKS + procedury celnej
+  Interpretacja art. 119a OrdPU (GAAR)   Wymaga analizy orzecznictwa
+                                         NSA/WSA — system ma uproszczoną
+                                         regułę
+  IP Box — wątpliwe kwalifikacje         Wymaga ekspertyzy technicznej +
+                                         prawnej (algorytm to IP?). System
+                                         ma heurystykę ale nie pewność
+  Ceny transferowe >2 mln                Wymaga lokalnej dokumentacji TP,
+                                         benchmarków, analizy funkcjonalnej
+                                         — system ma tylko safe harbour
+  Pełna księgowość >2 mln EUR           Wymaga sprawozdań finansowych wg
+                                         UoR art. 45-52 — system NIE ma
+                                         tego wykonawcy
+  Restrukturyzacja JDG → sp. z o.o.      Wymaga strategii podatkowej
+                                         (CIT estoński? sp. z o.o. klasyczna?),
+                                         analizy wyjścia z majątku
+  Sukcesja po śmierci przedsiębiorcy     Wymaga notarialnego zarządu
+                                         sukcesyjnego, kwalifikacji
+                                         spadkowej
+  Reprezentacja w NSA/WSA                Wymaga radcy/adwokata — pisma
+                                         procesowe, skargi kasacyjne
+  Nowelizacja przepisów w ciągu roku     System ma legal_delta_agent.py ale
+                                         człowiek musi ocenić wpływ
+                                         (decyzja strategiczna)
+
+
+================================================================================
+7. PUNKT KRYTYCZNY: HYPER RULES SZABLONOWE
+================================================================================
+
+Pliki JDG/rules/jdg/hyper/*/plan45.rego (~520 reguł) mają placeholder
+zamiast artykułu ustawy:
+
+  rego
+  "_legal_basis": "R-ID"  <- zamiast "Art. 86 ust. 2a VAT"
+  
+
+PRZYKŁADY z kodu:
+  Line 10 jdg.hyper.wis.solidarity.levy.aggregate.alert_900k: R-ID
+  Line 60 jdg.hyper.family.audit.aggregate.risk_score_update: R-ID
+  Line 40 jdg.hyper.mdr.mdr.hallmark.a10.main_benefit_test: R-ID
+  Line 195 jdg.hyper.mdr.mdr.aggregate.annual_risk_score: R-ID
+  Line 85 jdg.hyper.audit.binding_info.portfolio.management: R-ID
+  Line 370 jdg.hyper.general.communication.aggregate.status_dashboard: R-ID
+
+WNIOSEK: ~520 'reguł' w 6 368 nie ma prawdziwej podstawy prawnej. Są to
+szablony wygenerowane maszynowo. Nie można ich użyć do obrony przed
+urzędem skarbowym. To istotna czerwona flaga dla kogoś, kto chciałby
+'zastąpić księgowego'.
+
+
+================================================================================
+8. REALISTYCZNY TIMELINE DO PEŁNEGO ZASTĄPIENIA (95-98%)
+================================================================================
+
+Wg NexusAI_JDG_DROGA_DO_PELNEGO_ZASTAPIENIA:
+
+  SPRINT        CZAS     CO DAJE
+  ------------  -------  -------------------------------------------------
+  Sprint 1       4 tyg.  Pełne KKS szczegółowe (230 reguł),
+                          poprawka P914→R0582 (zawieszenie JDG
+                          + składka zdrowotna nadal należna)
+  Sprint 2       3 tyg.  Pełna validacja PKPiR kolumna po kolumnie,
+                          tabela KŚT 881 grup, UoR inwentaryzacja,
+                          kursy NBP z DuckDB time-travel
+  Sprint 3       2 tyg.  MPiPS szczegółowo, zasiłki ZUS (7 reguł),
+                          RODO dla JDG, PCC szczegółowe
+  Sprint 4       3 tyg.  Konflikty międzydomenowe (27 reguł), Merkle
+                          Tree w DuckDB, Legal Explainer UI, Golden Tests
+  ============  =======  =================================================
+  RAZEM          12 tygodni (3 miesiące)
+
+Po 4 sprintach oczekiwane pokrycie: 95-98% codziennej/miesięcznej/rocznej
+pracy typowej JDG.
+
+BUDŻET: ~175 000 PLN (2 senior Rego devs + 1 QA + 1 DevOps + 1 Frontend).
+
+ROI po wdrożeniu:
+  - Zastąpienie pracy księgowego: 500-1 000 PLN/mies./JDG
+  - Przy 1 000 klientów: 500 000 - 1 000 000 PLN/rok
+  - Zwrot z inwestycji w 4-6 miesięcy
+
+
+================================================================================
+9. POKRYCIE PER DOMENA PRAWNA (wg 52_AUDYT_JAKOSCI_REGUL)
+================================================================================
+
+  DOMENA                    %   UWAGI
+  ------------------------ ---- --------------------------------------------
+  KKS                       66% 152/230 reguł — KKS karuzele VAT, faktury
+                              puste, dane nierzetelne OK
+  Edge Cases                45% 90/200 R-ID z Doc 28a (VAT/PIT/ZUS niuanse)
+  Walidacja PKPiR          100% kolumna po kolumnie
+  Klasyfikacja KŚT         100%
+  Konflikty międzyd.       100% 27 reguł (R0586-R0612)
+  Inwentaryzacja UoR       100% tylko szablony, brak wykonawcy
+  MPiPS                    100% FP/FGŚP/PFRON
+  Zasiłki ZUS              100% deklaratoryjnie
+  RODO                     100% art. 17/32/33
+  PCC                      100%
+  VAT substantive           81% P101-P140 (stawki, GTU, MPP)
+  PIT (forms/KUP/zaliczki) ~70%
+  ZUS (składki)            ~80%
+  Cross-border              88%
+  Compliance                41% Biała Lista OK, KSeF średnio
+
+Dodatkowa statystyka (wg NexusAI_JDG_DRUGA_WARSTWA_POPRAWEK Phase 5):
+
+  9 modułów Python v2.0 + 9 modułów Phase 5 = 18 wdrożonych
+  5 integracji Rego Phase 5 (safe_merge, immutable_verdict, R0582,
+    salted hashing, immutable ZUS) Wszystkie wdrożone.
+  23/23 testów strategic_v2_modules.py przechodzi
+
+
+================================================================================
+10. FINALNA ODPOWIEDŹ NA 4 PYTANIA UŻYTKOWNIKA
+================================================================================
+
+----------------------------------------
+10.1 'Czy moduł JDG pokryje pracę księgowego?'
+----------------------------------------
+
+TAK, w 60-75% operacyjnej pracy dziennych/miesięcznych/kwartalnych
+zadań, przy założeniu:
+  - Typowej JDG (skala/liniowy/ryczałt) bez skomplikowanych cross-border
+  - Orotu < 2 mln EUR (nie wymaga pełnej księgowości UoR)
+  - Braku konfliktów międzydomenowych (IP Box + B+R jednocześnie)
+  - Mniej niż 2 transakcje zagraniczne UE/miesiąc
+
+----------------------------------------
+10.2 'Czy w razie braku 100% pracodawca będzie
+      w stanie wykonać te parę kliknięć?'
+----------------------------------------
+
+TAK dla 20-30% braków. Pracodawca z dostępem do ePUAP/profil zaufany +
+podstawową wiedzą podatkową będzie w stanie:
+  - Wystawić i wysłać fakturę przez KSeF
+  - Zweryfikować kontrahenta na Białej Liście
+  - Złożyć JPK_V7 przez e-Urząd
+  - Sprawdzić termin płatności ZUS DRA
+  - Złożyć wniosek o interpretację indywidualną
+
+ALE wymaga ludzkiej ekspertyzy w ~10-15%:
+  - Kontrola KAS (reprezentacja)
+  - IP Box z wątpliwą kwalifikacją techniczną
+  - Ceny transferowe > 2 mln EUR
+  - Pełna księgowość > 2 mln EUR (UoR)
+  - Restrukturyzacja JDG → sp. z o.o./estoński CIT
+  - Sukcesja
+
+----------------------------------------
+10.3 'Czy JDG zastąpi księgowego?'
+----------------------------------------
+
+Odpowiedź warstwowa:
+  - DZIŚ (2026-07-14) — NIE zastępuje, ale asystuje w 60-75% codziennej
+    pracy z wyraźnym 'dźwigniem' (kliknięcia robią zaawansowane rzeczy)
+  - ZA 3 MIESIĄCE (po Sprint 1-4) — zastępuje w 95-98% codziennej/
+    miesięcznej/rocznej pracy typowej JDG
+  - NAWET PO 12 TYGODNIACH — wymaga ludzkiego nadzoru w zakresie:
+    orzecznictwo, nietypowe sytuacje, restrukturyzacje, spory z US
+
+----------------------------------------
+10.4 'Czy reguły pokrywają wszystkie przepisy prawne?'
+----------------------------------------
+
+NIE — uczciwa odpowiedź. Ale pokrywają ~95% typowych przepisów:
+  + VAT (P101-P140 + odliczenia/procedury/JPK/KSeF)
+  + PIT (PIT-0/skala/liniowy/ryczałt + KUP + zaliczki + ulgi)
+  / ZUS (składki OK, zasiłki średnio, edge cases niepełne)
+  / KKS (152/230 — podstawowe przestępstwa/wykroczenia OK,
+      szczegóły sankcji brak)
+  / UoR (deklaratoryjnie OK, ale brak faktycznego wykonawcy
+      sprawozdań)
+  - OrdPU (audyt karnoskarbowy tak, pełna procedura średnio)
+  - Ceny transferowe (uproszczone, brak pełnej dokumentacji TP)
+  - Pełna lista regul klasy B z 50_BRAKUJACE_PUNKTY_PRAWNE.md —
+      ~465 punktów z 509 całkowicie niepokrytych
+
+Te 465 braków to realne luki — wiele z nich to konkretne artykuły
+ustawy VAT (art. 13-40), które nigdy nie zostały w pełni wdrożone.
+
+
+================================================================================
+11. REKOMENDACJA WG PROFILU KLIENTA
+================================================================================
+
+  PROFIL KLIENTA                              REKOMENDACJA
+  ------------------------------------------- ----------------------------
+  Typowa JDG do 1 mln EUR obrotu,             JDG WYSTARCZY, koszt 0
+  skala lub liniowy                            vs księgowy 500-1000 PLN/mies.
+                                               Oszczędność: 6-12 tys. PLN/rok
+  JDG z importem lub B2C e-commerce            JDG + 2h konsultacji
+                                               kwartalnie z doradcą
+  JDG z pracownikami i/lub B+R/IP Box         JDG + rozliczenie roczne
+                                               z doradcą podatkowym
+  JDG > 2 mln EUR obrotu                      Księgowa pełna z JDG
+  lub restrukturyzacja                        jako asystentem
+  Spółka, estoński CIT, audytowana            Pełna księgowa — JDG jest
+                                               w fazie proof-of-concept
+                                               dla tych form
+
+
+================================================================================
+12. KLUCZOWE WNIOSKI I RYZYKA
+================================================================================
+
+CO JEST MOCNĄ STRONĄ
+---------------------
++ Kompletna architektura enterprise (First-Match-Wins, 25-polowy
+  werdykt, Multi-Pass)
++ Kompletna aplikacja z UI (Flet/Litestar) — użytkownik może kliknąć
++ 18 strategicznych modułów Python (A1-A3, B1-B3, C1-C3 + Phase 5)
++ Merkle Tree + HMAC-SHA256 (audytowalność)
++ Property-based testing (orthogonal arrays all-pairs)
++ 8 strategicznych integratorów (KSeF, Biała Lista, NBP, GUS, ...)
++ KSeF obowiązkowy od 2026-02-01 — gotowy (ksef_service + ksef_generator)
++ Realnie pokrywa codzienną pracę typowej JDG w 85%
+
+CO BUDZI WĄTPLIWOŚCI
+---------------------
+- Drastyczna rozbieżność liczb w materiałach marketingowych:
+  81% (README) vs 8% (audyt COVERAGE_REPORT) vs 26% (Droga) vs 56%
+  (49_SUMMARY). To sugeruje brak transparentności w komunikacji.
+- ~520 'hyper' rules z placeholderem R-ID zamiast prawdziwego artykułu
+  ustawy — nie można ich użyć do obrony przed US.
+- 47 zdeprecjonowanych reguł (z audytu 38b_DEDUP_REPORT) — system
+  zarósł w 'stare' wymieszane z nowymi.
+- Brak testów Rego w JDG/tests/ — tylko Python testy (pytest). Testy
+  integracyjne (test_opa_e2e.py) weryfikują poprawność integracji
+  OPA bundle z aplikacją, ale NIE walidują samych reguł Rego jako
+  deterministycznych werdyktów dla wszystkich kombinacji input.
+- 265 hardcoded values wykrytych przez A2 rego_linter — wartości liczbowe
+  i kwoty mają być w data.thresholds.jdg, ale nie są.
+- Brak wykonawcy UoR (inwentaryzacja i sprawozdanie finansowe są
+  deklaratoryjnie w Rego ale brak faktycznego modułu integrującego).
+- Migracja z OPA v0.59+ nie jest w 100% udokumentowana w materiałach
+  dla end-developera.
+
+REALNE RYZYKA DLA INWESTORA/KLIENTA
+------------------------------------
+! Błąd P914 → R0582 (zawieszenie JDG + zdrowotna) — został wdrożony
+  ale jakakolwiek regresja oznacza, że każda JDG w zawieszeniu traci
+  prawo do świadczeń zdrowotnych.
+! Brak pełnego KKS — 152/230 reguł = 78 braków. Dla każdej transakcji
+  powyżej 5 mln PLN brak reguły wykrywającej karalność KKS.
+! Brak pełnej listy 465 punktów z 50_BRAKUJACE_PUNKTY_PRAWNE.md — to
+  jest realny compliance gap na wejściu produkcyjnym.
+
+RYZYKO TECHNICZNE
+------------------
+! Monolityczne pliki Rego (vat.rego 16 326 linii, pit.rego 14 902,
+  kks.rego 10 721) — OPA nie lubi takiej skali; zarządzanie wersjami
+  i testowanie jest trudne.
+! 47 deprecated reguł stale w MANIFEST — mogą mylić developerów i
+  generować fałszywe metryki pokrycia.
+! Brak testów Rego w JDG/tests/ — nawet Phase 5 testy są w
+  tests/test_phase5_modules.py (Python), więc jakość reguł nie jest
+  weryfikowana na bieżąco.
+
+
+================================================================================
+13. PODSUMOWANIE DLA DECYDENTA
+================================================================================
+
+NexusAI JDG to POWAŻNY produkt enterprise z realnym potencjałem, ale ma
+2 problemy do rozwiązania, zanim można powiedzieć 'zastępuje księgowego':
+
+  1. WYŚRODKOWANIE LICZB w materiałach marketingowych.
+     81% vs 8% vs 26% vs 56% to ogromna różnica, która może wprowadzać
+     w błąd inwestorów/klientów.
+     REKOMENDACJA: Wybrać JEDNĄ oficjalną metrykę i używać jej
+     konsekwentnie (np. liczba reguł z produkcyjnym matched:true i
+     niepustym _legal_basis z prawdziwym artykułem ustawy).
+
+  2. UZUPEŁNIENIE 465 brakujących punktów prawnych
+     z 50_BRAKUJACE_PUNKTY_PRAWNE.md oraz 78 reguł KKS.
+     REKOMENDACJA: Sprint 1 (4 tygodnie) wdrożony natychmiast.
+
+REALISTYCZNIE:
+  Produkt nadaje się do sprzedaży JAKO ASYSTENT dla typowej JDG dziś.
+  Produkt nadaje się jako ZASTĘPSTWO księgowego za 12 tygodni.
+  Produkt NIE nadaje się jako marketingowy claim 'zastępuje 100%'.
+
+ZALECENIE BIZNESOWE
+-------------------
+* Pozycjonować produkt jako:
+  "AI-asystent księgowo-podatkowy dla JDG z automatyzacją 60-75%
+   codziennej pracy i pełnym wsparciem 95-98% po wdrożeniu Sprint 1-4.
+   Skalowalny z jednym klientem do 1 000 JDG bez proporcjonalnego
+   wzrostu kosztów (DuckDB + OPA + WASM)."
+* Wycenić produkt na 100-300 PLN/mies./JDG (10× taniej niż księgowy
+  500-1 000 PLN/mies.).
+* Zbudować jeszcze 100 golden tests z prawdziwymi biurami rachunkowymi
+  zanim ruszy commercial launch.
+
+================================================================================
+                    KONIEC RAPORTU
+================================================================================
+
+Dokument wygenerowany przez Zespół Analityków NexusAI
+Data: 2026-07-14
+Bazuje na: JDG/README.md, MANIFEST.md, COVERAGE_REPORT.md, docs/
+ARCHITECTURE.md, bundles/manifest.json, Plan OPA/49, 50, 51, 52,
+NexusAI_JDG_DROGA_DO_PELNEGO_ZASTAPIENIA, NexusAI_JDG_PELNE_POKRYCIE
+_PRAWNE, NexusAI_JDG_STRATEGIC_IMPROVEMENTS_7000, NexusAI_JDG_DRUGA
+_WARSTWA_POPRAWEK, NexusAI_JDG_7000_MASTER_IMPLEMENTATION_PLAN
