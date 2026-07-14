@@ -227,6 +227,24 @@ else := {
     input.employment.purchases_from_zpch_this_period == true
 }
 
+# ══ P1222e: employer_ohs_medical_exams_kup — Badania BHP i medycyna pracy 100% KUP ══
+else := {
+    "matched":true,"rule_id":"jdg.employer.ohs_medical_exams_kup",
+    "package":"jdg.employer","priority":1222,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"KUP_FULL","kus_percent":100,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","employment_tax_obligation":"",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 229 KP w zw. z Art. 22 ust. 1 PIT",
+    "_warnings":["Badania BHP i medycyna pracy → 100% KUP jako koszt obowiązkowy pracodawcy. Dotyczy: badań wstępnych, okresowych, kontrolnych. Wymagane skierowanie na badania."]
+} {
+    input.employment.has_employees == true
+    input.invoice.category_code == "MEDICAL_EXAMS_OHS"
+    input.employment.ohs_exams_mandatory == true
+}
+
 # ══ P1220e: employer_small_mandate_flat_tax — Małe zlecenie ≤200 PLN ryczałt ══
 else := {
     "matched":true,"rule_id":"jdg.employer.small_mandate_flat_tax",
