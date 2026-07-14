@@ -21,7 +21,116 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.business
 import data.jdg.helpers
-default decide := {"matched":false,"rule_id":"jdg.business.no_match","package":"jdg.business","priority":949}
+default decide := {"matched":false,"rule_id":"jdg.business.no_match","package":"jdg.business","priority":950}
+
+# ══════ P916: business_resumption_procedure — Wznowienie po zawieszeniu ══════
+# Cel: Wznowienie JDG z CEIDG — od daty złożenia wniosku (nie data przyszła)
+# Podstawa prawna: Art. 22-25 Prawa przedsiębiorców
+# ═══════════════════════════════════════════════════════════════════════════════
+decide := {
+    "matched":true,"rule_id":"jdg.business.resumption_procedure",
+    "package":"jdg.business","priority":916,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"ACTIVE",
+    "resumption_date": resumption_date_val,
+    "ceidg_registration_required":false,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 22-25 Prawa przedsiębiorców",
+    "_warnings":["Wznowienie działalności — od daty złożenia wniosku do CEIDG. Pamiętaj o wznowieniu ZUS i VAT."]
+} {
+    input.jdg_entrepreneur.business_status == "SUSPENDED"
+    input.jdg_entrepreneur.resumption_requested == true
+    resumption_date_val := object.get(input.jdg_entrepreneur, "resumption_request_date", "")
+}
+
+# ══════ P917: maximum_suspension_period — Max 6 mies. + blokada przy pracownikach ══════
+else := {
+    "matched":true,"rule_id":"jdg.business.max_suspension_block",
+    "package":"jdg.business","priority":917,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"SUSPENDED",
+    "suspension_blocked_by_employees": emp_count > 0,
+    "suspension_expired": susp_months >= 6,
+    "_routing":"BLOCK_AND_ALERT",
+    "_routing_reason":"Nie można zawiesić JDG — zatrudniasz pracowników / przekroczono max 6 mies.",
+    "_legal_basis":"Art. 22-25 Prawa przedsiębiorców",
+    "_warnings":[sprintf("Zawieszenie %d mies., %d pracowników — %s",[susp_months, emp_count, warn_msg])]
+} {
+    input.jdg_entrepreneur.business_status == "SUSPENDED"
+    susp_months := object.get(input.jdg_entrepreneur,"suspension_months_continuous",0)
+    emp_count := object.get(input.jdg_entrepreneur,"employee_count",0)
+    warn_msg = "Zawieszenie zablokowane — zatrudniasz pracowników!" { emp_count > 0 }
+    else = "Przekroczono max 6 mies. zawieszenia — automatyczne wznowienie" { susp_months >= 6 }
+    susp_months >= 6
+    or emp_count > 0
+}
+
+# ══════ P929c: succession_manager_appointment_valid — Ważność zarządcy ══════
+else := {
+    "matched":true,"rule_id":"jdg.business.succession_manager_valid",
+    "package":"jdg.business","priority":929,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"IN_SUCCESSIO",
+    "succession_manager_valid": all_ok,
+    "_routing": routing_flag,
+    "_routing_reason": routing_reason,
+    "_legal_basis":"Art. 3-4 u.z.s.",
+    "_warnings":[warn_msg]
+} {
+    input.jdg_entrepreneur.in_succession == true
+    has_appointed := object.get(input.jdg_entrepreneur, "succession_manager_appointed", false)
+    has_consent := object.get(input.jdg_entrepreneur, "succession_manager_consent", false)
+    in_ceidg := object.get(input.jdg_entrepreneur, "succession_manager_in_ceidg", false)
+    all_ok := has_appointed and has_consent and in_ceidg
+    routing_flag = "" { all_ok == true }
+    routing_flag = "BLOCK_AND_ALERT" { all_ok == false }
+    routing_reason = "" { all_ok == true }
+    routing_reason = "Zarządca sukcesyjny NIE spełnia wymogów — wymagane: powołanie + zgoda + wpis w CEIDG" { all_ok == false }
+    warn_msg = "Zarządca sukcesyjny prawidłowo ustanowiony" { all_ok == true }
+    warn_msg = "Zarządca sukcesyjny musi być powołany, wyrazić zgodę i być wpisany do CEIDG!" { all_ok == false }
+}
+
+# ══════ P929d: succession_time_limits — Zarząd max 2 lata (5 lat z sądem) ══════
+else := {
+    "matched":true,"rule_id":"jdg.business.succession_expiry",
+    "package":"jdg.business","priority":930,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"IN_SUCCESSIO",
+    "succession_expires_in_months": max([0, succession_limit - months_since]),
+    "succession_expired": months_since >= succession_limit,
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason": sprintf("Zarząd sukcesyjny wygasa za %d miesięcy", [max([0, succession_limit - months_since])]),
+    "_legal_basis":"Art. 12-15 u.z.s.",
+    "_warnings":[sprintf("Zarząd sukcesyjny trwa %d mies. (max %d). Wygaśnięcie: %s.", [months_since, succession_limit, expiry_info])],
+    "_future_events":[{
+        "event_id":"succession_expiry",
+        "event_type":"SUCCESSION_EXPIRY",
+        "description":sprintf("Zarząd sukcesyjny wygasa za %d miesięcy", [max([0, succession_limit - months_since])]),
+        "due_date_horizon":sprintf("+%dmo", [max([0, succession_limit - months_since])]),
+        "action":"TERMINATE_JDG_SUCCESSIO",
+        "priority":"CRITICAL"
+    }]
+} {
+    input.jdg_entrepreneur.in_succession == true
+    months_since := object.get(input.jdg_entrepreneur, "months_since_date_of_death", 0)
+    has_extension := object.get(input.jdg_entrepreneur, "succession_court_extended", false)
+    succession_limit = 24 { has_extension == false }
+    succession_limit = 60 { has_extension == true }
+    expiry_info = sprintf("już wygasł (przekroczono %d mies.)", [succession_limit]) { months_since >= succession_limit }
+    expiry_info = sprintf("za %d mies.", [succession_limit - months_since]) { months_since < succession_limit }
+}
 
 # ══════ P900: ceidg_registration_check — Obowiązek rejestracji CEIDG ══════
 decide := {

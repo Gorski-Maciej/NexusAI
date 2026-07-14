@@ -44,7 +44,79 @@ default decide := {
     "matched": false,
     "rule_id": "jdg.allowances.no_match",
     "package": "jdg.allowances",
-    "priority": 639
+    "priority": 665
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P637: relief_rd_documentation_obligation_jdg — Gatekeeper: wyodrębniona ewidencja B+R
+# ═══════════════════════════════════════════════════════════════════════════════
+# Cel: Brak wyodrębnionej ewidencji kosztów B+R w PKPiR (kolumna 16) = BRAK prawa do ulgi
+# Podstawa prawna: Art. 26e ust. 8 PIT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── P637: RD documentation gatekeeper — blocks RD relief if no separate evidence ──
+decide := {
+    "matched": true,
+    "rule_id": "jdg.allowances.relief_rd_evidence_blocked",
+    "package": "jdg.allowances",
+    "priority": 637,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": pit_form,
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "full",
+    "kus_percent": 100,
+    "relief_type": "R_AND_D",
+    "relief_percent": 0,
+    "rd_relief_blocked": true,
+    "rd_relief_block_reason": "NO_SEPARATE_EVIDENCE",
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Brak wyodrębnionej ewidencji B+R — ulga NIEDOSTĘPNA",
+    "_legal_basis": "Art. 26e ust. 8 PIT",
+    "_warnings": ["Brak wyodrębnionej ewidencji kosztów B+R — ulga NIEDOSTĘPNA. Załóż ewidencję w PKPiR (kolumna 16) przed zastosowaniem ulgi."]
+} {
+    input.jdg_entrepreneur.has_rd_status == true
+    object.get(input.jdg_entrepreneur, "rd_evidence_separate", true) == false
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P638: relief_rd_centrum_200pct_conditions_jdg — Status CBR + ważność decyzji
+# ═══════════════════════════════════════════════════════════════════════════════
+# Cel: Tylko jednostki z ważną decyzją CBR mają 200%. Wygasła decyzja → 100%.
+# Podstawa prawna: Art. 26e ust. 1 zd. 2 PIT, Art. 17 ustawy o wspieraniu działalności innowacyjnej
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── P638: CBR decision validity check — must have valid ministerial decision ────
+else := {
+    "matched": true,
+    "rule_id": "jdg.allowances.relief_rd_cbr_valid",
+    "package": "jdg.allowances",
+    "priority": 638,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": pit_form,
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "full",
+    "kus_percent": 100,
+    "relief_type": "R_AND_D",
+    "relief_percent": 200,
+    "relief_carry_forward_years": 6,
+    "_legal_basis": "Art. 26e ust. 1 zd. 2 PIT",
+    "_warnings": ["Status CBR — koszty kwalifikowane odliczane w 200%"]
+} {
+    input.jdg_entrepreneur.has_rd_status == true
+    object.get(input.jdg_entrepreneur, "rd_is_cbr", false) == true
+    cbr_valid_to := object.get(input.jdg_entrepreneur, "rd_cbr_decision_valid_to", "2099-12-31")
+    tx_date := object.get(input.invoice, "transaction_date", "2000-01-01")
+    tx_date <= cbr_valid_to
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -557,6 +629,163 @@ else := {
 # ═══════════════════════════════════════════════════════════════════════════════
 # P630: crypto_income_classification — Krypto jako kapitały 19% (Priority 630)
 # ═══════════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P655: relief_joint_allowances_priority_order_jdg — Kolejność odliczania ulg
+# ═══════════════════════════════════════════════════════════════════════════════
+# Cel: Ulgi odlicza się w ustalonej kolejności: strata → IP Box → B+R → prototyp →
+# robotyzacja → ekspansja → termo → rehabilitacja → internet → darowizny → abolicyjna
+# Podstawa prawna: Art. 26 ust. 1 PIT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── P655: Relief priority order informational helper ────────────────────────────
+relief_application_order := [
+    "LOSS_CARRY_FORWARD",
+    "PIT_0_EXEMPTIONS",
+    "IP_BOX_5PCT",
+    "RD_100_200PCT",
+    "PROTOTYPE_30PCT",
+    "ROBOTIZATION_50PCT",
+    "EXPANSION_1M",
+    "THERMOMODERNIZATION_53K",
+    "REHABILITATION",
+    "INTERNET_760",
+    "DONATIONS_OPP_BLOOD_CHURCH",
+    "ABOLITION_1360"
+]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P660: relief_loss_carry_forward_conditions_jdg — Rozliczenie straty 5 lat
+# ═══════════════════════════════════════════════════════════════════════════════
+# Cel: Strata z lat ubiegłych: max 5 lat, max 50% straty w jednym roku
+# Podstawa prawna: Art. 9 ust. 3 PIT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── P660: Loss carry-forward conditions informational helper ────────────────────
+loss_carry_forward_info := {
+    "rule_id": "jdg.allowances.loss_carry_forward",
+    "package": "jdg.allowances",
+    "priority": 660,
+    "relief_type": "LOSS_CARRY_FORWARD",
+    "relief_max_years": 5,
+    "relief_max_percent_per_year": 50,
+    "relief_separate_per_loss_year": true,
+    "_legal_basis": "Art. 9 ust. 3 PIT",
+    "_info": "Strata podatkowa rozliczana max 50% rocznie przez 5 lat. Każdy rok strat osobno."
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P650: pit_exemption_young_detailed_jdg — Ulga dla młodych (do 26 r.ż.)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Cel: PIT-0 do 85 528 PLN rocznie dla osób ≤26 lat, TYLKO na skali podatkowej
+# Podstawa prawna: Art. 21 ust. 1 pkt 148 PIT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── P650: Young exemption gate ──────────────────────────────────────────────────
+else := {
+    "matched": true,
+    "rule_id": "jdg.allowances.pit_exemption_young",
+    "package": "jdg.allowances",
+    "priority": 650,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "PIT_SCALE",
+    "pit_rate": "0.00",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "full",
+    "kus_percent": 100,
+    "relief_type": "PIT_0_YOUNG",
+    "pit_exemption": "YOUNG",
+    "pit_exemption_limit": pit_limit,
+    "pit_exemption_limit_remaining": max([0, pit_limit - cum_income]),
+    "_legal_basis": "Art. 21 ust. 1 pkt 148 PIT",
+    "_warnings": [sprintf("Ulga dla młodych — limit %.0f PLN. Pozostało: %.0f PLN. Po przekroczeniu: skala 12%%/32%%.", [pit_limit, max([0, pit_limit - cum_income])])]
+} {
+    age := object.get(input.jdg_entrepreneur, "age", 99)
+    age <= 26
+    input.jdg_entrepreneur.tax_form == "PIT_SCALE"
+    cum_income := object.get(input.jdg_entrepreneur, "cumulative_income_current_year", 0)
+    pit_limit := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "pit_young_exemption_limit", 85528)
+    cum_income <= pit_limit
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P651: pit_exemption_return_detailed_jdg — Ulga na powrót (4 lata)
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true,
+    "rule_id": "jdg.allowances.pit_exemption_return",
+    "package": "jdg.allowances",
+    "priority": 651,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "PIT_SCALE",
+    "pit_rate": "0.00",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "full",
+    "kus_percent": 100,
+    "relief_type": "PIT_0_RETURN",
+    "pit_exemption": "RETURN",
+    "pit_exemption_limit": pit_limit,
+    "return_years_remaining": max([0, 4 - years_used]),
+    "_legal_basis": "Art. 21 ust. 1 pkt 152 PIT",
+    "_warnings": [sprintf("Ulga na powrót — rok %d z 4. Limit %.0f PLN.", [years_used + 1, pit_limit])]
+} {
+    object.get(input.jdg_entrepreneur, "return_from_emigration", false) == true
+    years_abroad := object.get(input.jdg_entrepreneur, "years_abroad", 0)
+    years_abroad >= 3
+    years_used := object.get(input.jdg_entrepreneur, "return_years_used", 0)
+    years_used < 4
+    input.jdg_entrepreneur.tax_form == "PIT_SCALE"
+    cum_income := object.get(input.jdg_entrepreneur, "cumulative_income_current_year", 0)
+    pit_limit := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "pit_return_exemption_limit", 85528)
+    cum_income <= pit_limit
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P654: pit_exemption_interactions_and_shared_limit_jdg — Koordynacja PIT-0
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true,
+    "rule_id": "jdg.allowances.pit_exemption_interactions",
+    "package": "jdg.allowances",
+    "priority": 654,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "PIT_SCALE",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "relief_type": "PIT_0_COORDINATION",
+    "pit_exemption_active": "MULTIPLE_ELIGIBLE",
+    "pit_exemption_shared_limit": 85528,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "Wiele ulg PIT-0 — wybierz jedną",
+    "_legal_basis": "Art. 21 ust. 1 pkt 148, 152, 153, 154 PIT",
+    "_warnings": ["Aktywna może być TYLKO JEDNA ulga PIT-0 w roku. Współdzielony limit 85 528 PLN."]
+} {
+    input.jdg_entrepreneur.tax_form == "PIT_SCALE"
+    age := object.get(input.jdg_entrepreneur, "age", 99)
+    is_female := object.get(input.jdg_entrepreneur, "is_female", false)
+    senior_age := 60 { is_female == true }
+    else := 65 { is_female == false }
+    eligible_count := count({e |
+        (age <= 26)
+        or (object.get(input.jdg_entrepreneur, "return_from_emigration", false) == true
+            and object.get(input.jdg_entrepreneur, "years_abroad", 0) >= 3)
+        or (object.get(input.jdg_entrepreneur, "children_count", 0) >= 4)
+        or (age >= senior_age
+            and object.get(input.jdg_entrepreneur, "receives_pension", true) == false)
+    })
+    eligible_count > 1
+}
 
 # ── P630: crypto_income_classification ─────────────────────────────────────────
 # Cel biznesowy: Klasyfikacja przychodów z kryptoaktywów jako odrębne źródło

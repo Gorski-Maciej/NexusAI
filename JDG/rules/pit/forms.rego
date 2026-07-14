@@ -91,6 +91,41 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# P508: pit_revenue_exclusions — Wyłączenia z przychodów PIT
+# ═══════════════════════════════════════════════════════════════════════════════
+# Doc 38a: Art. 14 ust. 3 PIT — zwrot VAT, nadpłata ZUS, odszkodowania
+# NIE stanowią przychodu podatkowego. Krytyczne dla poprawnego obliczenia dochodu.
+else := {
+    "matched": true, "rule_id": "jdg.pit.pit_revenue_exclusions",
+    "package": "jdg.pit.forms", "priority": 508,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "pit_revenue_excluded": true, "revenue_exclusion_type": exclusion_type,
+    "pkpir_excluded": true,
+    "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 14 ust. 3 pkt 1-4 PIT",
+    "_warnings": [sprintf("Ten wpływ (%s) NIE stanowi przychodu podatkowego — wyłączony na podstawie Art. 14 ust. 3 PIT", [exclusion_type])]
+} {
+    # Tylko wpływy (SALE lub ogólny INFLOW) — nie wykluczamy kategorii zakupowych
+    is_inflow := object.get(input.invoice, "direction", "") == "SALE"
+    is_inflow == true
+    inflow_code := object.get(input.invoice, "category_code", "")
+    # Kategorie wyłączone z przychodu (Art. 14 ust. 3 PIT)
+    excluded_categories := {"VAT_REFUND", "ZUS_OVERPAYMENT_REFUND", "INSURANCE_COMPENSATION_PERSONAL", "DAMAGES_AWARD_PERSONAL"}
+    inflow_code in excluded_categories
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+
+    exclusion_type = "Zwrot VAT" { inflow_code == "VAT_REFUND" }
+    exclusion_type = "Zwrot nadpłaconych składek ZUS" { inflow_code == "ZUS_OVERPAYMENT_REFUND" }
+    exclusion_type = "Odszkodowanie osobowe (szkoda na osobie)" { inflow_code == "INSURANCE_COMPENSATION_PERSONAL" }
+    exclusion_type = "Zadośćuczynienie/odszkodowanie" { inflow_code == "DAMAGES_AWARD_PERSONAL" }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # P510: pit_form_linear — Podatek liniowy 19%
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {

@@ -25,12 +25,126 @@ import data.jdg.helpers
 
 default decide := {
     "matched": false, "rule_id": "jdg.zus.no_match",
-    "package": "jdg.zus", "priority": 780
+    "package": "jdg.zus", "priority": 800
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# P740: zus_start_relief_jdg — Ulga na start (6 miesięcy)
+# P779: zus_health_minimum_base_guarantee_jdg — Gwarancja minimalnej podstawy
 # ═══════════════════════════════════════════════════════════════════════════════
+# 🚨 CRITICAL: Nawet przy zerowym dochodzie składka ≥ 9%/4.9% min. wynagrodzenia
+# Podstawa prawna: Art. 81 ust. 2, Art. 81 ust. 2a u.ś.o.z.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── P779: Minimum base guarantee — standalone helper ────────────────────────────
+zus_health_minimum_base_guarantee := {
+    "rule_id": "jdg.zus.health_minimum_base",
+    "package": "jdg.zus",
+    "priority": 779,
+    "zus_health_base_min": min_wage,
+    "zus_health_base_rule": "MAX_OF_INCOME_OR_MINIMUM_WAGE",
+    "_legal_basis": "Art. 81 ust. 2 u.ś.o.z.",
+    "_info": sprintf("Minimalna podstawa składki zdrowotnej: %.2f PLN (100%% minimalnego wynagrodzenia)", [min_wage])
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P773: zus_maly_plus_income_limit_monitoring_jdg — Monitorowanie limitu MZP
+# ═══════════════════════════════════════════════════════════════════════════════
+
+maly_zus_plus_limit_monitor := {
+    "rule_id": "jdg.zus.maly_plus_limit_exceeded",
+    "package": "jdg.zus",
+    "priority": 773,
+    "maly_zus_plus_loss_next_year": true,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": sprintf("Przekroczono limit 120 000 PLN przychodu — utrata Małego ZUS Plus od stycznia", []),
+    "_legal_basis": "Art. 18c ust. 8 SUS",
+    "_warnings": [sprintf("Przekroczyłeś limit przychodu 120 000 PLN (%.2f PLN) — od stycznia przyszłego roku utrata Małego ZUS Plus. Standardowy ZUS.", [cum_rev])],
+    "_future_events": [{
+        "event_id": "maly_plus_loss",
+        "event_type": "ZUS_STATUS_CHANGE",
+        "description": "Utrata Małego ZUS Plus od stycznia przyszłego roku",
+        "due_date_horizon": "NEXT_YEAR_JANUARY",
+        "action": "SWITCH_TO_STANDARD_ZUS",
+        "priority": "HIGH"
+    }]
+} {
+    object.get(input.jdg_entrepreneur, "zus_status", "") == "MALY_ZUS_PLUS"
+    cum_rev := object.get(input.jdg_entrepreneur, "cumulative_revenue_current_year", 0)
+    revenue_limit := object.get(object.get(object.get(data.thresholds, "jdg", {}), "limits", {}), "zus_maly_plus_revenue_limit", 120000)
+    cum_rev > revenue_limit
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P782: zus_concurrent_mandate_jdg — Zbieg JDG + umowa zlecenie
+# ═══════════════════════════════════════════════════════════════════════════════
+# Cel: Zlecenie ma pierwszeństwo przed JDG jeśli podstawa ≥ min. wynagrodzenie
+# Podstawa prawna: Art. 9 ust. 2-2c SUS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true, "rule_id": "jdg.zus.concurrent_mandate",
+    "package": "jdg.zus", "priority": 782,
+    "immutable_verdict": true,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_social_priority": "MANDATE",
+    "zus_social_from_jdg": false,
+    "zus_health_due": true,
+    "zus_health_rate": health_rate,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 9 ust. 2-2c SUS",
+    "_warnings": [sprintf("Zbieg JDG+zlecenie — podstawa zlecenia %.2f PLN ≥ min. %.2f PLN. Społeczne ze zlecenia, z JDG tylko zdrowotna.", [mandate_base, min_wage])]
+} {
+    input.jdg_entrepreneur.has_mandate_contract == true
+    mandate_base := object.get(input.jdg_entrepreneur, "mandate_monthly_base", 0)
+    min_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "minimum_wage_gross", 4666)
+    mandate_base >= min_wage
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
+    health_rate = "0.09" { pit_form == "PIT_SCALE" }
+    health_rate = "0.049" { pit_form == "LINEAR" }
+    health_rate = "0.049" { pit_form == "LUMP_SUM" }
+    health_rate = "0.09" { pit_form == "TAX_CARD" }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P784: zus_payment_deadlines_by_entity_type_jdg — Terminy płatności ZUS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+zus_payment_deadlines_info := {
+    "rule_id": "jdg.zus.payment_deadlines",
+    "package": "jdg.zus",
+    "priority": 784,
+    "zus_payment_deadline_day": 10,
+    "zus_declaration_deadline_day": 10,
+    "_legal_basis": "Art. 47 ust. 1 pkt 2 SUS",
+    "_warnings": ["Składki ZUS opłać do 10. dnia następnego miesiąca. Jeśli 10. wypada w weekend/święto → następny dzień roboczy."]
+} {
+    object.get(input.jdg_entrepreneur, "entity_type", "") == "JDG"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P780: zus_health_annual_reconciliation_all_forms_jdg — Roczne rozliczenie
+# ═══════════════════════════════════════════════════════════════════════════════
+
+zus_annual_health_reconciliation := {
+    "rule_id": "jdg.zus.health_annual_reconciliation",
+    "package": "jdg.zus",
+    "priority": 780,
+    "health_annual_overpayment": max([0, paid_total - due_total]),
+    "health_annual_underpayment": max([0, due_total - paid_total]),
+    "_legal_basis": "Art. 81 ust. 2e-2g u.ś.o.z.",
+    "_warnings": [sprintf("Roczne rozliczenie składki zdrowotnej — zapłacono %.2f PLN, należne %.2f PLN. %s", [paid_total, due_total, balance_info])]
+} {
+    paid_total := object.get(input.jdg_entrepreneur, "zus_health_paid_annual", 0)
+    due_total := object.get(input.jdg_entrepreneur, "zus_health_due_annual", 0)
+    paid_total != due_total
+    balance_info = sprintf("Dopłać %.2f PLN do ZUS", [due_total - paid_total]) { due_total > paid_total }
+    balance_info = sprintf("Nadpłata %.2f PLN — ZUS powinien zwrócić", [paid_total - due_total]) { paid_total > due_total }
+}
+
 decide := {
     "matched": true, "rule_id": "jdg.zus.start_relief",
     "package": "jdg.zus", "priority": 740,
@@ -474,6 +588,7 @@ else := {
     has_conflict := active_count > 1
     conflict_info = "KONFLIKT: wiele świadczeń w tym samym okresie — wybierz wyższe" { has_conflict == true }
     conflict_info = "Brak konfliktów — jedno świadczenie aktywne" { has_conflict == false }
+}
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  P1207zs-P1212zs — EMERYTURY I RENTY ZUS (swiadczenia dlugoterminowe)    ║

@@ -11,7 +11,35 @@ package jdg.environmental
 # deprecated: false
 #
 import data.jdg.helpers
-default decide := {"matched":false,"rule_id":"jdg.environmental.no_match","package":"jdg.environmental","priority":1417}
+default decide := {"matched":false,"rule_id":"jdg.environmental.no_match","package":"jdg.environmental","priority":1775}
+
+# ══════ P1770: environment_sup_plastic_fee — Opłata SUP od plastikowych opakowań ══════
+# ⚖️ Obowiązek od 2024: gastronomia/handel → opłata za kubki/pojemniki plastikowe
+# Podstawa: Ustawa SUP (Dz.U. 2023 poz. 877), Dyrektywa SUP 2019/904
+# ═══════════════════════════════════════════════════════════════════════════════
+decide := {
+    "matched":true,"rule_id":"jdg.environmental.sup_plastic_fee",
+    "package":"jdg.environmental","priority":1770,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "sup_fee_amount": sup_amount,
+    "sup_fee_included_in_vat_base":true,
+    "sup_fee_quarterly_report_required":true,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Ustawa SUP (Dz.U. 2023 poz. 877)",
+    "_warnings":[sprintf("Opłata SUP — %d szt. × %.2f PLN = %.2f PLN. Odprowadź kwartalnie do US.", [items, sup_rate, sup_amount])]
+} {
+    pkd := object.get(input.jdg_entrepreneur, "pkd_main", "")
+    sup_pkd := {"56.10.A", "56.30.Z", "47.11.Z", "47.81.Z"}
+    pkd in sup_pkd
+    items := object.get(input.invoice, "sup_plastic_items_sold", 0)
+    items > 0
+    sup_rate := object.get(object.get(object.get(data.thresholds, "jdg", {}), "environmental", {}), "sup_fee_rate", 0.25)
+    sup_amount := items * sup_rate
+}
 
 # ══ P1400: bdo_registration_required — BDO — rejestracja obowiązkowa ══
 decide := {

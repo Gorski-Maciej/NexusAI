@@ -22,6 +22,39 @@ package jdg.compliance
 import data.jdg.helpers
 default decide := {"matched":false,"rule_id":"jdg.compliance.no_match","package":"jdg.compliance","priority":167}
 
+# ══════ P1730: whistleblower_procedure_check — Sygnaliści ≥50 os. (standalone advisory) ══════
+whistleblower_procedure_check := {
+    "rule_id":"jdg.compliance.whistleblower_procedure_required",
+    "package":"jdg.compliance","priority":1730,
+    "whistleblower_procedure_required":true,
+    "whistleblower_potential_penalty":"do_30_000_PLN",
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason":sprintf("Obowiązek procedury sygnalistów — %d osób, brak procedury", [workers_count]),
+    "_legal_basis":"Ustawa z 14.06.2024 o ochronie sygnalistów (Dz.U. 2024 poz. 928)",
+    "_warnings":[sprintf("SYGNALIŚCI — %d osób ≥ 50 → obowiązek wdrożenia procedury zgłoszeń! Kara do 30 000 PLN.", [workers_count])]
+} {
+    workers_count := object.get(input.jdg_entrepreneur, "workers_count", 0)
+    workers_count >= 50
+    object.get(input.jdg_entrepreneur, "whistleblower_procedure_implemented", true) == false
+}
+
+# ══════ P1731: aml_procedure_check — AML dla biur rachunkowych/krypto (standalone) ══════
+aml_procedure_check := {
+    "rule_id":"jdg.compliance.aml_procedure_required",
+    "package":"jdg.compliance","priority":1731,
+    "aml_obligated_entity":true,
+    "aml_procedure_required":true,
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason":sprintf("Podmiot obowiązany AML — PKD: %s", [pkd]),
+    "_legal_basis":"Ustawa AML z 01.03.2018 (Dz.U. 2025 poz. 567)",
+    "_warnings":[sprintf("AML — Twoja działalność (%s) podlega AML. Wdróż procedurę i raportuj do GIIF. Kara do 5 000 000 PLN.", [pkd])]
+} {
+    pkd := object.get(input.jdg_entrepreneur, "pkd_main", "")
+    aml_pkd := {"69.20.Z", "66.19.Z", "68.31.Z", "64.99.Z"}
+    pkd in aml_pkd
+    object.get(input.jdg_entrepreneur, "aml_procedure_implemented", true) == false
+}
+
 # ══════ P20: whitelist_missing_over_limit — Brak na Białej Liście >15k ══════
 decide := {
     "matched":true,"rule_id":"jdg.compliance.whitelist_missing_over_limit",

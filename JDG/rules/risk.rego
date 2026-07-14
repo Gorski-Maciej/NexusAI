@@ -6,14 +6,18 @@
 # title: Risk Package — Fraud Detection, Sanctions, Pre-Validation
 # description: |
 #   PAS 0 Multi-Pass. First-Match-Wins else-chain. Blokuje transakcje przed
-#   dalszą ewaluacją jeśli wykryje fraud (P0/P0b), GAAR (P9), niski trust (P1),
-#   anomalię kwotową (P2), zawieszonego kontrahenta (P8), lub wydatek osobisty (P5).
+#   dalszą ewaluacją jeśli wykryje fraud (P0/P0b), ukryte dochody KKS 54 (P4),
+#   GAAR (P9), niski trust (P1), anomalię kwotową (P2),
+#   nierzetelną PKPiR KKS 56 (P6), zawieszonego kontrahenta (P8),
+#   lub wydatek osobisty (P5).
 #   Jeśli _routing = BLOCK_AND_ALERT → main_jdg.rego abortuje dalsze passy.
 # architecture: Multi-Pass PAS 0 (ADR-001)
-# legal_basis: Art. 86 ust. 1 VAT, Art. 55/62 KKS, Art. 119a Ordynacji, Art. 22 UoR
+# legal_basis: Art. 86 ust. 1 VAT, Art. 54-56/62 KKS, Art. 119a Ordynacji, Art. 22 UoR
 # edge_cases:
 #   - P0b (pusta faktura): fraud_flag AND !delivery_confirmed AND amount>0
 #   - P1 (trust): próg auto_post z data.thresholds, routing dynamiczny (BLOCK vs TRIAGE)
+#   - P4 (ukryte dochody): bank_deposits_ytd vs declared_revenue_ytd, >30% rozbieżności
+#   - P6 (nierzetelna PKPiR): integrity_score < 0.70, entry_count > 0
 #   - P9 (GAAR): related_party AND artificial_scheme — oba warunki muszą być spełnione
 # package: jdg.risk
 # deprecated: false
@@ -132,6 +136,33 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# P4: kks_hidden_income_flag — Ukryte dochody (Art. 54 KKS)
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.risk.kks_hidden_income_flag",
+    "package": "jdg.risk", "priority": 4,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_risk": "Art.54",
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": sprintf("Rozbieżność %.0f%% — ryzyko ukrytych dochodów KKS Art. 54", [floor(discrepancy_pct * 100)]),
+    "_legal_basis": "Art. 54 § 1 KKS",
+    "_warnings": [sprintf("Rozbieżność %.0f%% między wpływami (%.0f PLN) a deklarowanymi przychodami (%.0f PLN) — ryzyko ukrytych dochodów KKS Art. 54!", [floor(discrepancy_pct * 100), deposits, declared])]
+} {
+    deposits := object.get(input.jdg_entrepreneur, "bank_deposits_ytd", 0)
+    declared := object.get(input.jdg_entrepreneur, "declared_revenue_ytd", 0)
+    deposits > 0
+    declared > 0
+    deposits > declared
+    discrepancy_threshold := object.get(object.get(object.get(data.thresholds, "jdg", {}), "limits", {}), "kks_discrepancy_threshold", 0.30)
+    discrepancy_pct := (deposits - declared) / declared
+    discrepancy_pct > discrepancy_threshold
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # P5: semantic_guard_disallowed — Wydatek niezwiązany z działalnością
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
@@ -148,6 +179,33 @@ else := {
     "_warnings": ["Wydatek niezwiązany z działalnością — NIE stanowi KUP"]
 } {
     input.invoice.category_code in {"ALCOHOL", "ENTERTAINMENT", "LUXURY", "PERSONAL_EXPENSE"}
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P6: kks_unreliable_books — Nierzetelna PKPiR (Art. 56 KKS)
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.risk.kks_unreliable_books",
+    "package": "jdg.risk", "priority": 6,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "none", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_risk": "Art.56",
+    "pkpir_integrity_score": integrity_score,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": sprintf("PKPiR integrity score %.0f%% < %.0f%% — ryzyko nierzetelnych ksiąg", [floor(integrity_score * 100), floor(integrity_min * 100)]),
+    "_legal_basis": "Art. 56 § 1-2 KKS, Art. 24a PIT",
+    "_warnings": [sprintf("Nierzetelna PKPiR — integrity score %.0f%% < %.0f%%. Ryzyko KKS Art. 56 (grzywna do 720 stawek dziennych). Skoryguj ewidencję!", [floor(integrity_score * 100), floor(integrity_min * 100)])]
+} {
+    uses_pkpir := object.get(input.jdg_entrepreneur, "uses_pkpir", false)
+    uses_pkpir == true
+    entry_count := object.get(input.jdg_entrepreneur, "pkpir_entry_count", 0)
+    entry_count > 0
+    integrity_min := object.get(object.get(object.get(data.thresholds, "jdg", {}), "limits", {}), "pkpir_integrity_min", 0.70)
+    integrity_score := object.get(input.jdg_entrepreneur, "pkpir_integrity_score", 1.0)
+    integrity_score < integrity_min
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

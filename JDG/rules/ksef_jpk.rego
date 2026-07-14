@@ -11,7 +11,32 @@ package jdg.ksef_jpk
 # deprecated: false
 #
 import data.jdg.helpers
-default decide := {"matched":false,"rule_id":"jdg.ksef_jpk.no_match","package":"jdg.ksef_jpk","priority":999}
+default decide := {"matched":false,"rule_id":"jdg.ksef_jpk.no_match","package":"jdg.ksef_jpk","priority":1799}
+
+# ══════ P1790: security_ksef_token_rotation_enforcement — Rotacja tokenów KSeF ══════
+# 🚨 CRITICAL: Token KSeF >90 dni → BLOCK wysyłki faktur. Ryzyko odrzucenia.
+# Podstawa: Specyfikacja techniczna KSeF v3.0, Polityka bezpieczeństwa MF
+# ═══════════════════════════════════════════════════════════════════════════════
+decide := {
+    "matched":true,"rule_id":"jdg.ksef_jpk.token_stale",
+    "package":"jdg.ksef_jpk","priority":1790,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "ksef_token_stale":true,"ksef_invoice_blocked":true,
+    "_routing":"BLOCK_AND_ALERT",
+    "_routing_reason":sprintf("Token KSeF niewymieniany od %d dni — wygeneruj nowy token", [token_age]),
+    "_legal_basis":"Specyfikacja techniczna KSeF v3.0",
+    "_warnings":[sprintf("Token KSeF niewymieniany od %d dni (max 90) — wygeneruj nowy token przed wysyłką faktur!", [token_age])]
+} {
+    token_age := object.get(input.jdg_entrepreneur, "ksef_token_age_days", 0)
+    max_age := object.get(object.get(object.get(data.thresholds, "jdg", {}), "security", {}), "ksef_token_max_age_days", 90)
+    token_age > max_age
+    input.jdg_entrepreneur.is_vat_payer == true
+    input.invoice.direction == "SALE"
+}
 
 # ══════ P950: ksef_structured_mandatory — Obowiązek KSeF od 01.02.2026 ══════
 decide := {
