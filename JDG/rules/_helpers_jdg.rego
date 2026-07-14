@@ -90,6 +90,15 @@ jdg_amount_eur = eur {
 
 # ── Date Helpers ───────────────────────────────────────────────────────────────
 
+# Oblicza liczbę dni między dwiema datami ISO (date2 - date1)
+# Używa time.parse_ns do konwersji na nanosekundy, potem dzieli na dni
+# Przykład: days_between("2026-01-01", "2026-01-15") → 14
+days_between(date1, date2) = days {
+    t1 := time.parse_ns("2006-01-02", date1)
+    t2 := time.parse_ns("2006-01-02", date2)
+    days := (t2 - t1) / 86400000000000
+}
+
 # Sprawdza czy data transakcji mieści się w okresie obowiązywania reguły JDG
 jdg_is_valid_period(date_str) {
     date_str >= object.get(data.thresholds.jdg, "valid_from", "2000-01-01")

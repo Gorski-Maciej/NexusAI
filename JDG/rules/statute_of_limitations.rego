@@ -6,8 +6,70 @@ package jdg.limitations
 import data.jdg.helpers
 default decide := {"matched":false,"rule_id":"jdg.limitations.no_match","package":"jdg.limitations","priority":449}
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# OP.03 (Doc 50): Art. 20 § 1 OrdPU — Bieg terminu przedawnienia
+# Zobowiązanie podatkowe przedawnia się z upływem 5 lat, licząc od końca roku
+# kalendarzowego, w którym upłynął termin płatności podatku. Dzień rozpoczęcia
+# biegu = 1 stycznia roku następującego po roku, w którym powstał obowiązek.
+# ═══════════════════════════════════════════════════════════════════════════════
+decide := {
+    "matched":true,"rule_id":"jdg.limitations.statute_period_begins_art20",
+    "package":"jdg.limitations","priority":420,
+    "vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"",
+    "statute_years":5,"statute_starts_from":"END_OF_TAX_YEAR","statute_deadline_year":deadline_yr,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 20 § 1 OrdPU, Art. 70 § 1 OrdPU",
+    "_warnings":[sprintf("BIEG PRZEDAWNIENIA — 5 lat od końca roku podatkowego %s. Przedawnienie nastąpi 31.12.%s. Po terminie: obowiązek wygasa, egzekucja niedopuszczalna.",[tax_year, deadline_yr])]
+} {
+    tax_year := object.get(input.invoice, "tax_year", "")
+    tax_year != ""
+    tax_yr_num := to_number(tax_year)
+    deadline_yr := sprintf("%d", [tax_yr_num + 5])
+}
+
+# OP.04a (Doc 50): Art. 21 § 1 pkt 1 OrdPU — Zawieszenie: postępowanie KKS
+# Bieg terminu przedawnienia ulega zawieszeniu w przypadku wszczęcia
+# postępowania karnego skarbowego — do dnia prawomocnego zakończenia.
+else := {
+    "matched":true,"rule_id":"jdg.limitations.suspension_of_limitation_art21",
+    "package":"jdg.limitations","priority":421,
+    "vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"",
+    "statute_suspended":true,"suspension_reason":"Postępowanie KKS wszczęte","max_extension_years":10,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Zawieszenie przedawnienia — KKS w toku",
+    "_legal_basis":"Art. 21 § 1 pkt 1 OrdPU, Art. 70 § 4 OrdPU",
+    "_warnings":["ZAWIESZENIE PRZEDAWNIENIA — postępowanie KKS wszczęte. Bieg NIE PŁYNIE do czasu prawomocnego zakończenia. Maksymalny okres przedawnienia: 10 lat."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_proceedings_active", false) == true
+}
+
+# OP.04b (Doc 50): Zawieszenie: kontrola podatkowa
+else := {
+    "matched":true,"rule_id":"jdg.limitations.suspension_of_limitation_art21",
+    "package":"jdg.limitations","priority":421,
+    "vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"",
+    "statute_suspended":true,"suspension_reason":"Kontrola podatkowa w toku","max_extension_years":10,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Zawieszenie przedawnienia — kontrola podatkowa",
+    "_legal_basis":"Art. 21 § 1 pkt 1 OrdPU, Art. 70 § 4 OrdPU",
+    "_warnings":["ZAWIESZENIE PRZEDAWNIENIA — kontrola podatkowa w toku. Bieg NIE PŁYNIE do dnia zakończenia kontroli. Maksymalny okres przedawnienia: 10 lat."]
+} {
+    object.get(input.jdg_entrepreneur, "tax_audit_active", false) == true
+}
+
+# OP.04c (Doc 50): Zawieszenie: postępowanie podatkowe
+else := {
+    "matched":true,"rule_id":"jdg.limitations.suspension_of_limitation_art21",
+    "package":"jdg.limitations","priority":421,
+    "vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"",
+    "statute_suspended":true,"suspension_reason":"Postępowanie podatkowe wszczęte","max_extension_years":10,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Zawieszenie przedawnienia — postępowanie podatkowe",
+    "_legal_basis":"Art. 21 § 1 pkt 1 OrdPU, Art. 70 § 4 OrdPU",
+    "_warnings":["ZAWIESZENIE PRZEDAWNIENIA — postępowanie podatkowe wszczęte. Bieg NIE PŁYNIE do dnia wydania decyzji ostatecznej. Maksymalny okres przedawnienia: 10 lat."]
+} {
+    object.get(input.jdg_entrepreneur, "tax_proceedings_started", false) == true
+}
+
 # R0436: statute_5_years — Przedawnienie 5 lat
-decide := {"matched":true,"rule_id":"jdg.limitations.statute_5_years","package":"jdg.limitations","priority":436,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","statute_of_limitations_years":5,"statute_deadline":deadline,"_routing":"","_routing_reason":"","_legal_basis":"Art. 70 § 1 OrdPU","_warnings":[sprintf("PRZEDAWNIENIE 5 LAT — zobowiązanie z %s przedawnia się 31.12.%s. Po terminie US nie może prowadzić egzekucji.",[tax_year,deadline])]} { tax_year:=object.get(input.invoice,"tax_year","");tax_year!="";deadline:=sprintf("%d",[to_number(tax_year)+5]) }
+else := {"matched":true,"rule_id":"jdg.limitations.statute_5_years","package":"jdg.limitations","priority":436,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","statute_of_limitations_years":5,"statute_deadline":deadline,"_routing":"","_routing_reason":"","_legal_basis":"Art. 70 § 1 OrdPU","_warnings":[sprintf("PRZEDAWNIENIE 5 LAT — zobowiązanie z %s przedawnia się 31.12.%s. Po terminie US nie może prowadzić egzekucji.",[tax_year,deadline])]} { tax_year:=object.get(input.invoice,"tax_year","");tax_year!="";deadline:=sprintf("%d",[to_number(tax_year)+5]) }
 
 # R0437: statute_10_years — Przedawnienie 10 lat (zawieszenie/ przerwanie)
 else := {"matched":true,"rule_id":"jdg.limitations.statute_10_years","package":"jdg.limitations","priority":437,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","statute_of_limitations_years":10,"statute_reason":"SUSPENDED_OR_INTERRUPTED","_routing":"TRIAGE_QUEUE","_routing_reason":"Przedawnienie wydłużone do 10 lat","_legal_basis":"Art. 70 § 4-6 OrdPU","_warnings":["PRZEDAWNIENIE 10 LAT — bieg przedawnienia został zawieszony lub przerwany. Wydłużenie do max 10 lat od końca roku kalendarzowego."]} { object.get(input.jdg_entrepreneur,"statute_suspended_or_interrupted",false)==true }

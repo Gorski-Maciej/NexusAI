@@ -62,3 +62,23 @@ else :=   {"matched":true,"rule_id":"jdg.pit.kup_detailed_exclusions_catalog","p
 else :=   {"matched":true,"rule_id":"jdg.pit.loss_carry_forward_5years_5m","package":"jdg.pit","priority":615,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Strata — max 50% rocznie przez 5 lat lub 5M PLN jednorazowo","_legal_basis":"Art. 9 ust. 3 PIT","_warnings":["Strata do rozliczenia — max 50% rocznie lub 5M PLN"]} {
     object.get(input.jdg_entrepreneur, "has_tax_loss", false) == true; object.get(input.jdg_entrepreneur, "has_rd_status", false) == true; object.get(input.invoice, "category_code", "") == "CAR"
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P.18 (Doc 50): IP Box — Art. 22p PIT — Definicja kwalifikowanego IP
+# IP Box to preferencyjna stawka 5% od dochodu z kwalifikowanych praw własności
+# intelektualnej (patent, program komputerowy, wzór użytkowy). Wymaga wyodrębnionej
+# ewidencji + wskaźnika Nexus. NIE dla ryczałtu i karty podatkowej.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched":true,"rule_id":"jdg.pit.a22p.r1","package":"jdg.pit","priority":550,
+    "vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"",
+    "ip_box_eligible":true,"ip_box_rate":"5%","ip_box_requires_nexus":true,
+    "_routing":"","_routing_reason":"IP Box — preferencyjna stawka 5% od dochodu z kwalifikowanego IP",
+    "_legal_basis":"Art. 22p PIT, Art. 30ca PIT",
+    "_warnings":["IP BOX — 5% od dochodu z kwalifikowanego IP (patent, software, wzór). Wymagana wyodrębniona ewidencja + wskaźnik Nexus. NIE dla ryczałtu/karty podatkowej!"]
+} {
+    object.get(input.jdg_entrepreneur, "ip_box_eligible", false) == true
+    object.get(input.jdg_entrepreneur, "tax_form", "") != "LUMP_SUM"
+    object.get(input.jdg_entrepreneur, "tax_form", "") != "TAX_CARD"
+    object.get(input.invoice, "ip_box_claimed", false) == true
+}

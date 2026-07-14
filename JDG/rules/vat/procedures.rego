@@ -39,9 +39,46 @@ default decide := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# P230: vat_tax_point_continuous_service — Usługi ciągłe: koniec okresu
+# V.07: Art. 19a ust. 5 pkt 3 VAT — Obowiązek podatkowy przy fakturowaniu z dołu
+# Jeśli faktura wystawiona w terminie do 60 dni od wykonania usługi, obowiązek
+# podatkowy powstaje z chwilą wystawienia faktury (ale nie później niż 60 dnia).
+# JDG często myli — wystawia FV z opóźnieniem → obowiązek za zły miesiąc.
 # ═══════════════════════════════════════════════════════════════════════════════
 decide := {
+    "matched": true, "rule_id": "jdg.vat.procedures.tax_point_delayed_invoice_60d",
+    "package": "jdg.vat.procedures", "priority": 227,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "",
+    "vat_exemption": "", "tax_point": tax_point_result,
+    "vat_tax_point_day": tax_point_day,
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 19a ust. 5 pkt 3 VAT",
+    "_warnings": [sprintf("FAKTUROWANIE Z DOŁU — usługa wykonana %s, faktura %s (%d dni po). Obowiązek podatkowy: %s. Uwaga: max 60 dni od wykonania!", [service_date, invoice_date, days_diff, tax_point_result])]
+} {
+    input.invoice.is_service == true
+    input.invoice.invoice_issued == true
+    input.invoice.invoice_issue_date != ""
+    input.invoice.service_completion_date != ""
+
+    days_diff := helpers.days_between(input.invoice.service_completion_date, input.invoice.invoice_issue_date)
+    days_diff <= 60
+    days_diff > 0
+
+    # Obowiązek w dacie faktury, ale max 60 dnia od wykonania
+    tax_point_day = days_diff { days_diff <= 60 }
+    tax_point_result = "INVOICE_DATE" { days_diff <= 60 }
+
+    service_date := input.invoice.service_completion_date
+    invoice_date := input.invoice.invoice_issue_date
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P230: vat_tax_point_continuous_service — Usługi ciągłe: koniec okresu
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
     "matched": true, "rule_id": "jdg.vat.procedures.tax_point_continuous",
     "package": "jdg.vat.procedures", "priority": 230,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "",

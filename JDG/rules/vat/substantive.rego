@@ -40,9 +40,60 @@ default decide := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# P50: vat_margin_scheme — Procedura VAT-marża
+# V.01: Art. 5 ust. 1 pkt 1 VAT — Dostawa towarów za wynagrodzeniem w PL
+# Fundamentalna definicja: dostawa towarów za wynagrodzeniem na terytorium
+# kraju → podlega VAT. Używamy category_code (nie expense_type) dla spójności.
 # ═══════════════════════════════════════════════════════════════════════════════
 decide := {
+    "matched": true, "rule_id": "jdg.vat.substantive.goods_delivery_taxable",
+    "package": "jdg.vat.substantive", "priority": 5,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "",
+    "vat_exemption": "", "vat_taxable": true, "vat_transaction_type": "GOODS_DELIVERY",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 5 ust. 1 pkt 1 VAT",
+    "_warnings": []
+} {
+    input.invoice.direction == "SALE"
+    input.invoice.category_code in {"GOODS", "MERCHANDISE", "PRODUCTS", "RAW_MATERIALS"}
+    input.invoice.amount_net > 0
+    input.vendor.country == "PL"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V.02: Art. 17 ust. 1 pkt 5 VAT — WNT odwrotne obciążenie dla nabywcy
+# WNT: nabywca rozlicza VAT (23% należny + naliczony), faktura od dostawcy BEZ VAT.
+# Warunek: PURCHASE, vendor w UE (nie PL), towary, zarejestrowany VAT-UE.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.wnt_reverse_charge_buyer",
+    "package": "jdg.vat.substantive", "priority": 7,
+    "vat_rate": "0.23", "rounding_level": "position", "gtu_code": "",
+    "procedure": "WNT_REVERSE_CHARGE",
+    "vat_exemption": "", "vat_mechanism": "REVERSE_CHARGE",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 17 ust. 1 pkt 5 VAT",
+    "_warnings": [sprintf("WNT REVERSE CHARGE — nabycie towarów z %s. VAT rozlicza nabywca (23%% należny + naliczony). Faktura od dostawcy BEZ VAT. JPK_V7: pole K_41.", [vendor_country])]
+} {
+    input.invoice.direction == "PURCHASE"
+    input.vendor.country in eu_countries
+    input.vendor.country != "PL"
+    input.invoice.category_code in {"GOODS", "MERCHANDISE", "RAW_MATERIALS"}
+    input.jdg_entrepreneur.is_vat_eu_registered == true
+    vendor_country := input.vendor.country
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P50: vat_margin_scheme — Procedura VAT-marża
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
     "matched": true, "rule_id": "jdg.vat.substantive.margin_scheme",
     "package": "jdg.vat.substantive", "priority": 50,
     "vat_rate": "0.23", "rounding_level": "total",
@@ -1115,4 +1166,33 @@ else := {
         "LEGAL_SERVICES", "ACCOUNTING_SERVICES", "TRANSPORT_GOODS",
         "CONSTRUCTION_MATERIALS", "MAINTENANCE", "SECURITY"
     }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V.04: Art. 15 ust. 1 VAT — Podatnik VAT (JDG prowadząca działalność gosp.)
+# Definicja: JDG wykonująca samodzielnie działalność gospodarczą = podatnik VAT.
+# Umieszczona ABSOLUTNIE NA KOŃCU else-chain (po P67 catch-all) aby NIE shadowować
+# żadnych szczegółowych reguł stawek VAT. Odpala tylko gdy żaden inny warunek
+# reguł VAT nie został spełniony, a JDG faktycznie prowadzi działalność.
+# UWAGA: `conducts_economic_activity` jest opcjonalnym polem input — jeśli nie
+# istnieje w schemie, reguła nie odpali (bezpieczny fail).
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.taxable_person_jdg_v04",
+    "package": "jdg.vat.substantive", "priority": 999,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "",
+    "vat_exemption": "", "vat_taxable_person": true,
+    "vat_taxable_basis": "Art. 15 ust. 1 VAT — JDG jako podatnik",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 15 ust. 1 VAT",
+    "_warnings": ["PODATNIK VAT (Art. 15 ust. 1) — JDG wykonuje samodzielnie działalność gospodarczą. Transakcja podlega VAT, szczegółowa stawka nie została określona — zweryfikuj."]
+} {
+    input.jdg_entrepreneur.is_jdg == true
+    input.jdg_entrepreneur.conducts_economic_activity == true
+    input.invoice.amount_net > 0
+    input.vendor.country == "PL"
 }

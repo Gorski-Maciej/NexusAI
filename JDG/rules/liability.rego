@@ -13,8 +13,77 @@ package jdg.liability
 import data.jdg.helpers
 default decide := {"matched":false,"rule_id":"jdg.liability.no_match","package":"jdg.liability","priority":1184}
 
-# ══════ P1150: tax_statute_of_limitations_5y — Przedawnienie 5 lat ══════
+# ═══════════════════════════════════════════════════════════════════════════════
+# OP.01 (Doc 50): Art. 16 § 1-4 OrdPU — Powstanie obowiązku podatkowego
+# Obowiązek podatkowy powstaje z dniem zaistnienia zdarzenia, z którym ustawa
+# podatkowa wiąże powstanie takiego obowiązku. Dla JDG: moment wystawienia
+# faktury, otrzymania zapłaty lub wykonania usługi (zależnie od podatku).
+# ═══════════════════════════════════════════════════════════════════════════════
 decide := {
+    "matched":true,"rule_id":"jdg.liability.tax_obligation_arises_art16",
+    "package":"jdg.liability","priority":1101,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "tax_obligation_event":obligation_event,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 16 § 1-4 OrdPU",
+    "_warnings":[sprintf("OBOWIĄZEK PODATKOWY — powstał w momencie: %s. Od tego dnia biegną terminy płatności, deklaracji i przedawnienia.",[obligation_event])]
+} {
+    input.invoice.amount_net > 0
+    is_sale := input.invoice.direction == "SALE"
+    is_paid := object.get(input.invoice, "is_paid", false)
+    is_invoiced := object.get(input.invoice, "invoice_issued", false)
+    obligation_event = "WYKONANIE_USLUGI" { is_sale == true; not is_invoiced }
+    obligation_event = "WYSTAWIENIE_FAKTURY" { is_invoiced == true }
+    obligation_event = "OTRZYMANIE_ZAPLATY" { is_paid == true; not is_invoiced }
+}
+
+# OP.02 (Doc 50): Art. 16a OrdPU — Dodatkowe zobowiązanie podatkowe
+# Organ podatkowy może ustalić dodatkowe zobowiązanie podatkowe (sankcję)
+# w wysokości do 30% zaniżonego zobowiązania. Dotyczy: rażące zaniżenie,
+# nieujawnienie podstawy opodatkowania, brak deklaracji mimo obowiązku.
+else := {
+    "matched":true,"rule_id":"jdg.liability.additional_tax_obligation_art16a",
+    "package":"jdg.liability","priority":1102,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "additional_tax_rate_pct":30,"additional_tax_amount":floor(tax_gap*0.30),
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Dodatkowe zobowiązanie 30% — rażące zaniżenie podatku",
+    "_legal_basis":"Art. 16a OrdPU",
+    "_warnings":[sprintf("DODATKOWE ZOBOWIĄZANIE 30%% — %.2f PLN (30%% od %.2f PLN zaniżenia). Zapłata w 14 dni od doręczenia decyzji.",[floor(tax_gap*0.30), tax_gap])]
+} {
+    tax_gap := object.get(input.jdg_entrepreneur, "tax_understatement_amount", 0)
+    tax_gap > 0
+    object.get(input.jdg_entrepreneur, "gross_understatement", false) == true
+}
+
+# OP.02b: wariant B — nieujawniona podstawa opodatkowania
+else := {
+    "matched":true,"rule_id":"jdg.liability.additional_tax_obligation_art16a",
+    "package":"jdg.liability","priority":1102,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "additional_tax_rate_pct":30,"additional_tax_amount":floor(tax_gap*0.30),
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Dodatkowe zobowiązanie 30% — nieujawniona podstawa",
+    "_legal_basis":"Art. 16a OrdPU",
+    "_warnings":[sprintf("DODATKOWE ZOBOWIĄZANIE 30%% — %.2f PLN (30%% od %.2f PLN nieujawnionej podstawy). Zapłata w 14 dni od doręczenia decyzji.",[floor(tax_gap*0.30), tax_gap])]
+} {
+    tax_gap := object.get(input.jdg_entrepreneur, "tax_understatement_amount", 0)
+    tax_gap > 0
+    object.get(input.jdg_entrepreneur, "undisclosed_tax_base", false) == true
+}
+
+# ══════ P1150: tax_statute_of_limitations_5y — Przedawnienie 5 lat ══════
+else := {
     "matched":true,"rule_id":"jdg.liability.statute_5_years",
     "package":"jdg.liability","priority":1150,
     "vat_rate":"","rounding_level":"","gtu_code":"",
