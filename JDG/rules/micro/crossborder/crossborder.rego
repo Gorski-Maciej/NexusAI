@@ -2071,3 +2071,3250 @@ else := {
 } {
     object.get(input.invoice, "crossborder_a20_exception_2", false) == true
 }
+
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  PLAN OPA/50 — KLASA B — Wygenerowane masowo (120 reguł)       ║
+# ║  Priorytety: 50000-50119                                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.cb.a28.u1.p1 — `cb_a28_u1_p1`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a28.u1.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50000,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a28_u1_p1_check", false) == true
+}
+# jdg.cb.a28.u2.p2 — `cb_a28_u2_p2`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a28.u2.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50001,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a28_u2_p2_check", false) == true
+}
+# jdg.cb.a28.u3.p3 — `cb_a28_u3_p3`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a28.u3.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50002,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a28_u3_p3_check", false) == true
+}
+# jdg.cb.a29.u1.p2 — `cb_a29_u1_p2`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a29.u1.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50003,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a29_u1_p2_check", false) == true
+}
+# jdg.cb.a29.u2.p3 — `cb_a29_u2_p3`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a29.u2.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50004,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a29_u2_p3_check", false) == true
+}
+# jdg.cb.a29.u4.p4 — `cb_a29_u4_p4`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a29.u4.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50005,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a29_u4_p4_check", false) == true
+}
+# jdg.cb.a29.u5.p1 — `cb_a29_u5_p1`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a29.u5.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50006,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a29_u5_p1_check", false) == true
+}
+# jdg.cb.a30.u1.p1 — `cb_a30_u1_p1`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a30.u1.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50007,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a30_u1_p1_check", false) == true
+}
+# jdg.cb.a30.u1.p3 — `cb_a30_u1_p3`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a30.u1.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50008,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a30_u1_p3_check", false) == true
+}
+# jdg.cb.a30.u2.p2 — `cb_a30_u2_p2`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a30.u2.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50009,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a30_u2_p2_check", false) == true
+}
+# jdg.cb.a30.u3.p4 — `cb_a30_u3_p4`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a30.u3.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50010,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a30_u3_p4_check", false) == true
+}
+# jdg.cb.a30.u4.p1 — `cb_a30_u4_p1`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a30.u4.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50011,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a30_u4_p1_check", false) == true
+}
+# jdg.cb.a30.u5.p2 — `cb_a30_u5_p2`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a30.u5.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50012,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a30_u5_p2_check", false) == true
+}
+# jdg.cb.a31.u1.p2 — `cb_a31_u1_p2`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a31.u1.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50013,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a31_u1_p2_check", false) == true
+}
+# jdg.cb.a31.u2.p4 — `cb_a31_u2_p4`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a31.u2.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50014,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a31_u2_p4_check", false) == true
+}
+# jdg.cb.a31.u3.p1 — `cb_a31_u3_p1`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a31.u3.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50015,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a31_u3_p1_check", false) == true
+}
+# jdg.cb.a31.u3.p3 — `cb_a31_u3_p3`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a31.u3.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50016,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a31_u3_p3_check", false) == true
+}
+# jdg.cb.a31.u4.p2 — `cb_a31_u4_p2`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a31.u4.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50017,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a31_u4_p2_check", false) == true
+}
+# jdg.cb.a31.u4.p4 — `cb_a31_u4_p4`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a31.u4.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50018,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a31_u4_p4_check", false) == true
+}
+# jdg.cb.a31.u5.p1 — `cb_a31_u5_p1`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a31.u5.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50019,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a31_u5_p1_check", false) == true
+}
+# jdg.cb.a31.u5.p3 — `cb_a31_u5_p3`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a31.u5.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50020,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a31_u5_p3_check", false) == true
+}
+# jdg.cb.a32.u1.p4 — `cb_a32_u1_p4`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a32.u1.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50021,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a32_u1_p4_check", false) == true
+}
+# jdg.cb.a32.u2.p1 — `cb_a32_u2_p1`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a32.u2.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50022,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a32_u2_p1_check", false) == true
+}
+# jdg.cb.a32.u2.p3 — `cb_a32_u2_p3`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a32.u2.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50023,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a32_u2_p3_check", false) == true
+}
+# jdg.cb.a32.u3.p2 — `cb_a32_u3_p2`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a32.u3.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50024,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a32_u3_p2_check", false) == true
+}
+# jdg.cb.a32.u3.p4 — `cb_a32_u3_p4`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a32.u3.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50025,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a32_u3_p4_check", false) == true
+}
+# jdg.cb.a32.u4.p1 — `cb_a32_u4_p1`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a32.u4.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50026,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a32_u4_p1_check", false) == true
+}
+# jdg.cb.a32.u4.p3 — `cb_a32_u4_p3`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a32.u4.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50027,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a32_u4_p3_check", false) == true
+}
+# jdg.cb.a32.u5.p2 — `cb_a32_u5_p2`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a32.u5.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50028,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a32_u5_p2_check", false) == true
+}
+# jdg.cb.a33.u1.p1 — `cb_a33_u1_p1`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a33.u1.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50029,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a33_u1_p1_check", false) == true
+}
+# jdg.cb.a33.u1.p3 — `cb_a33_u1_p3`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a33.u1.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50030,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a33_u1_p3_check", false) == true
+}
+# jdg.cb.a33.u2.p2 — `cb_a33_u2_p2`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a33.u2.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50031,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a33_u2_p2_check", false) == true
+}
+# jdg.cb.a33.u2.p4 — `cb_a33_u2_p4`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a33.u2.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50032,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a33_u2_p4_check", false) == true
+}
+# jdg.cb.a33.u3.p1 — `cb_a33_u3_p1`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a33.u3.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50033,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a33_u3_p1_check", false) == true
+}
+# jdg.cb.a33.u3.p3 — `cb_a33_u3_p3`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a33.u3.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50034,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a33_u3_p3_check", false) == true
+}
+# jdg.cb.a33.u4.p2 — `cb_a33_u4_p2`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a33.u4.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50035,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a33_u4_p2_check", false) == true
+}
+# jdg.cb.a33.u5.p4 — `cb_a33_u5_p4`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a33.u5.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50036,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a33_u5_p4_check", false) == true
+}
+# jdg.cb.a34.u1.p2 — `cb_a34_u1_p2`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a34.u1.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50037,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a34_u1_p2_check", false) == true
+}
+# jdg.cb.a34.u1.p4 — `cb_a34_u1_p4`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a34.u1.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50038,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a34_u1_p4_check", false) == true
+}
+# jdg.cb.a34.u2.p1 — `cb_a34_u2_p1`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a34.u2.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50039,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a34_u2_p1_check", false) == true
+}
+# jdg.cb.a34.u2.p3 — `cb_a34_u2_p3`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a34.u2.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50040,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a34_u2_p3_check", false) == true
+}
+# jdg.cb.a34.u3.p2 — `cb_a34_u3_p2`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a34.u3.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50041,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a34_u3_p2_check", false) == true
+}
+# jdg.cb.a34.u4.p4 — `cb_a34_u4_p4`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a34.u4.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50042,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a34_u4_p4_check", false) == true
+}
+# jdg.cb.a34.u5.p1 — `cb_a34_u5_p1`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a34.u5.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50043,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a34_u5_p1_check", false) == true
+}
+# jdg.cb.a34.u5.p3 — `cb_a34_u5_p3`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a34.u5.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50044,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a34_u5_p3_check", false) == true
+}
+# jdg.cb.a35.u1.p1 — `cb_a35_u1_p1`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a35.u1.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50045,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a35_u1_p1_check", false) == true
+}
+# jdg.cb.a35.u1.p3 — `cb_a35_u1_p3`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a35.u1.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50046,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a35_u1_p3_check", false) == true
+}
+# jdg.cb.a35.u2.p2 — `cb_a35_u2_p2`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a35.u2.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50047,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a35_u2_p2_check", false) == true
+}
+# jdg.cb.a35.u3.p4 — `cb_a35_u3_p4`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a35.u3.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50048,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a35_u3_p4_check", false) == true
+}
+# jdg.cb.a35.u4.p1 — `cb_a35_u4_p1`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a35.u4.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50049,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a35_u4_p1_check", false) == true
+}
+# jdg.cb.a35.u4.p3 — `cb_a35_u4_p3`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a35.u4.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50050,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a35_u4_p3_check", false) == true
+}
+# jdg.cb.a35.u5.p2 — `cb_a35_u5_p2`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a35.u5.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50051,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a35_u5_p2_check", false) == true
+}
+# jdg.cb.a35.u5.p4 — `cb_a35_u5_p4`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a35.u5.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50052,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a35_u5_p4_check", false) == true
+}
+# jdg.cb.a36.u1.p2 — `cb_a36_u1_p2`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a36.u1.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50053,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a36_u1_p2_check", false) == true
+}
+# jdg.cb.a36.u2.p4 — `cb_a36_u2_p4`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a36.u2.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50054,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a36_u2_p4_check", false) == true
+}
+# jdg.cb.a36.u3.p1 — `cb_a36_u3_p1`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a36.u3.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50055,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a36_u3_p1_check", false) == true
+}
+# jdg.cb.a36.u3.p3 — `cb_a36_u3_p3`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a36.u3.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50056,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a36_u3_p3_check", false) == true
+}
+# jdg.cb.a36.u4.p2 — `cb_a36_u4_p2`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a36.u4.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50057,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a36_u4_p2_check", false) == true
+}
+# jdg.cb.a36.u4.p4 — `cb_a36_u4_p4`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a36.u4.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50058,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a36_u4_p4_check", false) == true
+}
+# jdg.cb.a36.u5.p1 — `cb_a36_u5_p1`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a36.u5.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50059,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a36_u5_p1_check", false) == true
+}
+# jdg.cb.a36.u5.p3 — `cb_a36_u5_p3`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a36.u5.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50060,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a36_u5_p3_check", false) == true
+}
+# jdg.cb.a37.u1.p4 — `cb_a37_u1_p4`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a37.u1.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50061,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a37_u1_p4_check", false) == true
+}
+# jdg.cb.a37.u2.p1 — `cb_a37_u2_p1`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a37.u2.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50062,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a37_u2_p1_check", false) == true
+}
+# jdg.cb.a37.u2.p3 — `cb_a37_u2_p3`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a37.u2.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50063,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a37_u2_p3_check", false) == true
+}
+# jdg.cb.a37.u3.p2 — `cb_a37_u3_p2`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a37.u3.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50064,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a37_u3_p2_check", false) == true
+}
+# jdg.cb.a37.u3.p4 — `cb_a37_u3_p4`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a37.u3.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50065,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a37_u3_p4_check", false) == true
+}
+# jdg.cb.a37.u4.p1 — `cb_a37_u4_p1`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a37.u4.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50066,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a37_u4_p1_check", false) == true
+}
+# jdg.cb.a37.u4.p3 — `cb_a37_u4_p3`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a37.u4.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50067,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a37_u4_p3_check", false) == true
+}
+# jdg.cb.a37.u5.p2 — `cb_a37_u5_p2`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a37.u5.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50068,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a37_u5_p2_check", false) == true
+}
+# jdg.cb.a38.u1.p1 — `cb_a38_u1_p1`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a38.u1.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50069,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a38_u1_p1_check", false) == true
+}
+# jdg.cb.a38.u1.p3 — `cb_a38_u1_p3`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a38.u1.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50070,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a38_u1_p3_check", false) == true
+}
+# jdg.cb.a38.u2.p2 — `cb_a38_u2_p2`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a38.u2.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50071,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a38_u2_p2_check", false) == true
+}
+# jdg.cb.a38.u2.p4 — `cb_a38_u2_p4`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a38.u2.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50072,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a38_u2_p4_check", false) == true
+}
+# jdg.cb.a38.u3.p1 — `cb_a38_u3_p1`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a38.u3.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50073,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a38_u3_p1_check", false) == true
+}
+# jdg.cb.a38.u3.p3 — `cb_a38_u3_p3`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a38.u3.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50074,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a38_u3_p3_check", false) == true
+}
+# jdg.cb.a38.u4.p2 — `cb_a38_u4_p2`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a38.u4.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50075,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a38_u4_p2_check", false) == true
+}
+# jdg.cb.a38.u5.p4 — `cb_a38_u5_p4`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a38.u5.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50076,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a38_u5_p4_check", false) == true
+}
+# jdg.cb.a39.u1.p2 — `cb_a39_u1_p2`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a39.u1.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50077,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a39_u1_p2_check", false) == true
+}
+# jdg.cb.a39.u1.p4 — `cb_a39_u1_p4`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a39.u1.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50078,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a39_u1_p4_check", false) == true
+}
+# jdg.cb.a39.u2.p1 — `cb_a39_u2_p1`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a39.u2.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50079,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a39_u2_p1_check", false) == true
+}
+# jdg.cb.a39.u2.p3 — `cb_a39_u2_p3`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a39.u2.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50080,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a39_u2_p3_check", false) == true
+}
+# jdg.cb.a39.u3.p2 — `cb_a39_u3_p2`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a39.u3.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50081,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a39_u3_p2_check", false) == true
+}
+# jdg.cb.a39.u4.p4 — `cb_a39_u4_p4`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a39.u4.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50082,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a39_u4_p4_check", false) == true
+}
+# jdg.cb.a39.u5.p1 — `cb_a39_u5_p1`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a39.u5.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50083,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a39_u5_p1_check", false) == true
+}
+# jdg.cb.a39.u5.p3 — `cb_a39_u5_p3`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a39.u5.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50084,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a39_u5_p3_check", false) == true
+}
+# jdg.cb.a40.u1.p1 — `cb_a40_u1_p1`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a40.u1.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50085,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a40_u1_p1_check", false) == true
+}
+# jdg.cb.a40.u1.p3 — `cb_a40_u1_p3`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a40.u1.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50086,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a40_u1_p3_check", false) == true
+}
+# jdg.cb.a40.u2.p2 — `cb_a40_u2_p2`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a40.u2.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50087,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a40_u2_p2_check", false) == true
+}
+# jdg.cb.a40.u3.p4 — `cb_a40_u3_p4`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a40.u3.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50088,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a40_u3_p4_check", false) == true
+}
+# jdg.cb.a40.u4.p1 — `cb_a40_u4_p1`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a40.u4.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50089,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a40_u4_p1_check", false) == true
+}
+# jdg.cb.a40.u4.p3 — `cb_a40_u4_p3`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a40.u4.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50090,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a40_u4_p3_check", false) == true
+}
+# jdg.cb.a40.u5.p2 — `cb_a40_u5_p2`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a40.u5.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50091,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a40_u5_p2_check", false) == true
+}
+# jdg.cb.a40.u5.p4 — `cb_a40_u5_p4`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a40.u5.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50092,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a40_u5_p4_check", false) == true
+}
+# jdg.cb.a41.u1.p2 — `cb_a41_u1_p2`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a41.u1.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50093,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a41_u1_p2_check", false) == true
+}
+# jdg.cb.a41.u2.p4 — `cb_a41_u2_p4`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a41.u2.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50094,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a41_u2_p4_check", false) == true
+}
+# jdg.cb.a41.u3.p1 — `cb_a41_u3_p1`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a41.u3.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50095,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a41_u3_p1_check", false) == true
+}
+# jdg.cb.a41.u3.p3 — `cb_a41_u3_p3`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a41.u3.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50096,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a41_u3_p3_check", false) == true
+}
+# jdg.cb.a41.u4.p2 — `cb_a41_u4_p2`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a41.u4.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50097,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a41_u4_p2_check", false) == true
+}
+# jdg.cb.a41.u4.p4 — `cb_a41_u4_p4`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a41.u4.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50098,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a41_u4_p4_check", false) == true
+}
+# jdg.cb.a41.u5.p1 — `cb_a41_u5_p1`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a41.u5.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50099,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a41_u5_p1_check", false) == true
+}
+# jdg.cb.a41.u5.p3 — `cb_a41_u5_p3`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a41.u5.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50100,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a41_u5_p3_check", false) == true
+}
+# jdg.cb.a42.u1.p4 — `cb_a42_u1_p4`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a42.u1.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50101,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a42_u1_p4_check", false) == true
+}
+# jdg.cb.a42.u2.p1 — `cb_a42_u2_p1`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a42.u2.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50102,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a42_u2_p1_check", false) == true
+}
+# jdg.cb.a42.u2.p3 — `cb_a42_u2_p3`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a42.u2.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50103,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a42_u2_p3_check", false) == true
+}
+# jdg.cb.a42.u3.p2 — `cb_a42_u3_p2`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a42.u3.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50104,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a42_u3_p2_check", false) == true
+}
+# jdg.cb.a42.u3.p4 — `cb_a42_u3_p4`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a42.u3.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50105,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a42_u3_p4_check", false) == true
+}
+# jdg.cb.a42.u4.p1 — `cb_a42_u4_p1`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a42.u4.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50106,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a42_u4_p1_check", false) == true
+}
+# jdg.cb.a42.u4.p3 — `cb_a42_u4_p3`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a42.u4.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50107,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a42_u4_p3_check", false) == true
+}
+# jdg.cb.a42.u5.p2 — `cb_a42_u5_p2`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a42.u5.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50108,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a42_u5_p2_check", false) == true
+}
+# jdg.cb.a43.u1.p3 — `cb_a43_u1_p3`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a43.u1.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50109,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a43_u1_p3_check", false) == true
+}
+# jdg.cb.a43.u2.p4 — `cb_a43_u2_p4`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a43.u2.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50110,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a43_u2_p4_check", false) == true
+}
+# jdg.cb.a43.u3.p1 — `cb_a43_u3_p1`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a43.u3.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50111,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a43_u3_p1_check", false) == true
+}
+# jdg.cb.a43.u4.p2 — `cb_a43_u4_p2`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a43.u4.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50112,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a43_u4_p2_check", false) == true
+}
+# jdg.cb.a43.u5.p4 — `cb_a43_u5_p4`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a43.u5.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50113,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a43_u5_p4_check", false) == true
+}
+# jdg.cb.a44.u1.p4 — `cb_a44_u1_p4`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a44.u1.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50114,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a44_u1_p4_check", false) == true
+}
+# jdg.cb.a44.u2.p1 — `cb_a44_u2_p1`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a44.u2.p1",
+    "package": "jdg.micro.crossborder",
+    "priority": 50115,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a44_u2_p1_check", false) == true
+}
+# jdg.cb.a44.u3.p2 — `cb_a44_u3_p2`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a44.u3.p2",
+    "package": "jdg.micro.crossborder",
+    "priority": 50116,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a44_u3_p2_check", false) == true
+}
+# jdg.cb.a44.u5.p3 — `cb_a44_u5_p3`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a44.u5.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50117,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a44_u5_p3_check", false) == true
+}
+# jdg.cb.a45.u4.p3 — `cb_a45_u4_p3`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a45.u4.p3",
+    "package": "jdg.micro.crossborder",
+    "priority": 50118,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a45_u4_p3_check", false) == true
+}
+# jdg.cb.a45.u5.p4 — `cb_a45_u5_p4`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.cb.a45.u5.p4",
+    "package": "jdg.micro.crossborder",
+    "priority": 50119,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "cb_a45_u5_p4_check", false) == true
+}

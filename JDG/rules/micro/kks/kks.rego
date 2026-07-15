@@ -10719,3 +10719,2656 @@ else := {
 } {
     object.get(input.invoice, "kks_a87_exception_2", false) == true
 }
+
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  PLAN OPA/50 — KLASA B — Wygenerowane masowo (98 reguł)       ║
+# ║  Priorytety: 50000-50097                                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.kks.a62.r2 — `kks_a62_r2`: Art. 62 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a62.r2",
+    "package": "jdg.micro.kks",
+    "priority": 50000,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 62 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 62: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a62_r2_check", false) == true
+}
+# jdg.kks.a70.u1.p1 — `kks_a70_u1_p1`: Art. 70 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a70.u1.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50001,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 70 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 70: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a70_u1_p1_check", false) == true
+}
+# jdg.kks.a70.u2.p2 — `kks_a70_u2_p2`: Art. 70 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a70.u2.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50002,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 70 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 70: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a70_u2_p2_check", false) == true
+}
+# jdg.kks.a71.u1.p2 — `kks_a71_u1_p2`: Art. 71 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a71.u1.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50003,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a71_u1_p2_check", false) == true
+}
+# jdg.kks.a71.u3.p3 — `kks_a71_u3_p3`: Art. 71 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a71.u3.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50004,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a71_u3_p3_check", false) == true
+}
+# jdg.kks.a71.u4.p4 — `kks_a71_u4_p4`: Art. 71 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a71.u4.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50005,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a71_u4_p4_check", false) == true
+}
+# jdg.kks.a71.u5.p1 — `kks_a71_u5_p1`: Art. 71 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a71.u5.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50006,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a71_u5_p1_check", false) == true
+}
+# jdg.kks.a72.u2.p3 — `kks_a72_u2_p3`: Art. 72 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a72.u2.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50007,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a72_u2_p3_check", false) == true
+}
+# jdg.kks.a72.u3.p4 — `kks_a72_u3_p4`: Art. 72 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a72.u3.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50008,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a72_u3_p4_check", false) == true
+}
+# jdg.kks.a72.u4.p1 — `kks_a72_u4_p1`: Art. 72 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a72.u4.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50009,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a72_u4_p1_check", false) == true
+}
+# jdg.kks.a72.u5.p2 — `kks_a72_u5_p2`: Art. 72 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a72.u5.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50010,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a72_u5_p2_check", false) == true
+}
+# jdg.kks.a73.u1.p3 — `kks_a73_u1_p3`: Art. 73 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a73.u1.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50011,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a73_u1_p3_check", false) == true
+}
+# jdg.kks.a73.u2.p4 — `kks_a73_u2_p4`: Art. 73 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a73.u2.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50012,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a73_u2_p4_check", false) == true
+}
+# jdg.kks.a73.u3.p1 — `kks_a73_u3_p1`: Art. 73 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a73.u3.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50013,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a73_u3_p1_check", false) == true
+}
+# jdg.kks.a73.u4.p2 — `kks_a73_u4_p2`: Art. 73 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a73.u4.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50014,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a73_u4_p2_check", false) == true
+}
+# jdg.kks.a74.u1.p4 — `kks_a74_u1_p4`: Art. 74 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a74.u1.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50015,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a74_u1_p4_check", false) == true
+}
+# jdg.kks.a74.u2.p1 — `kks_a74_u2_p1`: Art. 74 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a74.u2.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50016,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a74_u2_p1_check", false) == true
+}
+# jdg.kks.a74.u3.p2 — `kks_a74_u3_p2`: Art. 74 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a74.u3.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50017,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a74_u3_p2_check", false) == true
+}
+# jdg.kks.a74.u5.p3 — `kks_a74_u5_p3`: Art. 74 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a74.u5.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50018,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a74_u5_p3_check", false) == true
+}
+# jdg.kks.a75.u1.p1 — `kks_a75_u1_p1`: Art. 75 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a75.u1.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50019,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a75_u1_p1_check", false) == true
+}
+# jdg.kks.a75.u2.p2 — `kks_a75_u2_p2`: Art. 75 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a75.u2.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50020,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a75_u2_p2_check", false) == true
+}
+# jdg.kks.a75.u4.p3 — `kks_a75_u4_p3`: Art. 75 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a75.u4.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50021,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a75_u4_p3_check", false) == true
+}
+# jdg.kks.a75.u5.p4 — `kks_a75_u5_p4`: Art. 75 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a75.u5.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50022,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a75_u5_p4_check", false) == true
+}
+# jdg.kks.a76.u1.p2 — `kks_a76_u1_p2`: Art. 76 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a76.u1.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50023,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a76_u1_p2_check", false) == true
+}
+# jdg.kks.a76.u3.p3 — `kks_a76_u3_p3`: Art. 76 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a76.u3.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50024,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a76_u3_p3_check", false) == true
+}
+# jdg.kks.a76.u4.p4 — `kks_a76_u4_p4`: Art. 76 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a76.u4.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50025,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a76_u4_p4_check", false) == true
+}
+# jdg.kks.a76.u5.p1 — `kks_a76_u5_p1`: Art. 76 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a76.u5.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50026,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a76_u5_p1_check", false) == true
+}
+# jdg.kks.a77.r1 — `kks_a77_r1`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a77.r1",
+    "package": "jdg.micro.kks",
+    "priority": 50027,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a77_r1_check", false) == true
+}
+# jdg.kks.a77.u2.p3 — `kks_a77_u2_p3`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a77.u2.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50028,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a77_u2_p3_check", false) == true
+}
+# jdg.kks.a77.u3.p4 — `kks_a77_u3_p4`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a77.u3.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50029,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a77_u3_p4_check", false) == true
+}
+# jdg.kks.a77.u4.p1 — `kks_a77_u4_p1`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a77.u4.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50030,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a77_u4_p1_check", false) == true
+}
+# jdg.kks.a77.u5.p2 — `kks_a77_u5_p2`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a77.u5.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50031,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a77_u5_p2_check", false) == true
+}
+# jdg.kks.a78.u1.p3 — `kks_a78_u1_p3`: Art. 78 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a78.u1.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50032,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a78_u1_p3_check", false) == true
+}
+# jdg.kks.a78.u2.p4 — `kks_a78_u2_p4`: Art. 78 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a78.u2.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50033,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a78_u2_p4_check", false) == true
+}
+# jdg.kks.a78.u3.p1 — `kks_a78_u3_p1`: Art. 78 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a78.u3.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50034,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a78_u3_p1_check", false) == true
+}
+# jdg.kks.a78.u4.p2 — `kks_a78_u4_p2`: Art. 78 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a78.u4.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50035,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a78_u4_p2_check", false) == true
+}
+# jdg.kks.a79.u1.p4 — `kks_a79_u1_p4`: Art. 79 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a79.u1.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50036,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a79_u1_p4_check", false) == true
+}
+# jdg.kks.a79.u2.p1 — `kks_a79_u2_p1`: Art. 79 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a79.u2.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50037,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a79_u2_p1_check", false) == true
+}
+# jdg.kks.a79.u3.p2 — `kks_a79_u3_p2`: Art. 79 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a79.u3.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50038,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a79_u3_p2_check", false) == true
+}
+# jdg.kks.a79.u5.p3 — `kks_a79_u5_p3`: Art. 79 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a79.u5.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50039,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a79_u5_p3_check", false) == true
+}
+# jdg.kks.a80.u1.p1 — `kks_a80_u1_p1`: Art. 80 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a80.u1.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50040,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a80_u1_p1_check", false) == true
+}
+# jdg.kks.a80.u2.p2 — `kks_a80_u2_p2`: Art. 80 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a80.u2.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50041,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a80_u2_p2_check", false) == true
+}
+# jdg.kks.a80.u4.p3 — `kks_a80_u4_p3`: Art. 80 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a80.u4.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50042,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a80_u4_p3_check", false) == true
+}
+# jdg.kks.a80.u5.p4 — `kks_a80_u5_p4`: Art. 80 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a80.u5.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50043,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a80_u5_p4_check", false) == true
+}
+# jdg.kks.a81.u1.p2 — `kks_a81_u1_p2`: Art. 81 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a81.u1.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50044,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a81_u1_p2_check", false) == true
+}
+# jdg.kks.a81.u3.p3 — `kks_a81_u3_p3`: Art. 81 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a81.u3.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50045,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a81_u3_p3_check", false) == true
+}
+# jdg.kks.a81.u4.p4 — `kks_a81_u4_p4`: Art. 81 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a81.u4.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50046,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a81_u4_p4_check", false) == true
+}
+# jdg.kks.a81.u5.p1 — `kks_a81_u5_p1`: Art. 81 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a81.u5.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50047,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a81_u5_p1_check", false) == true
+}
+# jdg.kks.a82.u2.p3 — `kks_a82_u2_p3`: Art. 82 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a82.u2.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50048,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a82_u2_p3_check", false) == true
+}
+# jdg.kks.a82.u3.p4 — `kks_a82_u3_p4`: Art. 82 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a82.u3.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50049,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a82_u3_p4_check", false) == true
+}
+# jdg.kks.a82.u4.p1 — `kks_a82_u4_p1`: Art. 82 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a82.u4.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50050,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a82_u4_p1_check", false) == true
+}
+# jdg.kks.a82.u5.p2 — `kks_a82_u5_p2`: Art. 82 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a82.u5.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50051,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a82_u5_p2_check", false) == true
+}
+# jdg.kks.a83.u1.p3 — `kks_a83_u1_p3`: Art. 83 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a83.u1.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50052,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a83_u1_p3_check", false) == true
+}
+# jdg.kks.a83.u2.p4 — `kks_a83_u2_p4`: Art. 83 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a83.u2.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50053,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a83_u2_p4_check", false) == true
+}
+# jdg.kks.a83.u3.p1 — `kks_a83_u3_p1`: Art. 83 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a83.u3.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50054,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a83_u3_p1_check", false) == true
+}
+# jdg.kks.a83.u4.p2 — `kks_a83_u4_p2`: Art. 83 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a83.u4.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50055,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a83_u4_p2_check", false) == true
+}
+# jdg.kks.a84.u1.p4 — `kks_a84_u1_p4`: Art. 84 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a84.u1.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50056,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 84 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 84: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a84_u1_p4_check", false) == true
+}
+# jdg.kks.a84.u2.p1 — `kks_a84_u2_p1`: Art. 84 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a84.u2.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50057,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 84 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 84: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a84_u2_p1_check", false) == true
+}
+# jdg.kks.a84.u3.p2 — `kks_a84_u3_p2`: Art. 84 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a84.u3.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50058,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 84 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 84: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a84_u3_p2_check", false) == true
+}
+# jdg.kks.a84.u5.p3 — `kks_a84_u5_p3`: Art. 84 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a84.u5.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50059,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 84 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 84: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a84_u5_p3_check", false) == true
+}
+# jdg.kks.a85.u1.p1 — `kks_a85_u1_p1`: Art. 85 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a85.u1.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50060,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 85 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 85: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a85_u1_p1_check", false) == true
+}
+# jdg.kks.a85.u2.p2 — `kks_a85_u2_p2`: Art. 85 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a85.u2.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50061,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 85 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 85: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a85_u2_p2_check", false) == true
+}
+# jdg.kks.a85.u4.p3 — `kks_a85_u4_p3`: Art. 85 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a85.u4.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50062,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 85 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 85: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a85_u4_p3_check", false) == true
+}
+# jdg.kks.a85.u5.p4 — `kks_a85_u5_p4`: Art. 85 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a85.u5.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50063,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 85 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 85: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a85_u5_p4_check", false) == true
+}
+# jdg.kks.a86.u1.p2 — `kks_a86_u1_p2`: Art. 86 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a86.u1.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50064,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 86 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 86: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a86_u1_p2_check", false) == true
+}
+# jdg.kks.a86.u3.p3 — `kks_a86_u3_p3`: Art. 86 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a86.u3.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50065,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 86 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 86: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a86_u3_p3_check", false) == true
+}
+# jdg.kks.a86.u4.p4 — `kks_a86_u4_p4`: Art. 86 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a86.u4.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50066,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 86 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 86: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a86_u4_p4_check", false) == true
+}
+# jdg.kks.a86.u5.p1 — `kks_a86_u5_p1`: Art. 86 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a86.u5.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50067,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 86 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 86: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a86_u5_p1_check", false) == true
+}
+# jdg.kks.a87.u2.p3 — `kks_a87_u2_p3`: Art. 87 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a87.u2.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50068,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 87 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 87: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a87_u2_p3_check", false) == true
+}
+# jdg.kks.a87.u3.p4 — `kks_a87_u3_p4`: Art. 87 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a87.u3.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50069,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 87 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 87: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a87_u3_p4_check", false) == true
+}
+# jdg.kks.a87.u4.p1 — `kks_a87_u4_p1`: Art. 87 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a87.u4.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50070,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 87 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 87: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a87_u4_p1_check", false) == true
+}
+# jdg.kks.a87.u5.p2 — `kks_a87_u5_p2`: Art. 87 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a87.u5.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50071,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 87 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 87: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a87_u5_p2_check", false) == true
+}
+# jdg.kks.a88.u1.p3 — `kks_a88_u1_p3`: Art. 88 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a88.u1.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50072,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 88 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 88: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a88_u1_p3_check", false) == true
+}
+# jdg.kks.a88.u2.p4 — `kks_a88_u2_p4`: Art. 88 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a88.u2.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50073,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 88 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 88: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a88_u2_p4_check", false) == true
+}
+# jdg.kks.a88.u3.p1 — `kks_a88_u3_p1`: Art. 88 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a88.u3.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50074,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 88 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 88: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a88_u3_p1_check", false) == true
+}
+# jdg.kks.a88.u4.p2 — `kks_a88_u4_p2`: Art. 88 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a88.u4.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50075,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 88 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 88: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a88_u4_p2_check", false) == true
+}
+# jdg.kks.a89.u1.p4 — `kks_a89_u1_p4`: Art. 89 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a89.u1.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50076,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 89 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 89: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a89_u1_p4_check", false) == true
+}
+# jdg.kks.a89.u2.p1 — `kks_a89_u2_p1`: Art. 89 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a89.u2.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50077,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 89 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 89: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a89_u2_p1_check", false) == true
+}
+# jdg.kks.a89.u3.p2 — `kks_a89_u3_p2`: Art. 89 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a89.u3.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50078,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 89 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 89: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a89_u3_p2_check", false) == true
+}
+# jdg.kks.a89.u5.p3 — `kks_a89_u5_p3`: Art. 89 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a89.u5.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50079,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 89 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 89: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a89_u5_p3_check", false) == true
+}
+# jdg.kks.a90.u1.p1 — `kks_a90_u1_p1`: Art. 90 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a90.u1.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50080,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 90 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 90: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a90_u1_p1_check", false) == true
+}
+# jdg.kks.a90.u2.p2 — `kks_a90_u2_p2`: Art. 90 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a90.u2.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50081,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 90 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 90: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a90_u2_p2_check", false) == true
+}
+# jdg.kks.a90.u4.p3 — `kks_a90_u4_p3`: Art. 90 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a90.u4.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50082,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 90 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 90: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a90_u4_p3_check", false) == true
+}
+# jdg.kks.a90.u5.p4 — `kks_a90_u5_p4`: Art. 90 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a90.u5.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50083,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 90 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 90: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a90_u5_p4_check", false) == true
+}
+# jdg.kks.a91.u1.p2 — `kks_a91_u1_p2`: Art. 91 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a91.u1.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50084,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 91 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 91: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a91_u1_p2_check", false) == true
+}
+# jdg.kks.a91.u3.p3 — `kks_a91_u3_p3`: Art. 91 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a91.u3.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50085,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 91 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 91: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a91_u3_p3_check", false) == true
+}
+# jdg.kks.a91.u4.p4 — `kks_a91_u4_p4`: Art. 91 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a91.u4.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50086,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 91 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 91: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a91_u4_p4_check", false) == true
+}
+# jdg.kks.a91.u5.p1 — `kks_a91_u5_p1`: Art. 91 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a91.u5.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50087,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 91 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 91: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a91_u5_p1_check", false) == true
+}
+# jdg.kks.a92.u2.p3 — `kks_a92_u2_p3`: Art. 92 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a92.u2.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50088,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 92 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 92: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a92_u2_p3_check", false) == true
+}
+# jdg.kks.a92.u3.p4 — `kks_a92_u3_p4`: Art. 92 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a92.u3.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50089,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 92 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 92: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a92_u3_p4_check", false) == true
+}
+# jdg.kks.a92.u4.p1 — `kks_a92_u4_p1`: Art. 92 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a92.u4.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50090,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 92 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 92: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a92_u4_p1_check", false) == true
+}
+# jdg.kks.a92.u5.p2 — `kks_a92_u5_p2`: Art. 92 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a92.u5.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50091,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 92 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 92: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a92_u5_p2_check", false) == true
+}
+# jdg.kks.a93.u1.p3 — `kks_a93_u1_p3`: Art. 93 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a93.u1.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50092,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 93 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 93: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a93_u1_p3_check", false) == true
+}
+# jdg.kks.a93.u2.p4 — `kks_a93_u2_p4`: Art. 93 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a93.u2.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50093,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 93 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 93: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a93_u2_p4_check", false) == true
+}
+# jdg.kks.a93.u3.p1 — `kks_a93_u3_p1`: Art. 93 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a93.u3.p1",
+    "package": "jdg.micro.kks",
+    "priority": 50094,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 93 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 93: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a93_u3_p1_check", false) == true
+}
+# jdg.kks.a93.u4.p2 — `kks_a93_u4_p2`: Art. 93 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a93.u4.p2",
+    "package": "jdg.micro.kks",
+    "priority": 50095,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 93 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 93: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a93_u4_p2_check", false) == true
+}
+# jdg.kks.a94.u1.p4 — `kks_a94_u1_p4`: Art. 94 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a94.u1.p4",
+    "package": "jdg.micro.kks",
+    "priority": 50096,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 94 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 94: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a94_u1_p4_check", false) == true
+}
+# jdg.kks.a94.u5.p3 — `kks_a94_u5_p3`: Art. 94 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.kks.a94.u5.p3",
+    "package": "jdg.micro.kks",
+    "priority": 50097,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 94 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Art. 94: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "kks_a94_u5_p3_check", false) == true
+}

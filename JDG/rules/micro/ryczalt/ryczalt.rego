@@ -2786,3 +2786,1360 @@ else := {
 } {
     object.get(input.invoice, "ryczalt_a30_exception_2", false) == true
 }
+
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  PLAN OPA/50 — KLASA B — Wygenerowane masowo (50 reguł)       ║
+# ║  Priorytety: 50000-50049                                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.ryc.a22.u1.p1 — `ryc_a22_u1_p1`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a22.u1.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50000,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a22_u1_p1_check", false) == true
+}
+# jdg.ryc.a22.u2.p2 — `ryc_a22_u2_p2`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a22.u2.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50001,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a22_u2_p2_check", false) == true
+}
+# jdg.ryc.a22.u3.p3 — `ryc_a22_u3_p3`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a22.u3.p3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50002,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a22_u3_p3_check", false) == true
+}
+# jdg.ryc.a22.u4.p4 — `ryc_a22_u4_p4`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a22.u4.p4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50003,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a22_u4_p4_check", false) == true
+}
+# jdg.ryc.a23.u1.p2 — `ryc_a23_u1_p2`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a23.u1.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50004,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a23_u1_p2_check", false) == true
+}
+# jdg.ryc.a23.u2.p3 — `ryc_a23_u2_p3`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a23.u2.p3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50005,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a23_u2_p3_check", false) == true
+}
+# jdg.ryc.a23.u3.p4 — `ryc_a23_u3_p4`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a23.u3.p4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50006,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a23_u3_p4_check", false) == true
+}
+# jdg.ryc.a23.u5.p1 — `ryc_a23_u5_p1`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a23.u5.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50007,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a23_u5_p1_check", false) == true
+}
+# jdg.ryc.a24.u1.p3 — `ryc_a24_u1_p3`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a24.u1.p3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50008,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a24_u1_p3_check", false) == true
+}
+# jdg.ryc.a24.u2.p4 — `ryc_a24_u2_p4`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a24.u2.p4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50009,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a24_u2_p4_check", false) == true
+}
+# jdg.ryc.a24.u4.p1 — `ryc_a24_u4_p1`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a24.u4.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50010,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a24_u4_p1_check", false) == true
+}
+# jdg.ryc.a24.u5.p2 — `ryc_a24_u5_p2`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a24.u5.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50011,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a24_u5_p2_check", false) == true
+}
+# jdg.ryc.a25.u1.p4 — `ryc_a25_u1_p4`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a25.u1.p4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50012,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a25_u1_p4_check", false) == true
+}
+# jdg.ryc.a25.u3.p1 — `ryc_a25_u3_p1`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a25.u3.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50013,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a25_u3_p1_check", false) == true
+}
+# jdg.ryc.a25.u4.p2 — `ryc_a25_u4_p2`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a25.u4.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50014,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a25_u4_p2_check", false) == true
+}
+# jdg.ryc.a25.u5.p3 — `ryc_a25_u5_p3`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a25.u5.p3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50015,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a25_u5_p3_check", false) == true
+}
+# jdg.ryc.a26.u2.p1 — `ryc_a26_u2_p1`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a26.u2.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50016,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a26_u2_p1_check", false) == true
+}
+# jdg.ryc.a26.u3.p2 — `ryc_a26_u3_p2`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a26.u3.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50017,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a26_u3_p2_check", false) == true
+}
+# jdg.ryc.a26.u4.p3 — `ryc_a26_u4_p3`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a26.u4.p3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50018,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a26_u4_p3_check", false) == true
+}
+# jdg.ryc.a26.u5.p4 — `ryc_a26_u5_p4`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a26.u5.p4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50019,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a26_u5_p4_check", false) == true
+}
+# jdg.ryc.a27.u1.p1 — `ryc_a27_u1_p1`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a27.u1.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50020,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a27_u1_p1_check", false) == true
+}
+# jdg.ryc.a27.u2.p2 — `ryc_a27_u2_p2`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a27.u2.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50021,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a27_u2_p2_check", false) == true
+}
+# jdg.ryc.a27.u3.p3 — `ryc_a27_u3_p3`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a27.u3.p3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50022,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a27_u3_p3_check", false) == true
+}
+# jdg.ryc.a27.u4.p4 — `ryc_a27_u4_p4`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a27.u4.p4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50023,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a27_u4_p4_check", false) == true
+}
+# jdg.ryc.a28.u1.p2 — `ryc_a28_u1_p2`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a28.u1.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50024,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a28_u1_p2_check", false) == true
+}
+# jdg.ryc.a28.u2.p3 — `ryc_a28_u2_p3`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a28.u2.p3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50025,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a28_u2_p3_check", false) == true
+}
+# jdg.ryc.a28.u3.p4 — `ryc_a28_u3_p4`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a28.u3.p4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50026,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a28_u3_p4_check", false) == true
+}
+# jdg.ryc.a28.u5.p1 — `ryc_a28_u5_p1`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a28.u5.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50027,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a28_u5_p1_check", false) == true
+}
+# jdg.ryc.a29.u1.p3 — `ryc_a29_u1_p3`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a29.u1.p3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50028,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a29_u1_p3_check", false) == true
+}
+# jdg.ryc.a29.u2.p4 — `ryc_a29_u2_p4`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a29.u2.p4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50029,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a29_u2_p4_check", false) == true
+}
+# jdg.ryc.a29.u4.p1 — `ryc_a29_u4_p1`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a29.u4.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50030,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a29_u4_p1_check", false) == true
+}
+# jdg.ryc.a29.u5.p2 — `ryc_a29_u5_p2`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a29.u5.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50031,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a29_u5_p2_check", false) == true
+}
+# jdg.ryc.a30.u1.p4 — `ryc_a30_u1_p4`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a30.u1.p4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50032,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a30_u1_p4_check", false) == true
+}
+# jdg.ryc.a30.u3.p1 — `ryc_a30_u3_p1`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a30.u3.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50033,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a30_u3_p1_check", false) == true
+}
+# jdg.ryc.a30.u4.p2 — `ryc_a30_u4_p2`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a30.u4.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50034,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a30_u4_p2_check", false) == true
+}
+# jdg.ryc.a30.u5.p3 — `ryc_a30_u5_p3`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a30.u5.p3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50035,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a30_u5_p3_check", false) == true
+}
+# jdg.ryc.a31.u2.p1 — `ryc_a31_u2_p1`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a31.u2.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50036,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a31_u2_p1_check", false) == true
+}
+# jdg.ryc.a31.u3.p2 — `ryc_a31_u3_p2`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a31.u3.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50037,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a31_u3_p2_check", false) == true
+}
+# jdg.ryc.a31.u4.p3 — `ryc_a31_u4_p3`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a31.u4.p3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50038,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a31_u4_p3_check", false) == true
+}
+# jdg.ryc.a31.u5.p4 — `ryc_a31_u5_p4`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a31.u5.p4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50039,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a31_u5_p4_check", false) == true
+}
+# jdg.ryc.a32.u1.p1 — `ryc_a32_u1_p1`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a32.u1.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50040,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a32_u1_p1_check", false) == true
+}
+# jdg.ryc.a32.u2.p2 — `ryc_a32_u2_p2`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a32.u2.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50041,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a32_u2_p2_check", false) == true
+}
+# jdg.ryc.a32.u3.p3 — `ryc_a32_u3_p3`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a32.u3.p3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50042,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a32_u3_p3_check", false) == true
+}
+# jdg.ryc.a32.u4.p4 — `ryc_a32_u4_p4`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a32.u4.p4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50043,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a32_u4_p4_check", false) == true
+}
+# jdg.ryc.a33.u1.p2 — `ryc_a33_u1_p2`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a33.u1.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50044,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a33_u1_p2_check", false) == true
+}
+# jdg.ryc.a33.u2.p3 — `ryc_a33_u2_p3`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a33.u2.p3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50045,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a33_u2_p3_check", false) == true
+}
+# jdg.ryc.a33.u3.p4 — `ryc_a33_u3_p4`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a33.u3.p4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50046,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a33_u3_p4_check", false) == true
+}
+# jdg.ryc.a33.u5.p1 — `ryc_a33_u5_p1`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a33.u5.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50047,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a33_u5_p1_check", false) == true
+}
+# jdg.ryc.a34.u4.p1 — `ryc_a34_u4_p1`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a34.u4.p1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50048,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a34_u4_p1_check", false) == true
+}
+# jdg.ryc.a34.u5.p2 — `ryc_a34_u5_p2`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ryc.a34.u5.p2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 50049,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ryc_a34_u5_p2_check", false) == true
+}

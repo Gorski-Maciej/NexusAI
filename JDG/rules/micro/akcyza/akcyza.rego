@@ -931,3 +931,2710 @@ else := {
 } {
     object.get(input.invoice, "akcyza_a99_exception_2", false) == true
 }
+
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  PLAN OPA/50 — KLASA B — Wygenerowane masowo (100 reguł)       ║
+# ║  Priorytety: 50000-50099                                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.pcc_akc.a10.u1.p1 — `pcc_akc_a10_u1_p1`: Art. 10 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a10.u1.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50000,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 10 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a10_u1_p1_check", false) == true
+}
+# jdg.pcc_akc.a10.u2.p2 — `pcc_akc_a10_u2_p2`: Art. 10 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a10.u2.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50001,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 10 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a10_u2_p2_check", false) == true
+}
+# jdg.pcc_akc.a11.u1.p2 — `pcc_akc_a11_u1_p2`: Art. 11 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a11.u1.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50002,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a11_u1_p2_check", false) == true
+}
+# jdg.pcc_akc.a11.u3.p3 — `pcc_akc_a11_u3_p3`: Art. 11 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a11.u3.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50003,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a11_u3_p3_check", false) == true
+}
+# jdg.pcc_akc.a11.u4.p4 — `pcc_akc_a11_u4_p4`: Art. 11 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a11.u4.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50004,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a11_u4_p4_check", false) == true
+}
+# jdg.pcc_akc.a11.u5.p1 — `pcc_akc_a11_u5_p1`: Art. 11 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a11.u5.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50005,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a11_u5_p1_check", false) == true
+}
+# jdg.pcc_akc.a12.u2.p3 — `pcc_akc_a12_u2_p3`: Art. 12 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a12.u2.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50006,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a12_u2_p3_check", false) == true
+}
+# jdg.pcc_akc.a12.u3.p4 — `pcc_akc_a12_u3_p4`: Art. 12 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a12.u3.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50007,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a12_u3_p4_check", false) == true
+}
+# jdg.pcc_akc.a12.u4.p1 — `pcc_akc_a12_u4_p1`: Art. 12 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a12.u4.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50008,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a12_u4_p1_check", false) == true
+}
+# jdg.pcc_akc.a12.u5.p2 — `pcc_akc_a12_u5_p2`: Art. 12 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a12.u5.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50009,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a12_u5_p2_check", false) == true
+}
+# jdg.pcc_akc.a13.u1.p3 — `pcc_akc_a13_u1_p3`: Art. 13 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a13.u1.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50010,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a13_u1_p3_check", false) == true
+}
+# jdg.pcc_akc.a13.u2.p4 — `pcc_akc_a13_u2_p4`: Art. 13 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a13.u2.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50011,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a13_u2_p4_check", false) == true
+}
+# jdg.pcc_akc.a13.u3.p1 — `pcc_akc_a13_u3_p1`: Art. 13 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a13.u3.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50012,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a13_u3_p1_check", false) == true
+}
+# jdg.pcc_akc.a13.u4.p2 — `pcc_akc_a13_u4_p2`: Art. 13 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a13.u4.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50013,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a13_u4_p2_check", false) == true
+}
+# jdg.pcc_akc.a14.u1.p4 — `pcc_akc_a14_u1_p4`: Art. 14 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a14.u1.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50014,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a14_u1_p4_check", false) == true
+}
+# jdg.pcc_akc.a14.u2.p1 — `pcc_akc_a14_u2_p1`: Art. 14 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a14.u2.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50015,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a14_u2_p1_check", false) == true
+}
+# jdg.pcc_akc.a14.u3.p2 — `pcc_akc_a14_u3_p2`: Art. 14 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a14.u3.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50016,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a14_u3_p2_check", false) == true
+}
+# jdg.pcc_akc.a14.u5.p3 — `pcc_akc_a14_u5_p3`: Art. 14 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a14.u5.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50017,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a14_u5_p3_check", false) == true
+}
+# jdg.pcc_akc.a15.u1.p1 — `pcc_akc_a15_u1_p1`: Art. 15 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a15.u1.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50018,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a15_u1_p1_check", false) == true
+}
+# jdg.pcc_akc.a15.u2.p2 — `pcc_akc_a15_u2_p2`: Art. 15 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a15.u2.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50019,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a15_u2_p2_check", false) == true
+}
+# jdg.pcc_akc.a15.u4.p3 — `pcc_akc_a15_u4_p3`: Art. 15 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a15.u4.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50020,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a15_u4_p3_check", false) == true
+}
+# jdg.pcc_akc.a15.u5.p4 — `pcc_akc_a15_u5_p4`: Art. 15 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a15.u5.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50021,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a15_u5_p4_check", false) == true
+}
+# jdg.pcc_akc.a16.u1.p2 — `pcc_akc_a16_u1_p2`: Art. 16 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a16.u1.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50022,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a16_u1_p2_check", false) == true
+}
+# jdg.pcc_akc.a16.u3.p3 — `pcc_akc_a16_u3_p3`: Art. 16 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a16.u3.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50023,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a16_u3_p3_check", false) == true
+}
+# jdg.pcc_akc.a16.u4.p4 — `pcc_akc_a16_u4_p4`: Art. 16 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a16.u4.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50024,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a16_u4_p4_check", false) == true
+}
+# jdg.pcc_akc.a16.u5.p1 — `pcc_akc_a16_u5_p1`: Art. 16 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a16.u5.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50025,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a16_u5_p1_check", false) == true
+}
+# jdg.pcc_akc.a17.u2.p3 — `pcc_akc_a17_u2_p3`: Art. 17 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a17.u2.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50026,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a17_u2_p3_check", false) == true
+}
+# jdg.pcc_akc.a17.u3.p4 — `pcc_akc_a17_u3_p4`: Art. 17 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a17.u3.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50027,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a17_u3_p4_check", false) == true
+}
+# jdg.pcc_akc.a17.u4.p1 — `pcc_akc_a17_u4_p1`: Art. 17 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a17.u4.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50028,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a17_u4_p1_check", false) == true
+}
+# jdg.pcc_akc.a17.u5.p2 — `pcc_akc_a17_u5_p2`: Art. 17 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a17.u5.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50029,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a17_u5_p2_check", false) == true
+}
+# jdg.pcc_akc.a18.u1.p3 — `pcc_akc_a18_u1_p3`: Art. 18 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a18.u1.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50030,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a18_u1_p3_check", false) == true
+}
+# jdg.pcc_akc.a18.u2.p4 — `pcc_akc_a18_u2_p4`: Art. 18 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a18.u2.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50031,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a18_u2_p4_check", false) == true
+}
+# jdg.pcc_akc.a18.u3.p1 — `pcc_akc_a18_u3_p1`: Art. 18 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a18.u3.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50032,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a18_u3_p1_check", false) == true
+}
+# jdg.pcc_akc.a18.u4.p2 — `pcc_akc_a18_u4_p2`: Art. 18 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a18.u4.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50033,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a18_u4_p2_check", false) == true
+}
+# jdg.pcc_akc.a19.u1.p4 — `pcc_akc_a19_u1_p4`: Art. 19 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a19.u1.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50034,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a19_u1_p4_check", false) == true
+}
+# jdg.pcc_akc.a19.u2.p1 — `pcc_akc_a19_u2_p1`: Art. 19 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a19.u2.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50035,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a19_u2_p1_check", false) == true
+}
+# jdg.pcc_akc.a19.u3.p2 — `pcc_akc_a19_u3_p2`: Art. 19 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a19.u3.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50036,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a19_u3_p2_check", false) == true
+}
+# jdg.pcc_akc.a19.u5.p3 — `pcc_akc_a19_u5_p3`: Art. 19 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a19.u5.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50037,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a19_u5_p3_check", false) == true
+}
+# jdg.pcc_akc.a20.u1.p1 — `pcc_akc_a20_u1_p1`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a20.u1.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50038,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a20_u1_p1_check", false) == true
+}
+# jdg.pcc_akc.a20.u2.p2 — `pcc_akc_a20_u2_p2`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a20.u2.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50039,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a20_u2_p2_check", false) == true
+}
+# jdg.pcc_akc.a20.u4.p3 — `pcc_akc_a20_u4_p3`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a20.u4.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50040,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a20_u4_p3_check", false) == true
+}
+# jdg.pcc_akc.a20.u5.p4 — `pcc_akc_a20_u5_p4`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a20.u5.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50041,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a20_u5_p4_check", false) == true
+}
+# jdg.pcc_akc.a21.u1.p2 — `pcc_akc_a21_u1_p2`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a21.u1.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50042,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a21_u1_p2_check", false) == true
+}
+# jdg.pcc_akc.a21.u3.p3 — `pcc_akc_a21_u3_p3`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a21.u3.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50043,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a21_u3_p3_check", false) == true
+}
+# jdg.pcc_akc.a21.u4.p4 — `pcc_akc_a21_u4_p4`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a21.u4.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50044,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a21_u4_p4_check", false) == true
+}
+# jdg.pcc_akc.a21.u5.p1 — `pcc_akc_a21_u5_p1`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a21.u5.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50045,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a21_u5_p1_check", false) == true
+}
+# jdg.pcc_akc.a22.u2.p3 — `pcc_akc_a22_u2_p3`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a22.u2.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50046,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a22_u2_p3_check", false) == true
+}
+# jdg.pcc_akc.a22.u3.p4 — `pcc_akc_a22_u3_p4`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a22.u3.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50047,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a22_u3_p4_check", false) == true
+}
+# jdg.pcc_akc.a22.u4.p1 — `pcc_akc_a22_u4_p1`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a22.u4.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50048,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a22_u4_p1_check", false) == true
+}
+# jdg.pcc_akc.a22.u5.p2 — `pcc_akc_a22_u5_p2`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a22.u5.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50049,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a22_u5_p2_check", false) == true
+}
+# jdg.pcc_akc.a23.u1.p3 — `pcc_akc_a23_u1_p3`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a23.u1.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50050,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a23_u1_p3_check", false) == true
+}
+# jdg.pcc_akc.a23.u2.p4 — `pcc_akc_a23_u2_p4`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a23.u2.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50051,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a23_u2_p4_check", false) == true
+}
+# jdg.pcc_akc.a23.u3.p1 — `pcc_akc_a23_u3_p1`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a23.u3.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50052,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a23_u3_p1_check", false) == true
+}
+# jdg.pcc_akc.a23.u4.p2 — `pcc_akc_a23_u4_p2`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a23.u4.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50053,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a23_u4_p2_check", false) == true
+}
+# jdg.pcc_akc.a24.u1.p4 — `pcc_akc_a24_u1_p4`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a24.u1.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50054,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a24_u1_p4_check", false) == true
+}
+# jdg.pcc_akc.a24.u2.p1 — `pcc_akc_a24_u2_p1`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a24.u2.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50055,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a24_u2_p1_check", false) == true
+}
+# jdg.pcc_akc.a24.u3.p2 — `pcc_akc_a24_u3_p2`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a24.u3.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50056,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a24_u3_p2_check", false) == true
+}
+# jdg.pcc_akc.a24.u5.p3 — `pcc_akc_a24_u5_p3`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a24.u5.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50057,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a24_u5_p3_check", false) == true
+}
+# jdg.pcc_akc.a25.u1.p1 — `pcc_akc_a25_u1_p1`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a25.u1.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50058,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a25_u1_p1_check", false) == true
+}
+# jdg.pcc_akc.a25.u2.p2 — `pcc_akc_a25_u2_p2`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a25.u2.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50059,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a25_u2_p2_check", false) == true
+}
+# jdg.pcc_akc.a25.u4.p3 — `pcc_akc_a25_u4_p3`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a25.u4.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50060,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a25_u4_p3_check", false) == true
+}
+# jdg.pcc_akc.a25.u5.p4 — `pcc_akc_a25_u5_p4`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a25.u5.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50061,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a25_u5_p4_check", false) == true
+}
+# jdg.pcc_akc.a26.u1.p2 — `pcc_akc_a26_u1_p2`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a26.u1.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50062,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a26_u1_p2_check", false) == true
+}
+# jdg.pcc_akc.a26.u3.p3 — `pcc_akc_a26_u3_p3`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a26.u3.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50063,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a26_u3_p3_check", false) == true
+}
+# jdg.pcc_akc.a26.u4.p4 — `pcc_akc_a26_u4_p4`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a26.u4.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50064,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a26_u4_p4_check", false) == true
+}
+# jdg.pcc_akc.a26.u5.p1 — `pcc_akc_a26_u5_p1`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a26.u5.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50065,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a26_u5_p1_check", false) == true
+}
+# jdg.pcc_akc.a27.u2.p3 — `pcc_akc_a27_u2_p3`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a27.u2.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50066,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a27_u2_p3_check", false) == true
+}
+# jdg.pcc_akc.a27.u3.p4 — `pcc_akc_a27_u3_p4`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a27.u3.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50067,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a27_u3_p4_check", false) == true
+}
+# jdg.pcc_akc.a27.u4.p1 — `pcc_akc_a27_u4_p1`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a27.u4.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50068,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a27_u4_p1_check", false) == true
+}
+# jdg.pcc_akc.a27.u5.p2 — `pcc_akc_a27_u5_p2`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a27.u5.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50069,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a27_u5_p2_check", false) == true
+}
+# jdg.pcc_akc.a28.u1.p3 — `pcc_akc_a28_u1_p3`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a28.u1.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50070,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a28_u1_p3_check", false) == true
+}
+# jdg.pcc_akc.a28.u2.p4 — `pcc_akc_a28_u2_p4`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a28.u2.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50071,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a28_u2_p4_check", false) == true
+}
+# jdg.pcc_akc.a28.u3.p1 — `pcc_akc_a28_u3_p1`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a28.u3.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50072,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a28_u3_p1_check", false) == true
+}
+# jdg.pcc_akc.a28.u4.p2 — `pcc_akc_a28_u4_p2`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a28.u4.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50073,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a28_u4_p2_check", false) == true
+}
+# jdg.pcc_akc.a29.u1.p4 — `pcc_akc_a29_u1_p4`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a29.u1.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50074,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a29_u1_p4_check", false) == true
+}
+# jdg.pcc_akc.a29.u2.p1 — `pcc_akc_a29_u2_p1`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a29.u2.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50075,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a29_u2_p1_check", false) == true
+}
+# jdg.pcc_akc.a29.u3.p2 — `pcc_akc_a29_u3_p2`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a29.u3.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50076,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a29_u3_p2_check", false) == true
+}
+# jdg.pcc_akc.a29.u5.p3 — `pcc_akc_a29_u5_p3`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a29.u5.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50077,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a29_u5_p3_check", false) == true
+}
+# jdg.pcc_akc.a30.u1.p1 — `pcc_akc_a30_u1_p1`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a30.u1.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50078,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a30_u1_p1_check", false) == true
+}
+# jdg.pcc_akc.a30.u2.p2 — `pcc_akc_a30_u2_p2`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a30.u2.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50079,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a30_u2_p2_check", false) == true
+}
+# jdg.pcc_akc.a30.u4.p3 — `pcc_akc_a30_u4_p3`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a30.u4.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50080,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a30_u4_p3_check", false) == true
+}
+# jdg.pcc_akc.a30.u5.p4 — `pcc_akc_a30_u5_p4`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a30.u5.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50081,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a30_u5_p4_check", false) == true
+}
+# jdg.pcc_akc.a31.u1.p2 — `pcc_akc_a31_u1_p2`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a31.u1.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50082,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a31_u1_p2_check", false) == true
+}
+# jdg.pcc_akc.a31.u3.p3 — `pcc_akc_a31_u3_p3`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a31.u3.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50083,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a31_u3_p3_check", false) == true
+}
+# jdg.pcc_akc.a31.u4.p4 — `pcc_akc_a31_u4_p4`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a31.u4.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50084,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a31_u4_p4_check", false) == true
+}
+# jdg.pcc_akc.a31.u5.p1 — `pcc_akc_a31_u5_p1`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a31.u5.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50085,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a31_u5_p1_check", false) == true
+}
+# jdg.pcc_akc.a32.u2.p3 — `pcc_akc_a32_u2_p3`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a32.u2.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50086,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a32_u2_p3_check", false) == true
+}
+# jdg.pcc_akc.a32.u3.p4 — `pcc_akc_a32_u3_p4`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a32.u3.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50087,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a32_u3_p4_check", false) == true
+}
+# jdg.pcc_akc.a32.u4.p1 — `pcc_akc_a32_u4_p1`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a32.u4.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50088,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a32_u4_p1_check", false) == true
+}
+# jdg.pcc_akc.a32.u5.p2 — `pcc_akc_a32_u5_p2`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a32.u5.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50089,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a32_u5_p2_check", false) == true
+}
+# jdg.pcc_akc.a33.u1.p3 — `pcc_akc_a33_u1_p3`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a33.u1.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50090,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a33_u1_p3_check", false) == true
+}
+# jdg.pcc_akc.a33.u2.p4 — `pcc_akc_a33_u2_p4`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a33.u2.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50091,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a33_u2_p4_check", false) == true
+}
+# jdg.pcc_akc.a33.u3.p1 — `pcc_akc_a33_u3_p1`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a33.u3.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50092,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a33_u3_p1_check", false) == true
+}
+# jdg.pcc_akc.a33.u4.p2 — `pcc_akc_a33_u4_p2`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a33.u4.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50093,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a33_u4_p2_check", false) == true
+}
+# jdg.pcc_akc.a34.u1.p4 — `pcc_akc_a34_u1_p4`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a34.u1.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50094,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a34_u1_p4_check", false) == true
+}
+# jdg.pcc_akc.a34.u2.p1 — `pcc_akc_a34_u2_p1`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a34.u2.p1",
+    "package": "jdg.micro.akcyza",
+    "priority": 50095,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a34_u2_p1_check", false) == true
+}
+# jdg.pcc_akc.a34.u3.p2 — `pcc_akc_a34_u3_p2`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a34.u3.p2",
+    "package": "jdg.micro.akcyza",
+    "priority": 50096,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a34_u3_p2_check", false) == true
+}
+# jdg.pcc_akc.a34.u5.p3 — `pcc_akc_a34_u5_p3`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a34.u5.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50097,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a34_u5_p3_check", false) == true
+}
+# jdg.pcc_akc.a35.u4.p3 — `pcc_akc_a35_u4_p3`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a35.u4.p3",
+    "package": "jdg.micro.akcyza",
+    "priority": 50098,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a35_u4_p3_check", false) == true
+}
+# jdg.pcc_akc.a35.u5.p4 — `pcc_akc_a35_u5_p4`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pcc_akc.a35.u5.p4",
+    "package": "jdg.micro.akcyza",
+    "priority": 50099,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pcc_akc_a35_u5_p4_check", false) == true
+}

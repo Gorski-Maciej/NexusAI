@@ -16324,3 +16324,18316 @@ else := {
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_vat", false) == true
 }
+
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  PLAN OPA/50 — KLASA B — Wygenerowane masowo (678 reguł)       ║
+# ║  Priorytety: 50000-50677                                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.final.a100.u1.p1 — `final_a100_u1_p1`: Art. 100 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a100.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50000,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 100 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 100: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a100_u1_p1_check", false) == true
+}
+# jdg.final.a101.u2.p2 — `final_a101_u2_p2`: Art. 101 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a101.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50001,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a101_u2_p2_check", false) == true
+}
+# jdg.final.a101.u3.p3 — `final_a101_u3_p3`: Art. 101 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a101.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50002,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a101_u3_p3_check", false) == true
+}
+# jdg.final.a101.u4.p4 — `final_a101_u4_p4`: Art. 101 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a101.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50003,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a101_u4_p4_check", false) == true
+}
+# jdg.final.a102.u1.p2 — `final_a102_u1_p2`: Art. 102 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a102.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50004,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 102 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 102: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a102_u1_p2_check", false) == true
+}
+# jdg.final.a102.u2.p3 — `final_a102_u2_p3`: Art. 102 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a102.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50005,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 102 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 102: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a102_u2_p3_check", false) == true
+}
+# jdg.final.a102.u5.p1 — `final_a102_u5_p1`: Art. 102 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a102.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50006,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 102 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 102: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a102_u5_p1_check", false) == true
+}
+# jdg.final.a103.u3.p4 — `final_a103_u3_p4`: Art. 103 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a103.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50007,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 103 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 103: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a103_u3_p4_check", false) == true
+}
+# jdg.final.a103.u4.p1 — `final_a103_u4_p1`: Art. 103 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a103.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50008,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 103 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 103: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a103_u4_p1_check", false) == true
+}
+# jdg.final.a103.u5.p2 — `final_a103_u5_p2`: Art. 103 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a103.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50009,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 103 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 103: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a103_u5_p2_check", false) == true
+}
+# jdg.final.a104.u1.p3 — `final_a104_u1_p3`: Art. 104 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a104.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50010,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 104 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 104: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a104_u1_p3_check", false) == true
+}
+# jdg.final.a104.u2.p4 — `final_a104_u2_p4`: Art. 104 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a104.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50011,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 104 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 104: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a104_u2_p4_check", false) == true
+}
+# jdg.final.a104.u3.p1 — `final_a104_u3_p1`: Art. 104 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a104.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50012,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 104 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 104: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a104_u3_p1_check", false) == true
+}
+# jdg.final.a105.u1.p4 — `final_a105_u1_p4`: Art. 105 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a105.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50013,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 105 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 105: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a105_u1_p4_check", false) == true
+}
+# jdg.final.a105.u4.p2 — `final_a105_u4_p2`: Art. 105 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a105.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50014,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 105 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 105: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a105_u4_p2_check", false) == true
+}
+# jdg.final.a105.u5.p3 — `final_a105_u5_p3`: Art. 105 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a105.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50015,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 105 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 105: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a105_u5_p3_check", false) == true
+}
+# jdg.final.a106.u2.p1 — `final_a106_u2_p1`: Art. 106 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a106.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50016,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 106 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 106: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a106_u2_p1_check", false) == true
+}
+# jdg.final.a106.u3.p2 — `final_a106_u3_p2`: Art. 106 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a106.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50017,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 106 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 106: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a106_u3_p2_check", false) == true
+}
+# jdg.final.a106.u4.p3 — `final_a106_u4_p3`: Art. 106 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a106.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50018,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 106 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 106: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a106_u4_p3_check", false) == true
+}
+# jdg.final.a107.u1.p1 — `final_a107_u1_p1`: Art. 107 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a107.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50019,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 107 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 107: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a107_u1_p1_check", false) == true
+}
+# jdg.final.a107.u2.p2 — `final_a107_u2_p2`: Art. 107 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a107.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50020,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 107 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 107: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a107_u2_p2_check", false) == true
+}
+# jdg.final.a107.u5.p4 — `final_a107_u5_p4`: Art. 107 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a107.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50021,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 107 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 107: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a107_u5_p4_check", false) == true
+}
+# jdg.final.a108.u3.p3 — `final_a108_u3_p3`: Art. 108 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a108.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50022,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 108 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 108: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a108_u3_p3_check", false) == true
+}
+# jdg.final.a108.u4.p4 — `final_a108_u4_p4`: Art. 108 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a108.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50023,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 108 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 108: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a108_u4_p4_check", false) == true
+}
+# jdg.final.a108.u5.p1 — `final_a108_u5_p1`: Art. 108 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a108.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50024,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 108 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 108: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a108_u5_p1_check", false) == true
+}
+# jdg.final.a109.u1.p2 — `final_a109_u1_p2`: Art. 109 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a109.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50025,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a109_u1_p2_check", false) == true
+}
+# jdg.final.a109.u2.p3 — `final_a109_u2_p3`: Art. 109 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a109.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50026,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a109_u2_p3_check", false) == true
+}
+# jdg.final.a109.u3.p4 — `final_a109_u3_p4`: Art. 109 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a109.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50027,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a109_u3_p4_check", false) == true
+}
+# jdg.final.a110.u1.p3 — `final_a110_u1_p3`: Art. 110 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a110.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50028,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 110 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 110: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a110_u1_p3_check", false) == true
+}
+# jdg.final.a110.u4.p1 — `final_a110_u4_p1`: Art. 110 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a110.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50029,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 110 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 110: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a110_u4_p1_check", false) == true
+}
+# jdg.final.a110.u5.p2 — `final_a110_u5_p2`: Art. 110 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a110.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50030,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 110 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 110: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a110_u5_p2_check", false) == true
+}
+# jdg.final.a111.u2.p4 — `final_a111_u2_p4`: Art. 111 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a111.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50031,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 111 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 111: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a111_u2_p4_check", false) == true
+}
+# jdg.final.a111.u3.p1 — `final_a111_u3_p1`: Art. 111 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a111.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50032,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 111 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 111: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a111_u3_p1_check", false) == true
+}
+# jdg.final.a111.u4.p2 — `final_a111_u4_p2`: Art. 111 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a111.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50033,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 111 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 111: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a111_u4_p2_check", false) == true
+}
+# jdg.final.a112.u1.p4 — `final_a112_u1_p4`: Art. 112 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a112.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50034,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 112 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 112: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a112_u1_p4_check", false) == true
+}
+# jdg.final.a112.u2.p1 — `final_a112_u2_p1`: Art. 112 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a112.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50035,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 112 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 112: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a112_u2_p1_check", false) == true
+}
+# jdg.final.a112.u5.p3 — `final_a112_u5_p3`: Art. 112 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a112.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50036,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 112 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 112: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a112_u5_p3_check", false) == true
+}
+# jdg.final.a113.u3.p2 — `final_a113_u3_p2`: Art. 113 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a113.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50037,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 113 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 113: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a113_u3_p2_check", false) == true
+}
+# jdg.final.a113.u4.p3 — `final_a113_u4_p3`: Art. 113 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a113.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50038,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 113 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 113: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a113_u4_p3_check", false) == true
+}
+# jdg.final.a113.u5.p4 — `final_a113_u5_p4`: Art. 113 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a113.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50039,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 113 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 113: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a113_u5_p4_check", false) == true
+}
+# jdg.final.a114.u1.p1 — `final_a114_u1_p1`: Art. 114 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a114.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50040,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 114 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 114: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a114_u1_p1_check", false) == true
+}
+# jdg.final.a114.u2.p2 — `final_a114_u2_p2`: Art. 114 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a114.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50041,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 114 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 114: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a114_u2_p2_check", false) == true
+}
+# jdg.final.a114.u3.p3 — `final_a114_u3_p3`: Art. 114 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a114.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50042,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 114 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 114: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a114_u3_p3_check", false) == true
+}
+# jdg.final.a115.u1.p2 — `final_a115_u1_p2`: Art. 115 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a115.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50043,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 115 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 115: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a115_u1_p2_check", false) == true
+}
+# jdg.final.a115.u4.p4 — `final_a115_u4_p4`: Art. 115 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a115.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50044,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 115 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 115: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a115_u4_p4_check", false) == true
+}
+# jdg.final.a115.u5.p1 — `final_a115_u5_p1`: Art. 115 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a115.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50045,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 115 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 115: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a115_u5_p1_check", false) == true
+}
+# jdg.final.a116.u2.p3 — `final_a116_u2_p3`: Art. 116 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a116.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50046,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 116 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 116: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a116_u2_p3_check", false) == true
+}
+# jdg.final.a116.u3.p4 — `final_a116_u3_p4`: Art. 116 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a116.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50047,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 116 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 116: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a116_u3_p4_check", false) == true
+}
+# jdg.final.a116.u4.p1 — `final_a116_u4_p1`: Art. 116 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a116.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50048,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 116 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 116: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a116_u4_p1_check", false) == true
+}
+# jdg.final.a117.u1.p3 — `final_a117_u1_p3`: Art. 117 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a117.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50049,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 117 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 117: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a117_u1_p3_check", false) == true
+}
+# jdg.final.a117.u5.p2 — `final_a117_u5_p2`: Art. 117 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.final.a117.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50050,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 117 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_warnings": ["[MICRO] Art. 117: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "final_a117_u5_p2_check", false) == true
+}
+# jdg.gaar.r1 — `gaar_r1`: przepis szczegółowy → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.gaar.r1",
+    "package": "jdg.micro.general",
+    "priority": 50051,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] jdg.gaar.r1 — punkt kontrolny OPA dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] jdg.gaar.r1: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "gaar_r1_check", false) == true
+}
+# jdg.vat.a103.r3 — `vat_a103_r3`: Art. 103 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a103.r3",
+    "package": "jdg.micro.vat",
+    "priority": 50052,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 103 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 103: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a103_r3_check", false) == true
+}
+# jdg.vat.a11.u1.p1 — `vat_a11_u1_p1`: Art. 11 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a11.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50053,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a11_u1_p1_check", false) == true
+}
+# jdg.vat.a11.u2.p2 — `vat_a11_u2_p2`: Art. 11 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a11.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50054,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a11_u2_p2_check", false) == true
+}
+# jdg.vat.a11.u3.p3 — `vat_a11_u3_p3`: Art. 11 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a11.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50055,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a11_u3_p3_check", false) == true
+}
+# jdg.vat.a11.u4.p4 — `vat_a11_u4_p4`: Art. 11 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a11.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50056,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a11_u4_p4_check", false) == true
+}
+# jdg.vat.a12.u1.p2 — `vat_a12_u1_p2`: Art. 12 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a12.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50057,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a12_u1_p2_check", false) == true
+}
+# jdg.vat.a12.u2.p3 — `vat_a12_u2_p3`: Art. 12 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a12.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50058,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a12_u2_p3_check", false) == true
+}
+# jdg.vat.a12.u3.p4 — `vat_a12_u3_p4`: Art. 12 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a12.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50059,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a12_u3_p4_check", false) == true
+}
+# jdg.vat.a12.u5.p1 — `vat_a12_u5_p1`: Art. 12 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a12.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50060,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a12_u5_p1_check", false) == true
+}
+# jdg.vat.a13.u1.p3 — `vat_a13_u1_p3`: Art. 13 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a13.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50061,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a13_u1_p3_check", false) == true
+}
+# jdg.vat.a13.u2.p4 — `vat_a13_u2_p4`: Art. 13 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a13.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50062,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a13_u2_p4_check", false) == true
+}
+# jdg.vat.a13.u4.p1 — `vat_a13_u4_p1`: Art. 13 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a13.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50063,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a13_u4_p1_check", false) == true
+}
+# jdg.vat.a13.u5.p2 — `vat_a13_u5_p2`: Art. 13 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a13.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50064,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a13_u5_p2_check", false) == true
+}
+# jdg.vat.a130.u1.p1 — `vat_a130_u1_p1`: Art. 130 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a130.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50065,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 130 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 130: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a130_u1_p1_check", false) == true
+}
+# jdg.vat.a130.u2.p2 — `vat_a130_u2_p2`: Art. 130 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a130.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50066,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 130 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 130: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a130_u2_p2_check", false) == true
+}
+# jdg.vat.a130.u3.p3 — `vat_a130_u3_p3`: Art. 130 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a130.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50067,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 130 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 130: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a130_u3_p3_check", false) == true
+}
+# jdg.vat.a130.u4.p4 — `vat_a130_u4_p4`: Art. 130 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a130.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50068,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 130 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 130: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a130_u4_p4_check", false) == true
+}
+# jdg.vat.a131.u1.p2 — `vat_a131_u1_p2`: Art. 131 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a131.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50069,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 131 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 131: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a131_u1_p2_check", false) == true
+}
+# jdg.vat.a131.u2.p3 — `vat_a131_u2_p3`: Art. 131 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a131.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50070,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 131 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 131: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a131_u2_p3_check", false) == true
+}
+# jdg.vat.a131.u3.p4 — `vat_a131_u3_p4`: Art. 131 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a131.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50071,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 131 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 131: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a131_u3_p4_check", false) == true
+}
+# jdg.vat.a131.u5.p1 — `vat_a131_u5_p1`: Art. 131 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a131.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50072,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 131 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 131: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a131_u5_p1_check", false) == true
+}
+# jdg.vat.a132.u1.p3 — `vat_a132_u1_p3`: Art. 132 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a132.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50073,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 132 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 132: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a132_u1_p3_check", false) == true
+}
+# jdg.vat.a132.u2.p4 — `vat_a132_u2_p4`: Art. 132 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a132.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50074,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 132 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 132: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a132_u2_p4_check", false) == true
+}
+# jdg.vat.a132.u4.p1 — `vat_a132_u4_p1`: Art. 132 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a132.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50075,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 132 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 132: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a132_u4_p1_check", false) == true
+}
+# jdg.vat.a132.u5.p2 — `vat_a132_u5_p2`: Art. 132 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a132.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50076,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 132 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 132: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a132_u5_p2_check", false) == true
+}
+# jdg.vat.a133.u1.p4 — `vat_a133_u1_p4`: Art. 133 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a133.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50077,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 133 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 133: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a133_u1_p4_check", false) == true
+}
+# jdg.vat.a133.u3.p1 — `vat_a133_u3_p1`: Art. 133 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a133.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50078,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 133 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 133: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a133_u3_p1_check", false) == true
+}
+# jdg.vat.a133.u4.p2 — `vat_a133_u4_p2`: Art. 133 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a133.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50079,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 133 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 133: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a133_u4_p2_check", false) == true
+}
+# jdg.vat.a133.u5.p3 — `vat_a133_u5_p3`: Art. 133 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a133.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50080,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 133 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 133: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a133_u5_p3_check", false) == true
+}
+# jdg.vat.a134.u2.p1 — `vat_a134_u2_p1`: Art. 134 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a134.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50081,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 134 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 134: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a134_u2_p1_check", false) == true
+}
+# jdg.vat.a134.u3.p2 — `vat_a134_u3_p2`: Art. 134 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a134.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50082,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 134 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 134: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a134_u3_p2_check", false) == true
+}
+# jdg.vat.a134.u4.p3 — `vat_a134_u4_p3`: Art. 134 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a134.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50083,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 134 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 134: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a134_u4_p3_check", false) == true
+}
+# jdg.vat.a134.u5.p4 — `vat_a134_u5_p4`: Art. 134 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a134.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50084,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 134 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 134: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a134_u5_p4_check", false) == true
+}
+# jdg.vat.a135.u1.p1 — `vat_a135_u1_p1`: Art. 135 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a135.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50085,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 135 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 135: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a135_u1_p1_check", false) == true
+}
+# jdg.vat.a135.u2.p2 — `vat_a135_u2_p2`: Art. 135 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a135.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50086,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 135 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 135: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a135_u2_p2_check", false) == true
+}
+# jdg.vat.a135.u3.p3 — `vat_a135_u3_p3`: Art. 135 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a135.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50087,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 135 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 135: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a135_u3_p3_check", false) == true
+}
+# jdg.vat.a135.u4.p4 — `vat_a135_u4_p4`: Art. 135 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a135.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50088,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 135 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 135: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a135_u4_p4_check", false) == true
+}
+# jdg.vat.a136.u1.p2 — `vat_a136_u1_p2`: Art. 136 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a136.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50089,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 136 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 136: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a136_u1_p2_check", false) == true
+}
+# jdg.vat.a136.u2.p3 — `vat_a136_u2_p3`: Art. 136 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a136.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50090,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 136 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 136: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a136_u2_p3_check", false) == true
+}
+# jdg.vat.a136.u3.p4 — `vat_a136_u3_p4`: Art. 136 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a136.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50091,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 136 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 136: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a136_u3_p4_check", false) == true
+}
+# jdg.vat.a136.u5.p1 — `vat_a136_u5_p1`: Art. 136 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a136.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50092,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 136 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 136: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a136_u5_p1_check", false) == true
+}
+# jdg.vat.a137.u1.p3 — `vat_a137_u1_p3`: Art. 137 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a137.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50093,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 137 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 137: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a137_u1_p3_check", false) == true
+}
+# jdg.vat.a137.u2.p4 — `vat_a137_u2_p4`: Art. 137 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a137.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50094,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 137 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 137: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a137_u2_p4_check", false) == true
+}
+# jdg.vat.a137.u4.p1 — `vat_a137_u4_p1`: Art. 137 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a137.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50095,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 137 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 137: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a137_u4_p1_check", false) == true
+}
+# jdg.vat.a137.u5.p2 — `vat_a137_u5_p2`: Art. 137 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a137.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50096,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 137 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 137: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a137_u5_p2_check", false) == true
+}
+# jdg.vat.a138.u1.p4 — `vat_a138_u1_p4`: Art. 138 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a138.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50097,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 138 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 138: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a138_u1_p4_check", false) == true
+}
+# jdg.vat.a138.u3.p1 — `vat_a138_u3_p1`: Art. 138 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a138.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50098,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 138 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 138: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a138_u3_p1_check", false) == true
+}
+# jdg.vat.a138.u4.p2 — `vat_a138_u4_p2`: Art. 138 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a138.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50099,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 138 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 138: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a138_u4_p2_check", false) == true
+}
+# jdg.vat.a138.u5.p3 — `vat_a138_u5_p3`: Art. 138 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a138.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50100,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 138 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 138: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a138_u5_p3_check", false) == true
+}
+# jdg.vat.a139.u2.p1 — `vat_a139_u2_p1`: Art. 139 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a139.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50101,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 139 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 139: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a139_u2_p1_check", false) == true
+}
+# jdg.vat.a139.u3.p2 — `vat_a139_u3_p2`: Art. 139 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a139.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50102,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 139 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 139: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a139_u3_p2_check", false) == true
+}
+# jdg.vat.a139.u4.p3 — `vat_a139_u4_p3`: Art. 139 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a139.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50103,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 139 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 139: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a139_u4_p3_check", false) == true
+}
+# jdg.vat.a139.u5.p4 — `vat_a139_u5_p4`: Art. 139 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a139.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50104,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 139 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 139: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a139_u5_p4_check", false) == true
+}
+# jdg.vat.a14.u1.p4 — `vat_a14_u1_p4`: Art. 14 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a14.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50105,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a14_u1_p4_check", false) == true
+}
+# jdg.vat.a14.u3.p1 — `vat_a14_u3_p1`: Art. 14 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a14.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50106,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a14_u3_p1_check", false) == true
+}
+# jdg.vat.a14.u4.p2 — `vat_a14_u4_p2`: Art. 14 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a14.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50107,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a14_u4_p2_check", false) == true
+}
+# jdg.vat.a14.u5.p3 — `vat_a14_u5_p3`: Art. 14 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a14.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50108,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a14_u5_p3_check", false) == true
+}
+# jdg.vat.a140.u1.p1 — `vat_a140_u1_p1`: Art. 140 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a140.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50109,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 140 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 140: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a140_u1_p1_check", false) == true
+}
+# jdg.vat.a140.u2.p2 — `vat_a140_u2_p2`: Art. 140 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a140.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50110,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 140 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 140: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a140_u2_p2_check", false) == true
+}
+# jdg.vat.a140.u3.p3 — `vat_a140_u3_p3`: Art. 140 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a140.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50111,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 140 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 140: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a140_u3_p3_check", false) == true
+}
+# jdg.vat.a140.u4.p4 — `vat_a140_u4_p4`: Art. 140 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a140.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50112,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 140 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 140: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a140_u4_p4_check", false) == true
+}
+# jdg.vat.a141.u1.p2 — `vat_a141_u1_p2`: Art. 141 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a141.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50113,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 141 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 141: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a141_u1_p2_check", false) == true
+}
+# jdg.vat.a141.u2.p3 — `vat_a141_u2_p3`: Art. 141 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a141.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50114,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 141 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 141: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a141_u2_p3_check", false) == true
+}
+# jdg.vat.a141.u3.p4 — `vat_a141_u3_p4`: Art. 141 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a141.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50115,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 141 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 141: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a141_u3_p4_check", false) == true
+}
+# jdg.vat.a141.u5.p1 — `vat_a141_u5_p1`: Art. 141 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a141.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50116,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 141 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 141: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a141_u5_p1_check", false) == true
+}
+# jdg.vat.a142.u1.p3 — `vat_a142_u1_p3`: Art. 142 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a142.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50117,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 142 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 142: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a142_u1_p3_check", false) == true
+}
+# jdg.vat.a142.u2.p4 — `vat_a142_u2_p4`: Art. 142 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a142.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50118,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 142 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 142: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a142_u2_p4_check", false) == true
+}
+# jdg.vat.a142.u4.p1 — `vat_a142_u4_p1`: Art. 142 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a142.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50119,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 142 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 142: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a142_u4_p1_check", false) == true
+}
+# jdg.vat.a142.u5.p2 — `vat_a142_u5_p2`: Art. 142 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a142.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50120,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 142 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 142: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a142_u5_p2_check", false) == true
+}
+# jdg.vat.a143.u1.p4 — `vat_a143_u1_p4`: Art. 143 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a143.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50121,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 143 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 143: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a143_u1_p4_check", false) == true
+}
+# jdg.vat.a143.u3.p1 — `vat_a143_u3_p1`: Art. 143 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a143.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50122,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 143 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 143: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a143_u3_p1_check", false) == true
+}
+# jdg.vat.a143.u4.p2 — `vat_a143_u4_p2`: Art. 143 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a143.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50123,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 143 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 143: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a143_u4_p2_check", false) == true
+}
+# jdg.vat.a143.u5.p3 — `vat_a143_u5_p3`: Art. 143 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a143.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50124,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 143 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 143: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a143_u5_p3_check", false) == true
+}
+# jdg.vat.a144.u2.p1 — `vat_a144_u2_p1`: Art. 144 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a144.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50125,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 144 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 144: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a144_u2_p1_check", false) == true
+}
+# jdg.vat.a144.u3.p2 — `vat_a144_u3_p2`: Art. 144 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a144.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50126,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 144 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 144: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a144_u3_p2_check", false) == true
+}
+# jdg.vat.a144.u4.p3 — `vat_a144_u4_p3`: Art. 144 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a144.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50127,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 144 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 144: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a144_u4_p3_check", false) == true
+}
+# jdg.vat.a144.u5.p4 — `vat_a144_u5_p4`: Art. 144 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a144.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50128,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 144 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 144: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a144_u5_p4_check", false) == true
+}
+# jdg.vat.a145.u1.p1 — `vat_a145_u1_p1`: Art. 145 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a145.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50129,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 145 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 145: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a145_u1_p1_check", false) == true
+}
+# jdg.vat.a145.u2.p2 — `vat_a145_u2_p2`: Art. 145 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a145.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50130,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 145 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 145: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a145_u2_p2_check", false) == true
+}
+# jdg.vat.a145.u3.p3 — `vat_a145_u3_p3`: Art. 145 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a145.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50131,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 145 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 145: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a145_u3_p3_check", false) == true
+}
+# jdg.vat.a145.u4.p4 — `vat_a145_u4_p4`: Art. 145 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a145.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50132,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 145 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 145: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a145_u4_p4_check", false) == true
+}
+# jdg.vat.a146.u1.p2 — `vat_a146_u1_p2`: Art. 146 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a146.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50133,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 146 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 146: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a146_u1_p2_check", false) == true
+}
+# jdg.vat.a146.u2.p3 — `vat_a146_u2_p3`: Art. 146 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a146.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50134,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 146 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 146: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a146_u2_p3_check", false) == true
+}
+# jdg.vat.a146.u3.p4 — `vat_a146_u3_p4`: Art. 146 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a146.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50135,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 146 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 146: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a146_u3_p4_check", false) == true
+}
+# jdg.vat.a146.u5.p1 — `vat_a146_u5_p1`: Art. 146 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a146.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50136,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 146 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 146: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a146_u5_p1_check", false) == true
+}
+# jdg.vat.a147.u1.p3 — `vat_a147_u1_p3`: Art. 147 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a147.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50137,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 147 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 147: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a147_u1_p3_check", false) == true
+}
+# jdg.vat.a147.u2.p4 — `vat_a147_u2_p4`: Art. 147 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a147.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50138,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 147 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 147: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a147_u2_p4_check", false) == true
+}
+# jdg.vat.a147.u4.p1 — `vat_a147_u4_p1`: Art. 147 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a147.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50139,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 147 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 147: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a147_u4_p1_check", false) == true
+}
+# jdg.vat.a147.u5.p2 — `vat_a147_u5_p2`: Art. 147 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a147.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50140,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 147 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 147: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a147_u5_p2_check", false) == true
+}
+# jdg.vat.a148.u1.p4 — `vat_a148_u1_p4`: Art. 148 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a148.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50141,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 148 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 148: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a148_u1_p4_check", false) == true
+}
+# jdg.vat.a148.u3.p1 — `vat_a148_u3_p1`: Art. 148 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a148.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50142,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 148 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 148: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a148_u3_p1_check", false) == true
+}
+# jdg.vat.a148.u4.p2 — `vat_a148_u4_p2`: Art. 148 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a148.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50143,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 148 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 148: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a148_u4_p2_check", false) == true
+}
+# jdg.vat.a148.u5.p3 — `vat_a148_u5_p3`: Art. 148 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a148.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50144,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 148 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 148: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a148_u5_p3_check", false) == true
+}
+# jdg.vat.a149.u2.p1 — `vat_a149_u2_p1`: Art. 149 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a149.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50145,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 149 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 149: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a149_u2_p1_check", false) == true
+}
+# jdg.vat.a149.u3.p2 — `vat_a149_u3_p2`: Art. 149 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a149.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50146,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 149 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 149: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a149_u3_p2_check", false) == true
+}
+# jdg.vat.a149.u4.p3 — `vat_a149_u4_p3`: Art. 149 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a149.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50147,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 149 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 149: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a149_u4_p3_check", false) == true
+}
+# jdg.vat.a149.u5.p4 — `vat_a149_u5_p4`: Art. 149 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a149.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50148,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 149 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 149: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a149_u5_p4_check", false) == true
+}
+# jdg.vat.a15.u2.p1 — `vat_a15_u2_p1`: Art. 15 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a15.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50149,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a15_u2_p1_check", false) == true
+}
+# jdg.vat.a15.u3.p2 — `vat_a15_u3_p2`: Art. 15 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a15.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50150,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a15_u3_p2_check", false) == true
+}
+# jdg.vat.a15.u4.p3 — `vat_a15_u4_p3`: Art. 15 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a15.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50151,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a15_u4_p3_check", false) == true
+}
+# jdg.vat.a15.u5.p4 — `vat_a15_u5_p4`: Art. 15 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a15.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50152,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a15_u5_p4_check", false) == true
+}
+# jdg.vat.a150.u1.p1 — `vat_a150_u1_p1`: Art. 150 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a150.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50153,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 150 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 150: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a150_u1_p1_check", false) == true
+}
+# jdg.vat.a150.u2.p2 — `vat_a150_u2_p2`: Art. 150 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a150.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50154,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 150 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 150: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a150_u2_p2_check", false) == true
+}
+# jdg.vat.a150.u3.p3 — `vat_a150_u3_p3`: Art. 150 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a150.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50155,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 150 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 150: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a150_u3_p3_check", false) == true
+}
+# jdg.vat.a150.u4.p4 — `vat_a150_u4_p4`: Art. 150 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a150.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50156,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 150 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 150: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a150_u4_p4_check", false) == true
+}
+# jdg.vat.a151.u1.p2 — `vat_a151_u1_p2`: Art. 151 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a151.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50157,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 151 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 151: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a151_u1_p2_check", false) == true
+}
+# jdg.vat.a151.u2.p3 — `vat_a151_u2_p3`: Art. 151 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a151.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50158,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 151 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 151: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a151_u2_p3_check", false) == true
+}
+# jdg.vat.a151.u3.p4 — `vat_a151_u3_p4`: Art. 151 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a151.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50159,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 151 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 151: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a151_u3_p4_check", false) == true
+}
+# jdg.vat.a151.u5.p1 — `vat_a151_u5_p1`: Art. 151 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a151.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50160,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 151 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 151: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a151_u5_p1_check", false) == true
+}
+# jdg.vat.a152.u1.p3 — `vat_a152_u1_p3`: Art. 152 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a152.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50161,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 152 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 152: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a152_u1_p3_check", false) == true
+}
+# jdg.vat.a152.u2.p4 — `vat_a152_u2_p4`: Art. 152 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a152.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50162,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 152 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 152: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a152_u2_p4_check", false) == true
+}
+# jdg.vat.a152.u4.p1 — `vat_a152_u4_p1`: Art. 152 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a152.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50163,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 152 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 152: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a152_u4_p1_check", false) == true
+}
+# jdg.vat.a152.u5.p2 — `vat_a152_u5_p2`: Art. 152 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a152.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50164,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 152 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 152: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a152_u5_p2_check", false) == true
+}
+# jdg.vat.a153.u1.p4 — `vat_a153_u1_p4`: Art. 153 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a153.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50165,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 153 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 153: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a153_u1_p4_check", false) == true
+}
+# jdg.vat.a153.u3.p1 — `vat_a153_u3_p1`: Art. 153 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a153.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50166,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 153 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 153: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a153_u3_p1_check", false) == true
+}
+# jdg.vat.a153.u4.p2 — `vat_a153_u4_p2`: Art. 153 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a153.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50167,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 153 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 153: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a153_u4_p2_check", false) == true
+}
+# jdg.vat.a153.u5.p3 — `vat_a153_u5_p3`: Art. 153 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a153.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50168,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 153 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 153: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a153_u5_p3_check", false) == true
+}
+# jdg.vat.a154.u2.p1 — `vat_a154_u2_p1`: Art. 154 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a154.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50169,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 154 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 154: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a154_u2_p1_check", false) == true
+}
+# jdg.vat.a154.u3.p2 — `vat_a154_u3_p2`: Art. 154 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a154.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50170,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 154 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 154: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a154_u3_p2_check", false) == true
+}
+# jdg.vat.a154.u4.p3 — `vat_a154_u4_p3`: Art. 154 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a154.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50171,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 154 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 154: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a154_u4_p3_check", false) == true
+}
+# jdg.vat.a154.u5.p4 — `vat_a154_u5_p4`: Art. 154 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a154.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50172,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 154 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 154: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a154_u5_p4_check", false) == true
+}
+# jdg.vat.a155.u1.p1 — `vat_a155_u1_p1`: Art. 155 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a155.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50173,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 155 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 155: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a155_u1_p1_check", false) == true
+}
+# jdg.vat.a155.u2.p2 — `vat_a155_u2_p2`: Art. 155 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a155.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50174,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 155 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 155: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a155_u2_p2_check", false) == true
+}
+# jdg.vat.a155.u3.p3 — `vat_a155_u3_p3`: Art. 155 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a155.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50175,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 155 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 155: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a155_u3_p3_check", false) == true
+}
+# jdg.vat.a155.u4.p4 — `vat_a155_u4_p4`: Art. 155 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a155.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50176,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 155 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 155: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a155_u4_p4_check", false) == true
+}
+# jdg.vat.a156.u1.p2 — `vat_a156_u1_p2`: Art. 156 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a156.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50177,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 156 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 156: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a156_u1_p2_check", false) == true
+}
+# jdg.vat.a156.u2.p3 — `vat_a156_u2_p3`: Art. 156 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a156.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50178,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 156 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 156: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a156_u2_p3_check", false) == true
+}
+# jdg.vat.a156.u3.p4 — `vat_a156_u3_p4`: Art. 156 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a156.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50179,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 156 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 156: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a156_u3_p4_check", false) == true
+}
+# jdg.vat.a156.u5.p1 — `vat_a156_u5_p1`: Art. 156 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a156.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50180,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 156 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 156: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a156_u5_p1_check", false) == true
+}
+# jdg.vat.a157.u1.p3 — `vat_a157_u1_p3`: Art. 157 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a157.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50181,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 157 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 157: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a157_u1_p3_check", false) == true
+}
+# jdg.vat.a157.u2.p4 — `vat_a157_u2_p4`: Art. 157 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a157.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50182,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 157 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 157: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a157_u2_p4_check", false) == true
+}
+# jdg.vat.a157.u4.p1 — `vat_a157_u4_p1`: Art. 157 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a157.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50183,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 157 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 157: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a157_u4_p1_check", false) == true
+}
+# jdg.vat.a157.u5.p2 — `vat_a157_u5_p2`: Art. 157 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a157.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50184,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 157 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 157: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a157_u5_p2_check", false) == true
+}
+# jdg.vat.a158.u1.p4 — `vat_a158_u1_p4`: Art. 158 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a158.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50185,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 158 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 158: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a158_u1_p4_check", false) == true
+}
+# jdg.vat.a158.u3.p1 — `vat_a158_u3_p1`: Art. 158 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a158.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50186,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 158 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 158: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a158_u3_p1_check", false) == true
+}
+# jdg.vat.a158.u4.p2 — `vat_a158_u4_p2`: Art. 158 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a158.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50187,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 158 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 158: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a158_u4_p2_check", false) == true
+}
+# jdg.vat.a158.u5.p3 — `vat_a158_u5_p3`: Art. 158 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a158.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50188,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 158 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 158: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a158_u5_p3_check", false) == true
+}
+# jdg.vat.a159.u2.p1 — `vat_a159_u2_p1`: Art. 159 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a159.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50189,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 159 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 159: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a159_u2_p1_check", false) == true
+}
+# jdg.vat.a159.u3.p2 — `vat_a159_u3_p2`: Art. 159 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a159.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50190,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 159 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 159: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a159_u3_p2_check", false) == true
+}
+# jdg.vat.a159.u4.p3 — `vat_a159_u4_p3`: Art. 159 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a159.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50191,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 159 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 159: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a159_u4_p3_check", false) == true
+}
+# jdg.vat.a159.u5.p4 — `vat_a159_u5_p4`: Art. 159 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a159.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50192,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 159 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 159: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a159_u5_p4_check", false) == true
+}
+# jdg.vat.a16.u1.p1 — `vat_a16_u1_p1`: Art. 16 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a16.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50193,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a16_u1_p1_check", false) == true
+}
+# jdg.vat.a16.u2.p2 — `vat_a16_u2_p2`: Art. 16 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a16.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50194,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a16_u2_p2_check", false) == true
+}
+# jdg.vat.a16.u3.p3 — `vat_a16_u3_p3`: Art. 16 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a16.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50195,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a16_u3_p3_check", false) == true
+}
+# jdg.vat.a16.u4.p4 — `vat_a16_u4_p4`: Art. 16 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a16.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50196,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a16_u4_p4_check", false) == true
+}
+# jdg.vat.a160.u1.p1 — `vat_a160_u1_p1`: Art. 160 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a160.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50197,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 160 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 160: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a160_u1_p1_check", false) == true
+}
+# jdg.vat.a160.u2.p2 — `vat_a160_u2_p2`: Art. 160 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a160.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50198,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 160 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 160: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a160_u2_p2_check", false) == true
+}
+# jdg.vat.a160.u3.p3 — `vat_a160_u3_p3`: Art. 160 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a160.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50199,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 160 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 160: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a160_u3_p3_check", false) == true
+}
+# jdg.vat.a160.u4.p4 — `vat_a160_u4_p4`: Art. 160 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a160.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50200,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 160 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 160: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a160_u4_p4_check", false) == true
+}
+# jdg.vat.a161.u1.p2 — `vat_a161_u1_p2`: Art. 161 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a161.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50201,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 161 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 161: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a161_u1_p2_check", false) == true
+}
+# jdg.vat.a161.u2.p3 — `vat_a161_u2_p3`: Art. 161 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a161.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50202,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 161 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 161: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a161_u2_p3_check", false) == true
+}
+# jdg.vat.a161.u3.p4 — `vat_a161_u3_p4`: Art. 161 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a161.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50203,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 161 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 161: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a161_u3_p4_check", false) == true
+}
+# jdg.vat.a161.u5.p1 — `vat_a161_u5_p1`: Art. 161 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a161.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50204,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 161 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 161: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a161_u5_p1_check", false) == true
+}
+# jdg.vat.a162.u1.p3 — `vat_a162_u1_p3`: Art. 162 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a162.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50205,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 162 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 162: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a162_u1_p3_check", false) == true
+}
+# jdg.vat.a162.u2.p4 — `vat_a162_u2_p4`: Art. 162 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a162.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50206,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 162 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 162: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a162_u2_p4_check", false) == true
+}
+# jdg.vat.a162.u4.p1 — `vat_a162_u4_p1`: Art. 162 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a162.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50207,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 162 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 162: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a162_u4_p1_check", false) == true
+}
+# jdg.vat.a162.u5.p2 — `vat_a162_u5_p2`: Art. 162 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a162.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50208,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 162 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 162: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a162_u5_p2_check", false) == true
+}
+# jdg.vat.a163.u1.p4 — `vat_a163_u1_p4`: Art. 163 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a163.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50209,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 163 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 163: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a163_u1_p4_check", false) == true
+}
+# jdg.vat.a163.u3.p1 — `vat_a163_u3_p1`: Art. 163 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a163.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50210,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 163 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 163: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a163_u3_p1_check", false) == true
+}
+# jdg.vat.a163.u4.p2 — `vat_a163_u4_p2`: Art. 163 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a163.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50211,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 163 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 163: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a163_u4_p2_check", false) == true
+}
+# jdg.vat.a163.u5.p3 — `vat_a163_u5_p3`: Art. 163 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a163.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50212,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 163 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 163: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a163_u5_p3_check", false) == true
+}
+# jdg.vat.a164.u2.p1 — `vat_a164_u2_p1`: Art. 164 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a164.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50213,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 164 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 164: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a164_u2_p1_check", false) == true
+}
+# jdg.vat.a164.u3.p2 — `vat_a164_u3_p2`: Art. 164 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a164.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50214,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 164 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 164: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a164_u3_p2_check", false) == true
+}
+# jdg.vat.a164.u4.p3 — `vat_a164_u4_p3`: Art. 164 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a164.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50215,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 164 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 164: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a164_u4_p3_check", false) == true
+}
+# jdg.vat.a164.u5.p4 — `vat_a164_u5_p4`: Art. 164 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a164.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50216,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 164 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 164: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a164_u5_p4_check", false) == true
+}
+# jdg.vat.a165.u1.p1 — `vat_a165_u1_p1`: Art. 165 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a165.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50217,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 165 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 165: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a165_u1_p1_check", false) == true
+}
+# jdg.vat.a165.u2.p2 — `vat_a165_u2_p2`: Art. 165 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a165.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50218,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 165 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 165: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a165_u2_p2_check", false) == true
+}
+# jdg.vat.a165.u3.p3 — `vat_a165_u3_p3`: Art. 165 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a165.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50219,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 165 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 165: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a165_u3_p3_check", false) == true
+}
+# jdg.vat.a165.u4.p4 — `vat_a165_u4_p4`: Art. 165 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a165.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50220,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 165 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 165: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a165_u4_p4_check", false) == true
+}
+# jdg.vat.a166.u1.p2 — `vat_a166_u1_p2`: Art. 166 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a166.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50221,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 166 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 166: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a166_u1_p2_check", false) == true
+}
+# jdg.vat.a166.u2.p3 — `vat_a166_u2_p3`: Art. 166 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a166.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50222,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 166 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 166: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a166_u2_p3_check", false) == true
+}
+# jdg.vat.a166.u3.p4 — `vat_a166_u3_p4`: Art. 166 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a166.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50223,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 166 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 166: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a166_u3_p4_check", false) == true
+}
+# jdg.vat.a166.u5.p1 — `vat_a166_u5_p1`: Art. 166 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a166.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50224,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 166 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 166: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a166_u5_p1_check", false) == true
+}
+# jdg.vat.a167.u1.p3 — `vat_a167_u1_p3`: Art. 167 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a167.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50225,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 167 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 167: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a167_u1_p3_check", false) == true
+}
+# jdg.vat.a167.u2.p4 — `vat_a167_u2_p4`: Art. 167 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a167.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50226,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 167 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 167: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a167_u2_p4_check", false) == true
+}
+# jdg.vat.a167.u4.p1 — `vat_a167_u4_p1`: Art. 167 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a167.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50227,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 167 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 167: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a167_u4_p1_check", false) == true
+}
+# jdg.vat.a167.u5.p2 — `vat_a167_u5_p2`: Art. 167 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a167.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50228,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 167 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 167: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a167_u5_p2_check", false) == true
+}
+# jdg.vat.a168.u1.p4 — `vat_a168_u1_p4`: Art. 168 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a168.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50229,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 168 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 168: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a168_u1_p4_check", false) == true
+}
+# jdg.vat.a168.u3.p1 — `vat_a168_u3_p1`: Art. 168 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a168.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50230,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 168 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 168: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a168_u3_p1_check", false) == true
+}
+# jdg.vat.a168.u4.p2 — `vat_a168_u4_p2`: Art. 168 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a168.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50231,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 168 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 168: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a168_u4_p2_check", false) == true
+}
+# jdg.vat.a168.u5.p3 — `vat_a168_u5_p3`: Art. 168 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a168.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50232,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 168 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 168: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a168_u5_p3_check", false) == true
+}
+# jdg.vat.a169.u2.p1 — `vat_a169_u2_p1`: Art. 169 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a169.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50233,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 169 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 169: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a169_u2_p1_check", false) == true
+}
+# jdg.vat.a169.u3.p2 — `vat_a169_u3_p2`: Art. 169 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a169.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50234,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 169 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 169: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a169_u3_p2_check", false) == true
+}
+# jdg.vat.a169.u4.p3 — `vat_a169_u4_p3`: Art. 169 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a169.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50235,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 169 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 169: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a169_u4_p3_check", false) == true
+}
+# jdg.vat.a169.u5.p4 — `vat_a169_u5_p4`: Art. 169 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a169.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50236,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 169 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 169: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a169_u5_p4_check", false) == true
+}
+# jdg.vat.a17.u1.p2 — `vat_a17_u1_p2`: Art. 17 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a17.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50237,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a17_u1_p2_check", false) == true
+}
+# jdg.vat.a17.u2.p3 — `vat_a17_u2_p3`: Art. 17 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a17.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50238,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a17_u2_p3_check", false) == true
+}
+# jdg.vat.a17.u3.p4 — `vat_a17_u3_p4`: Art. 17 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a17.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50239,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a17_u3_p4_check", false) == true
+}
+# jdg.vat.a17.u5.p1 — `vat_a17_u5_p1`: Art. 17 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a17.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50240,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a17_u5_p1_check", false) == true
+}
+# jdg.vat.a170.u1.p1 — `vat_a170_u1_p1`: Art. 170 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a170.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50241,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 170 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 170: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a170_u1_p1_check", false) == true
+}
+# jdg.vat.a170.u2.p2 — `vat_a170_u2_p2`: Art. 170 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a170.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50242,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 170 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 170: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a170_u2_p2_check", false) == true
+}
+# jdg.vat.a170.u3.p3 — `vat_a170_u3_p3`: Art. 170 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a170.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50243,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 170 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 170: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a170_u3_p3_check", false) == true
+}
+# jdg.vat.a170.u4.p4 — `vat_a170_u4_p4`: Art. 170 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a170.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50244,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 170 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 170: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a170_u4_p4_check", false) == true
+}
+# jdg.vat.a171.u1.p2 — `vat_a171_u1_p2`: Art. 171 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a171.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50245,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 171 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 171: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a171_u1_p2_check", false) == true
+}
+# jdg.vat.a171.u2.p3 — `vat_a171_u2_p3`: Art. 171 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a171.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50246,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 171 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 171: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a171_u2_p3_check", false) == true
+}
+# jdg.vat.a171.u3.p4 — `vat_a171_u3_p4`: Art. 171 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a171.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50247,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 171 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 171: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a171_u3_p4_check", false) == true
+}
+# jdg.vat.a171.u5.p1 — `vat_a171_u5_p1`: Art. 171 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a171.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50248,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 171 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 171: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a171_u5_p1_check", false) == true
+}
+# jdg.vat.a172.u4.p1 — `vat_a172_u4_p1`: Art. 172 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a172.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50249,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 172 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 172: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a172_u4_p1_check", false) == true
+}
+# jdg.vat.a18.u1.p3 — `vat_a18_u1_p3`: Art. 18 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a18.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50250,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a18_u1_p3_check", false) == true
+}
+# jdg.vat.a18.u2.p4 — `vat_a18_u2_p4`: Art. 18 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a18.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50251,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a18_u2_p4_check", false) == true
+}
+# jdg.vat.a18.u4.p1 — `vat_a18_u4_p1`: Art. 18 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a18.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50252,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a18_u4_p1_check", false) == true
+}
+# jdg.vat.a18.u5.p2 — `vat_a18_u5_p2`: Art. 18 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a18.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50253,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a18_u5_p2_check", false) == true
+}
+# jdg.vat.a19.u1.p4 — `vat_a19_u1_p4`: Art. 19 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a19.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50254,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a19_u1_p4_check", false) == true
+}
+# jdg.vat.a19.u3.p1 — `vat_a19_u3_p1`: Art. 19 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a19.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50255,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a19_u3_p1_check", false) == true
+}
+# jdg.vat.a19.u4.p2 — `vat_a19_u4_p2`: Art. 19 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a19.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50256,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a19_u4_p2_check", false) == true
+}
+# jdg.vat.a19.u5.p3 — `vat_a19_u5_p3`: Art. 19 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a19.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50257,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a19_u5_p3_check", false) == true
+}
+# jdg.vat.a20.u2.p1 — `vat_a20_u2_p1`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a20.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50258,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a20_u2_p1_check", false) == true
+}
+# jdg.vat.a20.u3.p2 — `vat_a20_u3_p2`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a20.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50259,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a20_u3_p2_check", false) == true
+}
+# jdg.vat.a20.u4.p3 — `vat_a20_u4_p3`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a20.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50260,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a20_u4_p3_check", false) == true
+}
+# jdg.vat.a20.u5.p4 — `vat_a20_u5_p4`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a20.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50261,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a20_u5_p4_check", false) == true
+}
+# jdg.vat.a21.u1.p1 — `vat_a21_u1_p1`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a21.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50262,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a21_u1_p1_check", false) == true
+}
+# jdg.vat.a21.u2.p2 — `vat_a21_u2_p2`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a21.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50263,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a21_u2_p2_check", false) == true
+}
+# jdg.vat.a21.u3.p3 — `vat_a21_u3_p3`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a21.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50264,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a21_u3_p3_check", false) == true
+}
+# jdg.vat.a21.u4.p4 — `vat_a21_u4_p4`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a21.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50265,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a21_u4_p4_check", false) == true
+}
+# jdg.vat.a22.u1.p2 — `vat_a22_u1_p2`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a22.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50266,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a22_u1_p2_check", false) == true
+}
+# jdg.vat.a22.u2.p3 — `vat_a22_u2_p3`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a22.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50267,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a22_u2_p3_check", false) == true
+}
+# jdg.vat.a22.u3.p4 — `vat_a22_u3_p4`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a22.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50268,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a22_u3_p4_check", false) == true
+}
+# jdg.vat.a22.u5.p1 — `vat_a22_u5_p1`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a22.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50269,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a22_u5_p1_check", false) == true
+}
+# jdg.vat.a23.u1.p3 — `vat_a23_u1_p3`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a23.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50270,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a23_u1_p3_check", false) == true
+}
+# jdg.vat.a23.u2.p4 — `vat_a23_u2_p4`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a23.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50271,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a23_u2_p4_check", false) == true
+}
+# jdg.vat.a23.u4.p1 — `vat_a23_u4_p1`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a23.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50272,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a23_u4_p1_check", false) == true
+}
+# jdg.vat.a23.u5.p2 — `vat_a23_u5_p2`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a23.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50273,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a23_u5_p2_check", false) == true
+}
+# jdg.vat.a24.u1.p4 — `vat_a24_u1_p4`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a24.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50274,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a24_u1_p4_check", false) == true
+}
+# jdg.vat.a24.u3.p1 — `vat_a24_u3_p1`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a24.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50275,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a24_u3_p1_check", false) == true
+}
+# jdg.vat.a24.u4.p2 — `vat_a24_u4_p2`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a24.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50276,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a24_u4_p2_check", false) == true
+}
+# jdg.vat.a24.u5.p3 — `vat_a24_u5_p3`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a24.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50277,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a24_u5_p3_check", false) == true
+}
+# jdg.vat.a25.u2.p1 — `vat_a25_u2_p1`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a25.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50278,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a25_u2_p1_check", false) == true
+}
+# jdg.vat.a25.u3.p2 — `vat_a25_u3_p2`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a25.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50279,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a25_u3_p2_check", false) == true
+}
+# jdg.vat.a25.u4.p3 — `vat_a25_u4_p3`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a25.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50280,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a25_u4_p3_check", false) == true
+}
+# jdg.vat.a25.u5.p4 — `vat_a25_u5_p4`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a25.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50281,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a25_u5_p4_check", false) == true
+}
+# jdg.vat.a26.u1.p1 — `vat_a26_u1_p1`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a26.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50282,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a26_u1_p1_check", false) == true
+}
+# jdg.vat.a26.u2.p2 — `vat_a26_u2_p2`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a26.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50283,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a26_u2_p2_check", false) == true
+}
+# jdg.vat.a26.u3.p3 — `vat_a26_u3_p3`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a26.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50284,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a26_u3_p3_check", false) == true
+}
+# jdg.vat.a26.u4.p4 — `vat_a26_u4_p4`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a26.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50285,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a26_u4_p4_check", false) == true
+}
+# jdg.vat.a27.u1.p2 — `vat_a27_u1_p2`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a27.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50286,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a27_u1_p2_check", false) == true
+}
+# jdg.vat.a27.u2.p3 — `vat_a27_u2_p3`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a27.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50287,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a27_u2_p3_check", false) == true
+}
+# jdg.vat.a27.u3.p4 — `vat_a27_u3_p4`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a27.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50288,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a27_u3_p4_check", false) == true
+}
+# jdg.vat.a27.u5.p1 — `vat_a27_u5_p1`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a27.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50289,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a27_u5_p1_check", false) == true
+}
+# jdg.vat.a28.u1.p3 — `vat_a28_u1_p3`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a28.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50290,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a28_u1_p3_check", false) == true
+}
+# jdg.vat.a28.u2.p4 — `vat_a28_u2_p4`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a28.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50291,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a28_u2_p4_check", false) == true
+}
+# jdg.vat.a28.u4.p1 — `vat_a28_u4_p1`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a28.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50292,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a28_u4_p1_check", false) == true
+}
+# jdg.vat.a28.u5.p2 — `vat_a28_u5_p2`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a28.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50293,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a28_u5_p2_check", false) == true
+}
+# jdg.vat.a29.u1.p4 — `vat_a29_u1_p4`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a29.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50294,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a29_u1_p4_check", false) == true
+}
+# jdg.vat.a29.u3.p1 — `vat_a29_u3_p1`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a29.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50295,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a29_u3_p1_check", false) == true
+}
+# jdg.vat.a29.u4.p2 — `vat_a29_u4_p2`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a29.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50296,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a29_u4_p2_check", false) == true
+}
+# jdg.vat.a29.u5.p3 — `vat_a29_u5_p3`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a29.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50297,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a29_u5_p3_check", false) == true
+}
+# jdg.vat.a30.u2.p1 — `vat_a30_u2_p1`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a30.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50298,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a30_u2_p1_check", false) == true
+}
+# jdg.vat.a30.u3.p2 — `vat_a30_u3_p2`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a30.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50299,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a30_u3_p2_check", false) == true
+}
+# jdg.vat.a30.u4.p3 — `vat_a30_u4_p3`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a30.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50300,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a30_u4_p3_check", false) == true
+}
+# jdg.vat.a30.u5.p4 — `vat_a30_u5_p4`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a30.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50301,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a30_u5_p4_check", false) == true
+}
+# jdg.vat.a31.u1.p1 — `vat_a31_u1_p1`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a31.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50302,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a31_u1_p1_check", false) == true
+}
+# jdg.vat.a31.u2.p2 — `vat_a31_u2_p2`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a31.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50303,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a31_u2_p2_check", false) == true
+}
+# jdg.vat.a31.u3.p3 — `vat_a31_u3_p3`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a31.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50304,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a31_u3_p3_check", false) == true
+}
+# jdg.vat.a31.u4.p4 — `vat_a31_u4_p4`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a31.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50305,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a31_u4_p4_check", false) == true
+}
+# jdg.vat.a32.u1.p2 — `vat_a32_u1_p2`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a32.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50306,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a32_u1_p2_check", false) == true
+}
+# jdg.vat.a32.u2.p3 — `vat_a32_u2_p3`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a32.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50307,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a32_u2_p3_check", false) == true
+}
+# jdg.vat.a32.u3.p4 — `vat_a32_u3_p4`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a32.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50308,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a32_u3_p4_check", false) == true
+}
+# jdg.vat.a32.u5.p1 — `vat_a32_u5_p1`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a32.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50309,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a32_u5_p1_check", false) == true
+}
+# jdg.vat.a33.u1.p3 — `vat_a33_u1_p3`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a33.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50310,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a33_u1_p3_check", false) == true
+}
+# jdg.vat.a33.u2.p4 — `vat_a33_u2_p4`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a33.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50311,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a33_u2_p4_check", false) == true
+}
+# jdg.vat.a33.u4.p1 — `vat_a33_u4_p1`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a33.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50312,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a33_u4_p1_check", false) == true
+}
+# jdg.vat.a33.u5.p2 — `vat_a33_u5_p2`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a33.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50313,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a33_u5_p2_check", false) == true
+}
+# jdg.vat.a34.u1.p4 — `vat_a34_u1_p4`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a34.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50314,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a34_u1_p4_check", false) == true
+}
+# jdg.vat.a34.u3.p1 — `vat_a34_u3_p1`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a34.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50315,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a34_u3_p1_check", false) == true
+}
+# jdg.vat.a34.u4.p2 — `vat_a34_u4_p2`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a34.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50316,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a34_u4_p2_check", false) == true
+}
+# jdg.vat.a34.u5.p3 — `vat_a34_u5_p3`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a34.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50317,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a34_u5_p3_check", false) == true
+}
+# jdg.vat.a35.u2.p1 — `vat_a35_u2_p1`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a35.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50318,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a35_u2_p1_check", false) == true
+}
+# jdg.vat.a35.u3.p2 — `vat_a35_u3_p2`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a35.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50319,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a35_u3_p2_check", false) == true
+}
+# jdg.vat.a35.u4.p3 — `vat_a35_u4_p3`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a35.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50320,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a35_u4_p3_check", false) == true
+}
+# jdg.vat.a35.u5.p4 — `vat_a35_u5_p4`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a35.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50321,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a35_u5_p4_check", false) == true
+}
+# jdg.vat.a36.u1.p1 — `vat_a36_u1_p1`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a36.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50322,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a36_u1_p1_check", false) == true
+}
+# jdg.vat.a36.u2.p2 — `vat_a36_u2_p2`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a36.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50323,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a36_u2_p2_check", false) == true
+}
+# jdg.vat.a36.u3.p3 — `vat_a36_u3_p3`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a36.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50324,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a36_u3_p3_check", false) == true
+}
+# jdg.vat.a36.u4.p4 — `vat_a36_u4_p4`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a36.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50325,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a36_u4_p4_check", false) == true
+}
+# jdg.vat.a37.u1.p2 — `vat_a37_u1_p2`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a37.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50326,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a37_u1_p2_check", false) == true
+}
+# jdg.vat.a37.u2.p3 — `vat_a37_u2_p3`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a37.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50327,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a37_u2_p3_check", false) == true
+}
+# jdg.vat.a37.u3.p4 — `vat_a37_u3_p4`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a37.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50328,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a37_u3_p4_check", false) == true
+}
+# jdg.vat.a37.u5.p1 — `vat_a37_u5_p1`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a37.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50329,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a37_u5_p1_check", false) == true
+}
+# jdg.vat.a38.u1.p3 — `vat_a38_u1_p3`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a38.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50330,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a38_u1_p3_check", false) == true
+}
+# jdg.vat.a38.u2.p4 — `vat_a38_u2_p4`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a38.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50331,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a38_u2_p4_check", false) == true
+}
+# jdg.vat.a38.u4.p1 — `vat_a38_u4_p1`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a38.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50332,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a38_u4_p1_check", false) == true
+}
+# jdg.vat.a38.u5.p2 — `vat_a38_u5_p2`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a38.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50333,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a38_u5_p2_check", false) == true
+}
+# jdg.vat.a39.u1.p4 — `vat_a39_u1_p4`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a39.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50334,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a39_u1_p4_check", false) == true
+}
+# jdg.vat.a39.u3.p1 — `vat_a39_u3_p1`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a39.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50335,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a39_u3_p1_check", false) == true
+}
+# jdg.vat.a39.u4.p2 — `vat_a39_u4_p2`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a39.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50336,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a39_u4_p2_check", false) == true
+}
+# jdg.vat.a39.u5.p3 — `vat_a39_u5_p3`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a39.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50337,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a39_u5_p3_check", false) == true
+}
+# jdg.vat.a40.u2.p1 — `vat_a40_u2_p1`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a40.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50338,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a40_u2_p1_check", false) == true
+}
+# jdg.vat.a40.u3.p2 — `vat_a40_u3_p2`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a40.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50339,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a40_u3_p2_check", false) == true
+}
+# jdg.vat.a40.u4.p3 — `vat_a40_u4_p3`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a40.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50340,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a40_u4_p3_check", false) == true
+}
+# jdg.vat.a40.u5.p4 — `vat_a40_u5_p4`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a40.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50341,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a40_u5_p4_check", false) == true
+}
+# jdg.vat.a41.u1.p1 — `vat_a41_u1_p1`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a41.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50342,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a41_u1_p1_check", false) == true
+}
+# jdg.vat.a41.u2.p2 — `vat_a41_u2_p2`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a41.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50343,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a41_u2_p2_check", false) == true
+}
+# jdg.vat.a41.u3.p3 — `vat_a41_u3_p3`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a41.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50344,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a41_u3_p3_check", false) == true
+}
+# jdg.vat.a41.u4.p4 — `vat_a41_u4_p4`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a41.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50345,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a41_u4_p4_check", false) == true
+}
+# jdg.vat.a42.u1.p2 — `vat_a42_u1_p2`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a42.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50346,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a42_u1_p2_check", false) == true
+}
+# jdg.vat.a42.u2.p3 — `vat_a42_u2_p3`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a42.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50347,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a42_u2_p3_check", false) == true
+}
+# jdg.vat.a42.u3.p4 — `vat_a42_u3_p4`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a42.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50348,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a42_u3_p4_check", false) == true
+}
+# jdg.vat.a42.u5.p1 — `vat_a42_u5_p1`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a42.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50349,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a42_u5_p1_check", false) == true
+}
+# jdg.vat.a43.u1.p3 — `vat_a43_u1_p3`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a43.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50350,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a43_u1_p3_check", false) == true
+}
+# jdg.vat.a43.u2.p4 — `vat_a43_u2_p4`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a43.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50351,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a43_u2_p4_check", false) == true
+}
+# jdg.vat.a43.u4.p1 — `vat_a43_u4_p1`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a43.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50352,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a43_u4_p1_check", false) == true
+}
+# jdg.vat.a43.u5.p2 — `vat_a43_u5_p2`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a43.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50353,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a43_u5_p2_check", false) == true
+}
+# jdg.vat.a44.u1.p4 — `vat_a44_u1_p4`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a44.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50354,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a44_u1_p4_check", false) == true
+}
+# jdg.vat.a44.u3.p1 — `vat_a44_u3_p1`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a44.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50355,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a44_u3_p1_check", false) == true
+}
+# jdg.vat.a44.u4.p2 — `vat_a44_u4_p2`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a44.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50356,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a44_u4_p2_check", false) == true
+}
+# jdg.vat.a44.u5.p3 — `vat_a44_u5_p3`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a44.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50357,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a44_u5_p3_check", false) == true
+}
+# jdg.vat.a45.u2.p1 — `vat_a45_u2_p1`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a45.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50358,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a45_u2_p1_check", false) == true
+}
+# jdg.vat.a45.u3.p2 — `vat_a45_u3_p2`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a45.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50359,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a45_u3_p2_check", false) == true
+}
+# jdg.vat.a45.u4.p3 — `vat_a45_u4_p3`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a45.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50360,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a45_u4_p3_check", false) == true
+}
+# jdg.vat.a45.u5.p4 — `vat_a45_u5_p4`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a45.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50361,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a45_u5_p4_check", false) == true
+}
+# jdg.vat.a46.u1.p1 — `vat_a46_u1_p1`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a46.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50362,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a46_u1_p1_check", false) == true
+}
+# jdg.vat.a46.u2.p2 — `vat_a46_u2_p2`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a46.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50363,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a46_u2_p2_check", false) == true
+}
+# jdg.vat.a46.u3.p3 — `vat_a46_u3_p3`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a46.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50364,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a46_u3_p3_check", false) == true
+}
+# jdg.vat.a46.u4.p4 — `vat_a46_u4_p4`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a46.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50365,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a46_u4_p4_check", false) == true
+}
+# jdg.vat.a47.u1.p2 — `vat_a47_u1_p2`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a47.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50366,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a47_u1_p2_check", false) == true
+}
+# jdg.vat.a47.u2.p3 — `vat_a47_u2_p3`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a47.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50367,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a47_u2_p3_check", false) == true
+}
+# jdg.vat.a47.u3.p4 — `vat_a47_u3_p4`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a47.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50368,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a47_u3_p4_check", false) == true
+}
+# jdg.vat.a47.u5.p1 — `vat_a47_u5_p1`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a47.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50369,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a47_u5_p1_check", false) == true
+}
+# jdg.vat.a48.u1.p3 — `vat_a48_u1_p3`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a48.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50370,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a48_u1_p3_check", false) == true
+}
+# jdg.vat.a48.u2.p4 — `vat_a48_u2_p4`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a48.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50371,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a48_u2_p4_check", false) == true
+}
+# jdg.vat.a48.u4.p1 — `vat_a48_u4_p1`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a48.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50372,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a48_u4_p1_check", false) == true
+}
+# jdg.vat.a48.u5.p2 — `vat_a48_u5_p2`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a48.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50373,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a48_u5_p2_check", false) == true
+}
+# jdg.vat.a49.u1.p4 — `vat_a49_u1_p4`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a49.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50374,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a49_u1_p4_check", false) == true
+}
+# jdg.vat.a49.u3.p1 — `vat_a49_u3_p1`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a49.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50375,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a49_u3_p1_check", false) == true
+}
+# jdg.vat.a49.u4.p2 — `vat_a49_u4_p2`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a49.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50376,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a49_u4_p2_check", false) == true
+}
+# jdg.vat.a49.u5.p3 — `vat_a49_u5_p3`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a49.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50377,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a49_u5_p3_check", false) == true
+}
+# jdg.vat.a50.u2.p1 — `vat_a50_u2_p1`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a50.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50378,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a50_u2_p1_check", false) == true
+}
+# jdg.vat.a50.u3.p2 — `vat_a50_u3_p2`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a50.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50379,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a50_u3_p2_check", false) == true
+}
+# jdg.vat.a50.u4.p3 — `vat_a50_u4_p3`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a50.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50380,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a50_u4_p3_check", false) == true
+}
+# jdg.vat.a50.u5.p4 — `vat_a50_u5_p4`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a50.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50381,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a50_u5_p4_check", false) == true
+}
+# jdg.vat.a51.u1.p1 — `vat_a51_u1_p1`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a51.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50382,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a51_u1_p1_check", false) == true
+}
+# jdg.vat.a51.u2.p2 — `vat_a51_u2_p2`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a51.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50383,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a51_u2_p2_check", false) == true
+}
+# jdg.vat.a51.u3.p3 — `vat_a51_u3_p3`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a51.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50384,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a51_u3_p3_check", false) == true
+}
+# jdg.vat.a51.u4.p4 — `vat_a51_u4_p4`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a51.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50385,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a51_u4_p4_check", false) == true
+}
+# jdg.vat.a52.u1.p2 — `vat_a52_u1_p2`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a52.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50386,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a52_u1_p2_check", false) == true
+}
+# jdg.vat.a52.u2.p3 — `vat_a52_u2_p3`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a52.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50387,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a52_u2_p3_check", false) == true
+}
+# jdg.vat.a52.u3.p4 — `vat_a52_u3_p4`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a52.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50388,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a52_u3_p4_check", false) == true
+}
+# jdg.vat.a52.u5.p1 — `vat_a52_u5_p1`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a52.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50389,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a52_u5_p1_check", false) == true
+}
+# jdg.vat.a53.u1.p3 — `vat_a53_u1_p3`: Art. 53 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a53.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50390,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 53 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 53: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a53_u1_p3_check", false) == true
+}
+# jdg.vat.a53.u2.p4 — `vat_a53_u2_p4`: Art. 53 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a53.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50391,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 53 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 53: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a53_u2_p4_check", false) == true
+}
+# jdg.vat.a53.u4.p1 — `vat_a53_u4_p1`: Art. 53 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a53.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50392,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 53 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 53: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a53_u4_p1_check", false) == true
+}
+# jdg.vat.a53.u5.p2 — `vat_a53_u5_p2`: Art. 53 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a53.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50393,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 53 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 53: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a53_u5_p2_check", false) == true
+}
+# jdg.vat.a54.u1.p4 — `vat_a54_u1_p4`: Art. 54 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a54.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50394,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 54 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 54: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a54_u1_p4_check", false) == true
+}
+# jdg.vat.a54.u3.p1 — `vat_a54_u3_p1`: Art. 54 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a54.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50395,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 54 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 54: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a54_u3_p1_check", false) == true
+}
+# jdg.vat.a54.u4.p2 — `vat_a54_u4_p2`: Art. 54 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a54.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50396,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 54 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 54: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a54_u4_p2_check", false) == true
+}
+# jdg.vat.a54.u5.p3 — `vat_a54_u5_p3`: Art. 54 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a54.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50397,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 54 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 54: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a54_u5_p3_check", false) == true
+}
+# jdg.vat.a55.u2.p1 — `vat_a55_u2_p1`: Art. 55 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a55.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50398,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 55 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 55: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a55_u2_p1_check", false) == true
+}
+# jdg.vat.a55.u3.p2 — `vat_a55_u3_p2`: Art. 55 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a55.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50399,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 55 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 55: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a55_u3_p2_check", false) == true
+}
+# jdg.vat.a55.u4.p3 — `vat_a55_u4_p3`: Art. 55 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a55.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50400,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 55 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 55: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a55_u4_p3_check", false) == true
+}
+# jdg.vat.a55.u5.p4 — `vat_a55_u5_p4`: Art. 55 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a55.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50401,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 55 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 55: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a55_u5_p4_check", false) == true
+}
+# jdg.vat.a56.u1.p1 — `vat_a56_u1_p1`: Art. 56 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a56.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50402,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 56 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 56: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a56_u1_p1_check", false) == true
+}
+# jdg.vat.a56.u2.p2 — `vat_a56_u2_p2`: Art. 56 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a56.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50403,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 56 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 56: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a56_u2_p2_check", false) == true
+}
+# jdg.vat.a56.u3.p3 — `vat_a56_u3_p3`: Art. 56 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a56.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50404,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 56 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 56: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a56_u3_p3_check", false) == true
+}
+# jdg.vat.a56.u4.p4 — `vat_a56_u4_p4`: Art. 56 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a56.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50405,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 56 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 56: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a56_u4_p4_check", false) == true
+}
+# jdg.vat.a57.u1.p2 — `vat_a57_u1_p2`: Art. 57 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a57.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50406,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 57 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 57: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a57_u1_p2_check", false) == true
+}
+# jdg.vat.a57.u2.p3 — `vat_a57_u2_p3`: Art. 57 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a57.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50407,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 57 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 57: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a57_u2_p3_check", false) == true
+}
+# jdg.vat.a57.u3.p4 — `vat_a57_u3_p4`: Art. 57 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a57.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50408,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 57 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 57: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a57_u3_p4_check", false) == true
+}
+# jdg.vat.a57.u5.p1 — `vat_a57_u5_p1`: Art. 57 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a57.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50409,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 57 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 57: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a57_u5_p1_check", false) == true
+}
+# jdg.vat.a58.u1.p3 — `vat_a58_u1_p3`: Art. 58 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a58.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50410,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 58 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 58: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a58_u1_p3_check", false) == true
+}
+# jdg.vat.a58.u2.p4 — `vat_a58_u2_p4`: Art. 58 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a58.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50411,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 58 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 58: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a58_u2_p4_check", false) == true
+}
+# jdg.vat.a58.u4.p1 — `vat_a58_u4_p1`: Art. 58 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a58.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50412,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 58 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 58: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a58_u4_p1_check", false) == true
+}
+# jdg.vat.a58.u5.p2 — `vat_a58_u5_p2`: Art. 58 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a58.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50413,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 58 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 58: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a58_u5_p2_check", false) == true
+}
+# jdg.vat.a59.u1.p4 — `vat_a59_u1_p4`: Art. 59 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a59.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50414,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 59 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 59: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a59_u1_p4_check", false) == true
+}
+# jdg.vat.a59.u3.p1 — `vat_a59_u3_p1`: Art. 59 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a59.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50415,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 59 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 59: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a59_u3_p1_check", false) == true
+}
+# jdg.vat.a59.u4.p2 — `vat_a59_u4_p2`: Art. 59 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a59.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50416,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 59 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 59: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a59_u4_p2_check", false) == true
+}
+# jdg.vat.a59.u5.p3 — `vat_a59_u5_p3`: Art. 59 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a59.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50417,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 59 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 59: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a59_u5_p3_check", false) == true
+}
+# jdg.vat.a60.u2.p1 — `vat_a60_u2_p1`: Art. 60 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a60.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50418,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 60 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 60: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a60_u2_p1_check", false) == true
+}
+# jdg.vat.a60.u3.p2 — `vat_a60_u3_p2`: Art. 60 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a60.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50419,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 60 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 60: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a60_u3_p2_check", false) == true
+}
+# jdg.vat.a60.u4.p3 — `vat_a60_u4_p3`: Art. 60 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a60.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50420,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 60 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 60: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a60_u4_p3_check", false) == true
+}
+# jdg.vat.a60.u5.p4 — `vat_a60_u5_p4`: Art. 60 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a60.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50421,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 60 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 60: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a60_u5_p4_check", false) == true
+}
+# jdg.vat.a61.u1.p1 — `vat_a61_u1_p1`: Art. 61 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a61.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50422,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 61 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 61: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a61_u1_p1_check", false) == true
+}
+# jdg.vat.a61.u2.p2 — `vat_a61_u2_p2`: Art. 61 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a61.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50423,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 61 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 61: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a61_u2_p2_check", false) == true
+}
+# jdg.vat.a61.u3.p3 — `vat_a61_u3_p3`: Art. 61 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a61.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50424,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 61 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 61: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a61_u3_p3_check", false) == true
+}
+# jdg.vat.a61.u4.p4 — `vat_a61_u4_p4`: Art. 61 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a61.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50425,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 61 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 61: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a61_u4_p4_check", false) == true
+}
+# jdg.vat.a62.u1.p2 — `vat_a62_u1_p2`: Art. 62 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a62.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50426,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 62 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 62: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a62_u1_p2_check", false) == true
+}
+# jdg.vat.a62.u2.p3 — `vat_a62_u2_p3`: Art. 62 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a62.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50427,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 62 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 62: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a62_u2_p3_check", false) == true
+}
+# jdg.vat.a62.u3.p4 — `vat_a62_u3_p4`: Art. 62 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a62.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50428,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 62 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 62: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a62_u3_p4_check", false) == true
+}
+# jdg.vat.a62.u5.p1 — `vat_a62_u5_p1`: Art. 62 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a62.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50429,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 62 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 62: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a62_u5_p1_check", false) == true
+}
+# jdg.vat.a63.u1.p3 — `vat_a63_u1_p3`: Art. 63 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a63.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50430,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 63 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 63: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a63_u1_p3_check", false) == true
+}
+# jdg.vat.a63.u2.p4 — `vat_a63_u2_p4`: Art. 63 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a63.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50431,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 63 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 63: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a63_u2_p4_check", false) == true
+}
+# jdg.vat.a63.u4.p1 — `vat_a63_u4_p1`: Art. 63 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a63.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50432,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 63 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 63: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a63_u4_p1_check", false) == true
+}
+# jdg.vat.a63.u5.p2 — `vat_a63_u5_p2`: Art. 63 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a63.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50433,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 63 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 63: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a63_u5_p2_check", false) == true
+}
+# jdg.vat.a64.u1.p4 — `vat_a64_u1_p4`: Art. 64 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a64.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50434,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 64 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 64: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a64_u1_p4_check", false) == true
+}
+# jdg.vat.a64.u3.p1 — `vat_a64_u3_p1`: Art. 64 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a64.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50435,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 64 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 64: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a64_u3_p1_check", false) == true
+}
+# jdg.vat.a64.u4.p2 — `vat_a64_u4_p2`: Art. 64 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a64.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50436,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 64 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 64: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a64_u4_p2_check", false) == true
+}
+# jdg.vat.a64.u5.p3 — `vat_a64_u5_p3`: Art. 64 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a64.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50437,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 64 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 64: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a64_u5_p3_check", false) == true
+}
+# jdg.vat.a65.u2.p1 — `vat_a65_u2_p1`: Art. 65 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a65.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50438,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 65 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 65: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a65_u2_p1_check", false) == true
+}
+# jdg.vat.a65.u3.p2 — `vat_a65_u3_p2`: Art. 65 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a65.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50439,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 65 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 65: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a65_u3_p2_check", false) == true
+}
+# jdg.vat.a65.u4.p3 — `vat_a65_u4_p3`: Art. 65 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a65.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50440,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 65 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 65: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a65_u4_p3_check", false) == true
+}
+# jdg.vat.a65.u5.p4 — `vat_a65_u5_p4`: Art. 65 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a65.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50441,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 65 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 65: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a65_u5_p4_check", false) == true
+}
+# jdg.vat.a66.u1.p1 — `vat_a66_u1_p1`: Art. 66 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a66.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50442,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 66 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 66: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a66_u1_p1_check", false) == true
+}
+# jdg.vat.a66.u2.p2 — `vat_a66_u2_p2`: Art. 66 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a66.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50443,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 66 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 66: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a66_u2_p2_check", false) == true
+}
+# jdg.vat.a66.u3.p3 — `vat_a66_u3_p3`: Art. 66 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a66.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50444,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 66 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 66: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a66_u3_p3_check", false) == true
+}
+# jdg.vat.a66.u4.p4 — `vat_a66_u4_p4`: Art. 66 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a66.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50445,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 66 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 66: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a66_u4_p4_check", false) == true
+}
+# jdg.vat.a67.u1.p2 — `vat_a67_u1_p2`: Art. 67 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a67.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50446,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 67 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 67: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a67_u1_p2_check", false) == true
+}
+# jdg.vat.a67.u2.p3 — `vat_a67_u2_p3`: Art. 67 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a67.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50447,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 67 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 67: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a67_u2_p3_check", false) == true
+}
+# jdg.vat.a67.u3.p4 — `vat_a67_u3_p4`: Art. 67 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a67.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50448,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 67 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 67: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a67_u3_p4_check", false) == true
+}
+# jdg.vat.a67.u5.p1 — `vat_a67_u5_p1`: Art. 67 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a67.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50449,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 67 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 67: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a67_u5_p1_check", false) == true
+}
+# jdg.vat.a68.u1.p3 — `vat_a68_u1_p3`: Art. 68 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a68.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50450,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 68 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 68: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a68_u1_p3_check", false) == true
+}
+# jdg.vat.a68.u2.p4 — `vat_a68_u2_p4`: Art. 68 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a68.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50451,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 68 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 68: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a68_u2_p4_check", false) == true
+}
+# jdg.vat.a68.u4.p1 — `vat_a68_u4_p1`: Art. 68 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a68.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50452,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 68 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 68: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a68_u4_p1_check", false) == true
+}
+# jdg.vat.a68.u5.p2 — `vat_a68_u5_p2`: Art. 68 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a68.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50453,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 68 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 68: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a68_u5_p2_check", false) == true
+}
+# jdg.vat.a69.u1.p4 — `vat_a69_u1_p4`: Art. 69 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a69.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50454,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 69 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 69: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a69_u1_p4_check", false) == true
+}
+# jdg.vat.a69.u3.p1 — `vat_a69_u3_p1`: Art. 69 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a69.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50455,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 69 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 69: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a69_u3_p1_check", false) == true
+}
+# jdg.vat.a69.u4.p2 — `vat_a69_u4_p2`: Art. 69 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a69.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50456,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 69 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 69: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a69_u4_p2_check", false) == true
+}
+# jdg.vat.a69.u5.p3 — `vat_a69_u5_p3`: Art. 69 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a69.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50457,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 69 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 69: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a69_u5_p3_check", false) == true
+}
+# jdg.vat.a70.u2.p1 — `vat_a70_u2_p1`: Art. 70 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a70.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50458,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 70 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 70: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a70_u2_p1_check", false) == true
+}
+# jdg.vat.a70.u3.p2 — `vat_a70_u3_p2`: Art. 70 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a70.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50459,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 70 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 70: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a70_u3_p2_check", false) == true
+}
+# jdg.vat.a70.u4.p3 — `vat_a70_u4_p3`: Art. 70 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a70.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50460,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 70 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 70: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a70_u4_p3_check", false) == true
+}
+# jdg.vat.a70.u5.p4 — `vat_a70_u5_p4`: Art. 70 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a70.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50461,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 70 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 70: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a70_u5_p4_check", false) == true
+}
+# jdg.vat.a71.u1.p1 — `vat_a71_u1_p1`: Art. 71 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a71.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50462,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a71_u1_p1_check", false) == true
+}
+# jdg.vat.a71.u2.p2 — `vat_a71_u2_p2`: Art. 71 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a71.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50463,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a71_u2_p2_check", false) == true
+}
+# jdg.vat.a71.u3.p3 — `vat_a71_u3_p3`: Art. 71 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a71.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50464,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a71_u3_p3_check", false) == true
+}
+# jdg.vat.a71.u4.p4 — `vat_a71_u4_p4`: Art. 71 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a71.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50465,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a71_u4_p4_check", false) == true
+}
+# jdg.vat.a72.u1.p2 — `vat_a72_u1_p2`: Art. 72 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a72.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50466,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a72_u1_p2_check", false) == true
+}
+# jdg.vat.a72.u2.p3 — `vat_a72_u2_p3`: Art. 72 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a72.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50467,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a72_u2_p3_check", false) == true
+}
+# jdg.vat.a72.u3.p4 — `vat_a72_u3_p4`: Art. 72 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a72.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50468,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a72_u3_p4_check", false) == true
+}
+# jdg.vat.a72.u5.p1 — `vat_a72_u5_p1`: Art. 72 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a72.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50469,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a72_u5_p1_check", false) == true
+}
+# jdg.vat.a73.u1.p3 — `vat_a73_u1_p3`: Art. 73 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a73.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50470,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a73_u1_p3_check", false) == true
+}
+# jdg.vat.a73.u2.p4 — `vat_a73_u2_p4`: Art. 73 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a73.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50471,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a73_u2_p4_check", false) == true
+}
+# jdg.vat.a73.u4.p1 — `vat_a73_u4_p1`: Art. 73 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a73.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50472,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a73_u4_p1_check", false) == true
+}
+# jdg.vat.a73.u5.p2 — `vat_a73_u5_p2`: Art. 73 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a73.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50473,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a73_u5_p2_check", false) == true
+}
+# jdg.vat.a74.u1.p4 — `vat_a74_u1_p4`: Art. 74 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a74.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50474,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a74_u1_p4_check", false) == true
+}
+# jdg.vat.a74.u3.p1 — `vat_a74_u3_p1`: Art. 74 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a74.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50475,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a74_u3_p1_check", false) == true
+}
+# jdg.vat.a74.u4.p2 — `vat_a74_u4_p2`: Art. 74 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a74.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50476,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a74_u4_p2_check", false) == true
+}
+# jdg.vat.a74.u5.p3 — `vat_a74_u5_p3`: Art. 74 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a74.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50477,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a74_u5_p3_check", false) == true
+}
+# jdg.vat.a75.u2.p1 — `vat_a75_u2_p1`: Art. 75 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a75.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50478,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a75_u2_p1_check", false) == true
+}
+# jdg.vat.a75.u3.p2 — `vat_a75_u3_p2`: Art. 75 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a75.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50479,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a75_u3_p2_check", false) == true
+}
+# jdg.vat.a75.u4.p3 — `vat_a75_u4_p3`: Art. 75 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a75.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50480,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a75_u4_p3_check", false) == true
+}
+# jdg.vat.a75.u5.p4 — `vat_a75_u5_p4`: Art. 75 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a75.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50481,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a75_u5_p4_check", false) == true
+}
+# jdg.vat.a76.u1.p1 — `vat_a76_u1_p1`: Art. 76 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a76.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50482,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a76_u1_p1_check", false) == true
+}
+# jdg.vat.a76.u2.p2 — `vat_a76_u2_p2`: Art. 76 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a76.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50483,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a76_u2_p2_check", false) == true
+}
+# jdg.vat.a76.u3.p3 — `vat_a76_u3_p3`: Art. 76 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a76.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50484,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a76_u3_p3_check", false) == true
+}
+# jdg.vat.a76.u4.p4 — `vat_a76_u4_p4`: Art. 76 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a76.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50485,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a76_u4_p4_check", false) == true
+}
+# jdg.vat.a77.u1.p2 — `vat_a77_u1_p2`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a77.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50486,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a77_u1_p2_check", false) == true
+}
+# jdg.vat.a77.u2.p3 — `vat_a77_u2_p3`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a77.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50487,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a77_u2_p3_check", false) == true
+}
+# jdg.vat.a77.u3.p4 — `vat_a77_u3_p4`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a77.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50488,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a77_u3_p4_check", false) == true
+}
+# jdg.vat.a77.u5.p1 — `vat_a77_u5_p1`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a77.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50489,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a77_u5_p1_check", false) == true
+}
+# jdg.vat.a78.u1.p3 — `vat_a78_u1_p3`: Art. 78 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a78.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50490,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a78_u1_p3_check", false) == true
+}
+# jdg.vat.a78.u2.p4 — `vat_a78_u2_p4`: Art. 78 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a78.u2.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50491,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a78_u2_p4_check", false) == true
+}
+# jdg.vat.a78.u4.p1 — `vat_a78_u4_p1`: Art. 78 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a78.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50492,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a78_u4_p1_check", false) == true
+}
+# jdg.vat.a78.u5.p2 — `vat_a78_u5_p2`: Art. 78 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a78.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50493,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a78_u5_p2_check", false) == true
+}
+# jdg.vat.a79.u1.p4 — `vat_a79_u1_p4`: Art. 79 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a79.u1.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50494,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a79_u1_p4_check", false) == true
+}
+# jdg.vat.a79.u3.p1 — `vat_a79_u3_p1`: Art. 79 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a79.u3.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50495,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a79_u3_p1_check", false) == true
+}
+# jdg.vat.a79.u4.p2 — `vat_a79_u4_p2`: Art. 79 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a79.u4.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50496,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a79_u4_p2_check", false) == true
+}
+# jdg.vat.a79.u5.p3 — `vat_a79_u5_p3`: Art. 79 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a79.u5.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50497,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a79_u5_p3_check", false) == true
+}
+# jdg.vat.a80.u2.p1 — `vat_a80_u2_p1`: Art. 80 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a80.u2.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50498,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a80_u2_p1_check", false) == true
+}
+# jdg.vat.a80.u3.p2 — `vat_a80_u3_p2`: Art. 80 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a80.u3.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50499,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a80_u3_p2_check", false) == true
+}
+# jdg.vat.a80.u4.p3 — `vat_a80_u4_p3`: Art. 80 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a80.u4.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50500,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a80_u4_p3_check", false) == true
+}
+# jdg.vat.a80.u5.p4 — `vat_a80_u5_p4`: Art. 80 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a80.u5.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50501,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a80_u5_p4_check", false) == true
+}
+# jdg.vat.a81.u1.p1 — `vat_a81_u1_p1`: Art. 81 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a81.u1.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50502,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a81_u1_p1_check", false) == true
+}
+# jdg.vat.a81.u2.p2 — `vat_a81_u2_p2`: Art. 81 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a81.u2.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50503,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a81_u2_p2_check", false) == true
+}
+# jdg.vat.a81.u3.p3 — `vat_a81_u3_p3`: Art. 81 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a81.u3.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50504,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a81_u3_p3_check", false) == true
+}
+# jdg.vat.a81.u4.p4 — `vat_a81_u4_p4`: Art. 81 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a81.u4.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50505,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a81_u4_p4_check", false) == true
+}
+# jdg.vat.a82.u1.p2 — `vat_a82_u1_p2`: Art. 82 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a82.u1.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50506,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a82_u1_p2_check", false) == true
+}
+# jdg.vat.a82.u2.p3 — `vat_a82_u2_p3`: Art. 82 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a82.u2.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50507,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a82_u2_p3_check", false) == true
+}
+# jdg.vat.a82.u3.p4 — `vat_a82_u3_p4`: Art. 82 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a82.u3.p4",
+    "package": "jdg.micro.vat",
+    "priority": 50508,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a82_u3_p4_check", false) == true
+}
+# jdg.vat.a82.u5.p1 — `vat_a82_u5_p1`: Art. 82 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a82.u5.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50509,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a82_u5_p1_check", false) == true
+}
+# jdg.vat.a83.u1.p3 — `vat_a83_u1_p3`: Art. 83 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a83.u1.p3",
+    "package": "jdg.micro.vat",
+    "priority": 50510,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a83_u1_p3_check", false) == true
+}
+# jdg.vat.a83.u4.p1 — `vat_a83_u4_p1`: Art. 83 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a83.u4.p1",
+    "package": "jdg.micro.vat",
+    "priority": 50511,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a83_u4_p1_check", false) == true
+}
+# jdg.vat.a83.u5.p2 — `vat_a83_u5_p2`: Art. 83 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a83.u5.p2",
+    "package": "jdg.micro.vat",
+    "priority": 50512,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a83_u5_p2_check", false) == true
+}
+# jdg.vat.a96.r20 — `vat_a96_r20`: Art. 96 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.a96.r20",
+    "package": "jdg.micro.vat",
+    "priority": 50513,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 96 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] Art. 96: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_a96_r20_check", false) == true
+}
+# jdg.vat.ksef.r1 — `vat_ksef_r1`: przepis szczegółowy → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.ksef.r1",
+    "package": "jdg.micro.vat",
+    "priority": 50514,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] jdg.vat.ksef.r1 — punkt kontrolny OPA dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] jdg.vat.ksef.r1: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_ksef_r1_check", false) == true
+}
+# jdg.vat.marz.r1 — `vat_marz_r1`: przepis szczegółowy → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.marz.r1",
+    "package": "jdg.micro.vat",
+    "priority": 50515,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] jdg.vat.marz.r1 — punkt kontrolny OPA dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] jdg.vat.marz.r1: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_marz_r1_check", false) == true
+}
+# jdg.vat.marz.r10 — `vat_marz_r10`: przepis szczegółowy → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.marz.r10",
+    "package": "jdg.micro.vat",
+    "priority": 50516,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] jdg.vat.marz.r10 — punkt kontrolny OPA dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] jdg.vat.marz.r10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_marz_r10_check", false) == true
+}
+# jdg.vat.mpp.r1 — `vat_mpp_r1`: przepis szczegółowy → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.mpp.r1",
+    "package": "jdg.micro.vat",
+    "priority": 50517,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] jdg.vat.mpp.r1 — punkt kontrolny OPA dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] jdg.vat.mpp.r1: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_mpp_r1_check", false) == true
+}
+# jdg.vat.rr.r15 — `vat_rr_r15`: przepis szczegółowy → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vat.rr.r15",
+    "package": "jdg.micro.vat",
+    "priority": 50518,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] jdg.vat.rr.r15 — punkt kontrolny OPA dla JDG",
+    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_warnings": ["[MICRO] jdg.vat.rr.r15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vat_rr_r15_check", false) == true
+}
+# jdg.vida.*.r1 — `vida_*_r1`: przepis szczegółowy → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.vida.*.r1",
+    "package": "jdg.micro.general",
+    "priority": 50519,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] jdg.vida.*.r1 — punkt kontrolny OPA dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] jdg.vida.*.r1: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "vida_*_r1_check", false) == true
+}
+# jdg.zus.a18.u1.p1 — `zus_a18_u1_p1`: Art. 18 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a18.u1.p1",
+    "package": "jdg.micro.general",
+    "priority": 50520,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a18_u1_p1_check", false) == true
+}
+# jdg.zus.a19.u2.p2 — `zus_a19_u2_p2`: Art. 19 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a19.u2.p2",
+    "package": "jdg.micro.general",
+    "priority": 50521,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a19_u2_p2_check", false) == true
+}
+# jdg.zus.a19.u3.p3 — `zus_a19_u3_p3`: Art. 19 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a19.u3.p3",
+    "package": "jdg.micro.general",
+    "priority": 50522,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a19_u3_p3_check", false) == true
+}
+# jdg.zus.a19.u4.p4 — `zus_a19_u4_p4`: Art. 19 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a19.u4.p4",
+    "package": "jdg.micro.general",
+    "priority": 50523,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a19_u4_p4_check", false) == true
+}
+# jdg.zus.a19.u5.p1 — `zus_a19_u5_p1`: Art. 19 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a19.u5.p1",
+    "package": "jdg.micro.general",
+    "priority": 50524,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a19_u5_p1_check", false) == true
+}
+# jdg.zus.a20.u1.p2 — `zus_a20_u1_p2`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a20.u1.p2",
+    "package": "jdg.micro.general",
+    "priority": 50525,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a20_u1_p2_check", false) == true
+}
+# jdg.zus.a20.u2.p3 — `zus_a20_u2_p3`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a20.u2.p3",
+    "package": "jdg.micro.general",
+    "priority": 50526,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a20_u2_p3_check", false) == true
+}
+# jdg.zus.a20.u3.p4 — `zus_a20_u3_p4`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a20.u3.p4",
+    "package": "jdg.micro.general",
+    "priority": 50527,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a20_u3_p4_check", false) == true
+}
+# jdg.zus.a20.u4.p1 — `zus_a20_u4_p1`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a20.u4.p1",
+    "package": "jdg.micro.general",
+    "priority": 50528,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a20_u4_p1_check", false) == true
+}
+# jdg.zus.a21.u1.p3 — `zus_a21_u1_p3`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a21.u1.p3",
+    "package": "jdg.micro.general",
+    "priority": 50529,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a21_u1_p3_check", false) == true
+}
+# jdg.zus.a21.u2.p4 — `zus_a21_u2_p4`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a21.u2.p4",
+    "package": "jdg.micro.general",
+    "priority": 50530,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a21_u2_p4_check", false) == true
+}
+# jdg.zus.a21.u3.p1 — `zus_a21_u3_p1`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a21.u3.p1",
+    "package": "jdg.micro.general",
+    "priority": 50531,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a21_u3_p1_check", false) == true
+}
+# jdg.zus.a21.u5.p2 — `zus_a21_u5_p2`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a21.u5.p2",
+    "package": "jdg.micro.general",
+    "priority": 50532,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a21_u5_p2_check", false) == true
+}
+# jdg.zus.a22.u1.p4 — `zus_a22_u1_p4`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a22.u1.p4",
+    "package": "jdg.micro.general",
+    "priority": 50533,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a22_u1_p4_check", false) == true
+}
+# jdg.zus.a22.u2.p1 — `zus_a22_u2_p1`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a22.u2.p1",
+    "package": "jdg.micro.general",
+    "priority": 50534,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a22_u2_p1_check", false) == true
+}
+# jdg.zus.a22.u4.p2 — `zus_a22_u4_p2`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a22.u4.p2",
+    "package": "jdg.micro.general",
+    "priority": 50535,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a22_u4_p2_check", false) == true
+}
+# jdg.zus.a22.u5.p3 — `zus_a22_u5_p3`: Art. 22 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a22.u5.p3",
+    "package": "jdg.micro.general",
+    "priority": 50536,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a22_u5_p3_check", false) == true
+}
+# jdg.zus.a23.u1.p1 — `zus_a23_u1_p1`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a23.u1.p1",
+    "package": "jdg.micro.general",
+    "priority": 50537,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a23_u1_p1_check", false) == true
+}
+# jdg.zus.a23.u3.p2 — `zus_a23_u3_p2`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a23.u3.p2",
+    "package": "jdg.micro.general",
+    "priority": 50538,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a23_u3_p2_check", false) == true
+}
+# jdg.zus.a23.u4.p3 — `zus_a23_u4_p3`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a23.u4.p3",
+    "package": "jdg.micro.general",
+    "priority": 50539,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a23_u4_p3_check", false) == true
+}
+# jdg.zus.a23.u5.p4 — `zus_a23_u5_p4`: Art. 23 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a23.u5.p4",
+    "package": "jdg.micro.general",
+    "priority": 50540,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a23_u5_p4_check", false) == true
+}
+# jdg.zus.a24.u2.p2 — `zus_a24_u2_p2`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a24.u2.p2",
+    "package": "jdg.micro.general",
+    "priority": 50541,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a24_u2_p2_check", false) == true
+}
+# jdg.zus.a24.u3.p3 — `zus_a24_u3_p3`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a24.u3.p3",
+    "package": "jdg.micro.general",
+    "priority": 50542,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a24_u3_p3_check", false) == true
+}
+# jdg.zus.a24.u4.p4 — `zus_a24_u4_p4`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a24.u4.p4",
+    "package": "jdg.micro.general",
+    "priority": 50543,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a24_u4_p4_check", false) == true
+}
+# jdg.zus.a24.u5.p1 — `zus_a24_u5_p1`: Art. 24 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a24.u5.p1",
+    "package": "jdg.micro.general",
+    "priority": 50544,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a24_u5_p1_check", false) == true
+}
+# jdg.zus.a25.u1.p2 — `zus_a25_u1_p2`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a25.u1.p2",
+    "package": "jdg.micro.general",
+    "priority": 50545,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a25_u1_p2_check", false) == true
+}
+# jdg.zus.a25.u2.p3 — `zus_a25_u2_p3`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a25.u2.p3",
+    "package": "jdg.micro.general",
+    "priority": 50546,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a25_u2_p3_check", false) == true
+}
+# jdg.zus.a25.u3.p4 — `zus_a25_u3_p4`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a25.u3.p4",
+    "package": "jdg.micro.general",
+    "priority": 50547,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a25_u3_p4_check", false) == true
+}
+# jdg.zus.a25.u4.p1 — `zus_a25_u4_p1`: Art. 25 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a25.u4.p1",
+    "package": "jdg.micro.general",
+    "priority": 50548,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a25_u4_p1_check", false) == true
+}
+# jdg.zus.a26.u1.p3 — `zus_a26_u1_p3`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a26.u1.p3",
+    "package": "jdg.micro.general",
+    "priority": 50549,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a26_u1_p3_check", false) == true
+}
+# jdg.zus.a26.u2.p4 — `zus_a26_u2_p4`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a26.u2.p4",
+    "package": "jdg.micro.general",
+    "priority": 50550,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a26_u2_p4_check", false) == true
+}
+# jdg.zus.a26.u3.p1 — `zus_a26_u3_p1`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a26.u3.p1",
+    "package": "jdg.micro.general",
+    "priority": 50551,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a26_u3_p1_check", false) == true
+}
+# jdg.zus.a26.u5.p2 — `zus_a26_u5_p2`: Art. 26 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a26.u5.p2",
+    "package": "jdg.micro.general",
+    "priority": 50552,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a26_u5_p2_check", false) == true
+}
+# jdg.zus.a27.u1.p4 — `zus_a27_u1_p4`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a27.u1.p4",
+    "package": "jdg.micro.general",
+    "priority": 50553,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a27_u1_p4_check", false) == true
+}
+# jdg.zus.a27.u2.p1 — `zus_a27_u2_p1`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a27.u2.p1",
+    "package": "jdg.micro.general",
+    "priority": 50554,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a27_u2_p1_check", false) == true
+}
+# jdg.zus.a27.u4.p2 — `zus_a27_u4_p2`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a27.u4.p2",
+    "package": "jdg.micro.general",
+    "priority": 50555,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a27_u4_p2_check", false) == true
+}
+# jdg.zus.a27.u5.p3 — `zus_a27_u5_p3`: Art. 27 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a27.u5.p3",
+    "package": "jdg.micro.general",
+    "priority": 50556,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a27_u5_p3_check", false) == true
+}
+# jdg.zus.a28.u1.p1 — `zus_a28_u1_p1`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a28.u1.p1",
+    "package": "jdg.micro.general",
+    "priority": 50557,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a28_u1_p1_check", false) == true
+}
+# jdg.zus.a28.u3.p2 — `zus_a28_u3_p2`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a28.u3.p2",
+    "package": "jdg.micro.general",
+    "priority": 50558,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a28_u3_p2_check", false) == true
+}
+# jdg.zus.a28.u4.p3 — `zus_a28_u4_p3`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a28.u4.p3",
+    "package": "jdg.micro.general",
+    "priority": 50559,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a28_u4_p3_check", false) == true
+}
+# jdg.zus.a28.u5.p4 — `zus_a28_u5_p4`: Art. 28 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a28.u5.p4",
+    "package": "jdg.micro.general",
+    "priority": 50560,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a28_u5_p4_check", false) == true
+}
+# jdg.zus.a29.u2.p2 — `zus_a29_u2_p2`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a29.u2.p2",
+    "package": "jdg.micro.general",
+    "priority": 50561,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a29_u2_p2_check", false) == true
+}
+# jdg.zus.a29.u3.p3 — `zus_a29_u3_p3`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a29.u3.p3",
+    "package": "jdg.micro.general",
+    "priority": 50562,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a29_u3_p3_check", false) == true
+}
+# jdg.zus.a29.u4.p4 — `zus_a29_u4_p4`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a29.u4.p4",
+    "package": "jdg.micro.general",
+    "priority": 50563,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a29_u4_p4_check", false) == true
+}
+# jdg.zus.a29.u5.p1 — `zus_a29_u5_p1`: Art. 29 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a29.u5.p1",
+    "package": "jdg.micro.general",
+    "priority": 50564,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a29_u5_p1_check", false) == true
+}
+# jdg.zus.a30.u1.p2 — `zus_a30_u1_p2`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a30.u1.p2",
+    "package": "jdg.micro.general",
+    "priority": 50565,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a30_u1_p2_check", false) == true
+}
+# jdg.zus.a30.u2.p3 — `zus_a30_u2_p3`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a30.u2.p3",
+    "package": "jdg.micro.general",
+    "priority": 50566,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a30_u2_p3_check", false) == true
+}
+# jdg.zus.a30.u3.p4 — `zus_a30_u3_p4`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a30.u3.p4",
+    "package": "jdg.micro.general",
+    "priority": 50567,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a30_u3_p4_check", false) == true
+}
+# jdg.zus.a30.u4.p1 — `zus_a30_u4_p1`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a30.u4.p1",
+    "package": "jdg.micro.general",
+    "priority": 50568,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a30_u4_p1_check", false) == true
+}
+# jdg.zus.a31.u1.p3 — `zus_a31_u1_p3`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a31.u1.p3",
+    "package": "jdg.micro.general",
+    "priority": 50569,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a31_u1_p3_check", false) == true
+}
+# jdg.zus.a31.u2.p4 — `zus_a31_u2_p4`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a31.u2.p4",
+    "package": "jdg.micro.general",
+    "priority": 50570,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a31_u2_p4_check", false) == true
+}
+# jdg.zus.a31.u3.p1 — `zus_a31_u3_p1`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a31.u3.p1",
+    "package": "jdg.micro.general",
+    "priority": 50571,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a31_u3_p1_check", false) == true
+}
+# jdg.zus.a31.u5.p2 — `zus_a31_u5_p2`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a31.u5.p2",
+    "package": "jdg.micro.general",
+    "priority": 50572,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a31_u5_p2_check", false) == true
+}
+# jdg.zus.a32.u1.p4 — `zus_a32_u1_p4`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a32.u1.p4",
+    "package": "jdg.micro.general",
+    "priority": 50573,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a32_u1_p4_check", false) == true
+}
+# jdg.zus.a32.u2.p1 — `zus_a32_u2_p1`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a32.u2.p1",
+    "package": "jdg.micro.general",
+    "priority": 50574,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a32_u2_p1_check", false) == true
+}
+# jdg.zus.a32.u4.p2 — `zus_a32_u4_p2`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a32.u4.p2",
+    "package": "jdg.micro.general",
+    "priority": 50575,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a32_u4_p2_check", false) == true
+}
+# jdg.zus.a32.u5.p3 — `zus_a32_u5_p3`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a32.u5.p3",
+    "package": "jdg.micro.general",
+    "priority": 50576,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a32_u5_p3_check", false) == true
+}
+# jdg.zus.a33.u1.p1 — `zus_a33_u1_p1`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a33.u1.p1",
+    "package": "jdg.micro.general",
+    "priority": 50577,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a33_u1_p1_check", false) == true
+}
+# jdg.zus.a33.u3.p2 — `zus_a33_u3_p2`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a33.u3.p2",
+    "package": "jdg.micro.general",
+    "priority": 50578,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a33_u3_p2_check", false) == true
+}
+# jdg.zus.a33.u4.p3 — `zus_a33_u4_p3`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a33.u4.p3",
+    "package": "jdg.micro.general",
+    "priority": 50579,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a33_u4_p3_check", false) == true
+}
+# jdg.zus.a33.u5.p4 — `zus_a33_u5_p4`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a33.u5.p4",
+    "package": "jdg.micro.general",
+    "priority": 50580,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a33_u5_p4_check", false) == true
+}
+# jdg.zus.a34.u2.p2 — `zus_a34_u2_p2`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a34.u2.p2",
+    "package": "jdg.micro.general",
+    "priority": 50581,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a34_u2_p2_check", false) == true
+}
+# jdg.zus.a34.u3.p3 — `zus_a34_u3_p3`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a34.u3.p3",
+    "package": "jdg.micro.general",
+    "priority": 50582,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a34_u3_p3_check", false) == true
+}
+# jdg.zus.a34.u4.p4 — `zus_a34_u4_p4`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a34.u4.p4",
+    "package": "jdg.micro.general",
+    "priority": 50583,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a34_u4_p4_check", false) == true
+}
+# jdg.zus.a34.u5.p1 — `zus_a34_u5_p1`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a34.u5.p1",
+    "package": "jdg.micro.general",
+    "priority": 50584,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a34_u5_p1_check", false) == true
+}
+# jdg.zus.a35.u1.p2 — `zus_a35_u1_p2`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a35.u1.p2",
+    "package": "jdg.micro.general",
+    "priority": 50585,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a35_u1_p2_check", false) == true
+}
+# jdg.zus.a35.u2.p3 — `zus_a35_u2_p3`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a35.u2.p3",
+    "package": "jdg.micro.general",
+    "priority": 50586,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a35_u2_p3_check", false) == true
+}
+# jdg.zus.a35.u3.p4 — `zus_a35_u3_p4`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a35.u3.p4",
+    "package": "jdg.micro.general",
+    "priority": 50587,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a35_u3_p4_check", false) == true
+}
+# jdg.zus.a35.u4.p1 — `zus_a35_u4_p1`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a35.u4.p1",
+    "package": "jdg.micro.general",
+    "priority": 50588,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a35_u4_p1_check", false) == true
+}
+# jdg.zus.a36.u1.p3 — `zus_a36_u1_p3`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a36.u1.p3",
+    "package": "jdg.micro.general",
+    "priority": 50589,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a36_u1_p3_check", false) == true
+}
+# jdg.zus.a36.u2.p4 — `zus_a36_u2_p4`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a36.u2.p4",
+    "package": "jdg.micro.general",
+    "priority": 50590,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a36_u2_p4_check", false) == true
+}
+# jdg.zus.a36.u3.p1 — `zus_a36_u3_p1`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a36.u3.p1",
+    "package": "jdg.micro.general",
+    "priority": 50591,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a36_u3_p1_check", false) == true
+}
+# jdg.zus.a36.u5.p2 — `zus_a36_u5_p2`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a36.u5.p2",
+    "package": "jdg.micro.general",
+    "priority": 50592,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a36_u5_p2_check", false) == true
+}
+# jdg.zus.a37.u1.p4 — `zus_a37_u1_p4`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a37.u1.p4",
+    "package": "jdg.micro.general",
+    "priority": 50593,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a37_u1_p4_check", false) == true
+}
+# jdg.zus.a37.u2.p1 — `zus_a37_u2_p1`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a37.u2.p1",
+    "package": "jdg.micro.general",
+    "priority": 50594,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a37_u2_p1_check", false) == true
+}
+# jdg.zus.a37.u4.p2 — `zus_a37_u4_p2`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a37.u4.p2",
+    "package": "jdg.micro.general",
+    "priority": 50595,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a37_u4_p2_check", false) == true
+}
+# jdg.zus.a37.u5.p3 — `zus_a37_u5_p3`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a37.u5.p3",
+    "package": "jdg.micro.general",
+    "priority": 50596,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a37_u5_p3_check", false) == true
+}
+# jdg.zus.a38.u1.p1 — `zus_a38_u1_p1`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a38.u1.p1",
+    "package": "jdg.micro.general",
+    "priority": 50597,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a38_u1_p1_check", false) == true
+}
+# jdg.zus.a38.u2.p2 — `zus_a38_u2_p2`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a38.u2.p2",
+    "package": "jdg.micro.general",
+    "priority": 50598,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a38_u2_p2_check", false) == true
+}
+# jdg.zus.a38.u3.p2 — `zus_a38_u3_p2`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a38.u3.p2",
+    "package": "jdg.micro.general",
+    "priority": 50599,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a38_u3_p2_check", false) == true
+}
+# jdg.zus.a38.u4.p3 — `zus_a38_u4_p3`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a38.u4.p3",
+    "package": "jdg.micro.general",
+    "priority": 50600,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a38_u4_p3_check", false) == true
+}
+# jdg.zus.a38.u5.p4 — `zus_a38_u5_p4`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a38.u5.p4",
+    "package": "jdg.micro.general",
+    "priority": 50601,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a38_u5_p4_check", false) == true
+}
+# jdg.zus.a39.u1.p2 — `zus_a39_u1_p2`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a39.u1.p2",
+    "package": "jdg.micro.general",
+    "priority": 50602,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a39_u1_p2_check", false) == true
+}
+# jdg.zus.a39.u2.p2 — `zus_a39_u2_p2`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a39.u2.p2",
+    "package": "jdg.micro.general",
+    "priority": 50603,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a39_u2_p2_check", false) == true
+}
+# jdg.zus.a39.u3.p3 — `zus_a39_u3_p3`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a39.u3.p3",
+    "package": "jdg.micro.general",
+    "priority": 50604,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a39_u3_p3_check", false) == true
+}
+# jdg.zus.a39.u4.p4 — `zus_a39_u4_p4`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a39.u4.p4",
+    "package": "jdg.micro.general",
+    "priority": 50605,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a39_u4_p4_check", false) == true
+}
+# jdg.zus.a39.u5.p1 — `zus_a39_u5_p1`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a39.u5.p1",
+    "package": "jdg.micro.general",
+    "priority": 50606,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a39_u5_p1_check", false) == true
+}
+# jdg.zus.a40.u1.p2 — `zus_a40_u1_p2`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a40.u1.p2",
+    "package": "jdg.micro.general",
+    "priority": 50607,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a40_u1_p2_check", false) == true
+}
+# jdg.zus.a40.u2.p3 — `zus_a40_u2_p3`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a40.u2.p3",
+    "package": "jdg.micro.general",
+    "priority": 50608,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a40_u2_p3_check", false) == true
+}
+# jdg.zus.a40.u3.p4 — `zus_a40_u3_p4`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a40.u3.p4",
+    "package": "jdg.micro.general",
+    "priority": 50609,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a40_u3_p4_check", false) == true
+}
+# jdg.zus.a40.u4.p1 — `zus_a40_u4_p1`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a40.u4.p1",
+    "package": "jdg.micro.general",
+    "priority": 50610,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a40_u4_p1_check", false) == true
+}
+# jdg.zus.a40.u5.p2 — `zus_a40_u5_p2`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a40.u5.p2",
+    "package": "jdg.micro.general",
+    "priority": 50611,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a40_u5_p2_check", false) == true
+}
+# jdg.zus.a41.u1.p3 — `zus_a41_u1_p3`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a41.u1.p3",
+    "package": "jdg.micro.general",
+    "priority": 50612,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a41_u1_p3_check", false) == true
+}
+# jdg.zus.a41.u2.p4 — `zus_a41_u2_p4`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a41.u2.p4",
+    "package": "jdg.micro.general",
+    "priority": 50613,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a41_u2_p4_check", false) == true
+}
+# jdg.zus.a41.u3.p1 — `zus_a41_u3_p1`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a41.u3.p1",
+    "package": "jdg.micro.general",
+    "priority": 50614,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a41_u3_p1_check", false) == true
+}
+# jdg.zus.a41.u4.p2 — `zus_a41_u4_p2`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a41.u4.p2",
+    "package": "jdg.micro.general",
+    "priority": 50615,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a41_u4_p2_check", false) == true
+}
+# jdg.zus.a41.u5.p2 — `zus_a41_u5_p2`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a41.u5.p2",
+    "package": "jdg.micro.general",
+    "priority": 50616,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a41_u5_p2_check", false) == true
+}
+# jdg.zus.a42.u1.p4 — `zus_a42_u1_p4`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a42.u1.p4",
+    "package": "jdg.micro.general",
+    "priority": 50617,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a42_u1_p4_check", false) == true
+}
+# jdg.zus.a42.u2.p1 — `zus_a42_u2_p1`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a42.u2.p1",
+    "package": "jdg.micro.general",
+    "priority": 50618,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a42_u2_p1_check", false) == true
+}
+# jdg.zus.a42.u3.p2 — `zus_a42_u3_p2`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a42.u3.p2",
+    "package": "jdg.micro.general",
+    "priority": 50619,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a42_u3_p2_check", false) == true
+}
+# jdg.zus.a42.u4.p2 — `zus_a42_u4_p2`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a42.u4.p2",
+    "package": "jdg.micro.general",
+    "priority": 50620,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a42_u4_p2_check", false) == true
+}
+# jdg.zus.a42.u5.p3 — `zus_a42_u5_p3`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a42.u5.p3",
+    "package": "jdg.micro.general",
+    "priority": 50621,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a42_u5_p3_check", false) == true
+}
+# jdg.zus.a43.u1.p1 — `zus_a43_u1_p1`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a43.u1.p1",
+    "package": "jdg.micro.general",
+    "priority": 50622,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a43_u1_p1_check", false) == true
+}
+# jdg.zus.a43.u2.p2 — `zus_a43_u2_p2`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a43.u2.p2",
+    "package": "jdg.micro.general",
+    "priority": 50623,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a43_u2_p2_check", false) == true
+}
+# jdg.zus.a43.u3.p2 — `zus_a43_u3_p2`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a43.u3.p2",
+    "package": "jdg.micro.general",
+    "priority": 50624,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a43_u3_p2_check", false) == true
+}
+# jdg.zus.a43.u4.p3 — `zus_a43_u4_p3`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a43.u4.p3",
+    "package": "jdg.micro.general",
+    "priority": 50625,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a43_u4_p3_check", false) == true
+}
+# jdg.zus.a43.u5.p4 — `zus_a43_u5_p4`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a43.u5.p4",
+    "package": "jdg.micro.general",
+    "priority": 50626,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a43_u5_p4_check", false) == true
+}
+# jdg.zus.a44.u1.p2 — `zus_a44_u1_p2`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a44.u1.p2",
+    "package": "jdg.micro.general",
+    "priority": 50627,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a44_u1_p2_check", false) == true
+}
+# jdg.zus.a44.u2.p2 — `zus_a44_u2_p2`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a44.u2.p2",
+    "package": "jdg.micro.general",
+    "priority": 50628,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a44_u2_p2_check", false) == true
+}
+# jdg.zus.a44.u3.p3 — `zus_a44_u3_p3`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a44.u3.p3",
+    "package": "jdg.micro.general",
+    "priority": 50629,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a44_u3_p3_check", false) == true
+}
+# jdg.zus.a44.u4.p4 — `zus_a44_u4_p4`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a44.u4.p4",
+    "package": "jdg.micro.general",
+    "priority": 50630,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a44_u4_p4_check", false) == true
+}
+# jdg.zus.a44.u5.p1 — `zus_a44_u5_p1`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a44.u5.p1",
+    "package": "jdg.micro.general",
+    "priority": 50631,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a44_u5_p1_check", false) == true
+}
+# jdg.zus.a45.u1.p2 — `zus_a45_u1_p2`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a45.u1.p2",
+    "package": "jdg.micro.general",
+    "priority": 50632,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a45_u1_p2_check", false) == true
+}
+# jdg.zus.a45.u2.p3 — `zus_a45_u2_p3`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a45.u2.p3",
+    "package": "jdg.micro.general",
+    "priority": 50633,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a45_u2_p3_check", false) == true
+}
+# jdg.zus.a45.u3.p4 — `zus_a45_u3_p4`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a45.u3.p4",
+    "package": "jdg.micro.general",
+    "priority": 50634,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a45_u3_p4_check", false) == true
+}
+# jdg.zus.a45.u4.p1 — `zus_a45_u4_p1`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a45.u4.p1",
+    "package": "jdg.micro.general",
+    "priority": 50635,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a45_u4_p1_check", false) == true
+}
+# jdg.zus.a45.u5.p2 — `zus_a45_u5_p2`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a45.u5.p2",
+    "package": "jdg.micro.general",
+    "priority": 50636,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a45_u5_p2_check", false) == true
+}
+# jdg.zus.a46.u1.p3 — `zus_a46_u1_p3`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a46.u1.p3",
+    "package": "jdg.micro.general",
+    "priority": 50637,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a46_u1_p3_check", false) == true
+}
+# jdg.zus.a46.u2.p4 — `zus_a46_u2_p4`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a46.u2.p4",
+    "package": "jdg.micro.general",
+    "priority": 50638,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a46_u2_p4_check", false) == true
+}
+# jdg.zus.a46.u3.p1 — `zus_a46_u3_p1`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a46.u3.p1",
+    "package": "jdg.micro.general",
+    "priority": 50639,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a46_u3_p1_check", false) == true
+}
+# jdg.zus.a46.u4.p2 — `zus_a46_u4_p2`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a46.u4.p2",
+    "package": "jdg.micro.general",
+    "priority": 50640,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a46_u4_p2_check", false) == true
+}
+# jdg.zus.a47.u1.p4 — `zus_a47_u1_p4`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a47.u1.p4",
+    "package": "jdg.micro.general",
+    "priority": 50641,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a47_u1_p4_check", false) == true
+}
+# jdg.zus.a47.u2.p1 — `zus_a47_u2_p1`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a47.u2.p1",
+    "package": "jdg.micro.general",
+    "priority": 50642,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a47_u2_p1_check", false) == true
+}
+# jdg.zus.a47.u3.p2 — `zus_a47_u3_p2`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a47.u3.p2",
+    "package": "jdg.micro.general",
+    "priority": 50643,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a47_u3_p2_check", false) == true
+}
+# jdg.zus.a47.u5.p3 — `zus_a47_u5_p3`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a47.u5.p3",
+    "package": "jdg.micro.general",
+    "priority": 50644,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a47_u5_p3_check", false) == true
+}
+# jdg.zus.a48.u1.p1 — `zus_a48_u1_p1`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a48.u1.p1",
+    "package": "jdg.micro.general",
+    "priority": 50645,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a48_u1_p1_check", false) == true
+}
+# jdg.zus.a48.u2.p2 — `zus_a48_u2_p2`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a48.u2.p2",
+    "package": "jdg.micro.general",
+    "priority": 50646,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a48_u2_p2_check", false) == true
+}
+# jdg.zus.a48.u4.p3 — `zus_a48_u4_p3`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a48.u4.p3",
+    "package": "jdg.micro.general",
+    "priority": 50647,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a48_u4_p3_check", false) == true
+}
+# jdg.zus.a48.u5.p4 — `zus_a48_u5_p4`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a48.u5.p4",
+    "package": "jdg.micro.general",
+    "priority": 50648,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a48_u5_p4_check", false) == true
+}
+# jdg.zus.a49.u1.p2 — `zus_a49_u1_p2`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a49.u1.p2",
+    "package": "jdg.micro.general",
+    "priority": 50649,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a49_u1_p2_check", false) == true
+}
+# jdg.zus.a49.u3.p3 — `zus_a49_u3_p3`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a49.u3.p3",
+    "package": "jdg.micro.general",
+    "priority": 50650,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a49_u3_p3_check", false) == true
+}
+# jdg.zus.a49.u4.p4 — `zus_a49_u4_p4`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a49.u4.p4",
+    "package": "jdg.micro.general",
+    "priority": 50651,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a49_u4_p4_check", false) == true
+}
+# jdg.zus.a49.u5.p1 — `zus_a49_u5_p1`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a49.u5.p1",
+    "package": "jdg.micro.general",
+    "priority": 50652,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a49_u5_p1_check", false) == true
+}
+# jdg.zus.a50.u2.p3 — `zus_a50_u2_p3`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a50.u2.p3",
+    "package": "jdg.micro.general",
+    "priority": 50653,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a50_u2_p3_check", false) == true
+}
+# jdg.zus.a50.u3.p4 — `zus_a50_u3_p4`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a50.u3.p4",
+    "package": "jdg.micro.general",
+    "priority": 50654,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a50_u3_p4_check", false) == true
+}
+# jdg.zus.a50.u4.p1 — `zus_a50_u4_p1`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a50.u4.p1",
+    "package": "jdg.micro.general",
+    "priority": 50655,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a50_u4_p1_check", false) == true
+}
+# jdg.zus.a50.u5.p2 — `zus_a50_u5_p2`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a50.u5.p2",
+    "package": "jdg.micro.general",
+    "priority": 50656,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a50_u5_p2_check", false) == true
+}
+# jdg.zus.a51.u1.p3 — `zus_a51_u1_p3`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a51.u1.p3",
+    "package": "jdg.micro.general",
+    "priority": 50657,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a51_u1_p3_check", false) == true
+}
+# jdg.zus.a51.u2.p4 — `zus_a51_u2_p4`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a51.u2.p4",
+    "package": "jdg.micro.general",
+    "priority": 50658,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a51_u2_p4_check", false) == true
+}
+# jdg.zus.a51.u3.p1 — `zus_a51_u3_p1`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a51.u3.p1",
+    "package": "jdg.micro.general",
+    "priority": 50659,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a51_u3_p1_check", false) == true
+}
+# jdg.zus.a51.u4.p2 — `zus_a51_u4_p2`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a51.u4.p2",
+    "package": "jdg.micro.general",
+    "priority": 50660,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a51_u4_p2_check", false) == true
+}
+# jdg.zus.a52.u1.p4 — `zus_a52_u1_p4`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a52.u1.p4",
+    "package": "jdg.micro.general",
+    "priority": 50661,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a52_u1_p4_check", false) == true
+}
+# jdg.zus.a52.u2.p1 — `zus_a52_u2_p1`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a52.u2.p1",
+    "package": "jdg.micro.general",
+    "priority": 50662,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a52_u2_p1_check", false) == true
+}
+# jdg.zus.a52.u3.p2 — `zus_a52_u3_p2`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a52.u3.p2",
+    "package": "jdg.micro.general",
+    "priority": 50663,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a52_u3_p2_check", false) == true
+}
+# jdg.zus.a52.u5.p3 — `zus_a52_u5_p3`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a52.u5.p3",
+    "package": "jdg.micro.general",
+    "priority": 50664,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a52_u5_p3_check", false) == true
+}
+# jdg.zus.a53.u1.p1 — `zus_a53_u1_p1`: Art. 53 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a53.u1.p1",
+    "package": "jdg.micro.general",
+    "priority": 50665,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 53 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 53: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a53_u1_p1_check", false) == true
+}
+# jdg.zus.a53.u2.p2 — `zus_a53_u2_p2`: Art. 53 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a53.u2.p2",
+    "package": "jdg.micro.general",
+    "priority": 50666,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 53 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 53: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a53_u2_p2_check", false) == true
+}
+# jdg.zus.a53.u4.p3 — `zus_a53_u4_p3`: Art. 53 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a53.u4.p3",
+    "package": "jdg.micro.general",
+    "priority": 50667,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 53 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 53: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a53_u4_p3_check", false) == true
+}
+# jdg.zus.a53.u5.p4 — `zus_a53_u5_p4`: Art. 53 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a53.u5.p4",
+    "package": "jdg.micro.general",
+    "priority": 50668,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 53 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 53: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a53_u5_p4_check", false) == true
+}
+# jdg.zus.a54.u1.p2 — `zus_a54_u1_p2`: Art. 54 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a54.u1.p2",
+    "package": "jdg.micro.general",
+    "priority": 50669,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 54 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 54: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a54_u1_p2_check", false) == true
+}
+# jdg.zus.a54.u3.p3 — `zus_a54_u3_p3`: Art. 54 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a54.u3.p3",
+    "package": "jdg.micro.general",
+    "priority": 50670,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 54 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 54: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a54_u3_p3_check", false) == true
+}
+# jdg.zus.a54.u4.p4 — `zus_a54_u4_p4`: Art. 54 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a54.u4.p4",
+    "package": "jdg.micro.general",
+    "priority": 50671,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 54 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 54: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a54_u4_p4_check", false) == true
+}
+# jdg.zus.a54.u5.p1 — `zus_a54_u5_p1`: Art. 54 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a54.u5.p1",
+    "package": "jdg.micro.general",
+    "priority": 50672,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 54 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 54: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a54_u5_p1_check", false) == true
+}
+# jdg.zus.a55.u2.p3 — `zus_a55_u2_p3`: Art. 55 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a55.u2.p3",
+    "package": "jdg.micro.general",
+    "priority": 50673,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 55 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 55: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a55_u2_p3_check", false) == true
+}
+# jdg.zus.a55.u3.p4 — `zus_a55_u3_p4`: Art. 55 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a55.u3.p4",
+    "package": "jdg.micro.general",
+    "priority": 50674,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 55 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 55: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a55_u3_p4_check", false) == true
+}
+# jdg.zus.a55.u4.p1 — `zus_a55_u4_p1`: Art. 55 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a55.u4.p1",
+    "package": "jdg.micro.general",
+    "priority": 50675,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 55 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 55: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a55_u4_p1_check", false) == true
+}
+# jdg.zus.a55.u5.p2 — `zus_a55_u5_p2`: Art. 55 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a55.u5.p2",
+    "package": "jdg.micro.general",
+    "priority": 50676,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 55 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 55: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a55_u5_p2_check", false) == true
+}
+# jdg.zus.a9.r1a — `zus_a9_r1a`: Art. 9 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.zus.a9.r1a",
+    "package": "jdg.micro.general",
+    "priority": 50677,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 9 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Przepisy prawa polskiego",
+    "_warnings": ["[MICRO] Art. 9: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "zus_a9_r1a_check", false) == true
+}

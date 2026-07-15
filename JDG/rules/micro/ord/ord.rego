@@ -9168,3 +9168,2845 @@ else := {
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ord", false) == true
 }
+
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  PLAN OPA/50 — KLASA B — Wygenerowane masowo (105 reguł)       ║
+# ║  Priorytety: 50000-50104                                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.ord.a100.u1.p1 — `ord_a100_u1_p1`: Art. 100 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a100.u1.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50000,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 100 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 100: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a100_u1_p1_check", false) == true
+}
+# jdg.ord.a100.u2.p2 — `ord_a100_u2_p2`: Art. 100 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a100.u2.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50001,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 100 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 100: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a100_u2_p2_check", false) == true
+}
+# jdg.ord.a101.u1.p2 — `ord_a101_u1_p2`: Art. 101 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a101.u1.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50002,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a101_u1_p2_check", false) == true
+}
+# jdg.ord.a101.u3.p3 — `ord_a101_u3_p3`: Art. 101 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a101.u3.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50003,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a101_u3_p3_check", false) == true
+}
+# jdg.ord.a101.u4.p4 — `ord_a101_u4_p4`: Art. 101 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a101.u4.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50004,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a101_u4_p4_check", false) == true
+}
+# jdg.ord.a101.u5.p1 — `ord_a101_u5_p1`: Art. 101 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a101.u5.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50005,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a101_u5_p1_check", false) == true
+}
+# jdg.ord.a102.u2.p3 — `ord_a102_u2_p3`: Art. 102 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a102.u2.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50006,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 102 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 102: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a102_u2_p3_check", false) == true
+}
+# jdg.ord.a102.u3.p4 — `ord_a102_u3_p4`: Art. 102 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a102.u3.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50007,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 102 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 102: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a102_u3_p4_check", false) == true
+}
+# jdg.ord.a102.u4.p1 — `ord_a102_u4_p1`: Art. 102 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a102.u4.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50008,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 102 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 102: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a102_u4_p1_check", false) == true
+}
+# jdg.ord.a102.u5.p2 — `ord_a102_u5_p2`: Art. 102 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a102.u5.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50009,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 102 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 102: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a102_u5_p2_check", false) == true
+}
+# jdg.ord.a103.u1.p3 — `ord_a103_u1_p3`: Art. 103 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a103.u1.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50010,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 103 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 103: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a103_u1_p3_check", false) == true
+}
+# jdg.ord.a103.u2.p4 — `ord_a103_u2_p4`: Art. 103 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a103.u2.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50011,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 103 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 103: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a103_u2_p4_check", false) == true
+}
+# jdg.ord.a103.u3.p1 — `ord_a103_u3_p1`: Art. 103 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a103.u3.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50012,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 103 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 103: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a103_u3_p1_check", false) == true
+}
+# jdg.ord.a103.u4.p2 — `ord_a103_u4_p2`: Art. 103 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a103.u4.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50013,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 103 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 103: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a103_u4_p2_check", false) == true
+}
+# jdg.ord.a104.u1.p4 — `ord_a104_u1_p4`: Art. 104 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a104.u1.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50014,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 104 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 104: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a104_u1_p4_check", false) == true
+}
+# jdg.ord.a104.u2.p1 — `ord_a104_u2_p1`: Art. 104 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a104.u2.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50015,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 104 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 104: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a104_u2_p1_check", false) == true
+}
+# jdg.ord.a104.u3.p2 — `ord_a104_u3_p2`: Art. 104 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a104.u3.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50016,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 104 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 104: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a104_u3_p2_check", false) == true
+}
+# jdg.ord.a104.u5.p3 — `ord_a104_u5_p3`: Art. 104 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a104.u5.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50017,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 104 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 104: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a104_u5_p3_check", false) == true
+}
+# jdg.ord.a105.u1.p1 — `ord_a105_u1_p1`: Art. 105 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a105.u1.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50018,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 105 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 105: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a105_u1_p1_check", false) == true
+}
+# jdg.ord.a105.u2.p2 — `ord_a105_u2_p2`: Art. 105 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a105.u2.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50019,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 105 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 105: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a105_u2_p2_check", false) == true
+}
+# jdg.ord.a105.u4.p3 — `ord_a105_u4_p3`: Art. 105 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a105.u4.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50020,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 105 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 105: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a105_u4_p3_check", false) == true
+}
+# jdg.ord.a105.u5.p4 — `ord_a105_u5_p4`: Art. 105 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a105.u5.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50021,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 105 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 105: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a105_u5_p4_check", false) == true
+}
+# jdg.ord.a106.u1.p2 — `ord_a106_u1_p2`: Art. 106 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a106.u1.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50022,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 106 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 106: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a106_u1_p2_check", false) == true
+}
+# jdg.ord.a106.u3.p3 — `ord_a106_u3_p3`: Art. 106 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a106.u3.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50023,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 106 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 106: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a106_u3_p3_check", false) == true
+}
+# jdg.ord.a106.u4.p4 — `ord_a106_u4_p4`: Art. 106 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a106.u4.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50024,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 106 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 106: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a106_u4_p4_check", false) == true
+}
+# jdg.ord.a106.u5.p1 — `ord_a106_u5_p1`: Art. 106 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a106.u5.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50025,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 106 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 106: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a106_u5_p1_check", false) == true
+}
+# jdg.ord.a107.u2.p3 — `ord_a107_u2_p3`: Art. 107 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a107.u2.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50026,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 107 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 107: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a107_u2_p3_check", false) == true
+}
+# jdg.ord.a107.u3.p4 — `ord_a107_u3_p4`: Art. 107 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a107.u3.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50027,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 107 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 107: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a107_u3_p4_check", false) == true
+}
+# jdg.ord.a107.u4.p1 — `ord_a107_u4_p1`: Art. 107 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a107.u4.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50028,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 107 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 107: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a107_u4_p1_check", false) == true
+}
+# jdg.ord.a107.u5.p2 — `ord_a107_u5_p2`: Art. 107 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a107.u5.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50029,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 107 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 107: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a107_u5_p2_check", false) == true
+}
+# jdg.ord.a108.u1.p3 — `ord_a108_u1_p3`: Art. 108 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a108.u1.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50030,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 108 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 108: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a108_u1_p3_check", false) == true
+}
+# jdg.ord.a108.u2.p4 — `ord_a108_u2_p4`: Art. 108 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a108.u2.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50031,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 108 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 108: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a108_u2_p4_check", false) == true
+}
+# jdg.ord.a108.u3.p1 — `ord_a108_u3_p1`: Art. 108 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a108.u3.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50032,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 108 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 108: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a108_u3_p1_check", false) == true
+}
+# jdg.ord.a108.u4.p2 — `ord_a108_u4_p2`: Art. 108 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a108.u4.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50033,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 108 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 108: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a108_u4_p2_check", false) == true
+}
+# jdg.ord.a109.u1.p4 — `ord_a109_u1_p4`: Art. 109 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a109.u1.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50034,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a109_u1_p4_check", false) == true
+}
+# jdg.ord.a109.u2.p1 — `ord_a109_u2_p1`: Art. 109 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a109.u2.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50035,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a109_u2_p1_check", false) == true
+}
+# jdg.ord.a109.u3.p2 — `ord_a109_u3_p2`: Art. 109 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a109.u3.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50036,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a109_u3_p2_check", false) == true
+}
+# jdg.ord.a109.u5.p3 — `ord_a109_u5_p3`: Art. 109 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a109.u5.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50037,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a109_u5_p3_check", false) == true
+}
+# jdg.ord.a110.u1.p1 — `ord_a110_u1_p1`: Art. 110 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a110.u1.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50038,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 110 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 110: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a110_u1_p1_check", false) == true
+}
+# jdg.ord.a110.u2.p2 — `ord_a110_u2_p2`: Art. 110 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a110.u2.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50039,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 110 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 110: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a110_u2_p2_check", false) == true
+}
+# jdg.ord.a110.u4.p3 — `ord_a110_u4_p3`: Art. 110 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a110.u4.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50040,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 110 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 110: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a110_u4_p3_check", false) == true
+}
+# jdg.ord.a110.u5.p4 — `ord_a110_u5_p4`: Art. 110 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a110.u5.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50041,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 110 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 110: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a110_u5_p4_check", false) == true
+}
+# jdg.ord.a111.u1.p2 — `ord_a111_u1_p2`: Art. 111 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a111.u1.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50042,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 111 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 111: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a111_u1_p2_check", false) == true
+}
+# jdg.ord.a111.u3.p3 — `ord_a111_u3_p3`: Art. 111 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a111.u3.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50043,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 111 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 111: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a111_u3_p3_check", false) == true
+}
+# jdg.ord.a111.u4.p4 — `ord_a111_u4_p4`: Art. 111 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a111.u4.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50044,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 111 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 111: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a111_u4_p4_check", false) == true
+}
+# jdg.ord.a111.u5.p1 — `ord_a111_u5_p1`: Art. 111 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a111.u5.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50045,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 111 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 111: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a111_u5_p1_check", false) == true
+}
+# jdg.ord.a112.u2.p3 — `ord_a112_u2_p3`: Art. 112 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a112.u2.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50046,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 112 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 112: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a112_u2_p3_check", false) == true
+}
+# jdg.ord.a112.u3.p4 — `ord_a112_u3_p4`: Art. 112 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a112.u3.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50047,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 112 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 112: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a112_u3_p4_check", false) == true
+}
+# jdg.ord.a112.u4.p1 — `ord_a112_u4_p1`: Art. 112 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a112.u4.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50048,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 112 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 112: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a112_u4_p1_check", false) == true
+}
+# jdg.ord.a112.u5.p2 — `ord_a112_u5_p2`: Art. 112 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a112.u5.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50049,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 112 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 112: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a112_u5_p2_check", false) == true
+}
+# jdg.ord.a113.u1.p3 — `ord_a113_u1_p3`: Art. 113 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a113.u1.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50050,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 113 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 113: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a113_u1_p3_check", false) == true
+}
+# jdg.ord.a113.u2.p4 — `ord_a113_u2_p4`: Art. 113 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a113.u2.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50051,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 113 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 113: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a113_u2_p4_check", false) == true
+}
+# jdg.ord.a113.u3.p1 — `ord_a113_u3_p1`: Art. 113 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a113.u3.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50052,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 113 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 113: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a113_u3_p1_check", false) == true
+}
+# jdg.ord.a113.u4.p2 — `ord_a113_u4_p2`: Art. 113 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a113.u4.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50053,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 113 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 113: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a113_u4_p2_check", false) == true
+}
+# jdg.ord.a114.u1.p4 — `ord_a114_u1_p4`: Art. 114 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a114.u1.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50054,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 114 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 114: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a114_u1_p4_check", false) == true
+}
+# jdg.ord.a114.u2.p1 — `ord_a114_u2_p1`: Art. 114 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a114.u2.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50055,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 114 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 114: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a114_u2_p1_check", false) == true
+}
+# jdg.ord.a114.u3.p2 — `ord_a114_u3_p2`: Art. 114 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a114.u3.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50056,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 114 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 114: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a114_u3_p2_check", false) == true
+}
+# jdg.ord.a114.u5.p3 — `ord_a114_u5_p3`: Art. 114 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a114.u5.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50057,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 114 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 114: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a114_u5_p3_check", false) == true
+}
+# jdg.ord.a115.u1.p1 — `ord_a115_u1_p1`: Art. 115 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a115.u1.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50058,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 115 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 115: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a115_u1_p1_check", false) == true
+}
+# jdg.ord.a115.u2.p2 — `ord_a115_u2_p2`: Art. 115 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a115.u2.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50059,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 115 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 115: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a115_u2_p2_check", false) == true
+}
+# jdg.ord.a115.u4.p3 — `ord_a115_u4_p3`: Art. 115 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a115.u4.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50060,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 115 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 115: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a115_u4_p3_check", false) == true
+}
+# jdg.ord.a115.u5.p4 — `ord_a115_u5_p4`: Art. 115 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a115.u5.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50061,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 115 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 115: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a115_u5_p4_check", false) == true
+}
+# jdg.ord.a116.u1.p2 — `ord_a116_u1_p2`: Art. 116 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a116.u1.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50062,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 116 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 116: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a116_u1_p2_check", false) == true
+}
+# jdg.ord.a116.u3.p3 — `ord_a116_u3_p3`: Art. 116 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a116.u3.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50063,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 116 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 116: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a116_u3_p3_check", false) == true
+}
+# jdg.ord.a116.u4.p4 — `ord_a116_u4_p4`: Art. 116 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a116.u4.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50064,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 116 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 116: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a116_u4_p4_check", false) == true
+}
+# jdg.ord.a116.u5.p1 — `ord_a116_u5_p1`: Art. 116 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a116.u5.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50065,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 116 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 116: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a116_u5_p1_check", false) == true
+}
+# jdg.ord.a117.u2.p3 — `ord_a117_u2_p3`: Art. 117 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a117.u2.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50066,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 117 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 117: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a117_u2_p3_check", false) == true
+}
+# jdg.ord.a117.u3.p4 — `ord_a117_u3_p4`: Art. 117 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a117.u3.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50067,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 117 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 117: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a117_u3_p4_check", false) == true
+}
+# jdg.ord.a117.u4.p1 — `ord_a117_u4_p1`: Art. 117 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a117.u4.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50068,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 117 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 117: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a117_u4_p1_check", false) == true
+}
+# jdg.ord.a117.u5.p2 — `ord_a117_u5_p2`: Art. 117 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a117.u5.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50069,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 117 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 117: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a117_u5_p2_check", false) == true
+}
+# jdg.ord.a118.u1.p3 — `ord_a118_u1_p3`: Art. 118 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a118.u1.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50070,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 118 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 118: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a118_u1_p3_check", false) == true
+}
+# jdg.ord.a118.u2.p4 — `ord_a118_u2_p4`: Art. 118 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a118.u2.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50071,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 118 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 118: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a118_u2_p4_check", false) == true
+}
+# jdg.ord.a118.u3.p1 — `ord_a118_u3_p1`: Art. 118 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a118.u3.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50072,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 118 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 118: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a118_u3_p1_check", false) == true
+}
+# jdg.ord.a118.u4.p2 — `ord_a118_u4_p2`: Art. 118 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a118.u4.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50073,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 118 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 118: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a118_u4_p2_check", false) == true
+}
+# jdg.ord.a119.u1.p4 — `ord_a119_u1_p4`: Art. 119 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a119.u1.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50074,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 119 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 119: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a119_u1_p4_check", false) == true
+}
+# jdg.ord.a119.u2.p1 — `ord_a119_u2_p1`: Art. 119 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a119.u2.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50075,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 119 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 119: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a119_u2_p1_check", false) == true
+}
+# jdg.ord.a119.u3.p2 — `ord_a119_u3_p2`: Art. 119 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a119.u3.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50076,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 119 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 119: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a119_u3_p2_check", false) == true
+}
+# jdg.ord.a119.u5.p3 — `ord_a119_u5_p3`: Art. 119 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a119.u5.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50077,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 119 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 119: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a119_u5_p3_check", false) == true
+}
+# jdg.ord.a120.u1.p1 — `ord_a120_u1_p1`: Art. 120 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a120.u1.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50078,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 120 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 120: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a120_u1_p1_check", false) == true
+}
+# jdg.ord.a120.u2.p2 — `ord_a120_u2_p2`: Art. 120 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a120.u2.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50079,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 120 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 120: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a120_u2_p2_check", false) == true
+}
+# jdg.ord.a120.u4.p3 — `ord_a120_u4_p3`: Art. 120 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a120.u4.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50080,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 120 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 120: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a120_u4_p3_check", false) == true
+}
+# jdg.ord.a120.u5.p4 — `ord_a120_u5_p4`: Art. 120 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a120.u5.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50081,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 120 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 120: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a120_u5_p4_check", false) == true
+}
+# jdg.ord.a121.u1.p2 — `ord_a121_u1_p2`: Art. 121 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a121.u1.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50082,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 121 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 121: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a121_u1_p2_check", false) == true
+}
+# jdg.ord.a121.u3.p3 — `ord_a121_u3_p3`: Art. 121 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a121.u3.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50083,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 121 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 121: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a121_u3_p3_check", false) == true
+}
+# jdg.ord.a121.u4.p4 — `ord_a121_u4_p4`: Art. 121 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a121.u4.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50084,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 121 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 121: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a121_u4_p4_check", false) == true
+}
+# jdg.ord.a121.u5.p1 — `ord_a121_u5_p1`: Art. 121 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a121.u5.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50085,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 121 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 121: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a121_u5_p1_check", false) == true
+}
+# jdg.ord.a122.u2.p3 — `ord_a122_u2_p3`: Art. 122 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a122.u2.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50086,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 122 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 122: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a122_u2_p3_check", false) == true
+}
+# jdg.ord.a122.u3.p4 — `ord_a122_u3_p4`: Art. 122 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a122.u3.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50087,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 122 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 122: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a122_u3_p4_check", false) == true
+}
+# jdg.ord.a122.u4.p1 — `ord_a122_u4_p1`: Art. 122 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a122.u4.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50088,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 122 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 122: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a122_u4_p1_check", false) == true
+}
+# jdg.ord.a122.u5.p2 — `ord_a122_u5_p2`: Art. 122 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a122.u5.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50089,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 122 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 122: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a122_u5_p2_check", false) == true
+}
+# jdg.ord.a123.u1.p3 — `ord_a123_u1_p3`: Art. 123 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a123.u1.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50090,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 123 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 123: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a123_u1_p3_check", false) == true
+}
+# jdg.ord.a123.u2.p4 — `ord_a123_u2_p4`: Art. 123 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a123.u2.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50091,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 123 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 123: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a123_u2_p4_check", false) == true
+}
+# jdg.ord.a123.u3.p1 — `ord_a123_u3_p1`: Art. 123 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a123.u3.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50092,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 123 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 123: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a123_u3_p1_check", false) == true
+}
+# jdg.ord.a123.u4.p2 — `ord_a123_u4_p2`: Art. 123 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a123.u4.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50093,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 123 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 123: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a123_u4_p2_check", false) == true
+}
+# jdg.ord.a124.u1.p4 — `ord_a124_u1_p4`: Art. 124 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a124.u1.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50094,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 124 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 124: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a124_u1_p4_check", false) == true
+}
+# jdg.ord.a124.u2.p1 — `ord_a124_u2_p1`: Art. 124 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a124.u2.p1",
+    "package": "jdg.micro.ord",
+    "priority": 50095,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 124 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 124: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a124_u2_p1_check", false) == true
+}
+# jdg.ord.a124.u3.p2 — `ord_a124_u3_p2`: Art. 124 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a124.u3.p2",
+    "package": "jdg.micro.ord",
+    "priority": 50096,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 124 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 124: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a124_u3_p2_check", false) == true
+}
+# jdg.ord.a124.u5.p3 — `ord_a124_u5_p3`: Art. 124 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a124.u5.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50097,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 124 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 124: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a124_u5_p3_check", false) == true
+}
+# jdg.ord.a125.u4.p3 — `ord_a125_u4_p3`: Art. 125 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a125.u4.p3",
+    "package": "jdg.micro.ord",
+    "priority": 50098,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 125 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 125: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a125_u4_p3_check", false) == true
+}
+# jdg.ord.a125.u5.p4 — `ord_a125_u5_p4`: Art. 125 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a125.u5.p4",
+    "package": "jdg.micro.ord",
+    "priority": 50099,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 125 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 125: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a125_u5_p4_check", false) == true
+}
+# jdg.ord.a16.r1 — `ord_a16_r1`: Art. 16 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a16.r1",
+    "package": "jdg.micro.ord",
+    "priority": 50100,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a16_r1_check", false) == true
+}
+# jdg.ord.a16a.r1 — `ord_a16a_r1`: Art. 16a → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a16a.r1",
+    "package": "jdg.micro.ord",
+    "priority": 50101,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 16a — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 16a: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a16a_r1_check", false) == true
+}
+# jdg.ord.a20.r1 — `ord_a20_r1`: Art. 20 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a20.r1",
+    "package": "jdg.micro.ord",
+    "priority": 50102,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a20_r1_check", false) == true
+}
+# jdg.ord.a21.r1 — `ord_a21_r1`: Art. 21 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a21.r1",
+    "package": "jdg.micro.ord",
+    "priority": 50103,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a21_r1_check", false) == true
+}
+# jdg.ord.a67a.r1 — `ord_a67a_r1`: Art. 67a → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.ord.a67a.r1",
+    "package": "jdg.micro.ord",
+    "priority": 50104,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 67a — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_warnings": ["[MICRO] Art. 67a: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "ord_a67a_r1_check", false) == true
+}

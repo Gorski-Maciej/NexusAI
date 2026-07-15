@@ -14900,3 +14900,7840 @@ else := {
 } {
     object.get(input.invoice, "pit_a21e_exception_2", false) == true
 }
+
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  PLAN OPA/50 — KLASA B — Wygenerowane masowo (290 reguł)       ║
+# ║  Priorytety: 50000-50289                                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.pit.a100.u1.p1 — `pit_a100_u1_p1`: Art. 100 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a100.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50000,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 100 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 100: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a100_u1_p1_check", false) == true
+}
+# jdg.pit.a100.u2.p2 — `pit_a100_u2_p2`: Art. 100 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a100.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50001,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 100 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 100: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a100_u2_p2_check", false) == true
+}
+# jdg.pit.a100.u3.p3 — `pit_a100_u3_p3`: Art. 100 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a100.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50002,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 100 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 100: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a100_u3_p3_check", false) == true
+}
+# jdg.pit.a100.u5.p4 — `pit_a100_u5_p4`: Art. 100 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a100.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50003,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 100 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 100: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a100_u5_p4_check", false) == true
+}
+# jdg.pit.a101.u1.p2 — `pit_a101_u1_p2`: Art. 101 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a101.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50004,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a101_u1_p2_check", false) == true
+}
+# jdg.pit.a101.u2.p3 — `pit_a101_u2_p3`: Art. 101 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a101.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50005,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a101_u2_p3_check", false) == true
+}
+# jdg.pit.a101.u4.p4 — `pit_a101_u4_p4`: Art. 101 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a101.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50006,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a101_u4_p4_check", false) == true
+}
+# jdg.pit.a101.u5.p1 — `pit_a101_u5_p1`: Art. 101 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a101.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50007,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a101_u5_p1_check", false) == true
+}
+# jdg.pit.a102.u3.p4 — `pit_a102_u3_p4`: Art. 102 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a102.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50008,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 102 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 102: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a102_u3_p4_check", false) == true
+}
+# jdg.pit.a22p.r1 — `pit_a22p_r1`: Art. 22p → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a22p.r1",
+    "package": "jdg.micro.pit",
+    "priority": 50009,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 22p — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 22p: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a22p_r1_check", false) == true
+}
+# jdg.pit.a30.u1.p1 — `pit_a30_u1_p1`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a30.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50010,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a30_u1_p1_check", false) == true
+}
+# jdg.pit.a30.u2.p2 — `pit_a30_u2_p2`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a30.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50011,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a30_u2_p2_check", false) == true
+}
+# jdg.pit.a30.u3.p3 — `pit_a30_u3_p3`: Art. 30 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a30.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50012,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a30_u3_p3_check", false) == true
+}
+# jdg.pit.a31.u1.p2 — `pit_a31_u1_p2`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a31.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50013,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a31_u1_p2_check", false) == true
+}
+# jdg.pit.a31.u2.p3 — `pit_a31_u2_p3`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a31.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50014,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a31_u2_p3_check", false) == true
+}
+# jdg.pit.a31.u4.p4 — `pit_a31_u4_p4`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a31.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50015,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a31_u4_p4_check", false) == true
+}
+# jdg.pit.a31.u5.p1 — `pit_a31_u5_p1`: Art. 31 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a31.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50016,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a31_u5_p1_check", false) == true
+}
+# jdg.pit.a32.u1.p3 — `pit_a32_u1_p3`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a32.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50017,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a32_u1_p3_check", false) == true
+}
+# jdg.pit.a32.u3.p4 — `pit_a32_u3_p4`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a32.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50018,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a32_u3_p4_check", false) == true
+}
+# jdg.pit.a32.u4.p1 — `pit_a32_u4_p1`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a32.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50019,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a32_u4_p1_check", false) == true
+}
+# jdg.pit.a32.u5.p2 — `pit_a32_u5_p2`: Art. 32 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a32.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50020,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a32_u5_p2_check", false) == true
+}
+# jdg.pit.a33.u2.p4 — `pit_a33_u2_p4`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a33.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50021,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a33_u2_p4_check", false) == true
+}
+# jdg.pit.a33.u3.p1 — `pit_a33_u3_p1`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a33.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50022,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a33_u3_p1_check", false) == true
+}
+# jdg.pit.a33.u4.p2 — `pit_a33_u4_p2`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a33.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50023,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a33_u4_p2_check", false) == true
+}
+# jdg.pit.a33.u5.p3 — `pit_a33_u5_p3`: Art. 33 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a33.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50024,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a33_u5_p3_check", false) == true
+}
+# jdg.pit.a34.u1.p4 — `pit_a34_u1_p4`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a34.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50025,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a34_u1_p4_check", false) == true
+}
+# jdg.pit.a34.u2.p1 — `pit_a34_u2_p1`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a34.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50026,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a34_u2_p1_check", false) == true
+}
+# jdg.pit.a34.u3.p2 — `pit_a34_u3_p2`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a34.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50027,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a34_u3_p2_check", false) == true
+}
+# jdg.pit.a34.u4.p3 — `pit_a34_u4_p3`: Art. 34 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a34.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50028,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a34_u4_p3_check", false) == true
+}
+# jdg.pit.a35.u1.p1 — `pit_a35_u1_p1`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a35.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50029,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a35_u1_p1_check", false) == true
+}
+# jdg.pit.a35.u2.p2 — `pit_a35_u2_p2`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a35.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50030,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a35_u2_p2_check", false) == true
+}
+# jdg.pit.a35.u3.p3 — `pit_a35_u3_p3`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a35.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50031,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a35_u3_p3_check", false) == true
+}
+# jdg.pit.a35.u5.p4 — `pit_a35_u5_p4`: Art. 35 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a35.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50032,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a35_u5_p4_check", false) == true
+}
+# jdg.pit.a36.u1.p2 — `pit_a36_u1_p2`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a36.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50033,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a36_u1_p2_check", false) == true
+}
+# jdg.pit.a36.u2.p3 — `pit_a36_u2_p3`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a36.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50034,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a36_u2_p3_check", false) == true
+}
+# jdg.pit.a36.u4.p4 — `pit_a36_u4_p4`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a36.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50035,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a36_u4_p4_check", false) == true
+}
+# jdg.pit.a36.u5.p1 — `pit_a36_u5_p1`: Art. 36 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a36.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50036,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a36_u5_p1_check", false) == true
+}
+# jdg.pit.a37.u1.p3 — `pit_a37_u1_p3`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a37.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50037,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a37_u1_p3_check", false) == true
+}
+# jdg.pit.a37.u3.p4 — `pit_a37_u3_p4`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a37.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50038,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a37_u3_p4_check", false) == true
+}
+# jdg.pit.a37.u4.p1 — `pit_a37_u4_p1`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a37.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50039,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a37_u4_p1_check", false) == true
+}
+# jdg.pit.a37.u5.p2 — `pit_a37_u5_p2`: Art. 37 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a37.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50040,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a37_u5_p2_check", false) == true
+}
+# jdg.pit.a38.u2.p4 — `pit_a38_u2_p4`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a38.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50041,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a38_u2_p4_check", false) == true
+}
+# jdg.pit.a38.u3.p1 — `pit_a38_u3_p1`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a38.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50042,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a38_u3_p1_check", false) == true
+}
+# jdg.pit.a38.u4.p2 — `pit_a38_u4_p2`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a38.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50043,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a38_u4_p2_check", false) == true
+}
+# jdg.pit.a38.u5.p3 — `pit_a38_u5_p3`: Art. 38 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a38.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50044,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a38_u5_p3_check", false) == true
+}
+# jdg.pit.a39.u1.p4 — `pit_a39_u1_p4`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a39.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50045,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a39_u1_p4_check", false) == true
+}
+# jdg.pit.a39.u2.p1 — `pit_a39_u2_p1`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a39.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50046,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a39_u2_p1_check", false) == true
+}
+# jdg.pit.a39.u3.p2 — `pit_a39_u3_p2`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a39.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50047,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a39_u3_p2_check", false) == true
+}
+# jdg.pit.a39.u4.p3 — `pit_a39_u4_p3`: Art. 39 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a39.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50048,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a39_u4_p3_check", false) == true
+}
+# jdg.pit.a40.u1.p1 — `pit_a40_u1_p1`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a40.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50049,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a40_u1_p1_check", false) == true
+}
+# jdg.pit.a40.u2.p2 — `pit_a40_u2_p2`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a40.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50050,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a40_u2_p2_check", false) == true
+}
+# jdg.pit.a40.u3.p3 — `pit_a40_u3_p3`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a40.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50051,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a40_u3_p3_check", false) == true
+}
+# jdg.pit.a40.u5.p4 — `pit_a40_u5_p4`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a40.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50052,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a40_u5_p4_check", false) == true
+}
+# jdg.pit.a41.u1.p2 — `pit_a41_u1_p2`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a41.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50053,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a41_u1_p2_check", false) == true
+}
+# jdg.pit.a41.u2.p3 — `pit_a41_u2_p3`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a41.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50054,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a41_u2_p3_check", false) == true
+}
+# jdg.pit.a41.u4.p4 — `pit_a41_u4_p4`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a41.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50055,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a41_u4_p4_check", false) == true
+}
+# jdg.pit.a41.u5.p1 — `pit_a41_u5_p1`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a41.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50056,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a41_u5_p1_check", false) == true
+}
+# jdg.pit.a42.u1.p3 — `pit_a42_u1_p3`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a42.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50057,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a42_u1_p3_check", false) == true
+}
+# jdg.pit.a42.u3.p4 — `pit_a42_u3_p4`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a42.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50058,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a42_u3_p4_check", false) == true
+}
+# jdg.pit.a42.u4.p1 — `pit_a42_u4_p1`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a42.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50059,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a42_u4_p1_check", false) == true
+}
+# jdg.pit.a42.u5.p2 — `pit_a42_u5_p2`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a42.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50060,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a42_u5_p2_check", false) == true
+}
+# jdg.pit.a43.u2.p4 — `pit_a43_u2_p4`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a43.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50061,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a43_u2_p4_check", false) == true
+}
+# jdg.pit.a43.u3.p1 — `pit_a43_u3_p1`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a43.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50062,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a43_u3_p1_check", false) == true
+}
+# jdg.pit.a43.u4.p2 — `pit_a43_u4_p2`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a43.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50063,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a43_u4_p2_check", false) == true
+}
+# jdg.pit.a43.u5.p3 — `pit_a43_u5_p3`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a43.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50064,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a43_u5_p3_check", false) == true
+}
+# jdg.pit.a44.u1.p4 — `pit_a44_u1_p4`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a44.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50065,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a44_u1_p4_check", false) == true
+}
+# jdg.pit.a44.u2.p1 — `pit_a44_u2_p1`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a44.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50066,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a44_u2_p1_check", false) == true
+}
+# jdg.pit.a44.u3.p2 — `pit_a44_u3_p2`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a44.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50067,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a44_u3_p2_check", false) == true
+}
+# jdg.pit.a44.u4.p3 — `pit_a44_u4_p3`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a44.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50068,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a44_u4_p3_check", false) == true
+}
+# jdg.pit.a45.u1.p1 — `pit_a45_u1_p1`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a45.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50069,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a45_u1_p1_check", false) == true
+}
+# jdg.pit.a45.u2.p2 — `pit_a45_u2_p2`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a45.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50070,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a45_u2_p2_check", false) == true
+}
+# jdg.pit.a45.u3.p3 — `pit_a45_u3_p3`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a45.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50071,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a45_u3_p3_check", false) == true
+}
+# jdg.pit.a45.u5.p4 — `pit_a45_u5_p4`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a45.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50072,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a45_u5_p4_check", false) == true
+}
+# jdg.pit.a46.u1.p2 — `pit_a46_u1_p2`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a46.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50073,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a46_u1_p2_check", false) == true
+}
+# jdg.pit.a46.u2.p3 — `pit_a46_u2_p3`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a46.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50074,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a46_u2_p3_check", false) == true
+}
+# jdg.pit.a46.u4.p4 — `pit_a46_u4_p4`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a46.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50075,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a46_u4_p4_check", false) == true
+}
+# jdg.pit.a46.u5.p1 — `pit_a46_u5_p1`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a46.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50076,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a46_u5_p1_check", false) == true
+}
+# jdg.pit.a47.u1.p3 — `pit_a47_u1_p3`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a47.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50077,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a47_u1_p3_check", false) == true
+}
+# jdg.pit.a47.u3.p4 — `pit_a47_u3_p4`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a47.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50078,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a47_u3_p4_check", false) == true
+}
+# jdg.pit.a47.u4.p1 — `pit_a47_u4_p1`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a47.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50079,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a47_u4_p1_check", false) == true
+}
+# jdg.pit.a47.u5.p2 — `pit_a47_u5_p2`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a47.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50080,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a47_u5_p2_check", false) == true
+}
+# jdg.pit.a48.u2.p4 — `pit_a48_u2_p4`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a48.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50081,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a48_u2_p4_check", false) == true
+}
+# jdg.pit.a48.u3.p1 — `pit_a48_u3_p1`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a48.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50082,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a48_u3_p1_check", false) == true
+}
+# jdg.pit.a48.u4.p2 — `pit_a48_u4_p2`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a48.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50083,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a48_u4_p2_check", false) == true
+}
+# jdg.pit.a48.u5.p3 — `pit_a48_u5_p3`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a48.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50084,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a48_u5_p3_check", false) == true
+}
+# jdg.pit.a49.u1.p4 — `pit_a49_u1_p4`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a49.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50085,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a49_u1_p4_check", false) == true
+}
+# jdg.pit.a49.u2.p1 — `pit_a49_u2_p1`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a49.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50086,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a49_u2_p1_check", false) == true
+}
+# jdg.pit.a49.u3.p2 — `pit_a49_u3_p2`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a49.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50087,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a49_u3_p2_check", false) == true
+}
+# jdg.pit.a49.u4.p3 — `pit_a49_u4_p3`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a49.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50088,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a49_u4_p3_check", false) == true
+}
+# jdg.pit.a50.u1.p1 — `pit_a50_u1_p1`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a50.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50089,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a50_u1_p1_check", false) == true
+}
+# jdg.pit.a50.u2.p2 — `pit_a50_u2_p2`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a50.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50090,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a50_u2_p2_check", false) == true
+}
+# jdg.pit.a50.u3.p3 — `pit_a50_u3_p3`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a50.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50091,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a50_u3_p3_check", false) == true
+}
+# jdg.pit.a50.u5.p4 — `pit_a50_u5_p4`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a50.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50092,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a50_u5_p4_check", false) == true
+}
+# jdg.pit.a51.u1.p2 — `pit_a51_u1_p2`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a51.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50093,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a51_u1_p2_check", false) == true
+}
+# jdg.pit.a51.u2.p3 — `pit_a51_u2_p3`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a51.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50094,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a51_u2_p3_check", false) == true
+}
+# jdg.pit.a51.u4.p4 — `pit_a51_u4_p4`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a51.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50095,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a51_u4_p4_check", false) == true
+}
+# jdg.pit.a51.u5.p1 — `pit_a51_u5_p1`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a51.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50096,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a51_u5_p1_check", false) == true
+}
+# jdg.pit.a52.u1.p3 — `pit_a52_u1_p3`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a52.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50097,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a52_u1_p3_check", false) == true
+}
+# jdg.pit.a52.u3.p4 — `pit_a52_u3_p4`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a52.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50098,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a52_u3_p4_check", false) == true
+}
+# jdg.pit.a52.u4.p1 — `pit_a52_u4_p1`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a52.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50099,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a52_u4_p1_check", false) == true
+}
+# jdg.pit.a52.u5.p2 — `pit_a52_u5_p2`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a52.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50100,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a52_u5_p2_check", false) == true
+}
+# jdg.pit.a53.u2.p4 — `pit_a53_u2_p4`: Art. 53 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a53.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50101,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 53 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 53: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a53_u2_p4_check", false) == true
+}
+# jdg.pit.a53.u3.p1 — `pit_a53_u3_p1`: Art. 53 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a53.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50102,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 53 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 53: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a53_u3_p1_check", false) == true
+}
+# jdg.pit.a53.u4.p2 — `pit_a53_u4_p2`: Art. 53 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a53.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50103,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 53 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 53: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a53_u4_p2_check", false) == true
+}
+# jdg.pit.a53.u5.p3 — `pit_a53_u5_p3`: Art. 53 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a53.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50104,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 53 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 53: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a53_u5_p3_check", false) == true
+}
+# jdg.pit.a54.u1.p4 — `pit_a54_u1_p4`: Art. 54 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a54.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50105,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 54 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 54: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a54_u1_p4_check", false) == true
+}
+# jdg.pit.a54.u2.p1 — `pit_a54_u2_p1`: Art. 54 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a54.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50106,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 54 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 54: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a54_u2_p1_check", false) == true
+}
+# jdg.pit.a54.u3.p2 — `pit_a54_u3_p2`: Art. 54 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a54.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50107,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 54 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 54: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a54_u3_p2_check", false) == true
+}
+# jdg.pit.a54.u4.p3 — `pit_a54_u4_p3`: Art. 54 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a54.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50108,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 54 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 54: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a54_u4_p3_check", false) == true
+}
+# jdg.pit.a55.u1.p1 — `pit_a55_u1_p1`: Art. 55 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a55.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50109,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 55 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 55: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a55_u1_p1_check", false) == true
+}
+# jdg.pit.a55.u2.p2 — `pit_a55_u2_p2`: Art. 55 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a55.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50110,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 55 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 55: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a55_u2_p2_check", false) == true
+}
+# jdg.pit.a55.u3.p3 — `pit_a55_u3_p3`: Art. 55 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a55.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50111,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 55 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 55: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a55_u3_p3_check", false) == true
+}
+# jdg.pit.a55.u5.p4 — `pit_a55_u5_p4`: Art. 55 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a55.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50112,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 55 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 55: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a55_u5_p4_check", false) == true
+}
+# jdg.pit.a56.u1.p2 — `pit_a56_u1_p2`: Art. 56 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a56.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50113,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 56 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 56: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a56_u1_p2_check", false) == true
+}
+# jdg.pit.a56.u2.p3 — `pit_a56_u2_p3`: Art. 56 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a56.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50114,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 56 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 56: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a56_u2_p3_check", false) == true
+}
+# jdg.pit.a56.u4.p4 — `pit_a56_u4_p4`: Art. 56 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a56.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50115,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 56 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 56: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a56_u4_p4_check", false) == true
+}
+# jdg.pit.a56.u5.p1 — `pit_a56_u5_p1`: Art. 56 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a56.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50116,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 56 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 56: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a56_u5_p1_check", false) == true
+}
+# jdg.pit.a57.u1.p3 — `pit_a57_u1_p3`: Art. 57 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a57.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50117,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 57 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 57: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a57_u1_p3_check", false) == true
+}
+# jdg.pit.a57.u3.p4 — `pit_a57_u3_p4`: Art. 57 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a57.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50118,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 57 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 57: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a57_u3_p4_check", false) == true
+}
+# jdg.pit.a57.u4.p1 — `pit_a57_u4_p1`: Art. 57 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a57.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50119,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 57 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 57: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a57_u4_p1_check", false) == true
+}
+# jdg.pit.a57.u5.p2 — `pit_a57_u5_p2`: Art. 57 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a57.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50120,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 57 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 57: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a57_u5_p2_check", false) == true
+}
+# jdg.pit.a58.u2.p4 — `pit_a58_u2_p4`: Art. 58 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a58.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50121,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 58 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 58: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a58_u2_p4_check", false) == true
+}
+# jdg.pit.a58.u3.p1 — `pit_a58_u3_p1`: Art. 58 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a58.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50122,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 58 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 58: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a58_u3_p1_check", false) == true
+}
+# jdg.pit.a58.u4.p2 — `pit_a58_u4_p2`: Art. 58 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a58.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50123,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 58 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 58: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a58_u4_p2_check", false) == true
+}
+# jdg.pit.a58.u5.p3 — `pit_a58_u5_p3`: Art. 58 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a58.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50124,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 58 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 58: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a58_u5_p3_check", false) == true
+}
+# jdg.pit.a59.u1.p4 — `pit_a59_u1_p4`: Art. 59 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a59.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50125,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 59 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 59: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a59_u1_p4_check", false) == true
+}
+# jdg.pit.a59.u2.p1 — `pit_a59_u2_p1`: Art. 59 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a59.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50126,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 59 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 59: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a59_u2_p1_check", false) == true
+}
+# jdg.pit.a59.u3.p2 — `pit_a59_u3_p2`: Art. 59 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a59.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50127,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 59 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 59: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a59_u3_p2_check", false) == true
+}
+# jdg.pit.a59.u4.p3 — `pit_a59_u4_p3`: Art. 59 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a59.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50128,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 59 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 59: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a59_u4_p3_check", false) == true
+}
+# jdg.pit.a60.u1.p1 — `pit_a60_u1_p1`: Art. 60 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a60.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50129,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 60 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 60: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a60_u1_p1_check", false) == true
+}
+# jdg.pit.a60.u2.p2 — `pit_a60_u2_p2`: Art. 60 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a60.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50130,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 60 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 60: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a60_u2_p2_check", false) == true
+}
+# jdg.pit.a60.u3.p3 — `pit_a60_u3_p3`: Art. 60 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a60.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50131,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 60 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 60: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a60_u3_p3_check", false) == true
+}
+# jdg.pit.a60.u5.p4 — `pit_a60_u5_p4`: Art. 60 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a60.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50132,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 60 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 60: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a60_u5_p4_check", false) == true
+}
+# jdg.pit.a61.u1.p2 — `pit_a61_u1_p2`: Art. 61 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a61.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50133,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 61 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 61: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a61_u1_p2_check", false) == true
+}
+# jdg.pit.a61.u2.p3 — `pit_a61_u2_p3`: Art. 61 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a61.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50134,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 61 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 61: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a61_u2_p3_check", false) == true
+}
+# jdg.pit.a61.u4.p4 — `pit_a61_u4_p4`: Art. 61 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a61.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50135,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 61 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 61: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a61_u4_p4_check", false) == true
+}
+# jdg.pit.a61.u5.p1 — `pit_a61_u5_p1`: Art. 61 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a61.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50136,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 61 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 61: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a61_u5_p1_check", false) == true
+}
+# jdg.pit.a62.u1.p3 — `pit_a62_u1_p3`: Art. 62 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a62.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50137,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 62 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 62: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a62_u1_p3_check", false) == true
+}
+# jdg.pit.a62.u3.p4 — `pit_a62_u3_p4`: Art. 62 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a62.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50138,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 62 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 62: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a62_u3_p4_check", false) == true
+}
+# jdg.pit.a62.u4.p1 — `pit_a62_u4_p1`: Art. 62 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a62.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50139,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 62 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 62: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a62_u4_p1_check", false) == true
+}
+# jdg.pit.a62.u5.p2 — `pit_a62_u5_p2`: Art. 62 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a62.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50140,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 62 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 62: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a62_u5_p2_check", false) == true
+}
+# jdg.pit.a63.u2.p4 — `pit_a63_u2_p4`: Art. 63 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a63.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50141,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 63 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 63: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a63_u2_p4_check", false) == true
+}
+# jdg.pit.a63.u3.p1 — `pit_a63_u3_p1`: Art. 63 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a63.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50142,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 63 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 63: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a63_u3_p1_check", false) == true
+}
+# jdg.pit.a63.u4.p2 — `pit_a63_u4_p2`: Art. 63 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a63.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50143,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 63 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 63: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a63_u4_p2_check", false) == true
+}
+# jdg.pit.a63.u5.p3 — `pit_a63_u5_p3`: Art. 63 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a63.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50144,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 63 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 63: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a63_u5_p3_check", false) == true
+}
+# jdg.pit.a64.u1.p4 — `pit_a64_u1_p4`: Art. 64 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a64.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50145,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 64 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 64: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a64_u1_p4_check", false) == true
+}
+# jdg.pit.a64.u2.p1 — `pit_a64_u2_p1`: Art. 64 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a64.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50146,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 64 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 64: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a64_u2_p1_check", false) == true
+}
+# jdg.pit.a64.u3.p2 — `pit_a64_u3_p2`: Art. 64 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a64.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50147,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 64 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 64: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a64_u3_p2_check", false) == true
+}
+# jdg.pit.a64.u4.p3 — `pit_a64_u4_p3`: Art. 64 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a64.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50148,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 64 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 64: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a64_u4_p3_check", false) == true
+}
+# jdg.pit.a65.u1.p1 — `pit_a65_u1_p1`: Art. 65 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a65.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50149,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 65 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 65: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a65_u1_p1_check", false) == true
+}
+# jdg.pit.a65.u2.p2 — `pit_a65_u2_p2`: Art. 65 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a65.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50150,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 65 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 65: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a65_u2_p2_check", false) == true
+}
+# jdg.pit.a65.u3.p3 — `pit_a65_u3_p3`: Art. 65 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a65.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50151,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 65 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 65: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a65_u3_p3_check", false) == true
+}
+# jdg.pit.a65.u5.p4 — `pit_a65_u5_p4`: Art. 65 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a65.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50152,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 65 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 65: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a65_u5_p4_check", false) == true
+}
+# jdg.pit.a66.u1.p2 — `pit_a66_u1_p2`: Art. 66 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a66.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50153,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 66 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 66: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a66_u1_p2_check", false) == true
+}
+# jdg.pit.a66.u2.p3 — `pit_a66_u2_p3`: Art. 66 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a66.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50154,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 66 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 66: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a66_u2_p3_check", false) == true
+}
+# jdg.pit.a66.u4.p4 — `pit_a66_u4_p4`: Art. 66 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a66.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50155,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 66 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 66: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a66_u4_p4_check", false) == true
+}
+# jdg.pit.a66.u5.p1 — `pit_a66_u5_p1`: Art. 66 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a66.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50156,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 66 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 66: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a66_u5_p1_check", false) == true
+}
+# jdg.pit.a67.u1.p3 — `pit_a67_u1_p3`: Art. 67 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a67.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50157,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 67 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 67: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a67_u1_p3_check", false) == true
+}
+# jdg.pit.a67.u3.p4 — `pit_a67_u3_p4`: Art. 67 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a67.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50158,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 67 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 67: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a67_u3_p4_check", false) == true
+}
+# jdg.pit.a67.u4.p1 — `pit_a67_u4_p1`: Art. 67 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a67.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50159,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 67 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 67: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a67_u4_p1_check", false) == true
+}
+# jdg.pit.a67.u5.p2 — `pit_a67_u5_p2`: Art. 67 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a67.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50160,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 67 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 67: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a67_u5_p2_check", false) == true
+}
+# jdg.pit.a68.u2.p4 — `pit_a68_u2_p4`: Art. 68 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a68.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50161,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 68 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 68: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a68_u2_p4_check", false) == true
+}
+# jdg.pit.a68.u3.p1 — `pit_a68_u3_p1`: Art. 68 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a68.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50162,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 68 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 68: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a68_u3_p1_check", false) == true
+}
+# jdg.pit.a68.u4.p2 — `pit_a68_u4_p2`: Art. 68 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a68.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50163,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 68 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 68: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a68_u4_p2_check", false) == true
+}
+# jdg.pit.a68.u5.p3 — `pit_a68_u5_p3`: Art. 68 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a68.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50164,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 68 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 68: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a68_u5_p3_check", false) == true
+}
+# jdg.pit.a69.u1.p4 — `pit_a69_u1_p4`: Art. 69 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a69.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50165,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 69 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 69: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a69_u1_p4_check", false) == true
+}
+# jdg.pit.a69.u2.p1 — `pit_a69_u2_p1`: Art. 69 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a69.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50166,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 69 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 69: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a69_u2_p1_check", false) == true
+}
+# jdg.pit.a69.u3.p2 — `pit_a69_u3_p2`: Art. 69 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a69.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50167,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 69 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 69: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a69_u3_p2_check", false) == true
+}
+# jdg.pit.a69.u4.p3 — `pit_a69_u4_p3`: Art. 69 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a69.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50168,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 69 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 69: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a69_u4_p3_check", false) == true
+}
+# jdg.pit.a70.u1.p1 — `pit_a70_u1_p1`: Art. 70 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a70.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50169,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 70 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 70: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a70_u1_p1_check", false) == true
+}
+# jdg.pit.a70.u2.p2 — `pit_a70_u2_p2`: Art. 70 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a70.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50170,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 70 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 70: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a70_u2_p2_check", false) == true
+}
+# jdg.pit.a70.u3.p3 — `pit_a70_u3_p3`: Art. 70 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a70.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50171,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 70 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 70: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a70_u3_p3_check", false) == true
+}
+# jdg.pit.a70.u5.p4 — `pit_a70_u5_p4`: Art. 70 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a70.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50172,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 70 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 70: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a70_u5_p4_check", false) == true
+}
+# jdg.pit.a71.u1.p2 — `pit_a71_u1_p2`: Art. 71 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a71.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50173,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a71_u1_p2_check", false) == true
+}
+# jdg.pit.a71.u2.p3 — `pit_a71_u2_p3`: Art. 71 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a71.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50174,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a71_u2_p3_check", false) == true
+}
+# jdg.pit.a71.u4.p4 — `pit_a71_u4_p4`: Art. 71 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a71.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50175,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a71_u4_p4_check", false) == true
+}
+# jdg.pit.a71.u5.p1 — `pit_a71_u5_p1`: Art. 71 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a71.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50176,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a71_u5_p1_check", false) == true
+}
+# jdg.pit.a72.u1.p3 — `pit_a72_u1_p3`: Art. 72 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a72.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50177,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a72_u1_p3_check", false) == true
+}
+# jdg.pit.a72.u3.p4 — `pit_a72_u3_p4`: Art. 72 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a72.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50178,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a72_u3_p4_check", false) == true
+}
+# jdg.pit.a72.u4.p1 — `pit_a72_u4_p1`: Art. 72 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a72.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50179,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a72_u4_p1_check", false) == true
+}
+# jdg.pit.a72.u5.p2 — `pit_a72_u5_p2`: Art. 72 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a72.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50180,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a72_u5_p2_check", false) == true
+}
+# jdg.pit.a73.u2.p4 — `pit_a73_u2_p4`: Art. 73 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a73.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50181,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a73_u2_p4_check", false) == true
+}
+# jdg.pit.a73.u3.p1 — `pit_a73_u3_p1`: Art. 73 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a73.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50182,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a73_u3_p1_check", false) == true
+}
+# jdg.pit.a73.u4.p2 — `pit_a73_u4_p2`: Art. 73 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a73.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50183,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a73_u4_p2_check", false) == true
+}
+# jdg.pit.a73.u5.p3 — `pit_a73_u5_p3`: Art. 73 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a73.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50184,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a73_u5_p3_check", false) == true
+}
+# jdg.pit.a74.u1.p4 — `pit_a74_u1_p4`: Art. 74 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a74.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50185,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a74_u1_p4_check", false) == true
+}
+# jdg.pit.a74.u2.p1 — `pit_a74_u2_p1`: Art. 74 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a74.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50186,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a74_u2_p1_check", false) == true
+}
+# jdg.pit.a74.u3.p2 — `pit_a74_u3_p2`: Art. 74 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a74.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50187,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a74_u3_p2_check", false) == true
+}
+# jdg.pit.a74.u4.p3 — `pit_a74_u4_p3`: Art. 74 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a74.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50188,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a74_u4_p3_check", false) == true
+}
+# jdg.pit.a75.u1.p1 — `pit_a75_u1_p1`: Art. 75 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a75.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50189,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a75_u1_p1_check", false) == true
+}
+# jdg.pit.a75.u2.p2 — `pit_a75_u2_p2`: Art. 75 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a75.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50190,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a75_u2_p2_check", false) == true
+}
+# jdg.pit.a75.u3.p3 — `pit_a75_u3_p3`: Art. 75 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a75.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50191,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a75_u3_p3_check", false) == true
+}
+# jdg.pit.a75.u5.p4 — `pit_a75_u5_p4`: Art. 75 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a75.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50192,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a75_u5_p4_check", false) == true
+}
+# jdg.pit.a76.u1.p2 — `pit_a76_u1_p2`: Art. 76 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a76.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50193,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a76_u1_p2_check", false) == true
+}
+# jdg.pit.a76.u2.p3 — `pit_a76_u2_p3`: Art. 76 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a76.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50194,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a76_u2_p3_check", false) == true
+}
+# jdg.pit.a76.u4.p4 — `pit_a76_u4_p4`: Art. 76 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a76.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50195,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a76_u4_p4_check", false) == true
+}
+# jdg.pit.a76.u5.p1 — `pit_a76_u5_p1`: Art. 76 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a76.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50196,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a76_u5_p1_check", false) == true
+}
+# jdg.pit.a77.u1.p3 — `pit_a77_u1_p3`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a77.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50197,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a77_u1_p3_check", false) == true
+}
+# jdg.pit.a77.u3.p4 — `pit_a77_u3_p4`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a77.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50198,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a77_u3_p4_check", false) == true
+}
+# jdg.pit.a77.u4.p1 — `pit_a77_u4_p1`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a77.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50199,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a77_u4_p1_check", false) == true
+}
+# jdg.pit.a77.u5.p2 — `pit_a77_u5_p2`: Art. 77 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a77.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50200,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a77_u5_p2_check", false) == true
+}
+# jdg.pit.a78.u2.p4 — `pit_a78_u2_p4`: Art. 78 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a78.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50201,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a78_u2_p4_check", false) == true
+}
+# jdg.pit.a78.u3.p1 — `pit_a78_u3_p1`: Art. 78 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a78.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50202,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a78_u3_p1_check", false) == true
+}
+# jdg.pit.a78.u4.p2 — `pit_a78_u4_p2`: Art. 78 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a78.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50203,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a78_u4_p2_check", false) == true
+}
+# jdg.pit.a78.u5.p3 — `pit_a78_u5_p3`: Art. 78 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a78.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50204,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a78_u5_p3_check", false) == true
+}
+# jdg.pit.a79.u1.p4 — `pit_a79_u1_p4`: Art. 79 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a79.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50205,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a79_u1_p4_check", false) == true
+}
+# jdg.pit.a79.u2.p1 — `pit_a79_u2_p1`: Art. 79 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a79.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50206,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a79_u2_p1_check", false) == true
+}
+# jdg.pit.a79.u3.p2 — `pit_a79_u3_p2`: Art. 79 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a79.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50207,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a79_u3_p2_check", false) == true
+}
+# jdg.pit.a79.u4.p3 — `pit_a79_u4_p3`: Art. 79 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a79.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50208,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a79_u4_p3_check", false) == true
+}
+# jdg.pit.a80.u1.p1 — `pit_a80_u1_p1`: Art. 80 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a80.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50209,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a80_u1_p1_check", false) == true
+}
+# jdg.pit.a80.u2.p2 — `pit_a80_u2_p2`: Art. 80 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a80.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50210,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a80_u2_p2_check", false) == true
+}
+# jdg.pit.a80.u3.p3 — `pit_a80_u3_p3`: Art. 80 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a80.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50211,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a80_u3_p3_check", false) == true
+}
+# jdg.pit.a80.u5.p4 — `pit_a80_u5_p4`: Art. 80 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a80.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50212,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a80_u5_p4_check", false) == true
+}
+# jdg.pit.a81.u1.p2 — `pit_a81_u1_p2`: Art. 81 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a81.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50213,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a81_u1_p2_check", false) == true
+}
+# jdg.pit.a81.u2.p3 — `pit_a81_u2_p3`: Art. 81 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a81.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50214,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a81_u2_p3_check", false) == true
+}
+# jdg.pit.a81.u4.p4 — `pit_a81_u4_p4`: Art. 81 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a81.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50215,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a81_u4_p4_check", false) == true
+}
+# jdg.pit.a81.u5.p1 — `pit_a81_u5_p1`: Art. 81 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a81.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50216,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a81_u5_p1_check", false) == true
+}
+# jdg.pit.a82.u1.p3 — `pit_a82_u1_p3`: Art. 82 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a82.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50217,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a82_u1_p3_check", false) == true
+}
+# jdg.pit.a82.u3.p4 — `pit_a82_u3_p4`: Art. 82 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a82.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50218,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a82_u3_p4_check", false) == true
+}
+# jdg.pit.a82.u4.p1 — `pit_a82_u4_p1`: Art. 82 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a82.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50219,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a82_u4_p1_check", false) == true
+}
+# jdg.pit.a82.u5.p2 — `pit_a82_u5_p2`: Art. 82 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a82.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50220,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a82_u5_p2_check", false) == true
+}
+# jdg.pit.a83.u2.p4 — `pit_a83_u2_p4`: Art. 83 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a83.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50221,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a83_u2_p4_check", false) == true
+}
+# jdg.pit.a83.u3.p1 — `pit_a83_u3_p1`: Art. 83 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a83.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50222,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a83_u3_p1_check", false) == true
+}
+# jdg.pit.a83.u4.p2 — `pit_a83_u4_p2`: Art. 83 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a83.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50223,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a83_u4_p2_check", false) == true
+}
+# jdg.pit.a83.u5.p3 — `pit_a83_u5_p3`: Art. 83 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a83.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50224,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a83_u5_p3_check", false) == true
+}
+# jdg.pit.a84.u1.p4 — `pit_a84_u1_p4`: Art. 84 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a84.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50225,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 84 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 84: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a84_u1_p4_check", false) == true
+}
+# jdg.pit.a84.u2.p1 — `pit_a84_u2_p1`: Art. 84 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a84.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50226,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 84 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 84: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a84_u2_p1_check", false) == true
+}
+# jdg.pit.a84.u3.p2 — `pit_a84_u3_p2`: Art. 84 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a84.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50227,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 84 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 84: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a84_u3_p2_check", false) == true
+}
+# jdg.pit.a84.u4.p3 — `pit_a84_u4_p3`: Art. 84 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a84.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50228,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 84 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 84: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a84_u4_p3_check", false) == true
+}
+# jdg.pit.a85.u1.p1 — `pit_a85_u1_p1`: Art. 85 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a85.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50229,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 85 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 85: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a85_u1_p1_check", false) == true
+}
+# jdg.pit.a85.u2.p2 — `pit_a85_u2_p2`: Art. 85 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a85.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50230,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 85 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 85: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a85_u2_p2_check", false) == true
+}
+# jdg.pit.a85.u3.p3 — `pit_a85_u3_p3`: Art. 85 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a85.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50231,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 85 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 85: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a85_u3_p3_check", false) == true
+}
+# jdg.pit.a85.u5.p4 — `pit_a85_u5_p4`: Art. 85 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a85.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50232,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 85 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 85: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a85_u5_p4_check", false) == true
+}
+# jdg.pit.a86.u1.p2 — `pit_a86_u1_p2`: Art. 86 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a86.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50233,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 86 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 86: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a86_u1_p2_check", false) == true
+}
+# jdg.pit.a86.u2.p3 — `pit_a86_u2_p3`: Art. 86 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a86.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50234,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 86 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 86: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a86_u2_p3_check", false) == true
+}
+# jdg.pit.a86.u4.p4 — `pit_a86_u4_p4`: Art. 86 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a86.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50235,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 86 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 86: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a86_u4_p4_check", false) == true
+}
+# jdg.pit.a86.u5.p1 — `pit_a86_u5_p1`: Art. 86 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a86.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50236,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 86 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 86: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a86_u5_p1_check", false) == true
+}
+# jdg.pit.a87.u1.p3 — `pit_a87_u1_p3`: Art. 87 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a87.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50237,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 87 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 87: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a87_u1_p3_check", false) == true
+}
+# jdg.pit.a87.u3.p4 — `pit_a87_u3_p4`: Art. 87 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a87.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50238,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 87 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 87: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a87_u3_p4_check", false) == true
+}
+# jdg.pit.a87.u4.p1 — `pit_a87_u4_p1`: Art. 87 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a87.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50239,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 87 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 87: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a87_u4_p1_check", false) == true
+}
+# jdg.pit.a87.u5.p2 — `pit_a87_u5_p2`: Art. 87 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a87.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50240,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 87 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 87: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a87_u5_p2_check", false) == true
+}
+# jdg.pit.a88.u2.p4 — `pit_a88_u2_p4`: Art. 88 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a88.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50241,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 88 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 88: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a88_u2_p4_check", false) == true
+}
+# jdg.pit.a88.u3.p1 — `pit_a88_u3_p1`: Art. 88 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a88.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50242,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 88 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 88: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a88_u3_p1_check", false) == true
+}
+# jdg.pit.a88.u4.p2 — `pit_a88_u4_p2`: Art. 88 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a88.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50243,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 88 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 88: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a88_u4_p2_check", false) == true
+}
+# jdg.pit.a88.u5.p3 — `pit_a88_u5_p3`: Art. 88 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a88.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50244,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 88 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 88: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a88_u5_p3_check", false) == true
+}
+# jdg.pit.a89.u1.p4 — `pit_a89_u1_p4`: Art. 89 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a89.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50245,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 89 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 89: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a89_u1_p4_check", false) == true
+}
+# jdg.pit.a89.u2.p1 — `pit_a89_u2_p1`: Art. 89 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a89.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50246,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 89 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 89: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a89_u2_p1_check", false) == true
+}
+# jdg.pit.a89.u3.p2 — `pit_a89_u3_p2`: Art. 89 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a89.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50247,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 89 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 89: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a89_u3_p2_check", false) == true
+}
+# jdg.pit.a89.u4.p3 — `pit_a89_u4_p3`: Art. 89 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a89.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50248,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 89 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 89: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a89_u4_p3_check", false) == true
+}
+# jdg.pit.a90.u1.p1 — `pit_a90_u1_p1`: Art. 90 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a90.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50249,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 90 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 90: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a90_u1_p1_check", false) == true
+}
+# jdg.pit.a90.u2.p2 — `pit_a90_u2_p2`: Art. 90 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a90.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50250,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 90 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 90: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a90_u2_p2_check", false) == true
+}
+# jdg.pit.a90.u3.p3 — `pit_a90_u3_p3`: Art. 90 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a90.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50251,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 90 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 90: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a90_u3_p3_check", false) == true
+}
+# jdg.pit.a90.u5.p4 — `pit_a90_u5_p4`: Art. 90 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a90.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50252,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 90 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 90: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a90_u5_p4_check", false) == true
+}
+# jdg.pit.a91.u1.p2 — `pit_a91_u1_p2`: Art. 91 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a91.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50253,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 91 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 91: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a91_u1_p2_check", false) == true
+}
+# jdg.pit.a91.u2.p3 — `pit_a91_u2_p3`: Art. 91 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a91.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50254,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 91 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 91: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a91_u2_p3_check", false) == true
+}
+# jdg.pit.a91.u4.p4 — `pit_a91_u4_p4`: Art. 91 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a91.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50255,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 91 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 91: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a91_u4_p4_check", false) == true
+}
+# jdg.pit.a91.u5.p1 — `pit_a91_u5_p1`: Art. 91 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a91.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50256,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 91 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 91: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a91_u5_p1_check", false) == true
+}
+# jdg.pit.a92.u1.p3 — `pit_a92_u1_p3`: Art. 92 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a92.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50257,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 92 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 92: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a92_u1_p3_check", false) == true
+}
+# jdg.pit.a92.u3.p4 — `pit_a92_u3_p4`: Art. 92 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a92.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50258,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 92 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 92: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a92_u3_p4_check", false) == true
+}
+# jdg.pit.a92.u4.p1 — `pit_a92_u4_p1`: Art. 92 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a92.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50259,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 92 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 92: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a92_u4_p1_check", false) == true
+}
+# jdg.pit.a92.u5.p2 — `pit_a92_u5_p2`: Art. 92 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a92.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50260,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 92 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 92: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a92_u5_p2_check", false) == true
+}
+# jdg.pit.a93.u2.p4 — `pit_a93_u2_p4`: Art. 93 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a93.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50261,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 93 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 93: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a93_u2_p4_check", false) == true
+}
+# jdg.pit.a93.u3.p1 — `pit_a93_u3_p1`: Art. 93 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a93.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50262,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 93 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 93: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a93_u3_p1_check", false) == true
+}
+# jdg.pit.a93.u4.p2 — `pit_a93_u4_p2`: Art. 93 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a93.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50263,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 93 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 93: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a93_u4_p2_check", false) == true
+}
+# jdg.pit.a93.u5.p3 — `pit_a93_u5_p3`: Art. 93 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a93.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50264,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 93 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 93: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a93_u5_p3_check", false) == true
+}
+# jdg.pit.a94.u1.p4 — `pit_a94_u1_p4`: Art. 94 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a94.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50265,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 94 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 94: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a94_u1_p4_check", false) == true
+}
+# jdg.pit.a94.u2.p1 — `pit_a94_u2_p1`: Art. 94 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a94.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50266,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 94 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 94: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a94_u2_p1_check", false) == true
+}
+# jdg.pit.a94.u3.p2 — `pit_a94_u3_p2`: Art. 94 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a94.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50267,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 94 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 94: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a94_u3_p2_check", false) == true
+}
+# jdg.pit.a94.u4.p3 — `pit_a94_u4_p3`: Art. 94 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a94.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50268,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 94 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 94: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a94_u4_p3_check", false) == true
+}
+# jdg.pit.a95.u1.p1 — `pit_a95_u1_p1`: Art. 95 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a95.u1.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50269,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 95 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 95: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a95_u1_p1_check", false) == true
+}
+# jdg.pit.a95.u2.p2 — `pit_a95_u2_p2`: Art. 95 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a95.u2.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50270,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 95 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 95: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a95_u2_p2_check", false) == true
+}
+# jdg.pit.a95.u3.p3 — `pit_a95_u3_p3`: Art. 95 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a95.u3.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50271,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 95 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 95: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a95_u3_p3_check", false) == true
+}
+# jdg.pit.a95.u5.p4 — `pit_a95_u5_p4`: Art. 95 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a95.u5.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50272,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 95 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 95: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a95_u5_p4_check", false) == true
+}
+# jdg.pit.a96.u1.p2 — `pit_a96_u1_p2`: Art. 96 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a96.u1.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50273,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 96 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 96: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a96_u1_p2_check", false) == true
+}
+# jdg.pit.a96.u2.p3 — `pit_a96_u2_p3`: Art. 96 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a96.u2.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50274,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 96 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 96: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a96_u2_p3_check", false) == true
+}
+# jdg.pit.a96.u4.p4 — `pit_a96_u4_p4`: Art. 96 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a96.u4.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50275,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 96 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 96: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a96_u4_p4_check", false) == true
+}
+# jdg.pit.a96.u5.p1 — `pit_a96_u5_p1`: Art. 96 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a96.u5.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50276,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 96 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 96: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a96_u5_p1_check", false) == true
+}
+# jdg.pit.a97.u1.p3 — `pit_a97_u1_p3`: Art. 97 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a97.u1.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50277,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 97 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 97: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a97_u1_p3_check", false) == true
+}
+# jdg.pit.a97.u3.p4 — `pit_a97_u3_p4`: Art. 97 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a97.u3.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50278,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 97 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 97: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a97_u3_p4_check", false) == true
+}
+# jdg.pit.a97.u4.p1 — `pit_a97_u4_p1`: Art. 97 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a97.u4.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50279,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 97 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 97: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a97_u4_p1_check", false) == true
+}
+# jdg.pit.a97.u5.p2 — `pit_a97_u5_p2`: Art. 97 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a97.u5.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50280,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 97 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 97: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a97_u5_p2_check", false) == true
+}
+# jdg.pit.a98.u2.p4 — `pit_a98_u2_p4`: Art. 98 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a98.u2.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50281,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 98 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 98: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a98_u2_p4_check", false) == true
+}
+# jdg.pit.a98.u3.p1 — `pit_a98_u3_p1`: Art. 98 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a98.u3.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50282,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 98 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 98: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a98_u3_p1_check", false) == true
+}
+# jdg.pit.a98.u4.p2 — `pit_a98_u4_p2`: Art. 98 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a98.u4.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50283,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 98 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 98: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a98_u4_p2_check", false) == true
+}
+# jdg.pit.a98.u5.p3 — `pit_a98_u5_p3`: Art. 98 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a98.u5.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50284,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 98 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 98: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a98_u5_p3_check", false) == true
+}
+# jdg.pit.a99.u1.p4 — `pit_a99_u1_p4`: Art. 99 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a99.u1.p4",
+    "package": "jdg.micro.pit",
+    "priority": 50285,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 99 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 99: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a99_u1_p4_check", false) == true
+}
+# jdg.pit.a99.u2.p1 — `pit_a99_u2_p1`: Art. 99 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a99.u2.p1",
+    "package": "jdg.micro.pit",
+    "priority": 50286,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 99 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 99: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a99_u2_p1_check", false) == true
+}
+# jdg.pit.a99.u3.p2 — `pit_a99_u3_p2`: Art. 99 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a99.u3.p2",
+    "package": "jdg.micro.pit",
+    "priority": 50287,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 99 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 99: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a99_u3_p2_check", false) == true
+}
+# jdg.pit.a99.u4.p3 — `pit_a99_u4_p3`: Art. 99 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.a99.u4.p3",
+    "package": "jdg.micro.pit",
+    "priority": 50288,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 99 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] Art. 99: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_a99_u4_p3_check", false) == true
+}
+# jdg.pit.nkup.r46a — `pit_nkup_r46a`: przepis szczegółowy → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.nkup.r46a",
+    "package": "jdg.micro.pit",
+    "priority": 50289,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] jdg.pit.nkup.r46a — punkt kontrolny OPA dla JDG",
+    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
+    "_warnings": ["[MICRO] jdg.pit.nkup.r46a: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pit_nkup_r46a_check", false) == true
+}

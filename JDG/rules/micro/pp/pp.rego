@@ -2644,3 +2644,1360 @@ else := {
 } {
     object.get(input.invoice, "pp_a36_exception_2", false) == true
 }
+
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  PLAN OPA/50 — KLASA B — Wygenerowane masowo (50 reguł)       ║
+# ║  Priorytety: 50000-50049                                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.pp.a40.u1.p1 — `pp_a40_u1_p1`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a40.u1.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50000,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a40_u1_p1_check", false) == true
+}
+# jdg.pp.a40.u2.p2 — `pp_a40_u2_p2`: Art. 40 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a40.u2.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50001,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a40_u2_p2_check", false) == true
+}
+# jdg.pp.a41.u1.p2 — `pp_a41_u1_p2`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a41.u1.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50002,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a41_u1_p2_check", false) == true
+}
+# jdg.pp.a41.u3.p3 — `pp_a41_u3_p3`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a41.u3.p3",
+    "package": "jdg.micro.pp",
+    "priority": 50003,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a41_u3_p3_check", false) == true
+}
+# jdg.pp.a41.u4.p4 — `pp_a41_u4_p4`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a41.u4.p4",
+    "package": "jdg.micro.pp",
+    "priority": 50004,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a41_u4_p4_check", false) == true
+}
+# jdg.pp.a41.u5.p1 — `pp_a41_u5_p1`: Art. 41 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a41.u5.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50005,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a41_u5_p1_check", false) == true
+}
+# jdg.pp.a42.u2.p3 — `pp_a42_u2_p3`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a42.u2.p3",
+    "package": "jdg.micro.pp",
+    "priority": 50006,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a42_u2_p3_check", false) == true
+}
+# jdg.pp.a42.u3.p4 — `pp_a42_u3_p4`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a42.u3.p4",
+    "package": "jdg.micro.pp",
+    "priority": 50007,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a42_u3_p4_check", false) == true
+}
+# jdg.pp.a42.u4.p1 — `pp_a42_u4_p1`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a42.u4.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50008,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a42_u4_p1_check", false) == true
+}
+# jdg.pp.a42.u5.p2 — `pp_a42_u5_p2`: Art. 42 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a42.u5.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50009,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a42_u5_p2_check", false) == true
+}
+# jdg.pp.a43.u1.p3 — `pp_a43_u1_p3`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a43.u1.p3",
+    "package": "jdg.micro.pp",
+    "priority": 50010,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a43_u1_p3_check", false) == true
+}
+# jdg.pp.a43.u2.p4 — `pp_a43_u2_p4`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a43.u2.p4",
+    "package": "jdg.micro.pp",
+    "priority": 50011,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a43_u2_p4_check", false) == true
+}
+# jdg.pp.a43.u3.p1 — `pp_a43_u3_p1`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a43.u3.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50012,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a43_u3_p1_check", false) == true
+}
+# jdg.pp.a43.u4.p2 — `pp_a43_u4_p2`: Art. 43 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a43.u4.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50013,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a43_u4_p2_check", false) == true
+}
+# jdg.pp.a44.u1.p4 — `pp_a44_u1_p4`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a44.u1.p4",
+    "package": "jdg.micro.pp",
+    "priority": 50014,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a44_u1_p4_check", false) == true
+}
+# jdg.pp.a44.u2.p1 — `pp_a44_u2_p1`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a44.u2.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50015,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a44_u2_p1_check", false) == true
+}
+# jdg.pp.a44.u3.p2 — `pp_a44_u3_p2`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a44.u3.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50016,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a44_u3_p2_check", false) == true
+}
+# jdg.pp.a44.u5.p3 — `pp_a44_u5_p3`: Art. 44 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a44.u5.p3",
+    "package": "jdg.micro.pp",
+    "priority": 50017,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a44_u5_p3_check", false) == true
+}
+# jdg.pp.a45.u1.p1 — `pp_a45_u1_p1`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a45.u1.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50018,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a45_u1_p1_check", false) == true
+}
+# jdg.pp.a45.u2.p2 — `pp_a45_u2_p2`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a45.u2.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50019,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a45_u2_p2_check", false) == true
+}
+# jdg.pp.a45.u4.p3 — `pp_a45_u4_p3`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a45.u4.p3",
+    "package": "jdg.micro.pp",
+    "priority": 50020,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a45_u4_p3_check", false) == true
+}
+# jdg.pp.a45.u5.p4 — `pp_a45_u5_p4`: Art. 45 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a45.u5.p4",
+    "package": "jdg.micro.pp",
+    "priority": 50021,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a45_u5_p4_check", false) == true
+}
+# jdg.pp.a46.u1.p2 — `pp_a46_u1_p2`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a46.u1.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50022,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a46_u1_p2_check", false) == true
+}
+# jdg.pp.a46.u3.p3 — `pp_a46_u3_p3`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a46.u3.p3",
+    "package": "jdg.micro.pp",
+    "priority": 50023,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a46_u3_p3_check", false) == true
+}
+# jdg.pp.a46.u4.p4 — `pp_a46_u4_p4`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a46.u4.p4",
+    "package": "jdg.micro.pp",
+    "priority": 50024,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a46_u4_p4_check", false) == true
+}
+# jdg.pp.a46.u5.p1 — `pp_a46_u5_p1`: Art. 46 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a46.u5.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50025,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a46_u5_p1_check", false) == true
+}
+# jdg.pp.a47.u2.p3 — `pp_a47_u2_p3`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a47.u2.p3",
+    "package": "jdg.micro.pp",
+    "priority": 50026,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a47_u2_p3_check", false) == true
+}
+# jdg.pp.a47.u3.p4 — `pp_a47_u3_p4`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a47.u3.p4",
+    "package": "jdg.micro.pp",
+    "priority": 50027,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a47_u3_p4_check", false) == true
+}
+# jdg.pp.a47.u4.p1 — `pp_a47_u4_p1`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a47.u4.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50028,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a47_u4_p1_check", false) == true
+}
+# jdg.pp.a47.u5.p2 — `pp_a47_u5_p2`: Art. 47 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a47.u5.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50029,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a47_u5_p2_check", false) == true
+}
+# jdg.pp.a48.u1.p3 — `pp_a48_u1_p3`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a48.u1.p3",
+    "package": "jdg.micro.pp",
+    "priority": 50030,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a48_u1_p3_check", false) == true
+}
+# jdg.pp.a48.u2.p4 — `pp_a48_u2_p4`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a48.u2.p4",
+    "package": "jdg.micro.pp",
+    "priority": 50031,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a48_u2_p4_check", false) == true
+}
+# jdg.pp.a48.u3.p1 — `pp_a48_u3_p1`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a48.u3.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50032,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a48_u3_p1_check", false) == true
+}
+# jdg.pp.a48.u4.p2 — `pp_a48_u4_p2`: Art. 48 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a48.u4.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50033,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a48_u4_p2_check", false) == true
+}
+# jdg.pp.a49.u1.p4 — `pp_a49_u1_p4`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a49.u1.p4",
+    "package": "jdg.micro.pp",
+    "priority": 50034,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a49_u1_p4_check", false) == true
+}
+# jdg.pp.a49.u2.p1 — `pp_a49_u2_p1`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a49.u2.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50035,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a49_u2_p1_check", false) == true
+}
+# jdg.pp.a49.u3.p2 — `pp_a49_u3_p2`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a49.u3.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50036,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a49_u3_p2_check", false) == true
+}
+# jdg.pp.a49.u5.p3 — `pp_a49_u5_p3`: Art. 49 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a49.u5.p3",
+    "package": "jdg.micro.pp",
+    "priority": 50037,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a49_u5_p3_check", false) == true
+}
+# jdg.pp.a50.u1.p1 — `pp_a50_u1_p1`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a50.u1.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50038,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a50_u1_p1_check", false) == true
+}
+# jdg.pp.a50.u2.p2 — `pp_a50_u2_p2`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a50.u2.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50039,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a50_u2_p2_check", false) == true
+}
+# jdg.pp.a50.u4.p3 — `pp_a50_u4_p3`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a50.u4.p3",
+    "package": "jdg.micro.pp",
+    "priority": 50040,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a50_u4_p3_check", false) == true
+}
+# jdg.pp.a50.u5.p4 — `pp_a50_u5_p4`: Art. 50 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a50.u5.p4",
+    "package": "jdg.micro.pp",
+    "priority": 50041,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a50_u5_p4_check", false) == true
+}
+# jdg.pp.a51.u1.p2 — `pp_a51_u1_p2`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a51.u1.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50042,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a51_u1_p2_check", false) == true
+}
+# jdg.pp.a51.u3.p3 — `pp_a51_u3_p3`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a51.u3.p3",
+    "package": "jdg.micro.pp",
+    "priority": 50043,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a51_u3_p3_check", false) == true
+}
+# jdg.pp.a51.u4.p4 — `pp_a51_u4_p4`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a51.u4.p4",
+    "package": "jdg.micro.pp",
+    "priority": 50044,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a51_u4_p4_check", false) == true
+}
+# jdg.pp.a51.u5.p1 — `pp_a51_u5_p1`: Art. 51 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a51.u5.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50045,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a51_u5_p1_check", false) == true
+}
+# jdg.pp.a52.u2.p3 — `pp_a52_u2_p3`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a52.u2.p3",
+    "package": "jdg.micro.pp",
+    "priority": 50046,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a52_u2_p3_check", false) == true
+}
+# jdg.pp.a52.u3.p4 — `pp_a52_u3_p4`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a52.u3.p4",
+    "package": "jdg.micro.pp",
+    "priority": 50047,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a52_u3_p4_check", false) == true
+}
+# jdg.pp.a52.u4.p1 — `pp_a52_u4_p1`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a52.u4.p1",
+    "package": "jdg.micro.pp",
+    "priority": 50048,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a52_u4_p1_check", false) == true
+}
+# jdg.pp.a52.u5.p2 — `pp_a52_u5_p2`: Art. 52 → Punkt kontrolny
+else := {
+    "matched": true,
+    "rule_id": "jdg.pp.a52.u5.p2",
+    "package": "jdg.micro.pp",
+    "priority": 50049,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
+    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+} {
+    object.get(input.jdg_entrepreneur, "pp_a52_u5_p2_check", false) == true
+}
