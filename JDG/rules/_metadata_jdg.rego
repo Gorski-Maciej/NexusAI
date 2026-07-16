@@ -12,7 +12,7 @@ package jdg.metadata
 
 # ── Policy Version ────────────────────────────────────────────────────────────
 
-policy_version := "2026.07.10"
+policy_version := "2026.07.16"
 
 # ── Rules Metadata Registry ───────────────────────────────────────────────────
 
@@ -123,7 +123,7 @@ all_registered_rules = keys if {
 #   → valid_from: "2026-02-01" (B2B; wg aktualnego harmonogramu MF)
 # - Mały ZUS Plus (Art. 18c ustawy o SUS) → valid_from: "2019-04-01"
 # - Ulga na start (Art. 18a ustawy o SUS) → valid_from: "2018-04-01" (z nowelizacji)
-# - SLIM VAT 3 (Ustawa z 26.05.2023) → valid_from: "2023-07-01" — Art. 89a VAT 150 dni
+# - SLIM VAT 3 (Ustawa z 26.05.2023) → valid_from: "2023-07-01" — Art. 89a VAT 90 dni (SLIM VAT 3/2025)
 # ════════════════════════════════════════════════════════════════════════════════
 
 temporal_validity := {
@@ -220,7 +220,7 @@ temporal_validity := {
         "supersedes": null
     },
 
-    # ── SLIM VAT 3 (2023-07-01) — ulga na złe długi 150 dni (Art. 89a VAT) ──
+    # ── SLIM VAT 3 (2023-07-01) — ulga na złe długi 90 dni (Art. 89a VAT) ──
     "jdg.edge_cases.sanction_bad_debt_debtor_30pct": {
         "valid_from": "2023-07-01",
         "valid_to": null,
@@ -250,4 +250,274 @@ get_rule_validity(rule_id) = v  if {
 get_rule_validity(rule_id) = v  if {
     is_temporal_rule(rule_id)
     v := temporal_validity[rule_id]
+}
+
+# ════════════════════════════════════════════════════════════════════════════════
+# A2: TEMPORAL CAUSALITY CHAIN — Time-Travel Compliance (Strategic Initiative)
+# ════════════════════════════════════════════════════════════════════════════════
+# Umożliwia ewaluację reguł wg STANU PRAWNEGO z dnia transakcji, nie dzisiaj.
+# Kluczowe dla kontroli KAS za zaległe lata (2022-2025).
+#
+# Mechanizm:
+#   1. is_active_for_date(rule_id, eval_date) → true/false
+#   2. Reguła bez wpisu w temporal_validity = ALWAYS ACTIVE
+#   3. Reguła z valid_from > eval_date → NIE obowiązywała → pomiń
+#   4. Reguła z valid_to < eval_date → już nie obowiązuje → pomiń
+# ════════════════════════════════════════════════════════════════════════════════
+
+# Główna funkcja A2: sprawdza czy reguła obowiązywała w dniu transakcji
+# Użycie w regułach: metadata.is_active_for_date("jdg.business.suspension_zus", input.evaluation_datetime)
+is_active_for_date(rule_id, eval_date) = true {
+    not is_temporal_rule(rule_id)
+    # Reguła bez wpisu temporalnego = zawsze aktywna
+}
+
+is_active_for_date(rule_id, eval_date) = true {
+    v := temporal_validity[rule_id]
+    valid_from := object.get(v, "valid_from", "0000-01-01")
+    valid_to := object.get(v, "valid_to", "9999-12-31")
+    # Leksykograficzne porównanie dat ISO (YYYY-MM-DD)
+    eval_date >= valid_from
+    not valid_to  # null = nadal obowiązuje
+}
+
+is_active_for_date(rule_id, eval_date) = true {
+    v := temporal_validity[rule_id]
+    valid_from := object.get(v, "valid_from", "0000-01-01")
+    valid_to := object.get(v, "valid_to", "9999-12-31")
+    eval_date >= valid_from
+    valid_to  # ma datę końcową
+    eval_date <= valid_to
+}
+
+is_active_for_date(rule_id, eval_date) = false {
+    v := temporal_validity[rule_id]
+    valid_from := object.get(v, "valid_from", "9999-12-31")
+    eval_date < valid_from
+    # Reguła jeszcze nie obowiązywała
+}
+
+is_active_for_date(rule_id, eval_date) = false {
+    v := temporal_validity[rule_id]
+    valid_to := object.get(v, "valid_to", "9999-12-31")
+    valid_to
+    eval_date > valid_to
+    # Reguła już nie obowiązuje
+}
+
+# Pobiera listę reguł aktywnych na daną datę
+active_rules_for_date(eval_date) = active {
+    all := object.keys(temporal_validity)
+    active := [rule_id |
+        some rule_id in all
+        is_active_for_date(rule_id, eval_date)
+    ]
+}
+
+# Pobiera listę reguł NIEAKTYWNYCH na daną datę (do logowania/warningów)
+inactive_rules_for_date(eval_date) = inactive {
+    all := object.keys(temporal_validity)
+    inactive := [rule_id |
+        some rule_id in all
+        not is_active_for_date(rule_id, eval_date)
+    ]
+}
+
+# ════════════════════════════════════════════════════════════════════════════════
+# A3: LEGAL CARTOGRAPHY — RDF/SPARQL Ontology Mapping (Strategic Initiative)
+# ════════════════════════════════════════════════════════════════════════════════
+# Mapa ontologiczna łącząca artykuły ustaw z regułami JDG.
+# Format: legal_provisions — każdy artykuł to węzeł, reguła to relacja.
+# Umożliwia zapytania SPARQL: "Które reguły pokrywają Art. 113 VAT?"
+# Prefixy: lex: (akt prawny), jdg: (reguła), cito: (cytowanie)
+# ════════════════════════════════════════════════════════════════════════════════
+
+legal_cartography := {
+    # ── VAT ──
+    "lex:VAT:Art5": {
+        "title": "Definicja dostawy towarów",
+        "jdg_rules": ["jdg.vat.a5.r1"],
+        "coverage": "COMPLETE",
+        "thresholds": []
+    },
+    "lex:VAT:Art17": {
+        "title": "Reverse charge — usługi budowlane i import",
+        "jdg_rules": ["jdg.vat.a17.r5", "jdg.crossborder.eu_reverse_charge"],
+        "coverage": "COMPLETE",
+        "thresholds": []
+    },
+    "lex:VAT:Art41": {
+        "title": "Stawki podstawowe VAT (23%, 8%, 5%, 0%)",
+        "jdg_rules": ["jdg.vat.a41.r1"],
+        "coverage": "COMPLETE",
+        "thresholds": ["vat_rate_standard_23", "vat_rate_reduced_8", "vat_rate_reduced_5"]
+    },
+    "lex:VAT:Art43": {
+        "title": "Zwolnienia przedmiotowe (40 punktów)",
+        "jdg_rules": ["jdg.vat.a43.r1"],
+        "coverage": "PARTIAL",
+        "thresholds": [],
+        "gaps": ["art43_pkt10", "art43_pkt11", "art43_pkt12"]
+    },
+    "lex:VAT:Art86": {
+        "title": "Odliczenie VAT naliczonego",
+        "jdg_rules": ["jdg.vat.a86.r1"],
+        "coverage": "COMPLETE",
+        "thresholds": ["vat_deduction_proportion"]
+    },
+    "lex:VAT:Art89a": {
+        "title": "Złe długi — wierzyciel (korekta in plus)",
+        "jdg_rules": ["jdg.vat.a89a.r1", "jdg.conflicts.bad_debt_creditor_vat_corrected_but_not_pit"],
+        "coverage": "COMPLETE",
+        "thresholds": ["bad_debt_days"],
+        "temporal_note": "150 dni → 90 dni (SLIM VAT 3/2025-07-01)"
+    },
+    "lex:VAT:Art89b": {
+        "title": "Złe długi — dłużnik (korekta in minus)",
+        "jdg_rules": ["jdg.vat.a89b.r1"],
+        "coverage": "COMPLETE",
+        "thresholds": ["bad_debt_days", "bad_debt_debtor_sanction_30pct"]
+    },
+    "lex:VAT:Art106e": {
+        "title": "Elementy faktury (paragon ≤ 450 zł z NIP)",
+        "jdg_rules": ["jdg.vat.a106e.r10"],
+        "coverage": "COMPLETE",
+        "thresholds": ["receipt_nip_limit"]
+    },
+    "lex:VAT:Art113": {
+        "title": "Zwolnienie podmiotowe do 200 000 PLN",
+        "jdg_rules": ["jdg.vat.a113.r1", "jdg.edge_cases.vat_breach_mid_year"],
+        "coverage": "COMPLETE",
+        "thresholds": ["vat_subject_exemption_limit"]
+    },
+
+    # ── PIT ──
+    "lex:PIT:Art14": {
+        "title": "Przychody z działalności gospodarczej",
+        "jdg_rules": ["jdg.pit.a14.r1", "jdg.pit.forms.pit_revenue_exclusions"],
+        "coverage": "COMPLETE",
+        "thresholds": []
+    },
+    "lex:PIT:Art22": {
+        "title": "Koszty uzyskania przychodu",
+        "jdg_rules": ["jdg.pit.a22.r1", "jdg.pit.kup.direct_vs_indirect"],
+        "coverage": "COMPLETE",
+        "thresholds": ["kup_direct_revenue_year", "kup_indirect_invoice_date"]
+    },
+    "lex:PIT:Art23": {
+        "title": "Wydatki niestanowiące KUP (NKUP)",
+        "jdg_rules": ["jdg.pit.a23.r1"],
+        "coverage": "PARTIAL",
+        "thresholds": [],
+        "gaps": ["art23_pkt23_representation_detail", "art23_pkt46_car_75pct", "art23_pkt47_lease_limit"]
+    },
+    "lex:PIT:Art27": {
+        "title": "Skala podatkowa 12%/32%",
+        "jdg_rules": ["jdg.pit.a27.r1", "jdg.pit.forms.scale"],
+        "coverage": "COMPLETE",
+        "thresholds": ["pit_scale_threshold", "pit_scale_low_rate", "pit_scale_high_rate", "pit_tax_free_amount"]
+    },
+    "lex:PIT:Art30c": {
+        "title": "Podatek liniowy 19%",
+        "jdg_rules": ["jdg.pit.a30c.r1", "jdg.pit.forms.linear"],
+        "coverage": "COMPLETE",
+        "thresholds": ["pit_linear_rate", "linear_former_employer_block_years"]
+    },
+    "lex:PIT:Art30ca": {
+        "title": "IP Box — 5% od kwalifikowanego IP",
+        "jdg_rules": ["jdg.pit.a30ca.r1"],
+        "coverage": "COMPLETE",
+        "thresholds": ["ip_box_rate", "nexus_indicator_required"]
+    },
+    "lex:PIT:Art30f": {
+        "title": "CFC — zagraniczna spółka kontrolowana",
+        "jdg_rules": ["jdg.crossborder.cfc_jdg_controlled"],
+        "coverage": "COMPLETE",
+        "thresholds": ["cfc_control_threshold_50pct", "cfc_passive_income_33pct"]
+    },
+    "lex:PIT:Art30da": {
+        "title": "Exit Tax — przeniesienie aktywów za granicę",
+        "jdg_rules": ["jdg.pit.a30da.r1"],
+        "coverage": "PARTIAL",
+        "thresholds": ["exit_tax_rate_19pct"],
+        "gaps": ["exit_tax_asset_valuation", "exit_tax_deferral"]
+    },
+
+    # ── ZUS / SUS ──
+    "lex:SUS:Art18a": {
+        "title": "Ulga na start (6 mies.)",
+        "jdg_rules": ["jdg.sus.a18a.r1"],
+        "coverage": "COMPLETE",
+        "thresholds": ["start_relief_months"]
+    },
+    "lex:SUS:Art18c": {
+        "title": "Mały ZUS Plus (36 mies.)",
+        "jdg_rules": ["jdg.sus.a18c.r1"],
+        "coverage": "COMPLETE",
+        "thresholds": ["maly_zus_plus_months", "maly_zus_plus_income_limit"]
+    },
+    "lex:SUS:Art36a": {
+        "title": "Zawieszenie JDG a składki",
+        "jdg_rules": ["jdg.sus.a36a.r1", "jdg.business.suspension_zus"],
+        "coverage": "COMPLETE",
+        "thresholds": ["suspension_social_zero", "suspension_health_still_due"]
+    },
+
+    # ── Ordynacja Podatkowa ──
+    "lex:OP:Art70": {
+        "title": "Przedawnienie zobowiązań (5 lat)",
+        "jdg_rules": ["jdg.ord.a70.r1", "jdg.liability.statute_5_years"],
+        "coverage": "COMPLETE",
+        "thresholds": ["statute_of_limitations_years"]
+    },
+    "lex:OP:Art81": {
+        "title": "Korekty deklaracji",
+        "jdg_rules": ["jdg.ord.a81.r1", "jdg.corrections.vat_declaration_period"],
+        "coverage": "COMPLETE",
+        "thresholds": []
+    },
+    "lex:OP:Art117ba": {
+        "title": "Biała Lista — weryfikacja rachunku",
+        "jdg_rules": ["jdg.ord.a117ba.r1"],
+        "coverage": "COMPLETE",
+        "thresholds": ["whitelist_verification_days"]
+    },
+
+    # ── KKS ──
+    "lex:KKS:Art54": {
+        "title": "Podanie nieprawdy w deklaracji",
+        "jdg_rules": ["jdg.kks.a54.r1"],
+        "coverage": "PARTIAL",
+        "thresholds": [],
+        "gaps": ["kks_art54_penalty_graduation", "kks_art54_materiality_threshold"]
+    },
+    "lex:KKS:Art62": {
+        "title": "Pusta faktura / szara strefa",
+        "jdg_rules": ["jdg.kks.a62.r7"],
+        "coverage": "COMPLETE",
+        "thresholds": ["empty_invoice_sanction_30pct"]
+    }
+}
+
+# ── Legal Cartography Helpers ──────────────────────────────────────────────
+
+# Znajdź wszystkie reguły pokrywające dany artykuł
+rules_for_provision(provision_id) = rules {
+    provision := legal_cartography[provision_id]
+    rules := provision.jdg_rules
+} else = [] {
+    true
+}
+
+# Sprawdź czy artykuł ma pełne pokrycie
+is_fully_covered(provision_id) = true {
+    legal_cartography[provision_id].coverage == "COMPLETE"
+}
+
+# Lista artykułów z niepełnym pokryciem
+gaps_in_coverage = gaps {
+    gaps := [prov |
+        some prov in object.keys(legal_cartography)
+        legal_cartography[prov].coverage != "COMPLETE"
+    ]
 }

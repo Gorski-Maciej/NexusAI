@@ -7,10 +7,10 @@
 # description: |
 #   Reguły cyklu życia JDG. Kolejność: P900 (CEIDG) → P902 (aktualizacja) →
 #   P910 (zawieszenie) → P912 (KUP w zawieszeniu) →
-#   P914 (ZUS w zawieszeniu — społeczne=0, zdrowotna NADAL!) →
+#   P914 (ZUS w zawieszeniu — społeczne=0, zdrowotna NADAL! — AKTYWNA, NIE deprecated) →
 #   P920 (sukcesja) → P930 (limit nieewidencjonowanej) → P932 (ZUS exemption).
-#   Architektura: object.union — business.decide mergowane PO zus.decide
-#   (P914 nie ustawia zus_health_rate, pozwala ZUS-owi zachować stawkę).
+#   Architektura: object.union — business.decide mergowane PO zus.decide# (P914 nie ustawia zus_health_rate, pozwala ZUS-owi zachować stawkę).
+#   ⚠️ P914 NIE jest deprecated — to aktywna reguła kanoniczna.
 # legal_basis: Art. 5-7 CEIDG, Art. 22-25 Prawa przedsiębiorców, Art. 36a SUS
 # edge_cases:
 #   - Zawieszenie: społeczne=0, zdrowotna NADAL (Art. 36a SUS)

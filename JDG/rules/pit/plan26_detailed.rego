@@ -1,20 +1,18 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 # NexusAI JDG Policies — jdg.pit
 # Generated from Plan OPA specifications: 2026-07-13 14:05:06
-# Rules: 11
+# Rules: 10 (P508 DEPRECATED → jdg.pit.forms.pit_revenue_exclusions)
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.pit
 import data.jdg.helpers
 
 default decide := {"matched":false,"rule_id":"jdg.pit.no_match","package":"jdg.pit","priority":99999}
 
-# jdg.pit.revenue_exclusions_detail — Wyłączenia z przychodu — zwrot VAT, nadpłata ZUS, odszkodowania
-decide :=   {"matched":true,"rule_id":"jdg.pit.revenue_exclusions_detail","package":"jdg.pit","priority":508,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Wyłączenia z przychodu — zwrot VAT, nadpłata ZUS, odszkodowania","_legal_basis":"Art. 14 ust. 3 PIT","_warnings":[]} {
-    object.get(input.invoice, "direction", "") == "SALE"; object.get(input.invoice, "kus_qualification", "") == "NKUP"; object.get(input.invoice, "car_fuel_type", "") == "ELECTRIC"
-}
+# jdg.pit.revenue_exclusions_detail — [DEPRECATED P508 → jdg.pit.forms.pit_revenue_exclusions]
+# Usunięto duplikat. Kanoniczna wersja: JDG/rules/pit/forms.rego (priority 508)
 
 # jdg.pit.income_with_inventory_calculation — Dochód = przychód - KUP + (remanent końcowy - początkowy)
-else :=   {"matched":true,"rule_id":"jdg.pit.income_with_inventory_calculation","package":"jdg.pit","priority":509,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Dochód = przychód - KUP + (remanent końcowy - początkowy)","_legal_basis":"Art. 24 ust. 1-1b PIT","_warnings":[]} {
+decide :=   {"matched":true,"rule_id":"jdg.pit.income_with_inventory_calculation","package":"jdg.pit","priority":509,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Dochód = przychód - KUP + (remanent końcowy - początkowy)","_legal_basis":"Art. 24 ust. 1-1b PIT","_warnings":[]} {
     object.get(input.invoice, "direction", "") == "SALE"; object.get(input.invoice, "direction", "") == "PURCHASE"; object.get(input.jdg_entrepreneur, "uses_pkpir", false) == true
 }
 

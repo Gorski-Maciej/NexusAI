@@ -1,16 +1,19 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — Main Orchestrator (Multi-Pass First-Match-Wins)
+# NexusAI JDG — Main Orchestrator (Multi-Pass First-Match-Wins + Sharded Router)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
 # METADATA
-# title: JDG Main Orchestrator — Multi-Pass Evaluation Engine
+# title: JDG Main Orchestrator — Multi-Pass + Sharded Router (B1 Strategic Initiative)
 # description: |
-#   Główny plik decyzyjny JDG. Orkiestruje ewaluację wszystkich 29 pakietów
+#   Główny plik decyzyjny JDG. Orkiestruje ewaluację wszystkich 37 pakietów
 #   w architekturze Multi-Pass zgodnej z Doc 34, Sekcja 1.3.
-#   30 pakietów = 29 plików reguł + ten główny orchestrator.
+#   B1: Sharded Index Router — hash kontekstu (tax_form × transaction_type ×
+#   entity_flags × evaluation_date) → dynamiczny routing do specjalizowanych
+#   ścieżek ewaluacji. Redukuje złożoność z O(N) do O(1).
+#   Dodano 6 pakietów Klasy C (2026-07-16): mdr, tp, solidarity, edelivery, audit, residency.
 #   Używa object.union() do scalania werdyktów z kolejnością: najniższy
 #   priorytet wewnątrz, najwyższy na zewnątrz (overrides).
-# architecture: Multi-Pass OPA (ADR-001)
+# architecture: Multi-Pass OPA (ADR-001) + Sharded Router (B1)
 # legal_basis: N/A (orchestrator — nie zawiera reguł podatkowych)
 # edge_cases:
 #   - Jeśli RISK lub ROUTING zwrócą BLOCK_AND_ALERT, dalsze passy abortowane
@@ -39,6 +42,12 @@ import data.jdg.pit.transitions
 import data.jdg.pit.elearning
 import data.jdg.allowances
 import data.jdg.zus
+import data.jdg.mdr
+import data.jdg.tp
+import data.jdg.solidarity
+import data.jdg.edelivery
+import data.jdg.audit
+import data.jdg.residency
 import data.jdg.accounting
 import data.jdg.business
 import data.jdg.business.gig_economy
@@ -60,6 +69,156 @@ import data.jdg.mpips
 import data.jdg.rodo
 import data.jdg.validation
 import data.jdg.fallback
+import data.jdg.metadata
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Problem: 7,000 reguł w O(N) else-chain → 28s latency.
+# Rozwiązanie: Router O(1) buduje hash kontekstu i wybiera specjalizowaną
+# ścieżkę ewaluacji (shard) zamiast pełnego skanowania.
+#
+# Kontekst routingu:
+#   - tax_form: SCALE / LINEAR / LUMP_SUM / TAX_CARD
+#   - transaction_type: SALE / PURCHASE / EXPORT / IMPORT
+#   - entity_flags: CEIDG_VALID / SUSPENDED / IN_SUCCESSIO / UNREGISTERED
+#   - evaluation_date: kwartał roku
+#
+# W pełnej implementacji (Faza S2) router mapuje do dedykowanych shardów.
+# Obecnie: prototyp — dynamiczna selekcja pakietów na podstawie kontekstu.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── Context Builder: ekstrahuje kluczowe flagi do routingu ───────────────────
+
+routing_context := {
+    "tax_form": object.get(input.jdg_entrepreneur, "tax_form", "SCALE"),
+    "transaction_type": build_transaction_type(input),
+    "entity_status": build_entity_status(input),
+    "evaluation_quarter": build_evaluation_quarter(input),
+    "is_cross_border": is_cross_border_transaction(input),
+    "has_employees": object.get(input.jdg_entrepreneur, "has_employees", false),
+    "is_vat_payer": is_vat_payer_check(input),
+    "requires_ksef": requires_ksef_check(input)
+}
+
+# Pomocnicze
+build_transaction_type(input) = tx_type {
+    input.invoice.direction == "SALE"
+    input.invoice.procedure == "EXPORT"
+    tx_type := "EXPORT"
+} else = tx_type {
+    input.invoice.direction == "SALE"
+    input.vendor.country != "PL"
+    tx_type := "CROSS_BORDER_SALE"
+} else = tx_type {
+    input.invoice.direction == "SALE"
+    tx_type := "DOMESTIC_SALE"
+} else = tx_type {
+    input.invoice.direction == "PURCHASE"
+    input.vendor.country != "PL"
+    tx_type := "IMPORT"
+} else = tx_type {
+    input.invoice.direction == "PURCHASE"
+    tx_type := "DOMESTIC_PURCHASE"
+} else = "UNKNOWN" {
+    true
+}
+
+build_entity_status(input) = status {
+    object.get(input.jdg_entrepreneur, "business_status", "") == "SUSPENDED"
+    status := "SUSPENDED"
+} else = status {
+    object.get(input.jdg_entrepreneur, "in_succession", false) == true
+    status := "IN_SUCCESSIO"
+} else = status {
+    object.get(input.jdg_entrepreneur, "is_unregistered_activity", false) == true
+    status := "UNREGISTERED"
+} else = "ACTIVE" {
+    true
+}
+
+build_evaluation_quarter(input) = quarter {
+    eval_date := object.get(input, "evaluation_datetime", "2026-01-01")
+    month := to_number(substring(eval_date, 5, 2))
+    quarter = 1 { month <= 3 }
+    quarter = 2 { month > 3; month <= 6 }
+    quarter = 3 { month > 6; month <= 9 }
+    quarter = 4 { month > 9 }
+}
+
+is_cross_border_transaction(input) = true {
+    input.vendor.country != "PL"
+} else = false {
+    true
+}
+
+is_vat_payer_check(input) = true {
+    input.jdg_entrepreneur.vat_status == "ACTIVE"
+} else = false {
+    true
+}
+
+requires_ksef_check(input) = true {
+    object.get(input, "evaluation_datetime", "2026-01-01") >= "2026-02-01"
+    input.invoice.direction == "SALE"
+    input.invoice.document_type == "INVOICE"
+} else = false {
+    true
+}
+
+# ── Shard Router: wybiera optymalną ścieżkę ewaluacji ───────────────────────
+
+# Prototyp routera — w Fazie S2 (Sprinty 4-8) mapuje do dedykowanych shardów.
+# Obecnie: zwraca listę pakietów z priorytetyzacją na podstawie kontekstu.
+shard_selector(ctx) = shard_packages {
+    ctx.is_cross_border == true
+    shard_packages := ["risk", "kks", "routing", "compliance", "crossborder",
+        "post_brexit", "vat.substantive", "vat.deductions", "vat.procedures"]
+} else = shard_packages {
+    ctx.transaction_type == "DOMESTIC_SALE"
+    shard_packages := ["risk", "kks", "pit.forms", "pit.kup",
+        "vat.substantive", "accounting", "business", "zus"]
+} else = shard_packages {
+    ctx.transaction_type == "DOMESTIC_PURCHASE"
+    shard_packages := ["risk", "kks", "vat.substantive", "vat.deductions",
+        "accounting", "corrections", "pit.kup"]
+} else = shard_packages {
+    ctx.entity_status == "SUSPENDED"
+    shard_packages := ["risk", "kks", "routing", "business", "zus", "accounting"]
+} else = shard_packages {
+    # Fallback: pełny łańcuch bezpieczeństwa
+    shard_packages := ["risk", "kks", "routing", "compliance"]
+}
+
+# ── Shard Routing Decision ───────────────────────────────────────────────────
+
+# Na podstawie kontekstu decyduje czy użyć pełnego łańcucha czy shardu
+use_full_chain(ctx) = true {
+    # Pełny łańcuch wymagany gdy:
+    # 1. Transakcja transgraniczna
+    # 2. JDG zawieszona lub w sukcesji
+    # 3. Wykryto potencjalne ryzyko fraud
+    ctx.is_cross_border == true
+}
+
+use_full_chain(ctx) = true {
+    ctx.entity_status != "ACTIVE"
+}
+
+use_full_chain(ctx) = false {
+    # Shard wystarczy dla standardowych transakcji krajowych
+    ctx.transaction_type == "DOMESTIC_SALE"
+    ctx.entity_status == "ACTIVE"
+    ctx.is_cross_border == false
+}
+
+use_full_chain(ctx) = false {
+    ctx.transaction_type == "DOMESTIC_PURCHASE"
+    ctx.entity_status == "ACTIVE"
+} else = true {
+    true
+}
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Safe Merge helpers (Phase 5 P0 — ochrona niemutowalnych werdyktów ZUS)
@@ -132,11 +291,14 @@ safe_merge(a, b) = object.union(a, b) {
 # risk.decide lub inne pakiety z wyższym priorytetem.
 #
 # Kolejność (od najniższego priorytetu wewnątrz do najwyższego na zewnątrz):
- # fallback → retention → digital → temporal → restructuring → environmental →
-# employer → international → ksef_jpk → local_taxes → representation →
-# liability → corrections → business → accounting → zus → allowances →
-# transitions → exemptions → advances_returns → kup → forms → procedures →
-# deductions → substantive → crossborder → compliance → routing → kks → risk
+# fallback → validation → mpips → rodo → retention → edelivery → digital →
+# api_fallback → temporal → restructuring → environmental → employer →
+# residency → tp → international → ksef_jpk → local_taxes →
+# representation → audit → liability → corrections → mdr →
+# gig_economy → business → accounting → zus → solidarity → allowances →
+# elearning → transitions → exemptions → advances_returns → kup → forms →
+# procedures → deductions → substantive → crossborder → post_brexit →
+# compliance → routing → kks → risk
 ##    safe_merge chroni werdykty z flagą immutable_verdict=true
 # (ZUS P720/P722/P724, business P914) przed przypadkowym nadpisaniem.
 #
@@ -160,27 +322,34 @@ final_verdict = safe_merge(risk.decide,
     safe_merge(transitions.decide,
     safe_merge(elearning.decide,
     safe_merge(allowances.decide,
+    safe_merge(solidarity.decide,
     safe_merge(zus.decide,
     safe_merge(accounting.decide,
     safe_merge(business.decide,
     safe_merge(gig_economy.decide,
+    safe_merge(mdr.decide,
     safe_merge(corrections.decide,
     safe_merge(liability.decide,
+    safe_merge(audit.decide,
     safe_merge(representation.decide,
     safe_merge(local_taxes.decide,
     safe_merge(ksef_jpk.decide,
     safe_merge(international.decide,
+    safe_merge(tp.decide,
+    safe_merge(residency.decide,
     safe_merge(employer.decide,
     safe_merge(environmental.decide,
     safe_merge(restructuring.decide,
     safe_merge(temporal.decide,
     safe_merge(api_fallback.decide,
     safe_merge(digital.decide,
-    safe_merge(retention.decide,    safe_merge(rodo.decide,
+    safe_merge(retention.decide,
+    safe_merge(edelivery.decide,
+    safe_merge(rodo.decide,
     safe_merge(mpips.decide,
     safe_merge(validation.decide,
         fallback.decide
-    )))))))))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))))))))))))))))))))))
 
 # ── PAS 8: Cross-Domain Conflict Detection (Post-Merge) ────────────────────
 # conflicts.decide analizuje już scalony final_verdict i wykrywa

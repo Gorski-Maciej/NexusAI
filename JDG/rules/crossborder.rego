@@ -3,12 +3,13 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 #
 # METADATA
-# title: Crossborder Package — Intra-EU & Non-EU Transactions
+# title: Crossborder Package — Intra-EU & Non-EU Transactions (P40-P49 — AKTYWNE, NIE deprecated)
 # description: |
 #   PAS 3 Multi-Pass. First-Match-Wins else-chain. Obsługuje transakcje zagraniczne:
 #   WNT reverse charge (P40), import usług UE (P41), WDT 0% (P42), WDT bez dokumentów
 #   → stawka krajowa (P42c), import spoza UE (P45), eksport towarów (P48),
-#   transakcje trójstronne (P49).
+#   transakcje trójstronne (P49). Wszystkie reguły AKTYWNE — błędnie oznaczone
+#   jako DEPRECATED w dokumencie PELNE_POKRYCIE_PRAWNE.txt (dotyczyło starego policies/jdg/).
 # architecture: Multi-Pass PAS 3 (ADR-001)
 # legal_basis: Art. 17, 28b, 41-42, 135-138 VAT
 # edge_cases:

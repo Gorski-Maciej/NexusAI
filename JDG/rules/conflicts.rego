@@ -22,7 +22,7 @@
 #   - IP Box + B+R na tym samym dochodzie → konflikt (wybierz jeden)
 #   - Reprezentacja vs marketing — borderline (restauracje, eventy)
 #   - Auto bez ewidencji → VAT 50%, KUP 75% → uzasadniona asymetria
-#   - Złe długi: VAT 150 dni vs PIT 90 dni → różne progi czasowe
+#   - Złe długi: VAT 90 dni vs PIT 90 dni → zharmonizowane (SLIM VAT 3/2025)
 # package: jdg.conflicts
 # deprecated: false
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -485,35 +485,15 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# R0605-R0610: Bad Debt — VAT vs PIT (różne progi czasowe i zasady)
+# R0606-R0610: Bad Debt — VAT i PIT (zharmonizowane 90 dni, SLIM VAT 3/2025)
 # ═══════════════════════════════════════════════════════════════════════════════
-# Problem: Ulga na złe długi w VAT (Art. 89a VAT, 150 dni) i PIT (Art. 26i
-# PIT, 90 dni) mają różne progi czasowe i warunki. Podatnik może być
-# uprawniony do ulgi w PIT ale jeszcze nie w VAT (90-149 dni).
-# To NIE jest błąd — to różne reżimy prawne. Ale warto flagować.
+# Problem: Ulga na złe długi w VAT (Art. 89a VAT, 90 dni od SLIM VAT 3/2025)
+# i PIT (Art. 26i PIT, 90 dni) mają teraz zharmonizowane progi czasowe.
+# R0605 (timing_diff_150_vs_90) został usunięty jako nieaktualny.
+# Nadal istnieją różnice w warunkach formalnych między VAT i PIT.
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# R0605: bad_debt_timing_vat_150_vs_pit_90 — Różne progi czasowe
-else := {
-    "matched": true,
-    "rule_id": "jdg.conflicts.bad_debt_timing_vat_150_vs_pit_90",
-    "package": "jdg.conflicts",
-    "priority": 605,
-    "cross_domain_conflict": true,
-    "conflict_domains": ["vat", "pit"],
-    "conflict_severity": "INFO",
-    "conflict_resolution": "ACCEPT_TIMING_DIFFERENCE",
-    "conflict_message": "Złe długi: PIT (90 dni) vs VAT (150 dni) — różne progi prawidłowe",
-    "_routing": "",
-    "_routing_reason": "",
-    "_legal_basis": "Art. 26i PIT (90 dni) vs Art. 89a VAT (150 dni)",
-    "_warnings": [sprintf("ZŁE DŁUGI TIMING: %d dni po terminie — PIT już dostępny (>90 dni), VAT dopiero po 150 dniach. Korekta PIT: TAK, korekta VAT: %s.", [days_overdue, vat_available_str])]
-} {
-    days_overdue := object.get(input.invoice, "days_overdue", 0)
-    days_overdue >= 90
-    days_overdue < 150
-    vat_available_str := "NIE (czekaj do 150 dni)"
-}
+# R0605: [USUNIĘTA — SLIM VAT 3/2025 zharmonizował terminy VAT i PIT do 90 dni]
 
 # R0606: bad_debt_creditor_vat_corrected_but_not_pit — VAT skorygowany, PIT nie
 else := {
@@ -531,7 +511,7 @@ else := {
     "_legal_basis": "Art. 89a VAT, Art. 26i PIT",
     "_warnings": [sprintf("NIESPÓJNOŚĆ ZŁE DŁUGI: wierzyciel skorygował VAT (%.2f PLN) ale nie PIT. Jeśli >90 dni i spełnione warunki Art. 26i PIT — rozważ korektę PIT.", [vat_correction_amount])]
 } {
-    input.invoice.days_overdue >= 150
+    input.invoice.days_overdue >= 90
     input.invoice.vat_bad_debt_corrected == true
     input.invoice.pit_bad_debt_corrected == false
     vat_correction_amount := object.get(input.invoice, "vat_correction_amount", 0)
@@ -552,9 +532,9 @@ else := {
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Dłużnik złych długów — sprawdź obie korekty (VAT i PIT)",
     "_legal_basis": "Art. 89b VAT, Art. 26i ust. 9 PIT",
-    "_warnings": [sprintf("DŁUŻNIK ZŁE DŁUGI: %.2f PLN niezapłacone >150 dni. OBOWIĄZEK: (1) korekta VAT naliczonego w JPK_V7, (2) zwiększenie dochodu PIT o niezapłaconą kwotę netto.", [unpaid_amount])]
+    "_warnings": [sprintf("DŁUŻNIK ZŁE DŁUGI: %.2f PLN niezapłacone >90 dni. OBOWIĄZEK: (1) korekta VAT naliczonego w JPK_V7, (2) zwiększenie dochodu PIT o niezapłaconą kwotę netto.", [unpaid_amount])]
 } {
-    input.invoice.days_overdue >= 150
+    input.invoice.days_overdue >= 90
     input.invoice.is_paid == false
     input.invoice.i_am_debtor == true
     unpaid_amount := object.get(input.invoice, "amount_net", 0)

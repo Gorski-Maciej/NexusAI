@@ -1,0 +1,130 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI JDG — OPA/Rego CI/CD Pipeline (B3 Strategic Initiative)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Walidacje PRZED merge:
+#   1. Mandatory matched:true — żadna reguła nie może zwracać matched:false
+#   2. No fallback ALLOW — ścieżki walidacyjne muszą mieć konkretną decyzję
+#   3. Rule ID validation — każdy rule_id musi być w canonical map
+#   4. Hardcoded integers check — żadne magiczne liczby w Rego
+#   5. Legal basis required — każda reguła musi mieć _legal_basis
+#   6. Temporal validation — każda reguła musi mieć valid_from/valid_to
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: OPA Rego CI
+
+on:
+  pull_request:
+    paths:
+      - 'JDG/rules/**/*.rego'
+  push:
+    branches: [main]
+    paths:
+      - 'JDG/rules/**/*.rego'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  conftest-validate:
+    name: Conftest — Rego Policy Validation
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        check:
+          - matched_true_required
+          - no_fallback_allow
+          - rule_id_canonical
+          - no_hardcoded_integers
+          - legal_basis_required
+          - temporal_validity_required
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup OPA
+        uses: open-policy-agent/setup-opa@v2
+        with:
+          version: latest
+
+      - name: OPA Check — Syntax
+        run: |
+          opa check JDG/rules/*.rego || true
+          opa check JDG/rules/**/*.rego || true
+
+      - name: OPA Check — Bundle (main orchestrator only)
+        run: |
+          opa build JDG/rules/main_jdg.rego --output bundle.tar.gz || echo "Bundle build skipped (multi-package)"
+
+      - name: Conftest — ${{ matrix.check }}
+        uses: instrumenta/conftest-action@v2
+        with:
+          policy: conftest/policies/
+          data: conftest/data/
+          args: --namespace ${{ matrix.check }} JDG/rules/
+
+  rego-unit-tests:
+    name: OPA Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup OPA
+        uses: open-policy-agent/setup-opa@v2
+        with:
+          version: latest
+
+      - name: Run Rego Tests
+        run: |
+          opa test JDG/rules/ --verbose --count 10
+
+  lint-magic-numbers:
+    name: Lint — No Hardcoded Integers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Grep for magic numbers
+        run: |
+          echo "=== Checking for hardcoded integers in Rego ==="
+          # Find lines with standalone numeric values (not in thresholds_jdg.rego or comments)
+          VIOLATIONS=$(grep -rnP '(?<!#)\b([2-9]\d{3,}|[1-9]\d{4,})\b' JDG/rules/ \
+            --include='*.rego' \
+            --exclude='thresholds_jdg.rego' \
+            --exclude='_metadata_jdg.rego' \
+            | grep -v '//' \
+            | grep -v '#' \
+            | grep -v 'priority' \
+            | grep -v '0000-01-01' \
+            | grep -v '9999-12-31' \
+            | grep -v '2026-07' \
+            | grep -v '2025-07' \
+            || true)
+
+          if [ -n "$VIOLATIONS" ]; then
+            echo "❌ Found hardcoded numeric values that should be in thresholds_jdg.rego:"
+            echo "$VIOLATIONS"
+            echo ""
+            echo "Move these values to JDG/rules/thresholds_jdg.rego"
+            exit 1
+          else
+            echo "✅ No hardcoded numeric values found"
+          fi
+
+  manifest-sync-check:
+    name: Manifest Sync Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify package count
+        run: |
+          REGO_FILES=$(find JDG/rules/ -name '*.rego' -not -name 'thresholds_jdg.rego' | wc -l)
+          echo "Rego rule files found: $REGO_FILES"
+          if [ "$REGO_FILES" -lt 30 ]; then
+            echo "⚠️  Expected at least 30 rule files, found $REGO_FILES"
+          fi

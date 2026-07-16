@@ -14,7 +14,7 @@
 # legal_basis: Art. 41-43, 89a, 113, 120 VAT
 # edge_cases:
 #   - P58: zwolnienie podmiotowe tylko gdy !is_vat_payer AND turnover < 200k
-#   - P60: bad_debt_creditor wymaga >150 dni + debtor_notified
+#   - P60: bad_debt_creditor wymaga >90 dni (SLIM VAT 3/2025) + debtor_notified
 #   - P67: standard 23% = catch-all dla PL
 # package: jdg.vat.substantive
 # deprecated: false
