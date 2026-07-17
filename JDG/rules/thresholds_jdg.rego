@@ -113,9 +113,13 @@ zus := {
     # Art. 18c SUS — Mały ZUS Plus (P741)
     "maly_zus_plus_months": 36,                  # 36 miesięcy
     "maly_zus_plus_income_limit": 60000,         # PLN rocznie
+    "maly_zus_plus_revenue_limit": 120000,       # PLN rocznie — próg utraty MZP (ENTERPRISE)
 
     # Art. 18a SUS — preferencyjny (P742)
     "preferential_months": 24,                   # 24 miesiące
+
+    # Standardowa podstawa wymiaru (60% przeciętnego wynagrodzenia)
+    "social_base_standard": 5204.40,            # PLN — 60% × 8674 PLN (prognoza 2026)
 
     # Składka zdrowotna (Polski Ład 2022)
     "health_scale_rate": 0.09,                   # 9% od dochodu (P720) — NIE odlicza się
@@ -130,9 +134,38 @@ zus := {
     "health_lump_tier_3_amount": 1258.39,        # PLN/mies
 
     # Zasiłek chorobowy
-    "sickness_waiting_days": 90,                 # 90 dni wyczekiwania (P578)
+    "sickness_waiting_days": 90,                 # 90 dni wyczekiwania (P578, ENTERPRISE P745)
     "sickness_benefit_rate": 0.80,               # 80% podstawy
     "sickness_hospital_rate": 0.70,              # 70% w szpitalu
+
+    # Stopy procentowe składek społecznych
+    "pension_rate": 0.1952,                      # 19.52% — emerytalna
+    "disability_rate": 0.08,                     # 8% — rentowa
+    "sickness_voluntary_rate": 0.0245,           # 2.45% — chorobowa (dobrowolna)
+    "accident_rate": 0.0167,                     # 1.67% — wypadkowa
+    "labour_fund_rate": 0.0245,                  # 2.45% — Fundusz Pracy
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# BOUNDS — Ogólne wartości referencyjne (płaca minimalna, kursy walut)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+bounds := {
+    # Minimalne wynagrodzenie brutto (2026)
+    "minimum_wage_gross": 4666,                  # PLN — od 1 stycznia 2026
+
+    # Standardowa podstawa wymiaru składek ZUS (60% przeciętnego wynagrodzenia)
+    "zus_social_base_standard": 5204.40,        # PLN — 60% × 8674 PLN (prognoza 2026)
+
+    # Przeciętne miesięczne wynagrodzenie (prognoza 2026)
+    "avg_monthly_wage": 8674,                    # PLN — do obliczeń ZUS
+
+    # Kurs EUR/PLN (NBP, orientacyjny)
+    "eur_pln": 4.50,                             # PLN za 1 EUR
+
+    # Diety i kilometrówka
+    "mileage_rate_per_km": 1.15,                 # PLN/km — stawka za 1 km (osobowy)
+    "business_trip_diet": 45.00,                 # PLN/dzień — dieta krajowa
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

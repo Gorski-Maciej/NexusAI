@@ -56,6 +56,12 @@ import data.jdg.mpips
 import data.jdg.rodo
 import data.jdg.validation
 import data.jdg.fallback
+# ENTERPRISE v4.0 — Strategic Intelligence Packages
+import data.jdg.zus.benefits
+import data.jdg.local.enterprise
+import data.jdg.accounting.pkpir_validation
+import data.jdg.strategic
+import data.jdg.pit.transition_intel
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Safe Merge helpers (Phase 5 P0 — ochrona niemutowalnych werdyktów ZUS)
@@ -153,14 +159,19 @@ final_verdict = safe_merge(risk.decide,
     safe_merge(advances_returns.decide,
     safe_merge(exemptions.decide,
     safe_merge(transitions.decide,
+    safe_merge(transition_intel.decide,
     safe_merge(allowances.decide,
     safe_merge(zus.decide,
+    safe_merge(benefits.decide,
     safe_merge(accounting.decide,
+    safe_merge(pkpir_validation.decide,
     safe_merge(business.decide,
+    safe_merge(strategic.decide,
     safe_merge(corrections.decide,
     safe_merge(liability.decide,
     safe_merge(representation.decide,
     safe_merge(local_taxes.decide,
+    safe_merge(enterprise.decide,
     safe_merge(ksef_jpk.decide,
     safe_merge(international.decide,
     safe_merge(employer.decide,
@@ -168,11 +179,12 @@ final_verdict = safe_merge(risk.decide,
     safe_merge(restructuring.decide,
     safe_merge(temporal.decide,
     safe_merge(digital.decide,
-    safe_merge(retention.decide,    safe_merge(rodo.decide,
+    safe_merge(retention.decide,
+    safe_merge(rodo.decide,
     safe_merge(mpips.decide,
     safe_merge(validation.decide,
         fallback.decide
-    )))))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))
 
 # ── PAS 8: Cross-Domain Conflict Detection (Post-Merge) ────────────────────
 # conflicts.decide analizuje już scalony final_verdict i wykrywa
