@@ -5,13 +5,15 @@
 # METADATA
 # title: JDG Main Orchestrator — Multi-Pass + Sharded Router (B1 Strategic Initiative)
 # description: |
-#   Główny plik decyzyjny JDG. Orkiestruje ewaluację wszystkich 37 pakietów
+#   Główny plik decyzyjny JDG. Orkiestruje ewaluację wszystkich 40 pakietów
 #   w architekturze Multi-Pass zgodnej z Doc 34, Sekcja 1.3.
 #   B1: Sharded Index Router — hash kontekstu (tax_form × transaction_type ×
 #   entity_flags × evaluation_date) → dynamiczny routing do specjalizowanych
 #   ścieżek ewaluacji. Redukuje złożoność z O(N) do O(1).
 #   Dodano 6 pakietów Klasy C (2026-07-16): mdr, tp, solidarity, edelivery, audit, residency.
-#   Używa object.union() do scalania werdyktów z kolejnością: najniższy
+#   Dodano 9 pakietów Enterprise: pkpir, depreciation, pcc, art21, sickness,
+#   bdo, aml, rodo_extended, mdr_enterprise (2026-07-17).
+#   Używa safe_merge() do scalania werdyktów z kolejnością: najniższy
 #   priorytet wewnątrz, najwyższy na zewnątrz (overrides).
 # architecture: Multi-Pass OPA (ADR-001) + Sharded Router (B1)
 # legal_basis: N/A (orchestrator — nie zawiera reguł podatkowych)
@@ -29,6 +31,7 @@ import data.jdg.risk
 import data.jdg.kks
 import data.jdg.routing
 import data.jdg.compliance
+import data.jdg.compliance.aml
 import data.jdg.crossborder
 import data.jdg.crossborder.post_brexit
 import data.jdg.vat.substantive
@@ -38,17 +41,22 @@ import data.jdg.pit.forms
 import data.jdg.pit.kup
 import data.jdg.pit.advances_returns
 import data.jdg.pit.exemptions
+import data.jdg.pit.art21_exemptions
 import data.jdg.pit.transitions
 import data.jdg.pit.elearning
 import data.jdg.allowances
 import data.jdg.zus
+import data.jdg.zus.sickness_benefits
 import data.jdg.mdr
+import data.jdg.mdr.enterprise
 import data.jdg.tp
 import data.jdg.solidarity
 import data.jdg.edelivery
 import data.jdg.audit
 import data.jdg.residency
 import data.jdg.accounting
+import data.jdg.accounting.pkpir
+import data.jdg.accounting.depreciation
 import data.jdg.business
 import data.jdg.business.gig_economy
 import data.jdg.corrections
@@ -56,10 +64,12 @@ import data.jdg.conflicts
 import data.jdg.liability
 import data.jdg.representation
 import data.jdg.local_taxes
+import data.jdg.local_taxes.pcc_enterprise
 import data.jdg.ksef_jpk
 import data.jdg.international
 import data.jdg.employer
 import data.jdg.environmental
+import data.jdg.environmental.bdo
 import data.jdg.restructuring
 import data.jdg.temporal
 import data.jdg.digital
@@ -67,6 +77,7 @@ import data.jdg.api_fallback
 import data.jdg.retention
 import data.jdg.mpips
 import data.jdg.rodo
+import data.jdg.rodo_extended
 import data.jdg.validation
 import data.jdg.fallback
 import data.jdg.metadata
@@ -310,6 +321,7 @@ final_verdict = safe_merge(risk.decide,
     safe_merge(kks.decide,
     safe_merge(routing.decide,
     safe_merge(compliance.decide,
+    safe_merge(aml.decide,
     safe_merge(post_brexit.decide,
     safe_merge(crossborder.decide,
     safe_merge(substantive.decide,
@@ -319,26 +331,33 @@ final_verdict = safe_merge(risk.decide,
     safe_merge(kup.decide,
     safe_merge(advances_returns.decide,
     safe_merge(exemptions.decide,
+    safe_merge(art21_exemptions.decide,
     safe_merge(transitions.decide,
     safe_merge(elearning.decide,
     safe_merge(allowances.decide,
     safe_merge(solidarity.decide,
     safe_merge(zus.decide,
+    safe_merge(sickness_benefits.decide,
     safe_merge(accounting.decide,
+    safe_merge(pkpir.decide,
+    safe_merge(depreciation.decide,
     safe_merge(business.decide,
     safe_merge(gig_economy.decide,
     safe_merge(mdr.decide,
+    safe_merge(mdr_enterprise.decide,
     safe_merge(corrections.decide,
     safe_merge(liability.decide,
     safe_merge(audit.decide,
     safe_merge(representation.decide,
     safe_merge(local_taxes.decide,
+    safe_merge(pcc_enterprise.decide,
     safe_merge(ksef_jpk.decide,
     safe_merge(international.decide,
     safe_merge(tp.decide,
     safe_merge(residency.decide,
     safe_merge(employer.decide,
     safe_merge(environmental.decide,
+    safe_merge(bdo.decide,
     safe_merge(restructuring.decide,
     safe_merge(temporal.decide,
     safe_merge(api_fallback.decide,
@@ -346,6 +365,7 @@ final_verdict = safe_merge(risk.decide,
     safe_merge(retention.decide,
     safe_merge(edelivery.decide,
     safe_merge(rodo.decide,
+    safe_merge(rodo_extended.decide,
     safe_merge(mpips.decide,
     safe_merge(validation.decide,
         fallback.decide

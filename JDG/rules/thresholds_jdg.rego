@@ -9,10 +9,10 @@
 #   Wszystkie progi, stawki, limity i wartości numeryczne JDG w jednym miejscu.
 #   Reguły Rego używają wyłącznie data.thresholds.jdg.* — zero hardcoded values.
 #   Aktualizacja progów = zmiana tego pliku, bez rekompilacji WASM bundle.
-#   Zgodność z Stripe Tax / Avalara Data-Driven Policy pattern.
-# architecture: Decoupled Data Layer (B2)
-# package: jdg.thresholds
-# deprecated: false
+#   Dodano sekcje Environmental/AML/MDR (2026-07-17) z Enterprise packages
+#   architecture: Decoupled Data Layer (B2)
+#   package: jdg.thresholds
+#   deprecated: false
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.thresholds
@@ -282,8 +282,55 @@ local_taxes := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# MISC THRESHOLDS
+# ENVIRONMENTAL / BDO — Środowisko, odpady, WEEE, baterie, SUP
 # ═══════════════════════════════════════════════════════════════════════════════
+# Dodane 2026-07-17 z pakietów Enterprise BDO/AML/RODO/MDR
+# ═══════════════════════════════════════════════════════════════════════════════
+
+environmental := {
+    # BDO — opłaty rejestracyjne
+    "bdo_fee_micro_pln": 100,                    # PLN — mikroprzedsiębiorca (Art. 49 UoO)
+    "bdo_fee_small_pln": 300,                    # PLN — mały przedsiębiorca (Art. 49 UoO)
+
+    # Opakowania — poziomy recyklingu
+    "packaging_recycling_target_pct": 60,         # % — cel recyklingu odpadów opakowaniowych
+
+    # Baterie
+    "battery_collection_target_pct": 45,          # % — cel zbiórki baterii (wzrasta do 73% w 2030)
+    "battery_penalty_per_kg": 12.00,             # PLN/kg — opłata produktowa za nieosiągnięcie celu
+
+    # WEEE (ZSEiE)
+    "weee_penalty_per_kg": 15.00,                # PLN/kg — opłata produktowa WEEE
+
+    # SUP (Single-Use Plastics)
+    "sup_fee_rate": 0.25,                         # PLN/szt — opłata SUP od plastikowych opakowań
+    "sup_epr_rate_per_kg": 0.80,                  # PLN/kg — opłata rozszerzonej odpowiedzialności producenta
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AML — Anti-Money Laundering
+# ═══════════════════════════════════════════════════════════════════════════════
+
+aml := {
+    # Art. 72 Ustawy AML — próg gotówkowy w EUR
+    "cash_threshold_eur": 10000,                  # EUR — obowiązek rejestracji transakcji gotówkowej
+
+    # Art. 72 Ustawy AML — próg STR do GIIF
+    "str_threshold_eur": 15000,                   # EUR — obowiązek zgłoszenia STR do GIIF
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# MDR — Mandatory Disclosure Rules (DAC6)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+mdr := {
+    # Art. 86o OrdPU — kara administracyjna
+    "daily_penalty_pln": 5000,                    # PLN/dzień — kara za każdy dzień zwłoki MDR-3
+    "sanction_max_pln": 21000000,                 # PLN — maksymalna kara administracyjna (21 mln)
+
+    # Art. 86n OrdPU, Art. 16a KKS — czynny żal
+    "voluntary_disclosure_reduction_pct": 50,      # % — redukcja kary przy czynnym żalu
+}
 
 misc := {
     # Cash limit (Art. 22p PIT)
