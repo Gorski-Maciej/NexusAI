@@ -39,13 +39,16 @@ else := {
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","local_tax_type":"REAL_ESTATE","local_tax_land_rate":1.15,"local_tax_building_rate":33.00,
+    "business_status":"","local_tax_type":"REAL_ESTATE",
+    "local_tax_land_rate":land_rate,"local_tax_building_rate":bldg_rate,
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Ustawa o podatkach i opłatach lokalnych",
     "_warnings":["Podatek od nieruchomości firmowych — deklaracja DN-1 do 31 stycznia"]
 } {
     input.invoice.category_code == "REAL_ESTATE"
     input.invoice.is_commercial == true
+    land_rate := object.get(data.jdg.thresholds.local_taxes, "land_business_rate", 1.43)
+    bldg_rate := object.get(data.jdg.thresholds.local_taxes, "building_business_rate", 33.10)
 }
 
 # ══════ P1320: transport_tax — Podatek od środków transportowych ══════
@@ -317,15 +320,17 @@ else := {
     "matched":true,"rule_id":"jdg.local.property_tax_rates_2026",
     "package":"jdg.local","priority":1338,
     "local_tax_type":"REAL_ESTATE_DETAIL",
-    "land_business_rate":1.43,"land_other_rate":0.71,
-    "building_business_rate":33.10,"building_residential_rate":1.15,
+    "land_business_rate":land_biz,"land_other_rate":land_priv,
+    "building_business_rate":bldg_biz,"building_residential_rate":bldg_priv,
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Obwieszczenie MF — maksymalne stawki podatków lokalnych 2026",
-    "_warnings":[sprintf("NIERUCHOMOŚĆ FIRMOWA — grunt: %.2f PLN/m², budynek: %.2f PLN/m². Uwaga: stawka firmowa ~29× wyższa od prywatnej! DN-1 do 31 stycznia.",[land_rate,bldg_rate])]
+    "_warnings":[sprintf("NIERUCHOMOŚĆ FIRMOWA — grunt: %.2f PLN/m², budynek: %.2f PLN/m². Uwaga: stawka firmowa ~29× wyższa od prywatnej! DN-1 do 31 stycznia.",[land_biz,bldg_biz])]
 } {
     input.invoice.local_tax_type == "REAL_ESTATE_RATES"
-    land_rate := 1.43
-    bldg_rate := 33.10
+    land_biz := object.get(data.jdg.thresholds.local_taxes, "land_business_rate", 1.43)
+    bldg_biz := object.get(data.jdg.thresholds.local_taxes, "building_business_rate", 33.10)
+    land_priv := object.get(data.jdg.thresholds.local_taxes, "land_other_rate", 0.71)
+    bldg_priv := object.get(data.jdg.thresholds.local_taxes, "building_residential_rate", 1.15)
 }
 
 # P1339: mining_fee — Opłata eksploatacyjna
@@ -341,6 +346,58 @@ else := {
     mineral_type := object.get(input.invoice,"mineral_type","")
     tonnage := object.get(input.invoice,"mining_tonnage",0)
     tonnage > 0
+}
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  R1339a — NIERUCHOMOŚĆ FIRMOWA vs PRYWATNA — GUARD ANTY-BŁĘDNEJ KLASYFIKACJI ║
+# ║  Blind spot z STRATEGIC_IMPROVEMENTS_7000 (§1.1): "najczęstsze miejsce     ║
+# ║  kontroli gminnych" — stawka firmowa 24,84 zł/m² vs prywatna 1,15 zł/m²   ║
+# ║  Różnica ~29×. JDG błędnie klasyfikujące nieruchomość jako prywatną        ║
+# ║  narażają się na zaległości + odsetki + sankcje KKS (art. 56).             ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# R1339a: property_tax_business_use_guard — Guard: nieruchomość firmowa vs prywatna
+# Priorytet 13395 = konwencja "1339.5" (między P1339 mining_fee a P1340 excise_fuel)
+else := {
+    "matched":true,"rule_id":"jdg.local.property_tax_business_use_guard",
+    "package":"jdg.local","priority":13395,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "local_tax_type":"REAL_ESTATE_CLASSIFICATION_GUARD",
+    "property_misclassification_risk":true,
+    "commercial_rate_warning":sprintf("stawka firmowa ~%.2f PLN/m² vs prywatna ~%.2f PLN/m² (różnica ~%dx)", [commercial_rate, private_rate, multiplier]),
+    "_routing":routing_flag,
+    "_routing_reason":"Nieruchomość JDG sklasyfikowana jako prywatna — ryzyko błędnej stawki podatku od nieruchomości!",
+    "_legal_basis":"Art. 1a, Art. 5-6 Ustawy o podatkach i opłatach lokalnych, Art. 56 KKS",
+    "_warnings":[sprintf("NIERUCHOMOŚĆ FIRMOWA vs PRYWATNA — RYZYKO BŁĘDNEJ KLASYFIKACJI! JDG '%s' jest aktywna i ma nieruchomość o pow. %.0f m² sklasyfikowaną jako prywatną. Stawka firmowa: %.2f PLN/m² (grunt) / %.2f PLN/m² (budynek) — to ~%dx więcej niż stawka prywatna %.2f/%.2f PLN/m². Błędna klasyfikacja to NAJCZĘSTSZE miejsce kontroli gminnych! Zaległość + odsetki + sankcja KKS (art. 56).", [business_name, property_area, land_biz, bldg_biz, multiplier, land_priv, bldg_priv])]
+} {
+    # Warunek NA POZIOMIE FAKTURY — tylko dla spraw związanych z nieruchomościami
+    input.invoice.category_code == "REAL_ESTATE"
+    # Warunki NA POZIOMIE JDG — aktywna firma z nieruchomością sklasyfikowaną jako prywatna
+    business_status := object.get(input.jdg_entrepreneur, "business_status", "")
+    business_active := business_status != "CLOSED"
+    business_name := object.get(input.jdg_entrepreneur, "business_name", "JDG")
+    has_real_estate := object.get(input.jdg_entrepreneur, "has_real_estate", false)
+    is_commercial_classified := object.get(input.jdg_entrepreneur, "property_classified_commercial", true)
+    property_area := object.get(input.jdg_entrepreneur, "property_area_m2", 0)
+    business_active == true
+    has_real_estate == true
+    is_commercial_classified == false
+    property_area > 0
+    # Stawki z data.thresholds.jdg.local_taxes (fallback do obwieszczenia MF 2026)
+    land_biz := object.get(data.jdg.thresholds.local_taxes, "land_business_rate", 1.43)
+    bldg_biz := object.get(data.jdg.thresholds.local_taxes, "building_business_rate", 33.10)
+    land_priv := object.get(data.jdg.thresholds.local_taxes, "land_other_rate", 0.71)
+    bldg_priv := object.get(data.jdg.thresholds.local_taxes, "building_residential_rate", 1.15)
+    commercial_rate := land_biz + bldg_biz
+    private_rate := land_priv + bldg_priv
+    multiplier := floor((commercial_rate / private_rate) * 10) / 10
+    multiplier >= 3
+    routing_flag = "TRIAGE_QUEUE" { multiplier < 15 }
+    routing_flag = "WARNING" { multiplier >= 15 }
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗

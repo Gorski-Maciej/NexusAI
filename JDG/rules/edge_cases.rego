@@ -288,6 +288,34 @@ else := { "matched": true, "rule_id": "jdg.edge_cases.vat_ue_deadline_15th", "pa
 
 else := { "matched": true, "rule_id": "jdg.edge_cases.vat_vida_transaction_reporting", "package": "jdg.edge_cases", "priority": 592, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "vida_reporting": true, "_routing": "TRIAGE_QUEUE", "_routing_reason": "ViDA — raportowanie transakcji transgranicznych", "_legal_basis": "Dyrektywa ViDA 2025 (DAC8)", "_warnings": ["ViDA — transakcje transgraniczne > 2 000 EUR przez platformy cyfrowe podlegają raportowaniu DAC8. Termin: 31 stycznia następnego roku"] } { object.get(input.jdg_entrepreneur, "vida_reportable", false) == true }
 
+# R0593a: ksef_foreign_nip_exclusion — Wykluczenie KSeF dla zagranicznego NIP (T8.4 Phase 5)
+# Podstawa: Art. 106na ust. 7 VAT — KSeF nie dotyczy faktur dla podmiotów
+# nieposiadających polskiego NIP (kontrahenci zagraniczni).
+# Ta reguła działa jako PRE-PROCESOR — wyprzedza P593 (ksef_mandatory).
+# Priorytet 5925 = konwencja "592.5" (między P592 a P593). W else-chain
+# kolejność w pliku decyduje o first-match-wins, nie pole priority.
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.ksef_foreign_nip_exclusion",
+    "package": "jdg.edge_cases", "priority": 5925,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "ksef_required": false, "ksef_exclusion": "FOREIGN_BUYER_NIP",
+    "_routing": "", "_routing_reason": "KSeF wyłączony — kontrahent zagraniczny (brak PL NIP)",
+    "_legal_basis": "Art. 106na ust. 7 VAT",
+    "_warnings": [sprintf("KSeF WYŁĄCZENIE — kontrahent z %s nie posiada PL NIP. KSeF dotyczy wyłącznie podmiotów z polskim NIP (Art. 106na ust. 7 VAT). Faktura NIE wymaga KSeF.", [vendor_country])]
+} {
+    object.get(input.jdg_entrepreneur, "tax_year_as_int", 2026) >= 2026
+    input.invoice.document_type == "INVOICE"
+    input.invoice.direction == "SALE"
+    vendor_country := object.get(input.vendor, "country", "PL")
+    vendor_country != "PL"
+    vendor_nip := object.get(input.vendor, "nip", "")
+    not startswith(vendor_nip, "PL")
+}
+
 else := { "matched": true, "rule_id": "jdg.edge_cases.vat_ksef_mandatory_from_2026", "package": "jdg.edge_cases", "priority": 593, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "ksef_mandatory": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "KSeF obowiązkowy — faktura poza KSeF = sankcja 100% VAT", "_legal_basis": "Art. 106na VAT", "_warnings": ["KSeF OBOWIĄZKOWY — od 01.02.2026 wszystkie faktury B2B przez KSeF. Ta faktura NIE przeszła przez KSeF. Ryzyko: sankcja 100%% VAT (max 500k PLN)!"] } { object.get(input.jdg_entrepreneur, "tax_year_as_int", 2026) >= 2026; input.invoice.document_type == "INVOICE"; object.get(input.invoice, "ksef_sent", true) == false; input.invoice.direction == "SALE" }
 
 else := { "matched": true, "rule_id": "jdg.edge_cases.vat_cross_border_oss_ioss", "package": "jdg.edge_cases", "priority": 594, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "oss_ioss_applicable": true, "_routing": "TRIAGE_QUEUE", "_routing_reason": "OSS/IOSS — sprzedaż B2C do innych krajów UE", "_legal_basis": "Art. 130a-130d VAT (OSS), Art. 138a-138j VAT (IOSS)", "_warnings": ["OSS/IOSS — sprzedaż B2C do UE > 10 000 EUR. Zarejestruj w OSS aby rozliczać VAT w PL zamiast w każdym kraju UE osobno"] } { object.get(input.jdg_entrepreneur, "b2c_eu_sales_above_10k_eur", false) == true }
@@ -339,6 +367,44 @@ else := { "matched": true, "rule_id": "jdg.edge_cases.home_office_vs_exclusive_b
 
 # R0609: bad_debt_90_days — Złe długi po 90 dniach (VAT i PIT zharmonizowane SLIM VAT 3/2025)
 else := { "matched": true, "rule_id": "jdg.edge_cases.bad_debt_90_days", "package": "jdg.edge_cases", "priority": 609, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "bad_debt_timeline": true, "days_overdue": days_overdue, "pit_action": "KOREKTA KUP", "vat_action": "ULGA — korekta VAT", "debtor_action": "KOREKTA VAT OBOWIĄZKOWA!", "_routing": "TRIAGE_QUEUE", "_routing_reason": "Złe długi — korekta VAT i PIT po 90 dniach", "_legal_basis": "Art. 89a-89b VAT, Art. 26i PIT (SLIM VAT 3/2025)", "_warnings": [sprintf("ZŁE DŁUGI %d dni — PIT: korekta KUP | VAT wierzyciel: ulga | VAT dłużnik: obowiązek korekty", [days_overdue]) ] } { input.invoice.is_paid == false; days_overdue := object.get(input.invoice, "days_overdue", 0); days_overdue >= 90 }
+
+# R0609a: cash_method_receivable_buffer_guard — Metoda kasowa C3 anti-bankruptcy (T8.3 Phase 5)
+# Cel: Przy metodzie kasowej przychód rozpoznawany jest dopiero w dacie zapłaty.
+# Jeśli zbyt wiele faktur pozostaje nieopłaconych, JDG ma wydatki ale brak
+# rozpoznanego przychodu → ryzyko utraty płynności i bankructwa.
+# Ta reguła monitoruje bufor nieopłaconych należności i alarmuje, gdy
+# przekracza on bezpieczny próg (50% rocznego przychodu).
+# Powiązanie: P184 (obowiązek korekty dłużnika) + Art. 89a-89b VAT.
+# Priorytet 6095 = konwencja "609.5" (między R0609 a R0610).
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.cash_method_receivable_buffer_guard",
+    "package": "jdg.edge_cases", "priority": 6095,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "cash_method_buffer_exceeded": true,
+    "unpaid_receivables_pln": unpaid_total,
+    "unpaid_receivables_pct": buffer_pct,
+    "cash_method_active": true,
+    "related_rule_p184": "jdg.vat.deductions.bad_debt_debtor_mandatory",
+    "_routing": routing_flag,
+    "_routing_reason": routing_reason,
+    "_legal_basis": "Art. 21 VAT (metoda kasowa), Art. 89a-89b VAT (złe długi), Art. 21 Prawa upadłościowego",
+    "_warnings": [sprintf("METODA KASOWA — BUFOR NALEŻNOŚCI PRZEKROCZONY! Nieopłacone faktury: %.2f PLN (%.0f%% rocznego przychodu). Ryzyko utraty płynności! Przy metodzie kasowej przychód rozpoznawany dopiero przy zapłacie. Ogranicz wystawianie faktur z odroczonym terminem. Powiązane: P184 — obowiązek korekty VAT dłużnika po 90 dniach.", [unpaid_total, buffer_pct])]
+} {
+    object.get(input.jdg_entrepreneur, "vat_cash_accounting", false) == true
+    unpaid_total := object.get(input.jdg_entrepreneur, "unpaid_receivables_total", 0)
+    annual_revenue := object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)
+    annual_revenue > 0
+    buffer_pct := floor(unpaid_total * 100 / annual_revenue)
+    buffer_pct >= 50
+    routing_flag = "TRIAGE_QUEUE" { buffer_pct < 80 }
+    routing_flag = "BLOCK_AND_ALERT" { buffer_pct >= 80 }
+    routing_reason = "Metoda kasowa — bufor >50%: ryzyko płynności" { buffer_pct < 80 }
+    routing_reason = "Metoda kasowa — bufor >80%: KRYTYCZNE ryzyko bankructwa!" { buffer_pct >= 80 }
+}
 
 # R0610: fx_method_podatkowa_vs_bilansowa — Mieszanie metod FX
 else := { "matched": true, "rule_id": "jdg.edge_cases.fx_method_podatkowa_vs_bilansowa", "package": "jdg.edge_cases", "priority": 610, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "fx_method_conflict": true, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Mieszanie metod FX — podatkowa vs bilansowa", "_legal_basis": "Art. 14c PIT, Art. 30 UoR", "_warnings": ["MIESZANIE METOD FX w jednym roku — wybierz PODATKOWĄ (Art. 14c PIT) lub BILANSOWĄ (Art. 30 UoR) na cały rok!"] } { object.get(input.jdg_entrepreneur, "fx_method_podatkowa_used", false) == true; object.get(input.jdg_entrepreneur, "fx_method_bilansowa_used", false) == true }

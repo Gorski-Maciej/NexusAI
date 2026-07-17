@@ -97,6 +97,31 @@ else := {
     input.restructuring.succession_manager_appointed == false
 }
 
+# ══ R1504a: succession_minor_zcna_block — Sukcesja małoletni (ZCNA) — blok automatyzmu ══
+# Cel: Przy sukcesji na rzecz dzieci (małoletnich spadkobierców) wymagana jest
+# zgoda sądu rodzinnego na czynności przekraczające zwykły zarząd (ZCNA).
+# System musi BLOKOWAĆ automatyzm — JDG musi wskazać pełnomocnika procesowego.
+# T8.5 Phase 5: "Sukcesja małoletni (ZCNA) domaga się radcy Sądu Rodzinnego
+# (wydana zgoda na czynności przed KAS). Dlatego obowiązkowy blok automatyzmu."
+# Priorytet 15045 = konwencja "1504.5" (między P1504 a P1505).
+else := {
+    "matched":true,"rule_id":"jdg.restructuring.succession_minor_zcna_block",
+    "package":"jdg.restructuring","priority":15045,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"SUCCESSION_BLOCKED_MINOR_HEIR",
+    "zcna_required":true,"zcna_family_court_required":true,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Sukcesja z małoletnim spadkobiercą — wymagana zgoda sądu rodzinnego (ZCNA)",
+    "_legal_basis":"Art. 98 KRO (Kodeks Rodzinny i Opiekuńczy), Art. 51-54 Ustawy o zarządzie sukcesyjnym",
+    "_warnings":["SUKCESJA Z MAŁOLETNIM — BLOKADA AUTOMATYZMU! Spadkobiercą jest osoba małoletnia. Wymagana zgoda sądu rodzinnego (wydział rodzinny i nieletnich) na czynności przekraczające zwykły zarząd (ZCNA). JDG musi wskazać pełnomocnika procesowego. Bez zgody sądu — czynności prawne są nieważne (Art. 101 § 3 KRO)."]
+} {
+    input.restructuring.type == "SUCCESSION"
+    input.restructuring.heir_minor_involved == true
+    input.restructuring.zcna_family_court_consent == false
+}
+
 # ══ P1505: business_closure_ceidg — Zamknięcie JDG — CEIDG ══
 else := {
     "matched":true,"rule_id":"jdg.restructuring.business_closure",

@@ -214,6 +214,41 @@ business := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# LOCAL TAXES / OPŁATY LOKALNE (Klasa IX — Blind Spot §1.1 z STRATEGIC_IMPROVEMENTS_7000)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Stawki 2026 wg obwieszczenia MF. Gminy mogą ustalać niższe stawki uchwałą.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+local_taxes := {
+    # Art. 5 UoPiOL — podatek od nieruchomości (stawki maksymalne 2026)
+    "land_business_rate": 1.43,                  # PLN/m² — grunt związany z działalnością (P1310, P1338)
+    "land_other_rate": 0.71,                     # PLN/m² — grunt pozostały (w tym prywatny)
+    "building_business_rate": 33.10,             # PLN/m² — budynek firmowy (P1310, P1338)
+    "building_residential_rate": 1.15,           # PLN/m² — budynek mieszkalny/prywatny
+
+    # Art. 15-16 UoPiOL — opłata targowa
+    "market_fee_max_daily": 800,                 # PLN/dzień — max stawka (P1335)
+
+    # Art. 17 UoPiOL — opłata miejscowa
+    "resort_fee_max_daily": 6.00,                # PLN/dzień — max stawka (P1336)
+
+    # Art. 17a UoPiOL — opłata uzdrowiskowa
+    "spa_fee_max_daily": 8.00,                   # PLN/dzień — max stawka (P1337)
+
+    # Art. 9-14 UoPiOL — podatek od środków transportowych
+    "transport_truck_3_5_5_5": 800,              # PLN/rok — DMC 3.5-5.5t (P1331)
+    "transport_truck_5_5_9": 1000,               # PLN/rok — DMC 5.5-9t
+    "transport_truck_9_12": 1400,                # PLN/rok — DMC 9-12t
+    "transport_truck_12_plus": 2000,             # PLN/rok — DMC >12t
+    "transport_trailer_3_5": 1200,               # PLN/rok — przyczepa (P1331)
+    "transport_trailer_12_plus_3ax": 1800,       # PLN/rok — przyczepa >12t, 3+ osie
+    "transport_tractor_unit_36": 2200,           # PLN/rok — ciągnik siodłowy ≤36t (P1332)
+    "transport_tractor_unit_36_plus": 2800,      # PLN/rok — ciągnik siodłowy >36t
+    "transport_bus_22": 1600,                    # PLN/rok — autobus <22 miejsc (P1333)
+    "transport_bus_22_plus": 2400,               # PLN/rok — autobus ≥22 miejsc
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # MISC THRESHOLDS
 # ═══════════════════════════════════════════════════════════════════════════════
 
