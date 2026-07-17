@@ -1,9 +1,34 @@
 # 📋 JDG MANIFEST — Tracker Pokrycia Reguł vs Mapa Kanoniczna 38c
 
 > **Auto-generowane:** 2026-07-14 02:54:32
+> **Aktualizacja strategiczna:** 2026-07-17 (B3/C1/C2)
 > **Plików Rego:** 163
 > **Reguł:** 6368
+> **Narzędzi strategicznych:** 9 (A1-A3, B1-B3, C1-C3)
 > **Mapa kanoniczna:** `Plan OPA/38c_JDG_CANONICAL_MAP.md` (~779 reguł)
+
+---
+
+## 🛠️ NARZĘDZIA STRATEGICZNE (9 Inicjatyw A1-C3)
+
+| Inicjatywa | Nazwa | Plik | Status |
+|:---------:|-------|------|:------:|
+| A1 | Verdict Provenance Graph | `JDG/rules/provenance.rego` | ✅ |
+| A2 | Temporal Causality Chain | `JDG/rules/_metadata_jdg.rego` | ✅ |
+| A3 | Legal Cartography RDF | `JDG/rules/_metadata_jdg.rego` | ✅ |
+| B1 | Inverted Sharded Index | `JDG/rules/main_jdg.rego` (routing_context) | ✅ |
+| B2 | Decoupled Thresholds | `JDG/rules/thresholds_jdg.rego` | ✅ |
+| B3 | DRY Compiler + CI Linting | `JDG/tools/lint_rego_rules.py` + `conftest/policies/jdg_rules.rego` | ✅ |
+| C1 | Judgment Predictor | `JDG/tools/judgment_predictor.py` | ✅ |
+| C2 | LLM Co-Pilot Bridge | `JDG/tools/llm_bridge.py` | ✅ |
+| C3 | Live Legal Radar | `JDG/tools/isap_crawler.py` | ✅ |
+
+### Pliki conftest/data/
+| Plik | Opis |
+|------|------|
+| `conftest/data/canonical_map.json` | Rejestr mapy kanonicznej rule_id |
+| `conftest/data/legal_basis_map.json` | Mapa podstaw prawnych (13 aktów) |
+| `conftest/data/temporal_registry.json` | Rejestr temporalny (seed data) |
 
 ---
 

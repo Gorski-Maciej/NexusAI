@@ -7,12 +7,12 @@ package jdg.hyper.limits
 default decide := {"matched":false,"rule_id":"jdg.hyper.limits.no_match","package":"jdg.hyper.limits","priority":99999}
 
 # jdg.hyper.limits.seasonal.detection.months_with_revenue — Identyfikacja JDG sezonowej
-decide :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.detection.months_with_revenue","package":"jdg.hyper.limits","priority":1518,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`months_with_revenue` ≤ 9 AND wzorzec powtarzalny w 2+ latach","_legal_basis":"Art. 22 PP","_warnings":[]} {
+decide :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.detection.months_with_revenue","package":"jdg.hyper.limits","priority":1518,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`months_with_revenue` ≤ 9 AND wzorzec powtarzalny w 2+ latach","_legal_basis":"Art. 22 PP","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
 # jdg.hyper.limits.seasonal.detection.revenue_gap_3plus_months — Przerwa w przychodach ≥3 miesiące
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.detection.revenue_gap_3plus_months","package":"jdg.hyper.limits","priority":1519,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`revenue_gap_months` ≥ 3 AND `gap_annual_repeat` == true","_legal_basis":"Art. 22 PP","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.detection.revenue_gap_3plus_months","package":"jdg.hyper.limits","priority":1519,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`revenue_gap_months` ≥ 3 AND `gap_annual_repeat` == true","_legal_basis":"Art. 22 PP","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
@@ -32,12 +32,12 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.detection.constru
 }
 
 # jdg.hyper.limits.seasonal.suspension.keep_nip — Zawieszenie zamiast zamykania — zachowanie NIP
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.suspension.keep_nip","package":"jdg.hyper.limits","priority":1523,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`is_seasonal == true` AND `prefers_suspension_over_closure == true`","_legal_basis":"Art. 22 PP","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.suspension.keep_nip","package":"jdg.hyper.limits","priority":1523,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`is_seasonal == true` AND `prefers_suspension_over_closure == true`","_legal_basis":"Art. 22 PP","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
 # jdg.hyper.limits.seasonal.suspension.max_6_months — Limit zawieszenia — 6 mies. ciągłych
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.suspension.max_6_months","package":"jdg.hyper.limits","priority":1524,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`suspension_months_continuous` ≥ 6","_legal_basis":"Art. 22 PP","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.suspension.max_6_months","package":"jdg.hyper.limits","priority":1524,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`suspension_months_continuous` ≥ 6","_legal_basis":"Art. 22 PP","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
@@ -47,12 +47,12 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.closure.nip_loss_
 }
 
 # jdg.hyper.limits.seasonal.closure.reopening_zus_new_application — Zamknięcie → ponowne otwarcie → nowe zgłoszenie ZUS
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.closure.reopening_zus_new_application","package":"jdg.hyper.limits","priority":1526,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`business_status changed CLOSED→ACTIVE`","_legal_basis":"Art. 36 SUS","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.closure.reopening_zus_new_application","package":"jdg.hyper.limits","priority":1526,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`business_status changed CLOSED→ACTIVE`","_legal_basis":"Art. 36 SUS","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
 # jdg.hyper.limits.seasonal.closure.vat_r_new_application — Zamknięcie → ponowne otwarcie → nowy VAT-R
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.closure.vat_r_new_application","package":"jdg.hyper.limits","priority":1527,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`business_status changed CLOSED→ACTIVE` AND `wants_vat_payer == true`","_legal_basis":"Art. 96 VAT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.closure.vat_r_new_application","package":"jdg.hyper.limits","priority":1527,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`business_status changed CLOSED→ACTIVE` AND `wants_vat_payer == true`","_legal_basis":"Art. 96 VAT","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
@@ -87,7 +87,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.pit.scale_annual_
 }
 
 # jdg.hyper.limits.seasonal.pit.advances_simplified_recommendation — Zaliczki uproszczone — rekomendowane dla JDG sezonowej
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.pit.advances_simplified_recommendation","package":"jdg.hyper.limits","priority":1534,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`is_seasonal == true` AND `previous_year_tax > 0`","_legal_basis":"Art. 44 ust. 6b PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.pit.advances_simplified_recommendation","package":"jdg.hyper.limits","priority":1534,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`is_seasonal == true` AND `previous_year_tax > 0`","_legal_basis":"Art. 44 ust. 6b PIT","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
@@ -102,7 +102,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.pit.lump_sum_annu
 }
 
 # jdg.hyper.limits.seasonal.pit.loss_carry_forward_5years — Strata sezonowa — odliczenie w ciągu 5 lat
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.pit.loss_carry_forward_5years","package":"jdg.hyper.limits","priority":1537,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`annual_tax_result < 0`","_legal_basis":"Art. 9 ust. 3 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.pit.loss_carry_forward_5years","package":"jdg.hyper.limits","priority":1537,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`annual_tax_result < 0`","_legal_basis":"Art. 9 ust. 3 PIT","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
@@ -112,12 +112,12 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.vat.zero_returns_
 }
 
 # jdg.hyper.limits.seasonal.vat.exemption_200k_proportion — Zwolnienie VAT — proporcjonalny limit dla nowej JDG sezonowej
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.vat.exemption_200k_proportion","package":"jdg.hyper.limits","priority":1539,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`vat_exempt == true` AND `first_year == true`","_legal_basis":"Art. 113 ust. 9 VAT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.vat.exemption_200k_proportion","package":"jdg.hyper.limits","priority":1539,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`vat_exempt == true` AND `first_year == true`","_legal_basis":"Art. 113 ust. 9 VAT","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
 # jdg.hyper.limits.seasonal.vat.exemption_breach_mid_year — Przekroczenie limitu 200k w trakcie sezonu → VAT od nadwyżki
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.vat.exemption_breach_mid_year","package":"jdg.hyper.limits","priority":1540,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`cumulative_revenue > 200000` AND `vat_exempt == true`","_legal_basis":"Art. 113 ust. 5 VAT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.vat.exemption_breach_mid_year","package":"jdg.hyper.limits","priority":1540,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`cumulative_revenue > 200000` AND `vat_exempt == true`","_legal_basis":"Art. 113 ust. 5 VAT","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
@@ -132,12 +132,12 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.vat.deduction_mai
 }
 
 # jdg.hyper.limits.seasonal.aggregate.annual_summary_pit_zus — Roczne podsumowanie PIT i ZUS dla JDG sezonowej
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.aggregate.annual_summary_pit_zus","package":"jdg.hyper.limits","priority":1543,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`is_seasonal == true` AND `year_end == true`","_legal_basis":"—","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.aggregate.annual_summary_pit_zus","package":"jdg.hyper.limits","priority":1543,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`is_seasonal == true` AND `year_end == true`","_legal_basis":"—","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
 # jdg.hyper.limits.seasonal.aggregate.comparison_normal_vs_seasonal — Porównanie obciążeń: czy opłaca się zawieszać zamiast zamykać
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.aggregate.comparison_normal_vs_seasonal","package":"jdg.hyper.limits","priority":1544,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`is_seasonal == true`","_legal_basis":"—","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.aggregate.comparison_normal_vs_seasonal","package":"jdg.hyper.limits","priority":1544,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`is_seasonal == true`","_legal_basis":"—","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
@@ -147,26 +147,26 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.aggregate.optimal
 }
 
 # jdg.hyper.limits.kks.conviction.business_ban_art41kk — Zakaz prowadzenia działalności po skazaniu
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.kks.conviction.business_ban_art41kk","package":"jdg.hyper.limits","priority":1546,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`kks_convicted == true` AND `sentence_includes_business_ban == true`","_legal_basis":"Art. 41 KK","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.kks.conviction.business_ban_art41kk","package":"jdg.hyper.limits","priority":1546,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`kks_convicted == true` AND `sentence_includes_business_ban == true`","_legal_basis":"Art. 41 KK","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
 # jdg.hyper.limits.kks.conviction.professional_license_revocation — Utrata licencji zawodowych (doradca podatkowy, adwokat)
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.kks.conviction.professional_license_revocation","package":"jdg.hyper.limits","priority":1547,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`kks_convicted == true` AND `profession in ["TAX_ADVISOR","LAWYER"]`","_legal_basis":"Art. 41 KK, ustawy korporacyjne","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.kks.conviction.professional_license_revocation","package":"jdg.hyper.limits","priority":1547,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`kks_convicted == true` AND `profession in ["TAX_ADVISOR","LAWYER"]`","_legal_basis":"Art. 41 KK, ustawy korporacyjne","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
 # jdg.hyper.limits.kks.conviction.public_procurement_exclusion — Wykluczenie z zamówień publicznych
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.kks.conviction.public_procurement_exclusion","package":"jdg.hyper.limits","priority":1548,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`kks_convicted == true` AND `conviction_not_spent == true`","_legal_basis":"Art. 108 PZP","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.kks.conviction.public_procurement_exclusion","package":"jdg.hyper.limits","priority":1548,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`kks_convicted == true` AND `conviction_not_spent == true`","_legal_basis":"Art. 108 PZP","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
 # jdg.hyper.limits.kks.conviction.eu_funds_exclusion — Wykluczenie ze środków UE
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.kks.conviction.eu_funds_exclusion","package":"jdg.hyper.limits","priority":1549,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`kks_convicted == true` AND `fraud_related == true`","_legal_basis":"Rozp. 2018/1046","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.kks.conviction.eu_funds_exclusion","package":"jdg.hyper.limits","priority":1549,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`kks_convicted == true` AND `fraud_related == true`","_legal_basis":"Rozp. 2018/1046","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
 # jdg.hyper.limits.kks.conviction.regulated_profession_consequences — Skutki dla zawodów regulowanych — pełna lista
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.kks.conviction.regulated_profession_consequences","package":"jdg.hyper.limits","priority":1550,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`kks_convicted == true` AND `regulated_profession == true`","_legal_basis":"Ustawy branżowe","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.kks.conviction.regulated_profession_consequences","package":"jdg.hyper.limits","priority":1550,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`kks_convicted == true` AND `regulated_profession == true`","_legal_basis":"Ustawy branżowe","_warnings":[]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }

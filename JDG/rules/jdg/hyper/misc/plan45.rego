@@ -42,12 +42,12 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.misc.payment.foreign.cash_limit_1
 }
 
 # jdg.hyper.misc.payment.foreign.transfer_whitelist_required — Przelew zagraniczny >15k PLN — weryfikacja WL (dla PL kontrahentów)
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.payment.foreign.transfer_whitelist_required","package":"jdg.hyper.misc","priority":1667,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`transfer_cross_border == true` AND `amount_pln ≥ 15000` AND `vendor_country == "PL"`","_legal_basis":"Art. 96b VAT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.payment.foreign.transfer_whitelist_required","package":"jdg.hyper.misc","priority":1667,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`transfer_cross_border == true` AND `amount_pln ≥ 15000` AND `vendor_country == "PL"`","_legal_basis":"Art. 96b VAT","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"
 }
 
 # jdg.hyper.misc.payment.foreign.transfer_giif_reporting — Przelew zagraniczny >15k EUR → obowiązek raportu GIIF
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.payment.foreign.transfer_giif_reporting","package":"jdg.hyper.misc","priority":1668,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`transfer_cross_border == true` AND `amount_eur ≥ 15000`","_legal_basis":"Art. 72 AML","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.payment.foreign.transfer_giif_reporting","package":"jdg.hyper.misc","priority":1668,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`transfer_cross_border == true` AND `amount_eur ≥ 15000`","_legal_basis":"Art. 72 AML","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"
 }
 
@@ -62,17 +62,17 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.misc.payment.foreign.fx_spread_re
 }
 
 # jdg.hyper.misc.payment.terminal.obligation_20k_eur_turnover — Terminal płatniczy — obowiązek przy obrocie >20k EUR i >50% B2C
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.payment.terminal.obligation_20k_eur_turnover","package":"jdg.hyper.misc","priority":1671,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`annual_b2c_turnover_eur ≥ 20000` AND `b2c_share ≥ 0.50`","_legal_basis":"Ustawa o usługach płatniczych","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.payment.terminal.obligation_20k_eur_turnover","package":"jdg.hyper.misc","priority":1671,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`annual_b2c_turnover_eur ≥ 20000` AND `b2c_share ≥ 0.50`","_legal_basis":"Ustawa o usługach płatniczych","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"
 }
 
 # jdg.hyper.misc.payment.terminal.sanction_no_terminal_5000 — Brak terminala → kara 5 000 PLN
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.payment.terminal.sanction_no_terminal_5000","package":"jdg.hyper.misc","priority":1672,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`terminal_required == true` AND `terminal_installed == false`","_legal_basis":"Ustawa o usługach płatniczych","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.payment.terminal.sanction_no_terminal_5000","package":"jdg.hyper.misc","priority":1672,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`terminal_required == true` AND `terminal_installed == false`","_legal_basis":"Ustawa o usługach płatniczych","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"
 }
 
 # jdg.hyper.misc.payment.terminal.vat_deduction_terminal_cost — Koszt terminala + prowizje — KUP + VAT odliczalny
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.payment.terminal.vat_deduction_terminal_cost","package":"jdg.hyper.misc","priority":1673,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`terminal_installed == true`","_legal_basis":"Art. 22 PIT, Art. 86 VAT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.payment.terminal.vat_deduction_terminal_cost","package":"jdg.hyper.misc","priority":1673,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`terminal_installed == true`","_legal_basis":"Art. 22 PIT, Art. 86 VAT","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"
 }
 
@@ -82,17 +82,17 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.vs_representatio
 }
 
 # jdg.hyper.misc.advertising.product_promotion_kup — Promocja konkretnego produktu/usługi → KUP
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.product_promotion_kup","package":"jdg.hyper.misc","priority":1675,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`promotes_specific_product == true`","_legal_basis":"Art. 22 ust. 1 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.product_promotion_kup","package":"jdg.hyper.misc","priority":1675,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`promotes_specific_product == true`","_legal_basis":"Art. 22 ust. 1 PIT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
 # jdg.hyper.misc.advertising.brand_building_kup — Budowanie marki (nie osobistej) → KUP
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.brand_building_kup","package":"jdg.hyper.misc","priority":1676,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`promotes_company_brand == true` AND `not_personal_brand == true`","_legal_basis":"Art. 22 ust. 1 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.brand_building_kup","package":"jdg.hyper.misc","priority":1676,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`promotes_company_brand == true` AND `not_personal_brand == true`","_legal_basis":"Art. 22 ust. 1 PIT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
 # jdg.hyper.misc.advertising.representation_personal_prestige_nkup — Budowanie osobistego prestiżu właściciela → NKUP
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.representation_personal_prestige_nkup","package":"jdg.hyper.misc","priority":1677,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`promotes_owner_personally == true` AND `no_product_connection == true`","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.representation_personal_prestige_nkup","package":"jdg.hyper.misc","priority":1677,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`promotes_owner_personally == true` AND `no_product_connection == true`","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
@@ -152,17 +152,17 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.events.networkin
 }
 
 # jdg.hyper.misc.advertising.gifts.under_200_pln_branded_kup — Prezent dla kontrahenta <200 PLN z logo → KUP
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.gifts.under_200_pln_branded_kup","package":"jdg.hyper.misc","priority":1689,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`gift_value ≤ 200` AND `branded_with_logo == true`","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.gifts.under_200_pln_branded_kup","package":"jdg.hyper.misc","priority":1689,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`gift_value ≤ 200` AND `branded_with_logo == true`","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
 # jdg.hyper.misc.advertising.gifts.over_200_pln_nkup — Prezent dla kontrahenta >200 PLN → NKUP
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.gifts.over_200_pln_nkup","package":"jdg.hyper.misc","priority":1690,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`gift_value > 200` AND `recipient == "BUSINESS_PARTNER"`","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.gifts.over_200_pln_nkup","package":"jdg.hyper.misc","priority":1690,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`gift_value > 200` AND `recipient == "BUSINESS_PARTNER"`","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
 # jdg.hyper.misc.advertising.gifts.unbranded_nkup — Prezent bez logo firmy → NKUP (reprezentacja)
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.gifts.unbranded_nkup","package":"jdg.hyper.misc","priority":1691,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`branded_with_logo == false` AND `gift_value > 0`","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.gifts.unbranded_nkup","package":"jdg.hyper.misc","priority":1691,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`branded_with_logo == false` AND `gift_value > 0`","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
@@ -172,32 +172,32 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.gifts.samples_pr
 }
 
 # jdg.hyper.misc.advertising.gifts.vat_deduction_100_pln_limit — VAT od prezentów — odliczenie tylko do 100 PLN netto
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.gifts.vat_deduction_100_pln_limit","package":"jdg.hyper.misc","priority":1693,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`gift_value_netto > 100`","_legal_basis":"Art. 88 ust. 1 pkt 5 VAT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.gifts.vat_deduction_100_pln_limit","package":"jdg.hyper.misc","priority":1693,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`gift_value_netto > 100`","_legal_basis":"Art. 88 ust. 1 pkt 5 VAT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
 # jdg.hyper.misc.advertising.sponsorship.with_benefits_kup — Sponsoring z kontrświadczeniami (logo, promocja) → KUP
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.sponsorship.with_benefits_kup","package":"jdg.hyper.misc","priority":1694,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`sponsorship_type == "WITH_BENEFITS"` AND `logo_exposure == true`","_legal_basis":"Art. 22 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.sponsorship.with_benefits_kup","package":"jdg.hyper.misc","priority":1694,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`sponsorship_type == "WITH_BENEFITS"` AND `logo_exposure == true`","_legal_basis":"Art. 22 PIT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
 # jdg.hyper.misc.advertising.sponsorship.charity_donation_treatment — Sponsoring bez kontrświadczeń → traktowany jak darowizna (limit 6%)
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.sponsorship.charity_donation_treatment","package":"jdg.hyper.misc","priority":1695,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`sponsorship_type == "WITHOUT_BENEFITS"`","_legal_basis":"Art. 26 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.sponsorship.charity_donation_treatment","package":"jdg.hyper.misc","priority":1695,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`sponsorship_type == "WITHOUT_BENEFITS"`","_legal_basis":"Art. 26 PIT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
 # jdg.hyper.misc.advertising.sponsorship.sport_culture_kup — Sponsoring sportu/kultury z ekspozycją marki → KUP
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.sponsorship.sport_culture_kup","package":"jdg.hyper.misc","priority":1696,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`sponsorship_area in ["SPORT","CULTURE"]` AND `brand_exposure == true`","_legal_basis":"Art. 22 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.sponsorship.sport_culture_kup","package":"jdg.hyper.misc","priority":1696,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`sponsorship_area in ["SPORT","CULTURE"]` AND `brand_exposure == true`","_legal_basis":"Art. 22 PIT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
 # jdg.hyper.misc.advertising.sponsorship.local_event_kup — Sponsoring lokalnego wydarzenia → KUP
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.sponsorship.local_event_kup","package":"jdg.hyper.misc","priority":1697,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`sponsorship_area == "LOCAL_EVENT"` AND `local_business == true`","_legal_basis":"Art. 22 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.sponsorship.local_event_kup","package":"jdg.hyper.misc","priority":1697,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`sponsorship_area == "LOCAL_EVENT"` AND `local_business == true`","_legal_basis":"Art. 22 PIT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
 # jdg.hyper.misc.advertising.sponsorship.vat_on_sponsorship — VAT od sponsoringu — odliczenie w 100% (czynności opodatkowane)
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.sponsorship.vat_on_sponsorship","package":"jdg.hyper.misc","priority":1698,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`sponsorship_with_benefits == true`","_legal_basis":"Art. 86 VAT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.sponsorship.vat_on_sponsorship","package":"jdg.hyper.misc","priority":1698,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`sponsorship_with_benefits == true`","_legal_basis":"Art. 86 VAT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
@@ -212,12 +212,12 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.vat.deduction_gi
 }
 
 # jdg.hyper.misc.advertising.vat.imported_ad_services_reverse_charge — Import usług reklamowych z UE — reverse charge
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.vat.imported_ad_services_reverse_charge","package":"jdg.hyper.misc","priority":1701,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`ad_services_from_eu == true` AND `direction == "PURCHASE"`","_legal_basis":"Art. 28b VAT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.vat.imported_ad_services_reverse_charge","package":"jdg.hyper.misc","priority":1701,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`ad_services_from_eu == true` AND `direction == "PURCHASE"`","_legal_basis":"Art. 28b VAT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
 # jdg.hyper.misc.advertising.vat.cross_border_ads_vat_rules — VAT od reklamy transgranicznej — miejsce świadczenia = siedziba nabywcy B2B
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.vat.cross_border_ads_vat_rules","package":"jdg.hyper.misc","priority":1702,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`ad_services_to_eu_b2b == true`","_legal_basis":"Art. 28b VAT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.vat.cross_border_ads_vat_rules","package":"jdg.hyper.misc","priority":1702,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`ad_services_to_eu_b2b == true`","_legal_basis":"Art. 28b VAT","_warnings":[]} {
     object.get(input.document, "tax_proceedings_active", false) == true; object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
@@ -237,16 +237,16 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.influencer.nkup_
 }
 
 # jdg.hyper.misc.advertising.influencer.vat_treatment_b2b — Influencer B2B → reverse charge lub NP
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.influencer.vat_treatment_b2b","package":"jdg.hyper.misc","priority":1706,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`influencer_b2b == true` AND `influencer_country != "PL"`","_legal_basis":"Art. 28b VAT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.influencer.vat_treatment_b2b","package":"jdg.hyper.misc","priority":1706,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`influencer_b2b == true` AND `influencer_country != "PL"`","_legal_basis":"Art. 28b VAT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
 # jdg.hyper.misc.advertising.influencer.gift_vs_service_classification — Rozróżnienie: prezent dla influencera vs. usługa promocyjna
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.influencer.gift_vs_service_classification","package":"jdg.hyper.misc","priority":1707,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`transaction_with_influencer == true`","_legal_basis":"Art. 22 vs 23 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.influencer.gift_vs_service_classification","package":"jdg.hyper.misc","priority":1707,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`transaction_with_influencer == true`","_legal_basis":"Art. 22 vs 23 PIT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
 # jdg.hyper.misc.advertising.car_wrapping.vat26_full_deduction — Oklejenie auta reklamą → VAT-26 → 100% odliczenia VAT + 100% KUP paliwa
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.car_wrapping.vat26_full_deduction","package":"jdg.hyper.misc","priority":1708,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`car_wrapping_for_ads == true` AND `vat26_filed == true`","_legal_basis":"Art. 86a VAT, Art. 23 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.car_wrapping.vat26_full_deduction","package":"jdg.hyper.misc","priority":1708,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`car_wrapping_for_ads == true` AND `vat26_filed == true`","_legal_basis":"Art. 86a VAT, Art. 23 PIT","_warnings":[]} {
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }

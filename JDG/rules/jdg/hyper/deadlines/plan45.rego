@@ -22,17 +22,17 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.mandatory.det
 }
 
 # jdg.hyper.deadlines.insurance.kup.mandatory_oc_premium_full — Składka OC obowiązkowego — 100% KUP
-else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.kup.mandatory_oc_premium_full","package":"jdg.hyper.deadlines","priority":1613,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`mandatory_oc == true` AND `premium_paid == true`","_legal_basis":"Art. 22 ust. 1 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.kup.mandatory_oc_premium_full","package":"jdg.hyper.deadlines","priority":1613,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`mandatory_oc == true` AND `premium_paid == true`","_legal_basis":"Art. 22 ust. 1 PIT","_warnings":[]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }
 
 # jdg.hyper.deadlines.insurance.kup.mandatory_oc_over_limit_proportion — Składka ponad minimum — proporcjonalny KUP
-else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.kup.mandatory_oc_over_limit_proportion","package":"jdg.hyper.deadlines","priority":1614,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`mandatory_oc == true` AND `coverage_exceeds_minimum == true`","_legal_basis":"Art. 22 ust. 1 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.kup.mandatory_oc_over_limit_proportion","package":"jdg.hyper.deadlines","priority":1614,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`mandatory_oc == true` AND `coverage_exceeds_minimum == true`","_legal_basis":"Art. 22 ust. 1 PIT","_warnings":[]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }
 
 # jdg.hyper.deadlines.insurance.kup.voluntary_oc_business — Dobrowolne OC — KUP jeśli uzasadnione biznesowo
-else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.kup.voluntary_oc_business","package":"jdg.hyper.deadlines","priority":1615,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`voluntary_oc == true` AND `business_justification == true`","_legal_basis":"Art. 22 ust. 1 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.kup.voluntary_oc_business","package":"jdg.hyper.deadlines","priority":1615,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`voluntary_oc == true` AND `business_justification == true`","_legal_basis":"Art. 22 ust. 1 PIT","_warnings":[]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }
 
@@ -47,12 +47,12 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.kup.property_
 }
 
 # jdg.hyper.deadlines.insurance.claim.payout_as_revenue — Odszkodowanie z OC — przychód podatkowy
-else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.claim.payout_as_revenue","package":"jdg.hyper.deadlines","priority":1618,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`insurance_payout_received == true`","_legal_basis":"Art. 14 ust. 1 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.claim.payout_as_revenue","package":"jdg.hyper.deadlines","priority":1618,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`insurance_payout_received == true`","_legal_basis":"Art. 14 ust. 1 PIT","_warnings":[]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }
 
 # jdg.hyper.deadlines.insurance.claim.payout_reduced_by_damage — Odszkodowanie pomniejszone o poniesioną stratę
-else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.claim.payout_reduced_by_damage","package":"jdg.hyper.deadlines","priority":1619,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`payout_compensates_for_loss == true`","_legal_basis":"Art. 14 ust. 1 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.claim.payout_reduced_by_damage","package":"jdg.hyper.deadlines","priority":1619,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`payout_compensates_for_loss == true`","_legal_basis":"Art. 14 ust. 1 PIT","_warnings":[]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }
 
@@ -67,12 +67,12 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.claim.persona
 }
 
 # jdg.hyper.deadlines.insurance.claim.late_payment_interest_taxable — Odsetki od opóźnionej wypłaty odszkodowania — opodatkowane
-else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.claim.late_payment_interest_taxable","package":"jdg.hyper.deadlines","priority":1622,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`interest_on_late_payout_received == true`","_legal_basis":"Art. 17 ust. 1 PIT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.claim.late_payment_interest_taxable","package":"jdg.hyper.deadlines","priority":1622,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`interest_on_late_payout_received == true`","_legal_basis":"Art. 17 ust. 1 PIT","_warnings":[]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }
 
 # jdg.hyper.deadlines.insurance.vat.exemption_general — Usługi ubezpieczeniowe — zwolnione z VAT
-else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.vat.exemption_general","package":"jdg.hyper.deadlines","priority":1623,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`transaction_type == "INSURANCE"`","_legal_basis":"Art. 43 ust. 1 pkt 37 VAT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.vat.exemption_general","package":"jdg.hyper.deadlines","priority":1623,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`transaction_type == "INSURANCE"`","_legal_basis":"Art. 43 ust. 1 pkt 37 VAT","_warnings":[]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }
 
@@ -92,7 +92,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.vat.exception
 }
 
 # jdg.hyper.deadlines.insurance.vat.input_vat_deduction_blocked — VAT od wydatków na ubezpieczenia osobiste — NIE odlicza się
-else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.vat.input_vat_deduction_blocked","package":"jdg.hyper.deadlines","priority":1627,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`insurance_personal == true` AND `not_business_related == true`","_legal_basis":"Art. 88 VAT","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.vat.input_vat_deduction_blocked","package":"jdg.hyper.deadlines","priority":1627,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`insurance_personal == true` AND `not_business_related == true`","_legal_basis":"Art. 88 VAT","_warnings":[]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }
 
@@ -122,17 +122,17 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.voluntary.inv
 }
 
 # jdg.hyper.deadlines.insurance.gap.detection_mandatory_missing — Brak obowiązkowego OC → kara + odpowiedzialność osobista
-else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.gap.detection_mandatory_missing","package":"jdg.hyper.deadlines","priority":1633,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`mandatory_oc_required == true` AND `policy_active == false`","_legal_basis":"Ustawy branżowe","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.gap.detection_mandatory_missing","package":"jdg.hyper.deadlines","priority":1633,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`mandatory_oc_required == true` AND `policy_active == false`","_legal_basis":"Ustawy branżowe","_warnings":[]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }
 
 # jdg.hyper.deadlines.insurance.gap.detection_sum_insufficient — Suma ubezpieczenia poniżej wymaganego minimum
-else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.gap.detection_sum_insufficient","package":"jdg.hyper.deadlines","priority":1634,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`mandatory_oc_required == true` AND `sum_insured < legal_minimum`","_legal_basis":"Ustawy branżowe","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.gap.detection_sum_insufficient","package":"jdg.hyper.deadlines","priority":1634,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`mandatory_oc_required == true` AND `sum_insured < legal_minimum`","_legal_basis":"Ustawy branżowe","_warnings":[]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }
 
 # jdg.hyper.deadlines.insurance.gap.detection_policy_expiring — Polisa wygasająca — alert o odnowieniu
-else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.gap.detection_policy_expiring","package":"jdg.hyper.deadlines","priority":1635,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`policy_expiry_date - today() < 30_days`","_legal_basis":"—","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.insurance.gap.detection_policy_expiring","package":"jdg.hyper.deadlines","priority":1635,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`policy_expiry_date - today() < 30_days`","_legal_basis":"—","_warnings":[]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }
 

@@ -1,0 +1,728 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI JDG — Decision API OpenAPI 3.0 Schema
+# ═══════════════════════════════════════════════════════════════════════════════
+# Source: NexusAI_JDG_7000_MASTER_IMPLEMENTATION_PLAN.txt, Section 5.4
+# Description: REST API for evaluating JDG transactions against 7000+ rules
+# Architecture: Multi-Pass OPA (ADR-001) + Sharded Router (B1)
+# Package: jdg.main
+# ═══════════════════════════════════════════════════════════════════════════════
+
+openapi: 3.0.3
+info:
+  title: NexusAI JDG Decision API
+  description: |
+    Silnik decyzyjny JDG oparty na OPA/Rego. Ewaluuje transakcje gospodarcze
+    Jednoosobowej Działalności Gospodarczej przeciwko 7000+ regułom podatkowym,
+    ubezpieczeniowym i compliance. Zwraca werdykt z pełnym drzewem proweniencji
+    (A1) i łańcuchem przyczynowości temporalnej (A2).
+
+    Architektura Multi-Pass:
+      PASS 0: RISK (fraud/GKS/GAAR) → risk_verdict
+      PASS 1: ROUTING (field confidence) → routing_verdict
+      PASS 2: COMPLIANCE (Biała Lista/MPP/EPS) → compliance_verdict
+      PASS 3: CROSSBORDER (WNT/WDT/import) → crossborder_verdict
+      PASS 4: VAT (stawki + GTU + deductions) → vat_verdict
+      PASS 5: PIT (forma + KUP + zaliczki) → pit_verdict
+      PASS 6: ALLOWANCES (ulgi podatkowe) → allowances_verdict
+      PASS 7: ACCOUNTING (PKPiR + amortyzacja) → accounting_verdict
+      PASS 8: ZUS + BUSINESS + KSeF + JPK + RESZTA → misc_verdict
+      POST-MERGE: Cross-Domain Conflict Detection (R0586-R0612)
+
+    Sharded Router (B1): O(1) hash kontekstu → dedykowany shard (5-25 reguł).
+      Kontekst: tax_form × transaction_type × entity_flags × evaluation_date.
+      Latency p95: < 5 ms per shard.
+  version: 1.0.0
+  contact:
+    name: NexusAI JDG Team
+    url: https://github.com/Gorski-Maciej/NexusAI
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.nexusai.pl/v1
+    description: Produkcja
+  - url: https://api-staging.nexusai.pl/v1
+    description: Staging
+  - url: http://localhost:8000/v1
+    description: Lokalny development
+
+tags:
+  - name: Decision
+    description: Główny endpoint decyzyjny JDG
+  - name: Simulation
+    description: Shadow mode / what-if analysis (C1 Judgment Predictor)
+  - name: Audit
+    description: Weryfikacja historyczna werdyktów (A2 Time-Travel)
+  - name: Health
+    description: Status systemu, metryki, readiness
+
+paths:
+  # ═════════════════════════════════════════════════════════════════════════════
+  # POST /jdg/decide — Główny endpoint decyzyjny
+  # ═════════════════════════════════════════════════════════════════════════════
+  /jdg/decide:
+    post:
+      tags: [Decision]
+      summary: Evaluate JDG transaction against 7000 rules
+      description: |
+        Główny endpoint decyzyjny NexusAI JDG. Przyjmuje dane faktury i kontekst
+        przedsiębiorcy JDG, uruchamia pełny pipeline Multi-Pass OPA z Sharded
+        Routerem (B1) i zwraca werdykt z drzewem proweniencji (A1) oraz śladem
+        temporalnym (A2).
+
+        Wymagane pola: transaction_date, context (tenant_id, tenant_type, pit_form),
+        payload (invoice + jdg_entrepreneur).
+
+        Opcjonalnie: evaluation_datetime dla time-travel (A2) — ewaluacja wg stanu
+        prawnego z przeszłości.
+      operationId: evaluateJdgTransaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionRequest'
+            examples:
+              standard_invoice:
+                summary: Standardowa faktura sprzedaży JDG na skali
+                value:
+                  transaction_date: "2026-07-17"
+                  evaluation_datetime: "2026-07-17T10:00:00+02:00"
+                  context:
+                    tenant_id: "tnt_abc123"
+                    tenant_type: "jdg"
+                    pit_form: "SCALE"
+                    transaction_type: "DOMESTIC_SALE"
+                    pkpid_main: "62.01.Z"
+                  payload:
+                    invoice:
+                      invoice_number: "FV/2026/07/001"
+                      issue_date: "2026-07-17"
+                      sale_date: "2026-07-15"
+                      direction: "SALE"
+                      document_type: "INVOICE"
+                      currency: "PLN"
+                      amount_net: 10000.00
+                      amount_gross: 12300.00
+                      vat_rate: "0.23"
+                      vat_amount: 2300.00
+                      expense_type: "IT_SERVICES"
+                      ksef_sent: true
+                      ksef_upo_received: true
+                      is_paid: true
+                      days_overdue: 0
+                    vendor:
+                      name: "TechSolutions Sp. z o.o."
+                      nip: "1234567890"
+                      country: "PL"
+                      iban: "PL61109010140000071219812874"
+                      whitelist_status: "VERIFIED"
+                      ceidg_status: "ACTIVE"
+                    jdg_entrepreneur:
+                      tax_form: "SCALE"
+                      vat_status: "ACTIVE"
+                      business_status: "ACTIVE"
+                      has_employees: false
+                      annual_revenue_pln: 250000
+                      annual_taxable_income: 120000
+                      sales_ytd_vat_exempt: 0
+                      zus_start_relief_active: false
+                      zus_maly_plus_active: true
+                      zus_preferential_active: false
+                      has_rd_status: false
+                    system:
+                      ksef_status: "ONLINE"
+                      nbp_rate_available: true
+                  confidence:
+                    vendor_nip: 1.0
+                    vat_rate: 0.98
+                    expense_type: 0.95
+
+              cross_border_wnt:
+                summary: WNT — import usług z UE
+                value:
+                  transaction_date: "2026-07-17"
+                  context:
+                    tenant_id: "tnt_xyz789"
+                    tenant_type: "jdg"
+                    pit_form: "LINEAR"
+                    transaction_type: "IMPORT"
+                    pkpid_main: "62.01.Z"
+                  payload:
+                    invoice:
+                      invoice_number: "EU/2026/07/042"
+                      issue_date: "2026-07-17"
+                      direction: "PURCHASE"
+                      document_type: "INVOICE"
+                      currency: "EUR"
+                      amount_net: 5000.00
+                      amount_gross: 5000.00
+                      vat_rate: "ZW"
+                      vat_amount: 0
+                      expense_type: "CONSULTING"
+                      procedure: "WNT"
+                      nbp_rate_cached: "4.25"
+                      nbp_rate_cached_date: "2026-07-16"
+                    vendor:
+                      name: "Consulting GmbH"
+                      nip: "DE123456789"
+                      country: "DE"
+                      iban: "DE89370400440532013000"
+                      whitelist_status: "NOT_APPLICABLE"
+                      ceidg_status: "NOT_APPLICABLE"
+                    jdg_entrepreneur:
+                      tax_form: "LINEAR"
+                      vat_status: "ACTIVE"
+                      business_status: "ACTIVE"
+                      has_employees: false
+                  confidence:
+                    vendor_nip: 0.99
+                    vat_rate: 1.0
+                    expense_type: 0.92
+      responses:
+        '200':
+          description: Verdict with full provenance tree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerdictResponse'
+        '400':
+          description: Invalid input — brak wymaganych pól, nieprawidłowy format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Rule conflict detected — sprzeczność między domenami
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
+        '422':
+          description: No matching rule — BLOCK_AND_ALERT (brak reguły dla input)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds to wait before retry
+        '500':
+          description: Internal OPA/WASM evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: External API degradation — Biała Lista/CEIDG/KSeF offline
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DegradationResponse'
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # POST /jdg/simulate — Shadow mode / Judgment Predictor (C1)
+  # ═════════════════════════════════════════════════════════════════════════════
+  /jdg/simulate:
+    post:
+      tags: [Simulation]
+      summary: Shadow evaluation — predict KAS risk before committing
+      description: |
+        C1 Judgment Predictor z NexusAI_JDG_STRATEGIC_IMPROVEMENTS_7000.txt.
+        Tryb "shadow mode" — uruchamia wszystkie 7000 reguł bez zmiany stanu,
+        zwraca predykcyjny werdykt z szacowaną karą KKS i prawdopodobieństwem
+        sankcji. Nie modyfikuje głównego pipeline'u decyzyjnego.
+
+        Użycie: PRZED wystawieniem/opłaceniem faktury, klient ładuje roboczy
+        input, a system ostrzega o potencjalnych naruszeniach.
+      operationId: simulateJdgTransaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionRequest'
+      responses:
+        '200':
+          description: Simulation result with severity scoring
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationResponse'
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # GET /jdg/audit/{verdict_id} — Weryfikacja historyczna (A2)
+  # ═════════════════════════════════════════════════════════════════════════════
+  /jdg/audit/{verdict_id}:
+    get:
+      tags: [Audit]
+      summary: Time-travel audit — verify historical verdict
+      description: |
+        A2 Temporal Causality Chain. Odtwarza werdykt dla historycznej daty
+        z uwzględnieniem stanu prawnego z dnia transakcji (DuckDB time-travel).
+        Zwraca oryginalny werdykt + hash Merkle + temporal snapshot.
+        Użyteczność: kontrola KAS w 2029 za rok 2025.
+      operationId: auditHistoricalVerdict
+      parameters:
+        - name: verdict_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID werdyktu (UUID lub rule_id + timestamp)
+        - name: verify_merkle
+          in: query
+          schema:
+            type: boolean
+            default: true
+          description: Czy zweryfikować podpis Merkle Tree
+      responses:
+        '200':
+          description: Historical verdict with temporal proof
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditResponse'
+        '404':
+          description: Verdict not found in audit log
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # GET /jdg/health — Health check
+  # ═════════════════════════════════════════════════════════════════════════════
+  /jdg/health:
+    get:
+      tags: [Health]
+      summary: System health and dependency status
+      operationId: healthCheck
+      responses:
+        '200':
+          description: System health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# COMPONENTS — Schemas
+# ═══════════════════════════════════════════════════════════════════════════════
+components:
+  schemas:
+    # ── Request ─────────────────────────────────────────────────────────────
+    DecisionRequest:
+      type: object
+      required: [transaction_date, context, payload]
+      properties:
+        transaction_date:
+          type: string
+          format: date
+          description: |
+            ISO 8601 YYYY-MM-DD. Data transakcji dla temporal lookup (A2).
+            Decyduje która wersja reguły zostanie użyta (np. P189=90 dni
+            dla dat ≥ 2025-07-01, P189=150 dni dla wcześniejszych).
+          example: "2026-07-17"
+        evaluation_datetime:
+          type: string
+          format: date-time
+          description: |
+            Opcjonalny timestamp ewaluacji. Jeśli niepodany, używa bieżącej daty.
+            Dla time-travel (A2): podaj datę historyczną aby odtworzyć werdykt
+            wg stanu prawnego z tamtego okresu.
+          example: "2026-07-17T10:00:00+02:00"
+        context:
+          $ref: '#/components/schemas/JdgContext'
+        payload:
+          type: object
+          description: |
+            Pełny kontekst transakcji. Zawiera invoice, vendor, jdg_entrepreneur,
+            system, confidence i inne pola wymagane przez poszczególne pakiety Rego.
+          additionalProperties: true
+
+    JdgContext:
+      type: object
+      required: [tenant_id, tenant_type, pit_form]
+      properties:
+        tenant_id:
+          type: string
+          description: Unikalny identyfikator klienta JDG
+          example: "tnt_abc123"
+        tenant_type:
+          type: string
+          enum: [jdg, cit, other]
+          description: Typ podmiotu (JDG / CIT / inny)
+          example: "jdg"
+        pit_form:
+          type: string
+          enum: [SCALE, LINEAR, LUMP_SUM, TAX_CARD]
+          description: Forma opodatkowania PIT
+          example: "SCALE"
+        transaction_type:
+          type: string
+          enum:
+            - DOMESTIC_SALE
+            - DOMESTIC_PURCHASE
+            - EXPORT
+            - IMPORT
+            - CROSS_BORDER_SALE
+          description: Typ transakcji dla Sharded Routera (B1)
+          example: "DOMESTIC_SALE"
+        pkpid_main:
+          type: string
+          description: Główny kod PKD (np. 62.01.Z)
+          example: "62.01.Z"
+        entity_status:
+          type: string
+          enum: [ACTIVE, SUSPENDED, IN_SUCCESSIO, UNREGISTERED]
+          description: Status podmiotu CEIDG
+          example: "ACTIVE"
+
+    # ── Response ────────────────────────────────────────────────────────────
+    VerdictResponse:
+      type: object
+      required: [matched, rule_id, _provenance, _cost_ms]
+      properties:
+        matched:
+          type: boolean
+          description: Czy reguła została dopasowana (zawsze true dla głównego werdyktu)
+          example: true
+        rule_id:
+          type: string
+          description: ID reguły która zadecydowała (first-match-wins)
+          example: "P58"
+        action:
+          type: string
+          enum: [BLOCK_AND_ALERT, TRIAGE_QUEUE, ALLOW]
+          description: |
+            Decyzja:
+            - BLOCK_AND_ALERT: Transakcja zablokowana (ryzyko prawne/podatkowe)
+            - TRIAGE_QUEUE: Wymagana weryfikacja manualna
+            - ALLOW: Transakcja dozwolona
+          example: "ALLOW"
+        vat_rate:
+          type: string
+          description: Zastosowana stawka VAT
+          enum: ["0.23", "0.08", "0.05", "0.00", "ZW"]
+          example: "0.23"
+        vat_exemption:
+          type: string
+          description: Typ zwolnienia VAT jeśli dotyczy
+        pit_form:
+          type: string
+          description: Zastosowana forma opodatkowania PIT
+        pit_rate:
+          type: string
+          description: Stawka PIT
+        kus_qualification:
+          type: string
+          description: Kwalifikacja KUP (NKUP / pelne / proporcjonalne)
+        zus_social_base_type:
+          type: string
+          description: Typ podstawy ZUS społecznego
+          enum: [STANDARD, PREFERENTIAL, MALY_ZUS_PLUS, START_RELIEF, ZERO, MANDATE, EXEMPT, VOLUNTARY]
+        zus_health_rate:
+          type: string
+          description: Stawka składki zdrowotnej ZUS
+        business_status:
+          type: string
+          description: Status działalności
+        _routing:
+          type: string
+          description: Decyzja routingu (BLOCK_AND_ALERT / TRIAGE_QUEUE / "")
+        _routing_reason:
+          type: string
+          description: Uzasadnienie decyzji routingu
+        _legal_basis:
+          type: string
+          description: Podstawa prawna decyzji (artykuł ustawy)
+        _warnings:
+          type: array
+          items:
+            type: string
+          description: Ostrzeżenia i rekomendacje dla księgowego
+        _cross_domain_conflicts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrossDomainConflict'
+          description: Konflikty międzydomenowe wykryte przez PAS 8 (R0586-R0612)
+        _provenance:
+          $ref: '#/components/schemas/ProvenanceTree'
+        _cost_ms:
+          type: number
+          description: Czas ewaluacji OPA w milisekundach
+          example: 4.2
+        _shard_routed:
+          type: string
+          description: Nazwa shardu użytego przez router (B1)
+
+    ProvenanceTree:
+      type: object
+      required: [matched_at, conditions_evaluated, decision_hash]
+      properties:
+        matched_at:
+          type: string
+          format: date-time
+          description: Timestamp dopasowania reguły
+        path:
+          type: array
+          items:
+            $ref: '#/components/schemas/DecisionStep'
+          description: Ścieżka decyzyjna — każdy krok to osobny pakiet OPA
+        conditions_evaluated:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvaluatedCondition'
+          description: Lista warunków które były sprawdzane
+        legal_basis_summary:
+          type: array
+          items:
+            type: string
+          description: Podsumowanie podstaw prawnych
+        temporal_snapshot_used:
+          type: string
+          description: Wersja temporalna użyta do decyzji (np. "2026-Q3")
+        rule_version_applied:
+          type: integer
+          description: Wersja reguły użyta do decyzji
+        decision_hash:
+          type: string
+          description: SHA-256 hashu pełnego werdyktu + proweniencji (non-repudiation)
+        root_hash:
+          type: string
+          description: Merkle root hash (do weryfikacji kryptograficznej)
+        evaluation_ms:
+          type: number
+          description: Czas ewaluacji
+        evaluated_at:
+          type: string
+          description: Timestamp ewaluacji
+        active_packages:
+          type: integer
+          description: Liczba aktywnych pakietów
+        total_packages:
+          type: integer
+          description: Całkowita liczba sprawdzonych pakietów
+
+    DecisionStep:
+      type: object
+      properties:
+        step:
+          type: integer
+        package:
+          type: string
+        rule_id:
+          type: string
+        priority:
+          type: integer
+        legal_basis:
+          type: string
+        routing:
+          type: string
+        routing_reason:
+          type: string
+        matched:
+          type: boolean
+        threshold_refs:
+          type: array
+          items:
+            type: object
+        temporal_valid_from:
+          type: string
+          nullable: true
+        temporal_valid_to:
+          type: string
+          nullable: true
+        warnings:
+          type: array
+          items:
+            type: string
+
+    EvaluatedCondition:
+      type: object
+      properties:
+        condition_id:
+          type: string
+          description: ID warunku (np. "P58.condition.1")
+        match_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Score dopasowania (0.0-1.0)
+        legal_basis:
+          type: array
+          items:
+            type: string
+          description: Podstawy prawne warunku
+        temporal_version:
+          type: integer
+          description: Wersja temporalna użyta dla warunku
+        evaluation_time_us:
+          type: integer
+          description: Czas ewaluacji warunku w mikrosekundach
+
+    CrossDomainConflict:
+      type: object
+      properties:
+        rule_id:
+          type: string
+        conflict_domains:
+          type: array
+          items:
+            type: string
+        conflict_severity:
+          type: string
+          enum: [INFO, WARNING, HIGH, CRITICAL]
+        conflict_resolution:
+          type: string
+        conflict_message:
+          type: string
+
+    # ── Simulation ──────────────────────────────────────────────────────────
+    SimulationResponse:
+      type: object
+      properties:
+        severity_score:
+          type: number
+          description: Ogólny wynik ryzyka (0.0-1.0)
+        potential_fine_pln:
+          type: number
+          description: Szacowana kara w PLN
+        fine_probability:
+          type: number
+          description: Prawdopodobieństwo kary (0.0-1.0)
+        kks_articles_triggered:
+          type: array
+          items:
+            type: string
+          description: Artykuły KKS które mogą być naruszone
+        recommendations:
+          type: array
+          items:
+            type: string
+          description: Rekomendacje co zrobić przed wystawieniem faktury
+        verdict:
+          $ref: '#/components/schemas/VerdictResponse'
+
+    # ── Audit ───────────────────────────────────────────────────────────────
+    AuditResponse:
+      type: object
+      properties:
+        verdict_id:
+          type: string
+        original_verdict:
+          $ref: '#/components/schemas/VerdictResponse'
+        temporal_snapshot:
+          type: object
+          properties:
+            evaluation_date:
+              type: string
+            thresholds_snapshot_hash:
+              type: string
+            rules_version_hash:
+              type: string
+        merkle_root:
+          type: string
+        merkle_verified:
+          type: boolean
+        ecdsa_signature:
+          type: string
+
+    # ── Health ──────────────────────────────────────────────────────────────
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, down]
+        opa_version:
+          type: string
+        bundle_version:
+          type: string
+        external_apis:
+          type: object
+          properties:
+            whitelist_mf:
+              type: string
+              enum: [online, degraded, offline]
+            ceidg:
+              type: string
+              enum: [online, degraded, offline]
+            ksef:
+              type: string
+              enum: [online, degraded, offline]
+            nbp:
+              type: string
+              enum: [online, degraded, offline]
+        shard_count:
+          type: integer
+        rules_count:
+          type: integer
+        uptime_seconds:
+          type: integer
+
+    # ── Error ───────────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Kod błędu
+        message:
+          type: string
+          description: Opis błędu po polsku
+        details:
+          type: array
+          items:
+            type: object
+          description: Szczegóły walidacji (dla 400)
+        request_id:
+          type: string
+          description: ID requestu do śledzenia w logach
+
+    DegradationResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        degraded_apis:
+          type: array
+          items:
+            type: string
+        fallback_active:
+          type: boolean
+        retry_after_seconds:
+          type: integer
+
+    ConflictResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        conflicts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrossDomainConflict'
+        resolution_hint:
+          type: string
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token z tenant_id i scope. Wystawiany przez NexusAI Auth Service.
+        Token zawiera: tenant_id, tenant_type (jdg/cit), permissions (decide/simulate/audit).
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECURITY
+# ═══════════════════════════════════════════════════════════════════════════════
+security:
+  - BearerAuth: []
