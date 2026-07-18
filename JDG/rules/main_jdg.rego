@@ -13,6 +13,8 @@
 #   Dodano 6 pakietów Klasy C (2026-07-16): mdr, tp, solidarity, edelivery, audit, residency.
 #   Dodano 9 pakietów Enterprise: pkpir, depreciation, pcc, art21, sickness,
 #   bdo, aml, rodo_extended, mdr_enterprise (2026-07-17).
+#   Dodano 5 pakietów S1-S5 Enterprise v5.0 (2026-07-18): tax_optimization,
+#   cross_domain_hub, judicial_rulings, audit_defense, strategic_advisor.
 #   Używa safe_merge() do scalania werdyktów z kolejnością: najniższy
 #   priorytet wewnątrz, najwyższy na zewnątrz (overrides).
 # architecture: Multi-Pass OPA (ADR-001) + Sharded Router (B1)
@@ -29,6 +31,7 @@ package jdg.main
 
 import data.jdg.risk
 import data.jdg.kks
+import data.jdg.kks.enterprise_penalties
 import data.jdg.routing
 import data.jdg.compliance
 import data.jdg.compliance.aml
@@ -47,6 +50,7 @@ import data.jdg.pit.elearning
 import data.jdg.allowances
 import data.jdg.zus
 import data.jdg.zus.sickness_benefits
+import data.jdg.zus.health_contribution
 import data.jdg.mdr
 import data.jdg.mdr.enterprise
 import data.jdg.tp
@@ -56,6 +60,7 @@ import data.jdg.audit
 import data.jdg.residency
 import data.jdg.accounting
 import data.jdg.accounting.pkpir
+import data.jdg.accounting.pkpir_validation
 import data.jdg.accounting.depreciation
 import data.jdg.business
 import data.jdg.business.gig_economy
@@ -81,6 +86,11 @@ import data.jdg.rodo_extended
 import data.jdg.validation
 import data.jdg.fallback
 import data.jdg.metadata
+import data.jdg.tax_optimization
+import data.jdg.cross_domain_hub
+import data.jdg.judicial_rulings
+import data.jdg.audit_defense
+import data.jdg.strategic_advisor
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
@@ -319,6 +329,7 @@ safe_merge(a, b) = object.union(a, b) {
 # NIE zmienia wartości — tylko flaguje do _cross_domain_conflicts.
 final_verdict = safe_merge(risk.decide,
     safe_merge(kks.decide,
+    safe_merge(enterprise_penalties.decide,
     safe_merge(routing.decide,
     safe_merge(compliance.decide,
     safe_merge(aml.decide,
@@ -338,8 +349,10 @@ final_verdict = safe_merge(risk.decide,
     safe_merge(solidarity.decide,
     safe_merge(zus.decide,
     safe_merge(sickness_benefits.decide,
+    safe_merge(health_contribution.decide,
     safe_merge(accounting.decide,
     safe_merge(pkpir.decide,
+    safe_merge(pkpir_validation.decide,
     safe_merge(depreciation.decide,
     safe_merge(business.decide,
     safe_merge(gig_economy.decide,
@@ -377,4 +390,18 @@ final_verdict = safe_merge(risk.decide,
 # reprezentacja vs marketing, auto VAT 50% vs KUP 75%).
 # Wynik jest dołączany do final_verdict przez object.union — pole
 # _cross_domain_conflicts jest tylko do odczytu, nie zmienia decyzji.
+#
+# PAS 9: Enterprise Strategic Layer (Post-Merge Intelligence) — 5 pakietów
+# S1-S5 pracuje na już scalonym finalnym werdykcie. Dodają metadane
+# analityczne, optymalizacyjne i strategiczne. NIE zmieniają decyzji
+# podatkowych — tylko dostarczają rekomendacji i kontekstu biznesowego.
 final_verdict_with_conflicts = object.union(final_verdict, conflicts.decide)
+
+# Enterprise Enrichment: dodaj analizy strategiczne do finalnego werdyktu
+final_verdict_enriched = object.union(final_verdict_with_conflicts,
+    object.union(tax_optimization.decide,
+    object.union(cross_domain_hub.decide,
+    object.union(judicial_rulings.decide,
+    object.union(audit_defense.decide,
+        strategic_advisor.decide
+    )))))

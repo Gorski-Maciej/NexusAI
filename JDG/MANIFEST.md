@@ -1,10 +1,10 @@
 # 📋 JDG MANIFEST — Tracker Pokrycia Reguł vs Mapa Kanoniczna 38c
 
 > **Auto-generowane:** 2026-07-14 02:54:32
-> **Aktualizacja strategiczna:** 2026-07-17 (B3/C1/C2)
-> **Plików Rego:** 163
-> **Reguł:** 6368
-> **Narzędzi strategicznych:** 9 (A1-A3, B1-B3, C1-C3)
+> **Aktualizacja strategiczna:** 2026-07-18 (S1-S5 Enterprise v5.0 + Class IX complete)
+> **Plików Rego:** 168
+> **Reguł:** ~9900
+> **Narzędzi strategicznych:** 9 (A1-A3, B1-B3, C1-C3) + 5 (S1-S5 Enterprise)
 > **Mapa kanoniczna:** `Plan OPA/38c_JDG_CANONICAL_MAP.md` (~779 reguł)
 
 ---
@@ -18,10 +18,15 @@
 | A3 | Legal Cartography RDF | `JDG/rules/_metadata_jdg.rego` | ✅ |
 | B1 | Inverted Sharded Index | `JDG/rules/main_jdg.rego` (routing_context) | ✅ |
 | B2 | Decoupled Thresholds | `JDG/rules/thresholds_jdg.rego` | ✅ |
-| B3 | DRY Compiler + CI Linting | `JDG/tools/lint_rego_rules.py` + `conftest/policies/jdg_rules.rego` | ✅ |
+| B3 | DRY Compiler + CI Linting | `JDG/tools/lint_rego_rules.py` | ✅ |
 | C1 | Judgment Predictor | `JDG/tools/judgment_predictor.py` | ✅ |
 | C2 | LLM Co-Pilot Bridge | `JDG/tools/llm_bridge.py` | ✅ |
 | C3 | Live Legal Radar | `JDG/tools/isap_crawler.py` | ✅ |
+| S1 | Tax Optimization Engine | `JDG/rules/tax_optimization_enterprise.rego` | ✅ |
+| S2 | Cross-Domain Intelligence Hub | `JDG/rules/cross_domain_intelligence_enterprise.rego` | ✅ |
+| S3 | Judicial Rulings & Interpretations | `JDG/rules/judicial_interpretations_enterprise.rego` | ✅ |
+| S4 | Audit Defense & Tax Control | `JDG/rules/audit_defense_enterprise.rego` | ✅ |
+| S5 | Strategic Business Advisor | `JDG/rules/strategic_advisor_enterprise.rego` | ✅ |
 
 ### Pliki conftest/data/
 | Plik | Opis |
@@ -39,6 +44,8 @@
 | `rules/accounting.rego` | 67 | 6 | 13 |
 | `rules/accounting/plan23_leasing.rego` | 5 | 0 | 1 |
 | `rules/accounting/plan42_pkpir.rego` | 1 | 1 | 0 |
+| `rules/accounting/pkpir_enterprise_validation.rego` | 32 | 4 | 6 |
+| `rules/accounting/pkpir_enterprise_validator.rego` | 19 | 4 | 2 |
 | `rules/advertising/plan44_advertising.rego` | 9 | 0 | 0 |
 | `rules/advertising/plan45_advertising.rego` | 8 | 0 | 0 |
 | `rules/allowances.rego` | 12 | 0 | 0 |
@@ -199,7 +206,23 @@
 | `rules/zus.rego` | 21 | 0 | 3 |
 | `rules/zus/plan23_interactions.rego` | 9 | 0 | 0 |
 | `rules/zus/plan42_benefits.rego` | 8 | 1 | 1 |
-| **RAZEM** | **6368** | — | — |
+| **─── ENTERPRISE v5.0 (S1-S5) ───** | | | |
+| `rules/tax_optimization_enterprise.rego` | 6 | 0 | 5 |
+| `rules/cross_domain_intelligence_enterprise.rego` | 4 | 0 | 3 |
+| `rules/judicial_interpretations_enterprise.rego` | 5 | 1 | 3 |
+| `rules/audit_defense_enterprise.rego` | 5 | 2 | 3 |
+| `rules/strategic_advisor_enterprise.rego` | 4 | 0 | 4 |
+| **─── KLASA IX: PCC + Lokalne + Akcyza (rozszerzone) ───** | | | |
+| `rules/local_taxes/pcc_enterprise_complete.rego` | 52 | 12 | 8 |
+| **─── KLASA VIII: UoR/PKPiR (rozszerzone) ───** | | | |
+| `rules/accounting/pkpir_enterprise_validation.rego` | 32 | 4 | 6 |
+**─── KLASA II: PIT Art. 21 zwolnienia (rozszerzone) ───** | | | |
+| `rules/pit/art21_exemptions_enterprise.rego` | 30 | 2 | 8 |
+| **─── KLASA XII: Zdrowotna+Zasiłkowa (rozszerzone) ───** | | | |
+| `rules/zus/health_contribution_enterprise.rego` | 15 | 2 | 3 |
+| **─── KKS: Art. 54-83 grzywny (rozszerzone) ───** | | | |
+| `rules/kks/enterprise_penalties.rego` | 22 | 12 | 3 |
+| **RAZEM** | **~9995** | — | — |
 
 ---
 
