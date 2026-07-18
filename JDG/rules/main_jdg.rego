@@ -15,6 +15,18 @@
 #   bdo, aml, rodo_extended, mdr_enterprise (2026-07-17).
 #   Dodano 5 pakietów S1-S5 Enterprise v5.0 (2026-07-18): tax_optimization,
 #   cross_domain_hub, judicial_rulings, audit_defense, strategic_advisor.
+#   Dodano 5 pakietów S6-S10 Enterprise v5.1 (2026-07-18): ksef_resilience,
+#   ppk_pfron, cashflow_predictor, form_transition, banking.
+#   Rozbudowano banking_automation o PSD2/PolishAPI v3.x (2026-07-18):
+#   AIS, PIS, OAuth2/eIDAS, Elixir/ExpressElixir, multi-bank profiles,
+#   payment status tracking, batch payments XML/JSON, PSD2 audit trail.
+#   Dodano 3 pakiety S11-S13 Enterprise v5.2 (2026-07-18):
+#   annual_declaration (PIT-36/36L/28 auto-fill, advance reconciliation,
+#   joint filing optimization, relief cross-validation),
+#   jpk_v7_autogen (JPK_V7M sales/purchase registers, VAT-7 declaration,
+#   GTU code auto-assignment, cross-check validation, KSeF extraction),
+#   legislative_monitor (change detection, impact analysis, transitional
+#   provisions, compliance calendar, rule versioning & temporal validity).
 #   Używa safe_merge() do scalania werdyktów z kolejnością: najniższy
 #   priorytet wewnątrz, najwyższy na zewnątrz (overrides).
 # architecture: Multi-Pass OPA (ADR-001) + Sharded Router (B1)
@@ -91,6 +103,14 @@ import data.jdg.cross_domain_hub
 import data.jdg.judicial_rulings
 import data.jdg.audit_defense
 import data.jdg.strategic_advisor
+import data.jdg.ksef_resilience
+import data.jdg.ppk_pfron
+import data.jdg.cashflow_predictor
+import data.jdg.form_transition
+import data.jdg.banking
+import data.jdg.annual_declaration
+import data.jdg.jpk_v7_autogen
+import data.jdg.legislative_monitor
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
@@ -398,10 +418,21 @@ final_verdict = safe_merge(risk.decide,
 final_verdict_with_conflicts = object.union(final_verdict, conflicts.decide)
 
 # Enterprise Enrichment: dodaj analizy strategiczne do finalnego werdyktu
+# PAS 9: S1-S5 — analizy strategiczne (tax_opt, cross_domain, judicial, audit, strategic)
+# PAS 10: S6-S10 — moduły operacyjne enterprise v5.1 (KSeF, PPK/PFRON, cashflow, form_transition, banking)
+# PAS 11: S11-S13 — moduły deklaracyjno-monitorujące enterprise v5.2 (annual_declaration, jpk_v7_autogen, legislative_monitor)
 final_verdict_enriched = object.union(final_verdict_with_conflicts,
     object.union(tax_optimization.decide,
     object.union(cross_domain_hub.decide,
     object.union(judicial_rulings.decide,
     object.union(audit_defense.decide,
-        strategic_advisor.decide
-    )))))
+    object.union(strategic_advisor.decide,
+    object.union(ksef_resilience.decide,
+    object.union(ppk_pfron.decide,
+    object.union(cashflow_predictor.decide,
+    object.union(form_transition.decide,
+    object.union(banking.decide,
+    object.union(annual_declaration.decide,
+    object.union(jpk_v7_autogen.decide,
+        legislative_monitor.decide
+    ))))))))))))))

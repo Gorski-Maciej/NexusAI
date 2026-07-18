@@ -1,10 +1,10 @@
 # 📋 JDG MANIFEST — Tracker Pokrycia Reguł vs Mapa Kanoniczna 38c
 
 > **Auto-generowane:** 2026-07-14 02:54:32
-> **Aktualizacja strategiczna:** 2026-07-18 (S1-S5 Enterprise v5.0 + Class IX complete)
-> **Plików Rego:** 168
-> **Reguł:** ~9900
-> **Narzędzi strategicznych:** 9 (A1-A3, B1-B3, C1-C3) + 5 (S1-S5 Enterprise)
+> **Aktualizacja strategiczna:** 2026-07-18 (S1-S13 Enterprise v5.2 + Class IX complete)
+> **Plików Rego:** 176
+> **Reguł:** ~10145
+> **Narzędzi strategicznych:** 9 (A1-A3, B1-B3, C1-C3) + 5 (S1-S5 Enterprise) + 5 (S6-S10 Enterprise v5.1) + 3 (S11-S13 Enterprise v5.2)
 > **Mapa kanoniczna:** `Plan OPA/38c_JDG_CANONICAL_MAP.md` (~779 reguł)
 
 ---
@@ -27,6 +27,14 @@
 | S3 | Judicial Rulings & Interpretations | `JDG/rules/judicial_interpretations_enterprise.rego` | ✅ |
 | S4 | Audit Defense & Tax Control | `JDG/rules/audit_defense_enterprise.rego` | ✅ |
 | S5 | Strategic Business Advisor | `JDG/rules/strategic_advisor_enterprise.rego` | ✅ |
+| S6 | KSeF API Resilience Module | `JDG/rules/ksef_resilience_enterprise.rego` | ✅ |
+| S7 | PPK + PFRON Employer Obligations | `JDG/rules/ppk_pfron_enterprise.rego` | ✅ |
+| S8 | Cash-Flow Tax Predictor | `JDG/rules/cashflow_tax_predictor_enterprise.rego` | ✅ |
+| S9 | Tax Form Transition Simulator | `JDG/rules/form_transition_simulator_enterprise.rego` | ✅ |
+| S10 | Smart Banking PSD2 Automation | `JDG/rules/banking_automation_enterprise.rego` | ✅ |
+| S11 | Annual Tax Declaration Engine | `JDG/rules/annual_declaration_enterprise.rego` | ✅ |
+| S12 | JPK_V7 Auto-Generator Engine | `JDG/rules/jpk_v7_autogen_enterprise.rego` | ✅ |
+| S13 | Legislative Change Intelligence Monitor | `JDG/rules/legislative_monitor_enterprise.rego` | ✅ |
 
 ### Pliki conftest/data/
 | Plik | Opis |
@@ -212,6 +220,16 @@
 | `rules/judicial_interpretations_enterprise.rego` | 5 | 1 | 3 |
 | `rules/audit_defense_enterprise.rego` | 5 | 2 | 3 |
 | `rules/strategic_advisor_enterprise.rego` | 4 | 0 | 4 |
+| **─── ENTERPRISE v5.1 (S6-S10) ───** | | | |
+| `rules/ksef_resilience_enterprise.rego` | 8 | 2 | 5 |
+| `rules/ppk_pfron_enterprise.rego` | 7 | 0 | 3 |
+| `rules/cashflow_tax_predictor_enterprise.rego` | 7 | 3 | 3 |
+| `rules/form_transition_simulator_enterprise.rego` | 5 | 1 | 2 |
+| `rules/banking_automation_enterprise.rego` | 15 | 5 | 5 |
+| **─── ENTERPRISE v5.2 (S11-S13) ───** | | | |
+| `rules/annual_declaration_enterprise.rego` | 7 | 1 | 2 |
+| `rules/jpk_v7_autogen_enterprise.rego` | 6 | 2 | 3 |
+| `rules/legislative_monitor_enterprise.rego` | 5 | 2 | 2 |
 | **─── KLASA IX: PCC + Lokalne + Akcyza (rozszerzone) ───** | | | |
 | `rules/local_taxes/pcc_enterprise_complete.rego` | 52 | 12 | 8 |
 | **─── KLASA VIII: UoR/PKPiR (rozszerzone) ───** | | | |
@@ -222,7 +240,113 @@
 | `rules/zus/health_contribution_enterprise.rego` | 15 | 2 | 3 |
 | **─── KKS: Art. 54-83 grzywny (rozszerzone) ───** | | | |
 | `rules/kks/enterprise_penalties.rego` | 22 | 12 | 3 |
-| **RAZEM** | **~9995** | — | — |
+| **RAZEM** | **~10145** | — | — |
+
+---
+
+## 📋 ENTERPRISE v5.1 (S6-S10) — SZCZEGÓŁOWE REGUŁY
+
+### `rules/ksef_resilience_enterprise.rego` (8 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 1600 | `jdg.ksef_resilience.api_health_check` | 🟡 TRIAGE | Art. 106na-106nw VAT |
+| 1610 | `jdg.ksef_resilience.offline_mode_procedure` | 🟡 TRIAGE | Art. 106na ust. 2-3 VAT |
+| 1620 | `jdg.ksef_resilience.retry_engine` | 🟡 TRIAGE | Art. 106na VAT |
+| 1630 | `jdg.ksef_resilience.token_management` | 🔴 BLOCK | Art. 106nb VAT |
+| 1640 | `jdg.ksef_resilience.xml_validation_preflight` | 🔴 BLOCK | Rozporządzenie MF FA(2) |
+| 1645 | `jdg.ksef_resilience.batch_recovery` | 🟡 TRIAGE | Art. 106na ust. 3 VAT |
+| 1648 | `jdg.ksef_resilience.notify_tax_office` | 🟡 TRIAGE | Art. 106na ust. 4 VAT |
+| 9999 | `jdg.ksef_resilience.no_match` |  | N/A |
+
+### `rules/ppk_pfron_enterprise.rego` (7 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 1650 | `jdg.ppk_pfron.ppk_enrollment_check` | 🟡 TRIAGE | Art. 7-16 Ustawy o PPK |
+| 1655 | `jdg.ppk_pfron.ppk_contribution_calculation` |  | Art. 27-32 Ustawy o PPK |
+| 1660 | `jdg.ppk_pfron.pfron_obligation_check` | 🟡 TRIAGE | Art. 21 Ustawy o rehabilitacji |
+| 1665 | `jdg.ppk_pfron.pfron_relief_calculation` |  | Art. 21-22 Ustawy o rehabilitacji |
+| 1670 | `jdg.ppk_pfron.fgsp_contribution` |  | Ustawa o FGŚP |
+| 1675 | `jdg.ppk_pfron.zfss_obligation` | 🟡 TRIAGE | Ustawa o ZFŚS |
+| 1680 | `jdg.ppk_pfron.employer_total_cost_summary` |  | Art. 22 ust. 1 PIT |
+
+### `rules/cashflow_tax_predictor_enterprise.rego` (7 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 1700 | `jdg.cashflow.tax_liability_forecast_90d` | 🟡 TRIAGE | Art. 44 PIT, Art. 103 VAT |
+| 1710 | `jdg.cashflow.liquidity_gap_detection` | 🔴 BLOCK | Art. 56 OrdPU (odsetki) |
+| 1720 | `jdg.cashflow.tax_deadline_calendar` |  | Art. 44 PIT, Art. 103 VAT, Art. 47 SUS |
+| 1730 | `jdg.cashflow.seasonal_pattern_detection` | 🟡 TRIAGE | Ogólne — analiza biznesowa |
+| 1740 | `jdg.cashflow.buffer_recommendation` | 🔴 BLOCK | Ogólne — analiza płynności |
+| 1745 | `jdg.cashflow.annual_settlement_forecast` |  | Art. 27, 30c PIT |
+| 9999 | `jdg.cashflow.no_match` |  | N/A |
+
+### `rules/form_transition_simulator_enterprise.rego` (5 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 1750 | `jdg.form_transition.full_comparison_simulation` | 🟡 TRIAGE | Art. 9a PIT |
+| 1760 | `jdg.form_transition.restrictions_check` | 🔴 BLOCK | Art. 9a ust. 1-5 PIT |
+| 1770 | `jdg.form_transition.relief_loss_calculator` | 🟡 TRIAGE | Art. 26-30ca PIT |
+| 1780 | `jdg.form_transition.health_contribution_details` |  | Art. 79-81 ustawy zdrowotnej |
+| 9999 | `jdg.form_transition.no_match` |  | N/A |
+
+### `rules/banking_automation_enterprise.rego` (13 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 1800 | `jdg.banking.split_payment_preparation` | 🟡 TRIAGE | Art. 108a VAT |
+| 1810 | `jdg.banking.zus_transfer_preparation` |  | Art. 46-47 SUS |
+| 1820 | `jdg.banking.tax_office_transfer_preparation` |  | Art. 44 PIT; Art. 103 VAT |
+| 1830 | `jdg.banking.monthly_payment_batch` |  | Art. 44 PIT; Art. 61 OrdPU |
+| 1840 | `jdg.banking.iban_validation` | 🔴 BLOCK | ISO 13616; Art. 96b VAT |
+| 1845 | `jdg.banking.psd2_consent_management` | 🔴 BLOCK | PSD2 Art. 66-67; RTS SCA |
+| 1850 | `jdg.banking.ais_account_information` | 🟡 TRIAGE | PSD2 Art. 67; PolishAPI v3.x |
+| 1855 | `jdg.banking.pis_payment_initiation` | 🟡 TRIAGE | PSD2 Art. 64-66; PolishAPI v3.x |
+| 1860 | `jdg.banking.elixir_payload_generator` | 🟡 TRIAGE | Regulamin KIR; ISO 20022 |
+| 1865 | `jdg.banking.oauth2_eidas_token_management` | 🔴 BLOCK | PSD2 Art. 97; eIDAS |
+| 1870 | `jdg.banking.bank_profile_routing` |  | PolishAPI v3.x |
+| 1875 | `jdg.banking.payment_status_tracking` | 🔴 BLOCK | PSD2 Art. 92 |
+| 1880 | `jdg.banking.batch_payment_format` | 🟡 TRIAGE | ISO 20022 pain.001; PolishAPI |
+| 1885 | `jdg.banking.psd2_compliance_audit` | 🔴 BLOCK | RTS SCA (EU 2018/389); eIDAS |
+| 9999 | `jdg.banking.no_match` |  | N/A |
+
+### `rules/annual_declaration_enterprise.rego` (7 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 1900 | `jdg.annual_decl.pit36_full_autofill` | 🟡 TRIAGE | Art. 27, 27b, 45 PIT |
+| 1905 | `jdg.annual_decl.pit36l_full_autofill` | 🟡 TRIAGE | Art. 30c, 45 PIT |
+| 1910 | `jdg.annual_decl.pit28_full_autofill` |  | Art. 6-8, 21 ustawy o ryczałcie |
+| 1915 | `jdg.annual_decl.advance_reconciliation` | 🔴 BLOCK | Art. 44 ust. 1-6 PIT; Art. 45 ust. 6 PIT |
+| 1920 | `jdg.annual_decl.joint_filing_optimizer` |  | Art. 6 ust. 2 PIT |
+| 1922 | `jdg.annual_decl.relief_cross_validation` |  | Art. 26-30cb PIT |
+| 9999 | `jdg.annual_decl.no_match` |  | N/A |
+
+### `rules/jpk_v7_autogen_enterprise.rego` (6 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 1925 | `jdg.jpk_v7.sales_register_autofill` | 🟡 TRIAGE | Art. 109 ust. 3d-e VAT; Rozporządzenie MF JPK_V7 |
+| 1930 | `jdg.jpk_v7.purchase_register_autofill` | 🟡 TRIAGE | Art. 86-91 VAT; Art. 109 ust. 3d-e VAT |
+| 1935 | `jdg.jpk_v7.vat7_declaration_autogen` | 🔴 BLOCK | Art. 99 ust. 1-3, 103 VAT |
+| 1940 | `jdg.jpk_v7.gtu_code_autoassignment` | 🟡 TRIAGE | Art. 106e ust. 1 pkt 18a VAT; Zał. nr 15 VAT |
+| 1945 | `jdg.jpk_v7.cross_check_validation` | 🔴 BLOCK | Art. 109 ust. 3d VAT; Art. 193 OrdPU |
+| 1948 | `jdg.jpk_v7.ksef_data_extraction` |  | Art. 106na-106nw VAT; Rozporządzenie MF FA(2) |
+| 9999 | `jdg.jpk_v7.no_match` |  | N/A |
+
+### `rules/legislative_monitor_enterprise.rego` (5 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 1950 | `jdg.legislative.change_detection` | 🔴 BLOCK | Art. 4 OrdPU; Art. 88 Konstytucji RP |
+| 1955 | `jdg.legislative.impact_analysis` | 🔴 BLOCK | Art. 4 OrdPU; Art. 2 Konstytucji RP |
+| 1960 | `jdg.legislative.transitional_provisions` |  | Art. 4-5 OrdPU |
+| 1965 | `jdg.legislative.compliance_calendar` | 🟡 TRIAGE | Art. 4 OrdPU; Przepisy materialne (PIT/VAT/ZUS/KSeF) |
+| 1970 | `jdg.legislative.rule_versioning` | 🟡 TRIAGE | Art. 4 OrdPU; przepisy intertemporalne |
+| 9999 | `jdg.legislative.no_match` |  | N/A |
 
 ---
 

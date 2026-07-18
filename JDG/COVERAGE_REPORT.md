@@ -1,8 +1,9 @@
 # 📊 Raport Pokrycia Prawnego JDG
 
-> **Data:** 2026-07-14  
+> **Data:** 2026-07-18  
 > **Źródło:** `Plan OPA/50_JDG_BRAKUJACE_PUNKTY_PRAWNE.md`  
-> **Reguły Rego:** `JDG/rules/` (166 plików, 6 614 rule_id)  
+> **Reguły Rego:** `JDG/rules/` (176 plików, ~10145 rule_id — w tym S1-S13 Enterprise v5.2)  
+> **S11-S13 (2026-07-18):** Annual Declaration (PIT-36/36L/28 auto-fill), JPK_V7 Auto-Generator, Legislative Change Monitor
 
 ---
 
