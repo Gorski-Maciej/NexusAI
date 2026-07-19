@@ -1,10 +1,10 @@
 # 📋 JDG MANIFEST — Tracker Pokrycia Reguł vs Mapa Kanoniczna 38c
 
 > **Auto-generowane:** 2026-07-14 02:54:32
-> **Aktualizacja strategiczna:** 2026-07-18 (S1-S13 Enterprise v5.2 + Class IX complete)
-> **Plików Rego:** 176
-> **Reguł:** ~10145
-> **Narzędzi strategicznych:** 9 (A1-A3, B1-B3, C1-C3) + 5 (S1-S5 Enterprise) + 5 (S6-S10 Enterprise v5.1) + 3 (S11-S13 Enterprise v5.2)
+> **Aktualizacja strategiczna:** 2026-07-19 (S1-S24 Enterprise v7.0)
+> **Plików Rego:** 180
+> **Reguł:** ~10,185
+> **Narzędzi strategicznych:** 9 (A1-A3, B1-B3, C1-C3) + 5 (S1-S5 Enterprise) + 5 (S6-S10 Enterprise v5.1) + 3 (S11-S13 Enterprise v5.2) + 4 (S21-S24 Enterprise v7.0)
 > **Mapa kanoniczna:** `Plan OPA/38c_JDG_CANONICAL_MAP.md` (~779 reguł)
 
 ---
@@ -35,6 +35,10 @@
 | S11 | Annual Tax Declaration Engine | `JDG/rules/annual_declaration_enterprise.rego` | ✅ |
 | S12 | JPK_V7 Auto-Generator Engine | `JDG/rules/jpk_v7_autogen_enterprise.rego` | ✅ |
 | S13 | Legislative Change Intelligence Monitor | `JDG/rules/legislative_monitor_enterprise.rego` | ✅ |
+| S21 | VAT Substantive Complete (Art. 11-135) | `JDG/rules/vat_substantive_complete_enterprise.rego` | ✅ |
+| S22 | Tax Authority Interaction Engine | `JDG/rules/tax_authority_interaction_enterprise.rego` | ✅ |
+| S23 | Sanctions & Penalty Optimization | `JDG/rules/sanctions_optimization_enterprise.rego` | ✅ |
+| S24 | Holistic JDG Lifecycle Manager | `JDG/rules/lifecycle_manager_enterprise.rego` | ✅ |
 
 ### Pliki conftest/data/
 | Plik | Opis |
@@ -240,7 +244,65 @@
 | `rules/zus/health_contribution_enterprise.rego` | 15 | 2 | 3 |
 | **─── KKS: Art. 54-83 grzywny (rozszerzone) ───** | | | |
 | `rules/kks/enterprise_penalties.rego` | 22 | 12 | 3 |
-| **RAZEM** | **~10145** | — | — |
+| **─── ENTERPRISE v7.0 (S21-S24) ───** | | | |
+| `rules/vat_substantive_complete_enterprise.rego` | 12 | 2 | 4 |
+| `rules/tax_authority_interaction_enterprise.rego` | 6 | 1 | 5 |
+| `rules/sanctions_optimization_enterprise.rego` | 4 | 3 | 2 |
+| `rules/lifecycle_manager_enterprise.rego` | 4 | 2 | 2 |
+| **RAZEM** | **~10185** | — | — |
+
+---
+
+## 📋 ENTERPRISE v7.0 (S21-S24) — SZCZEGÓŁOWE REGUŁY
+
+### `rules/vat_substantive_complete_enterprise.rego` (10 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 100 | `jdg.vat_complete.place_of_supply_b2b_general` | 🟡 TRIAGE | Art. 28b VAT; Art. 17 ust. 1 pkt 4 VAT |
+| 110 | `jdg.vat_complete.place_of_supply_real_estate` | 🟡 TRIAGE | Art. 28e VAT; Art. 17 ust. 1 pkt 8 VAT |
+| 120 | `jdg.vat_complete.place_of_supply_transport` |  | Art. 28f-28i VAT |
+| 130 | `jdg.vat_complete.place_of_supply_intangible` | 🟡 TRIAGE | Art. 28d, 28k, 28l VAT |
+| 200 | `jdg.vat_complete.vat_margin_scheme` | 🟡 TRIAGE | Art. 120 VAT |
+| 210 | `jdg.vat_complete.oss_procedure` | 🔴 BLOCK | Art. 130a-130d VAT |
+| 220 | `jdg.vat_complete.ioss_procedure` | 🟡 TRIAGE | Art. 138a-138j VAT |
+| 300 | `jdg.vat_complete.tax_base_calculation` |  | Art. 29a-32 VAT |
+| 400 | `jdg.vat_complete.exemptions_detailed` | 🔴 BLOCK | Art. 43 ust. 1 pkt 18-33 VAT |
+| 500 | `jdg.vat_complete.multi_year_correction` | 🟡 TRIAGE | Art. 91 VAT |
+| 600 | `jdg.vat_complete.vat_additional_liability` | 🔴 BLOCK | Art. 108b-108d VAT |
+| 9999 | `jdg.vat_complete.no_match` |  | N/A |
+
+### `rules/tax_authority_interaction_enterprise.rego` (6 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 100 | `jdg.tax_interaction.voluntary_disclosure_letter` | 🔴 BLOCK | Art. 16 § 1-5 KKS |
+| 200 | `jdg.tax_interaction.response_to_summon` | 🟡 TRIAGE | Art. 155, 274c, 287 OrdPU |
+| 300 | `jdg.tax_interaction.individual_interpretation_request` | 🟡 TRIAGE | Art. 14b-14na OrdPU; Art. 42b-42h VAT |
+| 400 | `jdg.tax_interaction.overpayment_refund_claim` | 🟡 TRIAGE | Art. 72-80 OrdPU |
+| 500 | `jdg.tax_interaction.deferral_installment_request` | 🟡 TRIAGE | Art. 67a-67e OrdPU |
+| 600 | `jdg.tax_interaction.case_status_tracker` | 🟡 TRIAGE | Art. 139-140 OrdPU; Art. 36-38 KPA |
+| 9999 | `jdg.tax_interaction.no_match` |  | N/A |
+
+### `rules/sanctions_optimization_enterprise.rego` (4 reguły)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 100 | `jdg.sanctions.kks_art54_graduation` | 🔴 BLOCK | Art. 53-54 KKS |
+| 200 | `jdg.sanctions.kks_specific_offenses` | 🔴 BLOCK | Art. 56-62 KKS |
+| 300 | `jdg.sanctions.penalty_optimization_decision_tree` | 🔴 BLOCK | Art. 16, 16a KKS; Art. 56, 70 OrdPU |
+| 400 | `jdg.sanctions.kks_risk_calculator` | 🟡 TRIAGE | Kompleksowa analiza KKS + VAT + OrdPU |
+| 9999 | `jdg.sanctions.no_match` |  | N/A |
+
+### `rules/lifecycle_manager_enterprise.rego` (4 reguły)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 100 | `jdg.lifecycle.current_phase_detection` | 🟡 TRIAGE | Prawo Przedsiębiorców; Art. 18a-18c SUS |
+| 200 | `jdg.lifecycle.compliance_timeline` | 🔴 BLOCK | Art. 5-6 PP; Art. 96 VAT; Art. 43 SUS |
+| 300 | `jdg.lifecycle.health_scorecard` | 🟡 TRIAGE | Kompleksowa ocena stanu JDG |
+| 400 | `jdg.lifecycle.exit_strategy` | 🔴 BLOCK | Art. 24 PIT; Art. 14 VAT; Ustawa sukcesyjna |
+| 9999 | `jdg.lifecycle.no_match` |  | N/A |
 
 ---
 

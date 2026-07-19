@@ -28,15 +28,20 @@
 #   legislative_monitor (change detection, impact analysis, transitional
 #   provisions, compliance calendar, rule versioning & temporal validity).
 #   Dodano 3 pakiety S14-S16 Enterprise v6.0 (2026-07-19):
-#   neural_mesh (Neural Rule Mesh — 13-domain cross-intelligence fabric,
-#   synaptic rules connecting VAT×PIT×ZUS×KKS×OrdPU×PCC×UoR, global
-#   deadline orchestrator, predictive audit risk engine 12-factor,
-#   auto-healing correction pattern detector, global compliance scorecard),
-#   nkup_enterprise (Art. 23 PIT complete — 57 NKUP categories: representation
-#   detailed matrix, car expenses 75%/150k/225k limits, family wages,
-#   donations, thin capitalization, enforcement costs, provisions),
-#   exit_tax_mdr (Exit Tax Art. 30da + CFC Art. 30f + MDR/DAC6 + Transfer
-#   Pricing + Estoński CIT analysis + Double Tax Treaty Analyzer).
+#   neural_mesh, nkup_enterprise, exit_tax_mdr.
+#   Dodano 4 pakiety S21-S24 Enterprise v7.0 (2026-07-19):
+#   vat_substantive_complete (Art. 11-135 VAT — miejsce świadczenia,
+#   procedury szczególne OSS/IOSS/marża, podstawa opodatkowania,
+#   zwolnienia przedmiotowe, korekty wieloletnie, sankcje VAT),
+#   tax_authority_interaction (auto-generacja pism do US/KAS/ZUS —
+#   czynny żal, odwołania, interpretacje, zwrot nadpłaty, raty,
+#   monitoring statusu spraw),
+#   sanctions_optimization (KKS Art. 54 gradacja kar, szczegółowe
+#   typy czynów Art. 56-62, decision tree 4-ścieżkowy minimalizacji
+#   kary, kalkulator ryzyka karno-skarbowego),
+#   lifecycle_manager (pełny cykl życia JDG — od rejestracji CEIDG
+#   przez startup/growth/maturity po exit/sukcesję, timeline
+#   compliance, health scorecard, exit strategy).
 #   Używa safe_merge() do scalania werdyktów z kolejnością: najniższy
 #   priorytet wewnątrz, najwyższy na zewnątrz (overrides).
 # architecture: Multi-Pass OPA (ADR-001) + Sharded Router (B1)
@@ -128,6 +133,10 @@ import data.jdg.pkpir_live
 import data.jdg.uor_live
 import data.jdg.local_taxes.excise_enterprise
 import data.jdg.local_taxes.procedures_enterprise
+import data.jdg.vat_substantive_complete
+import data.jdg.tax_authority_interaction
+import data.jdg.sanctions_optimization
+import data.jdg.lifecycle_manager
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
@@ -468,5 +477,15 @@ final_verdict_enriched = object.union(final_verdict_with_conflicts,
     # S19: Excise Enterprise Complete — fuels, alcohol, tobacco, energy, warehouse
     # S20: Local Procedures Enterprise — PCC enforcement, property exemptions, cross-tax
     object.union(excise_enterprise.decide,
-        procedures_enterprise.decide
-    ))))))))))))))))))
+    object.union(procedures_enterprise.decide,
+    # ── PAS 15: Enterprise v7.0 Deep Coverage Layer (2026-07-19) ──
+    # S21: VAT Substantive Complete — Art. 11-135 full procedural coverage
+    # S22: Tax Authority Interaction Engine — auto-korespondencja z US/KAS/ZUS
+    # S23: Sanctions & Penalty Optimization — KKS gradacja + decision tree
+    # S24: Holistic JDG Lifecycle Manager — pełny cykl życia firmy
+    object.union(vat_substantive_complete.decide,
+    object.union(tax_authority_interaction.decide,
+    object.union(sanctions_optimization.decide,
+        lifecycle_manager.decide
+    ))))
+    )))))))))))))))))))

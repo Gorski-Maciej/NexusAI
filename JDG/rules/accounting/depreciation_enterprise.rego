@@ -1,30 +1,13 @@
-# ═══════════════════════════════════════════════════════════════════════════════
+# ------------------------------------------------------------------------------
 # NexusAI JDG — Enterprise Depreciation (Amortyzacja ŚT) Complete (Class B → A)
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# METADATA
-# title: Amortyzacja Środków Trwałych Enterprise — Art. 22a-22o PIT
-# description: |
-#   ENTERPRISE v5.0 — Wypełnia lukę ~60 punktów Klasy B (PIT Art. 22a-22o).
-#   Amortyzacja to jedna z najbardziej skomplikowanych części księgowości JDG.
-#   Implementuje:
-#   - Amortyzacja liniowa, degresywna, jednorazowa
-#   - Stawki amortyzacyjne wg KŚT (Klasyfikacji Środków Trwałych)
-#   - Limit 10 000 PLN na jednorazową amortyzację (mały podatnik)
-#   - Limit 100 000 PLN na jednorazową amortyzację (de minimis)
-#   - Ulepszenia ŚT powyżej 10 000 PLN
-#   - Amortyzacja niskocennych ŚT (do 10 000 PLN — jednorazowo)
-#   - Wartości niematerialne i prawne
-#   - Amortyzacja samochodów osobowych (limit 150k / 225k EV)
-#   - Cross-domain: Amortyzacja × PKPiR, Amortyzacja × ZUS, Amortyzacja × VAT
-# architecture: Enterprise Multi-Pass, First-Match-Wins else-chain
-# legal_basis: Art. 22a-22o PIT, Załącznik nr 1 do PIT (stawki KŚT)
-# package: jdg.accounting.depreciation
-# deprecated: false
-# ═══════════════════════════════════════════════════════════════════════════════
+# Amortyzacja liniowa, degresywna, jednorazowa, stawki KŚT, limity, WNiP
+# Legal basis: Art. 22a-22o PIT, Załącznik nr 1 do PIT (stawki KŚT)
+# Architecture: Enterprise Multi-Pass, First-Match-Wins else-chain
+# ------------------------------------------------------------------------------
 
 package jdg.accounting.depreciation
 
+import future.keywords.in
 import data.jdg.helpers
 
 default decide := {
@@ -32,9 +15,9 @@ default decide := {
     "package": "jdg.accounting.depreciation", "priority": 9999
 }
 
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  D100-D109: DEFINICJA ŚRODKA TRWAŁEGO (Art. 22a PIT)                     ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
+# ==============================================================================
+#   D100-D109: DEFINICJA ŚRODKA TRWAŁEGO (Art. 22a PIT)
+# ==============================================================================
 
 # ── D100: fixed_asset_definition — Definicja środka trwałego ──
 decide := {
@@ -57,10 +40,13 @@ decide := {
     input.invoice.category_code in {"FIXED_ASSET", "MACHINERY", "VEHICLE", "COMPUTER_EQUIPMENT", "OFFICE_EQUIPMENT", "REAL_ESTATE"}
     asset_value := object.get(input.invoice, "amount_net", 0)
     expected_life := object.get(input.invoice, "expected_useful_life_years", 5)
-    is_fixed_asset := asset_value >= 10000 and expected_life > 1
-    asset_status = sprintf("ŚT — amortyzuj przez %d lat", [expected_life]) { is_fixed_asset == true }
-    asset_status = "NISKOCENNY — jednorazowo w KUP" { asset_value < 10000 and asset_value > 0 }
-    asset_routing = "" { true }
+    is_fixed_asset := [asset_value >= 10000, expected_life > 1] == [true, true]
+    asset_status_opts := [
+        {"c": is_fixed_asset == true, "v": sprintf("ŚT — amortyzuj przez %d lat", [expected_life])},
+        {"c": asset_value < 10000, "c2": asset_value > 0, "v": "NISKOCENNY — jednorazowo w KUP"}
+    ]
+    asset_status := [x.v | some x in asset_status_opts; x.c; object.get(x, "c2", true)][0]
+    asset_routing := ""
 }
 
 # ── D101: low_value_asset_one_time — Niskocenne składniki majątku do 10k ──
@@ -86,9 +72,9 @@ else := {
     asset_value < 10000
 }
 
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  D200-D209: METODY AMORTYZACJI (Art. 22i-22k PIT)                        ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
+# ==============================================================================
+#   D200-D209: METODY AMORTYZACJI (Art. 22i-22k PIT)
+# ==============================================================================
 
 # ── D200: linear_depreciation — Amortyzacja liniowa ──
 else := {
@@ -112,21 +98,28 @@ else := {
     input.invoice.category_code in {"FIXED_ASSET", "MACHINERY", "VEHICLE", "COMPUTER_EQUIPMENT", "OFFICE_EQUIPMENT", "REAL_ESTATE"}
     initial_value := object.get(input.invoice, "amount_net", 0)
     initial_value >= 10000
-    # Stawka KŚT per typ
-    asset_type = "Budynki mieszkalne" { input.invoice.category_code == "REAL_ESTATE"; input.invoice.subtype == "RESIDENTIAL" }
-    asset_type = "Budynki niemieszkalne" { input.invoice.category_code == "REAL_ESTATE"; input.invoice.subtype != "RESIDENTIAL" }
-    asset_type = "Maszyny i urządzenia" { input.invoice.category_code in {"MACHINERY", "COMPUTER_EQUIPMENT", "OFFICE_EQUIPMENT"} }
-    asset_type = "Środki transportu" { input.invoice.category_code == "VEHICLE" }
-    asset_type = "WNiP" { input.invoice.category_code == "INTANGIBLE_ASSET" }
+    # Stawka KŚT per typ — OPA 0.68 opts pattern
+    asset_type_opts := [
+        {"c": input.invoice.category_code == "REAL_ESTATE", "c2": input.invoice.subtype == "RESIDENTIAL", "v": "Budynki mieszkalne"},
+        {"c": input.invoice.category_code == "REAL_ESTATE", "c2": input.invoice.subtype != "RESIDENTIAL", "v": "Budynki niemieszkalne"},
+        {"c": input.invoice.category_code in {"MACHINERY", "COMPUTER_EQUIPMENT", "OFFICE_EQUIPMENT"}, "v": "Maszyny i urządzenia"},
+        {"c": input.invoice.category_code == "VEHICLE", "v": "Środki transportu"},
+        {"c": input.invoice.category_code == "INTANGIBLE_ASSET", "v": "WNiP"}
+    ]
+    asset_type := [x.v | some x in asset_type_opts; x.c; object.get(x, "c2", true)][0]
     # Stawki roczne KŚT
-    annual_rate = 1.5 { input.invoice.subtype == "RESIDENTIAL" }
-    annual_rate = 2.5 { input.invoice.subtype == "NON_RESIDENTIAL" }
-    annual_rate = 20.0 { input.invoice.category_code == "VEHICLE" }  # Samochody 5 lat
-    annual_rate = 30.0 { input.invoice.category_code == "COMPUTER_EQUIPMENT" }
-    annual_rate = 20.0 { input.invoice.category_code == "OFFICE_EQUIPMENT" }
-    annual_rate = 14.0 { input.invoice.category_code == "MACHINERY" }
-    annual_rate = 20.0 { input.invoice.category_code == "INTANGIBLE_ASSET" }
-    annual_rate = 10.0 { true }  # Domyślnie
+    annual_rate_opts := [
+        {"c": input.invoice.subtype == "RESIDENTIAL", "v": 1.5},
+        {"c": input.invoice.subtype == "NON_RESIDENTIAL", "v": 2.5},
+        {"c": input.invoice.category_code == "VEHICLE", "v": 20.0},
+        {"c": input.invoice.category_code == "COMPUTER_EQUIPMENT", "v": 30.0},
+        {"c": input.invoice.category_code == "OFFICE_EQUIPMENT", "v": 20.0},
+        {"c": input.invoice.category_code == "MACHINERY", "v": 14.0},
+        {"c": input.invoice.category_code == "INTANGIBLE_ASSET", "v": 20.0},
+        {"c": true, "v": 10.0}
+    ]
+    annual_rate := [x.v | some x in annual_rate_opts; x.c][0]
+    months := 12
     annual_depr := floor(initial_value * annual_rate / 100 * 100) / 100
     monthly_depr := floor(annual_depr / 12 * 100) / 100
 }
@@ -154,8 +147,7 @@ else := {
     initial_value := object.get(input.invoice, "amount_net", 0)
     base_rate := object.get(input.invoice, "depreciation_base_rate", 20)
     coeff := object.get(input.invoice, "degressive_coefficient", 2.0)
-    coeff <= 2.0 { input.invoice.category_code == "MACHINERY" }
-    coeff <= 2.0 { true }
+    coeff <= 2.0
     effective_rate := base_rate * coeff
     annual_depr := floor(initial_value * effective_rate / 100 * 100) / 100
 }
@@ -183,14 +175,14 @@ else := {
     initial_value := object.get(input.invoice, "amount_net", 0)
     is_small_taxpayer := object.get(input.jdg_entrepreneur, "is_small_taxpayer", false)
     is_first_year := object.get(input.jdg_entrepreneur, "is_first_year", false)
-    is_small_taxpayer or is_first_year
+    [is_small_taxpayer, is_first_year] != [false, false]
     one_time_amount := min([initial_value, 100000])
     remaining_value := max([0, initial_value - 100000])
 }
 
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  D300-D309: LIMITY I OGRANICZENIA                                        ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
+# ==============================================================================
+#   D300-D309: LIMITY I OGRANICZENIA
+# ==============================================================================
 
 # ── D300: car_depreciation_limit — Limit amortyzacji auta 150k/225k ──
 else := {
@@ -212,15 +204,24 @@ else := {
     car_value := object.get(input.invoice, "amount_net", 0)
     is_electric := object.get(input.invoice, "is_electric_vehicle", false)
     is_passenger := object.get(input.invoice, "is_passenger_car", true)
-    car_limit = 225000 { is_electric == true }
-    car_limit = 150000 { true }
-    limit_type = "elektryczny" { is_electric == true }
-    limit_type = "spalinowy" { not is_electric }
+    car_limit_opts := [
+        {"c": is_electric == true, "v": 225000},
+        {"c": true, "v": 150000}
+    ]
+    car_limit := [x.v | some x in car_limit_opts; x.c][0]
+    limit_type_opts := [
+        {"c": is_electric == true, "v": "elektryczny"},
+        {"c": is_electric == false, "v": "spalinowy"}
+    ]
+    limit_type := [x.v | some x in limit_type_opts; x.c][0]
     depreciable_base := min([car_value, car_limit])
     excess_nkup := max([0, car_value - car_limit])
-    kup_allowed_pct = floor(depreciable_base / max([car_value, 0.01]) * 100)
-    car_routing = "TRIAGE_QUEUE" { excess_nkup > 0 }
-    car_routing = "" { true }
+    kup_allowed_pct := floor(depreciable_base / max([car_value, 0.01]) * 100)
+    car_routing_opts := [
+        {"c": excess_nkup > 0, "v": "TRIAGE_QUEUE"},
+        {"c": true, "v": ""}
+    ]
+    car_routing := [x.v | some x in car_routing_opts; x.c][0]
 }
 
 # ── D301: improvement_threshold — Ulepszenie ŚT powyżej 10k ──
@@ -243,15 +244,21 @@ else := {
     input.invoice.category_code == "ASSET_IMPROVEMENT"
     improvement_amount := object.get(input.invoice, "amount_net", 0)
     exceeds_threshold := improvement_amount >= 10000
-    improvement_treatment = "ZWIĘKSZA WARTOŚĆ POCZĄTKOWĄ ŚT — amortyzuj" { exceeds_threshold == true }
-    improvement_treatment = "KUP JEDNORAZOWO — próg 10k nie przekroczony" { not exceeds_threshold }
-    kup_treatment = 0 { exceeds_threshold == true }
-    kup_treatment = 100 { not exceeds_threshold }
+    improvement_treatment_opts := [
+        {"c": exceeds_threshold == true, "v": "ZWIĘKSZA WARTOŚĆ POCZĄTKOWĄ ŚT — amortyzuj"},
+        {"c": exceeds_threshold == false, "v": "KUP JEDNORAZOWO — próg 10k nie przekroczony"}
+    ]
+    improvement_treatment := [x.v | some x in improvement_treatment_opts; x.c][0]
+    kup_treatment_opts := [
+        {"c": exceeds_threshold == true, "v": 0},
+        {"c": exceeds_threshold == false, "v": 100}
+    ]
+    kup_treatment := [x.v | some x in kup_treatment_opts; x.c][0]
 }
 
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  D400-D409: WARTOŚCI NIEMATERIALNE I PRAWNE (WNiP)                        ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
+# ==============================================================================
+#   D400-D409: WARTOŚCI NIEMATERIALNE I PRAWNE (WNiP)
+# ==============================================================================
 
 # ── D400: intangible_asset_depreciation — Amortyzacja WNiP ──
 else := {
@@ -272,23 +279,29 @@ else := {
 } {
     input.invoice.category_code == "INTANGIBLE_ASSET"
     wnip_value := object.get(input.invoice, "amount_net", 0)
-    wnip_type = "Licencja / oprogramowanie" { input.invoice.subtype == "SOFTWARE_LICENSE" }
-    wnip_type = "Patent / znak towarowy" { input.invoice.subtype == "PATENT" }
-    wnip_type = "Prawa autorskie" { input.invoice.subtype == "COPYRIGHT" }
-    wnip_type = "Koszty prac rozwojowych" { input.invoice.subtype == "RND" }
-    wnip_type = "Wartość firmy" { input.invoice.subtype == "GOODWILL" }
+    wnip_type_opts := [
+        {"c": input.invoice.subtype == "SOFTWARE_LICENSE", "v": "Licencja / oprogramowanie"},
+        {"c": input.invoice.subtype == "PATENT", "v": "Patent / znak towarowy"},
+        {"c": input.invoice.subtype == "COPYRIGHT", "v": "Prawa autorskie"},
+        {"c": input.invoice.subtype == "RND", "v": "Koszty prac rozwojowych"},
+        {"c": input.invoice.subtype == "GOODWILL", "v": "Wartość firmy"}
+    ]
+    wnip_type := [x.v | some x in wnip_type_opts; x.c][0]
     # Minimalny okres amortyzacji
-    amort_years = 60 { input.invoice.subtype == "GOODWILL" }  # Wartość firmy — min. 5 lat (60 mies.)
-    amort_years = 24 { input.invoice.subtype in {"SOFTWARE_LICENSE", "PATENT", "COPYRIGHT"} }  # Min. 2 lata (24 mies.)
-    amort_years = 12 { input.invoice.subtype == "RND" }
-    amort_years = 60 { true }
+    amort_years_opts := [
+        {"c": input.invoice.subtype == "GOODWILL", "v": 60},
+        {"c": input.invoice.subtype in {"SOFTWARE_LICENSE", "PATENT", "COPYRIGHT"}, "v": 24},
+        {"c": input.invoice.subtype == "RND", "v": 12},
+        {"c": true, "v": 60}
+    ]
+    amort_years := [x.v | some x in amort_years_opts; x.c][0]
     annual_rate := floor(100 / amort_years * 10) / 10
     annual_depr := floor(wnip_value * annual_rate / 100 * 100) / 100
 }
 
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  D500-D509: EWIDENCJA ŚRODKÓW TRWAŁYCH                                    ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
+# ==============================================================================
+#   D500-D509: EWIDENCJA ŚRODKÓW TRWAŁYCH
+# ==============================================================================
 
 # ── D500: asset_register_required — Obowiązek prowadzenia ewidencji ŚT ──
 else := {
@@ -310,10 +323,16 @@ else := {
 } {
     input.jdg_entrepreneur.has_fixed_assets == true
     register_exists := object.get(input.jdg_entrepreneur, "asset_register_exists", false)
-    register_status = "OK — prowadzona" { register_exists == true }
-    register_status = "BRAK — załóż natychmiast!" { register_exists == false }
-    register_routing = "BLOCK_AND_ALERT" { not register_exists }
-    register_routing = "" { register_exists }
+    register_status_opts := [
+        {"c": register_exists == true, "v": "OK — prowadzona"},
+        {"c": register_exists == false, "v": "BRAK — załóż natychmiast!"}
+    ]
+    register_status := [x.v | some x in register_status_opts; x.c][0]
+    register_routing_opts := [
+        {"c": register_exists == false, "v": "BLOCK_AND_ALERT"},
+        {"c": true, "v": ""}
+    ]
+    register_routing := [x.v | some x in register_routing_opts; x.c][0]
 }
 
 # ── D501: asset_sale_income_tax — Sprzedaż ŚT — przychód/koszt ──
@@ -340,9 +359,9 @@ else := {
     gain := sale_price - book_value
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
 # FALLBACK
-# ═══════════════════════════════════════════════════════════════════════════════
+# ==============================================================================
 else := {
     "matched": true, "rule_id": "jdg.accounting.depreciation.fallback",
     "package": "jdg.accounting.depreciation", "priority": 999,

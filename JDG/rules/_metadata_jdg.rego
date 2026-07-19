@@ -10,6 +10,8 @@
 
 package jdg.metadata
 
+import future.keywords.in
+
 # ── Policy Version ────────────────────────────────────────────────────────────
 
 policy_version := "2026.07.16"

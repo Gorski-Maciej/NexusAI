@@ -34,22 +34,22 @@ jdg_tax_form = form  if {
 }
 
 # Czy JDG jest na skali podatkowej?
-is_scale  if {
+is_scale = true if {
     jdg_tax_form == "PIT_SCALE"
 }
 
 # Czy JDG jest na podatku liniowym?
-is_linear  if {
+is_linear = true if {
     jdg_tax_form == "LINEAR"
 }
 
 # Czy JDG jest na ryczałcie?
-is_lump_sum  if {
+is_lump_sum = true if {
     jdg_tax_form == "LUMP_SUM"
 }
 
 # Czy JDG jest na karcie podatkowej?
-is_tax_card  if {
+is_tax_card = true if {
     jdg_tax_form == "TAX_CARD"
 }
 

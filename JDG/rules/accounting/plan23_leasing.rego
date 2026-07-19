@@ -1,9 +1,9 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG Policies — jdg.accounting
-# Generated from Plan OPA specifications: 2026-07-13 14:05:06
-# Rules: 5
-# ═══════════════════════════════════════════════════════════════════════════════
+# ------------------------------------------------------------------------------
+# NexusAI JDG Policies — jdg.accounting — Plan 23: Leasing
+# Generated from Plan OPA specifications: 2026-07-13 14:05:06, Rules: 5
+# ------------------------------------------------------------------------------
 package jdg.accounting
+import future.keywords.in
 import data.jdg.helpers
 
 default decide := {"matched":false,"rule_id":"jdg.accounting.no_match","package":"jdg.accounting","priority":99999}
