@@ -27,6 +27,16 @@
 #   GTU code auto-assignment, cross-check validation, KSeF extraction),
 #   legislative_monitor (change detection, impact analysis, transitional
 #   provisions, compliance calendar, rule versioning & temporal validity).
+#   Dodano 3 pakiety S14-S16 Enterprise v6.0 (2026-07-19):
+#   neural_mesh (Neural Rule Mesh — 13-domain cross-intelligence fabric,
+#   synaptic rules connecting VAT×PIT×ZUS×KKS×OrdPU×PCC×UoR, global
+#   deadline orchestrator, predictive audit risk engine 12-factor,
+#   auto-healing correction pattern detector, global compliance scorecard),
+#   nkup_enterprise (Art. 23 PIT complete — 57 NKUP categories: representation
+#   detailed matrix, car expenses 75%/150k/225k limits, family wages,
+#   donations, thin capitalization, enforcement costs, provisions),
+#   exit_tax_mdr (Exit Tax Art. 30da + CFC Art. 30f + MDR/DAC6 + Transfer
+#   Pricing + Estoński CIT analysis + Double Tax Treaty Analyzer).
 #   Używa safe_merge() do scalania werdyktów z kolejnością: najniższy
 #   priorytet wewnątrz, najwyższy na zewnątrz (overrides).
 # architecture: Multi-Pass OPA (ADR-001) + Sharded Router (B1)
@@ -111,6 +121,13 @@ import data.jdg.banking
 import data.jdg.annual_declaration
 import data.jdg.jpk_v7_autogen
 import data.jdg.legislative_monitor
+import data.jdg.neural_mesh
+import data.jdg.nkup_enterprise
+import data.jdg.exit_tax_mdr
+import data.jdg.pkpir_live
+import data.jdg.uor_live
+import data.jdg.local_taxes.excise_enterprise
+import data.jdg.local_taxes.procedures_enterprise
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
@@ -434,5 +451,22 @@ final_verdict_enriched = object.union(final_verdict_with_conflicts,
     object.union(banking.decide,
     object.union(annual_declaration.decide,
     object.union(jpk_v7_autogen.decide,
-        legislative_monitor.decide
-    ))))))))))))))
+    object.union(legislative_monitor.decide,
+    # ── PAS 12: Enterprise v6.0 Neural & Compliance Layer (2026-07-19) ──
+    # S14: Neural Rule Mesh — cross-domain intelligence fabric
+    # S15: NKUP Enterprise Complete — Art. 23 PIT full coverage  
+    # S16: Exit Tax + MDR Enterprise — cross-border tax obligations
+    object.union(neural_mesh.decide,
+    object.union(nkup_enterprise.decide,
+    object.union(exit_tax_mdr.decide,
+    # ── PAS 13: Enterprise v6.1 Accounting Live Layer (2026-07-19) ──
+    # S17: PKPiR Enterprise Live — active column 1-17 validation
+    # S18: UoR Enterprise Live — full accounting law compliance
+    object.union(pkpir_live.decide,
+    object.union(uor_live.decide,
+    # ── PAS 14: Enterprise v6.2 Class IX Complete (2026-07-19) ──
+    # S19: Excise Enterprise Complete — fuels, alcohol, tobacco, energy, warehouse
+    # S20: Local Procedures Enterprise — PCC enforcement, property exemptions, cross-tax
+    object.union(excise_enterprise.decide,
+        procedures_enterprise.decide
+    ))))))))))))))))))
