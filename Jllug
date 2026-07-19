@@ -1,0 +1,234 @@
+
+Jesteś Technical Writerem i Architektem Oprogramowania z doświadczeniem w dokumentowaniu dużych systemów finansowych klasy Enterprise. Otrzymujesz pełny kod źródłowy aplikacji NexusAI – autonomicznej platformy księgowej (~85 000 linii kodu, ~22 000 plików). Twoim zadaniem jest stworzenie **kompletnej, szczegółowej i obszernej dokumentacji technicznej** spełniającej najwyższe standardy enterprise.
+
+## CEL
+Stwórz dokumentację, która:
+1. Umożliwi nowemu developerowi zrozumienie architektury i uruchomienie projektu w ciągu 15 minut.
+2. Zapewni pełną specyfikację API.
+3. Opisze proces deploymentu i budowania finalnej binarki.
+4. Będzie zgodna z wymogami audytu (ścieżka decyzji, bezpieczeństwo).
+5. Będzie użyteczna dla użytkownika końcowego (przedsiębiorcy) – instrukcje w prostym języku.
+6. Będzie żywym dokumentem – z miejscem na changelog, daty aktualizacji, autorów.
+
+## WYMAGANIA OGÓLNE DOKUMENTACJI
+- **Format:** Markdown (z możliwością konwersji do HTML/PDF).
+- **Styl:** jasny, precyzyjny, bez żargonu bez wyjaśnienia. Każdy element musi być zrozumiały dla nowego developera w zespole.
+- **Język:** polski (terminologia techniczna może pozostać angielska, ale opisy po polsku).
+- **Przykłady:**  diagramy w Mermaid lub ASCII.
+- **Samowystarczalność:** każda sekcja musi być niezależna – nowa osoba po przeczytaniu jednego rozdziału powinna wykonać konkretne zadanie bez odwoływania się do innych części.
+- **Wyszukiwalność:** twórz dokumentację z myślą o Ctrl+F – dodawaj zakotwiczone tagi, synonimy.
+- **Spójność terminologii:** jeśli raz nazywasz coś „kontenerem”, nie zmieniaj na „instancję Dockera”.
+- **Aktywne nagłówki:** „Konfiguracja zmiennych środowiskowych”, a nie „O zmiennych środowiskowych”.
+
+## KONTEKST PROJEKTU
+- **Nazwa:** NexusAI – wirtualny księgowy. Misja: "NexusAI to nie aplikacja – to wirtualny księgowy".
+- **Język:** Python ≥3.13 (free-threaded, bez GIL) + Rust (PyO3).
+- **Architektura:** Modularny Monolit z komunikacją przez NATS JetStream. CQRS + Event Sourcing.
+- **Bazy:** SQLite (SQLCipher, sqlite-vec), DuckDB (OLAP), TigerBeetle (double-entry ledger).
+- **AI:** llama-cpp-python (13 modeli GGUF), 5 agentów (Orkiestrator, Ekstrakcji Danych, Analityczny, Walidator Jakości, Środków Trwałych).
+- **OCR:** 4 silniki (Tesseract, PaddleOCR, docTR, EasyOCR) + walidacja krzyżowa + Nadzorca AI.
+- **Bezpieczeństwo:** własny moduł Rust (AEAD, Argon2id, SHA-256), JWT, RBAC, SQLCipher.
+- **Integracje:** KSeF, GUS BIR, Biała Lista MF, NBP API.
+- **UI:** Flet (Flutter).
+- **Monitorowanie:** OpenTelemetry, structlog + loguru, Sentry.
+
+
+## PODEJŚCIE ITERACYJNE
+Ze względu na ogromną skalę, dokumentacja będzie generowana partiami. W każdej iteracji:
+1. Potwierdź gotowość na kolejną partię kodu.
+2. Otrzymasz konkretny moduł (np. OCR, Tax Engine, Agenty AI).
+3. Wygenerujesz odpowiednią sekcję dokumentacji.
+
+## STRUKTURA DOKUMENTACJI – WYMAGANE SEKCJE
+
+### 0. Strona tytułowa / Meta
+- Nazwa aplikacji, wersja, data wydania, zespół autorów, licencja.
+- Krótki, opis wartości biznesowej, zasada PWE( P = problem , W = wartość , E = efekt, ) opisz propozycje wartości.
+
+### 1. README.md (strona główna)
+- Logo i nazwa projektu.
+- Misja: "NexusAI to nie aplikacja – to wirtualny księgowy".
+- Status: production / beta / alpha.
+- Kluczowe funkcje (bullet points,m).
+- Szybki start: `pixi install && pixi run dev`.
+- Linki do pełnej dokumentacji.
+- Licencja.
+
+### 2. Spis treści (automatyczny, z linkami)
+
+### 3. Wprowadzenie (docs/INTRODUCTION.md)
+- Cel aplikacji, problem który rozwiązuje.
+- Główni użytkownicy i scenariusze użycia.
+- Słownik kluczowych pojęć (glosariusz).
+
+### 4. Szybki start (Quick Start) (docs/QUICKSTART.md)
+- Instrukcja krok po kroku, jak uruchomić aplikację lokalnie w mniej niż 15 minut.
+- Wymagania wstępne: system operacyjny, wersje języków, narzędzia (pixi, Rust).
+- Komendy do skopiowania.
+
+### 5. Architektura systemu (docs/ARCHITECTURE.md)
+- **Diagramy C4** (Context, Container, Component) w formacie Mermaid:
+  - Context: Użytkownik → NexusAI → Zewnętrzne API (KSeF, GUS, NBP).
+  - Container: Litestar API, Agenci AI, NATS, Bazy danych.
+  - Component: Struktura wewnętrzna Agenta Ekstrakcji (OCR pipeline).
+- **Warstwy architektoniczne:** Domain, Application, Infrastructure, Presentation.
+- **Wzorce projektowe:** CQRS, Event Sourcing, Repository, Unit of Work, Chain of Responsibility, Strategy, Observer, Factory, Command, Specification, Saga.
+- **Diagramy sekwencji** dla krytycznych procesów:
+  - Przetwarzanie faktury od wpływu do decyzji.
+  - Komunikacja między agentami przez NATS.
+  - Proces decyzyjny Rady Agentów.
+- **Kluczowe decyzje architektoniczne (ADR)** – co najmniej 5:
+  - Dlaczego SQLite zamiast PostgreSQL.
+  - Dlaczego TigerBeetle do księgi głównej.
+  - Dlaczego NATS zamiast RabbitMQ.
+  - Dlaczego 4 silniki OCR zamiast jednego VLM.
+  - Dlaczego Python 3.13 free-threaded.
+- **Model domeny:** Agregaty (Invoice, Contractor, Account, Asset), Value Objects (Money, NIP, IBAN).
+- **Bazy danych:** schematy, relacje, polityka backupu.
+- **Stos technologiczny** (języki, frameworki, biblioteki kluczowe) z uzasadnieniem wyboru.
+
+### 6. Struktura projektu (docs/PROJECT_STRUCTURE.md)
+- Drzewo katalogów z wyjaśnieniem przeznaczenia każdego folderu/pliku.
+- Konwencje nazewnicze plików i modułów.
+
+### 7. Instalacja i konfiguracja (docs/INSTALLATION.md)
+- Szczegółowy opis instalacji (klonowanie repo, instalacja zależności, zmienne środowiskowe).
+- Plik `.env.example` z pełnym komentarzem każdej zmiennej.
+- Profile konfiguracyjne (dev, staging, prod) i różnice między nimi.
+
+### 8. Baza danych (docs/DATABASE.md)
+- Diagram ERD (encje i relacje).
+- Opis wszystkich tabel/kolekcji: nazwa, pola, typy, ograniczenia, indeksy, przykładowe zapytania.
+- Strategia migracji i seedowania danych.
+- Instrukcja backupu i przywracania.
+
+### 9. API / Komunikacja (docs/API.md)
+- API – pełna specyfikacja.
+- **Autentykacja:** JWT (uzyskiwanie, refresh, wygaśnięcie).
+- **Endpointy** (pogrupowane tematycznie):
+  - Faktury (CRUD, wysyłka do KSeF).
+  - Kontrahenci (weryfikacja w MF, dane z GUS).
+  - Księgowania (automatyczne, manualne, korekty).
+  - Raporty (analityka, podatki).
+  - Decyzje (oczekujące, historia).
+  - Środki trwałe (przyjęcie, amortyzacja).
+- Dla każdego endpointu: metoda, ścieżka, nagłówki, parametry, body, odpowiedzi (kody statusu, schemat JSON), przykłady curl.
+- **Rate limiting i throttling.**
+- **Kody błędów** (własne, HTTP, biznesowe).
+- Wersjonowanie API.
+
+### 10. Moduły / Logika biznesowa (docs/MODULES.md)
+- Opis każdego kluczowego modułu/usługi: odpowiedzialność, algorytmy, przepływ danych.
+- Diagramy sekwencji dla krytycznych procesów (np. księgowanie faktury, decyzja Rady Agentów).
+- Opis agentów AI: Orkiestrator, Ekstrakcji Danych, Analityczny, Walidator Jakości, Środków Trwałych.
+- Opis pipeline'u OCR: Preprocessing → 4 silniki → Walidacja krzyżowa → Nadzorca AI → Walidator Semantyczny.
+
+### 11. Testowanie (docs/TESTING.md)
+- Strategia testów (jednostkowe, integracyjne, E2E, wydajnościowe).
+- Jak uruchomić testy (komendy).
+- Opis użytych narzędzi: pytest, pytest-anyio, crosshair, schemathesis, locust, py-spy.
+- Jak pisać nowe testy – szablon/przykład.
+- Specyfika księgowa: testy dla zaokrągleń, podwójnego zapisu, przeliczania walut, obliczeń odsetek, amortyzacji.
+
+### 12. Wdrożenie / Deployment (docs/DEPLOYMENT.md)
+- Opis środowisk: dev, staging, produkcja.
+- **Budowanie finalnej binarki:** `pixi run build` (Nuitka + Inno Setup).
+- **Instalator Windows:** Inno Setup, podpisywanie kodu.
+- **Wymagania systemowe:** CPU, RAM (budżet 6 GB), miejsce na dysku.
+- **Zmienne środowiskowe** (wszystkie, opisane).
+- **Aktualizacje OTA** przez LiteServ.
+- **Backup i przywracanie** (BackupManager, szyfrowanie, weryfikacja SHA-256).
+- **Konfiguracja produkcyjna** (config/prod.toml).
+- Proces CI/CD (kroki w pipeline, wyzwalacze, skrypty).
+- Monitorowanie i logowanie (gdzie, jak skonfigurować alerty).
+
+### 13. Rozwiązywanie problemów (docs/TROUBLESHOOTING.md)
+- Lista często spotykanych błędów wraz z rozwiązaniami.
+- Poradnik debugowania (logi, narzędzia, tryby verbose).
+
+### 14. Bezpieczeństwo (docs/SECURITY.md)
+- **Model zagrożeń** (Threat Model).
+- **Szyfrowanie:** dane w spoczynku (SQLCipher), transmisja (TLS), własny moduł Rust (AEAD: ChaCha20-Poly1305, Argon2id, SHA-256).
+- **Autentykacja:** JWT, refresh tokeny, unieważnianie.
+- **RBAC:** role, uprawnienia, separacja obowiązków.
+- **Audyt:** Proof Chain SHA-256, niezmienialność logów.
+- **Bezpieczeństwo AI:** modele lokalne (offline-first), weryfikacja sum kontrolnych SHA-256 modeli.
+- **OWASP Top 10:** jak aplikacja chroni przed każdym zagrożeniem.
+- **Zależności:** Dependabot, OpenSSF Scorecard, CodeQL, SBOM, SLSA, OIDC.
+- **RODO:** anonimizacja, retencja, prawo do bycia zapomnianym.
+- Zarządzanie sekretami, rotacja kluczy.
+- Procedura zgłaszania podatności.
+
+### 15. Zgodność z przepisami (docs/COMPLIANCE.md)
+- **Zgodność z przepisami księgowymi:** UoR, IFRS, GAAP.
+- **KSeF:** generowanie XML, walidacja XSD, wysyłka.
+- **JPK:** struktury, eksport.
+- **Deklaracje podatkowe:** VAT-7, CIT-8, PIT-36.
+- **Ścieżka audytu:** jak odtworzyć dowolną decyzję.
+- **Przechowywanie danych:** okresy retencji zgodne z prawem.
+
+### 16. Proces rozwoju / Contributing (docs/CONTRIBUTING.md)
+- Jak dołączyć do projektu: konfiguracja środowiska dev, standardy kodowania (ruff, mypy strict), konwencje commitów, proces code review, gałęzie.
+- Jak zgłaszać błędy i proponować funkcje.
+- Jak pisać testy.
+- Jak dodawać nowe reguły podatkowe (OPA/Rego).
+- Jak dodawać nowego agenta AI.
+- Jak aktualizować dokumentację.
+- Zasady wersjonowania (SemVer).
+
+### 17. Podręcznik użytkownika (docs/USER_GUIDE.md)
+- **Pierwsze uruchomienie:** kreator konfiguracji, aktywacja licencji.
+- **Role użytkowników:** właściciel, księgowa, doradca (RBAC).
+- **Workflow – codzienna praca:**
+  1. Aplikacja pobiera faktury (e-mail, KSeF, folder).
+  2. Aplikacja samodzielnie księguje (AUTO_POST).
+  3. Jeśli ma wątpliwość – pyta (ASK_USER).
+  4. Przedsiębiorca klika jedną z 2-5 opcji.
+- **Centrum decyzji:** jak odpowiadać na pytania, historia decyzji.
+- **Raporty:** przeglądanie, eksport, drukowanie.
+- **Konfiguracja:** stawki VAT, plan kont, polityka rachunkowości.
+- **Integracje:** KSeF, GUS, NBP – jak skonfigurować.
+- **Backup:** jak tworzyć, jak przywracać.
+- **Aktualizacje:** automatyczne, ręczne.
+
+### 18. Słownik pojęć (docs/GLOSSARY.md)
+- Słownik pojęć księgowych używanych w aplikacji.
+- Definicje terminów technicznych (NATS, JetStream, GGUF, CQRS, Event Sourcing, itp.).
+
+### 19. FAQ / Najczęściej zadawane pytania (docs/FAQ.md)
+
+### 20. Dodatki
+- **Changelog.**
+- **Bibliografia.**
+- **Linki do powiązanych dokumentów.**
+
+## ZASADY TWOORZENIA DOKUMENTACJI (JAK PISAĆ)
+- **Pokazuj, nie mów** – każdą abstrakcyjną koncepcję ilustruj działającym fragmentem kodu lub konfiguracji.
+- **Zakładaj minimalną wiedzę** odbiorcy, ale nie bądź protekcjonalny.
+- **Utrzymuj spójność** terminologii (jeśli raz nazywasz coś „kontenerem”, nie zmieniaj na „instancję Dockera”).
+- **Używaj aktywnych nagłówków** („Konfiguracja zmiennych środowiskowych”, a nie „O zmiennych środowiskowych”).
+- **Każda sekcja musi być samowystarczalna** – nowa osoba po przeczytaniu jednego rozdziału powinna wykonać konkretne zadanie bez odwoływania się do innych części.
+- **Twórz dokumentację z myślą o wyszukiwaniu** (Ctrl+F) – dodawaj zakotwiczone tagi, synonimy.
+- Pisz językiem zrozumiałym dla developera, ale i dla analityka biznesowego.
+- Używaj diagramów Mermaid wszędzie, gdzie to pomaga.
+- Wszystkie ścieżki, nazwy plików i komendy podawaj jako kod (`backtick`).
+- W kodzie przykładów używaj składni Python z type hints.
+
+## FORMAT ODPOWIEDZI
+Dla każdej sekcji dokumentacji:
+- **Ścieżka pliku** (np. `docs/ARCHITECTURE.md`)
+- **Zawartość** – kompletna, gotowa do zapisania w pliku
+- **Krótkie wyjaśnienie** – dlaczego ta sekcja jest ważna
+
+Jeśli dla jakiejś sekcji brakuje danych, oznacz ją `[TODO: wymagane informacje...]` i zasugeruj, co muszę dostarczyć.
+
+## ZASADY KRYTYCZNE
+1. Nie pomijaj żadnego punktu z powyższej struktury.
+2. Każda sekcja musi być kompletna – nie zostawiaj pustych nagłówków.
+3. Dokumentacja ma być gotowa do wstawienia do repozytorium jako zestaw plików Markdown.
+
+Rozpocznij od potwierdzenia gotowości i przejdź do Fazy 0 – zapytaj o pierwszy moduł.
+
+
+
+WAŻNE: w docs/ są dwa pliki txt ( https://github.com/Gorski-Maciej/NexusAI/blob/main/docs/aa3fvcx.txt https://github.com/Gorski-Maciej/NexusAI/blob/main/docs/tfgxzd.txt) przedsiwiają ogólny kierunek i wygląd aplikacji , mogą występować tam stare elementy/mechanizmy/struktury i technologie, plik https://github.com/Gorski-Maciej/NexusAI/blob/main/RAPORT_TECHNOLOGII_NEXUSAI.txt jest aktualny i to on jest fundamentem aplikacji, plik ten przedstawia ogólny obraz i wygląd aplicji.
