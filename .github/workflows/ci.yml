@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-hatch
         with:
@@ -87,14 +87,14 @@ jobs:
         python-version: ["3.13", "3.13t"]
       fail-fast: false  # Nie przerywaj przy błędzie jednej wersji
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-hatch
         with:
           cache-key-prefix: hatch-test-${{ matrix.python-version }}
 
       - name: Install Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
@@ -122,7 +122,7 @@ jobs:
       matrix:
         environment: [dev, prod]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-pixi
         with:
@@ -147,14 +147,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-pixi
         with:
           pixi-env: dev
 
       - name: Download Rust wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nexus-crypto-ubuntu-latest
           path: dist/wheels/
@@ -164,7 +164,7 @@ jobs:
           pip install dist/wheels/nexus_crypto-*.whl
 
       - name: Cache mypyc compiled *.so files
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             **/*.cpython-313*.so
@@ -193,7 +193,7 @@ jobs:
         run: find . -name "*.so" -type f | sort | head -20
 
       - name: Upload mypyc compiled .so files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mypyc-compiled-so
           path: |
@@ -216,7 +216,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-pixi
         with:
@@ -294,7 +294,7 @@ jobs:
           cat /tmp/benchmark_report.md
 
       - name: Upload benchmark report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mimalloc-benchmark-report
           path: /tmp/benchmark_report.md
@@ -310,7 +310,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-pixi
         with:
@@ -336,7 +336,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-pixi
         with:
@@ -361,7 +361,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-pixi
         with:
@@ -387,7 +387,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-pixi
         with:
@@ -414,7 +414,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -450,10 +450,10 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Review dependencies
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
           comment-summary-in-pr: always
@@ -475,14 +475,14 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-pixi
         with:
           pixi-env: dev
 
       - name: Upload security scan report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: security-scan-report
@@ -503,7 +503,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-pixi
         with:
@@ -522,7 +522,7 @@ jobs:
         run: pixi run --environment dev pytest --cov=nexus_ai --cov-report=html --no-cov-on-fail
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage-report
@@ -550,13 +550,13 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -578,7 +578,7 @@ jobs:
         run: ls -lh nexus_ai/rust/target/wheels/
 
       - name: Upload wheel
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nexus-crypto-${{ matrix.os }}
           path: nexus_ai/rust/target/wheels/*.whl
@@ -604,12 +604,12 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-hatch
 
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ccache
           key: ccache-pgo-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'nexus_ai/**/*.py') }}
@@ -618,7 +618,7 @@ jobs:
             ccache-pgo-
 
       - name: Cache NUITKA_CACHE_DIR
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/nuitka
           key: nuitka-pgo-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
@@ -630,7 +630,7 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ccache g++
 
       - name: Download Rust wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nexus-crypto-ubuntu-latest
           path: dist/wheels/
@@ -680,7 +680,7 @@ jobs:
           file dist/NexusAI* 2>/dev/null || true
 
       - name: Upload PGO-optimized binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nexus-ai-pgo-ubuntu-latest
           path: dist/nexus-ai*
@@ -708,7 +708,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Clang + LLD (fast linker)
         run: |
@@ -720,7 +720,7 @@ jobs:
           cache-key-prefix: hatch-nuitka-clang
 
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ccache
           key: ccache-nuitka-clang-${{ hashFiles('pyproject.toml', 'nexus_ai/**/*.py') }}
@@ -728,7 +728,7 @@ jobs:
             ccache-nuitka-clang-
 
       - name: Cache NUITKA_CACHE_DIR
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/nuitka
           key: nuitka-cache-clang-${{ hashFiles('pyproject.toml') }}
@@ -736,13 +736,13 @@ jobs:
             nuitka-cache-clang-
 
       - name: Download Rust wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nexus-crypto-ubuntu-latest
           path: dist/wheels/
 
       - name: Download mypyc compiled .so files
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: mypyc-compiled-so
           path: ./
@@ -759,7 +759,7 @@ jobs:
         run: ccache --show-stats || echo "ccache stats unavailable"
 
       - name: Upload Clang build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nexus-ai-clang-ubuntu-latest
           path: dist/nexus-ai*
@@ -791,14 +791,14 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-hatch
         with:
           cache-key-prefix: hatch-nuitka-${{ runner.os }}
 
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ccache
           key: ccache-nuitka-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'nexus_ai/**/*.py') }}
@@ -807,7 +807,7 @@ jobs:
             ccache-nuitka-
 
       - name: Cache NUITKA_CACHE_DIR
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/nuitka
           key: nuitka-cache-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
@@ -824,14 +824,14 @@ jobs:
         run: choco install ccache --no-progress
 
       - name: Download Rust wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nexus-crypto-${{ matrix.os }}
           path: dist/wheels/
 
       - name: Download mypyc compiled .so files (Linux only)
         if: runner.os == 'Linux'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: mypyc-compiled-so
           path: ./
@@ -848,7 +848,7 @@ jobs:
         run: ccache --show-stats || echo "ccache stats unavailable"
 
       - name: Upload Nuitka build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nexus-ai-${{ matrix.os }}
           path: dist/nexus-ai*
@@ -873,7 +873,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Generate SBOM
         uses: advanced-security/sbom-generator-action@v0
@@ -883,7 +883,7 @@ jobs:
           project-version: ${{ github.ref_name }}
 
       - name: Upload SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nexus-ai-sbom
           path: "*.spdx.json"
@@ -914,25 +914,25 @@ jobs:
       name: release
       url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-hatch
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: nexus-*
           merge-multiple: true
 
       - name: Download SBOM
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nexus-ai-sbom
           path: dist/sbom/
 
       # SUPERMOC: Attest build provenance
       - name: Attest build provenance
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: nexus-ai-*
 
