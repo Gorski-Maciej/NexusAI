@@ -46,7 +46,7 @@ jobs:
           publish_results: true  # Badge w README
 
       - name: Upload SARIF to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: results.sarif
           category: openssf-scorecard
