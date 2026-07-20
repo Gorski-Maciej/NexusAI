@@ -48,7 +48,7 @@ Modular Monolith, wzorce projektowe i inżynierii oprogramowania.
 - https://github.com/Gorski-Maciej/NexusAI/blob/main/docs/DOMAIN.md
 - https://github.com/Gorski-Maciej/NexusAI/blob/main/docs/WORKFLOWS.md
 - https://github.com/Gorski-Maciej/NexusAI/blob/main/docs/CONFIG.md
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/docs/EVEENTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/docs/EVENTS.md
 - https://github.com/Gorski-Maciej/NexusAI/blob/main/docs/DECISIONS.md
 - https://github.com/Gorski-Maciej/NexusAI/blob/main/docs/BUILD_CONFIG.md
 

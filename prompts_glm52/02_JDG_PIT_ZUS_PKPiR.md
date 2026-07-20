@@ -106,8 +106,8 @@ Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 20-28 stron) zawierający:
 ### 2. ANALIZA POKRYCIA ZUS/SUS (POZIOM ENTERPRISE — PRIORYTET: SKŁADKA ZDROWOTNA)
 - **🎯 GŁÓWNY PRIORYTET: Składka zdrowotna (Polski Ład):**
   - Skala podatkowa (9% od dochodu) — czy reguły są poprawne?
-  - Liniowy (4.9%) — czy limit 11 600 PLN rocznie jest obsłużony?
-  - Ryczałt (9%/6%/3%) — czy 3 progi przychodu są poprawne?
+  - Liniowy (4.9%) — czy limit 12 900 PLN rocznie jest obsłużony? (UWAGA: aktualny limit 2024/2025 to 12 900 PLN, nie 11 600 PLN)
+  - Ryczałt (4.9% od podstawy progowej, 3 progi podstawy: TIER_1 ≤60K → 60% przeciętnego wynagrodzenia, TIER_2 60-300K → 100%, TIER_3 >300K → 180%) — czy progi są poprawne?
   - Karta podatkowa (9% od minimalnego) — czy reguła jest aktualna?
 - Składki społeczne, ulgi START/mały ZUS, zasiłki
 

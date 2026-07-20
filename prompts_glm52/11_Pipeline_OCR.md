@@ -16,11 +16,14 @@ z faktur i integracji AI z pipeline'ami dokumentowymi.
 - https://github.com/Gorski-Maciej/NexusAI/blob/main/nexus_ai/pipeline/ocr_consensus.py
 - https://github.com/Gorski-Maciej/NexusAI/blob/main/nexus_ai/pipeline/parser.py
 
-### Silniki OCR:
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/nexus_ai/core/tesseract_engine.py (jeśli istnieje)
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/nexus_ai/core/paddleocr_engine.py (jeśli istnieje)
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/nexus_ai/core/easyocr_engine.py (jeśli istnieje)
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/nexus_ai/core/doctr_engine.py (jeśli istnieje)
+### Silniki OCR (skonsolidowane w ocr_consensus.py ~480 LOC — patrz "Pipeline OCR — Core" powyżej):
+- UWAGA: Wszystkie 4 silniki (TesseractEngine, PaddleOCREngine, DocTREngine, EasyOCREngine) są zaimplementowane w jednym pliku ocr_consensus.py (zredukowane z 971 → ~480 LOC przez wspólną bazę BaseOCREngine w ocr_base.py). Nie istnieją osobne pliki tesseract_engine.py, paddleocr_engine.py, easyocr_engine.py, doctr_engine.py.
+
+### Testy OCR (stan istnienia):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_paddleocr_engine.py (ISTNIEJE)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_easyocr_engine.py (ISTNIEJE)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_tesseract_engine.py (BRAK — luka testowa)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_doctr_engine.py (BRAK — luka testowa)
 
 ### Przetwarzanie dokumentów:
 - https://github.com/Gorski-Maciej/NexusAI/blob/main/nexus_ai/core/pdfium.py
@@ -31,16 +34,12 @@ z faktur i integracji AI z pipeline'ami dokumentowymi.
 - https://github.com/Gorski-Maciej/NexusAI/blob/main/nexus_ai/services/context_enricher.py
 - https://github.com/Gorski-Maciej/NexusAI/blob/main/nexus_ai/services/pdfium/ (katalog)
 
-### Testy:
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_pdfium_engine.py
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_tesseract_engine.py
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_paddleocr_engine.py
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_easyocr_engine.py
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_doctr_engine.py
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_field_confidence.py
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_image_utils.py
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_semantic_guard.py
-- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_content_length_guard_contract.py
+### Testy (pozostałe — testy OCR patrz sekcja "Testy OCR" powyżej):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_pdfium_engine.py (ISTNIEJE)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_field_confidence.py (ISTNIEJE)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_image_utils.py (ISTNIEJE)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_semantic_guard.py (ISTNIEJE)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tests/test_content_length_guard_contract.py (ISTNIEJE)
 
 ### Dokumentacja:
 - https://github.com/Gorski-Maciej/NexusAI/blob/main/docs/PIPELINE.md
