@@ -1,5 +1,7 @@
 # 🧠 PROMPTY ANALITYCZNE GLM 5.2 — NexusAI ENTERPRISE v7.0
 
+> **⚠️ WYJŚCIE OBOWIĄZKOWE — PLIK .TXT:** Każdy prompt (01–17) generuje raport, który NALEŻY ZAPISAĆ jako czysty plik `.txt` (plain text, bez formatowania Markdown). To jedyne akceptowane WYJŚCIE każdej sesji analitycznej.
+
 > **Model:** GLM 5.2 (okno kontekstowe 1 000 000 tokenów)  
 > **Cel:** Generowanie rozbudowanych raportów analitycznych ENTERPRISE (BEZ KODU)  
 > **Data:** 2026-07-19  
@@ -51,14 +53,16 @@
 
 ## 📐 FORMAT RAPORTÓW
 
-Każdy prompt generuje raport zawierający:
+Każdy prompt generuje raport, który **ZAWSZE ZAPISUJEMY jako czysty plik `.txt`** (WYJŚCIE OBOWIĄZKOWE). Struktura raportu:
 - Executive Summary z TOP rekomendacjami
-- Diagramy Mermaid
+- Diagramy Mermaid (jako bloki kodu tekstowego)
 - Tabele porównawcze i macierze ryzyka
 - Sekcję "Genialne Pomysły ENTERPRISE"
 - Mapę drogową wdrożenia
 
 ---
+
+📄 **WYJŚCIE OBOWIĄZKOWE — PLIK .TXT:** Wygenerowany raport ZAWSZE ZAPISZ jako czysty plik `.txt` (plain text, bez formatowania Markdown).
 
 *Prompty wygenerowane dla projektu NexusAI — Wirtualny Księgowy*
 *Made in Poland 🇵🇱*

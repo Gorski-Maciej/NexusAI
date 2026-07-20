@@ -1,5 +1,7 @@
 # 🔥 PROMPT 02: JDG — PIT (Ulgi+Optymalizacja), ZUS (Zdrowotna), PKPiR, UoR, Micro
 
+> **⚠️ WYJŚCIE OBOWIĄZKOWE — PLIK .TXT:** Cały wygenerowany raport analityczny ZAPISZ jako czysty plik `.txt` (plain text, bez formatowania Markdown). To jedyne akceptowane WYJŚCIE twojej pracy.
+
 ```text
 🚨 INSTRUKCJA DLA MODELU GLM 5.2:
 
@@ -132,4 +134,7 @@ Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 20-28 stron) zawierający:
 ## ⚠️ PRZYPOMNIENIE:
 NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Tylko RAPORT ANALITYCZNY.
 ```
+
+📄 **WYJŚCIE = PLIK .TXT:** Zapisz cały wygenerowany raport analityczny jako czysty plik `.txt` (plain text, bez formatowania).
+
 🧹 PO ZAKOŃCZENIU ANALIZY: WYCZYŚĆ OKNO KONTEKSTOWE przed przejściem do następnej sesji.

@@ -1,5 +1,7 @@
 # 🔥 PROMPT 03: JDG Enterprise — KKS (Sankcje), Crossborder, Compliance, Edge Cases
 
+> **⚠️ WYJŚCIE OBOWIĄZKOWE — PLIK .TXT:** Cały wygenerowany raport analityczny ZAPISZ jako czysty plik `.txt` (plain text, bez formatowania Markdown). To jedyne akceptowane WYJŚCIE twojej pracy.
+
 ```text
 🚨 INSTRUKCJA DLA MODELU GLM 5.2:
 
@@ -110,4 +112,7 @@ Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 18-24 stron) zawierający:
 
 ## ⚠️ PRZYPOMNIENIE: NIE GENERUJ KODU REGO. Tylko RAPORT ANALITYCZNY.
 ```
+
+📄 **WYJŚCIE = PLIK .TXT:** Zapisz cały wygenerowany raport analityczny jako czysty plik `.txt` (plain text, bez formatowania).
+
 🧹 PO ZAKOŃCZENIU ANALIZY: WYCZYŚĆ OKNO KONTEKSTOWE przed przejściem do następnej sesji.

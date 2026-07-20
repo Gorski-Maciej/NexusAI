@@ -1,5 +1,7 @@
 # 🔥 PROMPT 10: Agenci AI + System Agentowy + 13 Modeli GGUF
 
+> **⚠️ WYJŚCIE OBOWIĄZKOWE — PLIK .TXT:** Cały wygenerowany raport analityczny ZAPISZ jako czysty plik `.txt` (plain text, bez formatowania Markdown). To jedyne akceptowane WYJŚCIE twojej pracy.
+
 ```text
 🚨 INSTRUKCJA DLA MODELU GLM 5.2:
 
@@ -100,4 +102,7 @@ Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 24-32 stron) zawierający:
 
 ## ⚠️ NIE GENERUJ KODU. Tylko RAPORT.
 ```
+
+📄 **WYJŚCIE = PLIK .TXT:** Zapisz cały wygenerowany raport analityczny jako czysty plik `.txt` (plain text, bez formatowania).
+
 🧹 PO ZAKOŃCZENIU ANALIZY: WYCZYŚĆ OKNO KONTEKSTOWE przed przejściem do następnej sesji.
