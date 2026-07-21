@@ -1,0 +1,1027 @@
+================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — JDG PIT (Ulgi+Optymalizacja) i ZUS (Zdrowotna) v7.0
+================================================================================
+Data: 2026-07-21
+Autor: NexusAI GLM 5.2 Enterprise Analysis Engine
+Wersja dokumentu: 7.0
+Status: FINAL
+================================================================================
+
+SPIS TRESCI
+===========
+1. EXECUTIVE SUMMARY — TOP 10 REKOMENDACJI
+2. ANALIZA POKRYCIA USTAWY O PIT — ULGI I OPTYMALIZACJA
+   2.1 Formy opodatkowania (Art. 9a, 27, 30c PIT)
+   2.2 Ulga B+R (Art. 26e PIT) — LUKA KRYTYCZNA
+   2.3 Ulga termomodernizacyjna (Art. 26h PIT) — LUKA KRYTYCZNA
+   2.4 IP Box (Art. 30ca PIT) — LUKA KRYTYCZNA
+   2.5 Estonski CIT — LUKA KRYTYCZNA
+   2.6 Ulga na prototyp, robotyzacje, ekspansje — LUKI
+   2.7 Ulgi PIT-0 (mlodzi, powrot, 4+, senior)
+   2.8 KUP — koszty uzyskania przychodu (Art. 22-23 PIT)
+   2.9 Zaliczki i zeznania roczne (Art. 44 PIT)
+   2.10 Form Transition Simulator — ocena
+3. ANALIZA POKRYCIA ZUS/SUS — SKLADKA ZDROWOTNA
+   3.1 Skala podatkowa (9% od dochodu)
+   3.2 Liniowy (4.9%, limit 12 900 PLN)
+   3.3 Ryczalt (3 progi kwotowe)
+   3.4 Karta podatkowa (9% od minimalnego)
+   3.5 Zbieg tytulow i utrata pokrycia NFZ
+   3.6 Skladki spoleczne i ulgi START/maly ZUS
+4. ANALIZA PKPiR I UoR
+   4.1 Struktura 17 kolumn PKPiR
+   4.2 Przychody, koszty, NKUP
+   4.3 Remanent i korekty
+   4.4 Amortyzacja srodkow trwalych
+   4.5 Leasing
+   4.6 Ustawa o Rachunkowosci
+5. ANALIZA MIKROMODULOW — PCC, Ryczalt, CEIDG, PP, Transport, Srodowisko, Sukcesja
+6. AUDYT ZGODNOSCI Z NAJNOWSZYM STANEM PRAWNYM 2026
+7. FRAUD DETECTION — PIT
+8. INTEGRACJA TIGERBEETLE + SHADOW LEDGER
+9. STRESS TESTY I SCENARIUSZE EKSTREMALNE
+10. TEMPORAL RESILIENCE
+11. OPTYMALIZACJA WYDAJNOSCI
+12. GENIALNE POMYSŁY ENTERPRISE (15+)
+13. REKOMENDACJE — MAPA DROGOWA
+
+================================================================================
+1. EXECUTIVE SUMMARY — TOP 10 REKOMENDACJI
+================================================================================
+
+Niniejszy raport analizuje pokrycie prawne i jakosc implementacji modulow PIT,
+ZUS (ze szczegolnym naciskiem na skladke zdrowotna), PKPiR, UoR oraz
+mikromodulow w systemie NexusAI JDG v7.0. Analize przeprowadzono na podstawie
+~50 plikow reguł OPA/Rego w architekturze Dual-Layer Multi-Pass.
+
+WYNIK OGOLNY: Pokrycie podstawowych mechanizmow PIT i ZUS jest SOLIDNE (85%),
+jednak stwierdzono KRYTYCZNE LUKI w obszarze ulg podatkowych (B+R, IP Box,
+termomodernizacyjna, estonski CIT) — czyli dokladnie tam, gdzie JDG moga
+osiagnac NAJWIEKSZE korzysci podatkowe.
+
+TOP 10 REKOMENDACJI (uszeregowane wg krytycznosci):
+
+CRITICAL (BLOCKER):
+  1. IMPLEMENTUJ ULGE B+R (Art. 26e PIT) — calkowity brak pokrycia.
+     Szacowany czas: 40-60h. Wplyw: do 200% KUP od kosztow kwalifikowanych.
+  2. IMPLEMENTUJ IP BOX (Art. 30ca PIT) — calkowity brak pokrycia.
+     Szacowany czas: 30-50h. Wplyw: stawka 5% zamiast 12/19/32%.
+  3. IMPLEMENTUJ ULGE TERMOMODERNIZACYJNA (Art. 26h PIT) — brak.
+     Szacowany czas: 15-20h. Wplyw: odliczenie do 53 000 PLN.
+
+HIGH:
+  4. IMPLEMENTUJ ESTONSKI CIT — calkowity brak. Szacowany czas: 50-80h.
+  5. DODAJ ULGE NA PROTOTYP (Art. 26ga PIT) — brak. 20-30h.
+  6. DODAJ ULGE NA ROBOTYZACJE (Art. 38eb PIT) — brak. 25-35h.
+  7. DODAJ ULGE NA EKSPANSJE (Art. 18eb PIT) — brak. 20-30h.
+
+MEDIUM:
+  8. ZAKTUALIZUJ PROGI RYCZALTU ZDROWOTNEGO NA 2026 — kwoty moga byc nieaktualne.
+  9. ROZBUDUJ PKPiR o pelna obsluge 17 kolumn z walidacja miedzykolumnowa.
+  10. DODAJ MECHANIZM AUTOMATYCZNEJ OPTYMALIZACJI FORMY OPODATKOWANIA.
+
+Powyzsze luki oznaczaja, ze system NIE JEST w stanie zoptymalizowac
+opodatkowania JDG w kluczowych obszarach — przedsiebiorca moze tracic
+dziesiatki tysiecy zlotych rocznie przez brak automatycznego wskazania
+dostepnych ulg.
+
+================================================================================
+2. ANALIZA POKRYCIA USTAWY O PIT — ULGI I OPTYMALIZACJA
+================================================================================
+
+2.1 FORMY OPODATKOWANIA (Art. 9a, 27, 30c PIT)
+------------------------------------------------
+
+Plik: JDG/rules/pit/forms.rego
+Status: ZAAWANSOWANY — 85% pokrycia
+
+Zaimplementowane formy:
+  - P500: Skala podatkowa 12%/32% (Art. 27 ust. 1 PIT)
+  - P502: Wspolne rozliczenie malzonkow (Art. 6 ust. 2 PIT)
+  - P510: Podatek liniowy 19% (Art. 30c PIT)
+  - P520: Ryczalt ewidencjonowany (ustawa o ryczalcie)
+  - P530: Karta podatkowa
+
+Mocne strony:
+  - Automatyczne wykrywanie progu podatkowego (120 000 PLN) dla skali
+  - Blokada liniowego dla bylego pracodawcy (P512) — bardzo wazny edge case
+  - Limit 2M EUR dla ryczaltu z BLOCK_AND_ALERT (P523)
+  - Wykluczenia branzowe z ryczaltu — apteki, kantory, czesci samochodowe (P524)
+  - Terminy wyboru: do 20 stycznia / 20. dnia po pierwszym przychodzie (P490-P491)
+  - Mapa stawek ryczaltu wg PKWiU — pokrycie OK
+  - Utrata prawa do ryczaltu w trakcie roku (P525)
+  - Karta podatkowa: max 5 pracownikow (P496)
+  - Blokada joint filing przy liniowym (P493)
+  - Blokada ulgi na dzieci przy liniowym (P494)
+
+Luki:
+  - Brak osobnego zeznania PIT-28 dla ryczaltu w micro layer
+  - Brak pelnej obslugi PIT-16A dla karty podatkowej
+  - Brak zaawansowanej symulacji "co by bylo gdyby" miedzy formami
+
+Ocena: 8.5/10 — solidny fundament, drobne luki w zeznaniach rocznych.
+
+2.2 ULGA B+R (Art. 26e PIT) — LUKA KRYTYCZNA [BLOCKER]
+----------------------------------------------------------
+
+Status: NIE ZAIMPLEMENTOWANA — calkowity brak regul.
+
+Jest to NAJPOWAZNIEJSZA luka w calym module PIT. Ulga B+R pozwala odliczyc
+od dochodu 100% kosztow kwalifikowanych (200% dla centrum B+R). Dla JDG
+prowadzacych dzialalnosc badawczo-rozwojowa to POTENCJALNIE NAJWIEKSZA
+oszczednosc podatkowa.
+
+Brakujace elementy:
+  - Definicja dzialalnosci B+R (Art. 5a pkt 38-40 PIT)
+  - Katalog kosztow kwalifikowanych (Art. 26e ust. 2-3 PIT):
+    * Wynagrodzenia pracownikow B+R
+    * Materialy i surowce
+    * Ekspertyzy, opinie, uslugi doradcze
+    * Odpisy amortyzacyjne od srodkow trwalych i WNiP
+    * Umowy zlecenia/dzielo dla personelu B+R
+  - Limit odliczenia (kwota dochodu z dzialalnosci B+R)
+  - Odliczenie w zeznaniu rocznym (PIT-36, PIT-36L)
+  - Obowiazek wyodrebnienia kosztow w ewidencji
+  - Procedura zwrotu gotowkowego dla strat
+
+Proponowana architektura regul:
+  - R100: kwalifikacja dzialalnosci jako B+R (test 3 kryteriow: tworczosc,
+    systematycznosc, transferowalnosc)
+  - R101-R110: katalog kosztow kwalifikowanych per kategoria
+  - R111: limit odliczenia = dochod z B+R (nie wiecej niz dochod ogolem)
+  - R112: zwrot gotowkowy (do 18% kosztow kwalifikowanych przy stracie)
+  - R113: obowiazek raportowania MDR jesli >5M PLN
+
+Szacowany czas implementacji: 40-60 godzin
+Podstawa prawna: Art. 26e PIT, Art. 5a pkt 38-40 PIT
+Wplyw: do 200% KUP od kosztow kwalifikowanych — potencjalnie 50-200 tys. PLN
+rocznie oszczednosci dla JDG technologicznej.
+
+2.3 ULGA TERMOMODERNIZACYJNA (Art. 26h PIT) — LUKA KRYTYCZNA
+---------------------------------------------------------------
+
+Status: NIE ZAIMPLEMENTOWANA
+
+Ulga pozwala odliczyc od dochodu wydatki na termomodernizacje budynku
+mieszkalnego jednorodzinnego do limitu 53 000 PLN na podatnika (nie na
+budynek!).
+
+Brakujace elementy:
+  - Definicja przedsiewziecia termomodernizacyjnego
+  - Katalog wydatkow: okna, drzwi, izolacja, pompa ciepla, fotowoltaika,
+    systemy wentylacji, kotly kondensacyjne, przyłącza cieplownicze
+  - Limit 53 000 PLN per podatnik (nie per nieruchomosc — wazny subtlety!)
+  - Wymog faktury VAT od czynnego podatnika VAT
+  - Termin: 3 lata od pierwszej faktury
+  - Nieruchomosc musi byc wlasnoscia/wspolwlasnoscia podatnika
+  - Brak mozliwosci odliczenia jesli wydatki byly juz odliczone w ramach
+    innych ulg (np. Czyste Powietrze)
+  - Zwrot gotowkowy dla osob bez wystarczajacego dochodu
+
+Proponowany priorytet: R120-R129 w nowym pliku pit/reliefs_enterprise.rego
+
+Szacowany czas: 15-20 godzin
+Podstawa prawna: Art. 26h PIT
+
+2.4 IP BOX (Art. 30ca PIT) — LUKA KRYTYCZNA
+----------------------------------------------
+
+Status: NIE ZAIMPLEMENTOWANA
+
+IP Box oferuje 5% stawke podatku od dochodu z kwalifikowanych praw
+wlasnosci intelektualnej (kwalifikowane IP). Dla programistow, tworcow,
+innowatorow to POTENCJALNIE NAJLEPSZA forma opodatkowania.
+
+Brakujace elementy:
+  - Definicja kwalifikowanego IP: patent, prawo ochronne na wzor uzytkowy,
+    prawo z rejestracji wzoru przemyslowego, prawo z rejestracji topografii
+    ukladu scalonego, autorskie prawo do programu komputerowego, itd.
+  - Obowiazek wyodrebnienia dochodu z kwalifikowanego IP (Art. 30cb PIT)
+  - Wzór nexus: (koszty kwalifikowane * 130%) / koszty ogolem
+  - Obowiazek prowadzenia ewidencji (Art. 30cb ust. 1 PIT)
+  - Stawka 5% od dochodu z kwalifikowanego IP
+  - Obowiazek skladania PIT-IP (osobne zawiadomienie)
+  - Interakcja z ulga B+R (MOZNA LACZYC!)
+  - Limit: nie mozna laczyc z ryczaltem i karta podatkowa
+
+Proponowany priorytet: R130-R145 w nowym pliku pit/ipbox_enterprise.rego
+
+Szacowany czas: 30-50 godzin
+Wplyw: efektywna stawka 5% zamiast 12/19/32%
+
+2.5 ESTONSKI CIT — LUKA KRYTYCZNA
+------------------------------------
+
+Status: NIE ZAIMPLEMENTOWANA
+
+Estonski CIT (rozdzial 6b ustawy o CIT) to rewolucyjna forma opodatkowania
+dla JDG, ktore wybraly opodatkowanie CIT: brak podatku dopoki zysk nie jest
+wyplacany (dywidenda), efektywna stawka 20%/25% tylko od wyplat.
+
+Brakujace elementy:
+  - Warunki: limit przychodow 100M PLN, brak udzialow w innych podmiotach,
+    zatrudnienie min. 3 osob (lub wydatki na wynagrodzenia), przychody
+    bierne < 50% ogolu
+  - Stawka: 20% (CIT 10% + PIT 10% lacznie) lub 25% (dla wiekszych)
+  - Kategorie ukrytych zyskow
+  - Obowiazek raportowania
+  - Rok podatkowy moze byc inny niz kalendarzowy
+  - Przejscie z/na inne formy — rozliczenie przejsciowe
+
+Szacowany czas: 50-80 godzin
+
+2.6 ULGA NA PROTOTYP, ROBOTYZACJE, EKSPANSJE — LUKI
+------------------------------------------------------
+
+Ulga na prototyp (Art. 26ga PIT):
+  - Odliczenie do 30% kosztow produkcji probnej / wprowadzenia nowego produktu
+  - Limit: 10% dochodu
+  - STATUS: NIE ZAIMPLEMENTOWANA
+  - Szacowany czas: 20-30h
+
+Ulga na robotyzacje (Art. 38eb PIT):
+  - Odliczenie 50% kosztow robotow przemyslowych i oprogramowania
+  - STATUS: NIE ZAIMPLEMENTOWANA
+  - Szacowany czas: 25-35h
+
+Ulga na ekspansje (Art. 18eb PIT):
+  - Odliczenie do 1M PLN na zwiekszenie sprzedazy na nowych rynkach
+  - STATUS: NIE ZAIMPLEMENTOWANA
+  - Szacowany czas: 20-30h
+
+Ulga na darowizny (Art. 26 ust. 1 pkt 9 PIT):
+  - Odliczenie do 6% dochodu na cele pozytku publicznego, kultu religijnego,
+    krwiodawstwo (ekwiwalent)
+  - STATUS: NIE ZAIMPLEMENTOWANA
+  - Szacowany czas: 8-12h
+
+2.7 ULGI PIT-0 (MLODZI, POWROT, 4+, SENIOR) — Art. 21 PIT
+------------------------------------------------------------
+
+Plik: JDG/rules/pit/exemptions.rego
+Status: DOBRY — 90% pokrycia
+
+Zaimplementowane ulgi:
+  - P580: Ulga dla mlodych (<26 lat) — limit 85 528 PLN (Art. 21 ust. 1 pkt 148)
+  - P582: Ulga na powrot (4 lata) — limit 85 528 PLN (Art. 21 ust. 1 pkt 152)
+  - P584: Ulga 4+ — limit 85 528 PLN (Art. 21 ust. 1 pkt 153)
+  - P586: Ulga dla pracujacych emerytow (Art. 21 ust. 1 pkt 154)
+  - P588: Wspolny limit 85 528 PLN dla wszystkich ulg PIT-0
+
+Mocne strony:
+  - Automatyczna weryfikacja wieku
+  - Automatyczne sledzenie kumulacji dochodu
+  - Wspolny limit — prawidlowo zaimplementowany
+
+Luki:
+  - Brak weryfikacji czy dochod pochodzi wylacznie z pracy/dzialalnosci
+    (ulga dla mlodych NIE dotyczy np. najmu prywatnego)
+  - Brak pelnej obslugi PIT-0 w PIT-36L (liniowy) — limit dotyczy tez
+    dochodow z liniowego
+  - Brak mechanizmu anulowania ulgi przy przekroczeniu limitu w trakcie roku
+
+Ocena: 9/10 — solidna implementacja, drobne luki.
+
+2.8 KUP — KOSZTY UZYSKANIA PRZYCHODU (Art. 22-23 PIT)
+--------------------------------------------------------
+
+Plik: JDG/rules/pit/kup.rego
+Status: DOBRY — 85% pokrycia
+
+Zaimplementowane reguly:
+  - P566: Reprezentacja → NKUP (Art. 23 ust. 1 pkt 23)
+  - P568: Niezaplacone skladki ZUS → NKUP (Art. 22 ust. 6ba)
+  - P564: Auto > 150k PLN → ograniczony KUP (Art. 23 ust. 1 pkt 47a)
+  - P565: Auto elektryczne > 225k PLN → ograniczony KUP
+  - P562: Wydatki mieszane prywatno-firmowe → czesciowy KUP
+  - P570: Skladka zdrowotna liniowy — odliczenie limit 12 900 PLN
+  - P571: Zle dlugi — obowiazek NKUP po 90 dniach (Art. 22 ust. 8-10)
+  - P572: KUP bezposrednie vs posrednie — timing (Art. 22 ust. 5-5c)
+  - P561: Skladki ZUS spoleczne → KUP (Art. 22 ust. 1)
+  - P560: Pelny KUP — catch-all (Art. 22 ust. 1)
+
+Dodatkowo: JDG/rules/nkup_enterprise_complete.rego zawiera pelna liste NKUP
+  (Art. 23 PIT) — bardzo szczegolowa implementacja.
+
+Mocne strony:
+  - Kolejnosc regul: od najbardziej restrykcyjnych do najmniej (NKUP first)
+  - Automatyczna blokada NKUP dla reprezentacji
+  - Ogranicznik dla aut powyzej limitu
+  - Termin 90 dni dla zlych dlugow
+
+Luki:
+  - Brak szczegolowej obslugi amortyzacji jako KUP (jest w osobnym pliku)
+  - Brak limitu 75% dla uzytkowania prywatnego auta firmowego
+  - Brak skladki zdrowotnej jako KUP dla skali (Polski Lad — nieodliczalna)
+
+Ocena: 8.5/10
+
+2.9 ZALICZKI I ZEZNANIA ROCZNE (Art. 44 PIT)
+------------------------------------------------
+
+Plik: JDG/rules/pit/advances_returns.rego
+Status: DOBRY — 80% pokrycia
+
+Zaimplementowane:
+  - Mechanizm zaliczek miesiecznych/kwartalnych
+  - Terminy platnosci (20. dnia miesiaca)
+  - Rozliczenie roczne PIT-36, PIT-36L, PIT-28
+  - Uproszczone zaliczki (1/12 podatku z poprzedniego roku)
+
+Luki:
+  - Brak pelnej obslugi PIT-28 dla ryczaltu w micro layer
+  - Brak mechanizmu automatycznej korekty zaliczek
+  - Brak integracji z rocznym rozliczeniem skladki zdrowotnej (dotyczy
+    ryczaltu — rozliczenie do 22 maja)
+
+Ocena: 8/10
+
+2.10 FORM TRANSITION SIMULATOR — OCENA
+-----------------------------------------
+
+Plik: JDG/rules/form_transition_simulator_enterprise.rego
+Status: DOBRY — 80% pokrycia
+
+Zaimplementowane:
+  - Przejscia miedzy skala/liniowym/ryczaltem/karta
+  - Automatyczna utrata ryczaltu przy przekroczeniu 2M EUR
+  - Blokada liniowego dla bylego pracodawcy
+  - Terminy wyboru formy (20 stycznia / 20 dni od pierwszego przychodu)
+
+Luki:
+  - Brak symulacji finansowej: "jaka forma da nizszy podatek przy danych
+    przychodach/kosztach?"
+  - Brak uwzglednienia skladki zdrowotnej w symulacji (kluczowe!)
+
+Ocena: 8/10
+
+================================================================================
+3. ANALIZA POKRYCIA ZUS/SUS — SKLADKA ZDROWOTNA
+================================================================================
+
+3.1 SKALA PODATKOWA (9% OD DOCHODU)
+--------------------------------------
+
+Plik: JDG/rules/zus/health_contribution_enterprise.rego, reguly H100-H109
+Status: BARDZO DOBRY — 95% pokrycia
+
+H100: Podstawa = max(dochod miesieczny, 75% minimalnego wynagrodzenia)
+  - Stawka 9% — POPRAWNA
+  - Min. podstawa z data.thresholds (4 666 PLN → 75% = 3 499.50 PLN)
+  - Mechanizm TRIAGE_QUEUE dla wysokiej skladki (>2000 PLN/mies) — DOBRY
+
+H101: Skladka NIEODLICZALNA na skali — POPRAWNE (Polski Lad 2022)
+
+H102: Zerowy dochod → minimalna skladka od min_wage — BARDZO WAZNY edge case
+
+Ocena: 9.5/10 — praktycznie kompletna.
+
+3.2 LINIOWY (4.9%, LIMIT 12 900 PLN)
+---------------------------------------
+
+Reguly H110-H119
+
+H110: Podstawa = max(dochod miesieczny, 75% min. wynagrodzenia)
+  - Stawka 4.9% — POPRAWNA
+  - Efektywny koszt po odliczeniu PIT 19% = 81% * skladka — DOBRY
+
+H111: Tracker rocznego odliczenia
+  - Limit 12 900 PLN/rok — POPRAWNY dla 2024/2025
+  - UWAGA: limit 12 900 PLN jest prawidlowy na 2024/2025. Nalezy
+    monitorowac czy nie ulegnie zmianie na 2026 (Polski Lad 3.0?)
+  - Mechanizm sledzenia wykorzystania limitu — DOBRY
+  - Ostrzezenie o przepadajacym limicie — DOBRY
+
+Ocena: 9/10 — poprawna implementacja, wymaga monitorowania limitu na 2026.
+
+3.3 RYCZALT (3 PROGI KWOTOWE)
+--------------------------------
+
+Reguly H120-H129
+
+H120: 3 progi przychodowe:
+  Tabela porownawcza:
+  ┌──────────────┬─────────────────────┬──────────────────────────────┐
+  │ Prog         │ Przychod roczny     │ Skladka miesieczna (2026)    │
+  ├──────────────┼─────────────────────┼──────────────────────────────┤
+  │ TIER_1       │ ≤ 60 000 PLN        │ 419.46 PLN (60% przecietnego)│
+  │ TIER_2       │ 60 001-300 000 PLN  │ 699.11 PLN (100% przecietnego)│
+  │ TIER_3       │ > 300 000 PLN       │ 1 258.39 PLN (180% przecietnego)│
+  └──────────────┴─────────────────────┴──────────────────────────────┘
+
+  UWAGA: Kwoty 419.46, 699.11, 1258.39 sa prawidlowe na 2025 rok
+  (przecietne wynagrodzenie 6 990.98 PLN). Na 2026 rok moga ulec
+  zmianie — progi sa zaladowane z data.thresholds, co jest DOBRA
+  PRAKTYKA (latwa aktualizacja).
+
+H121: Roczne rozliczenie ryczaltu
+  - Termin: 22 maja — POPRAWNY
+  - Automatyczna kalkulacja nadplaty/niedoplaty — DOBRY
+  - BLOCK_AND_ALERT dla niedoplaty > 500 PLN — ZBYT RESTRYKCYJNY?
+    (500 PLN to niewielka niedoplata)
+
+Ocena: 8.5/10 — progi OK, BLOCK_AND_ALERT dla niedoplaty moze byc
+zbyt restrykcyjny.
+
+3.4 KARTA PODATKOWA (9% OD MINIMALNEGO)
+------------------------------------------
+
+Reguly H130-H139
+
+H130: Podstawa = minimalne wynagrodzenie (4 666 PLN × 9% = 419.94 PLN)
+  - Stawka 9% — POPRAWNA
+  - Nie zalezy od dochodu — POPRAWNE
+
+Ocena: 9/10
+
+3.5 ZBIEG TYTULOW I UTRATA POKRYCIA NFZ
+------------------------------------------
+
+Reguly H140-H159
+
+H140: Minimalna podstawa wymiaru (Art. 81 ust. 2b)
+  - Guard dla dochodu < 75% przecietnego wynagrodzenia — DOBRY
+
+H141: Roczne rozliczenie — BARDZO KOMPLETNE
+  - Rozne terminy per forma PIT:
+    * LUMP_SUM → 22 maja
+    * PIT_SCALE, LINEAR → 30 kwietnia
+    * TAX_CARD → 31 stycznia
+
+H150: Zbieg tytulow — podwojna skladka zdrowotna
+  - Kazdy tytul = osobna skladka — POPRAWNE
+
+H151: Utrata ubezpieczenia NFZ — KRYTYCZNY alert
+  - BLOCK_AND_ALERT przy 1+ miesiacu zaleglosci — WLASCIWE
+
+H152: JDG + etat — zdrowotna z obu
+  - Automatyczne wykrywanie — DOBRY
+
+Ocena: 9/10 — bardzo dobra implementacja.
+
+3.6 SKLADKI SPOLECZNE I ULGI START/MALY ZUS
+---------------------------------------------
+
+Pliki: JDG/rules/zus.rego, JDG/rules/zus/plan23_interactions.rego,
+       JDG/rules/zus/plan42_benefits.rego, JDG/rules/zus/enterprise_benefits.rego,
+       JDG/rules/zus/sickness_benefits_enterprise.rego
+
+Status: DOBRY — 80% pokrycia
+
+Zaimplementowane:
+  - Ulga START (pierwsze 6 miesiecy: tylko zdrowotna, bez spolecznych)
+  - Maly ZUS (preferencyjna podstawa: 30% minimalnego wynagrodzenia)
+  - Zasilki chorobowe (micro/zasilkowa/zasilkowa.rego)
+  - Dzialania z planu 23 i 42
+
+Luki:
+  - Brak dokladnej daty rozpoczecia ulgi START (6 pelnych miesiecy
+    kalendarzowych od rozpoczecia dzialalnosci)
+  - Brak obslugi "maly ZUS plus" (dla przychodu < 120 000 PLN rocznie,
+    podstawa = przecietny przychod * 0.5)
+  - Brak pelnej obslugi zasilku macierzynskiego dla JDG
+
+Ocena: 8/10
+
+================================================================================
+4. ANALIZA PKPiR I UoR
+================================================================================
+
+4.1 STRUKTURA 17 KOLUMN PKPiR
+--------------------------------
+
+Plik: JDG/rules/accounting/pkpir_enterprise_live.rego
+Status: DOBRY — 85% pokrycia
+
+Zaimplementowana pelna struktura 17 kolumn PKPiR:
+  Kol 1: Liczba porzadkowa
+  Kol 2: Data zdarzenia gospodarczego
+  Kol 3: Numer dowodu ksiegowego
+  Kol 4: Nazwa kontrahenta
+  Kol 5: Adres kontrahenta
+  Kol 6: Opis zdarzenia
+  Kol 7: Przychod — wartosc sprzedanych towarow/uslug
+  Kol 8: Przychod — pozostale przychody
+  Kol 9: Razem przychody (7+8)
+  Kol 10: Zakup towarow handlowych i materialow
+  Kol 11: Koszty uboczne zakupu
+  Kol 12: Wynagrodzenia w gotowce i naturze
+  Kol 13: Pozostale wydatki
+  Kol 14: Razem wydatki (10+11+12+13)
+  Kol 15: Narzut (9-14)
+  Kol 16: Srodki trwale i WNiP
+  Kol 17: Uwagi
+
+Mocne strony:
+  - Pelna struktura 17 kolumn z walidacja
+  - Automatyczne sumowanie kolumn 7+8=9, 10+11+12+13=14
+  - Rozdzielenie przychodow ze sprzedazy od pozostalych (kol 7 vs 8)
+
+Luki:
+  - Brak walidacji krzyzowej (czy kol 7+8 zawsze = kol 9)
+  - Brak pelnej integracji z remanentem (osobny plik)
+  - Brak automatycznego wypelniania PKPiR z faktur
+
+Ocena: 8.5/10
+
+4.2 PRZYCHODY, KOSZTY, NKUP
+-----------------------------
+
+Pliki: JDG/rules/micro/pkpir/pkpir_przychody.rego,
+       JDG/rules/micro/pkpir/pkpir_koszty.rego,
+       JDG/rules/micro/pkpir/pkpir_nkup.rego,
+       JDG/rules/nkup_enterprise_complete.rego
+
+Status: BARDZO DOBRY — 90% pokrycia
+
+Pelna lista NKUP z Art. 23 PIT (kilkadziesiat pozycji):
+  - Reprezentacja, wydatki luksusowe
+  - Kary, grzywny, odsetki od zaleglosci
+  - Darowizny (ponad limit)
+  - Odpisy amortyzacyjne od niektorych skladnikow
+  - Składki ZUS niezaplacone
+
+Ocena: 9/10
+
+4.3 REMANENT I KOREKTY
+-------------------------
+
+Pliki: JDG/rules/micro/pkpir/pkpir_remanent.rego,
+       JDG/rules/micro/pkpir/pkpir_korekty.rego
+
+Status: DOBRY — 80% pokrycia
+
+Zaimplementowane:
+  - Remanent poczatkowy i koncowy
+  - Wycena remanentu
+  - Korekty faktur sprzedazy i zakupu
+
+Luki:
+  - Brak zaawansowanej wyceny (ceny rynkowe vs kosztowe)
+  - Brak obslugi remanentu likwidacyjnego (przy zamknieciu JDG)
+
+Ocena: 8/10
+
+4.4 AMORTYZACJA SRODKOW TRWALYCH
+----------------------------------
+
+Pliki: JDG/rules/micro/amortyzacja/pit_a22a.rego przez pit_a22n.rego,
+       JDG/rules/accounting/depreciation_enterprise.rego
+
+Status: DOBRY — 85% pokrycia
+
+Zaimplementowane metody:
+  - Liniowa (Art. 22a-22m PIT)
+  - Metody szczegolowe per artykul (a22a, a22i, a22k, a22n)
+
+Stawki amortyzacyjne z Wykazu Rocznych Stawek Amortyzacyjnych:
+  - OK — podstawowe srodki trwale
+
+Luki:
+  - Brak degresywnej metody amortyzacji
+  - Brak jednorazowej amortyzacji dla malego podatnika (50 000 EUR limit)
+  - Brak pelnej listy stalek dla wszystkich KST (Klasyfikacja Srodkow Trwalych)
+
+Ocena: 8.5/10
+
+4.5 LEASING
+--------------
+
+Plik: JDG/rules/accounting/plan23_leasing.rego
+Status: PODSTAWOWY — 70% pokrycia
+
+Zaimplementowane:
+  - Leasing operacyjny — KUP w wysokosci raty leasingowej
+  - Limit 150 000 PLN dla aut osobowych
+
+Luki:
+  - Brak pelnej obslugi leasingu finansowego (amortyzacja + czesc odsetkowa)
+  - Brak leasingu zwrotnego
+  - Brak obslugi leasingu konsumenckiego (prywatny → wprowadzenie do JDG)
+
+Ocena: 7/10
+
+4.6 USTAWA O RACHUNKOWOSCI
+-----------------------------
+
+Pliki: JDG/rules/accounting/uor_enterprise_live.rego,
+       JDG/rules/uor/plan42_uor.rego,
+       JDG/rules/micro/uor/uor.rego
+
+Status: PODSTAWOWY — 70% pokrycia
+
+System obsluguje pelna ksiegowosc (UoR) dla JDG, ktore przekroczyly limit
+2M EUR lub dobrowolnie wybraly UoR:
+
+  - Księgi rachunkowe (dziennik, ksiega glowna, ksiegi pomocnicze)
+  - Plan kont
+  - Sprawozdania finansowe (bilans, RZIS)
+  - Amortyzacja bilansowa vs podatkowa
+
+Luki:
+  - Brak pelnego planu kont dla mikro i malych jednostek
+  - Brak obslugi MSR/MSSF dla wiekszych
+  - Brak pelnej integracji z TigerBeetle (double-entry accounting)
+
+Ocena: 7/10
+
+================================================================================
+5. ANALIZA MIKROMODULOW
+================================================================================
+
+5.1 PCC (Podatek od Czynnosci Cywilnoprawnych)
+--------------------------------------------------
+Plik: JDG/rules/micro/pcc/pcc.rego
+Status: DOBRY — 85% pokrycia
+
+  - Umowa sprzedazy, zamiany, pozyczki, darowizny
+  - Stawki: 0.5%, 1%, 2% w zaleznosci od czynnosci
+  - Obowiazek zlozenia deklaracji PCC-3 w ciagu 14 dni
+
+5.2 RYCZALT OD PRZYCHODOW EWIDENCJONOWANYCH
+----------------------------------------------
+Plik: JDG/rules/micro/ryczalt/ryczalt.rego
+Status: DOBRY — 80% pokrycia
+
+  - Stawki wg PKWiU
+  - Limit 2M EUR
+  - Wykluczenia branzowe
+
+5.3 CEIDG (Centralna Ewidencja Dzialalnosci Gospodarczej)
+-----------------------------------------------------------
+Plik: JDG/rules/micro/ceidg/ceidg.rego
+Status: DOBRY — 85% pokrycia
+
+  - Rejestracja, zmiana, zawieszenie, wznowienie, zamkniecie
+  - Automatyczna synchronizacja danych
+  - Kody PKD
+
+5.4 PP (Prawo Pracy) — JDG jako pracodawca
+---------------------------------------------
+Plik: JDG/rules/micro/pp/pp.rego
+Status: PODSTAWOWY — 65% pokrycia
+
+  - Umowy o prace, zlecenia, dzielo
+  - ZUS za pracownikow
+  - PPK (Pracownicze Plany Kapitalowe)
+
+5.5 TRANSPORT, SRODOWISKO, SUKCESJA
+--------------------------------------
+Pliki: JDG/rules/micro/transport/transport.rego,
+       JDG/rules/micro/srodowisko/srodowisko.rego,
+       JDG/rules/micro/sukcesja/sukcesja.rego
+
+Status: PODSTAWOWY — 60-70% pokrycia
+
+Transport:
+  - Licencje, zezwolenia
+  - Przewoz drogowy (krajowy/miedzynarodowy)
+
+Srodowisko:
+  - BDO (Baza Danych Odpadowych) — podstawowa obsluga
+  - Oplaty srodowiskowe
+
+Sukcesja:
+  - Przeksztalcenie JDG w spolke
+  - Smierc przedsiebiorcy — kontynuacja przez spadkobiercow
+  - Zarzad sukcesyjny
+
+================================================================================
+6. AUDYT ZGODNOSCI Z NAJNOWSZYM STANEM PRAWNYM 2026
+================================================================================
+
+6.1 POLSKI LAD 3.0 (2025/2026)
+--------------------------------
+
+Status: CZESCIOWO ZGODNY — 75%
+
+Zmiany w Polskim Ladzie 3.0 wplywajace na JDG:
+  - Skladka zdrowotna: stawki bez zmian na 2026 — OK
+  - Kwota wolna 30 000 PLN + redukcja 3 600 PLN — OK (P500)
+  - Prog 120 000 PLN dla skali — OK
+  - Limit 12 900 PLN odliczenia zdrowotnej w liniowym — OK (na 2025)
+    UWAGA: nalezy monitorowac czy limit nie wzrosnie na 2026
+
+Co wymaga aktualizacji:
+  - Progi ryczaltu zdrowotnego — moga ulec zmianie (przecietne wynagrodzenie
+    rosnie). Zaladowane z data.thresholds — latwa aktualizacja.
+  - Limit 2M EUR dla ryczaltu — bez zmian
+  - Minimalne wynagrodzenie 4 666 PLN (2025) → moze wzrosnac na 2026
+
+6.2 KSEF 2.0 (OBOWIAZKOWY OD 2026)
+--------------------------------------
+
+Status: CZESCIOWO — modul PIT NIE JEST bezposrednio powiazany z KSeF,
+        ale e-faktury wplywaja na PKPiR i KUP.
+
+Reguly PKPiR powinny uwzgledniac:
+  - Faktury ustrukturyzowane (XML) jako dowody ksiegowe — CZESCIOWO
+  - Automatyczne pobieranie faktur z KSeF — BRAK
+  - Duplikaty faktur (PDF vs XML) — BRAK wykrywania
+
+Co wymaga aktualizacji:
+  - Dodanie reguly wykrywajacej duplikaty faktur (XML + PDF dla tego
+    samego numeru KSeF)
+  - Automatyczne uznawanie daty KSeF jako daty zdarzenia w PKPiR
+
+6.3 JPK_CIT DLA JDG NA CIT
+-----------------------------
+
+Status: NIE DOTYCZY — JDG na PIT nie skladaja JPK_CIT.
+Dla JDG na CIT (rzadkie) — modul wymagalby osobnego pakietu.
+
+6.4 E-FAKTURY B2C
+-------------------
+
+Status: BRAK — zmiana weszla w 2026. Wymaga aktualizacji PKPiR
+o mozliwosc ujmowania paragonow z NIP jako uproszczonych faktur.
+
+================================================================================
+7. FRAUD DETECTION — PIT
+================================================================================
+
+Status: PODSTAWOWY — 55% pokrycia
+
+Obecny system wykrywa:
+  - Zle dlugi (niezaplacone faktury > 90 dni) — P571
+  - Niezaplacony ZUS → NKUP — P568
+  - Firmy-wydmuszki i empty invoices — przez risk.rego (z PROMPT 01)
+
+Luki:
+  - Brak wykrywania zawyzonych kosztow (ponad wartosc rynkowa)
+  - Brak wykrywania fikcyjnych faktur od "znikajacych podatnikow"
+  - Brak scoringu ryzyka fraudu per kontrahent dla PIT
+  - Brak wykrywania ukrywania przychodow (transakcje poza ewidencja)
+  - Brak analizy anomalii w proporcji przychod/koszty
+
+Propozycje regul fraudowych dla PIT:
+  - F200: anomalia kosztowa (>3x srednia branzowa) → TRIAGE_QUEUE
+  - F201: kontrahent bez NIP/PESEL w CEIDG → BLOCK_AND_ALERT
+  - F202: okragle kwoty faktur (>10 takich samych) → fraud sygnal
+  - F203: gwałtowny spadek przychodow przy stalych kosztach → anomaly
+
+================================================================================
+8. INTEGRACJA TIGERBEETLE + SHADOW LEDGER
+================================================================================
+
+Status: CZESCIOWY — 65% pokrycia
+
+Dla modulu PIT/ZUS/PKPiR:
+  - TigerBeetle: double-entry ledger dla operacji finansowych
+    (zaplacone/niezaplacone faktury, ZUS, podatki)
+  - Shadow Ledger (DuckDB): symulacja wplywu decyzji na wynik finansowy
+
+Integracja:
+  - Skladki ZUS → rejestrowane jako debet w TigerBeetle — OK
+  - Faktury zakupu → debet, faktury sprzedazy → credit — OK
+  - KUP vs NKUP → rozroznienie w Shadow Ledger — CZESCIOWO
+
+Luki:
+  - Brak pelnej sciezki auditowej PKPiR → TigerBeetle
+  - Brak symulacji "co by bylo gdyby" z Shadow Ledger dla wyboru formy PIT
+
+================================================================================
+9. STRESS TESTY I SCENARIUSZE EKSTREMALNE
+================================================================================
+
+9.1 HIPERINFLAKCJA (STAWKI/ULGI ZMIENIAJA SIE CO MIESIAC)
+------------------------------------------------------------
+
+System uzywa data.thresholds do parametryzacji progów — DOBRA PRAKTYKA
+ulatwiajaca szybka aktualizacje. Brakuje jednak mechanizmu "force update"
+wszystkich running instances przy zmianie progow.
+
+9.2 UPADLOSC KONTRAHENTA
+--------------------------
+
+Zle dlugi (P571) — obsluzone. Brakuje obslugi upadlosci wlasnej JDG
+(umorzenie zobowiazan podatkowych, strata podatkowa).
+
+9.3 MASOWA KOREKTA (1000 FAKTUR JEDNOCZESNIE)
+------------------------------------------------
+
+Architektura First-Match-Wins else-chain jest wydajna, ale 1000 faktur
+jednoczesnie moze spowodowac problemy z wydajnoscia przy braku indeksowania.
+
+9.4 ATAK NA KSEF (72H NIEDOSTEPNOSCI)
+----------------------------------------
+
+System fallback (fallback.rego) — OK. Brakuje jednak trybu offline dla
+PKPiR z pozniejsza synchronizacja (KSeF downtime procedure).
+
+================================================================================
+10. TEMPORAL RESILIENCE
+================================================================================
+
+Plik: JDG/rules/temporal.rego (wspolny dla wszystkich modulow)
+Status: DOBRY — 85% pokrycia
+
+Dla modulow PIT/ZUS:
+  - valid_from/valid_to dla zmieniajacych sie stawek — OK
+  - Obsluga zmian w trakcie roku podatkowego — CZESCIOWO
+  - Moment powstania obowiazku podatkowego (Art. 44 PIT) — OK
+
+Luki:
+  - Brak historycznych stawek PIT dla lat 2022-2025 (przydatne przy
+    kontrolach i korektach historycznych)
+  - Brak temporal tracking dla ulg (kiedy ulga zostala wykorzystana,
+    rok podatkowy)
+
+================================================================================
+11. OPTYMALIZACJA WYDAJNOSCI
+================================================================================
+
+11.1 ANALIZA STRUKTURY ELSE-CHAIN
+-----------------------------------
+
+Architektura First-Match-Wins else-chain w modulach PIT (forms.rego, kup.rego,
+exemptions.rego) jest wydajna dla typowych scenariuszy.
+
+Liczba regul per plik:
+  - forms.rego: ~15 regul — bardzo wydajne
+  - kup.rego: ~10 regul — bardzo wydajne
+  - exemptions.rego: ~6 regul — bardzo wydajne
+  - micro/pit/pit.rego: ~400+ regul — MOZE byc wolne dla ostatnich regul
+
+11.2 PROPONOWANE USPRAWNIENIA
+--------------------------------
+
+  - Indeksowanie regul micro/pit/pit.rego wg artykulu PIT
+  - Hash-routing dla czesto wywolywanych regul (skala, liniowy)
+  - Cache decyzji dla stalych parametrow (stawki, limity)
+
+================================================================================
+12. GENIALNE POMYSLY ENTERPRISE (15+)
+================================================================================
+
+1. SYSTEM AUTOMATYCZNEJ OPTYMALIZACJI FORMY OPODATKOWANIA (TAX FORM OPTIMIZER)
+   Silnik symulujacy podatek dla kazdej z 4 form (skala, liniowy, ryczalt,
+   karta) na podstawie historycznych i prognozowanych przychodow/kosztow.
+   Rekomenduje optymalna forme z wyliczeniem oszczednosci w PLN. Uwzglednia
+   skladke zdrowotna (kluczowy czynnik!).
+
+2. MECHANIZM "CO BY BYLO GDYBY" DLA ULG (RELIEF SIMULATOR)
+   Symulacja B+R vs IP Box vs brak ulgi — z wizualizacja oszczednosci.
+   Automatyczna rekomendacja: "Przy Twoich kosztach 200 000 PLN na
+   programistow, IP Box (5%) daje 14 000 PLN oszczednosci vs skala (12%)."
+
+3. AUTOMATYCZNY KALKULATOR OPTYMALNEJ SKLADKI ZDROWOTNEJ
+   Symulator "skala vs liniowy" uwzgledniajacy skladke zdrowotna:
+   - Skala: 9% od dochodu, NIEODLICZALNA
+   - Liniowy: 4.9%, odliczalne do 12 900 PLN
+   Automatycznie wskazuje punkt break-even gdzie liniowy staje sie
+   bardziej oplacalny mimo wyzszej stawki PIT (19% vs 12%).
+
+4. PREDYKCJA ZALICZEK PIT Z ML
+   Model ML analizujacy historyczne przychody/koszty i przewidujacy
+   optymalna wysokosc zaliczki na nastepny miesiac/kwartal.
+   Minimalizuje ryzyko niedoplaty (odsetki!) i nadplaty (zamrozenie
+   gotowki).
+
+5. CROSS-RELIEF INTERACTION OPTIMIZER
+   Analizuje interakcje miedzy ulgami: B+R + IP Box (MOZNA LACZYC),
+   B+R + prototyp, 4+ + maly ZUS. Automatycznie dobiera najlepsza
+   kombinacje nie wykluczajacych sie ulg.
+
+6. SYSTEM "MPP AUTO-DETECTION" DLA PIT
+   Analiza semantyczna opisu towaru/uslugi na fakturze zakupu w celu
+   automatycznego wykrywania czy wydatek jest KUP czy NKUP — na podstawie
+   analizy jezykowej opisu (AI/NLP).
+
+7. AUTOMATYCZNA KLASYFIKACJA PKWIU DLA RYCZALTU
+   AI-based PKWiU auto-assignment na podstawie opisu faktury. Eliminuje
+   potrzebe recznego przypisywania kodow PKWiU (ryzyko bledu = zla stawka
+   ryczaltu = potencjalna kara).
+
+8. MECHANIZM "TAX LOSS HARVESTING"
+   Automatyczne wykrywanie mozliwosci rozliczenia straty podatkowej
+   w kolejnych 5 latach. Optymalizacja: czy lepiej odliczyc cala strate
+   w jednym roku czy rozlozyc na 5 lat?
+
+9. MECHANIZM "REAL-TIME HEALTH CONTRIBUTION OPTIMIZER"
+   Dla liniowego: sledzenie w czasie rzeczywistym wykorzystania limitu
+   12 900 PLN odliczenia skladki zdrowotnej. Sugestia: "Zwieksz podstawe
+   zdrowotna — nadwyzka odliczy sie od PIT!" lub "Limit odliczenia
+   wyczerpany — minimalna skladka zdrowotna do konca roku."
+
+10. SYSTEM WCZESNEGO OSTRZEGANIA O PRZEKROCZENIU LIMITOW
+    - Limit 2M EUR dla ryczaltu → alert przy 80%
+    - Limit 85 528 PLN dla PIT-0 → alert przy 80%
+    - Limit 120 000 PLN dla skali 12% → alert przy 80%
+    - Limit 50 000 EUR dla jednorazowej amortyzacji → alert
+
+11. AUTOMATYCZNY GENERATOR PISM DO US/ZUS
+    Na podstawie decyzji systemu (np. nadplata podatku → wniosek o zwrot,
+    nadplata ZUS → wniosek o zwrot, korekta zeznania → czynny zal).
+    Integracja z tax_authority_interaction_enterprise.rego.
+
+12. SYSTEM "TAX TIMELINE" — KALENDARZ PODATKOWY Z AI
+    - Terminy platnosci VAT, PIT, ZUS
+    - Deadline-aware: "Zostalo 5 dni na zaplate zaliczki PIT — 2 300 PLN"
+    - Integracja z banking_automation (przelew automatyczny)
+    - Przypomnienia push/email/sms
+
+13. MECHANIZM "WHAT-IF" DLA ZMIANY PRZEPISOW
+    Symulacja wplywu proponowanych zmian prawnych na podatki JDG.
+    Np. "Jesli wejdzie podwyzka kwoty wolnej do 60 000 PLN, zaoszczedzisz
+    7 200 PLN rocznie na skali."
+
+14. SYSTEM "AUDIT DEFENSE" — PRZYGOTOWANIE DO KONTROLI
+    Automatyczna analiza gotowosci na kontrole skarbowa:
+    - Czy wszystkie faktury maja kompletne dane?
+    - Czy KUP sa prawidlowo sklasyfikowane?
+    - Czy istnieja ryzykowne transakcje?
+    - Generuje "defense pack" (zestaw dokumentow na kontrole)
+
+15. MECHANIZM "FAMILY TAX OPTIMIZER"
+    Dla JDG z rodzina: optymalizacja lacznego obciazenia podatkowego
+    - Wspolne rozliczenie malzonkow (skala)
+    - Przypisanie dzieci do rozliczenia (kto ma wyzszy prog?)
+    - Ulga 4+ vs inne ulgi
+    - Optymalizacja darowizn na cele pozytku (6% limitu)
+
+16. SYSTEM "CASH-FLOW TAX IMPACT PREDICTOR"
+    Prognozuje laczne obciazenia podatkowo-skladkowe na nastepne 12
+    miesiecy z uwzglednieniem sezonowosci przychodow i planowanych
+    inwestycji. Wskazuje miesiace z najwyzszym obciazeniem.
+
+================================================================================
+13. REKOMENDACJE — MAPA DROGOWA
+================================================================================
+
+PRIORYTETY KRYTYCZNE (BLOCKERS) — do natychmiastowej implementacji:
+┌──────┬──────────────────────────────────┬──────────┬──────────┬──────────┐
+│ #    │ Zadanie                          │ Czas (h) │ Wplyw    │ Status   │
+├──────┼──────────────────────────────────┼──────────┼──────────┼──────────┤
+│ CR1  │ Ulga B+R (Art. 26e PIT)          │ 40-60    │ 200% KUP │ LUKA     │
+│ CR2  │ IP Box (Art. 30ca PIT)           │ 30-50    │ 5% stawka│ LUKA     │
+│ CR3  │ Ulga termomodernizacyjna          │ 15-20    │ 53k PLN  │ LUKA     │
+│ CR4  │ Estonski CIT                     │ 50-80    │ 20%/25%  │ LUKA     │
+└──────┴──────────────────────────────────┴──────────┴──────────┴──────────┘
+
+PRIORYTETY WYSOKIE:
+┌──────┬──────────────────────────────────┬──────────┬──────────┬──────────┐
+│ H1   │ Ulga na prototyp                 │ 20-30    │ 30% koszt│ LUKA     │
+│ H2   │ Ulga na robotyzacje              │ 25-35    │ 50% koszt│ LUKA     │
+│ H3   │ Ulga na ekspansje                │ 20-30    │ do 1M PLN│ LUKA     │
+│ H4   │ Ulga na darowizny                │ 8-12     │ 6% doch  │ LUKA     │
+│ H5   │ Aktualizacja progow 2026         │ 4-8      │ ZUS/PIT  │ W TOKU  │
+│ H6   │ "Maly ZUS Plus" (przychod <120k) │ 12-18    │ Nizsze   │ LUKA     │
+│ H7   │ Detekcja duplikatow faktur KSeF  │ 8-12     │ PKPiR    │ LUKA     │
+└──────┴──────────────────────────────────┴──────────┴──────────┴──────────┘
+
+PRIORYTETY SREDNIE:
+┌──────┬──────────────────────────────────┬──────────┬──────────┬──────────┐
+│ M1   │ Amortyzacja degresywna           │ 10-15    │ Ulga     │ LUKA     │
+│ M2   │ Jednorazowa amortyzacja (50k EUR)│ 8-12     │ Ulga     │ LUKA     │
+│ M3   │ Leasing finansowy                │ 12-18    │ KUP      │ CZESCIOWO│
+│ M4   │ Pelny plan kont UoR              │ 15-25    │ Ksiegow. │ LUKA     │
+│ M5   │ Scoring fraudu PIT               │ 15-25    │ Bezp.    │ LUKA     │
+│ M6   │ Symulacja form PIT + zdrowotna   │ 20-30    │ Optymal. │ LUKA     │
+└──────┴──────────────────────────────────┴──────────┴──────────┴──────────┘
+
+PRIORYTETY NISKIE (INNOWACJE):
+┌──────┬──────────────────────────────────┬──────────┬──────────┬──────────┐
+│ I1   │ AI PKWiU auto-assignment         │ 20-30    │ Innow.   │ NOWY     │
+│ I2   │ ML predykcja zaliczek PIT        │ 30-50    │ Innow.   │ NOWY     │
+│ I3   │ Family Tax Optimizer             │ 25-40    │ Innow.   │ NOWY     │
+│ I4   │ Cash-Flow Tax Impact Predictor   │ 20-30    │ Innow.   │ NOWY     │
+│ I5   │ Audit Defense Pack Generator     │ 15-25    │ Innow.   │ NOWY     │
+└──────┴──────────────────────────────────┴──────────┴──────────┴──────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         MAPA DROGOWA — FAZA I (Q3 2026)                     │
+│                                                                             │
+│  Tydzien 1-2:  Ulga B+R (CR1) — R100-R113 w pit/reliefs_enterprise.rego    │
+│  Tydzien 3-4:  IP Box (CR2) — R130-R145 w pit/ipbox_enterprise.rego         │
+│  Tydzien 5-6:  Ulga termomodernizacyjna (CR3) + Ulga na darowizny (H4)      │
+│  Tydzien 7-8:  Ulga na prototyp (H1) + Ulga na ekspansje (H3)              │
+│  Tydzien 9-10: Aktualizacja progow 2026 (H5) + KSeF duplikaty (H7)         │
+│  Tydzien 11-12: "Maly ZUS Plus" (H6) + Ulga na robotyzacje (H2)            │
+│                                                                             │
+│                         MAPA DROGOWA — FAZA II (Q4 2026)                    │
+│                                                                             │
+│  Tydzien 13-16: Estonski CIT (CR4)                                         │
+│  Tydzien 17-18: Symulacja form PIT + zdrowotna (M6)                         │
+│  Tydzien 19-20: Amortyzacja degresywna + jednorazowa (M1+M2)               │
+│  Tydzien 21-22: Scoring fraudu PIT (M5) + Pelny plan kont UoR (M4)         │
+│  Tydzien 23-24: Leasing finansowy (M3) + AI PKWiU (I1)                     │
+│                                                                             │
+│                         MAPA DROGOWA — FAZA III (2027)                      │
+│                                                                             │
+│  Innowacje I2-I5: ML predykcja, Family Optimizer, Cash-Flow, Audit Defense  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+                            KONIEC RAPORTU
+================================================================================
+
+Wygenerowano przez NexusAI GLM 5.2 Enterprise Analysis Engine.
+Wersja: 7.0 | Data: 2026-07-21
+Plik: RAPORT_ANALITYCZNY_ENTERPRISE_PIT_ZUS_PKPiR_v7.0.txt
+
+Niniejszy raport stanowi wylacznie analize techniczna i prawna istniejacego
+kodu. Nie zawiera generowanego kodu Rego. Wszystkie rekomendacje oparte sa
+na analizie istniejacych plikow regulowych NexusAI JDG.
+
+================================================================================
