@@ -81,6 +81,22 @@ from nexus_ai.services.shadow_simulator import (
     ShadowSimulationReport,
     build_accounting_variants,
 )
+# FAZA 1-3: Nowe moduły z audytu wdrożeniowego v7.0
+from nexus_ai.agents.silent_partner_manager import SilentPartnerManager
+from nexus_ai.agents.decision_pipeline import DecisionPipeline
+from nexus_ai.agents.explainability_engine import ExplainabilityEngine
+from nexus_ai.agents.swarm_optimizer import SwarmOptimizer
+from nexus_ai.agents.tool_registry import ToolRegistry
+from nexus_ai.agents.shadow_mode import ShadowMode
+from nexus_ai.agents.cot_debugger import ChainOfThoughtDebugger
+from nexus_ai.agents.emotion_detector import EmotionDetector
+from nexus_ai.core.predictive_preloader import PredictivePreloader
+from nexus_ai.core.cost_router import CostAwareRouter
+from nexus_ai.core.prompt_compressor import PromptCompressor
+from nexus_ai.core.prompt_ab_tester import PromptABTester
+from nexus_ai.core.knowledge_distiller import KnowledgeDistiller
+from nexus_ai.core.continuous_finetuner import ContinuousFinetuner
+from nexus_ai.core.federated_learning import FederatedLearning
 
 
 # ── Helper: extract strategy from decision's hidden payload ──────────
@@ -204,6 +220,29 @@ class AgentOrchestrator(BaseAgent):
             "accept_all_count": 0,
             "time_saved_total_minutes": 0.0,
         }
+        # FAZA 1: Wydzielone moduły z refaktoryzacji (Rekomendacja #1)
+        self._silent_partner_manager = SilentPartnerManager(
+            config=config,
+            strategy_engine=self._strategy_engine,
+            executive_summary=self._executive_summary,
+        )
+        self._decision_pipeline = DecisionPipeline(orchestrator=self, config=config)
+        # FAZA 1-3: Nowe moduły Enterprise
+        self._explainability_engine = ExplainabilityEngine()
+        self._swarm_optimizer = SwarmOptimizer(ram_budget_mb=config.get("ram_budget_mb", 6000.0) if config else 6000.0)
+        self._tool_registry = ToolRegistry()
+        self._shadow_mode = ShadowMode()
+        self._cot_debugger = ChainOfThoughtDebugger()
+        self._emotion_detector = EmotionDetector()
+        # FAZA 2: Predykcyjne ładowanie i routing kosztowy
+        self._predictive_preloader = PredictivePreloader(model_manager=model_manager)
+        self._cost_router = CostAwareRouter()
+        self._prompt_compressor = PromptCompressor()
+        self._prompt_ab_tester = PromptABTester(experiment_name="orchestrator_default")
+        # FAZA 3: Destylacja, Fine-tuning, Federated Learning
+        self._knowledge_distiller = KnowledgeDistiller()
+        self._continuous_finetuner = ContinuousFinetuner()
+        self._federated_learning = FederatedLearning(instance_id=config.get("instance_id", "default") if config else "default")
 
     def register_agent(self, name: str, agent: BaseAgent) -> None:
         """Zarejestruj podległego agenta i propaguj KnowledgeMesh."""
@@ -295,7 +334,85 @@ class AgentOrchestrator(BaseAgent):
     def silent_mode(self, value: bool) -> None:
         """Włącz/wyłącz Silent Partner v6.0."""
         self._silent_mode = value
+        self._silent_partner_manager.silent_mode = value
         logger.info("[ORCH] Silent Partner: %s", "ON" if value else "OFF")
+
+    # FAZA 1-3: Property accessors dla nowych modułów Enterprise
+
+    @property
+    def silent_partner(self) -> "SilentPartnerManager":
+        """Silent Partner Manager v6.0 (wydzielony)."""
+        return self._silent_partner_manager
+
+    @property
+    def pipeline(self) -> "DecisionPipeline":
+        """Decision Pipeline (wydzielony, 12 etapów)."""
+        return self._decision_pipeline
+
+    @property
+    def explainability(self) -> "ExplainabilityEngine":
+        """Decision Explainability Engine."""
+        return self._explainability_engine
+
+    @property
+    def swarm(self) -> "SwarmOptimizer":
+        """Agent Swarm Optimizer."""
+        return self._swarm_optimizer
+
+    @property
+    def tools(self) -> "ToolRegistry":
+        """Agentic RAG Tool Registry."""
+        return self._tool_registry
+
+    @property
+    def shadow(self) -> "ShadowMode":
+        """Shadow Mode (Production vs Shadow agents)."""
+        return self._shadow_mode
+
+    @property
+    def cot_debugger(self) -> "ChainOfThoughtDebugger":
+        """Chain-of-Thought Debugger."""
+        return self._cot_debugger
+
+    @property
+    def emotion(self) -> "EmotionDetector":
+        """Agent Emotion Detector."""
+        return self._emotion_detector
+
+    @property
+    def preloader(self) -> "PredictivePreloader":
+        """Predictive Model Preloader."""
+        return self._predictive_preloader
+
+    @property
+    def cost_router(self) -> "CostAwareRouter":
+        """Cost-Aware Agent Router."""
+        return self._cost_router
+
+    @property
+    def compressor(self) -> "PromptCompressor":
+        """Adaptive Prompt Compressor."""
+        return self._prompt_compressor
+
+    @property
+    def ab_tester(self) -> "PromptABTester":
+        """Automated A/B Prompt Tester."""
+        return self._prompt_ab_tester
+
+    @property
+    def distiller(self) -> "KnowledgeDistiller":
+        """Cross-Model Knowledge Distiller."""
+        return self._knowledge_distiller
+
+    @property
+    def finetuner(self) -> "ContinuousFinetuner":
+        """Continuous Fine-Tuning Pipeline."""
+        return self._continuous_finetuner
+
+    @property
+    def federated(self) -> "FederatedLearning":
+        """Federated Learning of Corrections."""
+        return self._federated_learning
 
     @property
     def silent_stats(self) -> dict[str, Any]:
@@ -500,6 +617,26 @@ class AgentOrchestrator(BaseAgent):
                     decision_id, self._silent_mode,
                     self._strategy_engine.current_mode.value)
 
+        # ── FAZA 3: Swarm Optimization — dynamiczny dobór agentów ──
+        vendor_nip = invoice_data.get("nip", "")
+        gross_amount = invoice_data.get("amount_gross", 0)
+        gross_amount_num = gross_amount if isinstance(gross_amount, (int, float)) else 0.0
+
+        swarm_config = self._swarm_optimizer.determine_swarm(
+            invoice_data=invoice_data,
+            vendor_trust=0.7,
+            vendor_known=vendor_nip != "" and not invoice_data.get("is_new_vendor", False),
+        )
+        skip_quality = "quality-validator" not in swarm_config.agents
+        skip_analytics = "analytics" not in swarm_config.agents
+        skip_extraction = "extraction" not in swarm_config.agents
+        logger.info("[SWARM] Selected: %s | agents=%s | ram=%.0fMB | skip_q=%s skip_a=%s",
+                    swarm_config.name, swarm_config.agents, swarm_config.ram_estimate_mb,
+                    skip_quality, skip_analytics)
+
+        # ── FAZA 3: Emotion-detected autonomy adjustment ──
+        emotion_adj = self._emotion_detector.get_autonomy_adjustment()
+
         # ── Decision Trace (v5.4) ────────────────────────────────
         vendor_nip_raw = invoice_data.get("nip", "unknown")
         gross_raw = invoice_data.get("amount_gross", 0)
@@ -596,16 +733,20 @@ class AgentOrchestrator(BaseAgent):
         if mesh_route is None and self._knowledge_mesh and self._knowledge_mesh.is_initialized:
             mesh_route = await self._knowledge_mesh.route(
                 vendor_nip=vendor_nip,
-                amount=gross_amount,
+                amount=gross_amount_num,
                 category=extraction_result.extracted_data.get("category", ""),
             )
             self._mesh_last_route = mesh_route
 
         # GENIALNY POMYSŁ v5.2: Progressive Autonomy — blend Bayesian + Profile
-        # Bayesian: uczy się z poprawności AI. Profile: uczy się z preferencji usera.
+        # FAZA 3: Dodaj emotion adjustment do progu
         profile_threshold = self._decision_profile.get_adaptive_threshold(vendor_nip)
-        auto_post_threshold = self.get_threshold(vendor_nip, base=profile_threshold)
+        auto_post_threshold = self.get_threshold(
+            vendor_nip, base=profile_threshold
+        ) + emotion_adj  # EmotionDetector: frustrated → niższy próg → więcej auto-post
         review_threshold = auto_post_threshold - 0.17  # REVIEW zawsze 0.17 poniżej AUTO_POST
+        logger.debug("[ORCH] Thresholds: auto=%.2f review=%.2f emotion_adj=%.2f",
+                     auto_post_threshold, review_threshold, emotion_adj)
 
         # ── 4. MultiModelEnsemble (v5.4) — ≥3 modele + diversity ──
         ensemble_span = self._tracer.start_span(decision_id, "ensemble", self.name)
@@ -665,9 +806,14 @@ class AgentOrchestrator(BaseAgent):
         })
 
         # ── 5. Walidacja przez QualityValidator ────────────────────
-        quality_result = await self._run_quality_check(
-            decision_id, actor_decision, extraction_result,
-        )
+        # FAZA 3: Swarm Optimization — pomiń QualityValidator jeśli nie w roju
+        quality_result = None
+        if not skip_quality:
+            quality_result = await self._run_quality_check(
+                decision_id, actor_decision, extraction_result,
+            )
+        else:
+            logger.info("[SWARM] Skipping QualityValidator (not in swarm config %s)", swarm_config.name)
         if quality_result:
             trust_score_obj.overall *= (1.0 - quality_result.overall_risk_score * 0.3)
 
@@ -1458,6 +1604,58 @@ Czy ta decyzja jest poprawna? Odpowiedz TAK lub NIE i uzasadnij."""
             status=decision.verdict.status,
             user_accepted=not was_corrected,
         )
+
+        # ── FAZA 1: Chain-of-Thought Debugger — analizuj korektę ──
+        if was_corrected:
+            self._cot_debugger.analyze_correction(
+                decision_id=decision_id,
+                ai_decision=decision.verdict.status,
+                user_correction=corrected_status,
+                trust_score=decision.verdict.trust_score,
+            )
+
+        # ── FAZA 3: Emotion Detector — rejestruj emocje użytkownika ──
+        self._emotion_detector.record_correction(
+            decision_id=decision_id,
+            original_status=decision.verdict.status,
+            corrected_status=corrected_status,
+        )
+
+        # ── FAZA 3: Knowledge Distiller — rejestruj decyzję nauczyciela ──
+        self._knowledge_distiller.record_teacher_decision(
+            decision=decision.verdict.status,
+            trust=decision.verdict.trust_score,
+        )
+        if was_corrected:
+            self._knowledge_distiller.record_user_correction(
+                teacher_decision=decision.verdict.status,
+                user_correction=corrected_status,
+            )
+
+        # ── FAZA 3: Continuous Fine-Tuner — rejestruj korektę ──
+        if was_corrected:
+            self._continuous_finetuner.record_correction(
+                prompt=f"Invoice {vendor_nip} {amount} {category}",
+                ai_response=decision.verdict.status,
+                user_correction=corrected_status,
+            )
+
+            # ── FAZA 3: Federated Learning — dodaj embedding korekty ──
+            if correction_embedding:
+                self._federated_learning.add_correction_embedding(
+                    embedding=correction_embedding,
+                )
+
+            # ── FAZA 3: Shadow Mode — rejestruj korektę jako ground truth ──
+            self._shadow_mode.record_user_correction(
+                decision_id=decision_id,
+                user_correction=corrected_status,
+            )
+
+            # ── FAZA 3: Sprawdź czy uruchomić fine-tuning ──
+            if self._continuous_finetuner.should_train():
+                finetune_result = self._continuous_finetuner.run_training()
+                logger.info("[ORCH] Auto-finetune result: %s", finetune_result)
 
         logger.info(
             "[ORCH] 📘 Unified Learning Protocol | %s: %s → %s | handbook: %d | mesh | profile | telemetry | calibrator",

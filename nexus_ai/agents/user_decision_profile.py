@@ -583,8 +583,9 @@ class UserDecisionProfile:
         range_label = self._get_amount_range(amount)
 
         if range_label not in self._amount_thresholds:
-            thresholds = dict(self.AMOUNT_RANGES)
-            min_amt, max_amt = thresholds.get(range_label, (0, float("inf")))
+            # Build a lookup dict from amount ranges: label -> (min, max)
+            range_lookup = {label: (min_amt, max_amt) for label, min_amt, max_amt in self.AMOUNT_RANGES}
+            min_amt, max_amt = range_lookup.get(range_label, (0, float("inf")))
             self._amount_thresholds[range_label] = AmountThreshold(
                 range_label=range_label,
                 min_amount=min_amt,

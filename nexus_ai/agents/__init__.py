@@ -137,6 +137,22 @@ from nexus_ai.services.shadow_simulator import (
     SimulationResult,
     build_accounting_variants,
 )
+# FAZA 1-3: Nowe moduły z audytu wdrożeniowego v7.0
+from nexus_ai.agents.silent_partner_manager import SilentPartnerManager
+from nexus_ai.agents.decision_pipeline import DecisionPipeline
+from nexus_ai.agents.explainability_engine import ExplainabilityEngine, DecisionExplanation
+from nexus_ai.agents.swarm_optimizer import SwarmOptimizer, SwarmConfig
+from nexus_ai.agents.tool_registry import ToolRegistry, Tool, create_default_tool_registry
+from nexus_ai.agents.shadow_mode import ShadowMode, ShadowConfig, ShadowResult
+from nexus_ai.agents.cot_debugger import ChainOfThoughtDebugger, FailureAnalysis
+from nexus_ai.agents.emotion_detector import EmotionDetector, EmotionProfile
+from nexus_ai.core.predictive_preloader import PredictivePreloader
+from nexus_ai.core.cost_router import CostAwareRouter, ModelCostProfile, MODEL_COST_PROFILES
+from nexus_ai.core.prompt_compressor import PromptCompressor
+from nexus_ai.core.prompt_ab_tester import PromptABTester, PromptVariant
+from nexus_ai.core.knowledge_distiller import KnowledgeDistiller, DistillationExample
+from nexus_ai.core.continuous_finetuner import ContinuousFinetuner, LoRAConfig, TrainingExample
+from nexus_ai.core.federated_learning import FederatedLearning
 
 __all__ = [
     # Struktury danych
@@ -241,6 +257,36 @@ __all__ = [
     "WorkflowManager",
     "WorkflowStatus",
     "WorkflowType",
+    # FAZA 1-3: Nowe moduły z audytu wdrożeniowego v7.0
+    "SilentPartnerManager",
+    "DecisionPipeline",
+    "ExplainabilityEngine",
+    "DecisionExplanation",
+    "SwarmOptimizer",
+    "SwarmConfig",
+    "ToolRegistry",
+    "Tool",
+    "create_default_tool_registry",
+    "ShadowMode",
+    "ShadowConfig",
+    "ShadowResult",
+    "ChainOfThoughtDebugger",
+    "FailureAnalysis",
+    "EmotionDetector",
+    "EmotionProfile",
+    "PredictivePreloader",
+    "CostAwareRouter",
+    "ModelCostProfile",
+    "MODEL_COST_PROFILES",
+    "PromptCompressor",
+    "PromptABTester",
+    "PromptVariant",
+    "KnowledgeDistiller",
+    "DistillationExample",
+    "ContinuousFinetuner",
+    "LoRAConfig",
+    "TrainingExample",
+    "FederatedLearning",
     # Agenci (5 — zgodnie z aa3fvcx.txt)
     "AgentOrchestrator",         # 1. Centralny Mózg i CFO
     "AgentDataExtraction",       # 2. Forteca Precyzji (OCR + KSeF)
