@@ -1,74 +1,108 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI — Dependabot Configuration
+# Dependabot Configuration — NexusAI v7.0 (Rec #9)
 # ═══════════════════════════════════════════════════════════════════════════════
-# Automatyczne aktualizacje zależności — zero ręcznej pracy.
 #
-# SUPERMOCE:
-#   - grouped updates (group) — jeden PR na wszystkie akcje
-#   - schedule z timezone — aktualizacje w godzinach pracy
-#   - open-pull-requests-limit — kontrola przepływu PR
-#   - labels — auto-kategoryzacja
-#   - reviewer — auto-assign do review
-#   - commit-message — conventional commits
+# Automatyczne aktualizacje zależności z podziałem na:
+#   - pip (Python) — codziennie, minor/patch, auto-merge dla patch
+#   - cargo (Rust) — co tydzień
+#   - github-actions — co tydzień
 #
-# Zgodnie z aa3fvcx.txt:
-#   - GitHub Actions: weekly updates, grouped  #   - pip: weekly updates, grouped (wyłącz nexus-crypto — lokalny)
+# ═══════════════════════════════════════════════════════════════════════════════
 
 version: 2
 updates:
-  # ── GitHub Actions ──────────────────────────────────────────────────────────
-  # Aktualizuje wszystkie akcje używane w .github/workflows/
+
+  # ── Python dependencies (pip/pixi) ─────────────────────────────────────────
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "06:00"
+      timezone: "Europe/Warsaw"
+    labels:
+      - "dependencies"
+      - "python"
+      - "auto-merge"
+    reviewers:
+      - "Gorski-Maciej"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "dev-deps"
+      include: "scope"
+    open-pull-requests-limit: 5
+    target-branch: "main"
+    versioning-strategy: increase
+    groups:
+      lint-typing:
+        patterns:
+          - "ruff"
+          - "mypy"
+          - "mypyc"
+        update-types:
+          - "minor"
+          - "patch"
+      o11y:
+        patterns:
+          - "opentelemetry*"
+          - "structlog"
+          - "sentry-sdk"
+        update-types:
+          - "minor"
+          - "patch"
+      msgspec:
+        patterns:
+          - "msgspec"
+        update-types:
+          - "minor"
+          - "patch"
+    allow:
+      - dependency-type: "direct"
+    ignore:
+      - dependency-name: "python"
+        versions: [">=3.14"]
+      - dependency-name: "tensorflow"
+      - dependency-name: "torch"
+
+  # ── Rust dependencies (nexus-crypto) ───────────────────────────────────────
+  - package-ecosystem: "cargo"
+    directory: "/nexus_ai/rust"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Warsaw"
+    labels:
+      - "dependencies"
+      - "rust"
+    reviewers:
+      - "Gorski-Maciej"
+    commit-message:
+      prefix: "cargo"
+      include: "scope"
+    open-pull-requests-limit: 3
+
+  # ── GitHub Actions ─────────────────────────────────────────────────────────
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "07:00"
+      time: "06:00"
       timezone: "Europe/Warsaw"
-    # SUPERMOC: grouped updates — jeden PR na wszystkie akcje
-    groups:
-      actions-core:
-        patterns:
-          - "actions/*"
-      security-actions:
-        patterns:
-          - "github/codeql-action*"
-          - "ossf/*"
-          - "advanced-security/*"
-          - "sigstore/*"
-          - "slsa-framework/*"
-      third-party-actions:
-        patterns:
-          - "prefix-dev/*"
-          - "astral-sh/*"
-          - "dtolnay/*"
-          - "softprops/*"
-          - "ncipollo/*"
     labels:
       - "dependencies"
-      - "github-actions"
-    open-pull-requests-limit: 5
-    # SUPERMOC: auto-assign reviewers
-    # reviewers:
-    #   - "Gorski-Maciej"
-
-  # ── Python (pixi) — zależności PyPI
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "07:00"
-      timezone: "Europe/Warsaw"
-    # SUPERMOC: grouped updates — jeden PR na wszystkie zależności
+      - "ci"
+      - "auto-merge"
+    reviewers:
+      - "Gorski-Maciej"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    open-pull-requests-limit: 3
     groups:
-      python-all:
+      actions:
         patterns:
           - "*"
-    # Wyłącz nexus-crypto — lokalny pakiet Rust, aktualizowany ręcznie
-    ignore:
-      - dependency-name: "nexus-crypto"
-    labels:
-      - "dependencies"
-      - "python"
-    open-pull-requests-limit: 10
+        update-types:
+          - "minor"
+          - "patch"

@@ -6,7 +6,7 @@ import sys
 
 
 def _load_services_module():
-    module_path = Path('Code/api/services.py').resolve()
+    module_path = Path('nexus_ai/api/services.py').resolve()
     spec = importlib.util.spec_from_file_location('nexus_api_services_runtime', module_path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)

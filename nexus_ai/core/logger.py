@@ -132,29 +132,40 @@ def _setup_structlog() -> None:
         "debug": _structlog.dev.StructLogStyle(color="cyan", bold=False),
     }
 
+    # ── Rec #8 v7.0: PII masking processor ────────────────────────────
+    _processors: list = [
+        _structlog.contextvars.merge_contextvars,
+        _structlog.stdlib.filter_by_level,
+        _structlog.stdlib.add_log_level,
+        _structlog.stdlib.add_log_level_number,
+        _structlog.stdlib.PositionalArgumentsFormatter(),
+    ]
+    # Add PII masking before rendering (Enterprise v7.0 Rec #8)
+    try:
+        from nexus_ai.services.log_pii_monitor import PiiMaskingProcessor as _PMP
+        _processors.append(_PMP())
+    except ImportError:
+        pass
+    _processors.extend([
+        _structlog.processors.CallsiteParameterAdder(
+            [
+                _structlog.processors.CallsiteParameter.FILENAME,
+                _structlog.processors.CallsiteParameter.LINENO,
+                _structlog.processors.CallsiteParameter.FUNC_NAME,
+            ]
+        ),
+        _structlog.processors.TimeStamper(fmt="iso"),
+        _structlog.processors.format_exc_info,
+        _structlog.stdlib.ExtraAdder(),
+        _structlog.dev.ConsoleRenderer(
+            sort_keys=True,
+            pad_event=30,
+            level_styles=_level_styles,
+        ),
+    ])
+
     _structlog.configure(
-        processors=[
-            _structlog.contextvars.merge_contextvars,
-            _structlog.stdlib.filter_by_level,
-            _structlog.stdlib.add_log_level,
-            _structlog.stdlib.add_log_level_number,
-            _structlog.stdlib.PositionalArgumentsFormatter(),
-            _structlog.processors.CallsiteParameterAdder(
-                [
-                    _structlog.processors.CallsiteParameter.FILENAME,
-                    _structlog.processors.CallsiteParameter.LINENO,
-                    _structlog.processors.CallsiteParameter.FUNC_NAME,
-                ]
-            ),
-            _structlog.processors.TimeStamper(fmt="iso"),
-            _structlog.processors.format_exc_info,
-            _structlog.stdlib.ExtraAdder(),
-            _structlog.dev.ConsoleRenderer(
-                sort_keys=True,
-                pad_event=30,
-                level_styles=_level_styles,
-            ),
-        ],
+        processors=_processors,
         wrapper_class=_structlog.stdlib.BoundLogger,
         context_class=dict,
         logger_factory=_LoguruFactory(),

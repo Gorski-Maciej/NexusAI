@@ -1,7 +1,7 @@
 """
 Integration tests for RiskGuard — pełny przepływ CRUD na prawdziwym DuckDB.
 
-Symuluje wywołania POST → GET → DELETE z ``Code/api/routes/risk.py``,
+Symuluje wywołania POST → GET → DELETE z ``nexus_ai/api/routes/risk.py``,
 ale testuje bezpośrednio klasę RiskGuard z realną bazą ``:memory:``.
 
 Przepływ:

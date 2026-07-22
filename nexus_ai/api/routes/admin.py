@@ -42,7 +42,7 @@ from nexus_ai.api.dto import (
     RuleListResponseDTO,
     StatusResponseDTO,
 )
-from nexus_ai.api.rbac import admin_only_guard, requires_permission
+from nexus_ai.api.rbac import admin_only_guard, requires_permission, log_rbac_change
 from nexus_ai.core.msgspec_utils import msgspec_dumps
 from nexus_ai.services.admin_services import (
     BillingRuleService as BillingRuleAdminSvc,
@@ -248,7 +248,16 @@ class AdminController(Controller):
                     {"id": uuid.uuid4().hex, "uid": user_id, "rid": role_row["id"]},
                 )
 
-            # Log to audit (inside the same transaction)
+            # Log to RBAC audit (v7.0 Security Audit)
+            log_rbac_change(
+                user_id=user_id,
+                changed_by=actor_name,
+                old_role=old_role,
+                new_role=new_role,
+                reason=f"Role changed by admin {actor_name}",
+            )
+
+            # Log to database audit (inside the same transaction)
             await conn.execute(
                 text(
                     """INSERT INTO audit_logs (id, user_id, action, old_value, new_value, timestamp, created_at)

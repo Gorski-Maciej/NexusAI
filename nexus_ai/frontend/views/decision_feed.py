@@ -233,6 +233,72 @@ def DecisionFeedView(page: ft.Page, api_client=None):
         """Tworzy handler dla przycisku karty — przechwytuje zmienne w closure."""
         return lambda _: page.run_task(_handle_card_action(card_id, decision_id, option))
 
+    # ── Rec #20 v7.0: Explainability Dialog ──────────────────────────
+
+    def _show_explain_dialog():
+        """Pokaż dialog 'DLACZEGO?' z wyjaśnieniem decyzji AI."""
+        decision_id = current_card.get("decision_id", "")
+        trust_val = current_card.get("trust_score", 0.0)
+        mode = current_card.get("decision_mode", "auto")
+        agent = current_card.get("agent_name", "orchestrator")
+
+        explanation = (
+            "Decyzja została podjęta przez system agentów AI na podstawie:\n\n"
+            f"• Trust Score: {trust_val:.0%}\n"
+            f"• Tryb decyzyjny: {mode}\n"
+            f"• Agent: {agent}\n"
+            f"• Cognitive Audit Trail: pełny ślad decyzji\n"
+            f"• Reguły OPA: 779+ audytowalnych reguł podatkowych\n"
+            f"• MultiModelEnsemble: głosowanie 3 modeli\n"
+            f"• Shadow Simulation: symulacja skutków finansowych\n\n"
+            "Szczegółowy ślad decyzji dostępny w Cognitive Audit Trail."
+        )
+
+        # Try to get richer explanation from ExplainabilityEngine
+        try:
+            from nexus_ai.agents.explainability_engine import ExplainabilityEngine
+            engine = ExplainabilityEngine()
+            engine_explanation = engine.explain(decision_id, format="text")
+            if engine_explanation:
+                explanation = str(engine_explanation)
+        except Exception:
+            pass
+
+        dialog = ft.AlertDialog(
+            title=ft.Row([
+                ft.Icon(ft.icons.PSYCHOLOGY, color=ft.colors.PURPLE_300, size=24),
+                ft.Text("🧠 DLACZEGO ta decyzja?", size=18, weight=ft.FontWeight.BOLD,
+                        color=ft.colors.GREY_100),
+            ]),
+            content=ft.Container(
+                content=ft.Text(
+                    explanation,
+                    size=14,
+                    color=ft.colors.GREY_300,
+                    selectable=True,
+                ),
+                padding=ft.padding.all(16),
+                width=450,
+            ),
+            actions=[
+                ft.TextButton("Zamknij",
+                              on_click=lambda e: _close_explain_dialog(dialog)),
+                ft.ElevatedButton(
+                    "📋 Kopiuj",
+                    icon=ft.icons.COPY,
+                    on_click=lambda e: page.set_clipboard(explanation),
+                ),
+            ],
+        )
+        page.dialog = dialog
+        dialog.open = True
+        page.update()
+
+    def _close_explain_dialog(dialog):
+        """Zamknij dialog wyjaśnienia."""
+        dialog.open = False
+        page.update()
+
     # ── Nawigacja ──────────────────────────────────────────────────
 
     def _prev():
@@ -583,6 +649,15 @@ def DecisionFeedView(page: ft.Page, api_client=None):
                                 border=ft.border.all(1, ft.colors.with_opacity(0.2, ft.colors.BLUE_400)),
                                 visible=bool(agent_hint),
                                 animate=ft.animation.Animation(300, ft.AnimationCurve.EASE_OUT),
+                            ),
+                            # ── Rec #20 v7.0: "DLACZEGO?" button ──
+                            ft.Container(height=8),
+                            ft.TextButton(
+                                content=ft.Row([
+                                    ft.Icon(ft.icons.PSYCHOLOGY, size=14, color=ft.colors.PURPLE_300),
+                                    ft.Text("🧠 DLACZEGO ta decyzja?", size=12, color=ft.colors.PURPLE_200),
+                                ], spacing=6),
+                                on_click=lambda _: _show_explain_dialog(),
                             ),
                             ft.Container(height=12),
                             ft.Row([

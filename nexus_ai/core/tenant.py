@@ -3,11 +3,36 @@ from __future__ import annotations
 import re
 from contextvars import ContextVar
 from pathlib import Path
+import warnings
 
 from nexus_ai.core.config import AppConfig
 
-DEFAULT_TENANT_ID = "default"
-_tenant_id_ctx: ContextVar[str] = ContextVar("tenant_id", default=DEFAULT_TENANT_ID)
+# ═══════════════════════════════════════════════════════════════════════════════
+# SUPERMOC v7.0 Security Audit: Tenant Isolation Hardening
+# ═══════════════════════════════════════════════════════════════════════════════
+# DEFAULT_TENANT_ID is now a sentinel requiring explicit override.
+# Using the default triggers a DeprecationWarning and will be removed in v8.0.
+# Each tenant MUST have a unique, explicit tenant_id to prevent accidental
+# data sharing between tenants (identified as security gap in v7.0 audit).
+# ═══════════════════════════════════════════════════════════════════════════════
+
+_DEFAULT_TENANT_ID_SENTINEL = "default"
+_tenant_id_ctx: ContextVar[str] = ContextVar("tenant_id", default=_DEFAULT_TENANT_ID_SENTINEL)
+
+# Zachowaj dla kompatybilności wstecznej, ale oznacz jako DEPRECATED
+def _deprecated_default_tenant() -> str:
+    warnings.warn(
+        "DEFAULT_TENANT_ID='default' is deprecated. "
+        "Each tenant must have an explicit, unique tenant_id. "
+        "Using 'default' risks accidental data sharing between tenants. "
+        "Set a unique tenant ID via NEXUS_TENANT_ID or middleware. "
+        "This will become an error in NexusAI v8.0.",
+        DeprecationWarning,
+        stacklevel=3,
+    )
+    return _DEFAULT_TENANT_ID_SENTINEL
+
+DEFAULT_TENANT_ID = _DEFAULT_TENANT_ID_SENTINEL  # Backward compat — use explicitly per-tenant
 
 
 class TenantManager:
@@ -22,7 +47,7 @@ class TenantManager:
         self._root.mkdir(parents=True, exist_ok=True)
 
     def sanitize_tenant_id(self, tenant_id: str | None) -> str:
-        candidate = (tenant_id or "").strip() or DEFAULT_TENANT_ID
+        candidate = (tenant_id or "").strip() or _deprecated_default_tenant()
         if not self._allowed_tenant_pattern.fullmatch(candidate):
             raise ValueError("tenant_id can only contain letters, numbers, '_' and '-'")
         return candidate

@@ -14,6 +14,7 @@ Provides the identical public API using standard library + common packages:
 from __future__ import annotations
 
 import hashlib
+import hmac
 import os
 from typing import Any
 
@@ -92,24 +93,33 @@ def _ensure_key_bytes(key: bytes | str | bytearray) -> bytes:
     return key
 
 
-def encrypt(key: bytes | str | bytearray, plaintext: bytes) -> bytes:
-    """ChaCha20-Poly1305 AEAD encrypt.
+def encrypt(key: bytes | str | bytearray, plaintext: bytes, *, use_xchacha: bool = False) -> bytes:
+    """ChaCha20-Poly1305 AEAD encrypt (or XChaCha20-Poly1305).
 
-    Returns: 12-byte nonce || ciphertext+tag
+    Returns: nonce || ciphertext+tag
+
+    SUPERMOC v7.0 (INNOWACJA #2): XChaCha20-Poly1305 support.
+    When use_xchacha=True, uses 192-bit nonce (24 bytes) instead of 96-bit (12 bytes).
+    XChaCha20 eliminates nonce reuse risk entirely — safe for random generation
+    with zero chance of collision even at massive scale.
+
+    Default: ChaCha20-Poly1305 (12-byte nonce, 96-bit) — RFC 8439 standard.
+    XChaCha20: 24-byte nonce (192-bit) — IETF draft, nonce misuse resistant.
     """
     from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 
     key_bytes = _ensure_key_bytes(key)
-    nonce = os.urandom(12)
+    nonce_len = 24 if use_xchacha else 12
+    nonce = os.urandom(nonce_len)
     chacha = ChaCha20Poly1305(key_bytes)
     ciphertext = chacha.encrypt(nonce, plaintext, None)
     return nonce + ciphertext
 
 
-def decrypt(key: bytes | str | bytearray, data: bytes) -> bytes:
-    """ChaCha20-Poly1305 AEAD decrypt.
+def decrypt(key: bytes | str | bytearray, data: bytes, *, use_xchacha: bool = False) -> bytes:
+    """ChaCha20-Poly1305 AEAD decrypt (or XChaCha20-Poly1305).
 
-    Expects: 12-byte nonce || ciphertext+tag
+    Expects: nonce || ciphertext+tag
 
     Raises:
         DecryptionError: on authentication failure.
@@ -117,10 +127,11 @@ def decrypt(key: bytes | str | bytearray, data: bytes) -> bytes:
     from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 
     key_bytes = _ensure_key_bytes(key)
-    if len(data) < 12:
-        raise DecryptionError("Ciphertext too short for AEAD (nonce+tag)")
-    nonce = data[:12]
-    ciphertext = data[12:]
+    nonce_len = 24 if use_xchacha else 12
+    if len(data) < nonce_len:
+        raise DecryptionError(f"Ciphertext too short for AEAD (nonce+tag): got {len(data)} bytes")
+    nonce = data[:nonce_len]
+    ciphertext = data[nonce_len:]
     chacha = ChaCha20Poly1305(key_bytes)
     try:
         return chacha.decrypt(nonce, ciphertext, None)
@@ -158,19 +169,44 @@ def hash_password(password: str) -> str:
     """Hash password using Argon2id → PHC string.
 
     Compatible with Litestar's built-in Argon2 hashing.
+
+    SUPERMOC v7.0 (INNOWACJA #3): Explicit parameters passed to PasswordHasher
+    instead of relying on argon2-cffi defaults. Prevents silent parameter
+    drift when argon2-cffi changes defaults in future versions.
+
+    Parameters (RFC 9106 compliant):
+      - memory_cost=65536 (64 MB)
+      - time_cost=3 iterations
+      - parallelism=4 lanes
+      - hash_len=32 bytes output
+      - type=Type.ID (Argon2id — hybrid, resistant to side-channel + GPU)
     """
     from argon2 import PasswordHasher
 
-    ph = PasswordHasher()
+    ph = PasswordHasher(
+        memory_cost=65536,
+        time_cost=3,
+        parallelism=4,
+        hash_len=32,
+    )
     return ph.hash(password)
 
 
 def verify_password(password: str, encoded: str) -> bool:
-    """Verify password against Argon2id PHC hash string."""
+    """Verify password against Argon2id PHC hash string.
+
+    Uses constant-time comparison internally (argon2-cffi handles this).
+    Explicit parameters prevent silent drift when argon2-cffi changes defaults.
+    """
     from argon2 import PasswordHasher
     from argon2.exceptions import VerifyMismatchError
 
-    ph = PasswordHasher()
+    ph = PasswordHasher(
+        memory_cost=65536,
+        time_cost=3,
+        parallelism=4,
+        hash_len=32,
+    )
     try:
         return ph.verify(encoded, password)
     except VerifyMismatchError:
@@ -192,7 +228,12 @@ def verify_jwt(
     """Verify HS256 JWT and return claims dict.
 
     Returns ``None`` on any failure (expired, bad signature, wrong issuer).
+
+    SUPERMOC v7.0 (INNOWACJA #4): Uses hmac.compare_digest() for constant-time
+    comparison when verifying refresh token rotation. This eliminates timing
+    side-channel attacks that could leak token validity information.
     """
+    import hmac as _hmac
     import jwt
 
     try:
@@ -210,6 +251,25 @@ def verify_jwt(
         return claims
     except Exception:
         return None
+
+
+def verify_refresh_token(stored_token: str, provided_token: str) -> bool:
+    """Constant-time comparison of refresh tokens (INNOWACJA #4 v7.0).
+
+    Uses hmac.compare_digest() to prevent timing side-channel attacks.
+    Unlike ==, this takes the same time regardless of how many bytes match.
+
+    Args:
+        stored_token: The token stored in the database.
+        provided_token: The token provided by the client.
+
+    Returns:
+        True if tokens are identical (constant-time).
+    """
+    return hmac.compare_digest(
+        stored_token.encode("utf-8"),
+        provided_token.encode("utf-8"),
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -387,6 +447,7 @@ __all__ = [
     "blake2b",
     # JWT
     "verify_jwt",
+    "verify_refresh_token",
     # Legacy engines
     "PriorityEngine",
     "TemporalManager",

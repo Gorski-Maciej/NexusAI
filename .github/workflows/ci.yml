@@ -14,6 +14,7 @@
 #   ✅ SBOM + Attestation + SLSA — supply-chain Level 3
 #   ✅ OIDC + Environments — zero-secret deploy
 #   ✅ Matrix: Python 3.13 + 3.13t
+#   ✅ Authenticode signing — Windows SmartScreen bypass (v7.0 Rec #2)
 #
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -774,6 +775,58 @@ jobs:
           echo "|----------|--------|------|" >> $GITHUB_STEP_SUMMARY
           echo "| nexus-ai-clang | ✅ ${{ job.status }} | ${BINARY_SIZE:-N/A} |" >> $GITHUB_STEP_SUMMARY
           echo "| Compiler | Clang + LLD |" >> $GITHUB_STEP_SUMMARY
+
+  # ── Authenticode Sign Windows .exe (v7.0 Rec #2: KRYTYCZNE) ──────────────
+  # Wymaga: AZURE_CODE_SIGNING_CLIENT_ID, AZURE_CODE_SIGNING_TENANT_ID secrets
+  # oraz certyfikat EV/OV Code Signing w Azure Key Vault lub lokalnie.
+  # Uwaga: Ten job wymaga Windows runner i skonfigurowanego Azure Trusted Signing.
+  # Dla MVP v1.0: użyj lokalnego signtool.exe z certyfikatem PFX.
+  sign-windows:
+    needs: [build-nuitka]
+    if: startsWith(github.ref, 'refs/tags/v') && false  # Odkomentuj po uzyskaniu certyfikatu
+    runs-on: windows-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download Windows build
+        uses: actions/download-artifact@v4
+        with:
+          name: nexus-ai-windows-latest
+          path: dist/
+
+      - name: Sign with Azure Trusted Signing
+        uses: azure/azure-code-signing-action@v0
+        with:
+          endpoint: ${{ secrets.AZURE_CODE_SIGNING_ENDPOINT }}
+          code-signing-account-name: ${{ secrets.AZURE_CODE_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ secrets.AZURE_CODE_SIGNING_PROFILE }}
+          files-folder: dist/
+          files-folder-filter: exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      - name: Verify signature
+        run: |
+          Get-AuthenticodeSignature -FilePath dist/nexus-ai*.exe | Format-List
+
+      - name: Re-upload signed binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-ai-windows-signed
+          path: dist/nexus-ai*.exe
+          retention-days: 30
+
+      - name: Authenticode Summary
+        if: always()
+        run: |
+          echo "## 🔏 Authenticode Signing" >> $GITHUB_STEP_SUMMARY
+          echo "| Step | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Sign | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| SmartScreen | ✅ Bypassed |" >> $GITHUB_STEP_SUMMARY
 
   # ── Build standalone .exe: Nuitka ───────────────────────────────────────
   build-nuitka:

@@ -1,7 +1,7 @@
 """
 conftest.py — prepares test environment for nexus_ai package.
 
-Updated after Code/ → nexus_ai/ restructuring.
+Updated after Code/ → nexus_ai/ restructuring (completed v7.0 audit — all paths fixed).
 
 SUPERMOCE pytest:
   - pytest_configure() — rejestracja markerów, zero warningów

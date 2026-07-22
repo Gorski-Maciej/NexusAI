@@ -30,6 +30,14 @@ from nexus_ai.services.otel_fallback import FileSpanBuffer
 
 logger = get_logger("nexus.core.otel")
 
+# ── Rec #7 v7.0: Resilient OTLP Exporter (BSP-FileSpanBuffer gap fix) ─────
+try:
+    from nexus_ai.services.otel_resilient_exporter import ResilientOTLPSpanExporter
+    _HAS_RESILIENT_EXPORTER = True
+except ImportError:
+    _HAS_RESILIENT_EXPORTER = False
+    ResilientOTLPSpanExporter = None  # type: ignore
+
 # ── Supermoc: Semantic Conventions -- standardowe atrybuty OTel ────────────
 try:
     from opentelemetry.semconv.trace import SpanAttributes

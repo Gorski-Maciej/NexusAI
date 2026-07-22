@@ -6,11 +6,19 @@ z przyciskiem "Akceptuj wszystkie".
 Zasada "3-Second Rule":
   Każda interakcja powinna zająć ≤ 3 sekundy przy 100% akceptacji.
 
-Stany UI:
+  - Graduated Autonomy Levels (L1-L4): Asystent/Partner/Wspólnik/Cichy Wspólnik (v7.0 audit)
+
+Stan UI:
   🔵 NORMAL:   Podsumowanie + "Akceptuj wszystkie"
   🟡 ATTENTION: 1-2 pozycje oznaczone kolorem
   🔴 ALERT:    Pilna sprawa z priorytetem
   ⚪ EMPTY:    "Wszystko zaksięgowane. Idź na kawę ☕"
+
+Poziomy autonomii (v7.0):
+  L1 ASYSTENT — pokazuje wszystko, tylko sugeruje
+  L2 PARTNER  — ksiegluje rutynowe, pyta o nowe
+  L3 WSPÓLNIK — ksiegluje wszystko, raportuje
+  L4 CICHY WSPÓLNIK — zero interakcji, tylko raporty
 
 Układ:
   ┌─────────────────────────────────────────────┐
@@ -90,6 +98,42 @@ STATE_EMOJIS = {
     "attention": "🟡",
     "alert": "🔴",
     "empty": "⚪",
+}
+
+# ── Rec #17 v7.0: Graduated Autonomy Levels ─────────────────────────────
+AUTONOMY_LEVELS: dict[str, dict[str, Any]] = {
+    "L1_ASYSTENT": {
+        "label": "🧑‍💼 Asystent",
+        "description": "Pokazuje wszystko, tylko sugeruje — pełna kontrola",
+        "icon": "🧑‍💼",
+        "color": COLORS["accent"],
+        "auto_post": False,
+        "silent": False,
+    },
+    "L2_PARTNER": {
+        "label": "🤝 Partner",
+        "description": "Księguje rutynowe, pyta o nowe — równowaga",
+        "icon": "🤝",
+        "color": COLORS["success"],
+        "auto_post": True,
+        "silent": False,
+    },
+    "L3_WSPOLNIK": {
+        "label": "🏢 Wspólnik",
+        "description": "Księguje wszystko, raportuje wyniki — wysoka autonomia",
+        "icon": "🏢",
+        "color": COLORS["warning"],
+        "auto_post": True,
+        "silent": True,
+    },
+    "L4_CICHY": {
+        "label": "🤫 Cichy Wspólnik",
+        "description": "Zero interakcji, tylko raporty — pełna autonomia",
+        "icon": "🤫",
+        "color": COLORS["danger"],
+        "auto_post": True,
+        "silent": True,
+    },
 }
 
 
@@ -257,6 +301,37 @@ class ExecutiveDashboardView:
             alignment=ft.alignment.center,
         )
 
+        # ── Rec #17 v7.0: Graduated Autonomy Levels Selector ──
+        current_level = self._summary.get("autonomy_level", "L2_PARTNER")
+        level_info = AUTONOMY_LEVELS.get(current_level, AUTONOMY_LEVELS["L2_PARTNER"])
+
+        autonomy_row = ft.Container(
+            content=ft.Column([
+                ft.Row([
+                    ft.Icon(ft.Icons.TUNE, size=16, color=COLORS["text_muted"]),
+                    ft.Text("Poziom autonomii:", color=COLORS["text_muted"], size=13),
+                ], spacing=6),
+                ft.Container(height=6),
+                ft.Row([
+                    ft.Text(level_info["label"], color=level_info["color"], size=14, weight=ft.FontWeight.BOLD),
+                    ft.Container(width=8),
+                    ft.Text(level_info["description"], color=COLORS["text_muted"], size=12),
+                ], spacing=0),
+                ft.Container(height=4),
+                ft.ProgressBar(
+                    value={"L1_ASYSTENT": 0.25, "L2_PARTNER": 0.5, "L3_WSPOLNIK": 0.75, "L4_CICHY": 1.0}.get(current_level, 0.5),
+                    color=level_info["color"],
+                    bgcolor=COLORS["surface_alt"],
+                    height=4,
+                ),
+            ], spacing=0),
+            padding=ft.padding.all(12),
+            bgcolor=COLORS["surface_alt"],
+            border_radius=ft.border_radius.all(10),
+            border=ft.border.all(1, COLORS["border"]),
+            margin=ft.margin.only(top=12),
+        )
+
         # ── Strategy Recommendations (jeśli są) ──────────────────────
         recs = self._summary.get("strategic_recommendations", [])
         recs_section = self._build_recommendations(recs) if recs else None
@@ -309,6 +384,7 @@ class ExecutiveDashboardView:
         children.append(accept_button)
         children.append(review_button)
         children.append(strategy_button)
+        children.append(autonomy_row)
 
         if recs_section:
             children.append(ft.Container(height=16))

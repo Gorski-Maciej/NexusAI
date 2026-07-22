@@ -2,8 +2,8 @@ from pathlib import Path
 
 
 def test_outbox_ops_endpoints_registered_and_guarded() -> None:
-    app_source = Path('Code/api/app.py').read_text(encoding='utf-8')
-    route_source = Path('Code/api/routes/outbox_ops.py').read_text(encoding='utf-8')
+    app_source = Path('nexus_ai/api/app.py').read_text(encoding='utf-8')
+    route_source = Path('nexus_ai/api/routes/outbox_ops.py').read_text(encoding='utf-8')
     assert 'OutboxOpsController' in app_source
     assert 'path = "/api/v1/system/outbox"' in route_source
     assert '@get("/stats")' in route_source

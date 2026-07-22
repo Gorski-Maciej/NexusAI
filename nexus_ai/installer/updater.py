@@ -10,7 +10,13 @@ Flow:
   2. Compare with local CURRENT_VERSION
   3. If update available -> show notification + Flet dialog
   4. If user accepts -> download new installer in background
-  5. After download -> prompt to close and run installer
+  5. SHA-256 integrity verification (KRYTYCZNE — Rec #1 v7.0)
+  6. After verification -> prompt to close and run installer
+
+Enterprise Security (v7.0):
+  - SHA-256 checksum verification before install
+  - Rollback support via .bak file
+  - Expected hash from version.json (sha256 field)
 """
 
 from __future__ import annotations
@@ -26,6 +32,14 @@ import httpx
 import msgspec
 from msgspec import Struct
 from structlog import get_logger
+
+try:
+    from nexus_crypto import Sha256Hasher
+    _HAS_NEXUS_CRYPTO = True
+except ImportError:
+    import hashlib
+    _HAS_NEXUS_CRYPTO = False
+    Sha256Hasher = None  # type: ignore
 
 logger = get_logger("nexus.installer.updater")
 
@@ -59,6 +73,7 @@ class UpdateInfo(Struct):
     release_date: str
     minimum_version: str
     critical: bool
+    sha256: str = ""  # KRYTYCZNE Rec #1 v7.0: SHA-256 checksum for integrity verification
 
 
 class UpdateCheckResult(Struct):
@@ -209,6 +224,61 @@ async def check_for_updates(
     )
 
 
+# ── SHA-256 verification (Rec #1 v7.0: KRYTYCZNE) ────────────────────────────
+
+
+def compute_file_sha256(filepath: Path) -> str:
+    """Compute SHA-256 checksum of a file (streaming, 64KB chunks).
+
+    Enterprise v7.0 Rec #1: Weryfikacja integralności pobranego instalatora.
+    Zapobiega atakom Man-in-the-Middle podczas OTA update.
+
+    Uses nexus_crypto.Sha256Hasher (Rust) for performance when available,
+    falls back to Python hashlib.
+    """
+    if _HAS_NEXUS_CRYPTO and Sha256Hasher is not None:
+        sha = Sha256Hasher()
+        with open(filepath, "rb") as f:
+            while True:
+                chunk = f.read(65536)
+                if not chunk:
+                    break
+                sha.update(chunk)
+        return sha.hexdigest()
+    else:
+        import hashlib as _hashlib
+        sha = _hashlib.sha256()
+        with open(filepath, "rb") as f:
+            while True:
+                chunk = f.read(65536)
+                if not chunk:
+                    break
+                sha.update(chunk)
+        return sha.hexdigest()
+
+
+def verify_installer_sha256(filepath: Path, expected_hash: str) -> bool:
+    """Verify installer file SHA-256 checksum.
+
+    Returns True if match or no expected hash provided.
+    Returns False on mismatch — installer MUST be discarded.
+    """
+    if not expected_hash:
+        logger.warning("No SHA-256 hash provided for update — skipping verification (NOT RECOMMENDED)")
+        return True
+    if not filepath.exists():
+        return False
+    actual = compute_file_sha256(filepath)
+    if actual != expected_hash:
+        logger.error(
+            "SHA-256 MISMATCH for installer! Expected=%s, Got=%s — DISCARDING",
+            expected_hash[:16], actual[:16],
+        )
+        return False
+    logger.info("SHA-256 verification PASSED: %s", expected_hash[:16])
+    return True
+
+
 # ── Download update ─────────────────────────────────────────────────────────
 
 
@@ -310,6 +380,13 @@ async def download_update(
             # Rename temp to final
             temp_path.rename(dest_path)
             logger.info("Update downloaded to %s (%d bytes)", dest_path, downloaded)
+
+            # ── KRYTYCZNE Rec #1 v7.0: SHA-256 integrity verification ──
+            if not verify_installer_sha256(dest_path, update_info.sha256):
+                logger.error("SHA-256 verification FAILED — discarding installer")
+                dest_path.unlink(missing_ok=True)
+                return None
+
             return dest_path
 
     except Exception as e:
@@ -325,6 +402,8 @@ async def install_update(installer_path: Path) -> None:
 
     On Windows, runs the installer with silent flag.
     The current application will close after launching the installer.
+
+    Enterprise v7.0: Creates .bak rollback backup before installing.
     """
     if not installer_path.exists():
         logger.error("Installer not found: %s", installer_path)
@@ -337,6 +416,16 @@ async def install_update(installer_path: Path) -> None:
     logger.info("Launching installer: %s", installer_path)
 
     try:
+        # ── Rollback support (Rec #1 v7.0): backup current .exe ──
+        import sys
+        if getattr(sys, "frozen", False):
+            current_exe = Path(sys.executable)
+            backup_path = current_exe.with_suffix(current_exe.suffix + ".bak")
+            if current_exe.exists():
+                backup_path.unlink(missing_ok=True)
+                current_exe.rename(backup_path)
+                logger.info("Rollback backup created: %s", backup_path)
+
         # Launch the installer with silent flag (fire-and-forget -- must outlive the app)
         # /S = silent install (NSIS), /VERYSILENT = silent (Inno Setup)
         proc = await anyio.run_process(

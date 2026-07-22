@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ctypes
 import os
 from pathlib import Path
 
@@ -88,6 +89,22 @@ class LocalSecretsCache:
         except OSError:
             logger.warning("[SECRETS] OS error setting permissions: %s", self.cache_path)
         self._key = self._load_encryption_key()
+        # ── INNOWACJA #1 v7.0: HKDF Key Separation dla Secrets ─────
+        # Wyprowadź osobny klucz dla sekretów z root key.
+        self._hkdf_key: bytes | None = None
+        self._mlock_buf: Any = None  # Utrzymywane jako atrybut dla mlock
+        if self._key is not None:
+            try:
+                from nexus_ai.core.hkdf import derive_context_key, KeyContext
+                self._hkdf_key = derive_context_key(self._key, KeyContext.SECRETS)
+                logger.debug("[SECRETS] HKDF key separation active: secrets_key=%s...", self._hkdf_key[:8].hex())
+            except ImportError:
+                pass
+        # ── mlock() dla klucza sekretów (INNOWACJA #5 rozszerzona) ──
+        # Raport v7.0: "mlock() tylko na kluczu Vault, NIE na kluczu LocalSecretsCache"
+        # Fix: buf przechowywany jako atrybut instancji, żeby GC go nie zwolnił
+        if self._hkdf_key is not None:
+            self._mlock_secrets_key(self._hkdf_key)
 
     @staticmethod
     def _load_encryption_key() -> bytes | None:
@@ -114,10 +131,43 @@ class LocalSecretsCache:
             )
             return None
 
+    def _get_active_key(self) -> bytes | None:
+        """Zwraca aktywny klucz szyfrowania (HKDF-derived pref.)."""
+        return self._hkdf_key if self._hkdf_key else self._key
+
+    def _mlock_secrets_key(self, key: bytes) -> None:
+        """Zabezpiecz klucz sekretów przed swapem (INNOWACJA #5 rozszerzona).
+
+        Raport v7.0: "mlock() tylko na kluczu Vault, NIE na kluczu
+        LocalSecretsCache" — ta luka jest teraz załatana.
+
+        Kluczowe: buf jest przechowywany jako atrybut instancji (self._mlock_buf),
+        żeby garbage collector go nie zwolnił natychmiast po wyjściu z funkcji.
+        """
+        try:
+            import ctypes
+            import ctypes.util
+
+            libc = ctypes.CDLL(ctypes.util.find_library("c"))
+            buf = (ctypes.c_char * len(key)).from_buffer_copy(key)
+            result = libc.mlock(buf, len(key))
+            if result != 0:
+                logger.debug("[SECRETS] mlock failed — key can be swapped (errno=%d)", result)
+            else:
+                logger.debug("[SECRETS] secrets encryption key locked in RAM (mlock)")
+                # Przechowaj buf jako atrybut, żeby nie został GC
+                self._mlock_buf = buf
+        except (OSError, ctypes.CDLLError) as exc:
+            logger.debug("[SECRETS] mlock not available: %s", exc)
+        except Exception as exc:
+            logger.debug("[SECRETS] mlock unexpected error: %s", exc)
+
     def _encrypt(self, value: str) -> tuple[str, bool]:
-        if not self._key or not HAS_NEXUS_CRYPTO:
+        enc_key = self._get_active_key()
+        if not enc_key or not HAS_NEXUS_CRYPTO:
             return value, False
-        encrypted = nexus_crypto.encrypt(self._key, value.encode("utf-8"))
+        # Użyj XChaCha20 (INNOWACJA #2) dla nonce misuse resistance
+        encrypted = nexus_crypto.encrypt(enc_key, value.encode("utf-8"), use_xchacha=True)
         import base64
 
         return base64.urlsafe_b64encode(encrypted).decode("utf-8"), True
@@ -125,13 +175,14 @@ class LocalSecretsCache:
     def _decrypt(self, value: str, encrypted: bool) -> str | None:
         if not encrypted:
             return value
-        if not self._key or not HAS_NEXUS_CRYPTO:
+        enc_key = self._get_active_key()
+        if not enc_key or not HAS_NEXUS_CRYPTO:
             return None
         try:
             import base64
 
             data = base64.urlsafe_b64decode(value.encode("utf-8"))
-            return nexus_crypto.decrypt(self._key, data).decode("utf-8")
+            return nexus_crypto.decrypt(enc_key, data, use_xchacha=True).decode("utf-8")
         except (ValueError, TypeError, base64.binascii.Error) as exc:
             logger.error("[SECRETS] Decryption format error for key: %s", exc)
             return None

@@ -27,6 +27,61 @@ class NexusRole(StrEnum):
     VIEWER = "viewer"
 
 
+# ── RBAC Audit Log (v7.0 Security Audit: "Brak audytu zmian RBAC") ──────────
+
+import uuid as _uuid
+from datetime import datetime as _datetime, timezone as _timezone
+from typing import Any as _Any
+
+from structlog import get_logger as _get_logger
+
+_logger = _get_logger("nexus.rbac")
+
+# In-memory audit buffer (w produkcji: zapisywane do SQLite)
+_rbac_audit_log: list[dict[str, _Any]] = []
+RBAC_AUDIT_MAX_ENTRIES: int = 2000
+
+
+def log_rbac_change(user_id: str, changed_by: str, old_role: str, new_role: str, reason: str = "") -> None:
+    """Zarejestruj zmianę roli w audycie RBAC.
+
+    SUPERMOC v7.0 Security Audit: Każda zmiana roli jest audytowana
+    z pełnym kontekstem — kto, komu, kiedy, dlaczego.
+    """
+    entry = {
+        "audit_id": _uuid.uuid4().hex,
+        "user_id": user_id,
+        "changed_by": changed_by,
+        "old_role": old_role,
+        "new_role": new_role,
+        "reason": reason,
+        "timestamp": _datetime.now(_timezone.utc).isoformat(),
+    }
+    _rbac_audit_log.append(entry)
+    if len(_rbac_audit_log) > RBAC_AUDIT_MAX_ENTRIES:
+        _rbac_audit_log[:] = _rbac_audit_log[-RBAC_AUDIT_MAX_ENTRIES:]
+    _logger.info(
+        "[RBAC-AUDIT] Role change: user=%s %s→%s by=%s reason=%s",
+        user_id, old_role, new_role, changed_by, reason or "unspecified",
+    )
+
+
+def get_rbac_audit_log(user_id: str | None = None, limit: int = 50) -> list[dict[str, _Any]]:
+    """Pobierz ślad audytowy zmian RBAC.
+
+    Args:
+        user_id: Opcjonalny filtr po ID użytkownika.
+        limit: Maksymalna liczba wpisów do zwrócenia.
+
+    Returns:
+        Lista wpisów audytu RBAC.
+    """
+    entries = _rbac_audit_log
+    if user_id:
+        entries = [e for e in entries if e["user_id"] == user_id]
+    return entries[-limit:]
+
+
 # ── Permission codenames (mirrored from models/role.py) ──────────────────────
 
 PERMISSIONS = {

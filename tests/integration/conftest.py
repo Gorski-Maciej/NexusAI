@@ -43,10 +43,10 @@ def anyio_backend():
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Session, create_engine, text
 
-# Ensure Code/ is on sys.path
+# Ensure nexus_ai/ is on sys.path
 import sys
 
-_CODE_DIR = Path(__file__).resolve().parents[1] / "Code"
+_CODE_DIR = Path(__file__).resolve().parents[1] / "nexus_ai"
 if str(_CODE_DIR) not in sys.path:
     sys.path.insert(0, str(_CODE_DIR))
 

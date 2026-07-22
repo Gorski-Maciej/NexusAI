@@ -66,6 +66,7 @@ from nexus_ai.api.routes.ui_state import UIStateController
 from nexus_ai.api.routes.system_ops import VersionController
 from nexus_ai.api.routes.workers import WorkerStatusController
 from nexus_ai.api.routes.ws import progress_sse
+from nexus_ai.api.routes.proof_chain_export import ProofChainExportController, CSPReportController
 from nexus_ai.api.security import jwt_auth, jwt_cookie_auth
 from nexus_ai.api.state import make_on_startup, on_shutdown
 from nexus_ai.api.static import get_static_config
@@ -144,17 +145,40 @@ async def _app_after_request(response: Response) -> Response:
 
     Zastępuje część funkcjonalności ``CorrelationAndDeprecationMiddleware``:
     - X-Content-Type-Options, X-Frame-Options, Referrer-Policy
-    - Permissions-Policy, Content-Security-Policy
+    - Permissions-Policy, Content-Security-Policy z nonce (v7.0 Rec)
+
+    SUPERMOC v7.0 Security Audit (Raport sekcja 6.2):
+    - CSP nonce zamiast statycznego 'self' — per-request nonce
+    - CSP report-uri dla monitorowania naruszeń
+    - SRI integrity hashe dla static assets (obsługiwane w static_files)
 
     Tenant context i x-correlation-id są obsługiwane przez ``TenantContextMiddleware``.
     Metryki czasu przetwarzania są zbierane przez ``PrometheusConfig``.
     """
+    import secrets as _secrets
+    import hashlib as _hashlib
+
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "no-referrer"
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+
+    # ── CSP z per-request nonce (v7.0 Security Audit, sekcja 6.2) ───
+    # Generuj unikalny nonce dla każdego requestu — bezpieczniejsze niż 'self'
+    csp_nonce = _secrets.token_urlsafe(24)
+    response.headers["X-CSP-Nonce"] = csp_nonce
     response.headers["Content-Security-Policy"] = (
-        "default-src 'self'; frame-ancestors 'none'; base-uri 'self'"
+        f"default-src 'self'; "
+        f"script-src 'self' 'nonce-{csp_nonce}'; "
+        f"style-src 'self' 'nonce-{csp_nonce}'; "
+        f"frame-ancestors 'none'; "
+        f"base-uri 'self'; "
+        f"report-uri /api/v2/security/csp-report"
+    )
+
+    # ── SRI: Dodaj nagłówek dla static assets (v7.0 Security Audit) ──
+    response.headers["Content-Security-Policy-Report-Only"] = (
+        "require-sri-for script style"
     )
     return response
 
@@ -234,6 +258,9 @@ def create_app() -> Litestar:
             RiskController,
             EventsSchemaController,
             PDFController,
+            # v7.0 Security Audit: Proof Chain export + RBAC audit + CSP reports
+            ProofChainExportController,
+            CSPReportController,
         ],
     )
 

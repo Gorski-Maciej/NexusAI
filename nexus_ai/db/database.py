@@ -96,13 +96,35 @@ def _sqlite_url(config: AppConfig, sqlite_path: Path | None = None) -> str:
 # ── Key resolution ────────────────────────────────────────────────────────
 
 
-def _resolve_key(config: AppConfig, key: str | None = None) -> str:
-    resolved = key or os.getenv(config.sqlcipher_key_env, "").strip()
+def _resolve_key(config: AppConfig, key: str | None = None, vault: Any = None) -> str | bytes:
+    """Resolve SQLCipher key with Vault priority (INNOWACJA #5 v7.0).
+
+    Priority:
+      1. Explicit ``key`` parameter
+      2. Vault.get_sqlcipher_key() — mlock-protected (INNOWACJA #5)
+      3. NEXUS_SQLCIPHER_KEY env var (legacy, visible in /proc)
+
+    Vault-based key is preferred because it's protected from swap
+    by mlock() and zeroized on destruction.
+
+    Returns:
+        Raw key as string (env var) or bytes (Vault).
+        Caller must handle both types for hex encoding.
+    """
+    if key:
+        return key
+    if vault is not None and vault.has_key:
+        vault_key = vault.get_sqlcipher_key()
+        if vault_key:
+            logger.debug("[DB] Using Vault-protected SQLCipher key (mlock)")
+            return vault_key  # Returns bytes directly — no double-hex!
+    resolved = os.getenv(config.sqlcipher_key_env, "").strip()
     if not resolved:
         raise RuntimeError(
             f"SQLCipher key not configured. "
-            f"Set {config.sqlcipher_key_env} environment variable "
-            f"or pass ``key=`` parameter."
+            f"Set {config.sqlcipher_key_env} environment variable, "
+            f"or pass ``key=`` parameter, "
+            f"or provide a Vault instance."
         )
     return resolved
 
@@ -194,7 +216,11 @@ def create_oltp_engine(
 
     url = _sqlite_url(config, sqlite_path)
     resolved_key = _resolve_key(config, sqlcipher_key)
-    key_hex = resolved_key.encode("utf-8").hex()
+    # Handle both bytes (Vault) and str (env var) key formats
+    if isinstance(resolved_key, bytes):
+        key_hex = resolved_key.hex()  # 32 bytes → 64 hex chars
+    else:
+        key_hex = resolved_key.encode("utf-8").hex()
 
     poolclass = QueuePool if use_pool else NullPool
     engine = create_engine(

@@ -98,6 +98,9 @@ from nexus_ai.core.knowledge_distiller import KnowledgeDistiller
 from nexus_ai.core.continuous_finetuner import ContinuousFinetuner
 from nexus_ai.core.federated_learning import FederatedLearning
 
+# FAZA 3 v7.0 Audit: Nowe moduły strategiczne
+# Importowane lazy — tylko gdy potrzebne (unikamy circular imports)
+
 
 # ── Helper: extract strategy from decision's hidden payload ──────────
 
@@ -243,6 +246,11 @@ class AgentOrchestrator(BaseAgent):
         self._knowledge_distiller = KnowledgeDistiller()
         self._continuous_finetuner = ContinuousFinetuner()
         self._federated_learning = FederatedLearning(instance_id=config.get("instance_id", "default") if config else "default")
+        # FAZA 3 v7.0 Audit: Strategiczne moduły (lazy init)
+        self._tax_optimizer = None
+        self._bank_sync_engine = None
+        self._opa_marketplace = None
+        self._delta_updater = None
 
     def register_agent(self, name: str, agent: BaseAgent) -> None:
         """Zarejestruj podległego agenta i propaguj KnowledgeMesh."""
@@ -413,6 +421,56 @@ class AgentOrchestrator(BaseAgent):
     def federated(self) -> "FederatedLearning":
         """Federated Learning of Corrections."""
         return self._federated_learning
+
+    # ── FAZA 3 v7.0 Audit: Strategiczne moduły ────────────────────
+
+    @property
+    def tax_optimizer(self):
+        """AI Tax Optimizer — całoroczny planer podatkowy (F3.1)."""
+        if self._tax_optimizer is None:
+            try:
+                from nexus_ai.services.tax_optimizer import TaxOptimizerEngine
+                self._tax_optimizer = TaxOptimizerEngine()
+            except ImportError as exc:
+                logger.warning("[ORCH] TaxOptimizer unavailable: %s", exc)
+                return None
+        return self._tax_optimizer
+
+    @property
+    def bank_sync(self):
+        """Bank Sync Engine — automatyczna integracja bankowa (F3.4)."""
+        if self._bank_sync_engine is None:
+            try:
+                from nexus_ai.services.bank_sync_engine import BankSyncEngine
+                self._bank_sync_engine = BankSyncEngine()
+            except ImportError as exc:
+                logger.warning("[ORCH] BankSync unavailable: %s", exc)
+                return None
+        return self._bank_sync_engine
+
+    @property
+    def opa_marketplace(self):
+        """OPA Marketplace — platforma reguł podatkowych (F3.5)."""
+        if self._opa_marketplace is None:
+            try:
+                from nexus_ai.services.opa_marketplace import OPAMarketplace
+                self._opa_marketplace = OPAMarketplace()
+            except ImportError as exc:
+                logger.warning("[ORCH] OPAMarketplace unavailable: %s", exc)
+                return None
+        return self._opa_marketplace
+
+    @property
+    def delta_updater(self):
+        """Delta Updates OTA — bsdiff4 incremental updates (F3.3)."""
+        if self._delta_updater is None:
+            try:
+                from nexus_ai.installer.delta_updater import delta_update_flow
+                self._delta_updater = delta_update_flow
+            except ImportError:
+                logger.warning("[ORCH] bsdiff4 not available — delta updates disabled")
+                return None
+        return self._delta_updater
 
     @property
     def silent_stats(self) -> dict[str, Any]:

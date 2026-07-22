@@ -1,7 +1,7 @@
 """
 Unit tests for RiskController — zarządzanie progami ryzyka (Strażnik Ryzyka).
 
-Testuje wszystkie 5 endpointów z ``Code/api/routes/risk.py``:
+Testuje wszystkie 5 endpointów z ``nexus_ai/api/routes/risk.py``:
 
   Endpoint                                                    Metoda
   ──────────────────────────────────────────────────────────── ─────────────────────
@@ -13,7 +13,7 @@ Testuje wszystkie 5 endpointów z ``Code/api/routes/risk.py``:
 
 Strategia mockowania:
   - ``RiskController._with_guard`` jest patched, aby wywołać action z mockiem RiskGuard
-  - ``config.AppConfig`` jest mockowane przed importem (brak Code/config.py)
+  - ``config.AppConfig`` jest mockowane przed importem (brak nexus_ai/config.py)
   - Testujemy logikę kontrolera w izolacji — nie otwieramy DuckDB
 """
 
@@ -30,7 +30,7 @@ import pytest
 
 # ── Mock config BEFORE importing RiskController ──────────────────────────────
 # RiskController._with_guard używa `from config import AppConfig`, ale w projekcie
-# nie ma `Code/config.py` — musimy zamockować moduł config przed importem.
+# nie ma `nexus_ai/config.py` — musimy zamockować moduł config przed importem.
 _config_mock = MagicMock()
 type(_config_mock.AppConfig.return_value).duckdb_path = PropertyMock(
     return_value=":memory:"

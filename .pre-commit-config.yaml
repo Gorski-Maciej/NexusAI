@@ -53,3 +53,28 @@ repos:
       - id: check-toml
         name: check-toml
         files: \.toml$
+
+  # ── Security: gitleaks (secrets scanning) — v7.0 Security Audit ──────
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.0
+    hooks:
+      - id: gitleaks
+        name: gitleaks-secrets-scan
+        args: ["--verbose"]
+
+  # ── Security: bandit (Python security linter) — v7.0 Security Audit ──
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.7
+    hooks:
+      - id: bandit
+        name: bandit-security-lint
+        args: ["-r", "nexus_ai/", "-ll"]
+        files: ^nexus_ai/
+
+  # ── Syntax: check-ast (Python syntax validation) — v7.0 Security Audit ──
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-ast
+        name: check-python-ast
+        files: \.py$

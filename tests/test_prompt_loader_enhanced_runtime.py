@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def _load_module():
-    path = Path('Code/CORE/prompts.py').resolve()
+    path = Path('nexus_ai/CORE/prompts.py').resolve()
     spec = importlib.util.spec_from_file_location('prompts_mod', path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)

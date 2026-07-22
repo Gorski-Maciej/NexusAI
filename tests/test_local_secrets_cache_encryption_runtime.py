@@ -10,7 +10,7 @@ from nexus_crypto import derive_key
 
 
 def _load_mod():
-    path = Path('Code/CORE/secrets.py').resolve()
+    path = Path('nexus_ai/CORE/secrets.py').resolve()
     spec = importlib.util.spec_from_file_location('secrets_mod', path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)

@@ -6,12 +6,18 @@ Kryptograficzny Łańcuch Audytowy (Proof Chain) -- SHA-256 hash chain.
 - Integrity Verifier -- cykliczne przeliczanie łańcucha
 - Explainer API -- GET /api/v2/audit/tax-decision/{transaction_id}
 
+SUPERMOC v7.0 (INNOWACJA #6): Transaction Signing.
+Kazdy wpis zawiera HMAC-SHA256 podpisany kluczem per-instance.
+To daje non-repudiation -- mozna udowodnic, ze wpis pochodzi
+z TEJ instancji NexusAI.
+
 Zgodnie z docs/tfgxzd.txt -- Kryptograficzny Ślad Audytowy Decyzji.
 """
 
 from __future__ import annotations
 
 import hashlib
+import hmac
 import uuid
 from datetime import UTC, datetime
 from typing import Any, final
@@ -33,11 +39,12 @@ class ProofChain:
     - current_hash: SHA-256(previous_hash + payload + timestamp)
     - context_snapshot: zamrożony kontekst z dnia decyzji
     """
-    __slots__ = ('_conn',)
+    __slots__ = ('_conn', '_signing_key')
 
 
-    def __init__(self, conn: duckdb.DuckDBPyConnection) -> None:
+    def __init__(self, conn: duckdb.DuckDBPyConnection, *, signing_key: bytes | None = None) -> None:
         self._conn = conn
+        self._signing_key = signing_key
         self._ensure_schema()
 
     def _ensure_schema(self) -> None:
@@ -50,6 +57,7 @@ class ProofChain:
                 context_snapshot   VARCHAR NOT NULL,
                 previous_hash      VARCHAR(64) NOT NULL DEFAULT '',
                 current_hash       VARCHAR(64) NOT NULL,
+                signature          VARCHAR(128) NOT NULL DEFAULT '',
                 created_at         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -67,19 +75,29 @@ class ProofChain:
         transaction_id: str,
         trace: dict[str, Any],
         context: dict[str, Any],
+        *,
+        signing_key: bytes | None = None,
     ) -> str:
 
         """Log a decision to the proof chain.
+
+        SUPERMOC v7.0 (INNOWACJA #6): Transaction Signing.
+        When signing_key is provided (or self._signing_key was set at init),
+        each entry includes an HMAC-SHA256 signature. This provides
+        non-repudiation — it proves the entry originated from THIS
+        NexusAI instance.
 
         Args:
             transaction_id: ID transakcji (faktury).
             trace: Pełny ślad decyzyjny (evaluated_rules, verdict).
             context: Zrzut kontekstu z dnia transakcji.
+            signing_key: Opcjonalny klucz HMAC per-instance.
 
         Returns:
             audit_id utworzonego wpisu.
         """
         audit_id = uuid.uuid4().hex
+        key = signing_key or self._signing_key
 
         # Pobierz ostatni hash do łańcucha
         last_row = self._conn.execute(
@@ -98,12 +116,18 @@ class ProofChain:
         raw = (previous_hash + payload + datetime.now(UTC).isoformat()).encode("utf-8")
         current_hash = hashlib.sha256(raw).hexdigest()
 
-        # Zapisz w bazie (append-only)
+        # INNOWACJA #6: HMAC-SHA256 Transaction Signing
+        signature = ""
+        if key:
+            sig_data = (current_hash + transaction_id).encode("utf-8")
+            signature = hmac.new(key, sig_data, hashlib.sha256).hexdigest()
+
+        # Zapisz w bazie (append-only) z podpisem HMAC
         self._conn.execute(
             """INSERT INTO tax_decision_audits
                (audit_id, transaction_id, trace_json, context_snapshot,
-                previous_hash, current_hash)
-               VALUES (?, ?, ?, ?, ?, ?)""",
+                previous_hash, current_hash, signature)
+               VALUES (?, ?, ?, ?, ?, ?, ?)""",
             (
                 audit_id,
                 transaction_id,
@@ -111,15 +135,25 @@ class ProofChain:
                 msgspec_dumps(context, ensure_ascii=False),
                 previous_hash,
                 current_hash,
+                signature,
             ),
         )
 
-        logger.info(
-            "[PROOF-CHAIN] Logged decision %s for tx=%s (hash=%s...)",
-            audit_id,
-            transaction_id,
-            current_hash[:16],
-        )
+        if signature:
+            logger.info(
+                "[PROOF-CHAIN] Signed decision %s for tx=%s (hash=%s..., sig=%s...)",
+                audit_id,
+                transaction_id,
+                current_hash[:16],
+                signature[:16],
+            )
+        else:
+            logger.info(
+                "[PROOF-CHAIN] Logged decision %s for tx=%s (hash=%s...)",
+                audit_id,
+                transaction_id,
+                current_hash[:16],
+            )
         return audit_id
 
     def get_decision(self, transaction_id: str) -> dict[str, Any] | None:

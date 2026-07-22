@@ -1,5 +1,5 @@
 """
-Tests for Code/installer/dependency_downloader.py
+Tests for nexus_ai/installer/dependency_downloader.py
 
 Covers:
   - Platform detection (Linux, Windows, macOS, unknown)
