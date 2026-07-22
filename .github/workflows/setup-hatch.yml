@@ -35,7 +35,7 @@ jobs:
         run: pipx install hatch
 
       - name: Cache hatch environments
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.hatch/env/virtual
