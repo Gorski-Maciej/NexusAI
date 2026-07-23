@@ -16,6 +16,9 @@ from structlog import get_logger
 
 from nexus_ai.frontend.api_client import NexusApiClient
 from nexus_ai.frontend.ui.unix_progress import UnixProgressClient
+from nexus_ai.frontend.ui.command_palette import subscribe_command_palette
+from nexus_ai.frontend.ui.notification_center import NotificationBell, subscribe_nats_notifications
+from nexus_ai.frontend.ui.adaptive_layout import AdaptiveLayout
 from nexus_ai.frontend.views.task_monitor import TaskMonitorPanel
 
 logger = get_logger("nexus.ui.root")
@@ -49,6 +52,16 @@ def NexusRootUI(page: ft.Page, process_manager=None):
         client = UnixProgressClient(page=page)
         unix_client.current = client
         page.run_task(client.start_async())
+
+    # v7.0: Adaptive Layout Engine
+    layout = AdaptiveLayout(page)
+
+    # v7.0: Command Palette (Ctrl+K)
+    subscribe_command_palette(page)
+
+    # v7.0: Notification Bell + NATS auto-notifications
+    notification_bell = NotificationBell(page)
+    page.run_task(subscribe_nats_notifications())
 
     nav_rail = ft.NavigationRail(
         ref=ft.Ref[ft.NavigationRail](),
@@ -198,7 +211,7 @@ def NexusRootUI(page: ft.Page, process_manager=None):
                 [
                     nav_rail,
                     ft.VerticalDivider(width=1, color=ft.colors.GREY_800),
-                    ft.Container(ref=main_content, expand=True, padding=20),
+                    ft.Container(ref=main_content, expand=True, padding=layout.content_padding),
                 ],
                 expand=True,
                 spacing=0,
@@ -207,6 +220,12 @@ def NexusRootUI(page: ft.Page, process_manager=None):
                 content=fab,
                 right=20,
                 bottom=20,
+            ),
+            # v7.0: Notification Bell w prawym górnym rogu
+            ft.Container(
+                content=notification_bell,
+                right=20,
+                top=12,
             ),
         ],
         expand=True,

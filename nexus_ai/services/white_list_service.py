@@ -13,22 +13,27 @@ from nexus_ai.core.logger import logger
 
 @final
 class WhiteListService:
-    """Serwis weryfikacji białej listy podatników VAT.
+    """Serwis weryfikacji białej listy podatników VAT — v7.0.
 
-    SUPERPOWERY: stamina.retry z circuit breaker dla odpornej komunikacji
-    z API Białej Listy MF (wl-api.mf.gov.pl).
+    v7.0: Shared CachedHttpClient przez DI (LUKA 12).
     """
 
     BASE_URL = "https://wl-api.mf.gov.pl/api/search/nip/"
     _CACHE_TTL = 3600
-    __slots__ = ("_cache", "_http")
+    __slots__ = ("_cache", "_http", "_owns_http")
 
-    def __init__(self) -> None:
+    def __init__(self, http_client: CachedHttpClient | None = None) -> None:
         self._cache = get_cache()
-        self._http = CachedHttpClient()
+        if http_client is not None:
+            self._http = http_client
+            self._owns_http = False
+        else:
+            self._http = CachedHttpClient()
+            self._owns_http = True
 
     async def close(self) -> None:
-        await self._http.close()
+        if self._owns_http:
+            await self._http.close()
 
     async def _fetch_nip_data(self, nip: str) -> dict | None:
         """Pobiera dane podmiotu z API MF dla danego NIP (z cache).

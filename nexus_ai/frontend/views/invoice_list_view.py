@@ -161,29 +161,6 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
 
     filtered = filtered_invoices()
 
-    rows = []
-    for inv in filtered:
-        status = getattr(inv, "status", "NEW")
-        status_color = INVOICE_STATUS_COLORS.get(status, ft.colors.GREY)
-
-        rows.append(
-            ft.DataRow(
-                cells=[
-                    ft.DataCell(ft.Text(inv.number or "W trakcie...")),
-                    ft.DataCell(ft.Text(inv.customer_id or "-")),
-                    ft.DataCell(ft.Text(f"{inv.amount_gross:.2f} {inv.currency}")),
-                    ft.DataCell(ft.Text(status, color=status_color, weight=ft.FontWeight.BOLD)),
-                    ft.DataCell(
-                        ft.Text(
-                            inv.created_at.format("YYYY-MM-DD HH:mm")
-                            if hasattr(inv.created_at, "format")
-                            else str(inv.created_at)
-                        )
-                    ),
-                ],
-            )
-        )
-
     return ft.Container(
         content=ft.Column(
             [
@@ -215,19 +192,52 @@ def InvoiceListView(page: ft.Page, api_client, query_context: dict | None = None
                 ft.Container(height=4),
                 ft.Text(f"Znaleziono: {len(filtered)} faktur", size=12, color=ft.colors.GREY_500),
                 ft.Divider(),
+                # v7.0: Wirtualizacja listy faktur z lazy loading (ListView zamiast DataTable)
                 ft.Container(
-                    content=ft.DataTable(
-                        columns=[
-                            ft.DataColumn(ft.Text("Numer")),
-                            ft.DataColumn(ft.Text("NIP")),
-                            ft.DataColumn(ft.Text("Kwota")),
-                            ft.DataColumn(ft.Text("Status")),
-                            ft.DataColumn(ft.Text("Data")),
+                    content=ft.ListView(
+                        controls=[
+                            ft.Container(
+                                content=ft.ListTile(
+                                    leading=ft.Icon(
+                                        ft.icons.DESCRIPTION,
+                                        color=INVOICE_STATUS_COLORS.get(
+                                            getattr(inv, "status", "NEW"), ft.colors.GREY
+                                        ),
+                                        size=24,
+                                    ),
+                                    title=ft.Text(
+                                        inv.number or "W trakcie...",
+                                        size=14,
+                                        weight=ft.FontWeight.MEDIUM,
+                                    ),
+                                    subtitle=ft.Text(
+                                        f"{inv.customer_id or '-'} · "
+                                        f"{inv.amount_gross:.2f} {getattr(inv, 'currency', 'PLN')} · "
+                                        f"{getattr(inv, 'status', 'NEW')}",
+                                        size=12,
+                                        color=ft.colors.GREY_500,
+                                    ),
+                                    trailing=ft.Text(
+                                        inv.created_at.format("YYYY-MM-DD")
+                                        if hasattr(inv.created_at, "format")
+                                        else str(inv.created_at),
+                                        size=11,
+                                        color=ft.colors.GREY_600,
+                                    ),
+                                    on_click=lambda _, inv_id=inv.number: (
+                                        page.go(f"/invoices/{inv_id}")
+                                    ),
+                                    shape=ft.RoundedRectangleBorder(radius=8),
+                                    bgcolor=ft.colors.with_opacity(0.02, ft.colors.WHITE),
+                                ),
+                                padding=ft.padding.symmetric(horizontal=4, vertical=2),
+                                border_radius=8,
+                            )
+                            for inv in filtered
                         ],
-                        rows=rows,
+                        spacing=2,
                     ),
                     expand=True,
-                    scroll=ft.ScrollMode.ADAPTIVE,
                 ),
             ],
             scroll=ft.ScrollMode.ALWAYS,

@@ -13,21 +13,51 @@ from nexus_ai.core.version_utils import parse_version
 
 logger = get_logger("nexus.updater")
 
-CURRENT_VERSION = "1.0.0"
-REPO_URL = "https://api.github.com/repos/TwojLogin/NexusAccounting/releases/latest"
+# ── Dynamic version from pyproject.toml (v7.0 Rec #3: Krytyczne) ──────────
+try:
+    import tomllib
+    from pathlib import Path
+    _project_root = Path(__file__).resolve().parent.parent.parent
+    _pyproject = _project_root / "pyproject.toml"
+    if _pyproject.exists():
+        with open(_pyproject, "rb") as _f:
+            _data = tomllib.load(_f)
+            CURRENT_VERSION = _data.get("project", {}).get("version", "1.0.0")
+    else:
+        CURRENT_VERSION = "1.0.0"
+except Exception:
+    CURRENT_VERSION = "1.0.0"
+
+# ── GitHub API endpoint (v7.0 Rec #3: Krytyczne) ──────────────────────────
+REPO_URL = "https://api.github.com/repos/Gorski-Maciej/NexusAI/releases/latest"
 
 
 async def check_for_updates() -> dict:
-    """Sprawdza, czy na GitHubie jest nowsza wersja."""
+    """Sprawdza, czy na GitHubie jest nowsza wersja.
+
+    v7.0 Rec #3: Używa dynamicznego CURRENT_VERSION z pyproject.toml.
+    v7.0 Rec #3: Używa faktycznego REPO_URL zamiast placeholder.
+    """
     client = CachedHttpClient()
     try:
-        response = await client.get(REPO_URL)
+        response = await client.get(
+            REPO_URL,
+            headers={"Accept": "application/vnd.github.v3+json"},
+        )
         if response.status_code == 200:
             latest_release = response.json()
             latest_version = latest_release["tag_name"].replace("v", "")
 
             if parse_version(latest_version) > parse_version(CURRENT_VERSION):
-                download_url = latest_release["assets"][0]["browser_download_url"]
+                assets = latest_release.get("assets", [])
+                if not assets:
+                    logger.warning("[Updater] No assets in latest release")
+                    return {"update_available": False}
+                download_url = assets[0]["browser_download_url"]
+                logger.info(
+                    "[Updater] Update available: %s -> %s",
+                    CURRENT_VERSION, latest_version,
+                )
                 return {
                     "update_available": True,
                     "version": latest_version,

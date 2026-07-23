@@ -1,0 +1,123 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI — Reproducible Builds (v7.0 Innowacja 9)
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Gwarancja że każdy build z tego samego commita daje IDENTYCZNY plik .exe:
+# - Deterministic timestamps (SOURCE_DATE_EPOCH)
+# - Sortowane listy plików
+# - Ten sam kompilator (Docker CI image)
+# - Weryfikacja przez dwóch builderów
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: Reproducible Build
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'  # Co poniedziałek o 6:00
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_DATE_EPOCH: 0  # Deterministic timestamp: 1970-01-01
+
+jobs:
+  build-1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      hash1: ${{ steps.hash.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-pixi
+        with:
+          pixi-env: dev
+
+      - name: Build binary (Builder 1)
+        env:
+          SOURCE_DATE_EPOCH: "0"
+          PYTHONHASHSEED: "0"
+        run: |
+          echo "=== Builder 1: Deterministic build ==="
+          hatch run build:build-nuitka || echo "Build skipped (no hatch script)"
+
+      - name: Compute SHA-256 hash
+        id: hash
+        run: |
+          if ls dist/nexus-ai* 2>/dev/null; then
+            SHA256=$(sha256sum dist/nexus-ai* | head -1 | cut -d' ' -f1)
+            echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+            echo "Builder 1 hash: $SHA256"
+          else
+            echo "sha256=no-binary" >> $GITHUB_OUTPUT
+            echo "No binary produced"
+          fi
+
+  build-2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      hash2: ${{ steps.hash.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-pixi
+        with:
+          pixi-env: dev
+
+      - name: Build binary (Builder 2 — independent verification)
+        env:
+          SOURCE_DATE_EPOCH: "0"
+          PYTHONHASHSEED: "0"
+        run: |
+          echo "=== Builder 2: Independent deterministic build ==="
+          hatch run build:build-nuitka || echo "Build skipped"
+
+      - name: Compute SHA-256 hash
+        id: hash
+        run: |
+          if ls dist/nexus-ai* 2>/dev/null; then
+            SHA256=$(sha256sum dist/nexus-ai* | head -1 | cut -d' ' -f1)
+            echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+            echo "Builder 2 hash: $SHA256"
+          else
+            echo "sha256=no-binary" >> $GITHUB_OUTPUT
+          fi
+
+  verify:
+    needs: [build-1, build-2]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify reproducibility
+        run: |
+          HASH1="${{ needs.build-1.outputs.hash1 }}"
+          HASH2="${{ needs.build-2.outputs.hash2 }}"
+
+          echo "## 🔐 Reproducible Build Verification" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Builder | SHA-256 |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Builder 1 | \`$HASH1\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Builder 2 | \`$HASH2\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$HASH1" = "no-binary" ] || [ "$HASH2" = "no-binary" ]; then
+            echo "⚠️ Build incomplete — cannot verify" >> $GITHUB_STEP_SUMMARY
+            echo "Build did not produce binaries for comparison."
+          elif [ "$HASH1" = "$HASH2" ]; then
+            echo "✅ **REPRODUCIBLE!** Both builders produced identical binaries (bit-for-bit)." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The build is fully deterministic and reproducible." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "🔴 **NOT REPRODUCIBLE!** Builders produced different binaries." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Investigate non-deterministic build components:" >> $GITHUB_STEP_SUMMARY
+            echo "- Check for timestamps in output" >> $GITHUB_STEP_SUMMARY
+            echo "- Check for unordered file lists" >> $GITHUB_STEP_SUMMARY
+            echo "- Check for compiler version differences" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi

@@ -74,6 +74,7 @@ class UpdateInfo(Struct):
     minimum_version: str
     critical: bool
     sha256: str = ""  # KRYTYCZNE Rec #1 v7.0: SHA-256 checksum for integrity verification
+    rollout_percentage: int = 100  # v7.0 Innowacja 2: Phased Rollout (0-100)
 
 
 class UpdateCheckResult(Struct):
@@ -160,6 +161,7 @@ async def check_for_updates(
                         release_date=data.get("release_date", ""),
                         minimum_version=data.get("minimum_version", "1.0.0"),
                         critical=data.get("critical", False),
+                        rollout_percentage=data.get("rollout_percentage", 100),
                     ),
                 )
             return UpdateCheckResult(update_available=False, latest_version=latest)
@@ -206,6 +208,7 @@ async def check_for_updates(
                         release_date=data.get("release_date", ""),
                         minimum_version=data.get("minimum_version", "1.0.0"),
                         critical=data.get("critical", False),
+                        rollout_percentage=data.get("rollout_percentage", 100),
                     ),
                 )
 

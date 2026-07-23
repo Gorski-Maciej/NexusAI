@@ -35,6 +35,12 @@ SHORTCUT_ACTIONS = {
         "icon": ft.icons.FULLSCREEN,
         "label": "Pełny ekran",
     },
+    "command_palette": {
+        "ctrl": True,
+        "key": "K",
+        "icon": ft.icons.KEYBOARD_COMMAND_KEY,
+        "label": "Paleta komend",
+    },
 }
 
 SHORTCUT_FEEDBACK = {
@@ -48,6 +54,7 @@ SHORTCUT_FEEDBACK = {
     "shortcut_delete": "🗑️ Usuwanie...",
     "shortcut_print": "🖨️ Drukowanie...",
     "trigger_refresh": "🔄 Odświeżanie danych...",
+    "shortcut_command_palette": "⌨️ Paleta komend...",
 }
 
 
@@ -102,6 +109,10 @@ def init_keyboard_handler(page: ft.Page):
             case (_, _, "F11"):
                 page.window_full_screen = not page.window_full_screen
                 page.update()
+            # v7.0 Rec #5: Command Palette Ctrl+K
+            case (True, _, "K"):
+                page.pubsub.send_all_on_topic("shortcut_command_palette", True)
+                _show_feedback(page, "shortcut_command_palette")
 
     page.on_keyboard_event = on_keyboard
 

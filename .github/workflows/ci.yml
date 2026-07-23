@@ -755,6 +755,17 @@ jobs:
           CCACHE_DIR: ~/.cache/ccache
           CCACHE_MAXSIZE: 2G
 
+      # v7.0 Rec #10: UPX compression for Clang build
+      - name: UPX Compress (Clang binary)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq upx-ucl
+          for bin in dist/nexus-ai*; do
+            if [ -f "$bin" ] && file "$bin" | grep -q "ELF"; then
+              upx --best --lzma "$bin" || echo "UPX skipped"
+              ls -lh "$bin"
+            fi
+          done
+
       - name: Show ccache stats
         if: always()
         run: ccache --show-stats || echo "ccache stats unavailable"
@@ -895,6 +906,28 @@ jobs:
           NUITKA_CACHE_DIR: ~/.cache/nuitka
           CCACHE_DIR: ~/.cache/ccache
           CCACHE_MAXSIZE: 2G
+
+      # v7.0 Rec #10: UPX compression — 30-50% mniejszy plik .exe
+      # UPX kompresuje finalny binary (opcjonalnie, wyłączone dla debug buildów)
+      - name: UPX Compress (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq upx-ucl
+          for bin in dist/nexus-ai*; do
+            if [ -f "$bin" ] && file "$bin" | grep -q "ELF"; then
+              upx --best --lzma "$bin" || echo "UPX skipped for $bin"
+              ls -lh "$bin"
+            fi
+          done
+
+      - name: UPX Compress (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install upx -y --no-progress
+          Get-ChildItem dist/nexus-ai*.exe | ForEach-Object {
+            upx --best --lzma $_.FullName 2>$null
+            Write-Host "$($_.Name): $($_.Length) bytes"
+          }
 
       - name: Show ccache stats
         if: always()

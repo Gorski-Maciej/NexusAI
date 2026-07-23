@@ -55,22 +55,56 @@ except ImportError:
 # Fallback map when verdict doesn't specify ksef_fields explicitly.
 # Based on Polish KSeF GTU classification (GTU_01 .. GTU_13).
 
+# v7.0 KSeF/JPK UJEDNOLICENIE: Pełna mapa GTU zgodna z oficjalną klasyfikacją MF.
+# Poprzednia wersja miała rozbieżności z jpk_v7_autogen_enterprise.rego.
+# Źródło: Rozporządzenie MF z 22.12.2021 (Dz.U. 2021 poz. 2493) + nowelizacje.
 CATEGORY_GTU_MAP: dict[str, dict[str, Any]] = {
-    "FUEL": {"gtu_code": "GTU_12", "procedure": None},
-    "IT_OFFICE": {"gtu_code": "GTU_01", "procedure": None},
-    "FOOD": {"gtu_code": "GTU_07", "procedure": None},
+    # GTU_01 — alkohol, tytoń, książki, IT (dostawa)
+    "ALCOHOL": {"gtu_code": "GTU_01", "procedure": None},
+    "TOBACCO": {"gtu_code": "GTU_01", "procedure": None},
     "BOOKS": {"gtu_code": "GTU_01", "procedure": None},
+    "IT_OFFICE": {"gtu_code": "GTU_01", "procedure": None},
+    # GTU_02 — paliwa (benzyna, olej napędowy, LPG, CNG)
+    "FUEL": {"gtu_code": "GTU_02", "procedure": None},
+    # GTU_03 — oleje opałowe i smarowe, produkty farmaceutyczne
+    "OIL_LUBRICANTS": {"gtu_code": "GTU_03", "procedure": None},
+    "PHARMA": {"gtu_code": "GTU_03", "procedure": None},
+    # GTU_04 — odpady (elektroniczne, niebezpieczne, komunalne)
+    "WASTE": {"gtu_code": "GTU_04", "procedure": None},
+    "ELECTRONICS_WASTE": {"gtu_code": "GTU_04", "procedure": None},
+    # GTU_05 — odpady elektroniczne, metale (dostawa)
+    "METAL": {"gtu_code": "GTU_05", "procedure": None},
+    "STEEL": {"gtu_code": "GTU_05", "procedure": None},
+    # GTU_06 — pojazdy, reklama
+    "VEHICLES": {"gtu_code": "GTU_06", "procedure": None},
+    "ADVERTISING": {"gtu_code": "GTU_06", "procedure": None},
+    # GTU_07 — żywność, zboża, rośliny oleiste, warzywa, owoce
+    "FOOD": {"gtu_code": "GTU_07", "procedure": None},
+    "GRAIN": {"gtu_code": "GTU_07", "procedure": None},
+    # GTU_08 — budownictwo, produkty lecznicze, maszyny
+    "CONSTRUCTION": {"gtu_code": "GTU_08", "procedure": None},
+    "PHARMA_MEDICAL": {"gtu_code": "GTU_08", "procedure": None},
+    "MACHINERY": {"gtu_code": "GTU_08", "procedure": None},
+    # GTU_09 — nieruchomości, wynajem
+    "RENT": {"gtu_code": "GTU_09", "procedure": None},
+    "REAL_ESTATE": {"gtu_code": "GTU_09", "procedure": None},
+    # GTU_10 — elektronika (dostawa), maszyny i urządzenia
+    "ELECTRONICS": {"gtu_code": "GTU_10", "procedure": None},
+    "HARDWARE": {"gtu_code": "GTU_10", "procedure": None},
+    # GTU_11 — usługi doradcze, prawne, IT, konsulting
+    "CONSULTING": {"gtu_code": "GTU_11", "procedure": None},
+    "LEGAL": {"gtu_code": "GTU_11", "procedure": None},
+    "IT_SERVICES": {"gtu_code": "GTU_11", "procedure": None},
+    # GTU_12 — żelazo, stal, metale szlachetne, aluminium, miedź
+    "PRECIOUS_METALS": {"gtu_code": "GTU_12", "procedure": None},
+    "ALUMINIUM": {"gtu_code": "GTU_12", "procedure": None},
+    "COPPER": {"gtu_code": "GTU_12", "procedure": None},
+    # GTU_13 — usługi hazardowe
+    "GAMBLING": {"gtu_code": "GTU_13", "procedure": None},
+    # Kategorie bez GTU
     "EDUCATION": {"gtu_code": None, "procedure": None},
     "HEALTHCARE": {"gtu_code": None, "procedure": None},
-    "TRANSPORT": {"gtu_code": "GTU_02", "procedure": None},
-    "ADVERTISING": {"gtu_code": "GTU_06", "procedure": None},
-    "RENT": {"gtu_code": "GTU_09", "procedure": None},
-    "CONSTRUCTION": {"gtu_code": "GTU_08", "procedure": None},
-    "ELECTRONICS": {"gtu_code": "GTU_10", "procedure": None},
-    "PHARMA": {"gtu_code": "GTU_03", "procedure": None},
-    "WASTE": {"gtu_code": "GTU_04", "procedure": None},
-    "METAL": {"gtu_code": "GTU_05", "procedure": None},
-    "GAMBLING": {"gtu_code": "GTU_13", "procedure": None},
+    "TRANSPORT": {"gtu_code": None, "procedure": "SW"},
 }
 
 

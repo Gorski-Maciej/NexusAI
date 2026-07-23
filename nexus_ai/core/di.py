@@ -212,6 +212,10 @@ class AppServices:
                 return ModelManager(config=self.config)
             case "broker":
                 return broker
+            case "shared_http_client":
+                # v7.0 INTEGRACJE ZEWNĘTRZNE: Współdzielony klient HTTP (LUKA 12)
+                from nexus_ai.core.di_http import get_shared_http_client
+                return get_shared_http_client()
             case _:
                 raise KeyError(f"Unknown service: {name}")
 
@@ -241,7 +245,14 @@ class AppServices:
 
 
 def create_app_services(config: AppConfig | None = None) -> AppServices:
+    """v7.0: Tworzy AppServices z rejestracją MT940 parserów i shared HTTP."""
     cfg = config or AppConfig()
+    # v7.0: Zarejestruj parsery MT940/XML w ParserFactory
+    try:
+        from nexus_ai.services.mt940_parser import register_mt940_parsers
+        register_mt940_parsers()
+    except (ImportError, ModuleNotFoundError):
+        logger.warning("[DI] MT940 parsers not available — bank_import module missing dependencies")
     return AppServices(config=cfg)
 
 

@@ -27,11 +27,18 @@ class ThemeManager:
 
     @staticmethod
     def load_theme(page: ft.Page) -> ft.ThemeMode:
-        """Load saved theme preference from client_storage."""
+        """Load saved theme preference from client_storage.
+
+        v7.0 Rec #3: Prefers-color-scheme — systemowe wykrywanie.
+        Jeśli nie zapisano preferencji, używa ft.ThemeMode.SYSTEM.
+        """
         saved = page.client_storage.get("theme_mode")
         if saved == "light":
             return ft.ThemeMode.LIGHT
-        return ft.ThemeMode.DARK
+        if saved == "dark":
+            return ft.ThemeMode.DARK
+        # v7.0: Auto-detect system preference
+        return ft.ThemeMode.SYSTEM
 
     @staticmethod
     def save_theme(page: ft.Page, mode: ft.ThemeMode):
@@ -47,8 +54,10 @@ class ThemeManager:
           - ColorScheme seed dla dynamicznej palety
           - TextThemeStyle dla spójnej typografii
         """
+        # v7.0: Dynamiczny ColorSchemeSeed z jednego koloru (Material 3 eksperymentalne)
         return ft.Theme(
             use_material3=True,
+            color_scheme_seed=ft.colors.BLUE_ACCENT_400,
             color_scheme=ft.ColorScheme(
                 primary=ft.colors.BLUE_ACCENT_400,
                 on_primary=ft.colors.WHITE,
@@ -126,8 +135,10 @@ class ThemeManager:
     @staticmethod
     def get_light_theme() -> ft.Theme:
         """Clean light theme with Material 3 and scrollbar theme."""
+        # v7.0: Dynamiczny ColorSchemeSeed dla light theme
         return ft.Theme(
             use_material3=True,
+            color_scheme_seed=ft.colors.BLUE_700,
             color_scheme=ft.ColorScheme(
                 primary=ft.colors.BLUE_700,
                 on_primary=ft.colors.WHITE,
@@ -179,13 +190,18 @@ class ThemeManager:
         current = ThemeManager.load_theme(page)
         is_dark = current == ft.ThemeMode.DARK
 
+        modes = [ft.ThemeMode.DARK, ft.ThemeMode.LIGHT, ft.ThemeMode.SYSTEM]
+        labels = ["Ciemny", "Jasny", "Auto"]
+        icons_list = [ft.icons.DARK_MODE, ft.icons.LIGHT_MODE, ft.icons.BRIGHTNESS_AUTO]
+
         async def toggle_theme(e):
-            nonlocal is_dark
-            is_dark = not is_dark
-            new_mode = ft.ThemeMode.DARK if is_dark else ft.ThemeMode.LIGHT
+            nonlocal current_idx
+            current_idx = (current_idx + 1) % 3
+            new_mode = modes[current_idx]
             page.theme_mode = new_mode
             ThemeManager.save_theme(page, new_mode)
-            e.control.icon = ft.icons.DARK_MODE if is_dark else ft.icons.LIGHT_MODE
+            e.control.icon = icons_list[current_idx]
+            e.control.tooltip = f"Motyw: {labels[current_idx]} (kliknij by zmienić)"
 
             page.theme_animation_style = ft.ThemeAnimationStyle(
                 duration=400,
@@ -193,8 +209,10 @@ class ThemeManager:
             )
             page.update()
 
+        current_idx = 0 if current == ft.ThemeMode.DARK else (1 if current == ft.ThemeMode.LIGHT else 2)
+
         return ft.IconButton(
-            icon=ft.icons.DARK_MODE if is_dark else ft.icons.LIGHT_MODE,
-            tooltip="Zmień motyw (zapisuje się automatycznie w client_storage)",
+            icon=icons_list[current_idx],
+            tooltip=f"Motyw: {labels[current_idx]} (kliknij by zmienić)",
             on_click=toggle_theme,
         )

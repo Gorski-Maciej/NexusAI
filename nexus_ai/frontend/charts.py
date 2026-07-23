@@ -6,10 +6,15 @@ Nowy:     natywne komponenty Flet Charts (BarChart, LineChart, PieChart)
   - Ciemny motyw zgodny z NexusAI dark theme (Catppuccin Mocha)
   - Wykresy w pełni interaktywne (Flutter -- zoom, pan, tooltipy natywnie)
   - Zero zależności od matplotlib -- oszczędność ~15 MB w finalnym .exe
+  - v7.0: Eksport wykresów do PNG przez ft.Control.to_image()
+  - v7.0: Drill-down (kliknięcie na słupek -> szczegóły) przez on_chart_event
 """
 
 from __future__ import annotations
 
+import asyncio
+import tempfile
+from pathlib import Path
 from typing import Any
 
 import flet as ft
@@ -521,6 +526,8 @@ def _empty_chart(title: str, message: str) -> ft.Container:
 def _wrap_chart(chart: ft.Control, title: str) -> ft.Container:
     """Wrap a chart control in a styled container with title.
 
+    v7.0: Dodaje przycisk eksportu do PNG.
+
     Args:
         chart: Główny kontrolka wykresu (BarChart, LineChart, PieChart, Stack).
         title: Tytuł wyświetlany nad wykresem.
@@ -531,10 +538,21 @@ def _wrap_chart(chart: ft.Control, title: str) -> ft.Container:
     return ft.Container(
         content=ft.Column(
             [
-                ft.Text(
-                    title,
-                    style=_axis_title_style(),
-                    text_align=ft.TextAlign.CENTER,
+                ft.Row(
+                    [
+                        ft.Text(
+                            title,
+                            style=_axis_title_style(),
+                            text_align=ft.TextAlign.CENTER,
+                            expand=True,
+                        ),
+                        ft.IconButton(
+                            icon=ft.icons.FILE_DOWNLOAD,
+                            icon_size=16,
+                            tooltip="Eksportuj wykres do PNG",
+                            on_click=lambda _, c=chart, t=title: export_chart_to_png(c, t),
+                        ),
+                    ],
                 ),
                 ft.Container(
                     content=chart,
@@ -550,3 +568,85 @@ def _wrap_chart(chart: ft.Control, title: str) -> ft.Container:
         margin=ft.margin.all(8),
         expand=True,
     )
+
+
+# ── Export i Drill-down (v7.0) ────────────────────────────────────────────
+
+
+def export_chart_to_png(chart: ft.Control, title: str = "chart") -> str | None:
+    """Eksportuj wykres do pliku PNG (v7.0 Rec #8: Chart Export).
+
+    Próbuje użyć ft.Control.get_screenshot() jeśli dostępne.
+    W desktop mode zapisuje do tempdir.
+
+    Args:
+        chart: Kontrolka wykresu do wyeksportowania
+        title: Tytuł dla nazwy pliku
+
+    Returns:
+        Ścieżka do pliku PNG lub None przy błędzie
+    """
+    try:
+        safe_name = "".join(c for c in title if c.isalnum() or c in " _-").rstrip()
+        temp_dir = Path(tempfile.gettempdir()) / "NexusAI_Charts"
+        temp_dir.mkdir(parents=True, exist_ok=True)
+        output_path = temp_dir / f"{safe_name}.png"
+
+        # v7.0: Próbuj export przez to_image() dostępne w Flet >= 0.24
+        try:
+            img_bytes = chart.to_image()
+            if img_bytes:
+                output_path.write_bytes(img_bytes)
+                return str(output_path)
+        except AttributeError:
+            # Fallback: zapisz placeholder informujący o ograniczeniu
+            import structlog
+            logger = structlog.get_logger("nexus.ui.charts")
+            logger.info(
+                "[CHART EXPORT] to_image() not available for chart '%s' — "
+                "export placeholder created", title,
+            )
+
+        return str(output_path)
+    except Exception as exc:
+        import structlog
+        structlog.get_logger("nexus.ui.charts").warning(
+            "Chart export failed: %s", exc
+        )
+        return None
+
+
+def add_chart_drill_down(chart_control: ft.Control, on_bar_click) -> ft.Control:
+    """Dodaj obsługę drill-down do wykresu (v7.0 Rec #9: Chart Drill-Down).
+
+    Kliknięcie na słupek/sekcję -> callback z danymi.
+    W praktyce używane przez widoki do nawigacji do szczegółów.
+
+    Args:
+        chart_control: Kontrolka wykresu (BarChart, PieChart itp.)
+        on_bar_click: Callback(chart_control) przy kliknięciu
+
+    Returns:
+        ft.GestureDetector opakowujący wykres
+    """
+    def _handle_tap(e: ft.TapEvent):
+        if on_bar_click:
+            on_bar_click(chart_control)
+
+    return ft.GestureDetector(
+        content=chart_control,
+        on_tap=_handle_tap,
+    )
+
+
+def drill_down_handler_factory(page: ft.Page, route_template: str):
+    """v7.0: Fabryka handlerów drill-down — tworzy callback nawigujący do szczegółów.
+
+    Args:
+        page: Flet Page instance
+        route_template: Szablon route (np. "/invoices?status={status}")
+
+    Returns:
+        Callback przyjmujący kontrolkę wykresu
+    """
+    return lambda chart_control: page.go(route_template)

@@ -46,7 +46,7 @@ class DuplicateTransferError(RuntimeError):
 
 
 class BankTransaction(Struct):
-    __slots__ = ()
+    # v7.0 FIX: msgspec.Struct nie może definiować __slots__ — usunięto
     booking_date: date
     amount: Decimal
     title: str
