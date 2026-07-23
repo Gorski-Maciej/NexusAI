@@ -14,7 +14,7 @@ Oszczednosc: 2-4 godziny miesiecznie.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import Any

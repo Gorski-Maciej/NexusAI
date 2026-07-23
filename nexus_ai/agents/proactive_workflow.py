@@ -1675,11 +1675,43 @@ class ProactiveWorkflowScheduler:
         return {"status": "dispatched"}
 
     async def _handle_tax_calendar(self) -> dict[str, Any]:
-        """Kalendarz podatkowy — alerty miesięczne.
+        """Kalendarz podatkowy — alerty miesięczne + eksport iCal.
 
         Wysyłane 10., 20., 25. dnia miesiąca.
+        v7.0.1: Generuje plik .ics (iCalendar) do importu w Google/Outlook/Apple.
         """
         now = pendulum.now("UTC")
+
+        # ── Generuj deadline'y na najbliższe 30 dni ──
+        deadlines = [
+            ("ZUS — składki", 10),
+            ("ZUS DRA — deklaracja", 15),
+            ("PIT/CIT — zaliczka", 20),
+            ("VAT + JPK_V7", 25),
+        ]
+
+        calendar_entries = []
+        for name, day in deadlines:
+            deadline = pendulum.datetime(now.year, now.month, day)
+            if deadline < now:
+                deadline = deadline.add(months=1)
+            days_left = (deadline - now).days
+            calendar_entries.append({
+                "name": name,
+                "deadline": deadline.to_date_string(),
+                "days_left": days_left,
+                "urgency": "critical" if days_left <= 3 else "high" if days_left <= 7 else "normal",
+            })
+
+        # ── Generuj iCal (.ics) do importu w kalendarzu ──
+        ics_content = ""
+        try:
+            from nexus_ai.services.ical_exporter import generate_tax_calendar_ics
+            ics_content = generate_tax_calendar_ics(calendar_entries)
+        except ImportError:
+            self._logger.debug("[TAX-CAL] iCal exporter not available")
+
+        # ── Publikuj alert przez NATS ──
         ctx = make_context(
             task_id=f"tax-calendar-{uuid.uuid4().hex[:8]}",
             source="proactive-scheduler",
@@ -1691,6 +1723,8 @@ class ProactiveWorkflowScheduler:
             {
                 "calendar_day": now.day,
                 "month": now.format("YYYY-MM"),
+                "entries": calendar_entries,
+                "ics_calendar": ics_content[:5000] if ics_content else "",
                 "upcoming": [
                     {"type": "ZUS", "days": "10-15"},
                     {"type": "PIT_CIT", "days": "20"},
@@ -1700,7 +1734,12 @@ class ProactiveWorkflowScheduler:
             ctx,
         )
 
-        return {"status": "dispatched"}
+        return {
+            "status": "dispatched",
+            "entries_count": len(calendar_entries),
+            "next_deadline": calendar_entries[0]["name"] if calendar_entries else None,
+            "ics_generated": len(ics_content) > 0,
+        }
 
     async def _handle_month_end_closing(self) -> dict[str, Any]:
         """Zamknięcie miesiąca — ostatnie dni."""

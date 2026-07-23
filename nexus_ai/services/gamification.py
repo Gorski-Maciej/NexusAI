@@ -38,11 +38,15 @@ class PlayerLevel(Enum):
     EXPERT = (4, "Ekspert", 2000, "🥇")
     MASTER = (5, "Mistrz Optymalizacji", 5000, "👑")
 
-    def __init__(self, level: int, name: str, xp_required: int, icon: str):
-        self.level = level
-        self.name = name
+    def __init__(self, level: int, display_name: str, xp_required: int, icon: str):
+        self._level = level
+        self.display_name = display_name
         self.xp_required = xp_required
         self.icon = icon
+
+    @property
+    def level(self) -> int:
+        return self._level
 
 
 class AchievementType(Enum):
@@ -293,13 +297,13 @@ class GamificationEngine:
                 break
 
         lines = [
-            f"{level.icon} {level.name} (Poziom {level.level})",
+            f"{level.icon} {level.display_name} (Poziom {level.level})",
             f"XP: {self._stats.xp}",
         ]
 
         if next_level:
             xp_needed = next_level.xp_required - self._stats.xp
-            lines.append(f"Do {next_level.icon} {next_level.name}: jeszcze {xp_needed} XP")
+            lines.append(f"Do {next_level.icon} {next_level.display_name}: jeszcze {xp_needed} XP")
 
         lines.extend([
             f"",
@@ -337,3 +341,51 @@ class GamificationEngine:
             a for a in ACHIEVEMENTS
             if a.id not in self._unlocked_achievements and not a.secret
         ]
+
+    def generate_dashboard_widget(self) -> dict[str, Any]:
+        """Wygeneruj widget gamifikacji dla dashboardu (v7.0.1).
+
+        Zwraca dane gotowe do renderowania w Flet UI:
+        - Poziom + XP + progress bar
+        - Ostatnie odznaki
+        - Tygodniowe wyzwanie
+        - Streak logowania
+        """
+        level = self.get_level_info(self._stats.xp)
+        next_level = None
+        next_xp = 0
+        for l in sorted(PlayerLevel, key=lambda l: l.xp_required):
+            if l.xp_required > self._stats.xp:
+                next_level = l
+                next_xp = l.xp_required
+                break
+
+        progress = 0.0
+        if next_level and next_xp > 0:
+            current_base = level.xp_required
+            progress = (self._stats.xp - current_base) / (next_xp - current_base) if next_xp > current_base else 1.0
+            progress = max(0.0, min(1.0, progress))
+
+        return {
+            "level": level.level,
+            "level_name": level.display_name,
+            "level_icon": level.icon,
+            "xp": self._stats.xp,
+            "next_level_name": next_level.display_name if next_level else "MAX",
+            "next_level_icon": next_level.icon if next_level else "🏆",
+            "next_level_xp": next_xp,
+            "progress": progress,
+            "total_invoices": self._stats.total_invoices,
+            "auto_post_count": self._stats.auto_post_count,
+            "zero_error_streak": self._stats.zero_error_streak,
+            "yearly_savings": self._stats.yearly_savings,
+            "login_streak": self._stats.login_streak,
+            "percentile": self._stats.percentile,
+            "weekly_challenge": self.get_weekly_challenge(),
+            "recent_achievements": [
+                {"icon": a.icon, "name": a.name}
+                for a in self.get_unlocked_achievements()[-3:]
+            ],
+            "total_achievements": len(self._unlocked_achievements),
+            "total_achievements_max": len(ACHIEVEMENTS) - sum(1 for a in ACHIEVEMENTS if a.secret),
+        }

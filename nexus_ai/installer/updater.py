@@ -258,24 +258,37 @@ def compute_file_sha256(filepath: Path) -> str:
 
 
 def verify_installer_sha256(filepath: Path, expected_hash: str) -> bool:
-    """Verify installer file SHA-256 checksum.
+    """Verify installer file SHA-256 checksum — HARD BLOCK (v7.0.1 Rec #1).
 
-    Returns True if match or no expected hash provided.
-    Returns False on mismatch — installer MUST be discarded.
+    Enterprise v7.0.1: SHA-256 verification is MANDATORY.
+    If no hash provided or mismatch → installer is DISCARDED.
+    This is a CRITICAL security control against MITM attacks.
+
+    Returns True ONLY if hash matches.
+    Raises ValueError if hash is missing (config error).
     """
     if not expected_hash:
-        logger.warning("No SHA-256 hash provided for update — skipping verification (NOT RECOMMENDED)")
-        return True
+        logger.critical(
+            "SHA-256 HASH MISSING for update! This is a CONFIGURATION ERROR. "
+            "The update server MUST provide a sha256 field in version.json. "
+            "Update BLOCKED for security."
+        )
+        raise ValueError(
+            "SHA-256 hash is REQUIRED for OTA updates. "
+            "Add 'sha256' field to version.json on the update server."
+        )
     if not filepath.exists():
+        logger.error("Installer file not found: %s", filepath)
         return False
     actual = compute_file_sha256(filepath)
     if actual != expected_hash:
-        logger.error(
-            "SHA-256 MISMATCH for installer! Expected=%s, Got=%s — DISCARDING",
+        logger.critical(
+            "SHA-256 MISMATCH! Expected=%s, Got=%s — DISCARDING installer. "
+            "Possible MITM attack or corrupted download.",
             expected_hash[:16], actual[:16],
         )
         return False
-    logger.info("SHA-256 verification PASSED: %s", expected_hash[:16])
+    logger.info("SHA-256 HARD VERIFICATION PASSED: %s", expected_hash[:16])
     return True
 
 

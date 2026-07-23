@@ -783,7 +783,7 @@ jobs:
   # Dla MVP v1.0: użyj lokalnego signtool.exe z certyfikatem PFX.
   sign-windows:
     needs: [build-nuitka]
-    if: startsWith(github.ref, 'refs/tags/v') && false  # Odkomentuj po uzyskaniu certyfikatu
+    if: startsWith(github.ref, 'refs/tags/v')  # AKTYWOWANE v7.0.1 — Authenticode Rec #2
     runs-on: windows-latest
     timeout-minutes: 15
     permissions:

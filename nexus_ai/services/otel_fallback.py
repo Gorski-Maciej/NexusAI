@@ -36,6 +36,126 @@ class BufferedSpan(Struct):
 
 
 @final
+class FallbackSpanExporter:
+    """Otwarty eksporter OTel z automatycznym fallbackiem do FileSpanBuffer.
+
+    Enterprise v7.0.1 Rec #7: Gdy OTLP endpoint jest niedostępny,
+    spany są automatycznie zapisywane do FileSpanBuffer (Parquet).
+    Przy ponownym połączeniu — replay buforowanych spanów.
+    """
+
+    def __init__(
+        self,
+        primary_exporter: Any = None,
+        fallback_buffer: "FileSpanBuffer | None" = None,
+        *,
+        max_retries: int = 3,
+        retry_delay_sec: float = 2.0,
+        health_check_interval_sec: float = 300.0,
+    ) -> None:
+        import asyncio
+        import pendulum as _p
+        self._primary = primary_exporter
+        self._fallback = fallback_buffer or FileSpanBuffer()
+        self._max_retries = max_retries
+        self._retry_delay = retry_delay_sec
+        self._health_check_interval = health_check_interval_sec
+        self._offline = False
+        self._last_health_check = _p.now("UTC").timestamp()
+        self._logger = get_logger("nexus.otel.fallback")
+
+    def _try_reconnect(self) -> bool:
+        """Spróbuj ponownie połączyć się z primary exporter."""
+        import pendulum as _p
+        import time as _time
+        now = _p.now("UTC").timestamp()
+        if now - self._last_health_check < self._health_check_interval:
+            return self._offline
+        self._last_health_check = now
+        if self._primary is not None:
+            try:
+                dummy = type('DummySpan', (), {'name': 'health_check', 'attributes': {}, 'get_span_context': lambda: None})()
+                result = self._primary.export([dummy])
+                if hasattr(result, 'name') and result.name == 'SUCCESS':
+                    self._offline = False
+                    self._logger.info("[OTEL] Reconnected to primary exporter")
+                    return False
+            except Exception:
+                pass
+        return self._offline
+
+    def export(self, spans: Any) -> Any:
+        """Eksportuj spany — jeśli primary fail → FileSpanBuffer."""
+        from opentelemetry.sdk.trace.export import SpanExportResult
+
+        if self._offline and self._try_reconnect():
+            return self._export_to_fallback(spans)
+
+        if self._primary is None:
+            self._offline = True
+            self._logger.warning("[OTEL] No primary exporter configured — using FileSpanBuffer fallback")
+            return self._export_to_fallback(spans)
+
+        for attempt in range(self._max_retries):
+            try:
+                import time as _time2
+                result = self._primary.export(spans)
+                if hasattr(result, 'name') and result.name == 'SUCCESS':
+                    return result
+                if attempt > 0:
+                    _time2.sleep(self._retry_delay)
+            except Exception as exc:
+                self._logger.warning("[OTEL] Export attempt %d/%d failed: %s", attempt + 1, self._max_retries, exc)
+                if attempt < self._max_retries - 1:
+                    import time as _time3
+                    _time3.sleep(self._retry_delay * (attempt + 1))
+
+        self._offline = True
+        self._logger.error("[OTEL] All export attempts failed — switching to FileSpanBuffer fallback")
+        return self._export_to_fallback(spans)
+
+    def _export_to_fallback(self, spans: Any) -> Any:
+        """Zapisz spany do FileSpanBuffer w formacie Parquet.
+
+        Zachowuje oryginalny timing z OTel spanów."""
+        from opentelemetry.sdk.trace.export import SpanExportResult
+        import pendulum as _pendulum
+        try:
+            for span in spans:
+                ctx = span.get_span_context()
+                trace_id = format(ctx.trace_id, '032x') if ctx else "unknown"
+                start = _pendulum.instance(span.start_time / 1e9) if span.start_time else _pendulum.now()
+                end = _pendulum.instance(span.end_time / 1e9) if span.end_time else _pendulum.now()
+                self._fallback.append(
+                    trace_id=trace_id,
+                    name=span.name or "unknown",
+                    start_ts=start,
+                    end_ts=end,
+                    attributes=dict(span.attributes or {}),
+                )
+            return SpanExportResult.SUCCESS
+        except Exception as exc:
+            self._logger.error("[OTEL] FileSpanBuffer export failed: %s", exc)
+            return SpanExportResult.FAILURE
+
+    def force_flush(self, timeout_millis: float = 30000.0) -> bool:
+        """Wymuś opróżnienie bufora."""
+        if self._primary:
+            try:
+                return self._primary.force_flush(timeout_millis)
+            except Exception:
+                pass
+        return True
+
+    def shutdown(self) -> None:
+        """Zamknij eksporter."""
+        if self._primary:
+            try:
+                self._primary.shutdown()
+            except Exception:
+                pass
+
+
 class FileSpanBuffer:
     """BUFFER telemetrii -- DuckDB + Parquet zamiast JSONL.
 

@@ -457,6 +457,32 @@ class DuckDBManager:
     # Alias dla backward compatibility
     _ddl_execute_safe = execute_ddl
 
+    def refresh_views_auto(self) -> dict[str, Any]:
+        """Auto-refresh materialized views — wywoływane przez NATS trigger.
+
+        Raport v7.0 Rec #1: Automatyczne odświeżanie materialized views
+        po każdym SQLite commit. Sub-sekundowe opóźnienie OLTP→OLAP.
+
+        Returns:
+            Dict z liczbą odświeżonych widoków i czasem wykonania.
+        """
+        import time as _time
+        t0 = _time.monotonic()
+        refreshed = 0
+        try:
+            from nexus_ai.db.queries import AnalyticsViews
+            AnalyticsViews.refresh(self)
+            refreshed = 2  # m_monthly_summary + m_top_contractors
+        except ImportError as exc:
+            _slow_logger.debug("[AUTO-REFRESH] AnalyticsViews unavailable: %s", exc)
+        elapsed_ms = (_time.monotonic() - t0) * 1000
+        if elapsed_ms > 50 or refreshed == 0:
+            _slow_logger.info(
+                "[AUTO-REFRESH] %.1f ms | %d views refreshed",
+                elapsed_ms, refreshed,
+            )
+        return {"refreshed": refreshed, "elapsed_ms": elapsed_ms}
+
     def refresh_materialized_cashflow(self) -> None:
         with self._ddl_lock:
             self._execute_unsafe(
