@@ -12,6 +12,7 @@ Enterprise v7.0.1:
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -165,20 +166,27 @@ class StreamingSQLEngine:
 
         try:
             if self._duckdb:
-                # Wstaw dane z bufora do DuckDB jako tymczasową tabelę
                 import polars as pl
 
                 df = pl.DataFrame(buffer)
                 arrow_table = df.to_arrow()
 
-                self._duckdb.get_connection_for_query().execute(
-                    "CREATE OR REPLACE TEMP TABLE _stream_buffer AS SELECT * FROM arrow_table"
-                )
+                conn = self._duckdb.get_connection_for_query()
+                try:
+                    conn.execute(
+                        "CREATE OR REPLACE TEMP TABLE _stream_buffer AS SELECT * FROM arrow_table"
+                    )
 
-                # Wykonaj zapytanie SQL na strumieniu
-                result_rows = self._duckdb.execute(
-                    query.sql_template.replace("FROM stream", "FROM _stream_buffer")
-                )
+                    safe_sql = re.sub(
+                        r'\bFROM\s+stream\b',
+                        'FROM _stream_buffer',
+                        query.sql_template,
+                        flags=re.IGNORECASE,
+                    )
+                    # Query must run on SAME connection (temp tables are connection-scoped)
+                    result_rows = conn.execute(safe_sql).fetchall()
+                finally:
+                    conn.close()
 
                 if result_rows:
                     result_value = float(result_rows[0][0])

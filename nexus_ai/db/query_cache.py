@@ -15,7 +15,6 @@ Enterprise v7.0.1:
 """
 from __future__ import annotations
 
-import hashlib
 import re
 import threading
 import time
@@ -60,10 +59,6 @@ def sql_fingerprint(query: str) -> str:
     return normalized
 
 
-def sql_fingerprint_hash(query: str) -> str:
-    """Generuj hash SHA-256 odcisku palca zapytania."""
-    fp = sql_fingerprint(query)
-    return hashlib.sha256(fp.encode()).hexdigest()[:16]
 
 
 # ── Cache Entry ────────────────────────────────────────────────────────────
