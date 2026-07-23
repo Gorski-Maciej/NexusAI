@@ -39,7 +39,7 @@ class DuckDBManager:
     Dla operacji DDL/DML używane jest per-thread połączenie z blokadą
     ``_ddl_lock``, aby uniknąć konfliktów DDL między wątkami.
     """
-    __slots__ = ('_close_lock', '_closed', '_db_path', '_ddl_lock', '_limits', '_local', '_read_only', '_slow_query_threshold_ms', '_sqlite_path')
+    __slots__ = ('_close_lock', '_closed', '_db_path', '_ddl_lock', '_limits', '_local', '_query_cache', '_read_only', '_slow_query_threshold_ms', '_sqlite_path')
 
     def __init__(
         self,
@@ -65,6 +65,8 @@ class DuckDBManager:
         self._closed = False
         # Profiler: logowanie wolnych zapytań (>100ms)
         self._slow_query_threshold_ms = 100.0
+        # Query Plan Cache — integracja v7.0.2
+        self._query_cache: Any = None  # lazy-init przez get_query_cache()
 
     def _create_connection(self) -> duckdb.DuckDBPyConnection:
         """Tworzy nowe, skonfigurowane połączenie DuckDB i rejestruje w globalnym registry.
@@ -153,12 +155,8 @@ class DuckDBManager:
         Wykonuje zapytanie. Dla zapytań SELECT tworzy nowe połączenie,
         co zapobiega blokowaniu między współbieżnymi zapytaniami.
 
-        - Profilowanie: loguje wolne zapytania (>100ms) z EXPLAIN ANALYZE
-        - Prepared statements: cache'uje często używane zapytania SELECT
-        - Arrow fetch: używa fetch_arrow_table() gdy wynik jest duży (>1000 rows)
-          (przez execute_arrow() -- szybszy transfer do Polars)
-
-        Dla DDL/INSERT/UPDATE używa per-thread połączenia z blokadą DDL.
+        v7.0.2: Query Plan Cache — automatycznie cache'uje wyniki SELECT
+        przez fingerprint matching. Redukuje round-trip do DuckDB.
         """
         import time
 
@@ -166,19 +164,34 @@ class DuckDBManager:
         t0 = time.monotonic()
 
         try:
+            # ── Query Plan Cache: spróbuj cache dla SELECT ──
+            if is_read_only_query and parameters is None:
+                try:
+                    from nexus_ai.db.query_cache import get_query_cache
+                    if self._query_cache is None:
+                        self._query_cache = get_query_cache()
+                    cached = self._query_cache.get(query)
+                    if cached is not None:
+                        _slow_logger.debug("[CACHE HIT] %s", query[:80])
+                        return cached.plan
+                except ImportError:
+                    pass
+
             if is_read_only_query:
-                # Krótkożyciowe połączenie dla zapytań SELECT
                 conn = self.get_connection_for_query()
                 try:
                     if parameters:
                         result = conn.execute(query, parameters).fetchall()
                     else:
                         result = conn.execute(query).fetchall()
+                    # ── Cache result for future use ──
+                    if parameters is None and self._query_cache is not None:
+                        elapsed = (time.monotonic() - t0) * 1000
+                        self._query_cache.put(query, result, elapsed)
                     return result
                 finally:
                     conn.close()
             else:
-                # DDL/DML przez per-thread połączenie z blokadą DDL
                 with self._ddl_lock:
                     conn = self.connect()
                     if parameters:
@@ -187,10 +200,7 @@ class DuckDBManager:
         finally:
             elapsed_ms = (time.monotonic() - t0) * 1000
             if elapsed_ms > self._slow_query_threshold_ms:
-                import logging
-
-                logger = logging.getLogger("nexus.duckdb.profiler")
-                logger.warning(
+                _slow_logger.warning(
                     "[SLOW QUERY] %.1f ms -- %s...",
                     elapsed_ms,
                     query[:120],
