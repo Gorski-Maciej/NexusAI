@@ -60,34 +60,84 @@ decide := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# P52: vat_rate_fuel_pl — Paliwo → 23% + GTU_04
+# v7.0 FIX: P58/P59 moved BEFORE stawki — zwolnienie podmiotowe sprawdzane jako pierwsze
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P51: vat_exemption_subject_jdg — Zwolnienie podmiotowe JDG (200k limit) ★★★ PO PIERWSZE
+# v7.0 FIX: Przesunięte PRZED stawkami (P52+). JDG zwolniona podmiotowo nie może
+# dostać stawki VAT przed sprawdzeniem zwolnienia!
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
-    "matched": true, "rule_id": "jdg.vat.substantive.fuel_pl",
-    "package": "jdg.vat.substantive", "priority": 52,
-    "vat_rate": "0.23", "rounding_level": "position",
-    "gtu_code": "GTU_04", "procedure": "",
-    "vat_exemption": "", "pit_form": "", "pit_rate": "",
+    "matched": true, "rule_id": "jdg.vat.substantive.subject_exemption_jdg",
+    "package": "jdg.vat.substantive", "priority": 50,
+    "vat_rate": "0.00", "rounding_level": "total",
+    "gtu_code": "", "procedure": "",
+    "vat_exemption": "SUBJECT", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "",
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 41 ust. 1 VAT",
-    "_warnings": []
+    "_legal_basis": "Art. 113 ust. 1 i 9 VAT",
+    "_warnings": ["Zwolnienie podmiotowe VAT — limit 200 000 PLN rocznie"]
 } {
-    input.invoice.category_code == "FUEL"
-    input.vendor.country == "PL"
+    input.jdg_entrepreneur.is_vat_payer == false
+    input.jdg_entrepreneur.annual_turnover_net < 200000
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# P53: vat_rate_food_pl — Żywność → 5% + GTU_07
+# P51b: subject_exemption_startup_proportion — Proporcja dla nowych JDG
+# v7.0 FIX: Przesunięte PRZED stawkami
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
-    "matched": true, "rule_id": "jdg.vat.substantive.food_pl",
-    "package": "jdg.vat.substantive", "priority": 53,
-    "vat_rate": "0.05", "rounding_level": "position",
-    "gtu_code": "GTU_07", "procedure": "",
+    "matched": true, "rule_id": "jdg.vat.substantive.startup_proportion",
+    "package": "jdg.vat.substantive", "priority": 50,
+    "vat_rate": "0.00", "rounding_level": "total",
+    "gtu_code": "", "procedure": "",
+    "vat_exemption": "SUBJECT", "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 113 ust. 9 VAT",
+    "_warnings": ["Nowa JDG — limit zwolnienia proporcjonalny do okresu prowadzenia działalności"]
+} {
+    input.jdg_entrepreneur.is_vat_payer == false
+    input.jdg_entrepreneur.ceidg_entry_date != null
+    input.jdg_entrepreneur.annual_turnover_net < 200000
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P51c: vat_not_subject_np — NP (not subject) — Transakcje spoza zakresu VAT ★★★ NOWA REGUŁA v7.0
+# v7.0: Dodana reguła dla transakcji niepodlegających VAT (np. sprzedaż przedsiębiorstwa,
+# aport, zbycie zorganizowanej części, odszkodowania, kary umowne)
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.not_subject_np",
+    "package": "jdg.vat.substantive", "priority": 51,
+    "vat_rate": "NP", "rounding_level": "total",
+    "gtu_code": "", "procedure": "NP",
+    "vat_exemption": "NP", "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 5-6 VAT (transakcje poza zakresem VAT)",
+    "_warnings": ["NP — transakcja nie podlega VAT (spoza zakresu ustawy)"]
+} {
+    input.invoice.procedure == "NP"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P52: vat_rate_fuel_pl — Paliwo → 23% + GTU_02 (v7.0 FIX)
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.fuel_pl",
+    "package": "jdg.vat.substantive", "priority": 52,
+    "vat_rate": "0.23", "rounding_level": "position",
+    "gtu_code": "GTU_02", "procedure": "",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -183,49 +233,6 @@ else := {
 } {
     input.invoice.category_code in {"FINANCIAL", "INSURANCE", "BANKING", "LOAN"}
     input.vendor.country == "PL"
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# P58: vat_exemption_subject_jdg — Zwolnienie podmiotowe JDG (200k limit)
-# ═══════════════════════════════════════════════════════════════════════════════
-else := {
-    "matched": true, "rule_id": "jdg.vat.substantive.subject_exemption_jdg",
-    "package": "jdg.vat.substantive", "priority": 58,
-    "vat_rate": "0.00", "rounding_level": "total",
-    "gtu_code": "", "procedure": "",
-    "vat_exemption": "SUBJECT", "pit_form": "", "pit_rate": "",
-    "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 113 ust. 1 i 9 VAT",
-    "_warnings": ["Zwolnienie podmiotowe VAT — limit 200 000 PLN rocznie"]
-} {
-    input.jdg_entrepreneur.is_vat_payer == false
-    input.jdg_entrepreneur.annual_turnover_net < 200000
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# P59: subject_exemption_startup_proportion — Proporcja dla nowych JDG
-# ═══════════════════════════════════════════════════════════════════════════════
-else := {
-    "matched": true, "rule_id": "jdg.vat.substantive.startup_proportion",
-    "package": "jdg.vat.substantive", "priority": 59,
-    "vat_rate": "0.00", "rounding_level": "total",
-    "gtu_code": "", "procedure": "",
-    "vat_exemption": "SUBJECT", "pit_form": "", "pit_rate": "",
-    "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 113 ust. 9 VAT",
-    "_warnings": ["Nowa JDG — limit zwolnienia proporcjonalny do okresu prowadzenia działalności"]
-} {
-    input.jdg_entrepreneur.is_vat_payer == false
-    input.jdg_entrepreneur.ceidg_entry_date != null
-    input.jdg_entrepreneur.annual_turnover_net < 200000
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -393,9 +400,9 @@ else := {
 gtu_map := {
     "ALCOHOL": "GTU_01",
     "BEVERAGES_ALCOHOLIC": "GTU_01",
-    "TOBACCO": "GTU_02",
-    "FUEL": "GTU_04",
-    "FUEL_HEATING": "GTU_04",
+    "TOBACCO": "GTU_04",
+    "FUEL": "GTU_02",
+    "FUEL_HEATING": "GTU_02",
     "OIL_LUBRICANTS": "GTU_05",
     "MEDICAL_PRODUCTS": "GTU_06",
     "WASTE": "GTU_07",
@@ -717,7 +724,7 @@ else := {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
     amount_gross > 15000
-    input.invoice.category_code in {"STEEL", "FUEL", "ELECTRONICS", "CONSTRUCTION", "COAL"}
+    helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
     category := input.invoice.category_code
 }
 
@@ -757,13 +764,17 @@ else := {
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Brak MPP przy obowiązku — sankcje: 30% VAT, NKUP PIT/CIT, solidarna odpowiedzialność",
     "_legal_basis": "Art. 108a ust. 5-7 VAT",
-    "_warnings": ["SANKCJA MPP: brak split payment przy obowiązku! Konsekwencje: (1) 30% dodatkowego zobowiązania VAT, (2) NKUP w PIT/CIT od netto, (3) solidarna odpowiedzialność za VAT dostawcy."]
+    "sanction_amount_30pct": sanction_amount,
+    "_warnings": [sprintf("SANKCJA MPP: brak split payment przy obowiązku! Konsekwencje: (1) 30%% dodatkowego zobowiązania VAT = %.2f PLN, (2) NKUP w PIT/CIT od netto = %.2f PLN, (3) solidarna odpowiedzialność za VAT dostawcy. KROKI NAPRAWCZE: (a) wykonaj przelew MPP (netto+VAT osobno), (b) wystaw korektę faktury z MPP, (c) złóż czynny żal.", [sanction_amount, amount_net])]
 } {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
     amount_gross > 15000
-    input.invoice.category_code in {"STEEL", "FUEL", "ELECTRONICS", "CONSTRUCTION", "COAL"}
+    helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
     input.invoice.split_payment_used == false
+    amount_net := object.get(input.invoice, "amount_net", 0)
+    vat_amount := amount_gross - amount_net
+    sanction_amount := vat_amount * 0.30
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -921,6 +932,36 @@ else := {
 } {
     input.jdg_entrepreneur.is_vat_payer == false
     input.jdg_entrepreneur.annual_turnover_net > 200000
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P103: vat_solidarity_liability — Solidarna odpowiedzialność nabywcy (Art. 105a-105c VAT) ★★★ NOWA REGUŁA v7.0
+# v7.0: BLOCK_AND_ALERT jeśli kwota >15 000 PLN + kategoria z Załącznika 15 +
+# split_payment_used==false. JEDYNYM bezpiecznym wyjściem jest MPP.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.solidarity_liability_block",
+    "package": "jdg.vat.substantive", "priority": 103,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "SOLIDARITY_LIABILITY",
+    "vat_exemption": "", "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "none", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "solidarity_liability_risk": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Ryzyko solidarnej odpowiedzialności za VAT dostawcy (Art. 105a-105c VAT) — użyj MPP!",
+    "_legal_basis": "Art. 105a-105c VAT",
+    "_warnings": [sprintf("SOLIDARNA ODPOWIEDZIALNOŚĆ ZA VAT DOSTAWCY! Kwota %.2f PLN > 15 000 PLN, kategoria %s z Załącznika 15, brak MPP. Konsekwencje: (1) odpowiadasz solidarnie za VAT niezapłacony przez dostawcę, (2) US może ściągnąć VAT od Ciebie, (3) odpowiedzialność do 5 lat wstecz. JEDYNE BEZPIECZNE ROZWIĄZANIE: użyj Mechanizmu Podzielonej Płatności (MPP).", [amount_gross, category])]
+} {
+    input.invoice.direction == "PURCHASE"
+    amount_gross := object.get(input.invoice, "amount_gross", 0)
+    amount_gross > 15000
+    category := input.invoice.category_code
+    helpers.jdg_is_mpp_sensitive(category)
+    input.invoice.split_payment_used == false
+    input.invoice.split_payment_mandatory_breached != true
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

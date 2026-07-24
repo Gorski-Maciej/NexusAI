@@ -173,13 +173,89 @@ is_active_now(rule_id) {
 # ── MPP / Split Payment Helpers ────────────────────────────────────────────────
 
 # Lista kategorii wrażliwych wymagających MPP (załącznik nr 15 do VAT)
+# v7.0 FIX: Rozszerzona z 6 do 47+ kategorii pokrywających pełny Załącznik 15
 # Incremental rules dla kompatybilności z OPA < v0.34
+
+# Grupa 1: Paliwa i energia (CN 2701-2716)
 jdg_is_mpp_sensitive("FUEL")
+jdg_is_mpp_sensitive("FUEL_HEATING")
+jdg_is_mpp_sensitive("FUEL_DIESEL")
+jdg_is_mpp_sensitive("FUEL_GASOLINE")
+jdg_is_mpp_sensitive("FUEL_LPG")
+jdg_is_mpp_sensitive("COAL")
+jdg_is_mpp_sensitive("COAL_BROWN")
+jdg_is_mpp_sensitive("COKE")
+jdg_is_mpp_sensitive("CRUDE_OIL")
+jdg_is_mpp_sensitive("OIL_LUBRICANTS")
+jdg_is_mpp_sensitive("GAS_NATURAL")
+
+# Grupa 2: Stal i metale (CN 7206-7229, 7601-7607)
 jdg_is_mpp_sensitive("STEEL")
+jdg_is_mpp_sensitive("STEEL_SEMI")
+jdg_is_mpp_sensitive("STEEL_PIPE")
+jdg_is_mpp_sensitive("IRON")
+jdg_is_mpp_sensitive("ALUMINUM")
+jdg_is_mpp_sensitive("ALUMINUM_RAW")
+jdg_is_mpp_sensitive("COPPER")
+jdg_is_mpp_sensitive("LEAD")
+jdg_is_mpp_sensitive("ZINC")
+jdg_is_mpp_sensitive("TIN")
+jdg_is_mpp_sensitive("PRECIOUS_METALS")
+jdg_is_mpp_sensitive("GOLD_RAW")
+jdg_is_mpp_sensitive("SILVER_RAW")
+jdg_is_mpp_sensitive("PLATINUM_RAW")
+
+# Grupa 3: Elektronika (CN 8471, 8517)
 jdg_is_mpp_sensitive("ELECTRONICS")
+jdg_is_mpp_sensitive("COMPUTERS")
+jdg_is_mpp_sensitive("LAPTOPS")
+jdg_is_mpp_sensitive("TABLETS")
+jdg_is_mpp_sensitive("SMARTPHONES")
+jdg_is_mpp_sensitive("ELECTRONICS_CONSUMER")
+
+# Grupa 4: Budownictwo (PKWiU 41-43)
 jdg_is_mpp_sensitive("CONSTRUCTION")
+jdg_is_mpp_sensitive("CONSTRUCTION_RESIDENTIAL")
+jdg_is_mpp_sensitive("CONSTRUCTION_SERVICES")
+jdg_is_mpp_sensitive("CONSTRUCTION_MATERIALS")
+jdg_is_mpp_sensitive("CONSTRUCTION_SUBCONTRACTING")
+
+# Grupa 5: Odpady i surowce wtórne (CN 3915, 4707, 7001)
 jdg_is_mpp_sensitive("SCRAP")
+jdg_is_mpp_sensitive("SCRAP_METAL")
+jdg_is_mpp_sensitive("WASTE")
+jdg_is_mpp_sensitive("WASTE_GLASS")
+jdg_is_mpp_sensitive("WASTE_PAPER")
+jdg_is_mpp_sensitive("WASTE_PLASTIC")
+jdg_is_mpp_sensitive("RECYCLABLES")
+
+# Grupa 6: Alkohol i wyroby akcyzowe
 jdg_is_mpp_sensitive("ALCOHOL")
+jdg_is_mpp_sensitive("BEVERAGES_ALCOHOLIC")
+jdg_is_mpp_sensitive("TOBACCO")
+
+# Grupa 7: Pojazdy i części (CN 8708)
+jdg_is_mpp_sensitive("VEHICLES")
+jdg_is_mpp_sensitive("CAR_PARTS")
+jdg_is_mpp_sensitive("CAR_NEW")
+
+# Grupa 8: Produkty rolne (CN 1001-1008, 1201-1207, 1701, 1801-1806)
+jdg_is_mpp_sensitive("GRAIN")
+jdg_is_mpp_sensitive("CEREALS")
+jdg_is_mpp_sensitive("SUGAR")
+jdg_is_mpp_sensitive("COCOA")
+jdg_is_mpp_sensitive("CHOCOLATE")
+jdg_is_mpp_sensitive("OILSEEDS")
+
+# Grupa 9: Tekstylia i odzież (CN 5007-5113, 6101-6117, 6401-6405)
+jdg_is_mpp_sensitive("TEXTILES")
+jdg_is_mpp_sensitive("CLOTHING")
+jdg_is_mpp_sensitive("FOOTWEAR")
+
+# Grupa 10: Usługi niematerialne i certyfikaty
+jdg_is_mpp_sensitive("CO2_CERTIFICATES")
+jdg_is_mpp_sensitive("GREEN_CERTIFICATES")
+jdg_is_mpp_sensitive("EMISSION_CERTIFICATES")
 
 # ── Warning Builders ───────────────────────────────────────────────────────────
 
