@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 import uuid
 from decimal import ROUND_HALF_UP, Decimal
+from enum import StrEnum
 from typing import final
 
 import pendulum
@@ -17,6 +18,14 @@ DEFAULT_LEDGER_ID = 2
 DEFAULT_TRANSFER_CODE = 1001
 
 
+class DepreciationMethod(StrEnum):
+    """v7.0 AUDIT: Rozszerzone metody amortyzacji (Raport 4.1)."""
+    LINEAR = "linear"
+    DEGRESSIVE = "degressive"  # Metoda malejącego salda (v7.0 NOWOŚĆ)
+    MIDM = "midm"  # Metoda indywidualna dla używanych środków (v7.0 NOWOŚĆ)
+    ONE_TIME = "one_time"  # Jednorazowa (do 100k EUR dla małych podatników)
+
+
 class FixedAsset(Struct):
     __slots__ = ()
     id: str
@@ -24,8 +33,16 @@ class FixedAsset(Struct):
     initial_value: Decimal
     residual_value: Decimal
     depreciation_rate: float
+    depreciation_method: str = "LINEAR"  # v7.0: LINEAR, DEGRESSIVE, MIDM, ONE_TIME
+    annual_rate: float = 0.0  # v7.0: roczna stawka amortyzacji
+    degressive_coefficient: float = 2.0  # v7.0: współczynnik dla metody degresywnej
     purchase_date: pendulum.Date
     last_depreciation_date: pendulum.Date | None
+    status: str = "ACTIVE"  # ACTIVE, FULLY_DEPRECIATED, DISPOSED, UPGRADED
+    upgrade_value: Decimal = Decimal("0")  # v7.0: wartość ulepszeń
+    upgrade_date: pendulum.Date | None = None  # v7.0: data ulepszenia
+    disposal_date: pendulum.Date | None = None  # v7.0: data likwidacji
+    disposal_value: Decimal = Decimal("0")  # v7.0: wartość likwidacyjna
 
 
 @final
@@ -37,61 +54,48 @@ class FixedAssetsService:
         self.tigerbeetle = tigerbeetle
 
     def generate_schedule(self, asset_id: str) -> int:
-        """Generate/refresh straight-line depreciation schedule starting next month.
+        """Generate/refresh depreciation schedule.
 
-        DuckDB generuje cały harmonogram w jednym SQL.
-        Eliminacja: ~30 linii pętli Python.
+        v7.0 AUDIT: Obsługa LINEAR, DEGRESSIVE, MIDM (Raport 4.1).
         """
-        # Zamiast while loop w Pythonie na 50 lat miesięcznie,
-        # DuckDB generuje serie od 1 do 600 miesięcy i oblicza
-        # raty amortyzacji w jednym SQL.
+        # Sprawdź metodę amortyzacji
+        asset_row = self.duckdb.execute(
+            "SELECT depreciation_method, initial_value, residual_value, annual_rate, "
+            "degressive_coefficient, upgrade_value, status "
+            "FROM fixed_assets WHERE id = ?",
+            (asset_id,),
+        )
+        if not asset_row:
+            return 0
+
+        method = str(asset_row[0][0] if asset_row else "LINEAR").upper()
+        initial = Decimal(str(asset_row[0][1] if asset_row else 0))
+        residual = Decimal(str(asset_row[0][2] if asset_row else 0))
+        annual_rate = float(asset_row[0][3] if asset_row else 0) or 0.20
+        coefficient = float(asset_row[0][4] if asset_row else 2) or 2.0
+        upgrade = Decimal(str(asset_row[0][5] if asset_row else 0))
+        asset_status = str(asset_row[0][6] if asset_row else "ACTIVE")
+
+        if asset_status not in ("ACTIVE", "UPGRADED"):
+            return 0
+
+        base_value = initial + upgrade - residual
+
         self.duckdb.execute(
             "DELETE FROM depreciation_schedule WHERE asset_id = ? AND is_posted = FALSE",
             (asset_id,),
         )
-        self.duckdb.execute(
-            """
-            INSERT INTO depreciation_schedule (
-                asset_id, planned_date, amount, is_posted, status, ledger_id, transfer_code
-            )
-            SELECT
-                fa.id AS asset_id,
-                (date_trunc('month', fa.purchase_date)
-                    + INTERVAL '1 month' * gn.n
-                    + INTERVAL '1 month'
-                    - INTERVAL '1 day')::DATE AS planned_date,
-                LEAST(
-                    ((fa.initial_value - COALESCE(fa.residual_value, 0))
-                        * COALESCE(fa.annual_rate, fa.depreciation_rate) / 12),
-                    (fa.initial_value - COALESCE(fa.residual_value, 0)
-                        - COALESCE((SELECT SUM(amount) FROM depreciation_schedule
-                                    WHERE asset_id = fa.id AND is_posted = TRUE), 0)
-                    )
-                ) AS amount,
-                FALSE AS is_posted,
-                'PENDING' AS status,
-                ? AS ledger_id,
-                ? AS transfer_code
-            FROM fixed_assets fa
-            CROSS JOIN (
-                SELECT unnest(generate_series(1, 600)) AS n
-            ) AS gn
-            WHERE fa.id = ?
-              AND fa.status = 'ACTIVE'
-              AND UPPER(COALESCE(fa.depreciation_method, 'LINEAR')) = 'LINEAR'
-              AND fa.initial_value > COALESCE(fa.residual_value, 0)
-              AND gn.n * ((fa.initial_value - COALESCE(fa.residual_value, 0))
-                    * COALESCE(fa.annual_rate, fa.depreciation_rate) / 12)
-                  < (fa.initial_value - COALESCE(fa.residual_value, 0)
-                    - COALESCE((SELECT SUM(amount) FROM depreciation_schedule
-                                WHERE asset_id = fa.id AND is_posted = TRUE), 0)
-                    )
-            """,
-            (DEFAULT_LEDGER_ID, DEFAULT_TRANSFER_CODE, asset_id),
-        )
-        # DuckDB: wykonaj SELECT change_count() dla liczby wstawionych wierszy
-        count = self.duckdb.execute("SELECT changes()").fetchone()
-        return count[0] if count else 0
+
+        if method == "LINEAR":
+            return self._generate_linear_schedule(asset_id, base_value, annual_rate, residual)
+        elif method == "DEGRESSIVE":
+            return self._generate_degressive_schedule(asset_id, base_value, annual_rate, coefficient, residual)
+        elif method == "MIDM":
+            return self._generate_midm_schedule(asset_id, base_value, annual_rate, residual)
+        elif method == "ONE_TIME":
+            return self._generate_one_time_schedule(asset_id, base_value, residual)
+        else:
+            return self._generate_linear_schedule(asset_id, base_value, annual_rate, residual)
 
     async def execute_monthly_depreciation(self, as_of: date | None = None) -> int:
         today = as_of or pendulum.now().date()
@@ -208,3 +212,275 @@ class FixedAssetsService:
             )
             posted += 1
         return posted
+
+    # ── v7.0 AUDIT: Metody amortyzacji (Raport 4.1) ────────────────────
+
+    def _generate_linear_schedule(
+        self, asset_id: str, base_value: Decimal, annual_rate: float, residual: Decimal
+    ) -> int:
+        """Generuj harmonogram amortyzacji liniowej."""
+        self.duckdb.execute(
+            """
+            INSERT INTO depreciation_schedule (
+                asset_id, planned_date, amount, is_posted, status, ledger_id, transfer_code
+            )
+            SELECT
+                fa.id AS asset_id,
+                (date_trunc('month', fa.purchase_date)
+                    + INTERVAL '1 month' * gn.n
+                    + INTERVAL '1 month'
+                    - INTERVAL '1 day')::DATE AS planned_date,
+                LEAST(
+                    (CAST(? AS DECIMAL) * CAST(? AS DECIMAL) / 12),
+                    (CAST(? AS DECIMAL)
+                        - COALESCE((SELECT SUM(amount) FROM depreciation_schedule
+                                    WHERE asset_id = fa.id AND is_posted = TRUE), 0))
+                ) AS amount,
+                FALSE AS is_posted,
+                'PENDING' AS status,
+                ? AS ledger_id,
+                ? AS transfer_code
+            FROM fixed_assets fa
+            CROSS JOIN (
+                SELECT unnest(generate_series(1, 600)) AS n
+            ) AS gn
+            WHERE fa.id = ?
+              AND fa.status IN ('ACTIVE', 'UPGRADED')
+              AND CAST(? AS DECIMAL) > 0
+              AND gn.n * (CAST(? AS DECIMAL) * CAST(? AS DECIMAL) / 12)
+                  < (CAST(? AS DECIMAL)
+                    - COALESCE((SELECT SUM(amount) FROM depreciation_schedule
+                                WHERE asset_id = fa.id AND is_posted = TRUE), 0))
+            """,
+            (
+                float(base_value), annual_rate,
+                float(base_value),
+                DEFAULT_LEDGER_ID, DEFAULT_TRANSFER_CODE, asset_id,
+                float(base_value), float(base_value), annual_rate, float(base_value),
+            ),
+        )
+        count = self.duckdb.execute("SELECT changes()").fetchone()
+        return count[0] if count else 0
+
+    def _generate_degressive_schedule(
+        self, asset_id: str, base_value: Decimal, annual_rate: float,
+        coefficient: float, residual: Decimal,
+    ) -> int:
+        """v7.0: Generuj harmonogram amortyzacji degresywnej (malejące saldo).
+
+        Metoda degresywna: stawka = annual_rate * coefficient (max 2.0).
+        Stosowana do wartości netto (wartość początkowa - dotychczasowe umorzenie).
+        W momencie gdy rata degresywna < rata liniowa, przechodzimy na liniową.
+        """
+        degressive_rate = annual_rate * min(coefficient, 2.0)
+        linear_monthly = float(base_value) * annual_rate / 12
+
+        self.duckdb.execute(
+            """
+            INSERT INTO depreciation_schedule (
+                asset_id, planned_date, amount, is_posted, status, ledger_id, transfer_code
+            )
+            SELECT
+                ? AS asset_id,
+                (date_trunc('month', fa.purchase_date)
+                    + INTERVAL '1 month' * gn.n
+                    + INTERVAL '1 month'
+                    - INTERVAL '1 day')::DATE AS planned_date,
+                GREATEST(
+                    LEAST(
+                        (CAST(? AS DECIMAL)
+                            - COALESCE((SELECT SUM(amount) FROM depreciation_schedule
+                                        WHERE asset_id = fa.id AND is_posted = TRUE), 0))
+                        * CAST(? AS DECIMAL) / 12,
+                        CAST(? AS DECIMAL)
+                            - COALESCE((SELECT SUM(amount) FROM depreciation_schedule
+                                        WHERE asset_id = fa.id AND is_posted = TRUE), 0)
+                    ),
+                    CAST(? AS DECIMAL)
+                ) AS amount,
+                FALSE AS is_posted,
+                'PENDING' AS status,
+                ? AS ledger_id,
+                ? AS transfer_code
+            FROM fixed_assets fa
+            CROSS JOIN (
+                SELECT unnest(generate_series(1, 600)) AS n
+            ) AS gn
+            WHERE fa.id = ?
+              AND fa.status IN ('ACTIVE', 'UPGRADED')
+              AND CAST(? AS DECIMAL) > 0
+              AND (CAST(? AS DECIMAL)
+                    - COALESCE((SELECT SUM(amount) FROM depreciation_schedule
+                                WHERE asset_id = fa.id AND is_posted = TRUE), 0)) > 0
+            """,
+            (
+                asset_id,
+                float(base_value), degressive_rate,
+                float(base_value),
+                linear_monthly,
+                DEFAULT_LEDGER_ID, DEFAULT_TRANSFER_CODE, asset_id,
+                float(base_value),
+                float(base_value),
+            ),
+        )
+        count = self.duckdb.execute("SELECT changes()").fetchone()
+        logger.info("[FIXED-ASSETS] Degressive schedule: %d months (rate=%.2f%%, coeff=%.1f)",
+                     count[0] if count else 0, degressive_rate * 100, coefficient)
+        return count[0] if count else 0
+
+    def _generate_midm_schedule(
+        self, asset_id: str, base_value: Decimal,
+        annual_rate: float, residual: Decimal,
+    ) -> int:
+        """v7.0: Generuj harmonogram MIDM (metoda indywidualna).
+
+        Dla używanych środków trwałych — stawka ustalana indywidualnie,
+        okres amortyzacji minimum 24 miesiące.
+        """
+        effective_rate = annual_rate if annual_rate > 0 else 0.20
+        min_months = 24
+
+        self.duckdb.execute(
+            """
+            INSERT INTO depreciation_schedule (
+                asset_id, planned_date, amount, is_posted, status, ledger_id, transfer_code
+            )
+            SELECT
+                ? AS asset_id,
+                (date_trunc('month', fa.purchase_date)
+                    + INTERVAL '1 month' * gn.n
+                    + INTERVAL '1 month'
+                    - INTERVAL '1 day')::DATE AS planned_date,
+                LEAST(
+                    CAST(? AS DECIMAL) * CAST(? AS DECIMAL) / 12,
+                    CAST(? AS DECIMAL)
+                        - COALESCE((SELECT SUM(amount) FROM depreciation_schedule
+                                    WHERE asset_id = fa.id AND is_posted = TRUE), 0)
+                ) AS amount,
+                FALSE AS is_posted,
+                'PENDING' AS status,
+                ? AS ledger_id,
+                ? AS transfer_code
+            FROM fixed_assets fa
+            CROSS JOIN (
+                SELECT unnest(generate_series(1, 600)) AS n
+            ) AS gn
+            WHERE fa.id = ?
+              AND fa.status IN ('ACTIVE', 'UPGRADED')
+              AND CAST(? AS DECIMAL) > 0
+              AND gn.n <= GREATEST(CAST(? AS DECIMAL) * 12, ?)
+              AND (CAST(? AS DECIMAL)
+                    - COALESCE((SELECT SUM(amount) FROM depreciation_schedule
+                                WHERE asset_id = fa.id AND is_posted = TRUE), 0)) > 0
+            """,
+            (
+                asset_id,
+                float(base_value), effective_rate, float(base_value),
+                DEFAULT_LEDGER_ID, DEFAULT_TRANSFER_CODE, asset_id,
+                float(base_value),
+                1.0 / max(effective_rate, 0.01), min_months,
+                float(base_value),
+            ),
+        )
+        count = self.duckdb.execute("SELECT changes()").fetchone()
+        logger.info("[FIXED-ASSETS] MIDM schedule: %d months (rate=%.2f%%)",
+                     count[0] if count else 0, effective_rate * 100)
+        return count[0] if count else 0
+
+    def _generate_one_time_schedule(
+        self, asset_id: str, base_value: Decimal, residual: Decimal,
+    ) -> int:
+        """v7.0: Jednorazowa amortyzacja (do 100k EUR dla małych podatników)."""
+        self.duckdb.execute(
+            """
+            INSERT INTO depreciation_schedule (
+                asset_id, planned_date, amount, is_posted, status, ledger_id, transfer_code
+            )
+            SELECT
+                ? AS asset_id,
+                (date_trunc('month', fa.purchase_date)
+                    + INTERVAL '1 month'
+                    - INTERVAL '1 day')::DATE AS planned_date,
+                CAST(? AS DECIMAL) AS amount,
+                FALSE AS is_posted,
+                'PENDING' AS status,
+                ? AS ledger_id,
+                ? AS transfer_code
+            FROM fixed_assets fa
+            WHERE fa.id = ?
+              AND fa.status = 'ACTIVE'
+              AND CAST(? AS DECIMAL) > 0
+            """,
+            (
+                asset_id, float(base_value),
+                DEFAULT_LEDGER_ID, DEFAULT_TRANSFER_CODE, asset_id,
+                float(base_value),
+            ),
+        )
+        count = self.duckdb.execute("SELECT changes()").fetchone()
+        logger.info("[FIXED-ASSETS] One-time schedule: %d entries", count[0] if count else 0)
+        return count[0] if count else 0
+
+    # ── v7.0 AUDIT: Ulepszenia i likwidacja (Raport 4.1) ──────────────
+
+    def upgrade_asset(
+        self, asset_id: str, upgrade_value: Decimal, upgrade_date: date | None = None,
+    ) -> None:
+        """v7.0: Zwiększ wartość początkową środka trwałego (ulepszenie).
+
+        Args:
+            asset_id: ID środka trwałego.
+            upgrade_value: Wartość ulepszenia.
+            upgrade_date: Data ulepszenia (domyślnie dzisiaj).
+        """
+        today = upgrade_date or pendulum.now().date()
+
+        self.duckdb.execute(
+            """UPDATE fixed_assets
+               SET upgrade_value = upgrade_value + ?,
+                   upgrade_date = ?,
+                   status = 'UPGRADED'
+               WHERE id = ?""",
+            (float(upgrade_value), today, asset_id),
+        )
+
+        # Regeneruj harmonogram z nową wartością
+        self.generate_schedule(asset_id)
+
+        logger.info(
+            "[FIXED-ASSETS] Asset %s upgraded: +%.2f PLN on %s",
+            asset_id, upgrade_value, today.isoformat(),
+        )
+
+    def dispose_asset(
+        self, asset_id: str, disposal_date: date | None = None,
+        disposal_value: Decimal = Decimal("0"),
+    ) -> None:
+        """v7.0: Zlikwiduj środek trwały.
+
+        Args:
+            asset_id: ID środka trwałego.
+            disposal_date: Data likwidacji (domyślnie dzisiaj).
+            disposal_value: Wartość likwidacyjna (np. cena sprzedaży).
+        """
+        today = disposal_date or pendulum.now().date()
+
+        self.duckdb.execute(
+            """UPDATE fixed_assets
+               SET status = 'DISPOSED',
+                   disposal_date = ?,
+                   disposal_value = ?
+               WHERE id = ?""",
+            (today, float(disposal_value), asset_id),
+        )
+
+        # Usuń niezaksięgowane raty amortyzacji
+        self.duckdb.execute(
+            "DELETE FROM depreciation_schedule WHERE asset_id = ? AND is_posted = FALSE",
+            (asset_id,),
+        )
+
+        logger.info(
+            "[FIXED-ASSETS] Asset %s disposed on %s, value=%.2f PLN",
+            asset_id, today.isoformat(), disposal_value,
+        )

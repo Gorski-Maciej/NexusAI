@@ -111,7 +111,7 @@ def calculate_liquidity_timeline(
 
     import polars as pl
 
-    cleared = Decimal(tigerbeetle._account_credits_posted.get(account_bank_id, 0)) / Decimal(100)
+    cleared = Decimal(tigerbeetle.get_account_balance(account_bank_id)) / Decimal(100)
     start_balance = cleared
 
     # DuckDB produkuje pa.Table, Polars konsumuje bez kopiowania.

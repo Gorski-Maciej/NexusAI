@@ -87,6 +87,38 @@ OTEL_METRIC_EXPORT_INTERVAL = int(os.getenv("OTEL_METRIC_EXPORT_INTERVAL", "5000
 OTEL_METRICS_CARDINALITY_LIMIT = os.getenv("OTEL_METRICS_CARDINALITY_LIMIT", "2000")
 os.environ.setdefault("OTEL_METRICS_CARDINALITY_LIMIT", OTEL_METRICS_CARDINALITY_LIMIT)
 
+# ── v7.0 Innowacja 12: Tail-Based Sampling ─────────────────────────────
+#   - ERROR traces: 100% (always capture failures)
+#   - Long traces (>1s): 50% (performance bottlenecks)
+#   - Short traces (<100ms): 1% (reduce volume 90%+)
+#   - Default: 10% (standard traces)
+
+_TAIL_SAMPLING_ENABLED = os.getenv("NEXUS_TAIL_SAMPLING", "0") == "1"
+_TAIL_ERROR_RATE = float(os.getenv("NEXUS_TAIL_ERROR_RATE", "1.0"))
+_TAIL_LONG_RATE = float(os.getenv("NEXUS_TAIL_LONG_RATE", "0.5"))
+_TAIL_SHORT_RATE = float(os.getenv("NEXUS_TAIL_SHORT_RATE", "0.01"))
+_TAIL_DEFAULT_RATE = float(os.getenv("NEXUS_TAIL_DEFAULT_RATE", "0.1"))
+_TAIL_LONG_THRESHOLD_MS = float(os.getenv("NEXUS_TAIL_LONG_MS", "1000"))
+_TAIL_SHORT_THRESHOLD_MS = float(os.getenv("NEXUS_TAIL_SHORT_MS", "100"))
+
+
+def should_sample_tail(has_error: bool, duration_ms: float) -> bool:
+    """Tail-based sampling decision: always capture errors, downsample fast requests.
+    
+    Enterprise v7.0 Innowacja 12: Redukuje volume o 70-90% bez utraty
+    krytycznych trace'ów (ERROR zawsze 100%, wolne requesty 50%).
+    """
+    import random
+    if not _TAIL_SAMPLING_ENABLED:
+        return True
+    if has_error:
+        return random.random() < _TAIL_ERROR_RATE
+    if duration_ms > _TAIL_LONG_THRESHOLD_MS:
+        return random.random() < _TAIL_LONG_RATE
+    if duration_ms < _TAIL_SHORT_THRESHOLD_MS:
+        return random.random() < _TAIL_SHORT_RATE
+    return random.random() < _TAIL_DEFAULT_RATE
+
 # ── Semantic Conventions key resolver ─────────────────────────────────
 _SEMCONV_ALIASES: dict[str, str] = {
     "component": "code.namespace",
@@ -373,10 +405,77 @@ def create_meter_provider(resource: Any | None = None, views: list[Any] | None =
         provider = MeterProvider(metric_readers=readers, resource=resource, views=views or None)
         metrics.set_meter_provider(provider)
         logger.info("[OTEL] Metrics init: readers=%d", len(readers))
+        # v7.0: Register business metrics (Raport 3.5)
+        _init_business_metrics()
         return provider
     except ImportError as exc:
         logger.warning("[OTEL] opentelemetry metrics not available: %s", exc)
         return None
+
+
+def _init_business_metrics() -> None:
+    """v7.0: Custom business metrics — invoice_count, tax_total, transfer_count.
+    
+    Raport 3.5: Dodaje metryki biznesowe (invoice_count, tax_total)
+    do OTel, umożliwiając monitorowanie operacji księgowych.
+    """
+    try:
+        from opentelemetry import metrics
+        meter = metrics.get_meter("nexus-ai", os.getenv("NEXUS_VERSION", "2.0.0"))
+        global _business_metrics
+        _business_metrics = {
+            "invoice_count": meter.create_counter(
+                "nexus.invoice.count",
+                description="Total invoice processing count",
+                unit="1",
+            ),
+            "invoice_errors": meter.create_counter(
+                "nexus.invoice.errors",
+                description="Invoice processing errors",
+                unit="1",
+            ),
+            "tax_total": meter.create_histogram(
+                "nexus.tax.total",
+                description="Total tax amount per invoice",
+                unit="PLN",
+            ),
+            "transfer_count": meter.create_counter(
+                "nexus.transfer.count",
+                description="Total TigerBeetle transfer count",
+                unit="1",
+            ),
+            "transfer_latency_ms": meter.create_histogram(
+                "nexus.transfer.latency",
+                description="TigerBeetle transfer latency in ms",
+                unit="ms",
+            ),
+        }
+        logger.debug("[OTEL] Business metrics registered: invoice_count, tax_total, transfer_count, transfer_latency_ms")
+    except Exception as exc:
+        logger.debug("[OTEL] Business metrics init failed: %s", exc)
+
+_business_metrics: dict[str, Any] = {}
+
+
+def record_business_metric(name: str, value: float | int = 1, attributes: dict[str, Any] | None = None) -> None:
+    """Record a business metric — safe no-op if OTel not available.
+    
+    Usage:
+        record_business_metric("invoice_count", 1, {"status": "processed"})
+        record_business_metric("tax_total", 2300.50, {"vat_rate": "23"})
+        record_business_metric("transfer_latency_ms", 15.3, {"ledger": "main"})
+    """
+    metric = _business_metrics.get(name)
+    if metric is None:
+        return
+    try:
+        from opentelemetry.metrics import Counter, Histogram  # noqa: F811
+        if isinstance(metric, Counter):
+            metric.add(int(value), attributes=attributes or {})
+        elif isinstance(metric, Histogram):
+            metric.record(float(value), attributes=attributes or {})
+    except Exception:
+        pass
 
 def _otel_atexit_shutdown() -> None:
     for ref in (_tracer_provider_ref, _meter_provider_ref, _logger_provider_ref):
@@ -437,10 +536,16 @@ def setup_otel_logging(resource: Any | None = None) -> Any | None:
 # ═══════════════════════════════════════════════════════════════════════════
 
 def instrument_all() -> dict[str, bool]:
-    """Instrumentacja wszystkich dostępnych bibliotek."""
+    """Instrumentacja wszystkich dostępnych bibliotek.
+    
+    v7.0: Dodano NATS instrumentation (Raport 3.3).
+    """
     results: dict[str, bool] = {}
-    for name, fn in [("sqlalchemy", _instrument_sqlalchemy), ("httpx", _instrument_httpx),
-                     ("logging", _instrument_logging), ("asyncio", _instrument_asyncio), ("grpc", _instrument_grpc)]:
+    for name, fn in [
+        ("sqlalchemy", _instrument_sqlalchemy), ("httpx", _instrument_httpx),
+        ("logging", _instrument_logging), ("asyncio", _instrument_asyncio),
+        ("grpc", _instrument_grpc), ("nats", _instrument_nats),
+    ]:
         results[name] = fn()
     successes = [k for k, v in results.items() if v]
     failures = [k for k, v in results.items() if not v]
@@ -449,6 +554,47 @@ def instrument_all() -> dict[str, bool]:
     if failures:
         logger.debug("[OTEL] Not available: %s", ", ".join(failures))
     return results
+
+def _instrument_nats() -> bool:
+    """v7.0: NATS instrumentation (Raport 3.3)."""
+    try:
+        from opentelemetry.instrumentation.nats import NATSInstrumentor
+        NATSInstrumentor().instrument()
+        return True
+    except ImportError:
+        pass
+    try:
+        from opentelemetry.instrumentation.pynats import PynatsInstrumentor
+        PynatsInstrumentor().instrument()
+        return True
+    except ImportError:
+        return False
+    except Exception as exc:
+        logger.warning("[OTEL] NATS instrumentation failed: %s", exc)
+        return False
+
+def uninstrument_all() -> None:
+    """Wyłącz wszystkie instrumentacje.
+
+    Używa importlib.import_module zamiast __import__ (Enterprise TOP-6 fix).
+    v7.0: Dodano NATS uninstrument.
+    """
+    import importlib as _il
+    for mod_name, instr_name in [
+        ("sqlalchemy", "SQLAlchemyInstrumentor"),
+        ("httpx", "HTTPXClientInstrumentor"),
+        ("logging", "LoggingInstrumentor"),
+        ("nats", "NATSInstrumentor"),
+    ]:
+        try:
+            mod = _il.import_module(f"opentelemetry.instrumentation.{mod_name}")
+            if hasattr(mod, instr_name):
+                instr_class = getattr(mod, instr_name)
+                if hasattr(instr_class, "uninstrument"):
+                    instr_class.uninstrument()
+        except Exception as exc:
+            logger.debug("[OTEL] Failed to uninstrument %s: %s", mod_name, exc)
+    logger.debug("[OTEL] All instrumentations uninstrumented")
 
 def _instrument_sqlalchemy() -> bool:
     try:

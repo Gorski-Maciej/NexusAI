@@ -34,12 +34,71 @@ from structlog import get_logger
 logger = get_logger("nexus.core.monitor")
 
 
+# ── v7.0 Innowacja 14: Mimalloc Memory Metrics ──────────────────────────
+
+class MimallocMetrics(Struct, frozen=True):
+    """Mimalloc allocator metrics — Enterprise v7.0 Innowacja 14.
+    
+    Dostępne tylko gdy mimalloc jest aktywny (LD_PRELOAD=libmimalloc.so).
+    """
+    
+    active: bool
+    heap_count: int | None = None
+    heap_size_mb: float | None = None
+    committed_mb: float | None = None
+    reserved_mb: float | None = None
+    reset_mb: float | None = None
+    segments_count: int | None = None
+    pages_count: int | None = None
+
+    @property
+    def fragmentation_pct(self) -> float | None:
+        """Estimowana fragmentacja: (reserved - committed) / reserved * 100."""
+        if self.reserved_mb and self.reserved_mb > 0 and self.committed_mb is not None:
+            return max(0.0, (self.reserved_mb - self.committed_mb) / self.reserved_mb * 100)
+        return None
+
+
+def collect_mimalloc_metrics() -> MimallocMetrics:
+    """Collect mimalloc memory allocator metrics.
+
+    Enterprise v7.0 Innowacja 14: Rozszerza ProcessMonitor o metryki mimalloc.
+    Automatyczna detekcja czy mimalloc jest LD_PRELOAD'owany.
+    """
+    try:
+        from nexus_ai.core.mimalloc_bridge import (
+            is_mimalloc_active,
+            get_heap_count,
+            get_mimalloc_stats,
+        )
+        if not is_mimalloc_active():
+            return MimallocMetrics(active=False)
+        
+        heap_count = get_heap_count()
+        stats = get_mimalloc_stats() or {}
+        
+        return MimallocMetrics(
+            active=True,
+            heap_count=heap_count,
+            heap_size_mb=stats.get("heap_size", 0) / (1024**2) if stats.get("heap_size") else None,
+            committed_mb=stats.get("committed", 0) / (1024**2) if stats.get("committed") else None,
+            reserved_mb=stats.get("reserved", 0) / (1024**2) if stats.get("reserved") else None,
+            reset_mb=stats.get("reset", 0) / (1024**2) if stats.get("reset") else None,
+            segments_count=stats.get("segments"),
+            pages_count=stats.get("pages"),
+        )
+    except ImportError:
+        return MimallocMetrics(active=False)
+    except Exception as exc:
+        logger.debug("[MONITOR] Mimalloc metrics collection failed: %s", exc)
+        return MimallocMetrics(active=False)
+
+
 # ── Typy danych ──────────────────────────────────────────────────────────────
 
 
 class ProcessMetrics(Struct, frozen=True):
     """Kompletne metryki procesu zebrane przez oneshot()."""
-    __slots__ = ()
 
     pid: int
     rss_mb: float
@@ -64,7 +123,6 @@ class ProcessMetrics(Struct, frozen=True):
 
 class SystemMetrics(Struct, frozen=True):
     """Kompletne metryki systemowe."""
-    __slots__ = ()
 
     # CPU
     cpu_count_physical: int

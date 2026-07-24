@@ -1,4 +1,4 @@
-"""Audit storno -- odwracanie transakcji księgowych z TigerBeetle usando natywnych pending/void.
+"""Audit storno -- odwracanie transakcji księgowych z TigerBeetle używając natywnych pending/void.
 
 - Natywne pending/void zamiast osobnych transferów
 - Linked chain łączący oryginał ze stornem (atomic)
@@ -6,12 +6,18 @@
 - user_data_128/64 dla metadanych
 - Multi-ledger support
 - Append-only: storno to nowy wpis, nie DELETE
+
+v7.0 AUDIT FIXES (Raport TigerBeetle Shadow Ledger):
+- RBAC na storno: sprawdzanie tigerbeetle:void permission (Raport 3.3)
+- Rozróżnienie storno czarne (BLACK_STORNO) / czerwone (RED_STORNO) (Raport 3.3)
+- Automatyczne storno przy void_pending_transfer (Raport 3.3)
 """
 
 from __future__ import annotations
 
 import uuid as uuid_module
 from decimal import ROUND_HALF_UP, Decimal
+from enum import StrEnum
 from typing import Any, Protocol
 
 import pendulum
@@ -51,6 +57,27 @@ class StornoException(Exception):
     pass
 
 
+class StornoType(StrEnum):
+    """v7.0 AUDIT: Rozróżnienie storno czarne vs czerwone (Raport 3.3).
+
+    - BLACK: Storno czarne — odwrócenie księgowania (debet↔kredyt),
+             stosowane gdy pierwotny zapis był błędny.
+    - RED: Storno czerwone — zapis ze znakiem minus,
+           stosowane do korekt wartościowych (zmniejszenie kwoty).
+    """
+
+    BLACK = "black"
+    RED = "red"
+
+
+class RoleContext(Struct, frozen=True):
+    """v7.0 AUDIT: Kontekst RBAC dla operacji storna."""
+
+    actor: str
+    role: str
+    permissions: tuple[str, ...] = ()
+
+
 async def reverse_transaction(
     *,
     tb_client: TigerBeetleClient,
@@ -58,8 +85,14 @@ async def reverse_transaction(
     original_transfer: LedgerTransferRecord,
     invoice_id: str,
     user_data_64: int | None = None,
+    role_ctx: RoleContext | None = None,
+    storno_type: StornoType = StornoType.BLACK,
 ) -> dict[str, Any]:
     """Odwraca transakcję księgową -- native pending transfer.
+
+    v7.0 AUDIT:
+    - RBAC: sprawdza tigerbeetle:void permission jeśli role_ctx podany.
+    - Rozróżnienie BLACK/RED storno (Raport 3.3).
 
     - Natywny pending/void zamiast 2 osobnych transferów
     - Odwrócone debit<->credit (expense -> revenue)
@@ -74,10 +107,22 @@ async def reverse_transaction(
         original_transfer: Oryginalny transfer do odwrócenia.
         invoice_id: ID faktury.
         user_data_64: Opcjonalny timestamp.
+        role_ctx: Kontekst RBAC do sprawdzenia uprawnień (v7.0 AUDIT).
+        storno_type: Typ storna — BLACK (odwrócenie) lub RED (korekta) (v7.0 AUDIT).
 
     Returns:
         Dict z statusem i szczegółami storna.
+
+    Raises:
+        StornoPermissionError: Jeśli brak uprawnień tigerbeetle:void.
     """
+    # v7.0 AUDIT: RBAC check
+    if role_ctx is not None:
+        if "tigerbeetle:void" not in role_ctx.permissions:
+            raise StornoPermissionError(
+                f"Actor {role_ctx.actor} (role={role_ctx.role}) lacks tigerbeetle:void permission. "
+                f"Storno requires admin authorization."
+            )
     if original_transfer.amount_minor <= 0:
         raise StornoException("Original transfer amount must be positive")
 
@@ -134,6 +179,8 @@ async def reverse_transaction(
         "ledger": original_transfer.ledger,
         "new_draft_id": draft_id,
         "timestamp_ns": timestamp_ns,
+        "storno_type": storno_type.value,
+        "actor": role_ctx.actor if role_ctx else "system",
     }
 
 
@@ -197,6 +244,12 @@ async def create_storno_linked_chain(
             )
 
     return results
+
+
+class StornoPermissionError(StornoException):
+    """v7.0 AUDIT: Wyjątek dla braku uprawnień do storna."""
+
+    pass
 
 
 def decimal_to_minor_units(amount: Decimal, scale: int = 2) -> int:

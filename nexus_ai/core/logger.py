@@ -33,18 +33,44 @@ from nexus_ai.core.msgspec_utils import msgspec_dumps
 _INITIALIZED = False
 
 
+def _get_active_trace_id() -> str:
+    """Get active OTel trace_id for log correlation. Returns 'no-trace' if unavailable."""
+    try:
+        from nexus_ai.core.otel import get_current_trace_id
+        tid = get_current_trace_id()
+        return tid or "no-trace"
+    except Exception:
+        return "no-trace"
+
+
+def _get_active_span_id() -> str:
+    """Get active OTel span_id for log correlation."""
+    try:
+        from nexus_ai.core.otel import get_current_span_id
+        sid = get_current_span_id()
+        return sid or "no-span"
+    except Exception:
+        return "no-span"
+
+
 @logger.patch
 def _patch_record(record):
-    """Patch loguru record with default correlation fields.
+    """Patch loguru record with default correlation fields + OTel trace_id.
 
     Zastępuje CorrelationIdFilter -- wbudowany mechanizm Loguru jest
     szybszy i czystszy niż custom filter class.
+
+    Enterprise v7.0 Innowacja 13: Log-to-Trace Correlation.
+    Automatycznie wstrzykuje trace_id i span_id z aktywnego OTel spanu.
     """
     record["extra"].setdefault("correlation_id", "system")
     record["extra"].setdefault("tenant_id", "default")
     record["extra"].setdefault("service", "nexus")
     record["extra"].setdefault("request_id", "system")
     record["extra"].setdefault("user_id", "anonymous")
+    # v7.0 Innowacja 13: Log-to-Trace Correlation
+    record["extra"].setdefault("trace_id", _get_active_trace_id())
+    record["extra"].setdefault("span_id", _get_active_span_id())
 
 
 def _json_format(record) -> str:
