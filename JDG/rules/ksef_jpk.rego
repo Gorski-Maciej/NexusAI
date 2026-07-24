@@ -55,17 +55,44 @@ decide := {
     input.invoice.direction == "SALE"
 }
 
-# ══════ P952: ksef_b2c_exemption — Wyłączenie B2C z KSeF ══════
+# ══════ P952: ksef_b2c_mandatory_2026 — KSeF B2C obowiązkowy od 2026-07-01 (v7.0 NEW) ══════
+# Raport v7.0 LUKA: KSeF B2C NIEOBSŁUŻONE. Teraz obowiązkowe od 2026-07-01.
+# Wyjątki: paragon <450 PLN, sprzedaż okazjonalna <1000 PLN, rolnicy ryczałtowi
+else := {
+    "matched":true,"rule_id":"jdg.ksef_jpk.ksef_b2c_mandatory_2026",
+    "package":"jdg.ksef_jpk","priority":952,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ksef_required":true,"ksef_b2c_applies":true,
+    "ksef_b2c_consumer_consent_required":true,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 106na-106nq VAT (rozszerzenie B2C od 2026-07-01)",
+    "_warnings":[sprintf("KSeF B2C OBOWIĄZKOWY od 2026-07-01 — faktura B2C %.2f PLN wymaga KSeF. Wyjątki: paragon <450 PLN, okazjonalna <1000 PLN, rolnicy ryczałtowi. Konsument musi wyrazić zgodę (opt-in).", [amount_gross])]
+} {
+    input.invoice.transaction_date >= "2026-07-01"
+    input.vendor.is_b2c == true
+    input.invoice.direction == "SALE"
+    input.invoice.document_type == "INVOICE"
+    amount_gross := object.get(input.invoice,"amount_gross",0)
+    amount_gross > 0
+    # Wyjątki (v7.0 cleanup: usunięto martwy guard document_type==RECEIPT — P952 wymaga INVOICE)
+    not input.invoice.category_code in {"RECEIPT_ONLY","FARMERS_FLAT_RATE","PASSENGER_TRANSPORT"}
+    not (input.invoice.category_code == "OCCASIONAL_SALE" and amount_gross < 1000)
+}
+
+# ══════ P953: ksef_b2c_exemption — Wyłączenie B2C z KSeF (przed 2026-07-01 lub wyjątki) ══════
 else := {
     "matched":true,"rule_id":"jdg.ksef_jpk.ksef_b2c_exemption",
-    "package":"jdg.ksef_jpk","priority":952,
+    "package":"jdg.ksef_jpk","priority":953,
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
     "business_status":"","ksef_required":false,"ksef_exemption":"B2C",
     "_routing":"","_routing_reason":"","_legal_basis":"Art. 106ga ust. 2 pkt 4 VAT",
-    "_warnings":["B2C — wyłączenie z obowiązku KSeF"]
+    "_warnings":["B2C — wyłączenie z obowiązku KSeF (przed 2026-07-01 lub wyjątek)"]
 } {
     input.vendor.is_b2c == true
     input.invoice.direction == "SALE"

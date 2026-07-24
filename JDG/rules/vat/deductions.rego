@@ -66,6 +66,7 @@ decide := {
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # P183: vat_blocked_categories — Kategorie wyłączone z odliczenia VAT
+# Pełna lista wyłączeń Art. 88 VAT (MR-5 v7.0 — rozszerzona z 6 do 20+ pozycji)
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true, "rule_id": "jdg.vat.deductions.blocked_categories",
@@ -77,15 +78,92 @@ else := {
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "",
     "business_status": "", "ceidg_registration_required": false,
-    "_routing": "", "_routing_reason": "VAT blocked category",
+    "_routing": "", "_routing_reason": sprintf("VAT blocked category: %s", [input.invoice.category_code]),
     "_legal_basis": "Art. 88 ust. 1 VAT",
-    "_warnings": [sprintf("Kategoria %s — VAT NIE podlega odliczeniu", [input.invoice.category_code])]
+    "_warnings": [sprintf("Kategoria %s — VAT NIE podlega odliczeniu (Art. 88 VAT)", [input.invoice.category_code])]
 } {
     input.invoice.direction == "PURCHASE"
     input.invoice.category_code in {
-        "HOTEL", "RESTAURANT_MEALS", "ENTERTAINMENT",
-        "REPRESENTATION", "ALCOHOL", "PERSONAL_EXPENSE"
+        # Art. 88 ust. 1 pkt 1: usługi noclegowe i gastronomiczne (z wyjątkami)
+        "HOTEL", "RESTAURANT_MEALS", "CATERING",
+        # Art. 88 ust. 1 pkt 2: wydatki osobiste i reprezentacja
+        "ENTERTAINMENT", "REPRESENTATION", "ALCOHOL", "PERSONAL_EXPENSE",
+        # Art. 88 ust. 1 pkt 3: paliwo do samochodów osobowych
+        "CAR_FUEL_PASSENGER",
+        # Art. 88 ust. 3a pkt 1: faktury od podmiotu niezarejestrowanego VAT
+        "UNREGISTERED_VENDOR",
+        # Art. 88 ust. 3a pkt 2: transakcje niepotwierdzone
+        "UNCONFIRMED_TRANSACTION",
+        # Art. 88 ust. 3a pkt 3: faktury poświadczające nieprawdę
+        "FALSE_INVOICE",
+        # Art. 88 ust. 3a pkt 4: faktury dokumentujące czynności niepodlegające
+        "NON_TAXABLE_ACTIVITY",
+        # Art. 88 ust. 3a pkt 5: faktury z ceną rażąco zawyżoną
+        "GROSSLY_INFLATED_PRICE",
+        # Art. 88 ust. 3a pkt 7: faktury od podmiotu nieistniejącego
+        "NONEXISTENT_ENTITY",
+        # Art. 88 ust. 3a pkt 8: faktury z niezgodnym stanem faktycznym
+        "FACTUAL_MISMATCH",
+        # Art. 88 ust. 4 pkt 1: usługi gastronomiczne i noclegowe
+        "GASTRONOMY_SERVICES",
+        # Art. 88 ust. 4 pkt 2: nabycie towarów przez komornika sądowego
+        "BAILIFF_PURCHASE",
+        # Art. 88 ust. 4 pkt 3: nabycie dzieł sztuki przez podatnika nie-artystę
+        "ARTWORK_NON_ARTIST",
+        # Art. 88 ust. 5 pkt 1: nabycie złota inwestycyjnego
+        "INVESTMENT_GOLD"
     }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P183b: vat_blocked_cn_specific — Specyficzne wyłączenia CN (Art. 88 VAT) v7.0
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.blocked_cn_specific",
+    "package": "jdg.vat.deductions", "priority": 183,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "VAT_BLOCKED_CN", "vat_exemption": "",
+    "vat_deduction_percent": 0, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "CN code na liście wyłączeń Art. 88 VAT",
+    "_legal_basis": "Art. 88 ust. 1 pkt 3, zał. do VAT",
+    "_warnings": [sprintf("Kod CN %s na liście wyłączeń Art. 88 VAT — paliwo do samochodów osobowych. Odliczenie niemożliwe.", [cn_code])]
+} {
+    input.invoice.direction == "PURCHASE"
+    cn_code := object.get(input.invoice, "cn_code", "")
+    # CN 2710 = oleje ropy naftowej (paliwo) — wyłączone dla osobówek
+    cn_code in {"2710", "27101141", "27101145", "27101149", "27101151", "27101159", "27101941", "27101943", "27101945"}
+    input.invoice.vehicle_type == "PASSENGER_CAR"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P183c: vat_bad_debt_debtor_exceptions — Wyjątki od obowiązku korekty dłużnika (Art. 89b ust. 2 VAT) v7.0
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.deductions.bad_debt_debtor_exception",
+    "package": "jdg.vat.deductions", "priority": 183,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "BAD_DEBT_DEBTOR_EXCEPTION", "vat_exemption": "",
+    "vat_deduction_percent": 0, "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "bad_debt_exception": true,
+    "_routing": "", "_routing_reason": "Wyjątek od obowiązku korekty dłużnika",
+    "_legal_basis": "Art. 89b ust. 2 VAT",
+    "_warnings": [sprintf("Wyjątek od korekty dłużnika: %s. Korekta VAT NIE jest obowiązkowa.", [exception_reason])]
+} {
+    input.invoice.direction == "PURCHASE"
+    input.invoice.is_paid == false
+    input.invoice.days_overdue >= 90
+    # Wyjątki (Art. 89b ust. 2 VAT):
+    # 1. Dłużnik nie jest podatnikiem VAT (zwolniony podmiotowo)
+    input.vendor.is_vat_payer == false
+    exception_reason := "dłużnik nie jest podatnikiem VAT"
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

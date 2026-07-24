@@ -257,6 +257,34 @@ jdg_is_mpp_sensitive("CO2_CERTIFICATES")
 jdg_is_mpp_sensitive("GREEN_CERTIFICATES")
 jdg_is_mpp_sensitive("EMISSION_CERTIFICATES")
 
+# ── CN Code Mapping for MPP (v7.0 NEW: bridge z Python MPPAnnex15Engine) ─────
+# Full Załącznik 15 — 47 pozycji kodów CN
+# Używane przez P100/P102/P103 w substantive.rego i compliance.rego P25
+# CN code → category mapping
+jdg_mpp_cn_to_category := {
+    "2701": "COAL", "2702": "COAL", "2704": "COAL",
+    "2710": "FUEL", "2711": "FUEL", "2713": "FUEL_HEATING",
+    "7106": "PRECIOUS_METALS", "7108": "PRECIOUS_METALS",
+    "7207": "STEEL", "7208": "STEEL", "7214": "STEEL",
+    "7225": "STEEL", "7402": "COPPER", "7404": "SCRAP",
+    "7601": "ALUMINUM", "7602": "SCRAP",
+    "7801": "NON_FERROUS", "7901": "NON_FERROUS", "8001": "NON_FERROUS",
+    "8471": "ELECTRONICS", "8517": "ELECTRONICS", "8528": "ELECTRONICS",
+    "3915": "WASTE", "4004": "WASTE", "4707": "WASTE", "7001": "WASTE",
+    "7204": "SCRAP", "8708": "AUTO_PARTS",
+    "1001": "GRAIN", "1201": "GRAIN",
+    "1507": "OILS", "1701": "FOOD", "1801": "FOOD",
+    "6101": "TEXTILES", "6201": "TEXTILES", "6401": "TEXTILES",
+    "5007": "TEXTILES", "5208": "TEXTILES", "5407": "TEXTILES",
+    "8501": "MACHINERY", "9401": "FURNITURE"
+}
+
+# CN code → is_mpp_sensitive (bridge integration)
+jdg_is_mpp_sensitive_by_cn(cn_code) {
+    category := jdg_mpp_cn_to_category[substring(cn_code, 0, 4)]
+    category != ""
+}
+
 # ── Warning Builders ───────────────────────────────────────────────────────────
 
 # Buduje array ostrzeżeń z opcjonalnym warningiem

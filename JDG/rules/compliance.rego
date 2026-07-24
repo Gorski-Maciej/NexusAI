@@ -93,21 +93,48 @@ else := {
 }
 
 # ══════ P25: split_payment_mandatory — Obowiązkowy MPP ══════
+# v7.0 QF-3: Dodano BLOCK_AND_ALERT przy braku MPP
 else := {
     "matched":true,"rule_id":"jdg.compliance.split_payment_mandatory",
+    "package":"jdg.compliance","priority":25,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"none","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ceidg_registration_required":false,
+    "mpp_required":true,
+    "_routing":"BLOCK_AND_ALERT",
+    "_routing_reason":"MPP OBOWIĄZKOWY — brak split payment przy transakcji >15k z Załącznika 15",
+    "_legal_basis":"Art. 108a ust. 1-1d VAT, Art. 105a-105c VAT",
+    "_warnings":[sprintf("BRAK MPP! Faktura %.2f PLN brutto, kategoria %s z Załącznika 15. Sankcja 30%% VAT: %.2f PLN. NKUP PIT/CIT: %.2f PLN. Solidarna odpowiedzialność za VAT dostawcy. Wykonaj przelew MPP.", [amount_gross, category, vat_amount * 0.30, amount_net])]
+} {
+    amount_gross := object.get(input.invoice, "amount_gross", 0)
+    amount_gross >= 15000
+    category := input.invoice.category_code
+    helpers.jdg_is_mpp_sensitive(category)
+    input.invoice.split_payment_used == false
+    amount_net := object.get(input.invoice, "amount_net", 0)
+    vat_amount := amount_gross - amount_net
+}
+
+# ══════ P25b: split_payment_mandatory_ok — MPP obowiązkowy zastosowany ══════
+else := {
+    "matched":true,"rule_id":"jdg.compliance.split_payment_mandatory_applied",
     "package":"jdg.compliance","priority":25,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
     "business_status":"","ceidg_registration_required":false,
-    "mpp_required":true,
+    "mpp_required":true,"mpp_applied":true,
+    "joint_vat_liability_exempt":true,
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 108a VAT",
-    "_warnings":["Obowiązkowy mechanizm podzielonej płatności (MPP) — towary/usługi wrażliwe + kwota ≥ 15 000 PLN"]
+    "_warnings":["MPP zastosowany prawidłowo — zwolnienie z odpowiedzialności solidarnej za VAT kontrahenta"]
 } {
     input.invoice.amount_gross >= 15000
     helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
+    input.invoice.split_payment_used == true
 }
 
 # ══════ P26: split_payment_voluntary_safe_harbor — Dobrowolny MPP ══════

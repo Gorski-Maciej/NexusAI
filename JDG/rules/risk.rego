@@ -246,3 +246,89 @@ else := {
     input.invoice.amount_net > 0
     input.invoice.is_artificial_scheme == true
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P0c: heuristic_empty_invoice_detection — Heurystyczna detekcja pustych faktur (QF-2 v7.0)
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.risk.heuristic_empty_invoice",
+    "package": "jdg.risk", "priority": 0,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "none", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "heuristic_empty_invoice": true,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "Heurystyczna detekcja potencjalnie pustej faktury",
+    "_legal_basis": "Art. 62 § 2 KKS (heurystyka)",
+    "_warnings": ["HEURYSTYKA: Potencjalnie pusta faktura — okrągła kwota >10k + nowy kontrahent. Wymagana weryfikacja manualna."]
+} {
+    amount_gross := object.get(input.invoice, "amount_gross", 0)
+    amount_gross > 10000
+    amount_gross % 1000 == 0
+    input.vendor.is_new == true
+    input.invoice.delivery_confirmed == false
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P10: vat_fraud_risk_score — 5-wymiarowy scoring ryzyka fraudu VAT (QF-1 v7.0)
+# Używa danych wstrzykniętych przez PreOPAFraudChecker przed ewaluacją OPA
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.risk.vat_fraud_risk_score",
+    "package": "jdg.risk", "priority": 10,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "none", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "vat_fraud_score": fraud_score,
+    "vat_fraud_level": fraud_level,
+    "_routing": routing,
+    "_routing_reason": routing_reason,
+    "_legal_basis": "Art. 86 ust. 1 VAT, Art. 55/62 KKS, procedury AML",
+    "_warnings": warnings
+} {
+    fraud_score := object.get(object.get(input, "risk", {}), "fraud_score", 0)
+    fraud_level := object.get(object.get(input, "risk", {}), "fraud_risk_level", "GREEN")
+    fraud_score > 0
+
+    routing = "BLOCK_AND_ALERT" { fraud_score > 60 }
+    routing_reason = "VAT Fraud Score RED — wysokie ryzyko oszustwa" { fraud_score > 60 }
+    routing = "TRIAGE_QUEUE" { fraud_score > 30; fraud_score <= 60 }
+    routing_reason = "VAT Fraud Score YELLOW — podwyższone ryzyko" { fraud_score > 30; fraud_score <= 60 }
+    routing = "" { fraud_score <= 30 }
+    routing_reason = "" { fraud_score <= 30 }
+
+    warnings = [sprintf("VAT FRAUD SCORE: %.0f/100 (%s). %d flag ostrzegawczych.", [fraud_score, fraud_level, flag_count])] {
+        flag_count := count(object.get(object.get(input, "risk", {}), "fraud_flags", []))
+    }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P11: vat_carousel_detection — Wykrywanie karuzel VAT (MR-2 v7.0)
+# Używa danych wstrzykniętych przez PreOPACarouselChecker przed ewaluacją OPA
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.risk.vat_carousel_detected",
+    "package": "jdg.risk", "priority": 11,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "none", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "vat_carousel_detected": true,
+    "vat_carousel_type": carousel_type,
+    "vat_carousel_entities": carousel_entities,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": sprintf("VAT CAROUSEL DETECTED — %s: %d podmiotów", [carousel_type, entity_count]),
+    "_legal_basis": "Art. 55 KKS, Art. 86 ust. 1 VAT, Art. 105a-105c VAT",
+    "_warnings": [sprintf("KARUZELA VAT WYKRYTA! Typ: %s. Podmioty: %s. Natychmiastowa blokada + zgłoszenie MDR do KAS.", [carousel_type, concat(", ", carousel_entities)])]
+} {
+    carousel_detected := object.get(object.get(input, "risk", {}), "carousel_detected", false)
+    carousel_detected == true
+    carousel_type := object.get(object.get(input, "risk", {}), "carousel_type", "UNKNOWN")
+    carousel_entities := object.get(object.get(input, "risk", {}), "carousel_entities", [])
+    entity_count := count(carousel_entities)
+}

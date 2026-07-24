@@ -333,6 +333,32 @@ else := {
     input.invoice.direction == "SALE"
 }
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# P60c: vat_bad_debt_bankruptcy_immediate — Ulga natychmiastowa przy upadłości (MR-4 v7.0)
+# Art. 89a ust. 2a VAT: wierzyciel może skorygować VAT natychmiast po
+# powzięciu wiadomości o upadłości dłużnika — NIE musi czekać 90/150 dni.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.bad_debt_bankruptcy_immediate",
+    "package": "jdg.vat.substantive", "priority": 60,
+    "vat_rate": "", "rounding_level": "",
+    "gtu_code": "", "procedure": "BAD_DEBT_BANKRUPTCY_IMMEDIATE",
+    "vat_exemption": "", "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "temporal_version": "BANKRUPTCY_IMMEDIATE", "bad_debt_threshold_days": 0,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 89a ust. 2a VAT — upadłość dłużnika",
+    "_warnings": [sprintf("UPADŁOŚĆ DŁUŻNIKA — ulga na złe długi VAT NATYCHMIAST po powzięciu wiadomości. NIE musisz czekać 90/150 dni. Data upadłości: %s. Skoryguj VAT w bieżącym JPK_V7.", [bankruptcy_date])]
+} {
+    input.invoice.is_paid == false
+    input.invoice.direction == "SALE"
+    input.invoice.debtor_in_bankruptcy == true
+    bankruptcy_date := object.get(input.invoice, "debtor_bankruptcy_date", "")
+}
+
 # P60b: vat_bad_debt_relief_90d_post_slim3 — Ulga na złe długi VAT (wierzyciel) PO SLIM VAT 3
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.bad_debt_relief_creditor_90d",
@@ -493,7 +519,8 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# P65: gtu_mapping_by_category — Mapowanie GTU (13 kodów)
+# P65: gtu_mapping_by_category — Mapowanie GTU z Semantic Auto-Assigner (v7.0 MR-3)
+# Pierwszeństwo: GTU z bridge'a (gtu_auto_assigner.py) → category_code fallback
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.gtu_mapping",
@@ -505,13 +532,45 @@ else := {
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "",
     "business_status": "", "ceidg_registration_required": false,
-    "_routing": "", "_routing_reason": "",
+    "gtu_method": gtu_method,
+    "gtu_confidence": gtu_confidence,
+    "_routing": routing,
+    "_routing_reason": routing_reason,
     "_legal_basis": "§ 10 rozporządzenia JPK_VAT",
     "_warnings": []
 } {
     input.vendor.country == "PL"
-    gtu_code := gtu_map[input.invoice.category_code]
+    # v7.0: Pierwszeństwo dla GTU z bridge'a
+    bridge_gtu := object.get(input.invoice, "gtu_code", "")
+    bridge_confidence := object.get(input.invoice, "gtu_confidence", 0.0)
+
+    gtu_code := bridge_gtu {
+        bridge_gtu != ""
+        bridge_confidence >= 0.40
+    }
+
+    gtu_code := gtu_map[input.invoice.category_code] {
+        bridge_gtu == ""
+    }
+
+    gtu_code := gtu_map[input.invoice.category_code] {
+        bridge_confidence < 0.40
+    }
+
     gtu_code != ""
+    gtu_method = "semantic" { bridge_gtu != ""; bridge_confidence >= 0.40 }
+    gtu_method = "category" { bridge_gtu == "" }
+    gtu_method = "fallback" { bridge_confidence < 0.40 }
+
+    gtu_confidence := bridge_confidence { bridge_confidence > 0 }
+    gtu_confidence := 0.65 { bridge_confidence == 0 }
+
+    routing = "" { bridge_confidence >= 0.70 }
+    routing = "" { bridge_confidence == 0 }
+    routing = "TRIAGE_QUEUE" { bridge_confidence < 0.70; bridge_confidence > 0 }
+    routing_reason = "GTU confidence low — manual review recommended" { bridge_confidence < 0.70; bridge_confidence > 0 }
+    routing_reason = "" { bridge_confidence >= 0.70 }
+    routing_reason = "" { bridge_confidence == 0 }
 }
 
 # ── GTU Map (13 kodów JPK_V7M) ────────────────────────────────────────────────
@@ -842,7 +901,10 @@ else := {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
     amount_gross > 15000
-    helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
+    # v7.0 CN bridge: MPP sensitivity by category OR CN code
+    mpp_matched { helpers.jdg_is_mpp_sensitive(input.invoice.category_code) }
+    mpp_matched { helpers.jdg_is_mpp_sensitive_by_cn(input.invoice.cn_code) }
+    mpp_matched
     category := input.invoice.category_code
 }
 
@@ -891,6 +953,9 @@ else := {
     helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
     input.invoice.split_payment_used == false
     amount_net := object.get(input.invoice, "amount_net", 0)
+    mpp_matched { helpers.jdg_is_mpp_sensitive(input.invoice.category_code) }
+    mpp_matched { helpers.jdg_is_mpp_sensitive_by_cn(input.invoice.cn_code) }
+    mpp_matched
     vat_amount := amount_gross - amount_net
     sanction_amount := vat_amount * 0.30
 }
@@ -918,7 +983,9 @@ else := {
     amount_gross := object.get(input.invoice, "amount_gross", 0)
     amount_gross > 15000
     category := input.invoice.category_code
-    helpers.jdg_is_mpp_sensitive(category)
+    mpp_matched { helpers.jdg_is_mpp_sensitive(category) }
+    mpp_matched { helpers.jdg_is_mpp_sensitive_by_cn(input.invoice.cn_code) }
+    mpp_matched
     input.invoice.split_payment_used == false
     input.invoice.split_payment_mandatory_breached != true
 }

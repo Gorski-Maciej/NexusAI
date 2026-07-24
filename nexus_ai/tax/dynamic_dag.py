@@ -177,17 +177,80 @@ class DynamicMultiPassEvaluator:
 
     Rozszerza standardowy MultiPassOpaEvaluator (ADR-001) o inteligentne
     pomijanie passów na podstawie charakteru transakcji.
+
+    v7.0: Zintegrowany z PreOPAPipeline — wszystkie pre-OPA checki
+    (MPP, fraud, carousel, GTU, KSeF B2C, 200k forecast) są uruchamiane
+    przed ewaluacją OPA, a wyniki wstrzykiwane do input_data.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, pre_opa_pipeline: Any = None) -> None:
         self._router = DynamicDAGRouter()
+        self._pre_opa = pre_opa_pipeline
 
     async def evaluate(
         self,
         opa_client: Any,
         input_data: dict[str, Any],
     ) -> dict[str, Any]:
-        """Ewaluuje tylko aktywne passy, merguje werdykty."""
+        """Ewaluuje tylko aktywne passy, merguje werdykty.
+
+        v7.0: Uruchamia PreOPAPipeline przed ewaluacją OPA.
+        Wyniki pre-OPA (MPP, fraud, carousel, GTU, KSeF B2C) są
+        wstrzykiwane do input_data przed wysłaniem do OPA.
+        """
+        # ── v7.0: Pre-OPA Pipeline Integration ────────────────────────────
+        if self._pre_opa is not None:
+            try:
+                from structlog import get_logger
+                _log = get_logger("nexus.tax.dag")
+
+                invoice_data = input_data.get("invoice", {})
+                contractor_data = input_data.get("vendor", {})
+                transaction_history = input_data.get("transaction_history")
+
+                pre_opa_result = self._pre_opa.run(
+                    invoice_data=invoice_data,
+                    contractor_data=contractor_data,
+                    transaction_history=transaction_history,
+                )
+
+                # Inject pre-OPA results into OPA input context
+                opa_enrichment = pre_opa_result.to_opa_input()
+                if "invoice" not in input_data:
+                    input_data["invoice"] = {}
+                if "risk" not in input_data:
+                    input_data["risk"] = {}
+
+                input_data["invoice"].update(opa_enrichment.get("invoice", {}))
+                input_data["risk"].update(opa_enrichment.get("risk", {}))
+
+                # If pre-OPA requires block, short-circuit OPA evaluation
+                if pre_opa_result.requires_block:
+                    _log.warning(
+                        "[DAG] Pre-OPA BLOCK: %s — skipping OPA evaluation",
+                        pre_opa_result.block_reason,
+                    )
+                    return {
+                        "matched": True,
+                        "rule_id": "jdg.main.pre_opa_block",
+                        "_routing": "BLOCK_AND_ALERT",
+                        "_routing_reason": pre_opa_result.block_reason,
+                        "_pre_opa_warnings": pre_opa_result.all_warnings,
+                        "_dag_metrics": self._router.get_skip_report(input_data),
+                    }
+
+                _log.info(
+                    "[DAG] Pre-OPA enrichment: mpp=%s fraud=%s carousel=%s gtu=%s forecast=%s",
+                    bool(opa_enrichment.get("invoice", {}).get("mpp_mandatory")),
+                    bool(opa_enrichment.get("risk", {}).get("fraud_score")),
+                    bool(opa_enrichment.get("risk", {}).get("carousel_detected")),
+                    bool(opa_enrichment.get("invoice", {}).get("gtu_code")),
+                    bool(opa_enrichment.get("invoice", {}).get("vat_breach_forecast")),
+                )
+            except Exception as exc:
+                _log.error("[DAG] Pre-OPA pipeline failed: %s — continuing without enrichment", exc)
+
+        # ── Standard DAG evaluation ───────────────────────────────────────
         active_passes = self._router.get_active_passes(input_data)
 
         verdicts: list[dict[str, Any]] = []

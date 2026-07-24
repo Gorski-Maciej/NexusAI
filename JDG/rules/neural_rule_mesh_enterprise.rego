@@ -5,8 +5,16 @@
 # METADATA
 # title: JDG Neural Rule Mesh — Cross-Domain Intelligent Decision Fabric
 # description: |
-#   ENTERPRISE v6.0 — Najwyższa warstwa inteligencji między-domenowej.
+#   ENTERPRISE v7.0 — Najwyższa warstwa inteligencji między-domenowej.
 #   Łączy WSZYSTKIE 13 domen prawnych w spójną sieć decyzyjną.
+#   
+#   **v7.0 VAT/MPP UPGRADE**: 6 nowych synaps (NM-410 do NM-460):
+#   - NM-410: VAT Fraud × KKS (5-wymiarowy fraud score → KKS risk)
+#   - NM-420: MPP × Sanctions (brak Split Payment → KKS sankcje + solidarna)
+#   - NM-430: GTU × JPK (auto-assigned GTU → JPK_V7 cross-validation)
+#   - NM-440: VAT Rate Change × Accounting (propagacja stawek → UoR/PKPiR)
+#   - NM-450: Shadow Ledger × Neural Mesh (TigerBeetle what-if → global health)
+#   - NM-460: JPK_CIT × PIT (CIT submissions → PIT implications)
 #   
 #   KLUCZOWA INNOWACJA: Reguły nie działają już w izolacji. Każda decyzja
 #   w jednej domenie (np. VAT) automatycznie propaguje konsekwencje do
@@ -22,7 +30,8 @@
 #   Ta sieć NIE JEST sumą reguł — jest ILOCZYNEM ich interakcji.
 #   13 domen × 13 domen = 169 potencjalnych interakcji między-domenowych.
 #   Każda interakcja jest modelowana jako reguła synaptyczna.
-# architecture: Neural Mesh v6.0, Post-Merge Cross-Domain Intelligence
+# architecture: Neural Mesh v7.0, Post-Merge Cross-Domain Intelligence
+# v7.0_changes: Added NM-410 through NM-460 (VAT Fraud, MPP, GTU, Rate Change, Shadow Ledger, JPK_CIT synapses)
 # legal_basis: Wszystkie 13 aktów prawnych (VAT, PIT, ZUS, OrdPU, KKS, UoR, 
 #              PP, PCC, PodLok, Ryczałt, Sukcesja, RODO, AML/BDO)
 # package: jdg.neural_mesh
@@ -1343,4 +1352,457 @@ else := {
     
     compliance_reason := sprintf("Compliance: %.0f/100 — Ocena %s", [overall_compliance, compliance_grade]) { overall_compliance < 90 }
     compliance_reason := "" { overall_compliance >= 90 }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# WARSTWA 4: PREDICTIVE SHIELD — Predykcja ryzyka (v7.0 Neural Mesh Upgrade)
+# Raport v7.0 VAT/MPP: 6 nowych synaps dla pełnej integracji między-domenowej
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# NM-410: VAT FRAUD × KKS SYNAPSE — 5-wymiarowy fraud score → KKS risk amplification
+# Raport v7.0: Fraud score z PreOPAPipeline integruje się z KKS przez Neural Mesh
+else := {
+    "matched": true,
+    "rule_id": "jdg.neural_mesh.vat_fraud_kks_synapse",
+    "package": "jdg.neural_mesh",
+    "priority": 410,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "neural_synapse_fraud_score": fraud_score,
+    "neural_synapse_fraud_level": fraud_level,
+    "neural_synapse_fraud_dimensions": fraud_dimensions_active,
+    "neural_synapse_fraud_to_kks_amplifier": kks_amplifier,
+    "neural_synapse_fraud_kks_penalty_estimate": penalty_estimate,
+    "neural_synapse_fraud_recommendation": fraud_recommendation,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": synapse_routing,
+    "_routing_reason": synapse_reason,
+    "_legal_basis": "Art. 54-62 KKS; Art. 108a-108d VAT; Art. 86 ust. 13 VAT; Art. 112c VAT",
+    "_warnings": build_fraud_kks_warnings(fraud_score, fraud_level, kks_amplifier, penalty_estimate)
+} {
+    input.neural_mesh_synapse_analysis == true
+    fraud_score := object.get(input.risk, "fraud_score", 0)
+    fraud_level := object.get(input.risk, "fraud_risk_level", "GREEN")
+    fraud_score >= 30  # Minimum threshold for synapse activation
+
+    # Fraud dimensions: które wymiary są aktywne (score > 0)
+    fraud_dimensions_raw := [
+        {"dim": "VAT_CONSISTENCY", "score": object.get(input.risk, "fraud_vat_consistency", 0)},
+        {"dim": "CASHFLOW_ANOMALY", "score": object.get(input.risk, "fraud_cashflow_anomaly", 0)},
+        {"dim": "COUNTERPARTY_RISK", "score": object.get(input.risk, "fraud_counterparty_risk", 0)},
+        {"dim": "TIMING_ANOMALY", "score": object.get(input.risk, "fraud_timing_anomaly", 0)},
+        {"dim": "PRICE_DEVIATION", "score": object.get(input.risk, "fraud_price_deviation", 0)}
+    ]
+    fraud_dimensions_active := [d.dim | d := fraud_dimensions_raw[_]; d.score > 0]
+
+    # Fraud → KKS amplifier
+    kks_amplifier := 1.0
+    kks_amplifier := 5.0 { fraud_level == "RED" }
+    kks_amplifier := 2.5 { fraud_level == "YELLOW" }
+    kks_amplifier := 1.5 { fraud_level == "ORANGE" }
+
+    # Estimated KKS penalty based on fraud score and invoice amount
+    invoice_amount := object.get(input.invoice, "amount_gross", 0)
+    penalty_base := invoice_amount * 0.30  # 30% of VAT as base penalty
+    penalty_estimate := penalty_base * kks_amplifier
+
+    fraud_recommendation := "🛑 NATYCHMIASTOWY BLOCK — 5-wymiarowy fraud RED. Złóż czynny żal KKS!" { fraud_level == "RED" }
+    fraud_recommendation := "⚠️ Zwiększona kontrola — fraud YELLOW/ORANGE. Weryfikuj dokumentację." { fraud_level != "RED"; fraud_level != "GREEN" }
+    fraud_recommendation := "✅ Fraud score w normie — monitoruj." { fraud_level == "GREEN" }
+
+    synapse_routing := "BLOCK_AND_ALERT" { fraud_level == "RED" }
+    synapse_routing := "TRIAGE_QUEUE" { fraud_level == "YELLOW" }
+    synapse_routing := "" { fraud_level == "GREEN" }
+
+    synapse_reason := sprintf("VAT Fraud×KKS: %.0f/100 (%s) ×%.1f KKS. Wymiary: %s",
+        [fraud_score, fraud_level, kks_amplifier, concat(", ", fraud_dimensions_active)]) { fraud_level != "GREEN" }
+    synapse_reason := "" { fraud_level == "GREEN" }
+}
+
+build_fraud_kks_warnings(score, level, amp, penalty) = warnings {
+    level == "RED"
+    warnings := [
+        sprintf("🧠 VAT FRAUD×KKS SYNAPSE CRITICAL: %.0f/100 ×%.1f KKS", [score, amp]),
+        sprintf("🚨 Szacowana kara KKS: ~%.0f PLN", [penalty]),
+        sprintf("🛑 Wstrzymaj transakcję! Złóż czynny żal KKS (Art. 16 KKS)."),
+        sprintf("📋 Dokumentuj wszystkie 5 wymiarów fraud dla obrony procesowej.")
+    ]
+} else = warnings {
+    warnings := [
+        sprintf("🧠 VAT FRAUD×KKS SYNAPSE: %.0f/100 ×%.1f — monitoruj.", [score, amp]),
+        sprintf("⚠️ Weryfikuj dokumentację dla wymiarów z podwyższonym ryzykiem.")
+    ]
+}
+
+# NM-420: MPP × SANCTIONS SYNAPSE — Brak Split Payment → KKS sankcje + solidarna odpowiedzialność
+# Raport v7.0: MPP Bridge dane + KKS penalties = synergiczny efekt
+else := {
+    "matched": true,
+    "rule_id": "jdg.neural_mesh.mpp_sanctions_synapse",
+    "package": "jdg.neural_mesh",
+    "priority": 420,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "neural_synapse_mpp_required": mpp_required,
+    "neural_synapse_mpp_used": mpp_used,
+    "neural_synapse_mpp_sanction_amount": sanction_amount,
+    "neural_synapse_mpp_solidarity_liability": solidarity_liability,
+    "neural_synapse_mpp_nkup_pit_cit": nkup_impact,
+    "neural_synapse_mpp_cn_codes_matched": cn_codes_matched,
+    "neural_synapse_mpp_recommendation": mpp_recommendation,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": synapse_routing,
+    "_routing_reason": synapse_reason,
+    "_legal_basis": "Art. 108a-108d VAT; Art. 105a-105c VAT (solidarna); Art. 54-62 KKS; Art. 22p PIT; Art. 15d CIT",
+    "_warnings": build_mpp_sanctions_warnings(mpp_required, mpp_used, sanction_amount, solidarity_liability)
+} {
+    input.neural_mesh_synapse_analysis == true
+    mpp_required := object.get(input.invoice, "mpp_mandatory", false)
+    mpp_used := object.get(input.invoice, "split_payment_used", false)
+    mpp_required == true
+    mpp_used == false
+
+    invoice_amount := object.get(input.invoice, "amount_gross", 0)
+    vat_rate := object.get(input.invoice, "vat_rate", "0.23")
+
+    # Sanction: 30% of VAT amount for missing MPP
+    vat_amount := invoice_amount * to_number(vat_rate)
+    sanction_amount := vat_amount * 0.30
+
+    # Solidarity liability (Art. 105a): if vendor doesn't pay VAT, buyer is liable
+    solidarity_liability := vat_amount { invoice_amount >= 15000 }
+    solidarity_liability := 0 { invoice_amount < 15000 }
+
+    # NKUP: missing MPP = no PIT/CIT deduction for this expense
+    nkup_impact := invoice_amount
+
+    mpp_recommendation := sprintf(
+        "🛑 BRAK MPP! Sankcja 30%% VAT = %.0f PLN. Solidarna odp. (Art. 105a) = %.0f PLN. NKUP PIT/CIT = %.0f PLN. %d kodów CN Zał. 15.",
+        [sanction_amount, solidarity_liability, nkup_impact, cn_codes_matched]
+    )
+
+    synapse_routing := "BLOCK_AND_ALERT" { invoice_amount >= 15000 }
+    synapse_routing := "TRIAGE_QUEUE" { invoice_amount < 15000 }
+
+    synapse_reason := sprintf("MPP×Sanctions: Brak MPP dla %d kodów CN. Sankcja %.0f PLN + solidarna %.0f PLN.",
+        [cn_codes_matched, sanction_amount, solidarity_liability])
+}
+
+build_mpp_sanctions_warnings(required, used, sanction, solidarity) = warnings {
+    solidarity > 0
+    warnings := [
+        sprintf("🧠 MPP×SANCTIONS SYNAPSE CRITICAL: Brak Split Payment!"),
+        sprintf("🚨 Sankcja 30%% VAT: %.0f PLN", [sanction]),
+        sprintf("🛑 ODPOWIEDZIALNOŚĆ SOLIDARNA (Art. 105a)!: %.0f PLN", [solidarity]),
+        sprintf("📋 NKUP: brak odliczenia PIT/CIT %.0f PLN. + KKS!"),
+        sprintf("📝 Wykonaj przelew MPP NATYCHMIAST, aby uniknąć sankcji.")
+    ]
+} else = warnings {
+    warnings := [
+        sprintf("🧠 MPP×SANCTIONS SYNAPSE: Sankcja 30%% = %.0f PLN", [sanction]),
+        sprintf("⚠️ NKUP PIT/CIT + ryzyko KKS. Zastosuj MPP.")
+    ]
+}
+
+# NM-430: GTU × JPK SYNAPSE — Auto-assigned GTU codes → JPK_V7 cross-validation
+# Raport v7.0: Semantic GTU auto-assigner (4 metody) → JPK_V7 validation
+else := {
+    "matched": true,
+    "rule_id": "jdg.neural_mesh.gtu_jpk_synapse",
+    "package": "jdg.neural_mesh",
+    "priority": 430,
+    "vat_rate": "", "rounding_level": "", "gtu_code": gtu_code,
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "neural_synapse_gtu_code": gtu_code,
+    "neural_synapse_gtu_confidence": gtu_confidence,
+    "neural_synapse_gtu_method": gtu_method,
+    "neural_synapse_gtu_alternative_codes": gtu_alternatives,
+    "neural_synapse_gtu_jpk_crosscheck": jpk_crosscheck,
+    "neural_synapse_gtu_jpk_validation_errors": jpk_errors,
+    "neural_synapse_gtu_recommendation": gtu_recommendation,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": synapse_routing,
+    "_routing_reason": synapse_reason,
+    "_legal_basis": "Art. 109 ust. 3e-3f VAT; Rozporządzenie JPK_V7; Objaśnienia MF do GTU",
+    "_warnings": build_gtu_jpk_warnings(gtu_code, gtu_confidence, gtu_method, jpk_errors)
+} {
+    input.neural_mesh_synapse_analysis == true
+    gtu_code := object.get(input.invoice, "gtu_code", "")
+    gtu_confidence := object.get(input.invoice, "gtu_confidence", 0)
+    gtu_method := object.get(input.invoice, "gtu_method", "NONE")
+    gtu_alternatives := object.get(input.invoice, "gtu_alternative_codes", [])
+    gtu_code != ""
+
+    # JPK_V7 cross-validation: check if GTU conflicts with other fields
+    category_code := object.get(input.invoice, "category_code", "")
+    cn_code := object.get(input.invoice, "cn_code", "")
+    pkwiu_code := object.get(input.invoice, "pkwiu_code", "")
+
+    jpk_errors := []
+
+    # GTU_01 (alkohol): CN must be 2203-2208
+    jpk_check_01 := cn_code >= "2203" and cn_code <= "2208" { gtu_code == "GTU_01"; cn_code != "" }
+    jpk_errors := array.concat(jpk_errors, [sprintf("GTU_01 wymaga CN 2203-2208, wykryto: %s", [cn_code])]) { gtu_code == "GTU_01"; cn_code != ""; not jpk_check_01 }
+
+    # GTU_02 (paliwa): CN must be 2707-2710, 2711, 3826
+    jpk_check_02 := cn_code >= "2707" and cn_code <= "2711" { gtu_code == "GTU_02"; cn_code != "" }
+    jpk_errors := array.concat(jpk_errors, [sprintf("GTU_02 wymaga CN 2707-2711, wykryto: %s", [cn_code])]) { gtu_code == "GTU_02"; cn_code != ""; not jpk_check_02 }
+
+    # GTU_12 (usługi niematerialne): PKWiU should be in services range
+    jpk_check_12 := pkwiu_code >= "62" and pkwiu_code <= "95" { gtu_code == "GTU_12"; pkwiu_code != "" }
+    jpk_errors := array.concat(jpk_errors, [sprintf("GTU_12 wymaga PKWiU 62-95, wykryto: %s", [pkwiu_code])]) { gtu_code == "GTU_12"; pkwiu_code != ""; not jpk_check_12 }
+
+    jpk_crosscheck := count(jpk_errors) == 0
+
+    gtu_recommendation := "✅ GTU zgodne z JPK_V7 — brak błędów walidacji." { jpk_crosscheck }
+    gtu_recommendation := sprintf("⚠️ GTU-JPK NIEZGODNOŚĆ: %d błędów! %s",
+        [count(jpk_errors), concat("; ", jpk_errors)]) { not jpk_crosscheck; count(jpk_errors) > 0 }
+    gtu_recommendation := "ℹ️ GTU auto-assigned — zweryfikuj manualnie." { gtu_confidence < 0.70 }
+
+    synapse_routing := "TRIAGE_QUEUE" { not jpk_crosscheck }
+    synapse_routing := "" { jpk_crosscheck }
+
+    synapse_reason := sprintf("GTU×JPK: %s (%.0f%%, %s) — %s",
+        [gtu_code, gtu_confidence * 100, gtu_method, gtu_recommendation]) { gtu_code != "" }
+    synapse_reason := "" { gtu_code == "" }
+}
+
+build_gtu_jpk_warnings(code, confidence, method, errors) = warnings {
+    count(errors) > 0
+    warnings := [
+        sprintf("🧠 GTU×JPK SYNAPSE: %s (%.0f%%, %s)", [code, confidence * 100, method]),
+        sprintf("⚠️ %d błędów walidacji JPK_V7: %s", [count(errors), concat("; ", errors)]),
+        sprintf("📋 Popraw GTU przed wysyłką JPK_V7M!")
+    ]
+} else = warnings {
+    warnings := [
+        sprintf("🧠 GTU×JPK SYNAPSE: %s (%.0f%%, %s) — walidacja OK", [code, confidence * 100, method])
+    ]
+}
+
+# NM-440: VAT RATE CHANGE × ACCOUNTING SYNAPSE — Propagacja stawek VAT → UoR/PKPiR
+# Raport v7.0: VAT Rate Propagator + PKPiR + UoR = domino księgowe
+else := {
+    "matched": true,
+    "rule_id": "jdg.neural_mesh.vat_rate_accounting_synapse",
+    "package": "jdg.neural_mesh",
+    "priority": 440,
+    "vat_rate": new_vat_rate_str, "rounding_level": "PLN_GROSZ", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "deductible_full", "kus_percent": 100,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "neural_synapse_vat_rate_change_date": change_date,
+    "neural_synapse_vat_rate_old": old_rate_str,
+    "neural_synapse_vat_rate_new": new_vat_rate_str,
+    "neural_synapse_vat_rate_category": rate_category,
+    "neural_synapse_vat_to_pkpir_impact": pkpir_impact,
+    "neural_synapse_vat_to_uor_impact": uor_impact,
+    "neural_synapse_vat_to_inventory_impact": inventory_impact,
+    "neural_synapse_vat_rate_recommendation": rate_recommendation,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": synapse_routing,
+    "_routing_reason": synapse_reason,
+    "_legal_basis": "Art. 41, 146a-146j VAT; Art. 22-24 PIT; Art. 28-34 UoR; § 5-8 Rozp. PKPiR",
+    "_warnings": build_vat_rate_accounting_warnings(change_date, old_rate_str, new_vat_rate_str, rate_category)
+} {
+    input.neural_mesh_synapse_analysis == true
+    input.invoice.vat_rate_change_detected == true
+
+    change_date := object.get(input.invoice, "vat_rate_effective_date", "2026-01-01")
+    old_rate_str := object.get(input.invoice, "previous_vat_rate", "0.23")
+    new_vat_rate_str := object.get(input.invoice, "vat_rate", "0.23")
+    rate_category := object.get(input.invoice, "vat_rate_category", "STANDARD")
+    direction := input.invoice.direction
+
+    old_rate := to_number(old_rate_str)
+    new_rate := to_number(new_vat_rate_str)
+    amount_net := object.get(input.invoice, "amount_net", 0)
+
+    # PKPiR impact: zmiana stawki VAT → zmiana kosztu uzyskania (kolumna 13)
+    # Dla PURCHASE: jeśli VAT nie podlega odliczeniu → wchodzi w koszt
+    pkpir_impact := sprintf("Kolumna 13 PKPiR: koszt zmienia się z %.0f na %.0f PLN",
+        [amount_net * (1 + old_rate), amount_net * (1 + new_rate)]) { direction == "PURCHASE" }
+    pkpir_impact := "Brak wpływu na PKPiR — sprzedaż" { direction == "SALE" }
+
+    # UoR impact: zmiana stawki VAT → zmiana wartości bilansowej
+    uor_impact := sprintf("Wycena bilansowa: %+.0f PLN (delta VAT: %+.0f)",
+        [amount_net * (new_rate - old_rate), amount_net * (new_rate - old_rate)])
+
+    # Inventory impact: remanent na koniec roku
+    inventory_impact := sprintf("Remanent (kol. 17 PKPiR): przelicz zapasy z nową stawką VAT %s",
+        [new_vat_rate_str]) { direction == "PURCHASE" }
+    inventory_impact := "Brak wpływu na remanent — sprzedaż" { direction == "SALE" }
+
+    rate_recommendation := sprintf("📢 ZMIANA STAWKI VAT: %s → %s od %s. Aktualizuj cenniki, PKPiR i UoR.",
+        [old_rate_str, new_vat_rate_str, change_date])
+
+    synapse_routing := "TRIAGE_QUEUE" { abs(new_rate - old_rate) > 0.05 }
+    synapse_routing := "" { abs(new_rate - old_rate) <= 0.05 }
+
+    synapse_reason := sprintf("VAT Rate×Accounting: %s→%s od %s. PKPiR: %s.",
+        [old_rate_str, new_vat_rate_str, change_date, pkpir_impact]) { abs(new_rate - old_rate) > 0 }
+    synapse_reason := "" { abs(new_rate - old_rate) == 0 }
+}
+
+build_vat_rate_accounting_warnings(date, old_rate, new_rate, category) = warnings {
+    warnings := [
+        sprintf("🧠 VAT RATE×ACCOUNTING SYNAPSE: %s → %s od %s (%s)", [old_rate, new_rate, date, category]),
+        "⚠️ Aktualizuj: PKPiR (kol. 13), UoR (wycena bilansowa), remanent (kol. 17)",
+        "📋 Przelicz zaliczki PIT z uwzględnieniem nowej stawki VAT.",
+        "📊 Dodaj wpis w polityce rachunkowości o zmianie stawki VAT."
+    ]
+}
+
+# NM-450: SHADOW LEDGER × NEURAL MESH SYNAPSE — TigerBeetle what-if → global health
+# Raport v7.0: Shadow Ledger symulacje wpływają na ocenę zdrowia VAT przez Neural Mesh
+else := {
+    "matched": true,
+    "rule_id": "jdg.neural_mesh.shadow_ledger_mesh_synapse",
+    "package": "jdg.neural_mesh",
+    "priority": 450,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "neural_synapse_shadow_vat_payable": shadow_vat_payable,
+    "neural_synapse_shadow_vat_receivable": shadow_vat_receivable,
+    "neural_synapse_shadow_net_vat_position": net_vat_position,
+    "neural_synapse_shadow_vat_compliance_score": shadow_compliance,
+    "neural_synapse_shadow_health_impact": health_impact,
+    "neural_synapse_shadow_anomalies_count": shadow_anomalies,
+    "neural_synapse_shadow_recommendation": shadow_recommendation,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": synapse_routing,
+    "_routing_reason": synapse_reason,
+    "_legal_basis": "Art. 86, 99 VAT; Art. 22 PIT; Art. 28-34 UoR; TigerBeetle Shadow Ledger Protocol",
+    "_warnings": build_shadow_mesh_warnings(shadow_vat_payable, shadow_vat_receivable, net_vat_position, shadow_compliance)
+} {
+    input.neural_mesh_synapse_analysis == true
+    input.neural_mesh_shadow_ledger_enabled == true
+    object.get(input.jdg_entrepreneur, "shadow_ledger_active", false) == true
+
+    shadow_vat_payable := object.get(input.shadow_ledger, "vat_payable_total", 0)
+    shadow_vat_receivable := object.get(input.shadow_ledger, "vat_receivable_total", 0)
+    shadow_compliance := object.get(input.shadow_ledger, "compliance_score", 100)
+    shadow_anomalies := object.get(input.shadow_ledger, "anomalies_count", 0)
+
+    net_vat_position := shadow_vat_receivable - shadow_vat_payable
+
+    # Health impact on Neural Mesh global score
+    health_impact := 0
+    health_impact := -10 { shadow_compliance < 70 }
+    health_impact := -5 { shadow_compliance >= 70; shadow_compliance < 85 }
+    health_impact := -15 { shadow_anomalies > 3 }
+    health_impact := health_impact - 5 { net_vat_position < -50000 }
+
+    shadow_recommendation := sprintf(
+        "Shadow Ledger: VAT do zapłaty %.0f PLN, do zwrotu %.0f PLN. Net: %+.0f PLN. Compliance: %.0f/100. Anomalie: %d.",
+        [shadow_vat_payable, shadow_vat_receivable, net_vat_position, shadow_compliance, shadow_anomalies]
+    )
+
+    synapse_routing := "BLOCK_AND_ALERT" { shadow_compliance < 50 }
+    synapse_routing := "TRIAGE_QUEUE" { shadow_compliance < 70 }
+    synapse_routing := "" { shadow_compliance >= 70 }
+
+    synapse_reason := sprintf("Shadow×Mesh: VAT net %+.0f PLN. Compliance %.0f/100. %d anomalii.",
+        [net_vat_position, shadow_compliance, shadow_anomalies]) { shadow_compliance < 85 }
+    synapse_reason := "" { shadow_compliance >= 85 }
+}
+
+build_shadow_mesh_warnings(payable, receivable, net_vat, compliance) = warnings {
+    compliance < 50
+    warnings := [
+        sprintf("🧠 SHADOW LEDGER×MESH CRITICAL: Compliance %.0f/100!", [compliance]),
+        sprintf("🚨 VAT do zapłaty: %.0f PLN | do zwrotu: %.0f PLN | Net: %+.0f PLN", [payable, receivable, net_vat]),
+        "🛑 NATYCHMIASTOWA KOREKTA — Shadow Ledger wykrył krytyczne rozbieżności!",
+        "📋 Porównaj z TigerBeetle i złóż korektę JPK_V7."
+    ]
+} else = warnings {
+    net_vat < -50000
+    warnings := [
+        sprintf("🧠 SHADOW LEDGER×MESH: Net VAT %+.0f PLN — wysoka nadpłata.", [net_vat]),
+        sprintf("⚠️ Rozważ wniosek o przyspieszony zwrot VAT (Art. 87 ust. 6 VAT).")
+    ]
+} else = warnings {
+    warnings := [
+        sprintf("🧠 SHADOW LEDGER×MESH: Compliance %.0f/100 — w normie.", [compliance])
+    ]
+}
+
+# NM-460: JPK_CIT × PIT SYNAPSE — CIT submissions → PIT implications
+# Raport v7.0: JPK_CIT dla JDG na CIT + PIT = efekt domina deklaracyjnego
+else := {
+    "matched": true,
+    "rule_id": "jdg.neural_mesh.jpk_cit_pit_synapse",
+    "package": "jdg.neural_mesh",
+    "priority": 460,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": pit_rate, "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "neural_synapse_jpk_cit_applies": jpk_cit_applies,
+    "neural_synapse_jpk_cit_tax_year": tax_year,
+    "neural_synapse_jpk_cit_deadline": jpk_cit_deadline,
+    "neural_synapse_jpk_cit_to_pit_transition": transition_note,
+    "neural_synapse_jpk_cit_pit_form_mismatch": form_mismatch,
+    "neural_synapse_jpk_cit_recommendation": cit_pit_recommendation,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": synapse_routing,
+    "_routing_reason": synapse_reason,
+    "_legal_basis": "Art. 27a-27f CIT; Art. 45 ust. 1f PIT; Art. 30c PIT; Rozporządzenie JPK_CIT",
+    "_warnings": build_jpk_cit_pit_warnings(jpk_cit_applies, tax_year, jpk_cit_deadline, form_mismatch)
+} {
+    input.neural_mesh_synapse_analysis == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    is_cit_payer := pit_form in {"CIT", "CIT_LINEAR", "ESTONIAN_CIT", "CIT_SMALL"}
+    is_cit_payer == true
+
+    tax_year := object.get(input.jdg_entrepreneur, "tax_year_as_int", 2026)
+    entity_type := object.get(input.jdg_entrepreneur, "entity_type", "JDG")
+
+    jpk_cit_applies := tax_year >= 2025
+    jpk_cit_deadline := "2026-12-31" { tax_year == 2025 }
+    jpk_cit_deadline := "2027-03-31" { tax_year == 2026 }
+    jpk_cit_deadline := "do 11. miesiąca po zakończeniu roku" { tax_year > 2026 }
+
+    # Form mismatch detection: JDG on CIT should file CIT-8, not PIT-36
+    form_mismatch := pit_form in {"CIT", "CIT_LINEAR"}
+
+    pit_rate := "0.19" { pit_form == "CIT_LINEAR" }
+    pit_rate := "0.19" { pit_form == "CIT" }
+    pit_rate := "0.09" { pit_form == "CIT_SMALL" }
+    pit_rate := "varying" { pit_form == "ESTONIAN_CIT" }
+
+    transition_note := "UWAGA: JDG na CIT — JPK_CIT zastępuje PIT-36. Termin: " + jpk_cit_deadline
+
+    cit_pit_recommendation := sprintf(
+        "📊 JPK_CIT×PIT: JDG na %s za %d. JPK_CIT deadline: %s. Stawka CIT: %s. Złóż JPK_KR + JPK_ST.",
+        [pit_form, tax_year, jpk_cit_deadline, pit_rate]
+    )
+
+    synapse_routing := "TRIAGE_QUEUE" { entity_type == "JDG" }
+    synapse_routing := "" { entity_type != "JDG" }
+
+    synapse_reason := sprintf("JPK_CIT×PIT: JDG na %s — JPK_CIT deadline %s", [pit_form, jpk_cit_deadline]) { entity_type == "JDG" }
+    synapse_reason := "" { entity_type != "JDG" }
+}
+
+build_jpk_cit_pit_warnings(applies, year, deadline, mismatch) = warnings {
+    mismatch
+    warnings := [
+        sprintf("🧠 JPK_CIT×PIT SYNAPSE: JDG na CIT — obowiązek JPK_CIT od %d!", [year]),
+        sprintf("⚠️ JPK_CIT deadline: %s", [deadline]),
+        sprintf("📋 Złóż JPK_KR (księgi rachunkowe) + JPK_ST (środki trwałe)."),
+        sprintf("📊 CIT-8 zamiast PIT-36! Formularze różnią się od standardowego JDG.")
+    ]
+} else = warnings {
+    warnings := [
+        sprintf("🧠 JPK_CIT×PIT SYNAPSE: JPK_CIT od %d — deadline %s", [year, deadline])
+    ]
 }

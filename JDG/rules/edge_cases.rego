@@ -58,6 +58,54 @@ decide := {
     breach_date := object.get(input.invoice, "transaction_date", "")
 }
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# R0546b: vat_exemption_breach_forecast — Prognoza przekroczenia limitu 200k (QF-6 v7.0)
+# Automatycznie oblicza kiedy JDG przekroczy limit 200 000 PLN przy obecnym tempie
+# sprzedaży i generuje alert z wyprzedzeniem.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.edge_cases.vat_breach_forecast",
+    "package": "jdg.edge_cases", "priority": 546,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "vat_breach_forecast": true,
+    "vat_breach_forecast_date": forecast_date,
+    "vat_breach_days_remaining": days_remaining,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": sprintf("Prognoza: limit VAT 200k przekroczony ~%s (za %d dni)", [forecast_date, days_remaining]),
+    "_legal_basis": "Art. 113 ust. 1 i 5 VAT",
+    "_warnings": [sprintf("PROGNOZA: Przy obecnym tempie sprzedaży (średnio %.2f PLN/dzień), limit VAT 200 000 PLN przekroczysz około %s (za %d dni). Zarejestruj VAT-R z wyprzedzeniem! Aktualny YTD: %.2f PLN, pozostało: %.2f PLN.", [daily_avg, forecast_date, days_remaining, ytd_sales, remaining])]
+} {
+    input.jdg_entrepreneur.vat_status == "EXEMPT_SUBJECT"
+    ytd_sales := object.get(input.jdg_entrepreneur, "sales_ytd_vat_exempt", 0)
+    days_elapsed := object.get(input.jdg_entrepreneur, "days_elapsed_this_year", 182)
+    days_elapsed > 0
+    ytd_sales > 0
+    limit := object.get(object.get(data.thresholds, "jdg", {}), "vat_subject_exemption_limit", 200000)
+    ytd_sales >= limit * 0.50  # Prognozuj gdy > 50% limitu
+    ytd_sales < limit  # Jeszcze nie przekroczono
+    daily_avg := ytd_sales / days_elapsed
+    remaining := limit - ytd_sales
+    days_remaining := floor(remaining / daily_avg)
+    # Oblicz datę prognozowanego przekroczenia
+    # v7.0: forecast_date pobierana z PreOPAPipeline (Python bridge)
+    # Jeśli bridge nie dostarczył daty, oblicz przybliżenie w Rego
+    current_date := object.get(input.invoice, "transaction_date", "2026-07-01")
+    forecast_from_bridge := object.get(input.jdg_entrepreneur, "vat_breach_forecast_date", "")
+    forecast_date := forecast_from_bridge { forecast_from_bridge != "" }
+    forecast_date := concat("", [substring(current_date, 0, 4), "-", format_month(month_forecast), "-", format_day(day_forecast)]) { forecast_from_bridge == "" }
+    month_num := to_number(substring(current_date, 5, 2))
+    months_to_add := floor(days_remaining / 30)
+    month_forecast := month_num + months_to_add { month_num + months_to_add <= 12 }
+    month_forecast := month_num + months_to_add - 12 { month_num + months_to_add > 12 }
+    day_forecast := 15  # mid-month approximation
+    format_month(m) = sprintf("%02d", [m])
+    format_day(d) = sprintf("%02d", [d])
+}
+
 # R0547: vat_breach_proportion_new_jdg — Limit proporcjonalny dla nowej JDG
 else := {
     "matched": true, "rule_id": "jdg.edge_cases.vat_breach_proportion_new_jdg",
