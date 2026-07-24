@@ -179,6 +179,104 @@ MCP_TOOLS: list[MCPTool] = [
             "required": ["form_type"],
         },
     ),
+    # ── v7.0 Audit KKS/Compliance: Nowe narzędzia Enterprise ──
+    MCPTool(
+        name="get_sanctions_screening",
+        description="Sprawdź kontrahenta na listach sankcyjnych (FATF/OFAC/EU/UK)",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "name": {"type": "string", "description": "Nazwa kontrahenta"},
+                "country": {"type": "string", "description": "Kod kraju ISO (np. PL, RU, IR)"},
+                "nip": {"type": "string", "description": "NIP kontrahenta"},
+            },
+            "required": ["name"],
+        },
+    ),
+    MCPTool(
+        name="get_kks_realtime_score",
+        description="Oblicz scoring ryzyka KKS 0-100 w czasie rzeczywistym dla faktury",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "amount_gross": {"type": "number", "description": "Kwota brutto faktury (PLN)"},
+                "offense_type": {"type": "string", "description": "Typ naruszenia KKS (EMPTY_INVOICE, TAX_EVASION, ...)"},
+                "severity": {"type": "string", "description": "Severity (CRITICAL, HIGH, MEDIUM)"},
+                "invoice_id": {"type": "string", "description": "ID faktury"},
+            },
+            "required": ["amount_gross"],
+        },
+    ),
+    MCPTool(
+        name="generate_kks_defense_package",
+        description="Wygeneruj pakiet dokumentów obronnych KKS (czynny żal, korekta, wniosek)",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "offense_type": {"type": "string", "description": "Typ naruszenia"},
+                "invoice_id": {"type": "string", "description": "ID faktury"},
+                "amount": {"type": "number", "description": "Kwota"},
+                "jdg_name": {"type": "string", "description": "Nazwa JDG"},
+                "jdg_nip": {"type": "string", "description": "NIP JDG"},
+            },
+            "required": ["offense_type", "invoice_id"],
+        },
+    ),
+    MCPTool(
+        name="predict_tax_inspection",
+        description="Przewidź prawdopodobieństwo kontroli skarbowej (ML)",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "industry": {"type": "string", "description": "Branża (CONSTRUCTION, IT_SERVICES, RETAIL, ...)"},
+                "annual_revenue": {"type": "number", "description": "Roczny przychód (PLN)"},
+                "jdg_age_months": {"type": "integer", "description": "Wiek JDG w miesiącach"},
+                "kks_incidents": {"type": "integer", "description": "Liczba incydentów KKS w 5 lat", "default": 0},
+            },
+            "required": ["industry", "annual_revenue"],
+        },
+    ),
+    MCPTool(
+        name="analyze_blockchain_transaction",
+        description="Przeanalizuj transakcję krypto pod kątem AML (miksery, darknet, ransomware)",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "tx_hash": {"type": "string", "description": "Hash transakcji"},
+                "from_address": {"type": "string", "description": "Adres nadawcy"},
+                "to_address": {"type": "string", "description": "Adres odbiorcy"},
+                "amount": {"type": "number", "description": "Kwota"},
+                "currency": {"type": "string", "description": "Waluta (BTC, ETH, USDT)", "default": "BTC"},
+            },
+            "required": ["tx_hash", "from_address", "to_address"],
+        },
+    ),
+    MCPTool(
+        name="get_cross_jurisdiction_wht",
+        description="Sprawdź stawkę WHT i metodę unikania podwójnego opodatkowania",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "target_country": {"type": "string", "description": "Kod kraju ISO"},
+                "income_type": {"type": "string", "description": "Typ dochodu: dividends, interest, royalties, services"},
+                "amount": {"type": "number", "description": "Kwota (PLN)"},
+            },
+            "required": ["target_country", "income_type"],
+        },
+    ),
+    MCPTool(
+        name="generate_audit_trail",
+        description="Wygeneruj raport audit trail (dowód należytej staranności) w formacie Markdown",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "jdg_id": {"type": "string", "description": "ID JDG"},
+                "period_start": {"type": "string", "description": "Data początkowa (YYYY-MM-DD)"},
+                "period_end": {"type": "string", "description": "Data końcowa (YYYY-MM-DD)"},
+            },
+            "required": ["jdg_id"],
+        },
+    ),
 ]
 
 MCP_RESOURCES: list[MCPResource] = [
@@ -283,6 +381,14 @@ class MCPServer:
             "simulate_what_if": self._handle_what_if,
             "get_tax_calendar_ics": self._handle_tax_calendar_ics,
             "generate_tax_form": self._handle_generate_tax_form,
+            # ── v7.0 Audit KKS/Compliance: Nowe handlery Enterprise ──
+            "get_sanctions_screening": self._handle_sanctions_screening,
+            "get_kks_realtime_score": self._handle_kks_realtime_score,
+            "generate_kks_defense_package": self._handle_kks_defense,
+            "predict_tax_inspection": self._handle_tax_inspection,
+            "analyze_blockchain_transaction": self._handle_blockchain,
+            "get_cross_jurisdiction_wht": self._handle_cross_jurisdiction,
+            "generate_audit_trail": self._handle_audit_trail,
         }
 
         handler = handlers.get(tool_name)
@@ -537,6 +643,143 @@ class MCPServer:
             }
         except ImportError:
             return {"content": [{"type": "text", "text": json.dumps({"status": "tax_form_autofill not available", "form_type": form_type})}]}
+
+    # ── JSON-RPC Helpers ────────────────────────────────────────────────────
+
+
+    # ── v7.0 Audit KKS/Compliance: Nowe handlery Enterprise ──
+
+    @staticmethod
+    def _handle_sanctions_screening(args: dict) -> dict:
+        name = args.get("name", "")
+        country = args.get("country", "")
+        try:
+            from nexus_ai.services.sanctions_screening_api import SanctionsScreeningAPI
+            api = SanctionsScreeningAPI()
+            result = api.screen(name, country=country)
+            return {"content": [{"type": "text", "text": json.dumps({
+                "is_sanctioned": result.is_sanctioned,
+                "risk_level": result.risk_level,
+                "hits": [{"name": h.matched_name, "list": h.source_list, "confidence": h.match_confidence} for h in result.hits],
+                "is_fatf_high_risk": result.is_fatf_high_risk,
+            }, indent=2)}]}
+        except ImportError:
+            return {"content": [{"type": "text", "text": json.dumps({"status": "not available"})}]}
+
+    @staticmethod
+    def _handle_kks_realtime_score(args: dict) -> dict:
+        amount = args.get("amount_gross", 0)
+        offense = args.get("offense_type", "")
+        try:
+            from nexus_ai.services.kks_realtime_scorer import KksRealtimeScorer
+            scorer = KksRealtimeScorer()
+            verdict = {}
+            if offense:
+                verdict = {"kks_offense_type": offense, "kks_penalty_severity": args.get("severity", "HIGH")}
+            score = scorer.score_invoice({"amount_gross": amount}, opa_verdict=verdict)
+            return {"content": [{"type": "text", "text": json.dumps({
+                "total_score": score.total_score,
+                "risk_zone": score.risk_zone.value,
+                "flags": score.flags,
+                "recommendations": score.recommendations,
+            }, indent=2)}]}
+        except ImportError:
+            return {"content": [{"type": "text", "text": json.dumps({"status": "not available"})}]}
+
+    @staticmethod
+    def _handle_kks_defense(args: dict) -> dict:
+        offense = args.get("offense_type", "")
+        invoice_id = args.get("invoice_id", "")
+        amount = args.get("amount", 0)
+        try:
+            from nexus_ai.services.kks_defense_generator import KksDefenseGenerator
+            gen = KksDefenseGenerator()
+            package = gen.generate_defense_package(
+                opa_verdict={"kks_offense_type": offense, "_routing": "BLOCK_AND_ALERT"},
+                invoice_data={"id": invoice_id, "amount_gross": amount},
+                jdg_data={"name": args.get("jdg_name", ""), "nip": args.get("jdg_nip", "")},
+            )
+            return {"content": [{"type": "text", "text": json.dumps({
+                "documents": [{"type": d.doc_type, "title": d.title, "content_preview": d.content[:500]} for d in package.documents],
+                "estimated_savings_pln": package.estimated_savings_pln,
+            }, indent=2)}]}
+        except ImportError:
+            return {"content": [{"type": "text", "text": json.dumps({"status": "not available"})}]}
+
+    @staticmethod
+    def _handle_tax_inspection(args: dict) -> dict:
+        industry = args.get("industry", "DEFAULT")
+        revenue = args.get("annual_revenue", 0)
+        age = args.get("jdg_age_months", 12)
+        incidents = args.get("kks_incidents", 0)
+        try:
+            from nexus_ai.services.tax_inspection_predictor import TaxInspectionPredictor
+            pred = TaxInspectionPredictor()
+            score = pred.predict(industry=industry, annual_revenue=revenue, jdg_age_months=age,
+                                kks_history={"incidents_60m": incidents})
+            return {"content": [{"type": "text", "text": json.dumps({
+                "total_score": score.total_score,
+                "risk_level": score.risk_level,
+                "probability_30d": score.probability_30d,
+                "probability_90d": score.probability_90d,
+                "top_factors": score.top_factors,
+                "recommendations": score.recommendations,
+            }, indent=2)}]}
+        except ImportError:
+            return {"content": [{"type": "text", "text": json.dumps({"status": "not available"})}]}
+
+    @staticmethod
+    def _handle_blockchain(args: dict) -> dict:
+        tx_hash = args.get("tx_hash", "")
+        from_addr = args.get("from_address", "")
+        to_addr = args.get("to_address", "")
+        amount = args.get("amount", 0)
+        currency = args.get("currency", "BTC")
+        try:
+            from nexus_ai.services.blockchain_analytics import BlockchainAnalytics
+            ba = BlockchainAnalytics()
+            result = ba.analyze_transaction(tx_hash=tx_hash, from_addr=from_addr, to_addr=to_addr,
+                                          amount=amount, currency=currency)
+            return {"content": [{"type": "text", "text": json.dumps({
+                "overall_risk": result.overall_risk,
+                "risk_level": result.risk_level,
+                "flags": result.flags,
+                "requires_sar": result.requires_sar,
+                "recommendation": result.recommendation,
+            }, indent=2)}]}
+        except ImportError:
+            return {"content": [{"type": "text", "text": json.dumps({"status": "not available"})}]}
+
+    @staticmethod
+    def _handle_cross_jurisdiction(args: dict) -> dict:
+        country = args.get("target_country", "")
+        income_type = args.get("income_type", "services")
+        amount = args.get("amount", 0)
+        try:
+            from nexus_ai.services.cross_jurisdiction_resolver import CrossJurisdictionResolver
+            resolver = CrossJurisdictionResolver()
+            result = resolver.analyze(country, income_type, amount=amount)
+            return {"content": [{"type": "text", "text": json.dumps({
+                "has_upo": result.has_upo,
+                "double_tax_risk": result.double_tax_risk,
+                "wht_recommendations": [{"type": r.income_type, "rate": r.effective_rate, "rec": r.recommendation} for r in result.wht_recommendations],
+            }, indent=2)}]}
+        except ImportError:
+            return {"content": [{"type": "text", "text": json.dumps({"status": "not available"})}]}
+
+    @staticmethod
+    def _handle_audit_trail(args: dict) -> dict:
+        jdg_id = args.get("jdg_id", "unknown")
+        period_start = args.get("period_start", "")
+        period_end = args.get("period_end", "")
+        try:
+            from nexus_ai.services.tax_audit_trail_generator import TaxAuditTrailGenerator
+            gen = TaxAuditTrailGenerator()
+            report = gen.generate_report(jdg_id, period_start, period_end)
+            md = gen.export_markdown(report)
+            return {"content": [{"type": "text", "text": md[:5000]}]}
+        except ImportError:
+            return {"content": [{"type": "text", "text": json.dumps({"status": "not available"})}]}
 
     # ── JSON-RPC Helpers ────────────────────────────────────────────────────
 

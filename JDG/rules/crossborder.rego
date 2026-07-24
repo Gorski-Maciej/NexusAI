@@ -432,6 +432,221 @@ else := {
 
 # ══════ P450-P454: IMPORT USŁUG SZCZEGÓŁOWY — Doc 36 §14 (5 reguł) ══════
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ViDA DAC8 Enterprise — v7.0 Audit: Pełna specyfikacja platform cyfrowych
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# P580: dac8_platform_reporting_obligation — Obowiązek raportowania DAC8
+decide := {
+    "matched":true,"rule_id":"jdg.crossborder.dac8_platform_reporting",
+    "package":"jdg.crossborder","priority":580,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "procedure":"DAC8_REPORTING","vat_exemption":"",
+    "dac8_reporting_required":true,
+    "dac8_deadline":"31_stycznia",
+    "dac8_penalty_no_reporting":"do_5_000_000_PLN",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason":sprintf("DAC8 — platforma %s: %.0f EUR / %d transakcji (próg: 2000 EUR lub 30 tx)", [platform_type, total_eur, total_tx]),
+    "_legal_basis":"Dyrektywa DAC8 (EU 2021/514 z późn. zm.) — automatyczna wymiana informacji o sprzedawcach na platformach cyfrowych",
+    "_warnings":[sprintf("DAC8 — platforma %s: %.0f EUR / %d transakcji. %s. Termin raportowania: 31 stycznia. Kara za brak: do 5 000 000 PLN!", [platform_type, total_eur, total_tx, action])]
+} {
+    input.jdg_entrepreneur.platform_operator == true
+    total_eur := object.get(input.jdg_entrepreneur, "dac8_total_amount_eur", 0)
+    total_tx := object.get(input.jdg_entrepreneur, "dac8_total_transactions", 0)
+    platform_type := object.get(input.jdg_entrepreneur, "dac8_platform_type", "DIGITAL_PLATFORM")
+    threshold_amount := 2000
+    threshold_tx := 30
+    exceeds := total_eur >= threshold_amount or total_tx >= threshold_tx
+    exceeds == true
+    action = "WYMAGANE RAPORTOWANIE DAC8 do 31 stycznia!"
+}
+
+# P581: dac8_ride_sharing_threshold — Ride-sharing: Uber/Bolt/FreeNow
+decide := {
+    "matched":true,"rule_id":"jdg.crossborder.dac8_ride_sharing",
+    "package":"jdg.crossborder","priority":581,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "procedure":"DAC8_RIDE_SHARING","vat_exemption":"",
+    "dac8_platform_category":"RIDE_SHARING",
+    "dac8_threshold_eur":2000,
+    "dac8_threshold_tx":30,
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason":sprintf("DAC8 Ride-Sharing — %.0f EUR / %d kursów", [total_eur, total_tx]),
+    "_legal_basis":"DAC8 Annex V Section I.A — usługi transportu osób",
+    "_warnings":[sprintf("DAC8 RIDE-SHARING — %d kierowców, %.0f EUR. Raportowanie: %s. Dane wymagane: imię, nazwisko, adres, NIP, kraj rezydencji, liczba kursów, łączne wynagrodzenie.", [drivers, total_eur, reporting_status])]
+} {
+    platform := object.get(input.jdg_entrepreneur, "dac8_platform_type", "")
+    platform == "RIDE_SHARING"
+    total_eur := object.get(input.jdg_entrepreneur, "dac8_total_amount_eur", 0)
+    total_tx := object.get(input.jdg_entrepreneur, "dac8_total_transactions", 0)
+    drivers := object.get(input.jdg_entrepreneur, "dac8_seller_count", 0)
+    exceeds := total_eur >= 2000 or total_tx >= 30
+    reporting_status = "WYMAGANE (przekroczony próg)" { exceeds == true }
+    reporting_status = "NIE WYMAGANE (poniżej progu)" { exceeds == false }
+}
+
+# P582: dac8_accommodation_threshold — Accommodation: Airbnb/Booking
+decide := {
+    "matched":true,"rule_id":"jdg.crossborder.dac8_accommodation",
+    "package":"jdg.crossborder","priority":582,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "procedure":"DAC8_ACCOMMODATION","vat_exemption":"",
+    "dac8_platform_category":"ACCOMMODATION",
+    "dac8_threshold_eur":2000,
+    "dac8_threshold_tx":30,
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason":sprintf("DAC8 Accommodation — %.0f EUR / %d rezerwacji", [total_eur, total_tx]),
+    "_legal_basis":"DAC8 Annex V Section I.B — najem nieruchomości",
+    "_warnings":[sprintf("DAC8 ACCOMMODATION — %d właściwości, %.0f EUR. Dane: adres nieruchomości, liczba dni wynajmu, łączne przychody. Kraj położenia nieruchomości.", [properties, total_eur])]
+} {
+    platform := object.get(input.jdg_entrepreneur, "dac8_platform_type", "")
+    platform == "ACCOMMODATION"
+    total_eur := object.get(input.jdg_entrepreneur, "dac8_total_amount_eur", 0)
+    total_tx := object.get(input.jdg_entrepreneur, "dac8_total_transactions", 0)
+    properties := object.get(input.jdg_entrepreneur, "dac8_property_count", 0)
+}
+
+# P583: dac8_personal_services_threshold — Personal services: Fiverr/Upwork
+decide := {
+    "matched":true,"rule_id":"jdg.crossborder.dac8_personal_services",
+    "package":"jdg.crossborder","priority":583,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "procedure":"DAC8_PERSONAL_SERVICES","vat_exemption":"",
+    "dac8_platform_category":"PERSONAL_SERVICES",
+    "dac8_threshold_eur":2000,
+    "dac8_threshold_tx":30,
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason":sprintf("DAC8 Personal Services — %.0f EUR / %d zleceń", [total_eur, total_tx]),
+    "_legal_basis":"DAC8 Annex V Section I.C — usługi osobiste",
+    "_warnings":[sprintf("DAC8 PERSONAL SERVICES — %d freelancerów, %.0f EUR. Kategorie: freelance, consulting, creative. Dane: NIP/usługobiorcy, opis usług, wynagrodzenie, waluta.", [sellers, total_eur])]
+} {
+    platform := object.get(input.jdg_entrepreneur, "dac8_platform_type", "")
+    platform == "PERSONAL_SERVICES"
+    total_eur := object.get(input.jdg_entrepreneur, "dac8_total_amount_eur", 0)
+    total_tx := object.get(input.jdg_entrepreneur, "dac8_total_transactions", 0)
+    sellers := object.get(input.jdg_entrepreneur, "dac8_seller_count", 0)
+}
+
+# P584: dac8_goods_sale_threshold — Goods sale: Amazon/eBay/Allegro
+decide := {
+    "matched":true,"rule_id":"jdg.crossborder.dac8_goods_sale",
+    "package":"jdg.crossborder","priority":584,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "procedure":"DAC8_GOODS_SALE","vat_exemption":"",
+    "dac8_platform_category":"GOODS_SALE",
+    "dac8_threshold_eur":2000,
+    "dac8_threshold_tx":30,
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason":sprintf("DAC8 Goods Sale — %.0f EUR / %d sprzedaży", [total_eur, total_tx]),
+    "_legal_basis":"DAC8 Annex V Section I.D — sprzedaż towarów",
+    "_warnings":[sprintf("DAC8 GOODS SALE — %d sprzedawców, %.0f EUR. Dane: NIP, liczba sprzedaży, łączne wynagrodzenie. Wyłączenie: sprzedaż okazjonalna <30 transakcji.", [sellers, total_eur])]
+} {
+    platform := object.get(input.jdg_entrepreneur, "dac8_platform_type", "")
+    platform == "GOODS_SALE"
+    total_eur := object.get(input.jdg_entrepreneur, "dac8_total_amount_eur", 0)
+    total_tx := object.get(input.jdg_entrepreneur, "dac8_total_transactions", 0)
+    sellers := object.get(input.jdg_entrepreneur, "dac8_seller_count", 0)
+}
+
+# P585: dac8_digital_content_threshold — Digital: App Store/Google Play
+decide := {
+    "matched":true,"rule_id":"jdg.crossborder.dac8_digital_content",
+    "package":"jdg.crossborder","priority":585,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "procedure":"DAC8_DIGITAL_CONTENT","vat_exemption":"",
+    "dac8_platform_category":"DIGITAL_CONTENT",
+    "dac8_threshold_eur":2000,
+    "dac8_threshold_tx":30,
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason":sprintf("DAC8 Digital Content — %.0f EUR / %d transakcji", [total_eur, total_tx]),
+    "_legal_basis":"DAC8 Annex V Section I.E — treści cyfrowe",
+    "_warnings":[sprintf("DAC8 DIGITAL CONTENT — %d developerów/twórców, %.0f EUR. Aplikacje, subskrypcje, IAP. Dane: identyfikator developera, kraj rezydencji, łączne przychody.", [creators, total_eur])]
+} {
+    platform := object.get(input.jdg_entrepreneur, "dac8_platform_type", "")
+    platform == "DIGITAL_CONTENT"
+    total_eur := object.get(input.jdg_entrepreneur, "dac8_total_amount_eur", 0)
+    total_tx := object.get(input.jdg_entrepreneur, "dac8_total_transactions", 0)
+    creators := object.get(input.jdg_entrepreneur, "dac8_seller_count", 0)
+}
+
+# P586: dac8_below_threshold_exemption — Wyłączenie poniżej progu
+decide := {
+    "matched":true,"rule_id":"jdg.crossborder.dac8_below_threshold",
+    "package":"jdg.crossborder","priority":586,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "procedure":"DAC8_EXEMPT","vat_exemption":"",
+    "dac8_reporting_required":false,
+    "dac8_exemption_reason":"BELOW_THRESHOLD",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"",
+    "_routing_reason":"DAC8 — poniżej progu 2000 EUR i 30 transakcji",
+    "_legal_basis":"DAC8 Art. 8ac ust. 2 — wyłączenie de minimis",
+    "_warnings":["DAC8 — platforma poniżej progu raportowania (<2000 EUR i <30 transakcji per sprzedawca). Raportowanie NIEWYMAGANE."]
+} {
+    input.jdg_entrepreneur.platform_operator == true
+    total_eur := object.get(input.jdg_entrepreneur, "dac8_total_amount_eur", 0)
+    total_tx := object.get(input.jdg_entrepreneur, "dac8_total_transactions", 0)
+    total_eur < 2000
+    total_tx < 30
+}
+
+# P587: dac8_deadline_reminder — Przypomnienie o terminie (styczeń)
+decide := {
+    "matched":true,"rule_id":"jdg.crossborder.dac8_deadline_reminder",
+    "package":"jdg.crossborder","priority":587,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "procedure":"DAC8_DEADLINE","vat_exemption":"",
+    "dac8_deadline_approaching":true,
+    "dac8_deadline_date":"31_stycznia",
+    "dac8_penalty_for_missing":5000000,
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason":"DAC8 — termin 31 stycznia! Przygotuj raport.",
+    "_legal_basis":"DAC8 — art. 8ac Dyrektywy 2011/16/UE",
+    "_warnings":[sprintf("DAC8 — TERMIN 31 STYCZNIA! %d dni do deadline'u. Przygotuj raport dla %d sprzedawców. Kara za brak: 5 000 000 PLN!", [days_left, seller_count])]
+} {
+    input.jdg_entrepreneur.dac8_report_filed == false
+    object.get(input.jdg_entrepreneur, "current_month", 1) == 1
+    seller_count := object.get(input.jdg_entrepreneur, "dac8_reportable_sellers", 0)
+    seller_count > 0
+    current_day := object.get(input.jdg_entrepreneur, "current_day", 1)
+    days_left := 31 - current_day
+}
+
+
+# ══════ P450-P454: IMPORT USŁUG SZCZEGÓŁOWY — Doc 36 §14 (5 reguł) ══════
+
 # P450: import_services_non_eu_b2b — Import usług spoza UE B2B
 else := {
     "matched":true,"rule_id":"jdg.crossborder.import_services_non_eu_b2b",

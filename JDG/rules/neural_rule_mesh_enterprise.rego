@@ -206,11 +206,19 @@ calculate_kks_health() = score {
     kks_flags := object.get(input.jdg_entrepreneur, "kks_risk_flags_active", 0)
     has_conviction := object.get(input.jdg_entrepreneur, "kks_convicted", false)
     has_vd := object.get(input.jdg_entrepreneur, "kks_voluntary_disclosure_filed", false)
+    # v7.0 Audit: integracja z KKS Realtime Scorer
+    kks_realtime_avg := object.get(input.jdg_entrepreneur, "kks_realtime_score_avg_30d", 0)
+    has_crossborder_kks := object.get(input.jdg_entrepreneur, "has_crossborder_transactions", false)
     
     score := 100
     score := score - 60 { has_conviction }
     score := score - 30 { kks_flags > 2 }
     score := score - 15 { kks_flags > 0; kks_flags <= 2 }
+    # v7.0 Audit: realtime scorer integration
+    score := score - 15 { kks_realtime_avg > 50 }  # RED zone avg
+    score := score - 8 { kks_realtime_avg > 30; kks_realtime_avg <= 50 }  # YELLOW zone avg
+    # v7.0 Audit: crossborder amplifies KKS risk
+    score := score - 10 { has_crossborder_kks; kks_flags > 0 }
     score := score + 20 { has_vd }
     score := min([max([score, 0]), 100])
 }
@@ -293,10 +301,19 @@ calculate_aml_bdo_health() = score {
     aml_procedure := object.get(input.jdg_entrepreneur, "aml_procedure_in_place", true)
     has_bdo := object.get(input.jdg_entrepreneur, "bdo_registered", false)
     bdo_ok := object.get(input.jdg_entrepreneur, "bdo_reports_filed", true)
+    # v7.0 Audit: integracja z SanctionsScreeningAPI
+    sanctions_hits := object.get(input.jdg_entrepreneur, "sanctions_hits_active", 0)
+    has_fatf_exposure := object.get(input.jdg_entrepreneur, "has_fatf_country_exposure", false)
+    aml_audit_score := object.get(input.jdg_entrepreneur, "aml_compliance_score", 100)
     
     score := 100
     score := score - 40 { has_aml; not aml_procedure }
     score := score - 30 { has_bdo; not bdo_ok }
+    # v7.0 Audit: sanctions screening + AML audit integration
+    score := score - 35 { sanctions_hits > 0 }
+    score := score - 25 { has_fatf_exposure }
+    score := score - 20 { aml_audit_score < 60 }
+    score := score - 10 { aml_audit_score >= 60; aml_audit_score < 80 }
     score := max([score, 0])
 }
 
@@ -532,6 +549,299 @@ else := {
         [vd_window_days, violation_amount]) { not tax_authority_aware }
     kks_routing_reason := "Postępowanie KAS w toku — czynny żal nieskuteczny" { tax_authority_aware }
     kks_routing_reason := "" { statute_years_remaining <= 0 }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# NM-310: KKS × AML SYNAPSE — Naruszenia KKS uruchamiają Enhanced Due Diligence AML
+# Raport v7.0: KKS violations + AML = synergiczny efekt compliance
+# ═══════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.neural_mesh.kks_aml_synapse",
+    "package": "jdg.neural_mesh",
+    "priority": 310,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "neural_synapse_kks_aml_edd_required": edd_required,
+    "neural_synapse_kks_aml_risk_amplification": risk_amplification,
+    "neural_synapse_kks_aml_sar_triggered": sar_triggered,
+    "neural_synapse_kks_aml_combined_risk": combined_risk_level,
+    "neural_synapse_kks_aml_remediation_steps": remediation_steps,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": synapse_routing,
+    "_routing_reason": synapse_reason,
+    "_legal_basis": "Art. 54-62 KKS; Art. 83-86 Ustawy AML; Art. 299 KKS; Rekomendacja 10 FATF",
+    "_warnings": build_kks_aml_warnings(edd_required, risk_amplification, sar_triggered, combined_risk_level)
+} {
+    input.neural_mesh_synapse_analysis == true
+    # Trigger: KKS flags ARE active AND JDG is AML-obligated
+    kks_flags := object.get(input.jdg_entrepreneur, "kks_risk_flags_active", 0)
+    is_aml_obligated := object.get(input.jdg_entrepreneur, "aml_obligated", false)
+    kks_flags > 0
+    is_aml_obligated == true
+
+    # KKS offense type determines AML risk amplification
+    kks_offense_type := object.get(input.jdg_entrepreneur, "kks_dominant_offense_type", "TAX_EVASION")
+    invoice_amount := object.get(input.invoice, "amount_gross", 0)
+    
+    # KKS → AML risk amplification factor
+    kks_aml_multiplier := 1.0
+    kks_aml_multiplier := 3.0 { kks_offense_type == "EMPTY_INVOICE" }
+    kks_aml_multiplier := 2.5 { kks_offense_type == "VAT_CAROUSEL" }
+    kks_aml_multiplier := 2.0 { kks_offense_type == "TAX_EVASION" }
+    kks_aml_multiplier := 1.8 { kks_offense_type == "UNRELIABLE_BOOKS" }
+    kks_aml_multiplier := 1.5 { kks_offense_type == "UNRELIABLE_VAT" }
+
+    risk_amplification := sprintf("KKS %s → AML ryzyko ×%.1f", [kks_offense_type, kks_aml_multiplier])
+
+    # EDD required when KKS flags > 0 AND AML obligated
+    edd_required := true
+
+    # SAR triggered when amount > 15000 PLN AND KKS offense is financial
+    sar_triggered := invoice_amount >= 15000
+    sar_triggered := true { kks_offense_type == "VAT_CAROUSEL" }
+    sar_triggered := true { kks_offense_type == "EMPTY_INVOICE"; invoice_amount >= 5000 }
+
+    # Combined risk level (priority: SAR > flags count)
+    combined_risk_level := "CRITICAL" { sar_triggered }
+    else := "CRITICAL" { kks_flags >= 5 }
+    else := "HIGH" { kks_flags >= 3 }
+    else := "MEDIUM" { kks_flags >= 1 }
+    else := "LOW"
+
+    # Remediation steps
+    remediation_steps := [
+        "1. Wstrzymaj transakcje z kontrahentem do czasu zakończenia EDD",
+        "2. Przygotuj STR/SAR do GIIF jeśli kwota > 15k PLN",
+        "3. Zweryfikuj źródło majątku kontrahenta",
+        "4. Uzyskaj zgodę zarządu na kontynuację relacji (Art. 43 ust. 5 Ustawy AML)",
+        "5. Złóż czynny żal KKS (Art. 16 KKS) dla nieprawidłowości podatkowych"
+    ]
+
+    synapse_routing := "BLOCK_AND_ALERT" { combined_risk_level == "CRITICAL" }
+    synapse_routing := "TRIAGE_QUEUE" { combined_risk_level == "HIGH" }
+    synapse_routing := "" { true }
+
+    synapse_reason := sprintf("KKS×AML SYNAPSE: %d flag KKS + AML obligated → EDD+SAR. Ryzyko: %s",
+        [kks_flags, combined_risk_level]) { combined_risk_level != "LOW" }
+    synapse_reason := "" { combined_risk_level == "LOW" }
+}
+
+build_kks_aml_warnings(edd, amplification, sar, risk) = warnings {
+    risk == "CRITICAL"
+    warnings := [
+        sprintf("🧠 KKS×AML SYNAPSE CRITICAL: %s", [amplification]),
+        "🚨 EDD WYMAGANE + SAR/STR do GIIF OBOWIĄZKOWY!",
+        "🛑 Art. 299 KKS — pranie pieniędzy: do 10 lat pozbawienia wolności!",
+        "📋 Wstrzymaj wszystkie transakcje do czasu wyjaśnienia."
+    ]
+} else = warnings {
+    risk == "HIGH"
+    warnings := [
+        sprintf("🧠 KKS×AML SYNAPSE HIGH: %s", [amplification]),
+        "⚠️ EDD wymagane. Rozważ zgłoszenie SAR do GIIF.",
+        "📋 Przeprowadź pogłębioną analizę w ciągu 14 dni."
+    ]
+} else = warnings {
+    warnings := [
+        sprintf("🧠 KKS×AML SYNAPSE: %s — monitoruj sytuację.", [amplification])
+    ]
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# NM-320: KKS × Crossborder SYNAPSE — Ryzyko KKS amplifikowane przez transakcje transgraniczne
+# Raport v7.0: crossborder + KKS = efekt domina międzynarodowego
+# ═══════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.neural_mesh.kks_crossborder_synapse",
+    "package": "jdg.neural_mesh",
+    "priority": 320,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "neural_synapse_kks_cb_risk_multiplier": risk_multiplier,
+    "neural_synapse_kks_cb_exposure_jurisdictions": exposed_jurisdictions,
+    "neural_synapse_kks_cb_max_penalty_crossborder": max_cb_penalty,
+    "neural_synapse_kks_cb_mdr_triggered": mdr_triggered,
+    "neural_synapse_kks_cb_recommendation": cb_recommendation,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": synapse_routing,
+    "_routing_reason": synapse_reason,
+    "_legal_basis": "Art. 54-62 KKS; Art. 86a OP (MDR); Art. 299 KKS (transgraniczne pranie); Dyrektywa DAC6",
+    "_warnings": build_kks_cb_warnings(risk_multiplier, exposed_jurisdictions, max_cb_penalty, mdr_triggered)
+} {
+    input.neural_mesh_synapse_analysis == true
+    kks_flags := object.get(input.jdg_entrepreneur, "kks_risk_flags_active", 0)
+    has_crossborder := object.get(input.jdg_entrepreneur, "has_crossborder_transactions", false)
+    kks_flags > 0
+    has_crossborder == true
+
+    # Cross-border risk jurisdictions
+    cb_countries := object.get(input.jdg_entrepreneur, "crossborder_countries", [])
+    fatf_black := {"IR", "KP", "MM"}
+    fatf_grey := {"SY", "VE", "YE", "AF", "SS", "ZW"}
+    sanctioned_jurisdictions := {"RU", "BY"}
+
+    # Identify exposed jurisdictions
+    exposed_fatf_black := [c | c := cb_countries[_]; c in fatf_black]
+    exposed_fatf_grey := [c | c := cb_countries[_]; c in fatf_grey]
+    exposed_sanctioned := [c | c := cb_countries[_]; c in sanctioned_jurisdictions]
+    exposed_jurisdictions := array.concat(array.concat(exposed_fatf_black, exposed_fatf_grey), exposed_sanctioned)
+
+    # Risk multiplier (priority: black > grey > sanctioned > default)
+    risk_multiplier := 3.0 { count(exposed_fatf_black) > 0 }
+    else := 2.0 { count(exposed_fatf_grey) > 0 }
+    else := 1.5 { count(exposed_sanctioned) > 0 }
+    else := 1.0
+
+    # Max cross-border penalty (720 daily rates * 143 PLN * risk multiplier)
+    max_cb_penalty := 720 * 143 * risk_multiplier
+
+    # MDR triggered when cross-border + KKS and amount > threshold
+    invoice_amount := object.get(input.invoice, "amount_gross", 0)
+    mdr_triggered := invoice_amount >= 50000
+
+    cb_recommendation := "NATYCHMIAST złóż MDR-3 + czynny żal KKS!" { mdr_triggered }
+    cb_recommendation := "Złóż czynny żal KKS — crossborder amplifikuje ryzyko." { not mdr_triggered; kks_flags > 0 }
+    cb_recommendation := "" { kks_flags == 0 }
+
+    synapse_routing := "BLOCK_AND_ALERT" { risk_multiplier >= 2.0 }
+    synapse_routing := "TRIAGE_QUEUE" { risk_multiplier >= 1.5; risk_multiplier < 2.0 }
+    synapse_routing := "" { risk_multiplier < 1.5 }
+
+    synapse_reason := sprintf("KKS×Crossborder: %d flag KKS + %d jurysdykcji ryzyka. Mnożnik: ×%.1f",
+        [kks_flags, count(exposed_jurisdictions), risk_multiplier]) { count(exposed_jurisdictions) > 0 }
+    synapse_reason := sprintf("KKS×Crossborder: %d flag KKS + transgraniczne. Monitoruj.", [kks_flags]) { count(exposed_jurisdictions) == 0 }
+}
+
+build_kks_cb_warnings(multiplier, jurisdictions, penalty, mdr) = warnings {
+    multiplier >= 2.0
+    jur_list := concat(", ", jurisdictions)
+    warnings := [
+        sprintf("🧠 KKS×CROSSBORDER SYNAPSE CRITICAL: ×%.1f — jurysdykcje ryzyka: %s", [multiplier, jur_list]),
+        sprintf("🚨 Maksymalna kara transgraniczna: %.0f PLN", [penalty]),
+        "🛑 MDR-3 WYMAGANY + czynny żal KKS! Ryzyko ekstradycji!",
+        "📋 Skontaktuj się z doradcą międzynarodowym."
+    ]
+} else = warnings {
+    multiplier >= 1.5
+    warnings := [
+        sprintf("🧠 KKS×CROSSBORDER SYNAPSE HIGH: ×%.1f", [multiplier]),
+        "⚠️ Transakcje transgraniczne zwiększają ryzyko KKS.",
+        "📋 Zweryfikuj dokumentację TP i MDR."
+    ]
+} else = warnings {
+    warnings := [
+        "🧠 KKS×CROSSBORDER SYNAPSE: Monitoruj transakcje transgraniczne."
+    ]
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# NM-330: AML × Crossborder SYNAPSE — AML risk amplifikowany przez transgraniczność
+# Raport v7.0: AML + crossborder = obowiązek FATF/OFAC screening + EDD
+# ═══════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.neural_mesh.aml_crossborder_synapse",
+    "package": "jdg.neural_mesh",
+    "priority": 330,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "neural_synapse_aml_cb_screening_required": screening_required,
+    "neural_synapse_aml_cb_risk_level": aml_cb_risk,
+    "neural_synapse_aml_cb_travel_rule": travel_rule_applies,
+    "neural_synapse_aml_cb_crypto_flag": crypto_flag,
+    "neural_synapse_aml_cb_max_str_deadline_days": str_deadline_days,
+    "neural_synapse_aml_cb_recommended_actions": recommended_actions,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": synapse_routing,
+    "_routing_reason": synapse_reason,
+    "_legal_basis": "Art. 43, 83-86 Ustawy AML; FATF Rekomendacje 10, 16, 19; AMLD5/AMLD6; TFR 2023/1113",
+    "_warnings": build_aml_cb_warnings(screening_required, aml_cb_risk, travel_rule_applies, crypto_flag)
+} {
+    input.neural_mesh_synapse_analysis == true
+    is_aml_obligated := object.get(input.jdg_entrepreneur, "aml_obligated", false)
+    has_crossborder := object.get(input.jdg_entrepreneur, "has_crossborder_transactions", false)
+    is_aml_obligated == true
+    has_crossborder == true
+
+    vendor_country := object.get(input.vendor, "country", "PL")
+    invoice_amount := object.get(input.invoice, "amount_gross", 0)
+    is_crypto := object.get(input.invoice, "is_crypto_transaction", false)
+
+    # FATF high-risk jurisdictions
+    fatf_high_risk := {"IR", "KP", "MM", "SY", "VE", "YE", "AF", "SS"}
+    screening_required := vendor_country in fatf_high_risk
+    screening_required := true { vendor_country in {"RU", "BY"} }
+
+    # Travel Rule (FATF R16): crypto transfers > 1000 EUR (~4300 PLN)
+    travel_rule_applies := is_crypto and invoice_amount >= 4300
+
+    # Crypto flag
+    crypto_flag := is_crypto
+
+    # Risk assessment (priority: CRITICAL countries > FATF high risk > crypto > medium)
+    aml_cb_risk := "CRITICAL" { vendor_country in {"IR", "KP", "MM", "RU", "BY"} }
+    else := "HIGH" { vendor_country in fatf_high_risk }
+    else := "HIGH" { is_crypto; invoice_amount >= 100000 }
+    else := "MEDIUM" { vendor_country in {"CN", "HK", "AE", "PA"} }
+    else := "LOW"
+
+    # STR deadline (days)
+    str_deadline_days := 30 { aml_cb_risk == "LOW" }
+    str_deadline_days := 14 { aml_cb_risk == "MEDIUM" }
+    str_deadline_days := 7 { aml_cb_risk == "HIGH" }
+    str_deadline_days := 2 { aml_cb_risk == "CRITICAL" }
+
+    # Recommended actions
+    recommended_actions := [
+        "1. Pełny screening OFAC/UE/UK/FATF kontrahenta",
+        "2. Enhanced Due Diligence (EDD) — źródło majątku + zgoda zarządu",
+        "3. Monitoring transakcji w czasie rzeczywistym",
+        "4. Przygotuj STR/SAR do GIIF",
+        "5. Dokumentuj wszystkie kroki AML (audit trail)"
+    ]
+
+    synapse_routing := "BLOCK_AND_ALERT" { aml_cb_risk == "CRITICAL" }
+    synapse_routing := "BLOCK_AND_ALERT" { travel_rule_applies; invoice_amount >= 50000 }
+    synapse_routing := "TRIAGE_QUEUE" { aml_cb_risk == "HIGH" }
+    synapse_routing := "" { true }
+
+    synapse_reason := sprintf("AML×Crossborder: %s — %s. STR w %d dni.",
+        [vendor_country, aml_cb_risk, str_deadline_days]) { aml_cb_risk != "LOW" }
+    synapse_reason := "" { aml_cb_risk == "LOW" }
+}
+
+build_aml_cb_warnings(screening, risk, travel_rule, crypto) = warnings {
+    risk == "CRITICAL"
+    warnings := [
+        sprintf("🧠 AML×CROSSBORDER SYNAPSE CRITICAL — ryzyko: %s", [risk]),
+        "🚨 PEŁNY SCREENING FATF/OFAC/UE WYMAGANY NATYCHMIAST!",
+        "🛑 STR/SAR do GIIF w ciągu 2 dni! Art. 86 Ustawy AML.",
+        "📋 Wstrzymaj transakcję do czasu zakończenia EDD."
+    ]
+} else = warnings {
+    risk == "HIGH"
+    travel_note := "+ Travel Rule (FATF R16)" { travel_rule }
+    travel_note := "" { not travel_rule }
+    warnings := [
+        sprintf("🧠 AML×CROSSBORDER SYNAPSE HIGH — %s %s", [risk, travel_note]),
+        "⚠️ EDD + screening sankcyjny wymagany.",
+        "📋 STR/SAR do GIIF w ciągu 7 dni."
+    ]
+} else = warnings {
+    warnings := [
+        sprintf("🧠 AML×CROSSBORDER SYNAPSE: %s — standardowe procedury AML.", [risk])
+    ]
 }
 
 # NM-400: PCC × VAT SYNAPSE — Transakcja PCC a zwolnienie VAT
