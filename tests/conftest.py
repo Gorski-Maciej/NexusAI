@@ -179,6 +179,53 @@ class FakeDuckDBManager:
         pass
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# SUPERMOC v7.0: Session-scoped autouse fixture do mockowania SQLAlchemy/SQLModel
+# Eliminuje import chain failures dla testów jednostkowych modułów CQRS/ES.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _mock_database_dependencies() -> Any:
+    """Mock SQLAlchemy/SQLModel modules for all tests.
+
+    SUPERMOC v7.0: Autouse session-scoped fixture. Mockuje silnik SQLAlchemy,
+    sesje, modele SQLModel, i async db pool — eliminując potrzebę
+    rzeczywistej bazy danych w testach jednostkowych CQRS/Event Sourcing.
+
+    Bez tego fixture, import nexus_ai.events.event_store powoduje
+    inicjalizację SQLAlchemy DDL która crashuje w testach.
+    """
+    _db_mock = MagicMock()
+    _sqlalchemy_modules = [
+        "sqlalchemy",
+        "sqlalchemy.orm",
+        "sqlalchemy.orm.session",
+        "sqlalchemy.ext",
+        "sqlalchemy.ext.asyncio",
+        "sqlalchemy.sql",
+        "sqlalchemy.exc",
+        "sqlalchemy.engine",
+        "sqlalchemy.pool",
+        "nexus_ai.db.models",
+        "nexus_ai.db.database",
+        "nexus_ai.db.async_db_pool",
+        "nexus_ai.db.async_base_service",
+        # NIE mockujemy nexus_ai.events.event_store — testy potrzebują AsyncEventStore
+    ]
+    _originals: dict[str, Any] = {}
+    for mod in _sqlalchemy_modules:
+        if mod not in sys.modules:
+            _originals[mod] = sys.modules.get(mod)
+            sys.modules[mod] = _db_mock
+    yield _db_mock
+    for mod, orig in _originals.items():
+        if orig is None:
+            sys.modules.pop(mod, None)
+        else:
+            sys.modules[mod] = orig
+
+
 EXTERNAL_MOCK_MODULES: list[str] = [
     # Granian — Rust ASGI server
     "granian",
@@ -263,6 +310,15 @@ EXTERNAL_MOCK_MODULES: list[str] = [
     "sqlmodel",
     "sqlmodel.sql",
     "sqlmodel.sql.expression",
+    # SQLAlchemy — wymagane dla testów CQRS/Event Sourcing (v7.0)
+    "sqlalchemy",
+    "sqlalchemy.orm",
+    "sqlalchemy.ext",
+    "sqlalchemy.ext.asyncio",
+    "sqlalchemy.exc",
+    "sqlalchemy.engine",
+    "sqlalchemy.pool",
+    "sqlalchemy.sql",
     # Arrow
     "pyarrow",
 ]

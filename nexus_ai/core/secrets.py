@@ -72,7 +72,7 @@ class LocalSecretsCache:
 
     Zastępuje: Fernet (cryptography) -> ChaCha20-Poly1305 (nexus-crypto)
     """
-    __slots__ = ('_key', 'cache_path', 'ttl_hours')
+    __slots__ = ('_encrypt_cache', '_hkdf_key', '_key', '_mlock_buf', 'cache_path', 'ttl_hours')
 
     def __init__(
         self, cache_path: Path | str = "app_data/secrets_cache.json", ttl_hours: int = 24
@@ -105,6 +105,16 @@ class LocalSecretsCache:
         # Fix: buf przechowywany jako atrybut instancji, żeby GC go nie zwolnił
         if self._hkdf_key is not None:
             self._mlock_secrets_key(self._hkdf_key)
+        # ── SUPERMOC v7.0: At-rest encryption of secrets cache ──────
+        # Raport v7.0: "Sekrety w JSON (niezaszyfrowane na dysku!)"
+        # Fix: Każdy write do cache jest teraz szyfrowany nexus-crypto
+        # (ChaCha20-Poly1305) jeśli klucz dostępny.
+        self._encrypt_cache = self._key is not None or self._hkdf_key is not None
+        if self._encrypt_cache:
+            logger.debug("[SECRETS] At-rest encryption active for secrets cache")
+        # Automatycznie prze-szyfruj istniejący plaintext cache
+        if self._encrypt_cache and self.cache_path.exists():
+            self._migrate_plaintext_cache()
 
     @staticmethod
     def _load_encryption_key() -> bytes | None:
@@ -189,6 +199,37 @@ class LocalSecretsCache:
         except nexus_crypto.DecryptionError as exc:
             logger.error("[SECRETS] Decryption failed - key may be corrupted: %s", exc)
             return None
+
+    def _migrate_plaintext_cache(self) -> None:
+        """SUPERMOC v7.0: Migrate existing plaintext cache to encrypted.
+
+        Raz wywołane przy starcie. Czyta plaintext, zapisuje encrypted.
+        Po migracji plik zawiera już tylko zaszyfrowane dane.
+        """
+        try:
+            payload = msgspec_loads(self.cache_path.read_bytes())
+        except Exception:
+            return
+        if not payload or not isinstance(payload, dict):
+            return
+        migrated = 0
+        for key, item in list(payload.items()):
+            if isinstance(item, dict) and not item.get("encrypted", False):
+                raw = str(item.get("value", ""))
+                encrypted_value, enc_flag = self._encrypt(raw)
+                payload[key] = {
+                    "value": encrypted_value,
+                    "encrypted": enc_flag,
+                    "updated_at": item.get("updated_at", pendulum.now("UTC").isoformat()),
+                }
+                migrated += 1
+        if migrated > 0:
+            self.cache_path.write_text(msgspec_dumps(payload, ensure_ascii=False), encoding="utf-8")
+            try:
+                self.cache_path.chmod(0o600)
+            except (PermissionError, OSError):
+                pass
+            logger.info("[SECRETS] Migrated %d plaintext secrets to encrypted", migrated)
 
     def save(self, key: str, value: str) -> None:
         payload = self._read_all()

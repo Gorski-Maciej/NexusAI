@@ -61,7 +61,7 @@ class JetStreamEventBus:
         reconnect_max_delay: Maksymalne opóźnienie między reconnectami (sekundy).
         name: Nazwa połączenia NATS (dla diagnostyki).
     """
-    __slots__ = ('_connect_lock', '_connect_timeout', '_connected', '_name', '_nats_servers', '_reconnect_attempts', '_reconnect_base_delay', '_reconnect_max_delay')
+    __slots__ = ('_connect_lock', '_connect_timeout', '_connected', '_js', '_kv_stores', '_name', '_nats_servers', '_nc', '_object_stores', '_reconnect_attempts', '_reconnect_base_delay', '_reconnect_max_delay')
 
     def __init__(
         self,
@@ -291,7 +291,7 @@ class ConsumerConfig(Struct):
 
 class JetStreamConsumer:
     """Consumes events from JetStream and dispatches to handlers."""
-    __slots__ = ('_configs', '_connect_timeout', '_connected', '_event_handler', '_js', '_nats_servers', '_nc', '_reconnect_attempts')
+    __slots__ = ('_configs', '_connect_timeout', '_connected', '_consumer_tasks', '_event_handler', '_js', '_nats_servers', '_nc', '_reconnect_attempts')
 
     def __init__(self, nats_servers: list[str] | str | None = None, configs: list[ConsumerConfig] | None = None,
                  event_handler: Any = None, connect_timeout: float = DEFAULT_CONNECT_TIMEOUT,

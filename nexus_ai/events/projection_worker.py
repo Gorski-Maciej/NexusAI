@@ -15,7 +15,7 @@ from structlog import get_logger
 from nexus_ai.events.domain_events import decode_event
 from nexus_ai.events.event_store import EventStore
 from nexus_ai.events.jetstream_bus import STREAM_CONFIG
-from nexus_ai.events.projections import DecisionProjection, InvoiceProjection, Projection
+from nexus_ai.events.projections import DecisionProjection, InvoiceProjection, BaseProjection as Projection
 
 logger = get_logger("nexus.events.projection_worker")
 

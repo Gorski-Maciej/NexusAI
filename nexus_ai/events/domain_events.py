@@ -11,13 +11,19 @@ import pendulum
 
 
 class DomainEvent(msgspec.Struct, kw_only=True, frozen=True, tag_field="event_type"):
-    """Base domain event with Tagged Unions -- explicit _event_tag + __init_subclass__ auto-registration."""
+    """Base domain event with Tagged Unions -- explicit _event_tag + __init_subclass__ auto-registration.
+
+    INNOWACJA #6 v7.0: Business Event Versioning.
+    Każdy domain event ma wersję schematu (event_schema_version).
+    Event store przechowuje wszystkie wersje. Projekcje obsługują upcasting (v1 → v2).
+    """
 
     event_id: str = msgspec.field(default_factory=lambda: uuid.uuid4().hex)
     timestamp: str = msgspec.field(default_factory=lambda: pendulum.now("UTC").isoformat())
     aggregate_id: str = ""
     aggregate_type: str = ""
     version: int = 0
+    event_schema_version: int = 1  # INNOWACJA #6 v7.0: Business Event Versioning
     metadata: dict[str, Any] = msgspec.field(default_factory=dict)
 
     _event_tag: ClassVar[str] = ""
@@ -31,7 +37,6 @@ class DomainEvent(msgspec.Struct, kw_only=True, frozen=True, tag_field="event_ty
 
 
 class InvoiceCreated(DomainEvent, tag="invoice.created"):
-    __slots__ = ()
     _event_tag = "invoice.created"
     _event_description = "Faktura utworzona w systemie (po OCR)"
     aggregate_type: str = "invoice"
@@ -47,7 +52,6 @@ class InvoiceCreated(DomainEvent, tag="invoice.created"):
 
 
 class InvoiceSubmitted(DomainEvent, tag="invoice.submitted"):
-    __slots__ = ()
     _event_tag = "invoice.submitted"
     _event_description = "Faktura przesłana do decyzji (DecisionEngine)"
     aggregate_type: str = "invoice"
@@ -56,7 +60,6 @@ class InvoiceSubmitted(DomainEvent, tag="invoice.submitted"):
 
 
 class InvoiceApproved(DomainEvent, tag="invoice.approved"):
-    __slots__ = ()
     _event_tag = "invoice.approved"
     _event_description = "Faktura zatwierdzona (auto-post lub manualnie)"
     aggregate_type: str = "invoice"
@@ -66,7 +69,6 @@ class InvoiceApproved(DomainEvent, tag="invoice.approved"):
 
 
 class InvoiceRejected(DomainEvent, tag="invoice.rejected"):
-    __slots__ = ()
     _event_tag = "invoice.rejected"
     _event_description = "Faktura odrzucona (manualnie)"
     aggregate_type: str = "invoice"
@@ -75,7 +77,6 @@ class InvoiceRejected(DomainEvent, tag="invoice.rejected"):
 
 
 class InvoiceBlocked(DomainEvent, tag="invoice.blocked"):
-    __slots__ = ()
     _event_tag = "invoice.blocked"
     _event_description = "Faktura zablokowana (RiskGuard / anomalia)"
     aggregate_type: str = "invoice"
@@ -85,7 +86,6 @@ class InvoiceBlocked(DomainEvent, tag="invoice.blocked"):
 
 
 class InvoicePaid(DomainEvent, tag="invoice.paid"):
-    __slots__ = ()
     _event_tag = "invoice.paid"
     _event_description = "Faktura opłacona (przez TigerBeetle)"
     aggregate_type: str = "invoice"
@@ -95,7 +95,6 @@ class InvoicePaid(DomainEvent, tag="invoice.paid"):
 
 
 class DecisionMade(DomainEvent, tag="decision.made"):
-    __slots__ = ()
     _event_tag = "decision.made"
     _event_description = "Decyzja podjęta przez system (DecisionEngine)"
     aggregate_type: str = "decision"
@@ -111,7 +110,6 @@ class DecisionMade(DomainEvent, tag="decision.made"):
 
 
 class DecisionOverridden(DomainEvent, tag="decision.overridden"):
-    __slots__ = ()
     _event_tag = "decision.overridden"
     _event_description = "Decyzja nadpisana przez użytkownika"
     aggregate_type: str = "decision"
@@ -122,7 +120,6 @@ class DecisionOverridden(DomainEvent, tag="decision.overridden"):
 
 
 class OutboxEventEmitted(DomainEvent, tag="outbox.emitted"):
-    __slots__ = ()
     _event_tag = "outbox.emitted"
     _event_description = "Zdarzenie outbox wyemitowane"
     aggregate_type: str = "outbox"
@@ -131,7 +128,6 @@ class OutboxEventEmitted(DomainEvent, tag="outbox.emitted"):
 
 
 class NotificationSent(DomainEvent, tag="notification.sent"):
-    __slots__ = ()
     _event_tag = "notification.sent"
     _event_description = "Powiadomienie wysłane do użytkownika"
     aggregate_type: str = "notification"
@@ -153,6 +149,45 @@ def encode_event(event: DomainEvent) -> bytes:
 
 def decode_event(data: bytes) -> DomainEvent:
     return msgspec.msgpack.decode(data, type=DomainEvent)
+
+
+# ── INNOWACJA #6 v7.0: Business Event Versioning / Upcasting ─────────────
+
+# Registry dla upcasterów: mapowanie (event_type, from_version) → upcast funkcja
+_upcast_registry: dict[tuple[str, int], Any] = {}
+
+
+def register_upcaster(
+    event_type: str,
+    from_version: int,
+    upcast_fn: Any,
+) -> None:
+    """Zarejestruj funkcję upcastingu dla konkretnego typu eventu i wersji.
+
+    Args:
+        event_type: Typ eventu (np. "invoice.created").
+        from_version: Wersja źródłowa schematu.
+        upcast_fn: Funkcja (dict) → dict przekształcająca starą wersję w nową.
+    """
+    _upcast_registry[(event_type, from_version)] = upcast_fn
+
+
+def upcast_event(event_dict: dict[str, Any], target_version: int = 1) -> dict[str, Any]:
+    """Upcastuj event do docelowej wersji.
+
+    Iteruje przez zarejestrowane upcastery aż osiągnie target_version.
+    Jeśli brak upcastera — zwraca bez zmian.
+    """
+    event_type = event_dict.get("event_type", "")
+    current = event_dict.get("event_schema_version", 1)
+    while current < target_version:
+        upcaster = _upcast_registry.get((event_type, current))
+        if upcaster is None:
+            break
+        event_dict = upcaster(event_dict)
+        current += 1
+        event_dict["event_schema_version"] = current
+    return event_dict
 
 
 # ── JSON Schema (auto from registry via __init_subclass__) ────────────

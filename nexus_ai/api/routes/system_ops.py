@@ -169,6 +169,33 @@ class KoreAuditController(Controller):
         return {"status": "ok", "kore_version": "legacy_removed", "detail": "kore_delivery_audit.py removed -- replaced by Integrity Verifier"}
 
 
+# ── /.well-known/security.txt ────────────────────────────────────────────
+# SUPERMOC v7.0 Security Audit: security.txt (RFC 9116) dla OWASP compliance
+class SecurityTxtController(Controller):
+    """RFC 9116 security.txt endpoint -- vulnerability disclosure."""
+
+    path = "/.well-known"
+    tags = (TAG_SECURITY,)
+
+    @get(
+        "/security.txt",
+        media_type="text/plain",
+        summary="security.txt (RFC 9116)",
+        description="Standard vulnerability disclosure endpoint per RFC 9116.",
+        operation_id="getSecurityTxt",
+        cache=86400,
+    )
+    async def security_txt(self) -> str:
+        return (
+            "Contact: mailto:security@nexusai.app\n"
+            "Expires: 2027-12-31T23:59:59Z\n"
+            "Preferred-Languages: pl, en\n"
+            "Canonical: https://nexusai.app/.well-known/security.txt\n"
+            "Policy: https://nexusai.app/security-policy\n"
+            "Acknowledgments: https://nexusai.app/security/hall-of-fame\n"
+        )
+
+
 # ── /version ────────────────────────────────────────────────────────────
 class VersionController(Controller):
     """API version information endpoint."""

@@ -10,27 +10,51 @@ from nexus_ai.core.config import AppConfig
 # ═══════════════════════════════════════════════════════════════════════════════
 # SUPERMOC v7.0 Security Audit: Tenant Isolation Hardening
 # ═══════════════════════════════════════════════════════════════════════════════
-# DEFAULT_TENANT_ID is now a sentinel requiring explicit override.
-# Using the default triggers a DeprecationWarning and will be removed in v8.0.
-# Each tenant MUST have a unique, explicit tenant_id to prevent accidental
+# DEFAULT_TENANT_ID is now HARD-FORBIDDEN outside explicit allowlist.
+# Using the default raises TenantIsolationError to prevent accidental
 # data sharing between tenants (identified as security gap in v7.0 audit).
 # ═══════════════════════════════════════════════════════════════════════════════
 
 _DEFAULT_TENANT_ID_SENTINEL = "default"
 _tenant_id_ctx: ContextVar[str] = ContextVar("tenant_id", default=_DEFAULT_TENANT_ID_SENTINEL)
 
-# Zachowaj dla kompatybilności wstecznej, ale oznacz jako DEPRECATED
-def _deprecated_default_tenant() -> str:
-    warnings.warn(
-        "DEFAULT_TENANT_ID='default' is deprecated. "
-        "Each tenant must have an explicit, unique tenant_id. "
-        "Using 'default' risks accidental data sharing between tenants. "
-        "Set a unique tenant ID via NEXUS_TENANT_ID or middleware. "
-        "This will become an error in NexusAI v8.0.",
-        DeprecationWarning,
-        stacklevel=3,
-    )
-    return _DEFAULT_TENANT_ID_SENTINEL
+
+class TenantIsolationError(RuntimeError):
+    """Raised when a tenant operation is attempted without explicit tenant_id.
+
+    SUPERMOC v7.0: Hard-security — każdy niejawny dostęp do "default"
+    kończy się błędem. To eliminuje ryzyko accidental data sharing
+    między tenantami (zidentyfikowane w audycie v7.0).
+    """
+    __slots__ = ()
+
+    def __init__(self, operation: str = "") -> None:
+        msg = (
+            f"TenantIsolationError: operation '{operation}' requires explicit tenant_id. "
+            "Using 'default' as fallback is forbidden. "
+            "Provide tenant_id via JWT, x-tenant-id header, or NEXUS_TENANT_ID env var."
+        )
+        super().__init__(msg)
+
+
+# Explicit allowlist dla operacji które mogą używać "default"
+# (np. health checks, auth endpoints). Wszystko inne → TenantIsolationError.
+_TENANT_ALLOWLIST_DEFAULT: frozenset[str] = frozenset({
+    "health", "auth", "metrics", "version", "security.txt",
+})
+
+
+def _deprecated_default_tenant(operation: str = "") -> str:
+    """v7.0 HARD: Rzuć TenantIsolationError zamiast fallback do 'default'.
+
+    Operacje na allowliście (health, auth, metrics) nadal mogą używać default.
+    Wszystkie pozostałe operacje wymagają explicit tenant_id.
+    """
+    op_lower = operation.lower().strip()
+    for allowed in _TENANT_ALLOWLIST_DEFAULT:
+        if allowed in op_lower:
+            return _DEFAULT_TENANT_ID_SENTINEL
+    raise TenantIsolationError(operation)
 
 DEFAULT_TENANT_ID = _DEFAULT_TENANT_ID_SENTINEL  # Backward compat — use explicitly per-tenant
 

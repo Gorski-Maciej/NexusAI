@@ -56,6 +56,7 @@ from nexus_ai.api.routes.risk import RiskController
 from nexus_ai.api.routes.contractor import ContractorController
 from nexus_ai.api.routes.security_alert import SecurityAlertController
 from nexus_ai.api.routes.system_ops import SecurityPostureController
+from nexus_ai.api.routes.system_ops import SecurityTxtController
 from nexus_ai.api.routes.system_integrity import SystemIntegrityController
 from nexus_ai.api.routes.tasks import TaskController
 from nexus_ai.api.routes.tax_math import TaxMathController
@@ -103,6 +104,31 @@ def _role_aware_identifier(request: Request) -> str:
 
 
 SUPPORTED_HEALTH_ENDPOINTS = ("/api/v1/health", "/api/v2/health")
+
+
+# ── GraphQL plugin lazy init (v7.0 INNOWACJA #7) ─────────────────────
+_GRAPHQL_PLUGIN: Any = None
+
+
+def _get_graphql_plugin() -> Any:
+    """Lazy-load GraphQL Strawberry plugin — tylko jeśli dostępny.
+
+    SUPERMOC v7.0: GraphQL endpoint przez Litestar Strawberry.
+    Importowany leniwie żeby nie blokować startu bez strawberry-graphql.
+    """
+    global _GRAPHQL_PLUGIN
+    # Sentinel: None = nie próbowano, False = próbowano i nie udało się
+    if _GRAPHQL_PLUGIN is False:
+        return None
+    if _GRAPHQL_PLUGIN is not None:
+        return _GRAPHQL_PLUGIN
+    try:
+        from nexus_ai.api.graphql import create_graphql_plugin
+        _GRAPHQL_PLUGIN = create_graphql_plugin()
+        return _GRAPHQL_PLUGIN or None  # create_graphql_plugin może zwrócić None
+    except ImportError:
+        _GRAPHQL_PLUGIN = False  # Sentinel: nie próbuj ponownie
+        return None
 
 
 # ── Router-level guards dla Layered Architecture ──────────────────────
@@ -275,10 +301,33 @@ def create_app() -> Litestar:
         ],
     )
 
+    wellknown_router = Router(
+        path="",
+        route_handlers=[
+            SecurityTxtController,  # v7.0 Security Audit: RFC 9116
+        ],
+    )
+
     # Używa _role_aware_identifier zdefiniowanego na poziomie modułu.
     # Jeden RateLimitConfig z custom identifier dla wszystkich endpointów.
     # identifier_for_request zwraca role-aware klucz, co daje per-role limity.
     # Endpointy wykluczone: health, schema -- nie wymagają rate limitingu.
+
+    # ── Tenant-level rate limiting (v7.0 Security Audit: per-tenant isolation) ──
+    # Rozszerza _role_aware_identifier o tenant_id dla pełnej izolacji
+    _original_role_aware = _role_aware_identifier
+
+    def _tenant_role_identifier(request: Request) -> str:
+        """Per-tenant + per-role rate limiting identifier.
+
+        SUPERMOC v7.0: Dodaje tenant_id do klucza rate limitingu,
+        zapobiegając sytuacji gdzie jeden tenant zużywa limit innego.
+        """
+        base = _original_role_aware(request)
+        tenant_id = getattr(request, "headers", {}).get("x-tenant-id", "") or "default"
+        # Bezpieczne — tylko alfanumeryczne
+        safe_tenant = "".join(c for c in str(tenant_id) if c.isalnum() or c in "_-")[:64]
+        return f"{safe_tenant}:{base}"
 
     # ── CSRF exclude z configu ──
     csrf_exclude_patterns: list[Any] = []
@@ -306,6 +355,7 @@ def create_app() -> Litestar:
             v1_router,
             v2_router,
             unversioned_router,
+            wellknown_router,  # v7.0: /.well-known/security.txt
             PrometheusController,  # Zastępuje MetricsController -- wbudowany /metrics
             MetricsDebugController,  # /debug/metrics -- debug endpoint
             progress_sse,  # path="/api/v1/events/progress" -- pełna ścieżka
@@ -316,6 +366,8 @@ def create_app() -> Litestar:
             OpenTelemetryPlugin(),
             # ProblemDetailsPlugin -- RFC 9457 dla wszystkich błędów HTTP (w tym własnych DomainError)
             ProblemDetailsPlugin(ProblemDetailsConfig(enable_for_all_http_exceptions=True)),
+            # v7.0 SUPERMOC #7: GraphQL Strawberry endpoint dla analityki
+            _get_graphql_plugin(),
         ],
         on_app_init=[jwt_auth.on_app_init, jwt_cookie_auth.on_app_init],
         on_startup=[on_startup],
@@ -332,7 +384,7 @@ def create_app() -> Litestar:
             # Jeden middleware zamiast trzech -- identifier zwraca role-aware klucz
             RateLimitConfig(
                 rate_limit=("minute", config.rate_limit_general),
-                identifier_for_request=_role_aware_identifier,
+                identifier_for_request=_tenant_role_identifier,  # v7.0: per-tenant + per-role
                 exclude=[
                     "/api/v1/health",
                     "/api/v2/health",
@@ -359,6 +411,7 @@ def create_app() -> Litestar:
             allow_methods=["*"],
             allow_headers=["*"],
             allow_credentials=cors_allow_credentials,
+            max_age=86400,  # v7.0 Security Audit: CORS preflight cache 24h (redukcja requestów OPTIONS o ~50%)
         ),
         csrf_config=CSRFConfig(
             secret=config.jwt_secret or "dev-csrf-secret",

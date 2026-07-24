@@ -9,6 +9,7 @@ from nexus_crypto import verify_jwt as _verify_jwt_rust
 
 from nexus_ai.core.tenant import (
     DEFAULT_TENANT_ID,
+    TenantIsolationError,
     reset_current_tenant_id,
     set_current_tenant_id,
 )
@@ -93,6 +94,13 @@ class TenantContextMiddleware(AbstractMiddleware):
             tenant_from_user = getattr(scope_user, "tenant_id", None)
 
         tenant_id = tenant_from_user or tenant_from_token or DEFAULT_TENANT_ID
+        # v7.0 SUPERMOC: Walidacja izolacji tenantów — brak explicit ID → log warning
+        if tenant_id == "default" and scope.get("path", "") not in ("/api/v1/health", "/api/v2/health", "/version", "/.well-known/security.txt"):
+            logger.warning(
+                "[TENANT-ISOLATION] Request without explicit tenant_id on path=%s — using 'default'. "
+                "This may cause data sharing between tenants. Consider adding tenant_id to JWT or x-tenant-id header.",
+                scope.get("path", "?"),
+            )
         tenant_token = set_current_tenant_id(tenant_id)
 
         structlog.contextvars.bind_contextvars(tenant_id=tenant_id)

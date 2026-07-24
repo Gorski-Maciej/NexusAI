@@ -108,9 +108,7 @@ class Subscription[EventT: msgspec.Struct]:
 # ── Typed EventBus ─────────────────────────────────────────────────────────
 
 
-final
-
-
+@final
 class EventBus:
     """Typed, msgspec-backed in-process event bus with structured concurrency.
 
@@ -128,7 +126,7 @@ class EventBus:
       - Replayable: event history enables late subscribers to catch up
       - Traceable: correlation_id propagates through the event chain
     """
-    __slots__ = ('_history_size', '_lock')
+    __slots__ = ('_history', '_history_size', '_lock', '_subscriptions')
 
     def __init__(self, history_size: int = 100) -> None:
         self._subscriptions: dict[type[msgspec.Struct], list[Subscription]] = {}

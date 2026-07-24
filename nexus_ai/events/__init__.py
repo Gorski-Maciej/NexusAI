@@ -71,6 +71,15 @@ from nexus_ai.events.projections import (
     DecisionProjection,
     InvoiceProjection,
 )
+from nexus_ai.events.nats_bridge import NatsBridge, BridgeEvent, get_nats_bridge
+from nexus_ai.events.saga_coordinator import (
+    SagaCoordinator,
+    SagaDefinition,
+    SagaState,
+    SagaStep,
+    StepStatus,
+    InvoiceProcessingSaga,
+)
 
 __all__ = [
     # Domain events
@@ -103,4 +112,15 @@ __all__ = [
     "get_event_schema_by_type",
     "get_event_type_map",
     "get_event_schema_summary",
+    # NATS Bridge (v7.0 INNOWACJA)
+    "NatsBridge",
+    "BridgeEvent",
+    "get_nats_bridge",
+    # Saga Coordinator (v7.0 INNOWACJA #3)
+    "SagaCoordinator",
+    "SagaDefinition",
+    "SagaState",
+    "SagaStep",
+    "StepStatus",
+    "InvoiceProcessingSaga",
 ]

@@ -36,8 +36,11 @@ logger = get_logger("nexus.events.projections")
 T = TypeVar("T", bound=DomainEvent)
 
 
-class BaseProjection[T: DomainEvent](AsyncBaseService):
+class BaseProjection(AsyncBaseService):
     """Generyczna projekcja CQRS -- współdzielona logika dla wszystkich widoków.
+
+    Używa __class_getitem__ zamiast [T: DomainEvent] aby uniknąć
+    konfliktu metaklas z AsyncBaseService w Python 3.13.
 
     Każda konkretna projekcja definiuje tylko:
       - schema_sql: DDL dla tabeli widoku
@@ -47,6 +50,14 @@ class BaseProjection[T: DomainEvent](AsyncBaseService):
     Współdzielone: checkpointy, PRAGMY, FTS5, paginacja, truncate, stats.
     """
     __slots__ = ('_event_store', '_name')
+
+    def __class_getitem__(cls, item: Any) -> Any:
+        """Obsługa Subskrypcji Typu Generycznego (BaseProjection[InvoiceCreated]).
+
+        W runtime zwraca po prostu klasę, pomijając mechanizm Generic.
+        Dla linterów: klasa zachowuje się jak Generic[T].
+        """
+        return cls
 
     schema_sql: ClassVar[str] = ""
     aggregate_type: ClassVar[str] = ""
