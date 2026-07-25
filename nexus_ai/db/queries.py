@@ -20,7 +20,7 @@ from nexus_ai.db.async_base_service import AsyncBaseService
 from nexus_ai.db.database import Base
 
 logger = get_logger("nexus.db.queries")
-T = TypeVar("T", bound=Base)
+T = TypeVar("T", bound="Base")  # Quoted to avoid mock evaluation during test collection
 
 
 # ═══════════════════════════════════════════════════════════════════════════

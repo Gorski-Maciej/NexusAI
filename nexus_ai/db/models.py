@@ -90,6 +90,10 @@ _STRICT_TABLES = {
     "reminders",
     "workflow_saga_state",
     "workflow_saga_history",
+    "audit_logs",
+    "fraud_entity_registry",
+    "category_codes",
+    "payment_methods",
 }
 
 
@@ -413,6 +417,7 @@ class AuditLog(SQLModel, table=True):
     __table_args__ = (
         Index("idx_audit_logs_invoice_action", "invoice_id", "action"),
         Index("idx_audit_logs_timestamp", "timestamp"),
+        Index("idx_audit_logs_tenant", "tenant_id"),
     )
     model_config: ClassVar[dict] = {
         "arbitrary_types_allowed": True,
@@ -431,6 +436,10 @@ class AuditLog(SQLModel, table=True):
         default=None,
         sa_type=JSON,
         description="JSON dict ze zmianami (dla AuditService)",
+    )
+    tenant_id: Mapped[str] = Field(
+        default="default",
+        sa_column_kwargs={"comment": "Tenant ID dla multi-tenant isolation"},
     )
     timestamp: Mapped[pendulum.DateTime] = Field(
         default_factory=lambda: pendulum.now("UTC"),
@@ -456,6 +465,7 @@ class OutboxEvent(SQLModel, table=True):
             "idx_outbox_pending", "status", "created_at", sqlite_where=text("status = 'PENDING'")
         ),
         Index("idx_outbox_aggregate", "aggregate_id", "event_type"),
+        Index("idx_outbox_tenant", "tenant_id"),
         {"sqlite_autoincrement": False},
     )
     model_config: ClassVar[dict] = {
@@ -487,6 +497,10 @@ class OutboxEvent(SQLModel, table=True):
         sa_type=PendulumDateTime,
     )
 
+    tenant_id: Mapped[str] = Field(
+        default="default",
+        sa_column_kwargs={"comment": "Tenant ID dla multi-tenant isolation"},
+    )
     invoice_id: Mapped[str | None] = Field(
         default=None,
         foreign_key="invoices.id",
@@ -502,7 +516,10 @@ class SecurityAlert(SQLModel, table=True):
     __slots__ = ()
 
     __tablename__ = "security_alerts"  # type: ignore[assignment]
-    __table_args__ = (Index("idx_security_alerts_actor", "actor", "created_at"),)
+    __table_args__ = (
+        Index("idx_security_alerts_actor", "actor", "created_at"),
+        Index("idx_security_alerts_tenant", "tenant_id"),
+    )
     model_config: ClassVar[dict] = {
         "arbitrary_types_allowed": True,
         "validate_assignment": True,
@@ -512,6 +529,10 @@ class SecurityAlert(SQLModel, table=True):
     id: Mapped[str] = Field(default_factory=lambda: uuid.uuid4().hex, primary_key=True)
     actor: Mapped[str] = Field(nullable=False)
     operation: Mapped[str] = Field(nullable=False)
+    tenant_id: Mapped[str] = Field(
+        default="default",
+        sa_column_kwargs={"comment": "Tenant ID dla multi-tenant isolation"},
+    )
     details: Mapped[dict] = Field(
         default_factory=dict,
         sa_type=JSON,

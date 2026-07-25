@@ -1,13 +1,19 @@
 """
 Database layer packages (OLTP and OLAP).
 
-Skonsolidowane moduły (FAZA 7):
-  - queries.py:  pagination + FTS5 + analytics views (dawniej pagination.py, fts.py, views.py)
-  - transactions.py: outbox + transaction patterns (dawniej outbox.py, transaction.py)
-  - security.py: SQLCipher config + key rotation (dawniej sqlcipher_config.py, sqlcipher_key_rotation.py)
-  - models.py: SQLModel definitions
+Skonsolidowane moduły (FAZA 7 + v7.0 Audit Enhancements):
+  - firewall.py: Database Firewall (INNOWACJA #5)
+  - wal_archiver.py: WAL Archiving + PITR (INNOWACJA #6)
+  - index_advisor.py: Intelligent Index Advisor (INNOWACJA #9)
+  - tenant_mesh.py: Zero-Trust Database Mesh (INNOWACJA #1)
+  - blue_green_migration.py: Blue-Green Schema Migration (INNOWACJA #3)
+  - queries.py:  pagination + FTS5 + analytics views
+  - transactions.py: outbox + transaction patterns
+  - security.py: SQLCipher config + key rotation
+  - models.py: SQLModel definitions (v7.0: STRICT audit_logs, tenant_id indexes)
   - hooks.py: DB hooks + walidacja
   - analytics.py: DuckDB manager
+  - vector_store.py: sqlite-vec with IVF/HNSW (v7.0: dim=768)
 """
 
 from nexus_ai.core.logger import get_logger as _get_logger

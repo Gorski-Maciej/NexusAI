@@ -38,11 +38,11 @@ VECTOR_DB_APP_ID = 1313827925  # NEXU
 VEC0_SCHEMAS: dict[str, dict[str, Any]] = {
     "invoice_vectors": {
         "table_name": "invoice_vectors",
-        "embedding_dim": 384,
+        "embedding_dim": 768,
         "distance_metric": "cosine",
         "partition_keys": [],
-        "metadata_columns": [],
-        "description": "Główne embeddingi faktur dla wyszukiwania semantycznego",
+        "metadata_columns": ["tenant_id", "id"],
+        "description": "Główne embeddingi faktur dla wyszukiwania semantycznego (768-dim LLM)",
     },
     "vendor_invoices": {
         "table_name": "vendor_invoices",

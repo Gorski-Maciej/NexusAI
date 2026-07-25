@@ -339,6 +339,24 @@ else := {
         us_initiated; tax_shortfall > 100000
     }
 
+    # PATH E: Ugoda z US (Art. 54 § 2-3 OrdPU) — dla dużych kwot, gdy spór jest ryzykowny
+    decision_path := "PATH_E_UGODA"
+    recommended_action := concat("\n", [
+        "1) ZŁÓŻ wniosek o przeprowadzenie postępowania ugodowego (Art. 54 OrdPU)",
+        "2) PRZYGOTUJ propozycję warunków ugody (częściowa redukcja + układ ratalny)",
+        "3) PRZEDSTAW argumentację: ważny interes podatnika + interes publiczny",
+        "4) ZABEZPIECZ majątek na poczet ugody",
+        "5) WYGENERUJ pismo ugodowe przez S22 (Tax Authority Interaction Engine)"
+    ])
+    penalty_before := sprintf("%.0f PLN (zaległość + 30%% sankcja VAT + odpowiedzialność KKS)", [tax_shortfall * 1.30])
+    penalty_after := sprintf("%.0f PLN (redukcja 30-50%% + rozłożenie na raty)", [tax_shortfall * 0.70])
+    mitigation_pct := 40
+    required_steps := ["Wniosek o postępowanie ugodowe", "Propozycja warunków", "Argumentacja prawna", "Zabezpieczenie majątku", "Pismo ugodowe (S22)"]
+    action_deadline := "Przed wydaniem decyzji ostatecznej"
+    decision_reason := "Duża kwota + ryzykowny spór — ugoda daje pewność i redukcję kary" {
+        us_initiated; tax_shortfall > 50000; has_fraud
+    }
+
     # PATH D: Przedawnienie (stare zobowiązania)
     decision_path := "PATH_D_PRZEDAWNIENIE"
     recommended_action := concat("\n", [

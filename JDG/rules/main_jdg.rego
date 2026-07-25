@@ -130,6 +130,7 @@ import data.jdg.legislative_monitor
 import data.jdg.neural_mesh
 import data.jdg.nkup_enterprise
 import data.jdg.exit_tax_mdr
+import data.jdg.mdr_dac6
 import data.jdg.pkpir_live
 import data.jdg.uor_live
 import data.jdg.local_taxes.excise_enterprise
@@ -138,6 +139,9 @@ import data.jdg.vat_substantive_complete
 import data.jdg.tax_authority_interaction
 import data.jdg.sanctions_optimization
 import data.jdg.lifecycle_manager
+import data.jdg.hyper_plan45_meta
+import data.jdg.wis_api
+import data.jdg.epuap
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
@@ -529,11 +533,12 @@ final_verdict_enriched = object.union(final_verdict_with_conflicts,
     object.union(legislative_monitor.decide,
     # ── PAS 12: Enterprise v6.0 Neural & Compliance Layer (2026-07-19) ──
     # S14: Neural Rule Mesh — cross-domain intelligence fabric
-    # S15: NKUP Enterprise Complete — Art. 23 PIT full coverage  
-    # S16: Exit Tax + MDR Enterprise — cross-border tax obligations
+    # S15: NKUP Enterprise Complete — Art. 23 PIT full coverage#   S16: Exit Tax + MDR Enterprise — cross-border tax obligations
+#   S16b: MDR DAC6 Enterprise — mandatory disclosure rules (hallmarks A-E)
     object.union(neural_mesh.decide,
     object.union(nkup_enterprise.decide,
     object.union(exit_tax_mdr.decide,
+    object.union(mdr_dac6.decide,
     # ── PAS 13: Enterprise v6.1 Accounting Live Layer (2026-07-19) ──
     # S17: PKPiR Enterprise Live — active column 1-17 validation
     # S18: UoR Enterprise Live — full accounting law compliance
@@ -550,8 +555,12 @@ final_verdict_enriched = object.union(final_verdict_with_conflicts,
     # S23: Sanctions & Penalty Optimization — KKS gradacja + decision tree
     # S24: Holistic JDG Lifecycle Manager — pełny cykl życia firmy
     object.union(vat_substantive_complete.decide,
-    object.union(tax_authority_interaction.decide,
-    object.union(sanctions_optimization.decide,
+    object.union(tax_authority_interaction.decide,    object.union(sanctions_optimization.decide,
         lifecycle_manager.decide
-    ))))
+    )))
     )))))))))))))))))))
+    # ── PAS 16: Enterprise v7.0 FAZA 3 Meta Layer (2026-07-25) ──
+    object.union(hyper_plan45_meta.decide,
+    object.union(wis_api.decide,
+        epuap.decide
+    ))))

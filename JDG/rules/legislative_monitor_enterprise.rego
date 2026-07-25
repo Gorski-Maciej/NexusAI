@@ -70,8 +70,10 @@ decide := {
     affected_acts := object.get(input, "legislative_affected_acts", [])
     trans_period := object.get(input, "legislative_transitional_period_months", 0)
 
-    change_routing := ""
-    change_routing_reason := ""
+    change_routing := "TRIAGE_QUEUE" { count(changes_detected) > 0 }
+    change_routing := "" { count(changes_detected) == 0 }
+    change_routing_reason := sprintf("Wykryto %d zmian — uruchom ISAP crawler: python JDG/tools/isap_crawler.py --dry-run", [count(changes_detected)]) { count(changes_detected) > 0 }
+    change_routing_reason := "" { count(changes_detected) == 0 }
 }
 
 build_change_detection_warnings(changes, pub, effective, vacatio, urgent, acts, trans_period) = warnings {
@@ -86,7 +88,11 @@ build_change_detection_warnings(changes, pub, effective, vacatio, urgent, acts, 
 
 no_changes_warning(changes) = warnings {
     count(changes) == 0
-    warnings := ["Brak nowych zmian legislacyjnych wplywajacych na JDG."]
+    warnings := [
+        "Brak nowych zmian legislacyjnych wplywajacych na JDG.",
+        "💡 Aktywuj crawler ISAP (isap.sejm.gov.pl) dla automatycznego monitoringu Dz.U.",
+        "📡 Crawler dostepny: JDG/tools/isap_crawler.py — uruchom go z harmonogramem cron."
+    ]
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

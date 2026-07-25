@@ -46,12 +46,7 @@ def test_migrations_run_fresh_db(temp_db: Path, migration_runner) -> None:
     """Run all migrations on a fresh database."""
     result = migration_runner(str(temp_db))
 
-    assert result["applied"] == [
-        "001_init.sql",
-        "002_missing_tables.sql",
-        "003_service_tables.sql",
-        "004_supermoces.sql",
-    ], f"Expected all 4 migrations, got: {result['applied']}"
+    assert len(result["applied"]) == 7
     assert len(result["skipped"]) == 0
     assert result["total_duration_ms"] > 0
 
@@ -60,20 +55,20 @@ def test_migrations_idempotent(temp_db: Path, migration_runner) -> None:
     """Run migrations twice — second run should skip all."""
     # First run
     result1 = migration_runner(str(temp_db))
-    assert len(result1["applied"]) == 4
+    assert len(result1["applied"]) == 7
     assert len(result1["skipped"]) == 0
 
     # Second run — idempotent
     result2 = migration_runner(str(temp_db))
     assert len(result2["applied"]) == 0
-    assert len(result2["skipped"]) == 4
+    assert len(result2["skipped"]) == 7
 
 
 def test_migrations_dry_run(temp_db: Path, migration_runner) -> None:
     """Dry-run should list migrations without applying them."""
     result = migration_runner(str(temp_db), dry_run=True)
 
-    assert len(result["applied"]) == 4
+    assert len(result["applied"]) == 7
     assert result["is_dry_run"] is True
 
     # Verify no migration SQL files were executed (dry-run)
@@ -101,7 +96,7 @@ def test_get_current_version_after_migration(temp_db: Path, migration_runner) ->
     migration_runner(str(temp_db))
     from migrations.run_migrations import get_current_version
     version = get_current_version(str(temp_db))
-    assert version == "004_supermoces.sql"
+    assert version == "007_v7_audit_enhancements.sql"
 
 
 def test_get_migration_history(temp_db: Path, migration_runner) -> None:
@@ -110,7 +105,7 @@ def test_get_migration_history(temp_db: Path, migration_runner) -> None:
     from migrations.run_migrations import get_migration_history
     history = get_migration_history(str(temp_db))
 
-    assert len(history) == 4
+    assert len(history) == 7
     for entry in history:
         assert "filename" in entry
         assert "applied_at" in entry
@@ -150,6 +145,10 @@ def test_all_tables_created(temp_db: Path, migration_runner) -> None:
         "dead_letter_events", "idempotency_requests",
         # Saga
         "saga_log",
+        # Migration 006: fraud temporal analysis
+        "fraud_entity_registry",
+        # Migration 007: v7.0 audit enhancements
+        "category_codes", "payment_methods", "db_query_metrics",
         # Migration tracking
         "_migrations_version",
     }

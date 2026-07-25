@@ -54,6 +54,7 @@ from nexus_ai.api.routes.performance_ops import PerformanceOpsController
 from nexus_ai.api.routes.system_ops import PrivacyController
 from nexus_ai.api.routes.risk import RiskController
 from nexus_ai.api.routes.contractor import ContractorController
+from nexus_ai.api.routes.db_observability import DBObservabilityController
 from nexus_ai.api.routes.security_alert import SecurityAlertController
 from nexus_ai.api.routes.system_ops import SecurityPostureController
 from nexus_ai.api.routes.system_ops import SecurityTxtController
@@ -287,6 +288,8 @@ def create_app() -> Litestar:
             # v7.0 Security Audit: Proof Chain export + RBAC audit + CSP reports
             ProofChainExportController,
             CSPReportController,
+            # v7.0 DB Observability: Firewall, WAL, Index Advisor, Tenant Mesh
+            DBObservabilityController,
         ],
     )
 

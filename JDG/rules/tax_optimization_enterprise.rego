@@ -20,6 +20,7 @@
 package jdg.tax_optimization
 
 import data.jdg.helpers
+import data.jdg.allowances
 
 default decide := {
     "matched": false, "rule_id": "jdg.tax_opt.no_match",
@@ -173,6 +174,230 @@ else := {
     routing_decision := "TRIAGE_QUEUE" { has_ip_rd_conflict }
     routing_reason := ""
     routing_reason := "Konflikt IP Box vs B+R — wymaga decyzji księgowego" { has_ip_rd_conflict }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S1-130: IP BOX DEEP INTEGRATION — Analiza IP Box + B+R + CIT Estonski
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.tax_opt.ip_box_deep_analysis",
+    "package": "jdg.tax_optimization",
+    "priority": 130,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "tax_opt_ip_box_eligible": ip_eligible,
+    "tax_opt_ip_box_effective_rate": ip_effective_rate,
+    "tax_opt_ip_box_vs_linear_breakeven": ip_breakeven,
+    "tax_opt_ip_box_requires_separate_evidence": true,
+    "tax_opt_ip_box_nexus_index_required": true,
+    "tax_opt_allowances_active": allowances_active,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": ip_routing,
+    "_routing_reason": ip_routing_reason,
+    "_legal_basis": "Art. 30ca-30cb PIT; Art. 24d ust. 4 PIT (wskaźnik Nexus)",
+    "_warnings": [
+        sprintf("🔬 IP BOX — ANALIZA GŁĘBOKA", []),
+        sprintf("   Kwalifikowane IP: %s", ["TAK" { ip_eligible } else "NIE"]),
+        sprintf("   Efektywna stawka: %.1f%%", [ip_effective_rate * 100]),
+        sprintf("   Próg opłacalności vs liniowy 19%%: %.0f PLN dochodu z IP", [ip_breakeven]),
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "📋 WYMAGANIA IP BOX:",
+        "   • Wyodrębniona ewidencja księgowa (Art. 30cb PIT)",
+        "   • Obliczenie wskaźnika Nexus [(a+b)*1.3/(a+b+c+d)]",
+        "   • Oddzielne konto bankowe dla IP (zalecane)",
+        "   • Dokumentacja kosztów kwalifikowanych B+R",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "💡 STRATEGIA ŁĄCZENIA:",
+        "   • IP Box (5%%) od dochodu z IP + B+R (100-200%% KUP) od POZOSTAŁEGO dochodu",
+        "   • Ulgi NIE mogą być stosowane na tym samym dochodzie!",
+        "   • Optymalnie: rozdziel dochód na IP i non-IP, zastosuj IP Box + B+R osobno"
+    ]
+} {
+    input.tax_optimization_ip_box_deep == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    has_ip := object.get(input.jdg_entrepreneur, "has_qualifying_ip", false)
+    ip_income := object.get(input.jdg_entrepreneur, "ip_box_qualifying_income", 0)
+    ip_costs := object.get(input.jdg_entrepreneur, "ip_box_costs", 0)
+    total_income := object.get(input.jdg_entrepreneur, "annual_income_projected", 120000)
+    non_ip_income := total_income - ip_income
+    has_rd_costs := object.get(input.jdg_entrepreneur, "has_rd_costs", false)
+
+    ip_eligible := has_ip and ip_income > 0 and pit_form != "LUMP_SUM"
+    ip_effective_rate := 0.05
+    ip_breakeven := ip_costs * 1.2
+    allowances_active := object.get(allowances.decide, "relief_type", "none")
+
+    ip_routing := "TRIAGE_QUEUE" { ip_eligible; ip_income > 50000 }
+    ip_routing := "" { true }
+    ip_routing_reason := sprintf("IP Box opłacalny — %.0f PLN dochodu z IP @ 5%%", [ip_income]) { ip_eligible; ip_income > 50000 }
+    ip_routing_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S1-140: ZUS COMPARISON BETWEEN TAX FORMS — Porównanie ZUS między formami
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.tax_opt.zus_comparison_by_form",
+    "package": "jdg.tax_optimization",
+    "priority": 140,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "",
+    "pit_form": current_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": zus_status, "zus_health_rate": "",
+    "tax_opt_zus_scale_total": zus_scale_total,
+    "tax_opt_zus_linear_total": zus_linear_total,
+    "tax_opt_zus_lump_total": zus_lump_total,
+    "tax_opt_zus_optimal_form": zus_optimal_form,
+    "tax_opt_zus_savings_vs_current": zus_savings,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Art. 79-81 ustawy zdrowotnej; Art. 18-22 SUS; Art. 30c ust. 2 PIT",
+    "_warnings": [
+        sprintf("🏥 PORÓWNANIE ZUS MIĘDZY FORMAMI", []),
+        sprintf("   Skala (9%% zdrowotna): %.0f PLN/rok", [zus_scale_total]),
+        sprintf("   Liniowy (4.9%% + odliczenie): %.0f PLN/rok", [zus_linear_total]),
+        sprintf("   Ryczałt (3 progi): %.0f PLN/rok", [zus_lump_total]),
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        sprintf("   💡 Najniższy ZUS: %s — oszczędność %.0f PLN/rok", [zus_optimal_form, zus_savings]),
+        "   ⚠️ UWAGA: Przy skali 9%% zdrowotna BEZ odliczenia od PIT!",
+        "   ✅ Liniowy: 4.9%% z możliwością odliczenia max 12 900 PLN/rok"
+    ]
+} {
+    input.tax_optimization_zus_comparison == true
+    current_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    zus_status := object.get(input.jdg_entrepreneur, "zus_status", "STANDARD")
+    annual_profit := object.get(input.jdg_entrepreneur, "annual_income_projected", 120000) - object.get(input.jdg_entrepreneur, "annual_costs_projected", 30000)
+    annual_revenue := object.get(input.jdg_entrepreneur, "annual_income_projected", 120000)
+    avg_wage := object.get(object.get(data.thresholds, "bounds", {}), "average_wage", 8000)
+
+    zus_scale_health := annual_profit * 0.09
+    zus_scale_total := zus_scale_health
+
+    zus_linear_health := min([annual_profit * 0.049, 12900])
+    zus_linear_total := zus_linear_health
+
+    zus_lump_health := floor(avg_wage * 0.60 * 0.09 * 100) / 100 * 12 { annual_revenue <= 60000 }
+    zus_lump_health := floor(avg_wage * 1.00 * 0.09 * 100) / 100 * 12 { annual_revenue > 60000; annual_revenue <= 300000 }
+    zus_lump_health := floor(avg_wage * 1.80 * 0.09 * 100) / 100 * 12 { annual_revenue > 300000 }
+    zus_lump_ded := floor(zus_lump_health * 0.50 * 100) / 100
+    zus_lump_total := zus_lump_health - zus_lump_ded
+
+    zus_optimal_form := "LINIOWY" { zus_linear_total < zus_scale_total; zus_linear_total <= zus_lump_total }
+    zus_optimal_form := "RYCZALT" { zus_lump_total < zus_scale_total; zus_lump_total < zus_linear_total }
+    zus_optimal_form := "SKALA" { zus_scale_total <= zus_linear_total; zus_scale_total <= zus_lump_total }
+
+    zus_current := object.get({"PIT_SCALE": zus_scale_total, "LINEAR": zus_linear_total, "LUMP_SUM": zus_lump_total}, current_form, zus_scale_total)
+    zus_optimal := object.get({"PIT_SCALE": zus_scale_total, "LINEAR": zus_linear_total, "LUMP_SUM": zus_lump_total}, zus_optimal_form, zus_scale_total)
+    zus_savings := zus_current - zus_optimal
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S1-150: ESTONSKI CIT CONSIDERATION — Czy warto przejść na CIT estoński?
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.tax_opt.estonian_cit_analysis",
+    "package": "jdg.tax_optimization",
+    "priority": 150,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "",
+    "pit_form": current_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "tax_opt_estonian_eligible": est_eligible,
+    "tax_opt_estonian_effective_rate": 0.09,
+    "tax_opt_estonian_deferral_benefit": est_deferral,
+    "tax_opt_estonian_profit_withdrawal_tax": est_withdrawal_tax,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "Analiza CIT estońskiego — rozważ przekształcenie",
+    "_legal_basis": "Art. 28c-28t CIT (rozdz. 6b — ryczałt od dochodów spółek)",
+    "_warnings": [
+        sprintf("🏢 CIT ESTOŃSKI — ANALIZA OPŁACALNOŚCI", []),
+        sprintf("   Kwalifikacja: %s", ["TAK" { est_eligible } else "NIE — JDG musi przekształcić się w Sp. z o.o."]),
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "✅ ZALETY CIT ESTOŃSKIEGO:",
+        "   • 0%% podatku dopóki zyski są reinwestowane",
+        "   • 9%% CIT tylko przy wypłacie zysku (mały podatnik)",
+        "   • 19%% CIT przy wypłacie (duży podatnik)",
+        "   • Brak zaliczek miesięcznych — podatek tylko przy dystrybucji",
+        "   • Uproszczona księgowość (brak odroczonego podatku)",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "⚠️ WYMAGANIA:",
+        "   • Sp. z o.o. / S.A. (NIE dostępne dla JDG!)",
+        "   • <50% przychodów pasywnych",
+        "   • Zatrudnienie minimum 3 pracowników (nie właściciel)",
+        "   • Nakłady inwestycyjne",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        sprintf("💰 Szacowana oszczędność przez odroczenie: %.0f PLN (przy reinwestycji)", [est_deferral])
+    ]
+} {
+    input.tax_optimization_estonian_cit_check == true
+    current_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    annual_profit := object.get(input.jdg_entrepreneur, "annual_income_projected", 120000) - object.get(input.jdg_entrepreneur, "annual_costs_projected", 30000)
+    is_jdg := true
+    has_min_employees := object.get(input.jdg_entrepreneur, "employee_count", 0) >= 3
+    passive_income_pct := object.get(input.jdg_entrepreneur, "passive_income_pct", 0)
+
+    est_eligible := not is_jdg and has_min_employees and passive_income_pct < 0.50
+    est_deferral := annual_profit * 0.19
+    est_withdrawal_tax := annual_profit * 0.09
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S1-160: JOINT FILING OPTIMIZATION — Wspólne rozliczenie z małżonkiem
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.tax_opt.joint_filing_optimizer",
+    "package": "jdg.tax_optimization",
+    "priority": 160,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "",
+    "pit_form": current_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "tax_opt_joint_filing_possible": joint_possible,
+    "tax_opt_joint_filing_saves": joint_savings,
+    "tax_opt_spouse_income": spouse_income,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": joint_routing,
+    "_routing_reason": joint_routing_reason,
+    "_legal_basis": "Art. 6 ust. 2-3 PIT (wspólne rozliczenie małżonków)",
+    "_warnings": [
+        sprintf("👫 WSPÓLNE ROZLICZENIE Z MAŁŻONKIEM", []),
+        sprintf("   Dochód JDG: %.0f PLN | Dochód małżonka: %.0f PLN", [jdg_income, spouse_income]),
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        sprintf("   💰 Oszczędność: %.0f PLN", [joint_savings]),
+        "   ✅ Rozliczenie na skali podatkowej (12%/32%)",
+        "   ⚠️ TYLKO skala — NIE liniowy, NIE ryczałt!",
+        "   ⚠️ Małżonek musi mieć PIT od etatu, emerytury lub renty",
+        "   📅 Wniosek do 30 kwietnia roku następnego"
+    ]
+} {
+    input.tax_optimization_joint_filing == true
+    current_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    jdg_income := object.get(input.jdg_entrepreneur, "annual_income_projected", 120000) - object.get(input.jdg_entrepreneur, "annual_costs_projected", 30000)
+    spouse_income := object.get(input.jdg_entrepreneur, "spouse_annual_income", 30000)
+    spouse_has_own_income := spouse_income > 0
+
+    joint_possible := current_form == "PIT_SCALE"
+    joint_savings := 0
+    joint_savings := jdg_income * 0.04 { current_form == "PIT_SCALE"; spouse_income < 30000 }
+    joint_savings := jdg_income * 0.02 { current_form == "PIT_SCALE"; spouse_income >= 30000 }
+
+    joint_routing := "TRIAGE_QUEUE" { joint_possible; joint_savings > 5000 }
+    joint_routing := "" { true }
+    joint_routing_reason := sprintf("Wspólne rozliczenie — oszczędność %.0f PLN", [joint_savings]) { joint_possible; joint_savings > 5000 }
+    joint_routing_reason := sprintf("Liniowy/ryczałt — wspólne rozliczenie NIEMOŻLIWE", []) { not joint_possible }
+    joint_routing_reason := "" { true }
 }
 
 build_stacking_warnings(combo, relief_pln) = warnings {

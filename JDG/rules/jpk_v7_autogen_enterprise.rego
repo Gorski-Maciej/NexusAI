@@ -327,6 +327,63 @@ crosscheck_warnings_fallback(disc_count, status, jpk_sales, pkpir_rev, ksef_cnt)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# JV7-1949: JPK_V7K SUPPORT — Kwartalne rozliczenie VAT (dla malych podatnikow)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.jpk_v7.v7k_quarterly_support",
+    "package": "jdg.jpk_v7_autogen",
+    "priority": 1949,
+    "vat_rate": "", "rounding_level": "PLN", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "jpk_version": "JPK_V7K(1)",
+    "jpk_v7k_quarter": v7k_quarter,
+    "jpk_v7k_quarterly_net_sales": q_net_sales,
+    "jpk_v7k_quarterly_vat_due": q_vat_due,
+    "jpk_v7k_quarterly_vat_deductible": q_vat_ded,
+    "jpk_v7k_net_vat_to_pay": net_vat,
+    "jpk_v7k_eligibility_check": eligibility_ok,
+    "_routing": v7k_routing,
+    "_routing_reason": v7k_reason,
+    "_legal_basis": "Art. 99 ust. 2-3 VAT; Art. 2 pkt 25 VAT (maly podatnik)",
+    "_warnings": [
+        sprintf("JPK_V7K — ROZLICZENIE KWARTALNE (Q%s)", [v7k_quarter]),
+        sprintf("   Sprzedaz netto: %.0f PLN | VAT nalezny: %.0f PLN", [q_net_sales, q_vat_due]),
+        sprintf("   VAT naliczony: %.0f PLN | Do zaplaty: %.0f PLN", [q_vat_ded, net_vat]),
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "📋 WARUNKI JPK_V7K (kwartalne):",
+        "   • Status malego podatnika VAT (sprzedaz < 2 000 000 EUR)",
+        "   • Zlozenie VAT-R z wyborem kwartalnego rozliczenia",
+        "   • Brak zaleglosci podatkowych",
+        "   • Termin: do 25. dnia miesiaca po zakonczeniu kwartalu",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "⚠️ UWAGA: Kwartalne = 4 deklaracje zamiast 12 — mniej administracji!",
+        "   • ALE: podatek za caly kwartal trzeba zaplacic jednorazowo",
+        "   • Wymagane: lepsze planowanie cashflow (modul S8)"
+    ]
+} {
+    input.jpk_v7k_generate == true
+    v7k_quarter := object.get(input, "jpk_v7k_quarter", "Q2")
+    q_net_sales := object.get(input, "jpk_v7k_quarterly_net_sales", 0)
+    q_vat_due := object.get(input, "jpk_v7k_quarterly_vat_due", 0)
+    q_vat_ded := object.get(input, "jpk_v7k_quarterly_vat_deductible", 0)
+    annual_revenue := object.get(input.jdg_entrepreneur, "annual_revenue_actual", 180000)
+    vat_status := object.get(input.jdg_entrepreneur, "vat_status", "EXEMPT")
+    
+    net_vat := q_vat_due - q_vat_ded
+    eligibility_ok := annual_revenue < 2000000 * 4.5
+    
+    v7k_routing := "TRIAGE_QUEUE" { eligibility_ok; vat_status != "ACTIVE" }
+    v7k_routing := "" { true }
+    v7k_reason := "Zarejestruj sie jako podatnik VAT kwartalny (VAT-R) aby zmniejszyc liczbe deklaracji z 12 do 4" { eligibility_ok; vat_status != "ACTIVE" }
+    v7k_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # JV7-1948: JPK_V7 KSEF DATA EXTRACTION
 # ═══════════════════════════════════════════════════════════════════════════════
 

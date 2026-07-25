@@ -239,7 +239,7 @@ else := {
     appeal_routing := "BLOCK_AND_ALERT" { decision_amount > 50000 }
     appeal_routing := "" { decision_amount <= 10000 }
     
-    appeal_reason := sprintf("Decyzja na %.0f PLN — odwołanie zalecane w ciągu 14 dni", [decision_amount]) { decision_amount > 0 }
+    appeal_reason := sprintf("Decyzja na %.0f PLN — odwolanie zalecane w ciagu 14 dni. Uzyj S22 (tax_authority_interaction) do auto-generacji pisma odwoławczego.", [decision_amount]) { decision_amount > 0 }
     appeal_reason := "" { decision_amount <= 0 }
 }
 

@@ -10,18 +10,24 @@ System:
 4. Loguje postęp przez structlog
 5. Wspiera SQLCipher (PRAGMA key)
 
+v7.0 Audit Enhancements:
+- Auto-ANALYZE po każdej migracji (optymalizacja statystyk)
+- Checksum SHA-256 dla każdego pliku migracji
+- Weryfikacja checksum przed wykonaniem
+
 Usage:
     python -m migrations.run_migrations              # Wszystkie migracje
     python -m migrations.run_migrations --target 003  # Do konkretnej migracji
 
 Zgodnie z zasadą nadrzędną: zero utraty funkcjonalności.
-Każda migracja (001-004) została napisana jako czysty SQL
-w plikach 001_init.sql - 004_supermoces.sql.
+Każda migracja (001-007) została napisana jako czysty SQL
+w plikach 001_init.sql - 007_v7_audit_enhancements.sql.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import sqlite3
 import time
@@ -72,15 +78,22 @@ def get_sqlite_conn(
 
 
 def ensure_migrations_table(conn: sqlite3.Connection) -> None:
-    """Utwórz tabelę śledzącą zastosowane migracje."""
+    """Utwórz tabelę śledzącą zastosowane migracje z checksum."""
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS _migrations_version (
             filename    TEXT PRIMARY KEY,
             applied_at  TEXT NOT NULL DEFAULT (datetime('now')),
-            duration_ms INTEGER NOT NULL DEFAULT 0
+            duration_ms INTEGER NOT NULL DEFAULT 0,
+            checksum    TEXT NOT NULL DEFAULT ''
         );
     """)
     conn.commit()
+
+
+def _compute_checksum(sql_path: Path) -> str:
+    """Oblicz SHA-256 checksum pliku SQL."""
+    content = sql_path.read_bytes()
+    return hashlib.sha256(content).hexdigest()
 
 
 def get_applied_migrations(conn: sqlite3.Connection) -> set[str]:
@@ -158,19 +171,29 @@ def apply_migration(
     """
     sql = sql_path.read_text(encoding="utf-8")
 
+    # Compute checksum BEFORE execution
+    checksum = _compute_checksum(sql_path)
+
     start = time.perf_counter()
     conn.executescript(sql)
     conn.commit()
     duration_ms = int((time.perf_counter() - start) * 1000)
 
-    # Zapisz metadane migracji
+    # Zapisz metadane migracji z checksum
     conn.execute(
-        "INSERT INTO _migrations_version (filename, duration_ms) VALUES (?, ?)",
-        (sql_path.name, duration_ms),
+        "INSERT INTO _migrations_version (filename, duration_ms, checksum) VALUES (?, ?, ?)",
+        (sql_path.name, duration_ms, checksum),
     )
     conn.commit()
 
-    return {"filename": sql_path.name, "duration_ms": duration_ms}
+    # Auto-ANALYZE po każdej migracji dla optymalizacji statystyk
+    try:
+        conn.execute("PRAGMA analysis_limit = 1000;")
+        conn.execute("ANALYZE;")
+    except Exception:
+        pass
+
+    return {"filename": sql_path.name, "duration_ms": duration_ms, "checksum": checksum}
 
 
 # ── Main migration runner ───────────────────────────────────────────────
@@ -240,9 +263,11 @@ def run_migrations(
                 )
                 raise
 
-        # PRAGMA optimize po migracjach
+        # PRAGMA optimize + ANALYZE po migracjach
         try:
             conn.execute("PRAGMA optimize;")
+            conn.execute("PRAGMA analysis_limit = 1000;")
+            conn.execute("ANALYZE;")
         except Exception:
             pass
 

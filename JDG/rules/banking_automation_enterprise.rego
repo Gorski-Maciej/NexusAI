@@ -213,42 +213,15 @@ else := {
     "banking_pit_advance_payment": pit_payment,
     "banking_us_total_monthly": us_total,
     "banking_us_pis_json": pis_json,
-    "_routing": "",
-    "_routing_reason": "",
+    "banking_us_cashflow_30d": cashflow_30d,
+    "banking_cashflow_gap": us_total - cashflow_30d,
+    "_routing": us_cf_routing,
+    "_routing_reason": us_cf_reason,
     "_legal_basis": "Art. 44 PIT; Art. 103 VAT; Art. 61 § 1 OrdPU",
-    "_warnings": build_us_transfer_warnings(vat_payment, pit_payment, us_total)
-} {
-    input.banking_us_prepare == true
-
-    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
-    is_vat_payer := object.get(input.jdg_entrepreneur, "vat_status", "ACTIVE") != "EXEMPT"
-    monthly_profit := object.get(input.jdg_entrepreneur, "monthly_profit_avg", 8000)
-    monthly_revenue := object.get(input.jdg_entrepreneur, "monthly_revenue_avg", 15000)
-    nip := object.get(input.jdg_entrepreneur, "nip", "")
-    us_micro_account := object.get(input.jdg_entrepreneur, "us_micro_account_number", "")
-
-    vat_payment := 0
-    vat_on_sales := monthly_revenue * 0.23 { is_vat_payer }
-    vat_on_purchases := monthly_revenue * 0.60 * 0.23 { is_vat_payer }
-    vat_payment := max([vat_on_sales - vat_on_purchases, 0]) { is_vat_payer }
-
-    pit_payment := 0
-    pit_payment := monthly_profit * 0.12 { pit_form == "PIT_SCALE"; monthly_profit <= 10000 }
-    pit_payment := 1200 + (monthly_profit - 10000) * 0.32 { pit_form == "PIT_SCALE"; monthly_profit > 10000 }
-    pit_payment := monthly_profit * 0.19 { pit_form == "LINEAR" }
-    pit_payment := monthly_revenue * 0.12 { pit_form == "LUMP_SUM" }
-
-    us_total := vat_payment + pit_payment
-    current_month := object.get(input, "current_month", 7)
-    current_year := 2026
-    next_month := current_month + 1
-
-    pis_json := build_pis_payload("TAX", us_micro_account, us_total,
-        sprintf("VAT+PIT %02d/%d NIP %s", [current_month, current_year, nip]),
-        input, "Urzad Skarbowy", nip)
+    "_warnings": build_us_transfer_warnings(vat_payment, pit_payment, us_total, cashflow_30d),
+    "_cross_ref": "S8 Cashflow Predictor — zintegruj automatyczne prognozowanie"
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
 # BNK-1830: MONTHLY PAYMENT BATCH — Paczka przelewów na miesiąc
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -996,12 +969,15 @@ build_zus_transfer_warnings(social, health, fp_fs, total, deadline) = warnings {
 }
 
 # Helper: US warnings
-build_us_transfer_warnings(vat, pit, total) = warnings {
+build_us_transfer_warnings(vat, pit, total, cf_30d) = warnings {
+    cf_info := sprintf("   Cashflow 30d: %.0f PLN — %s", [cf_30d, "OK" { cf_30d >= 0 } else "DEFICYT!"]) { cf_30d != 0 }
+    cf_info := [] { cf_30d == 0 }
     warnings := [
         sprintf("🏛️ PRZELEWY DO US — %.2f PLN miesięcznie", [total]),
         sprintf("   VAT-7: %.2f PLN → do 25. dnia", [vat]) { vat > 0 },
         sprintf("   PIT: %.2f PLN → do 20. dnia", [pit]) { pit > 0 },
         "📋 MIKRORACHUNEK PODATKOWY: generator na podatki.gov.pl",
-        "📌 PolishAPI credytorAccount = mikrorachunek US"
+        "📌 PolishAPI credytorAccount = mikrorachunek US",
+        cf_info
     ]
 }

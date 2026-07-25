@@ -156,7 +156,13 @@ def _make_pragma_setter(key_hex: str):
             raise RuntimeError("SQLCipher key_hex contains invalid characters")
         try:
             dbapi_connection.execute(f"PRAGMA key = x'{key_hex}';")
-            dbapi_connection.execute("PRAGMA cipher_compatibility = 4;")
+            # Try GCM first (faster, hardware-accelerated via AES-NI)
+            try:
+                dbapi_connection.execute("PRAGMA cipher_algorithm = 'AES-256-GCM';")
+                logger.debug("[DB] SQLCipher using AES-256-GCM (hardware-accelerated)")
+            except sqlite3.OperationalError:
+                # GCM not supported — fall back to CBC with compatibility profile
+                dbapi_connection.execute("PRAGMA cipher_compatibility = 4;")
         except sqlite3.OperationalError as exc:
             # Fallback for older SQLCipher versions
             dbapi_connection.execute("PRAGMA cipher_page_size = 4096;")

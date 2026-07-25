@@ -86,7 +86,6 @@ decide := {
     # Cashflow warning
     days_to_pay := object.get(input.invoice, "payment_days", 30)
     cashflow_warning := sprintf("⚠️ PŁYNNOŚĆ: Zapłacisz %.2f PLN brutto za %d dni. VAT (%.2f PLN) odzyskasz dopiero w deklaracji za ten miesiąc. LUKA KASOWA: %.2f PLN przez okres do zwrotu.",            [amount_net + amount_vat, days_to_pay, amount_vat, amount_vat])
-    }
     cashflow_warning := "" { not is_invoice_cost }
     cashflow_warning := "" { amount_vat <= 10000 }
 
@@ -385,3 +384,543 @@ build_health_warnings(score, tax, zus) = warnings {
 }
 
 monthly_rev := 15000
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S2-240: CROSS-PACKAGE DEPENDENCY MATRIX — Macierz zależności 60×60
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.cross_domain.dependency_matrix",
+    "package": "jdg.cross_domain_hub",
+    "priority": 240,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "cross_domain_dependency_count": dep_count,
+    "cross_domain_critical_dependencies": critical_deps,
+    "cross_domain_impact_score": impact_score,
+    "cross_domain_cascade_risk": cascade_risk,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": dep_routing,
+    "_routing_reason": dep_reason,
+    "_legal_basis": "Cross-domain analysis — wszystkie pakiety JDG",
+    "_warnings": [
+        sprintf("🔗 MACIERZ ZALEZNOSCI MIEDZY PAKIETAMI", []),
+        sprintf("   Aktywne zaleznosci: %d", [dep_count]),
+        sprintf("   Krytyczne: %d", [count(critical_deps)]),
+        sprintf("   Impact Score: %d/100", [impact_score]),
+        sprintf("   Ryzyko kaskadowe: %s", [cascade_risk])
+    ]
+} {
+    input.cross_domain_dependency_matrix == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    is_vat_payer := object.get(input.jdg_entrepreneur, "vat_status", "EXEMPT") == "ACTIVE"
+    has_employees := object.get(input.jdg_entrepreneur, "has_employees", false)
+    is_cross_border := object.get(input.jdg_entrepreneur, "is_cross_border_active", false)
+    uses_ksef := object.get(input.jdg_entrepreneur, "uses_ksef", false)
+    has_ip_box := object.get(input.jdg_entrepreneur, "has_qualifying_ip", false)
+
+    critical_deps := []
+    critical_deps := array.concat(critical_deps, ["VAT→PIT: zmiana stawki VAT wpływa na KUP i dochód PIT"]) { is_vat_payer }
+    critical_deps := array.concat(critical_deps, ["PIT→ZUS: zmiana formy PIT zmienia składkę zdrowotną"]) { pit_form == "PIT_SCALE" }
+    critical_deps := array.concat(critical_deps, ["ZUS→Cashflow: składki ZUS to stałe obciążenie miesięczne"]) { true }
+    critical_deps := array.concat(critical_deps, ["KSeF→VAT→PIT: faktury ustrukturyzowane wpływają na JPK i KUP"]) { uses_ksef }
+    critical_deps := array.concat(critical_deps, ["IPBox→PIT→ZUS: dochód z IP 5% zmienia PIT i podstawę zdrowotną"]) { has_ip_box }
+    critical_deps := array.concat(critical_deps, ["CrossBorder→VAT→MDR: transakcje transgraniczne trigger MDR DAC6"]) { is_cross_border }
+    critical_deps := array.concat(critical_deps, ["Employer→ZUS→PPK: zatrudnienie trigger składki PPK+PFRON"]) { has_employees }
+
+    dep_count := count(critical_deps)
+    impact_score := dep_count * 12
+    impact_score := 100 { impact_score > 100 }
+    cascade_risk := "NISKIE" { dep_count <= 2 }
+    cascade_risk := "SREDNIE" { dep_count > 2; dep_count <= 4 }
+    cascade_risk := "WYSOKIE" { dep_count > 4 }
+
+    dep_routing := "TRIAGE_QUEUE" { dep_count > 4 }
+    dep_routing := "" { true }
+    dep_reason := sprintf("Wysoka liczba zależności (%d) — ryzyko efektu domina", [dep_count]) { dep_count > 4 }
+    dep_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S2-250: KSeF × VAT × PIT TRIPLE INTERACTION — Trójstronna interakcja
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.cross_domain.ksef_vat_pit_triple",
+    "package": "jdg.cross_domain_hub",
+    "priority": 250,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "cross_domain_ksef_sync_status": ksef_sync,
+    "cross_domain_ksef_jpk_discrepancy": discrepancy_pct,
+    "cross_domain_ksef_pkpir_alignment": pkpir_aligned,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": triple_routing,
+    "_routing_reason": triple_reason,
+    "_legal_basis": "Art. 106na-106nw VAT (KSeF); Art. 109 ust. 3d-e VAT (JPK)",
+    "_warnings": [
+        sprintf("📊 KSeF × VAT × PIT — TROJSTRONNA INTERAKCJA", []),
+        sprintf("   Synchronizacja KSeF-JPK: %s", [ksef_sync]),
+        sprintf("   Rozbieznosc: %.1f%%", [discrepancy_pct * 100]),
+        sprintf("   PKPiR alignment: %s", ["OK" { pkpir_aligned } else "ROZBIEZNOSCI"])
+    ]
+} {
+    input.cross_domain_ksef_triple == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    ksef_invoices := object.get(input.jdg_entrepreneur, "ksef_invoice_count_month", 0)
+    jpk_invoices := object.get(input.jdg_entrepreneur, "jpk_invoice_count_month", 0)
+    pkpir_entries := object.get(input.jdg_entrepreneur, "pkpir_entries_month", 0)
+
+    ksef_sync := "ZSynchronizowane" { ksef_invoices == jpk_invoices }
+    ksef_sync := sprintf("Rozbieznosc: KSeF=%d, JPK=%d", [ksef_invoices, jpk_invoices]) { ksef_invoices != jpk_invoices }
+
+    max_invoices := max([ksef_invoices, jpk_invoices, 1])
+    discrepancy_pct := (ksef_invoices - jpk_invoices) / max_invoices { ksef_invoices >= jpk_invoices }
+    discrepancy_pct := (jpk_invoices - ksef_invoices) / max_invoices { jpk_invoices > ksef_invoices }
+
+    pkpir_aligned := pkpir_entries >= ksef_invoices
+
+    triple_routing := "TRIAGE_QUEUE" { not pkpir_aligned }
+    triple_routing := "" { true }
+    triple_reason := "Niezgodnosc KSeF/JPK/PKPiR — sprawdz księgowania" { not pkpir_aligned }
+    triple_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S2-260: CASHFLOW STRESS TEST CROSS-DOMAIN — Test warunków skrajnych
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.cross_domain.cashflow_stress_test",
+    "package": "jdg.cross_domain_hub",
+    "priority": 260,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "cross_domain_stress_liquid_ratio": liquid_ratio,
+    "cross_domain_stress_months_survival": months_survival,
+    "cross_domain_stress_worst_case_deficit": worst_deficit,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": stress_routing,
+    "_routing_reason": stress_reason,
+    "_legal_basis": "Ogólne — analiza płynności",
+    "_warnings": [
+        sprintf("💧 CASHFLOW STRESS TEST — CROSS-DOMAIN", []),
+        sprintf("   Wskaznik plynnosci: %.2f", [liquid_ratio]),
+        sprintf("   Miesiace przetrwania (scenariusz pesymistyczny): %d", [months_survival]),
+        sprintf("   Deficyt w najgorszym scenariuszu: %.0f PLN", [worst_deficit])
+    ]
+} {
+    input.cross_domain_stress_test == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    cash_reserves := object.get(input.jdg_entrepreneur, "cash_reserves", 30000)
+    monthly_fixed_costs := object.get(input.jdg_entrepreneur, "monthly_fixed_costs", 8000)
+    monthly_revenue := object.get(input.jdg_entrepreneur, "monthly_revenue_avg", 15000)
+    has_employees := object.get(input.jdg_entrepreneur, "has_employees", false)
+
+    # Stress scenario: revenue drops 50%, costs stay same
+    stress_revenue := monthly_revenue * 0.50
+    stress_monthly_deficit := monthly_fixed_costs - stress_revenue
+    worst_deficit := max([stress_monthly_deficit, 0])
+
+    liquid_ratio := cash_reserves / max([monthly_fixed_costs, 1])
+    months_survival := 0 { worst_deficit <= 0 }
+    months_survival := floor(cash_reserves / worst_deficit) { worst_deficit > 0 }
+
+    stress_routing := "BLOCK_AND_ALERT" { months_survival < 2 }
+    stress_routing := "TRIAGE_QUEUE" { months_survival >= 2; months_survival < 6 }
+    stress_routing := "" { true }
+    stress_reason := sprintf("KRYTYCZNE: tylko %d mies przetrwania przy spadku przychodow o 50%%!", [months_survival]) { months_survival < 2 }
+    stress_reason := sprintf("Umiarkowane ryzyko — %d mies bufferu", [months_survival]) { months_survival >= 2; months_survival < 6 }
+    stress_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S2-270: ZUS × PIT HEALTH CONTRIBUTION PARADOX DEEP
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.cross_domain.zus_pit_health_paradox_deep",
+    "package": "jdg.cross_domain_hub",
+    "priority": 270,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "cross_domain_effective_marginal_rate": effective_rate,
+    "cross_domain_health_paradox_active": has_paradox,
+    "cross_domain_break_even_income": break_even,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": paradox_routing,
+    "_routing_reason": paradox_reason,
+    "_legal_basis": "Art. 79-81 ustawy zdrowotnej; Art. 27, 30c PIT",
+    "_warnings": [
+        sprintf("🏥 PARADOKS SKŁADKI ZDROWOTNEJ — ANALIZA GŁĘBOKA", []),
+        sprintf("   Efektywna krańcowa stopa: %.1f%%", [effective_rate * 100]),
+        sprintf("   Paradoks aktywny: %s", ["TAK — 1000 PLN wiecej = +%.0f PLN zdrowotnej" { has_paradox } else "NIE"]),
+        sprintf("   Break-even dla zmiany na liniowy: %.0f PLN dochodu", [break_even])
+    ]
+} {
+    input.cross_domain_health_paradox == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    monthly_profit := object.get(input.jdg_entrepreneur, "monthly_profit_avg", 8000)
+    annual_profit := monthly_profit * 12
+
+    effective_rate := 0.12 + 0.09 { pit_form == "PIT_SCALE" }
+    effective_rate := 0.19 + 0.049 { pit_form == "LINEAR" }
+    effective_rate := 0.15 { pit_form == "LUMP_SUM" }
+
+    has_paradox := pit_form == "PIT_SCALE" and monthly_profit > 6000
+    break_even := 150000
+
+    paradox_routing := "" { true }
+    paradox_reason := sprintf("Efektywna stopa %.0f%% — rozwaz zmiane formy na liniowy (%.0f%%)", [effective_rate * 100, 0.239 * 100]) { has_paradox }
+    paradox_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S2-280: CROSS-BORDER × VAT × PIT DOMINO — Transgraniczny efekt domina
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.cross_domain.crossborder_vat_pit_domino",
+    "package": "jdg.cross_domain_hub",
+    "priority": 280,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "cross_domain_cb_wnt_triggered": wnt_triggered,
+    "cross_domain_cb_mdr_risk": mdr_risk,
+    "cross_domain_cb_tax_haven_flag": tax_haven_flag,
+    "cross_domain_cb_vat_registration_needed": vat_reg_needed,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": cb_routing,
+    "_routing_reason": cb_reason,
+    "_legal_basis": "Art. 17 VAT (WNT); Art. 86a-86o OrdPU (MDR); Art. 30c PIT",
+    "_warnings": [
+        sprintf("🌍 CROSS-BORDER × VAT × PIT — ANALIZA TRANSGRANICZNA", []),
+        sprintf("   WNT trigger: %s", ["TAK" { wnt_triggered } else "NIE"]),
+        sprintf("   Ryzyko MDR: %s", ["WYSOKIE" { mdr_risk } else "NISKIE"]),
+        sprintf("   Tax haven: %s — %s", ["TAK" { tax_haven_flag } else "NIE", "WYMAGA MDR!" { tax_haven_flag } else "OK"])
+    ]
+} {
+    input.cross_domain_cb_analysis == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    vendor_country := object.get(input.vendor, "country", "PL")
+    is_eu := vendor_country in {"DE","FR","IT","ES","NL","CZ","SK","LT","LV","EE","AT","BE","BG","HR","CY","DK","FI","GR","HU","IE","LU","MT","PT","RO","SI","SE"}
+    is_tax_haven := vendor_country in {"KY","BM","VG","JE","GG","IM","GI","MC","LI","AD","SM","MH","PW","CK","NR","NU","WS","VU","AE"}
+    amount_net := object.get(input.invoice, "amount_net", 0)
+
+    wnt_triggered := input.invoice.direction == "PURCHASE" and is_eu and vendor_country != "PL"
+    mdr_risk := is_tax_haven or (is_eu and amount_net > 1000000)
+    tax_haven_flag := is_tax_haven
+    vat_reg_needed := wnt_triggered and object.get(input.jdg_entrepreneur, "vat_status", "EXEMPT") == "EXEMPT"
+
+    cb_routing := "TRIAGE_QUEUE" { mdr_risk }
+    cb_routing := "" { true }
+    cb_reason := sprintf("Transakcja z %s — ryzyko MDR i sankcji!", [vendor_country]) { mdr_risk }
+    cb_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S2-290: MDR × EXIT TAX × VAT INTERACTION — Interakcja MDR z exit tax
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.cross_domain.mdr_exit_tax_vat",
+    "package": "jdg.cross_domain_hub",
+    "priority": 290,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "cross_domain_mdr_active": mdr_active,
+    "cross_domain_exit_tax_risk": exit_tax_risk,
+    "cross_domain_mdr_deadline_priority": deadline_priority,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": mdr_routing,
+    "_routing_reason": mdr_reason,
+    "_legal_basis": "Art. 86a-86o OrdPU (MDR); Art. 30da PIT (exit tax); Art. 108a-108d VAT",
+    "_warnings": [
+        sprintf("🔗 MDR × EXIT TAX × VAT — INTERAKCJA", []),
+        sprintf("   MDR DAC6: %s", ["AKTYWNY" { mdr_active } else "BRAK"]),
+        sprintf("   Exit tax risk: %s", ["AKTYWNY" { exit_tax_risk } else "BRAK"]),
+        sprintf("   Priorytet deadline: %s", [deadline_priority])
+    ]
+} {
+    input.cross_domain_mdr_analysis == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    is_cross_border := object.get(input.jdg_entrepreneur, "is_cross_border_active", false)
+    has_ip_transfer := object.get(input, "mdr_ip_transfer", false)
+    involves_tax_haven := object.get(input, "mdr_involves_tax_haven", false)
+    changes_tax_residency := object.get(input, "changes_tax_residency", false)
+
+    mdr_active := is_cross_border and (has_ip_transfer or involves_tax_haven)
+    exit_tax_risk := changes_tax_residency and is_cross_border
+
+    deadline_priority := "MDR FIRST (7 dni)" { mdr_active }
+    deadline_priority := "EXIT TAX FIRST (przed zmiana rezydencji)" { exit_tax_risk; not mdr_active }
+    deadline_priority := "BRAK" { not mdr_active; not exit_tax_risk }
+
+    mdr_routing := "TRIAGE_QUEUE" { mdr_active or exit_tax_risk }
+    mdr_routing := "" { true }
+    mdr_reason := "MDR i Exit Tax aktywne — priorytetowe raportowanie!" { mdr_active and exit_tax_risk }
+    mdr_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S2-300: S10 (BANKING) × S8 (CASHFLOW) INTEGRATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.cross_domain.banking_cashflow_integration",
+    "package": "jdg.cross_domain_hub",
+    "priority": 300,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "cross_domain_banking_auto_enabled": banking_auto,
+    "cross_domain_cashflow_forecast_30d": cashflow_30d,
+    "cross_domain_upcoming_payments_total": upcoming_total,
+    "cross_domain_banking_batch_ready": batch_ready,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": bc_routing,
+    "_routing_reason": bc_reason,
+    "_legal_basis": "Art. 108a VAT (MPP); Art. 47 SUS; PSD2 Art. 64-67",
+    "_warnings": [
+        sprintf("💳 BANKING × CASHFLOW — INTEGRACJA S10+S8", []),
+        sprintf("   Automatyzacja bankowa: %s", ["WLACZONA" { banking_auto } else "WYLACZONA"]),
+        sprintf("   Cashflow 30 dni: %.0f PLN", [cashflow_30d]),
+        sprintf("   Nadchodzace platnosci: %.0f PLN", [upcoming_total]),
+        sprintf("   Paczka gotowa do wysylki: %s", ["TAK" { batch_ready } else "NIE"])
+    ]
+} {
+    input.cross_domain_banking_cashflow == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    banking_auto := object.get(input.jdg_entrepreneur, "banking_psd2_enabled", false)
+    monthly_zus := object.get(input.jdg_entrepreneur, "monthly_zus_total", 1500)
+    monthly_vat := object.get(input.jdg_entrepreneur, "monthly_vat_to_pay", 2000)
+    monthly_pit := object.get(input.jdg_entrepreneur, "monthly_pit_advance", 1000)
+    cash_reserves := object.get(input.jdg_entrepreneur, "cash_reserves", 30000)
+
+    upcoming_total := monthly_zus + monthly_vat + monthly_pit
+    cashflow_30d := cash_reserves - upcoming_total
+    batch_ready := banking_auto and upcoming_total > 0 and cashflow_30d > 0
+
+    bc_routing := "BLOCK_AND_ALERT" { upcoming_total > 0; cashflow_30d < 0 }
+    bc_routing := "TRIAGE_QUEUE" { upcoming_total > 0; cashflow_30d < upcoming_total * 0.5 }
+    bc_routing := "" { true }
+    bc_reason := sprintf("DEFICYT: platnosci %.0f PLN > rezerwy %.0f PLN!", [upcoming_total, cash_reserves]) { cashflow_30d < 0 }
+    bc_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S2-310: IMPACT SCORING CALCULATOR — Punktacja wpływu zmian
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.cross_domain.impact_scoring",
+    "package": "jdg.cross_domain_hub",
+    "priority": 310,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "cross_domain_impact_total": impact_total,
+    "cross_domain_impact_ranking": impact_ranking,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": imp_routing,
+    "_routing_reason": imp_reason,
+    "_legal_basis": "Cross-domain impact analysis",
+    "_warnings": [
+        sprintf("📊 IMPACT SCORING — CROSS-DOMAIN", []),
+        sprintf("   Wynik: %d/100", [impact_total]),
+        sprintf("   Ranking: %s", [impact_ranking])
+    ]
+} {
+    input.cross_domain_impact_score == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    has_employees := object.get(input.jdg_entrepreneur, "has_employees", false)
+    is_vat_payer := object.get(input.jdg_entrepreneur, "vat_status", "EXEMPT") == "ACTIVE"
+    is_cross_border := object.get(input.jdg_entrepreneur, "is_cross_border_active", false)
+    uses_ksef := object.get(input.jdg_entrepreneur, "uses_ksef", false)
+
+    impact_total := 0
+    impact_total := impact_total + 25 { has_employees }
+    impact_total := impact_total + 20 { is_vat_payer }
+    impact_total := impact_total + 30 { is_cross_border }
+    impact_total := impact_total + 15 { uses_ksef }
+    impact_total := impact_total + 10 { pit_form == "PIT_SCALE" }
+
+    impact_ranking := "NISKI" { impact_total < 30 }
+    impact_ranking := "SREDNI" { impact_total >= 30; impact_total < 60 }
+    impact_ranking := "WYSOKI" { impact_total >= 60 }
+
+    imp_routing := "TRIAGE_QUEUE" { impact_total >= 60 }
+    imp_routing := "" { true }
+    imp_reason := sprintf("Wysoki impact score %d/100 — wymagany monitoring cross-domain", [impact_total]) { impact_total >= 60 }
+    imp_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S2-320: MERMAID DIAGRAM GENERATOR — Generowanie diagramów zależności
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.cross_domain.mermaid_diagram_generator",
+    "package": "jdg.cross_domain_hub",
+    "priority": 320,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "cross_domain_mermaid_diagram": mermaid_code,
+    "cross_domain_mermaid_nodes": node_count,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Wizualizacja zależności — narzędzie analityczne",
+    "_warnings": [
+        sprintf("📐 DIAGRAM MERMAID — ZALEZNOSCI CROSS-DOMAIN", []),
+        sprintf("   Wezlow: %d", [node_count]),
+        "   Skopiuj kod do https://mermaid.live aby zobaczyc diagram"
+    ]
+} {
+    input.cross_domain_mermaid == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    is_vat_payer := object.get(input.jdg_entrepreneur, "vat_status", "EXEMPT") == "ACTIVE"
+    has_employees := object.get(input.jdg_entrepreneur, "has_employees", false)
+    is_cross_border := object.get(input.jdg_entrepreneur, "is_cross_border_active", false)
+
+    # Generate Mermaid flowchart code
+    mermaid_lines := ["graph TD"]
+    mermaid_lines := array.concat(mermaid_lines, ["    VAT[VAT] --> PIT[PIT]"])
+    mermaid_lines := array.concat(mermaid_lines, ["    VAT --> JPK[JPK_V7/KSeF]"])
+    mermaid_lines := array.concat(mermaid_lines, ["    PIT --> ZUS[ZUS/Skladka zdrowotna]"])
+    mermaid_lines := array.concat(mermaid_lines, ["    ZUS --> CASHFLOW[Cashflow]"])
+    mermaid_lines := array.concat(mermaid_lines, ["    PIT --> ALLOW[Ulgi/IP Box]"])
+
+    mermaid_lines := array.concat(mermaid_lines, ["    VAT --> CB[Cross-Border]"]) { is_cross_border }
+    mermaid_lines := array.concat(mermaid_lines, ["    CB --> MDR[MDR DAC6]"])
+    mermaid_lines := array.concat(mermaid_lines, ["    CB --> EXIT[Exit Tax]"])
+
+    mermaid_lines := array.concat(mermaid_lines, ["    ZUS --> EMP[Employer/PPK]"]) { has_employees }
+    mermaid_lines := array.concat(mermaid_lines, ["    EMP --> PFRON[PFRON]"])
+
+    mermaid_lines := array.concat(mermaid_lines, ["    VAT --> BANKING[Banking PSD2]"]) { is_vat_payer }
+    mermaid_lines := array.concat(mermaid_lines, ["    BANKING --> CASHFLOW"])
+
+    mermaid_lines := array.concat(mermaid_lines, ["    PIT --> STRATEGIC[Strategic Advisor S5]"])
+    mermaid_lines := array.concat(mermaid_lines, ["    STRATEGIC --> TRANSFORM[JDG->Sp. z o.o.]"])
+
+    mermaid_code := concat("\n", mermaid_lines)
+    node_count := count(mermaid_lines) - 1
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S2-330: CROSS-INITIATIVE DEPENDENCY MAP — Mapa zależności między S1-S24
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.cross_domain.initiative_dependency_map",
+    "package": "jdg.cross_domain_hub",
+    "priority": 330,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "cross_domain_s1_depends_on": ["S9", "S11", "S14"],
+    "cross_domain_s2_depends_on": ["S1", "S8", "S10", "S12", "S14", "S16", "S21", "S22", "S23", "S24"],
+    "cross_domain_s4_depends_on": ["S22", "S23"],
+    "cross_domain_s8_depends_on": ["S1", "S9", "S10"],
+    "cross_domain_s10_depends_on": ["S8", "S12"],
+    "cross_domain_s16_depends_on": ["S13", "S21"],
+    "cross_domain_s22_depends_on": ["S4", "S23"],
+    "cross_domain_s23_depends_on": ["S4", "S22"],
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Mapa zależności inicjatyw strategicznych S1-S24",
+    "_warnings": [
+        "🗺️ MAPA ZALEZNOSCI INICJATYW S1-S24:",
+        "   S1 (Tax Opt) → S9 (Form Transition), S11 (Annual Declaration), S14 (Neural Mesh)",
+        "   S2 (Cross-Domain) → S1, S8, S10, S12, S14, S16, S21, S22, S23, S24",
+        "   S4 (Audit Defense) ↔ S22 (Tax Authority), S23 (Sanctions)",
+        "   S8 (Cashflow) → S1, S9, S10",
+        "   S10 (Banking) → S8, S12",
+        "   S16 (MDR) → S13 (Legislative), S21 (VAT Complete)",
+        "   S22 ↔ S4, S23",
+        "   S23 ↔ S4, S22"
+    ]
+} {
+    input.cross_domain_initiative_map == true
+    true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S2-340: ANNUAL CROSS-DOMAIN STRATEGIC REVIEW — Roczny przegląd
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.cross_domain.annual_strategic_review",
+    "package": "jdg.cross_domain_hub",
+    "priority": 340,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "cross_domain_annual_review_score": review_score,
+    "cross_domain_annual_recommendations": annual_recs,
+    "cross_domain_top_3_priorities": top_3,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": annual_routing,
+    "_routing_reason": annual_reason,
+    "_legal_basis": "Kompleksowy przegląd roczny — wszystkie inicjatywy",
+    "_warnings": [
+        sprintf("📅 ROCZNY PRZEGLAD CROSS-DOMAIN %d", [2026]),
+        sprintf("   Ocena: %d/100", [review_score]),
+        sprintf("   Rekomendacje: %d", [count(annual_recs)])
+    ]
+} {
+    input.cross_domain_annual_review == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    annual_revenue := object.get(input.jdg_entrepreneur, "annual_revenue_actual", 200000)
+    is_vat_payer := object.get(input.jdg_entrepreneur, "vat_status", "EXEMPT") == "ACTIVE"
+    has_employees := object.get(input.jdg_entrepreneur, "has_employees", false)
+
+    review_score := 50
+    review_score := review_score + 10 { is_vat_payer }
+    review_score := review_score + 15 { has_employees }
+    review_score := review_score + 10 { annual_revenue > 300000 }
+
+    annual_recs := [
+        "Przeglad zgodnosci VAT/JPK/PKPiR",
+        "Analiza optymalizacji formy opodatkowania",
+        "Aktualizacja kalendarza compliance S13",
+        "Weryfikacja MDR DAC6 dla transakcji transgranicznych"
+    ]
+
+    top_3 := ["Optymalizacja podatkowa S1", "Compliance cross-check S2", "Strategia transformacji S5"]
+
+    annual_routing := "TRIAGE_QUEUE" { review_score > 70 }
+    annual_routing := "" { true }
+    annual_reason := "Przeglad roczny zalecany" { true }
+}

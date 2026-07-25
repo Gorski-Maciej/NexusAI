@@ -375,6 +375,203 @@ build_annual_warnings() = [
     true
 }
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# S5-540: HIRING DECISION ADVISOR — Analiza opłacalności zatrudnienia
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.strategic.hiring_advisor",
+    "package": "jdg.strategic_advisor",
+    "priority": 540,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "strategic_hiring_breakeven_revenue": hiring_breakeven,
+    "strategic_hiring_monthly_cost": hiring_monthly_cost,
+    "strategic_hiring_recommended": hiring_recommended,
+    "strategic_hiring_rd_eligible": hiring_rd,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": hiring_routing,
+    "_routing_reason": hiring_reason,
+    "_legal_basis": "KP; Art. 26eb PIT (innowacyjni pracownicy); Art. 18d CIT",
+    "_warnings": [
+        sprintf("👥 DECYZJA O ZATRUDNIENIU", []),
+        sprintf("   Koszt miesieczny: %.0f PLN", [hiring_monthly_cost]),
+        sprintf("   Prog oplacalnosci: %.0f PLN dodatkowego przychodu/mies", [hiring_breakeven]),
+        sprintf("   %s", ["✅ ZATRUDNIJ — zwiekszysz moc przerobowa" { hiring_recommended } else "⏳ POCZEKAJ — za wczesnie"])
+    ]
+} {
+    input.strategic_hiring_check == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    monthly_revenue := object.get(input.jdg_entrepreneur, "monthly_revenue_avg", 15000)
+    revenue_trend := object.get(input.jdg_entrepreneur, "revenue_trend_6mo_pct", 0)
+    current_hours_utilization := object.get(input.jdg_entrepreneur, "hours_utilization_pct", 0.80)
+    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+
+    hiring_monthly_cost := min_wage * 1.40
+    hiring_breakeven := hiring_monthly_cost / 0.30
+    hiring_recommended := current_hours_utilization > 0.90 and revenue_trend > 15
+    hiring_rd := object.get(input.jdg_entrepreneur, "has_rd_activity", false) and hiring_recommended
+
+    hiring_routing := "TRIAGE_QUEUE" { hiring_recommended }
+    hiring_routing := "" { true }
+    hiring_reason := "Zatrudnienie rekomendowane — wykorzystanie >90% i trend wzrostowy" { hiring_recommended }
+    hiring_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S5-550: EXIT STRATEGY PLANNER — Plan wyjścia z biznesu
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.strategic.exit_planner",
+    "package": "jdg.strategic_advisor",
+    "priority": 550,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "strategic_exit_options": exit_options,
+    "strategic_exit_estimated_value": exit_value,
+    "strategic_exit_tax_impact": exit_tax,
+    "strategic_exit_recommended_path": exit_path,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": exit_routing,
+    "_routing_reason": exit_reason,
+    "_legal_basis": "Art. 30da PIT (exit tax); Art. 551-584 KSH; Art. 24 ust. 5 PIT",
+    "_warnings": [
+        sprintf("🚪 PLANOWANIE EXIT — STRATEGIA WYJSCIA", []),
+        sprintf("   Szacowana wartosc: %.0f PLN", [exit_value]),
+        sprintf("   Exit tax: %.0f PLN", [exit_tax]),
+        sprintf("   Rekomendowana sciezka: %s", [exit_path])
+    ]
+} {
+    input.strategic_exit_plan == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    annual_profit := object.get(input.jdg_entrepreneur, "annual_profit_actual", 100000)
+    business_assets := object.get(input.jdg_entrepreneur, "business_assets_value", 50000)
+    plans_exit := object.get(input.jdg_entrepreneur, "plans_business_exit_5y", false)
+    has_successor := object.get(input.jdg_entrepreneur, "has_successor", false)
+
+    exit_value := annual_profit * 2.5 + business_assets * 0.80
+    exit_tax := exit_value * 0.19
+
+    exit_options := ["Sprzedaz firmy", "Przeksztalcenie w Sp. z o.o. + sprzedaz udzialow", "Sukcesja familyjna", "Likwidacja"]
+    exit_path := "Przeksztalcenie w Sp. z o.o. + sprzedaz udzialow" { plans_exit; exit_value > 500000 }
+    exit_path := "Sukcesja familyjna" { has_successor }
+    exit_path := "Sprzedaz JDG" { true }
+
+    exit_routing := "TRIAGE_QUEUE" { plans_exit }
+    exit_routing := "" { true }
+    exit_reason := "Planowanie exit — rozpoczac przygotowania 2 lata przed" { plans_exit }
+    exit_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S5-560: ESG/SUSTAINABILITY ADVISOR — Doradca zrównoważonego rozwoju
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.strategic.esg_advisor",
+    "package": "jdg.strategic_advisor",
+    "priority": 560,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "strategic_esg_score": esg_score,
+    "strategic_esg_carbon_estimate": carbon_est,
+    "strategic_esg_csr_relief_eligible": csr_eligible,
+    "strategic_esg_bdo_required": bdo_required,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": esg_routing,
+    "_routing_reason": esg_reason,
+    "_legal_basis": "Art. 26ha PIT (ulga CSR); Ustawa o BDO; Taksonomia EU",
+    "_warnings": [
+        sprintf("🌱 ESG — ZROWNOWAZONY ROZWOJ", []),
+        sprintf("   ESG Score: %d/100", [esg_score]),
+        sprintf("   Szacowany slad weglowy: %.1f t CO2/rok", [carbon_est]),
+        sprintf("   Ulga CSR: %s", ["DOSTEPNA (150%% KUP)" { csr_eligible } else "BRAK"])
+    ]
+} {
+    input.strategic_esg_check == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    annual_revenue := object.get(input.jdg_entrepreneur, "annual_revenue_actual", 200000)
+    has_employees := object.get(input.jdg_entrepreneur, "has_employees", false)
+    industry := object.get(input.jdg_entrepreneur, "industry", "GENERAL")
+    has_csr_expenses := object.get(input.jdg_entrepreneur, "has_csr_sponsoring", false)
+
+    esg_score := 50
+    esg_score := esg_score + 20 { has_csr_expenses }
+    esg_score := esg_score + 10 { has_employees }
+
+    carbon_est := annual_revenue * 0.00005
+    csr_eligible := has_csr_expenses and pit_form != "LUMP_SUM"
+    bdo_required := industry in {"MANUFACTURING", "CONSTRUCTION", "TRANSPORT", "WASTE"}
+
+    esg_routing := "TRIAGE_QUEUE" { bdo_required }
+    esg_routing := "" { true }
+    esg_reason := "BDO wymagane — zarejestruj sie w bazie BDO" { bdo_required }
+    esg_reason := "" { true }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# S5-570: DIGITAL TRANSFORMATION ADVISOR — Doradca cyfryzacji
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.strategic.digital_transformation",
+    "package": "jdg.strategic_advisor",
+    "priority": 570,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "strategic_digital_ksef_ready": ksef_ready,
+    "strategic_digital_epuap_active": epuap_active,
+    "strategic_digital_automation_potential_pct": automation_pct,
+    "strategic_digital_next_steps": digital_steps,
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": dig_routing,
+    "_routing_reason": dig_reason,
+    "_legal_basis": "Ustawa o KSeF; Ustawa o e-Doreczeniach; Ustawa o dostepnosci cyfrowej",
+    "_warnings": [
+        sprintf("💻 TRANSFORMACJA CYFROWA JDG", []),
+        sprintf("   KSeF gotowosc: %s", ["TAK" { ksef_ready } else "NIE — wymagane do 2026"]),
+        sprintf("   ePUAP/e-Doreczenia: %s", ["AKTYWNE" { epuap_active } else "NIEAKTYWNE"]),
+        sprintf("   Potencjal automatyzacji: %.0f%%", [automation_pct * 100])
+    ]
+} {
+    input.strategic_digital_check == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    uses_ksef := object.get(input.jdg_entrepreneur, "uses_ksef", false)
+    has_epuap := object.get(input.jdg_entrepreneur, "has_epuap", false)
+    uses_banking_api := object.get(input.jdg_entrepreneur, "banking_psd2_enabled", false)
+    manual_processes_count := object.get(input.jdg_entrepreneur, "manual_processes_count", 5)
+
+    ksef_ready := uses_ksef
+    epuap_active := has_epuap
+    automation_pct := 0.20 { uses_ksef }
+    automation_pct := automation_pct + 0.15 { has_epuap }
+    automation_pct := automation_pct + 0.10 { uses_banking_api }
+
+    digital_steps := []
+    digital_steps := array.concat(digital_steps, ["Wdróż KSeF do fakturowania"]) { not uses_ksef }
+    digital_steps := array.concat(digital_steps, ["Aktywuj ePUAP/e-Doreczenia"]) { not has_epuap }
+    digital_steps := array.concat(digital_steps, ["Podłącz PSD2 API bankowe"]) { not uses_banking_api }
+    digital_steps := array.concat(digital_steps, ["Automatyzuj JPK_V7 i deklaracje"]) { manual_processes_count > 3 }
+
+    dig_routing := "TRIAGE_QUEUE" { count(digital_steps) > 2 }
+    dig_routing := "" { true }
+    dig_reason := sprintf("%d krokow do pelnej cyfryzacji", [count(digital_steps)]) { count(digital_steps) > 0 }
+    dig_reason := "" { true }
+}
+
 asset_value := 0
 asset_type := "GENERAL"
 depr_method := ""

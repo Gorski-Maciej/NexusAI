@@ -388,6 +388,75 @@ build_relief_loss_warnings(lost, value, kept) = warnings {
 } else = [sprintf("✅ Przy przejściu na %s zachowujesz wszystkie ulgi.", [""])]
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# FTS-1775: JDG → SP. Z O.O. TRANSITION ANALYSIS — Analiza przekształcenia
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.form_transition.jdg_to_spzoo_analysis",
+    "package": "jdg.form_transition",
+    "priority": 1775,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": current_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": zus_status, "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "sim_transition_to_spzoo_recommended": spzoo_recommended,
+    "sim_spzoo_jdg_annual_cost": jdg_annual,
+    "sim_spzoo_spzoo_annual_cost": spzoo_annual,
+    "sim_spzoo_breakeven_months": breakeven_months,
+    "_routing": spzoo_routing,
+    "_routing_reason": spzoo_reason,
+    "_legal_basis": "Art. 551-584 KSH (przekształcenie); Art. 19 CIT; Art. 30c PIT",
+    "_warnings": [
+        sprintf("🏢 PRZEKSZTAŁCENIE JDG → SP. Z O.O.", []),
+        sprintf("   JDG (obecnie): %.0f PLN/rok", [jdg_annual]),
+        sprintf("   Sp. z o.o.: %.0f PLN/rok", [spzoo_annual]),
+        sprintf("   💰 Oszczędność: %.0f PLN/rok", [jdg_annual - spzoo_annual]),
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "✅ ZALETY: Ograniczona odpowiedzialność, CIT estoński 9%, łatwiejsza sprzedaż",
+        "⚠️ WADY: Pełna księgowość, podwójne opodatkowanie, obowiązki KRS",
+        "📋 KOSZTY DODATKOWE: księgowa ~500 PLN/mies, KRS ~3000 PLN/rok, ZUS zarządu ~1000 PLN/mies",
+        sprintf("💡 %s", [spzoo_verdict])
+    ]
+} {
+    input.simulate_spzoo_transition == true
+    current_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    zus_status := object.get(input.jdg_entrepreneur, "zus_status", "STANDARD")
+    annual_profit := object.get(input.jdg_entrepreneur, "annual_profit_projected", 100000)
+    has_employees := object.get(input.jdg_entrepreneur, "has_employees", false)
+
+    # JDG annual cost (simplified)
+    pit_tax := annual_profit * 0.19 { current_form == "LINEAR" }
+    pit_tax := annual_profit * 0.19 { current_form == "PIT_SCALE"; annual_profit > 120000 }
+    pit_tax := max([annual_profit - 30000, 0]) * 0.12 { current_form == "PIT_SCALE"; annual_profit <= 120000 }
+    health_jdg := annual_profit * 0.09 { current_form == "PIT_SCALE" }
+    health_jdg := min([annual_profit * 0.049, 12900]) { current_form == "LINEAR" }
+    zus_jdg := 21600
+    jdg_annual := pit_tax + health_jdg + zus_jdg
+
+    # Sp. z o.o. annual cost
+    cit_estonski := not has_employees
+    cit_tax := 0 { cit_estonski }
+    cit_tax := annual_profit * 0.09 { not cit_estonski; annual_profit <= 2000000 }
+    cit_tax := annual_profit * 0.19 { not cit_estonski; annual_profit > 2000000 }
+    admin_cost := 21000
+    spzoo_annual := cit_tax + admin_cost
+
+    spzoo_recommended := jdg_annual > spzoo_annual + 15000
+    annual_savings := jdg_annual - spzoo_annual
+    breakeven_months := floor(21000 / max([annual_savings / 12, 1])) { annual_savings > 0 }
+    breakeven_months := 99 { annual_savings <= 0 }
+
+    spzoo_routing := "TRIAGE_QUEUE" { spzoo_recommended }
+    spzoo_routing := "" { true }
+    spzoo_reason := sprintf("Przekształcenie w Sp. z o.o. opłacalne — oszczędność %.0f PLN/rok", [jdg_annual - spzoo_annual]) { spzoo_recommended }
+    spzoo_reason := "Pozostań na JDG" { true }
+    spzoo_verdict := "PRZEKSZTAŁĆ — opłacalne finansowo" { spzoo_recommended }
+    spzoo_verdict := "POZOSTAŃ NA JDG — obecna forma optymalna" { not spzoo_recommended }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # FTS-1780: HEALTH CONTRIBUTION IMPACT — Wpływ składki zdrowotnej per forma
 # ═══════════════════════════════════════════════════════════════════════════════
 

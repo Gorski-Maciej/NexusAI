@@ -50,7 +50,10 @@ class ConfigLoader:
     Ładuje config/base.toml + config/{env}.toml.
     Auto-reload sprawdza mtime co poll_interval sekund.
     """
-    __slots__ = ('_auto_reload_enabled', '_base_path', '_path', '_poll_interval')
+    __slots__ = (
+        '_auto_reload_enabled', '_base_path', '_data', '_last_checked',
+        '_last_mtime', '_on_change_callbacks', '_path', '_poll_interval',
+    )
 
     def __init__(
         self,
