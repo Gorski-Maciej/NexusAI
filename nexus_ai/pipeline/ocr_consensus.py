@@ -22,6 +22,10 @@ from typing import Any, ClassVar
 
 import anyio
 import fsspec
+try:
+    import numpy as np
+except ImportError:
+    np = None  # type: ignore
 from msgspec import Struct, field
 from structlog import get_logger
 
@@ -66,25 +70,55 @@ class OCRConsensusDecision(Struct, kw_only=True):
     votes: list[OCRFieldResult] = field(default_factory=list)
 
 
+# ── Ważone głosowanie (v7.0 Audit — PaddleOCR x2 waga) ──────────────
+# Raport: "PaddleOCR dominuje dokładnością, konsensus często sprowadza się
+# do 'PaddleOCR + potwierdzenie przez 1-2 inne silniki'"
+ENGINE_WEIGHTS: dict[str, float] = {
+    "paddle": 2.0,    # PP-OCRv4 — najwyższa dokładność (94-98% precision)
+    "tesseract": 1.0, # Szybki, ale mniej dokładny
+    "doctr": 1.0,     # Dobry dla dokumentów anglojęzycznych
+    "easyocr": 1.0,   # Dobry dla wielu języków
+}
+
+
+def _get_engine_weight(source: str) -> float:
+    """Wyciągnij wagę silnika z source string (obsługuje 'paddle' i 'paddleocr')."""
+    source_lower = source.lower().split("|")[0].strip()
+    for engine_name, weight in ENGINE_WEIGHTS.items():
+        if engine_name in source_lower:
+            return weight
+    return 1.0
+
+
 def decide_field_consensus(
-    results: list[OCRFieldResult], *, min_confidence: float = 0.5, majority_threshold: int = 2,
+    results: list[OCRFieldResult], *, min_confidence: float = 0.5, majority_threshold: float = 3.0,
 ) -> OCRConsensusDecision:
+    """Konsensus pól tekstowych z ważonym głosowaniem (v7.0).
+
+    majority_threshold=3.0: przy 4 silnikach oznacza to minimum 3 głosy
+    (lub równowartość 3 przy ważeniu — PaddleOCR=2, reszta=1).
+    Remisy 2-2 zawsze dają confidence_conflict=True.
+    """
     if not results:
         return OCRConsensusDecision(accepted=None, confidence_conflict=False, votes=[])
     valid = [r for r in results if r.confidence >= min_confidence]
     if not valid:
         return OCRConsensusDecision(accepted=max(results, key=lambda r: r.confidence), confidence_conflict=True, votes=results)
-    value_counts: Counter[str] = Counter()
+    # Ważone zliczanie głosów
+    weighted_counts: dict[str, float] = {}
     value_sources: dict[str, list[OCRFieldResult]] = {}
     for r in valid:
         if r.value is not None:
             normalized = r.value.strip().upper()
-            value_counts[normalized] += 1
+            weight = _get_engine_weight(r.source)
+            weighted_counts[normalized] = weighted_counts.get(normalized, 0.0) + weight
             value_sources.setdefault(normalized, []).append(r)
-    if not value_counts:
+    if not weighted_counts:
         return OCRConsensusDecision(accepted=None, confidence_conflict=False, votes=results)
-    best_value, best_count = value_counts.most_common(1)[0]
-    if best_count >= majority_threshold:
+    # Sortuj po ważonej liczbie głosów
+    sorted_values = sorted(weighted_counts.items(), key=lambda x: x[1], reverse=True)
+    best_value, best_weight = sorted_values[0]
+    if best_weight >= majority_threshold:
         return OCRConsensusDecision(accepted=value_sources[best_value][0], confidence_conflict=False, votes=results)
     return OCRConsensusDecision(accepted=max(valid, key=lambda r: r.confidence), confidence_conflict=True, votes=results)
 
@@ -97,8 +131,13 @@ def _to_float(val: Any) -> float:
 
 
 def decide_amount_consensus(
-    results: list[OCRAmountResult], *, tolerance: float = 0.01, majority_threshold: int = 2,
+    results: list[OCRAmountResult], *, tolerance: float = 0.01, majority_threshold: float = 3.0,
 ) -> OCRConsensusDecision:
+    """Konsensus kwot z ważonym głosowaniem (v7.0).
+
+    majority_threshold=3.0: przy 4 silnikach oznacza minimum 3 głosy
+    (lub równowartość 3 przy ważeniu).
+    """
     if not results:
         return OCRConsensusDecision(accepted=None, confidence_conflict=False, votes=[])
     valid = [r for r in results if r.amount_gross is not None]
@@ -118,13 +157,16 @@ def decide_amount_consensus(
             if abs(val_i - _to_float(r2.amount_gross)) <= tolerance:
                 groups[val_i].append(r2)
                 assigned.add(j)
-    best_group = max(groups.values(), key=len)
+    # Ważone: oblicz sumaryczną wagę dla każdej grupy
+    def _group_weight(group: list[OCRAmountResult]) -> float:
+        return sum(_get_engine_weight(r.source) for r in group)
+    best_group = max(groups.values(), key=_group_weight)
+    best_weight = _group_weight(best_group)
     best_value = _to_float(best_group[0].amount_gross)
     field_results = [OCRFieldResult(value=str(r.amount_gross) if r.amount_gross is not None else None, confidence=0.85, source=r.source) for r in results]
     consensus_amount = next((r.amount_gross for r in best_group if r.amount_gross is not None), None)
     source_str = "|".join(r.source for r in best_group)
-    best_count = len(best_group)
-    if best_count >= majority_threshold:
+    if best_weight >= majority_threshold:
         return OCRConsensusDecision(accepted=OCRFieldResult(value=str(best_value), confidence=0.85, source=source_str), amount_gross=consensus_amount, confidence_conflict=False, votes=field_results)
     return OCRConsensusDecision(accepted=OCRFieldResult(value=str(best_value), confidence=0.7, source=best_group[0].source), amount_gross=consensus_amount, confidence_conflict=True, votes=field_results)
 
@@ -132,8 +174,11 @@ def decide_amount_consensus(
 def decide_amount_consensus_legacy(
     primary: OCRAmountResult, secondary: OCRAmountResult, *, tolerance: float = 0.01,
 ) -> OCRConsensusDecision:
-    """Legacy 2-way amount consensus (backward compatibility)."""
-    return decide_amount_consensus([primary, secondary], tolerance=tolerance, majority_threshold=2)
+    """Legacy 2-way amount consensus (backward compatibility).
+
+    Przy 2 silnikach threshold=2.0 oznacza wymóg obu głosów.
+    """
+    return decide_amount_consensus([primary, secondary], tolerance=tolerance, majority_threshold=2.0)
 
 
 # ── Tesseract Engine ─────────────────────────────────────────────────
@@ -726,6 +771,146 @@ def _parse_ocr_engines() -> dict[str, bool]:
 _DEFAULT_OCR_ENGINES = _parse_ocr_engines()
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# S28: Cross-Page Text Merging (v7.0)
+# ═══════════════════════════════════════════════════════════════════════════
+
+def merge_cross_page_text(texts: list[str], overlap_threshold: float = 0.3) -> str:
+    """Łączy tekst OCR z wielu stron, usuwając nakładające się nagłówki/stopki.
+
+    Raport v7.0: "Brak łączenia tekstu z wielu stron (cross-page text merging)"
+
+    Args:
+        texts: Lista tekstów OCR z kolejnych stron.
+        overlap_threshold: Próg podobieństwa do wykrycia powtarzających się linii.
+
+    Returns:
+        Połączony tekst z usuniętymi duplikatami.
+    """
+    if len(texts) <= 1:
+        return texts[0] if texts else ""
+
+    merged_lines: list[str] = []
+    prev_lines: set[str] = set()
+
+    for page_idx, text in enumerate(texts):
+        if not text:
+            continue
+        lines = text.strip().split("\n")
+
+        if page_idx == 0:
+            merged_lines.extend(lines)
+            # Zapamiętaj ostatnie ~30% linii jako potencjalny overlap
+            overlap_start = max(0, len(lines) - int(len(lines) * overlap_threshold))
+            prev_lines = {line.strip().lower() for line in lines[overlap_start:]}
+        else:
+            # Znajdź punkt, gdzie kończy się overlap
+            start_idx = 0
+            for i, line in enumerate(lines):
+                if line.strip().lower() not in prev_lines:
+                    start_idx = i
+                    break
+
+            # Dodaj tylko nowe linie
+            new_lines = lines[start_idx:]
+            if new_lines:
+                merged_lines.extend(new_lines)
+                overlap_start = max(0, len(lines) - int(len(lines) * overlap_threshold))
+                prev_lines = {line.strip().lower() for line in lines[overlap_start:]}
+
+    return "\n".join(merged_lines)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# S29: Extended Format Support — HEIC, DjVu, XLSX (v7.0)
+# ═══════════════════════════════════════════════════════════════════════════
+
+SUPPORTED_IMAGE_FORMATS: frozenset[str] = frozenset({
+    ".png", ".jpg", ".jpeg", ".tiff", ".tif", ".bmp", ".webp",
+    ".heic", ".heif",  # v7.0: iOS formats
+    ".djvu", ".djv",   # v7.0: archival documents
+})
+
+SUPPORTED_DOCUMENT_FORMATS: frozenset[str] = frozenset({
+    ".pdf", ".xlsx", ".xls",  # v7.0: Excel invoices
+})
+
+
+def _convert_exotic_format(file_path: Path, output_dir: Path | None = None) -> Path | None:
+    """Konwertuj egzotyczne formaty (HEIC, DjVu) do PNG dla OCR.
+
+    Raport v7.0: "Brak wsparcia dla formatu HEIC/HEIF" i "Brak wsparcia dla DjVu"
+    """
+    suffix = file_path.suffix.lower()
+    if output_dir is None:
+        output_dir = file_path.parent / f"{file_path.stem}_converted"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    out_path = output_dir / f"{file_path.stem}_converted.png"
+
+    # HEIC/HEIF → PNG
+    if suffix in (".heic", ".heif"):
+        try:
+            from PIL import Image
+            import pillow_heif
+            pillow_heif.register_heif_opener()
+            img = Image.open(str(file_path))
+            img.save(str(out_path), "PNG")
+            logger.info("[OCR] Converted HEIC → PNG: %s", file_path.name)
+            return out_path
+        except ImportError:
+            logger.warning("[OCR] pillow-heif not installed — HEIC unsupported: %s", file_path.name)
+            return None
+        except Exception as exc:
+            logger.warning("[OCR] HEIC conversion failed: %s", exc)
+            return None
+
+    # DjVu → PNG (przez djvulibre CLI)
+    if suffix in (".djvu", ".djv"):
+        try:
+            import shutil
+            if shutil.which("ddjvu"):
+                import subprocess
+                result = subprocess.run(
+                    ["ddjvu", "-format=png", str(file_path), str(out_path)],
+                    capture_output=True, timeout=120,
+                )
+                if result.returncode == 0:
+                    logger.info("[OCR] Converted DjVu → PNG: %s", file_path.name)
+                    return out_path
+            logger.warning("[OCR] ddjvu not found — DjVu unsupported")
+            return None
+        except Exception as exc:
+            logger.warning("[OCR] DjVu conversion failed: %s", exc)
+            return None
+
+    return None
+
+
+def _extract_xlsx_text(file_path: Path) -> str | None:
+    """Ekstrakcja tekstu z faktur XLSX.
+
+    Raport v7.0: "Brak wsparcia dla XLSX/DOCX jako źródeł (faktury w Excelu)"
+    """
+    try:
+        import openpyxl
+        wb = openpyxl.load_workbook(str(file_path), data_only=True)
+        all_text: list[str] = []
+        for sheet_name in wb.sheetnames:
+            ws = wb[sheet_name]
+            for row in ws.iter_rows(values_only=True):
+                row_text = " ".join(str(cell) for cell in row if cell is not None)
+                if row_text.strip():
+                    all_text.append(row_text)
+        wb.close()
+        return "\n".join(all_text) if all_text else None
+    except ImportError:
+        logger.warning("[OCR] openpyxl not installed — XLSX unsupported")
+        return None
+    except Exception as exc:
+        logger.warning("[OCR] XLSX extraction failed: %s", exc)
+        return None
+
+
 async def _prepare_images(file_path: Path) -> tuple[list[Path], list[Any]]:
     image_paths: list[Path] = []
     pil_pages: list[Any] = []
@@ -756,10 +941,38 @@ def _build_engines(use: dict[str, bool], **kwargs) -> list[tuple[str, Any]]:
 
 
 def _apply_opencv(file_image: Path, pil_pages: list[Any], file_path: Path):
+    """Enhanced OpenCV preprocessing with deskew, Sauvola, and predictive ops (v7.0).
+
+    v7.0 Audit: Zintegrowane deskew, binaryzacja Sauvola, background removal
+    i predictive preprocessing z ocr_preprocessing.py.
+    """
     try:
         from PIL import Image
+        import cv2 as _cv2
+
+        # Faza 1: Standardowy OpenCV preprocessing
         preprocessor = OpenCVPreprocessor()
         processed = preprocessor.process(Image.open(str(file_image)))
+
+        # Faza 2: Zaawansowany preprocessing (v7.0)
+        # Konwertuj PIL → OpenCV dla deskew/Sauvola
+        proc_cv = _cv2.cvtColor(np.array(processed.convert("RGB")), _cv2.COLOR_RGB2BGR)
+
+        # Pełny pipeline preprocessing v7.0
+        from nexus_ai.core.ocr_preprocessing import full_ocr_preprocess
+        proc_cv = full_ocr_preprocess(
+            proc_cv,
+            apply_deskew=True,
+            apply_sauvola=True,
+            apply_background_removal=False,  # tylko dla zdjęć z telefonu
+            apply_perspective_correction=False,  # tylko dla zdjęć pod kątem
+            apply_predictive=True,
+        )
+
+        # Konwertuj z powrotem do PIL
+        proc_rgb = _cv2.cvtColor(proc_cv, _cv2.COLOR_BGR2RGB)
+        processed = Image.fromarray(proc_rgb)
+
         cv_dir = file_image.parent / f"{file_path.stem}_cv"
         cv_dir.mkdir(parents=True, exist_ok=True)
         proc_path = cv_dir / file_image.name
@@ -820,8 +1033,171 @@ async def _run_ocr_pipeline(
 
 
 async def run_ocr_pipeline(file_path: Path, **opts) -> dict[str, str | None]:
+    """Standardowy OCR pipeline (wszystkie silniki równolegle)."""
     return await _run_ocr_pipeline(file_path, with_confidence=False, **opts)  # type: ignore
 
 
 async def run_ocr_pipeline_with_confidence(file_path: Path, **opts) -> dict[str, Any]:
+    """OCR pipeline z confidence scores."""
     return await _run_ocr_pipeline(file_path, with_confidence=True, **opts)  # type: ignore
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# S6: Dynamic Pipeline Fast-First (v7.0)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Optymalne konfiguracje per typ dokumentu (S7: AutoML routing)
+DOCUMENT_TYPE_CONFIGS: dict[str, dict[str, Any]] = {
+    "invoice_vat": {
+        "engines": ["tesseract", "paddle"],
+        "tesseract_psm": 4,
+        "tesseract_oem": 1,
+        "paddle_lang": "pl",
+        "description": "Faktura VAT — Tesseract + PaddleOCR, ok. 3s",
+    },
+    "receipt": {
+        "engines": ["easyocr", "paddle"],
+        "easyocr_adaptive": True,
+        "paddle_lang": "pl",
+        "description": "Paragon — EasyOCR adaptive + PaddleOCR, ok. 5s",
+    },
+    "contract_en": {
+        "engines": ["doctr", "easyocr"],
+        "doctr_reco": "parseq",
+        "easyocr_lang": "en",
+        "description": "Umowa EN — docTR(paresq) + EasyOCR(en), ok. 6s",
+    },
+    "unknown": {
+        "engines": ["tesseract", "paddle", "easyocr", "doctr"],
+        "description": "Nieznany — wszystkie 4 silniki, ok. 8s",
+    },
+}
+
+
+def _detect_document_type(first_page_text: str) -> str:
+    """Wykryj typ dokumentu na podstawie tekstu OCR (S7: AutoML routing).
+
+    Returns:
+        Klucz z DOCUMENT_TYPE_CONFIGS: invoice_vat, receipt, contract_en, unknown.
+    """
+    text_lower = first_page_text.lower()
+
+    # Faktura VAT
+    if any(kw in text_lower for kw in ("faktura", "invoice", "vat", "nip:", "netto", "brutto")):
+        if any(kw in text_lower for kw in ("nip:", "vat", "netto")):
+            return "invoice_vat"
+
+    # Paragon
+    if any(kw in text_lower for kw in ("paragon", "receipt", "fiscal", "total", "change")):
+        return "receipt"
+
+    # Umowa / kontrakt
+    if any(kw in text_lower for kw in ("agreement", "contract", "terms", "conditions", "party")):
+        lang = "en" if any(w in text_lower for w in ("the", "and", "shall", "agreement")) else "pl"
+        return "contract_en" if lang == "en" else "unknown"
+
+    return "unknown"
+
+
+def _avg_confidence(conf_data: list[dict] | None) -> float:
+    """Średnia confidence z danych OCR."""
+    if not conf_data:
+        return 0.0
+    confs = [w.get("confidence", 0.0) for w in conf_data]
+    return sum(confs) / len(confs) if confs else 0.0
+
+
+def _texts_agree(text_a: str | None, text_b: str | None, threshold: float = 0.9) -> bool:
+    """Czy dwa teksty OCR są wystarczająco podobne?"""
+    if not text_a or not text_b:
+        return False
+    # Prosta miara: stosunek wspólnych słów
+    words_a = set(text_a.lower().split())
+    words_b = set(text_b.lower().split())
+    if not words_a or not words_b:
+        return False
+    intersection = words_a & words_b
+    union = words_a | words_b
+    return len(intersection) / len(union) >= threshold
+
+
+async def run_ocr_pipeline_adaptive(
+    file_path: Path,
+    fast_path_threshold: float = 0.85,
+    **opts,
+) -> dict[str, Any]:
+    """Dynamiczny pipeline fast-first (S6 + S7 v7.0).
+
+    1. Uruchom Tesseract (najszybszy, ~1s)
+    2. Jeśli Tesseract zwraca wysoką confidence (>0.85) → pomin resztę
+    3. Jeśli Tesseract ma niską confidence → uruchom drugi silnik
+    4. Jeśli 2 silniki się zgadzają → konsensus, pomin resztę
+    5. Jeśli nie → uruchom pozostałe silniki dla pełnego konsensusu
+
+    Korzyść: 60-75% oszczędności czasu.
+    """
+    from nexus_ai.core.mimalloc_bridge import InvoiceOCRHeap
+
+    async with InvoiceOCRHeap(opts.get("invoice_id", file_path.stem), "ocr_pipeline_adaptive"):
+        image_paths, pil_pages = await _prepare_images(file_path)
+        if not image_paths and not pil_pages:
+            return {"texts": {}, "path": "empty"}
+
+        paddle_img = pil_pages[0] if pil_pages else None
+        file_img = image_paths[0] if image_paths else None
+
+        if file_img is None and paddle_img is None:
+            return {"texts": {}, "path": "empty"}
+
+        # Preprocessing
+        if opts.get("use_opencv_preprocessing", True) and HAS_CV2 and file_img is not None:
+            file_img, pil_pages, paddle_img = _apply_opencv(file_img, pil_pages, file_path)
+
+        # ── Faza 1: Tesseract (szybki, ~1s) ───────────────────────
+        tesseract = TesseractEngine()
+        tesseract_text = await tesseract.extract_text(file_img) if file_img else None
+        tesseract_conf = await tesseract.extract_text_with_confidence(file_img) if file_img else None
+
+        if tesseract_text and _avg_confidence(tesseract_conf) >= fast_path_threshold:
+            # Wykryj typ dokumentu dla metadanych
+            doc_type = _detect_document_type(tesseract_text)
+            logger.info("[OCR] Fast path: Tesseract high confidence (%.3f), doc_type=%s",
+                        _avg_confidence(tesseract_conf), doc_type)
+            return {
+                "texts": {"tesseract": tesseract_text},
+                "path": "fast_tesseract",
+                "doc_type": doc_type,
+                "avg_confidence": _avg_confidence(tesseract_conf),
+            }
+
+        # ── Faza 2: EasyOCR (adaptacyjny, ~2s) ────────────────────
+        easyocr = EasyOCREngine()
+        easyocr_text = await easyocr.extract_text_adaptive(file_img) if file_img else None
+
+        if tesseract_text and easyocr_text and _texts_agree(tesseract_text, easyocr_text):
+            doc_type = _detect_document_type(tesseract_text)
+            logger.info("[OCR] Medium path: Tesseract+EasyOCR agree, doc_type=%s", doc_type)
+            return {
+                "texts": {"tesseract": tesseract_text, "easyocr": easyocr_text},
+                "path": "medium_2engine",
+                "doc_type": doc_type,
+            }
+
+        # ── Faza 3: Pełny ensemble (PaddleOCR + docTR, ~5-8s) ─────
+        doc_type = _detect_document_type(tesseract_text or easyocr_text or "")
+        config = DOCUMENT_TYPE_CONFIGS.get(doc_type, DOCUMENT_TYPE_CONFIGS["unknown"])
+
+        logger.info("[OCR] Full path: all 4 engines, doc_type=%s", doc_type)
+
+        engines = _build_engines({
+            "tesseract": True, "paddleocr": True, "doctr": True, "easyocr": True,
+        })
+        results = dict(await anyio.gather(*[
+            _run_engine(n, e, file_img, paddle_img) for n, e in engines
+        ]))
+        return {
+            "texts": results,
+            "path": "full_ensemble",
+            "doc_type": doc_type,
+            "doc_type_config": config["description"],
+        }

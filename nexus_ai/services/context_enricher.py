@@ -98,7 +98,14 @@ class ContextEnricher:
                 logger.warning("[CONTEXT-ENRICHER] GUS BIR failed for NIP=%s: %s", nip, exc)
                 context["vendor_pkd"] = ""
 
-            # 3. Określ poziom zaufania
+            # 3. v7.0: Walidacja PKD vs przedmiot faktury (S30)
+            context["pkd_invoice_match"] = _validate_pkd_match(
+                context.get("vendor_pkd", ""),
+                invoice_data.get("category", ""),
+                invoice_data.get("ocr_full_text", ""),
+            )
+
+            # 4. Określ poziom zaufania
             trust_levels = []
             if context.get("vendor_vat_status") == "active":
                 trust_levels.append("high")
@@ -106,6 +113,10 @@ class ContextEnricher:
                 trust_levels.append("high")
             if context.get("vendor_pkd"):
                 trust_levels.append("medium")
+            # v7.0: PKD mismatch obniża zaufanie
+            if context.get("pkd_invoice_match") == "mismatch":
+                trust_levels = [t for t in trust_levels if t != "high"]
+                trust_levels.append("suspicious")
 
             context["vendor_trust"] = (
                 "high" if "high" in trust_levels else ("medium" if trust_levels else "low")
@@ -141,3 +152,80 @@ class ContextEnricher:
             await self._gus.close()
         except Exception as exc:
             logger.warning("[ENRICHER] Failed to close GUS client: %s", exc)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# v7.0: PKD Validation (S30)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Mapowanie kategorii faktur na kody PKD
+PKD_CATEGORY_MAP: dict[str, set[str]] = {
+    "IT_SERVICES": {"62.01", "62.02", "62.03", "62.09", "63.11", "63.12"},
+    "CONSTRUCTION": {"41.10", "41.20", "42.11", "43.11", "43.21", "43.31"},
+    "CATERING": {"56.10", "56.21", "56.29", "56.30"},
+    "TRANSPORT": {"49.41", "49.42", "52.10", "52.29"},
+    "CONSULTING": {"70.21", "70.22", "69.10", "69.20"},
+    "MANUFACTURING": {"10.00", "25.00", "28.00", "29.00", "31.00"},
+    "RETAIL": {"47.11", "47.19", "47.41", "47.91"},
+    "ACCOUNTING": {"69.20"},
+    "LEGAL": {"69.10"},
+    "MARKETING": {"73.11", "73.12"},
+}
+
+
+def _validate_pkd_match(vendor_pkd: str, category: str, ocr_text: str) -> str:
+    """Sprawdź czy PKD kontrahenta pasuje do przedmiotu faktury (S30).
+
+    Raport v7.0: "Brak weryfikacji, czy PKD kontrahenta jest zgodne
+    z przedmiotem faktury (np. firma budowlana wystawiająca fakturę za catering)"
+
+    Returns:
+        'match' — PKD zgodne z kategorią
+        'mismatch' — PKD niezgodne z kategorią (potencjalne ryzyko)
+        'unknown' — brak danych do porównania
+    """
+    if not vendor_pkd or not category:
+        return "unknown"
+
+    pkd_prefix = vendor_pkd.strip()[:5]  # pierwsze 5 znaków (XX.XX)
+    expected_pkds = PKD_CATEGORY_MAP.get(category.upper())
+
+    if expected_pkds is None:
+        # Kategoria nieznana — sprawdź tekst OCR dla słów kluczowych
+        return _match_pkd_from_text(vendor_pkd, ocr_text)
+
+    # Sprawdź czy PKD pasuje do oczekiwanych dla kategorii
+    for expected in expected_pkds:
+        if pkd_prefix.startswith(expected[:2]):  # dopasowanie na poziomie działu
+            return "match"
+
+    # Sprawdź pełne dopasowanie
+    if pkd_prefix in expected_pkds:
+        return "match"
+
+    return "mismatch"
+
+
+def _match_pkd_from_text(vendor_pkd: str, ocr_text: str) -> str:
+    """Dopasuj PKD na podstawie tekstu OCR gdy kategoria jest nieznana."""
+    if not ocr_text:
+        return "unknown"
+
+    text_lower = ocr_text.lower()
+
+    # Słówka kluczowe sugerujące kategorię
+    keywords_map = {
+        "62.": ["it", "software", "programming", "informatyczny", "programowanie"],
+        "41.": ["budowa", "construction", "remont", "budowlany"],
+        "56.": ["catering", "restauracja", "gastronomia", "food"],
+        "49.": ["transport", "przewóz", "spedycja", "logistics"],
+        "69.": ["księgow", "prawn", "accounting", "legal", "doradztwo"],
+    }
+
+    pkd_prefix = vendor_pkd.strip()[:3]
+    expected_keywords = keywords_map.get(pkd_prefix, [])
+
+    if expected_keywords and any(kw in text_lower for kw in expected_keywords):
+        return "match"
+
+    return "unknown"
