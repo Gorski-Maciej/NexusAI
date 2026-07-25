@@ -306,6 +306,127 @@ else := {
     }
 }
 
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  F200-F203: PIT FRAUD DETECTION — Strategiczna Inicjatywa S15 (v7.0 Audit)  ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# ── F200: pit_cost_anomaly — Anomalia kosztowa >3x średnia branżowa ──
+else := {
+    "matched": true, "rule_id": "jdg.risk.pit_cost_anomaly",
+    "package": "jdg.risk", "priority": 200,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "none", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "pit_fraud_flag": "COST_ANOMALY",
+    "pit_cost_ratio": cost_ratio,
+    "pit_industry_avg_ratio": industry_avg,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": sprintf("Anomalia kosztowa PIT: stosunek kosztów/przychodów %.1fx > średnia branżowa %.1fx (3x przekroczenie)", [cost_ratio, industry_avg]),
+    "_legal_basis": "Art. 22-23 PIT, Art. 56 KKS (nierzetelne księgi)",
+    "_warnings": [sprintf("F200 — ANOMALIA KOSZTOWA PIT: Twoje koszty (%.0f PLN) stanowią %.0f%% przychodów (%.0f PLN). Średnia dla branży '%s': %.0f%%. PRZEKROCZENIE %.1fx! Sprawdź poprawność dokumentacji kosztowej — ryzyko kontroli US.", [annual_costs, cost_ratio * 100, annual_revenue, industry, industry_avg * 100, cost_ratio / industry_avg])]
+} {
+    annual_revenue := object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)
+    annual_costs := object.get(input.jdg_entrepreneur, "annual_costs_pln", 0)
+    industry := object.get(input.jdg_entrepreneur, "industry", "SERVICES")
+    annual_revenue > 0
+    annual_costs > 0
+    cost_ratio := annual_costs / annual_revenue
+    # Średnie branżowe (KAS benchmark data)
+    industry_benchmarks := {
+        "IT": 0.15, "SERVICES": 0.25, "CONSTRUCTION": 0.60,
+        "TRADING": 0.75, "MANUFACTURING": 0.55, "TRANSPORT": 0.50,
+        "CONSULTING": 0.20, "HEALTHCARE": 0.30, "EDUCATION": 0.25
+    }
+    industry_avg := object.get(industry_benchmarks, industry, 0.30)
+    cost_ratio > industry_avg * 3
+}
+
+# ── F201: pit_counterparty_ghost — Kontrahent bez NIP/PESEL w CEIDG ──
+else := {
+    "matched": true, "rule_id": "jdg.risk.pit_counterparty_ghost",
+    "package": "jdg.risk", "priority": 201,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "none", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "pit_fraud_flag": "COUNTERPARTY_GHOST",
+    "ghost_nip": vendor_nip,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": sprintf("Kontrahent-widmo PIT: NIP %s nie figuruje w CEIDG/VAT — faktura może być fikcyjna!", [vendor_nip]),
+    "_legal_basis": "Art. 62 § 2 KKS (fikcyjne faktury), Art. 55 KKS, Art. 22 PIT",
+    "_warnings": [sprintf("F201 — KONTRAHENT-WIDMO: NIP %s nie figuruje w rejestrze CEIDG/VAT. Faktura na kwotę %.2f PLN może być FIKCYJNA. NIE księguj jako KUP do czasu weryfikacji! Sprawdź w CEIDG i na Białej Liście VAT.", [vendor_nip, invoice_amount])]
+} {
+    input.invoice.direction == "PURCHASE"
+    vendor_nip := object.get(input.vendor, "nip", "")
+    vendor_nip != ""
+    ceidg_verified := object.get(input.vendor, "ceidg_verified", true)
+    whitelist_verified := object.get(input.vendor, "whitelist_verified", true)
+    ceidg_verified == false
+    whitelist_verified == false
+    invoice_amount := object.get(input.invoice, "amount_net", 0)
+    invoice_amount > 0
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+}
+
+# ── F202: pit_round_amounts_fraud — Okrągłe kwoty faktur (>10 takich samych) ──
+else := {
+    "matched": true, "rule_id": "jdg.risk.pit_round_amounts_fraud",
+    "package": "jdg.risk", "priority": 202,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "pit_fraud_flag": "ROUND_AMOUNTS",
+    "round_amount_count": round_count,
+    "round_amount_value": round_value,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": sprintf("Sygnał fraudu: %d faktur na identyczną, okrągłą kwotę %.2f PLN od kontrahenta %s", [round_count, round_value, vendor_name]),
+    "_legal_basis": "Art. 62 KKS, Art. 22 PIT (fikcyjne faktury)",
+    "_warnings": [sprintf("F202 — OKRĄGŁE KWOTY: %d faktur od kontrahenta '%s' na identyczną kwotę %.2f PLN. Wzorzec typowy dla faktur fikcyjnych. Wymagana weryfikacja: czy istniała rzeczywista dostawa towaru/usługi?", [round_count, vendor_name, round_value])]
+} {
+    round_count := object.get(input.vendor, "same_amount_invoice_count", 0)
+    round_count > 10
+    round_value := object.get(input.vendor, "same_amount_value", 0)
+    round_value > 0
+    round_value == floor(round_value / 1000) * 1000
+    vendor_name := object.get(input.vendor, "name", "NIEZNANY")
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+}
+
+# ── F203: pit_revenue_drop_anomaly — Gwałtowny spadek przychodów przy stałych kosztach ──
+else := {
+    "matched": true, "rule_id": "jdg.risk.pit_revenue_drop_anomaly",
+    "package": "jdg.risk", "priority": 203,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "none", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "pit_fraud_flag": "REVENUE_DROP_ANOMALY",
+    "revenue_change_pct": revenue_change_pct,
+    "cost_change_pct": cost_change_pct,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": sprintf("Anomalia PIT: spadek przychodów o %.0f%% przy spadku kosztów tylko o %.0f%% — możliwe ukrywanie przychodów", [revenue_change_pct * 100, cost_change_pct * 100]),
+    "_legal_basis": "Art. 54 KKS (ukrywanie przychodów), Art. 14 PIT",
+    "_warnings": [sprintf("F203 — SPADEK PRZYCHODÓW: Przychody spadły o %.0f%% (z %.0f PLN na %.0f PLN), podczas gdy koszty spadły tylko o %.0f%% (z %.0f PLN na %.0f PLN). Nietypowa rozbieżność — możliwe ukrywanie przychodów poza ewidencją. Sprawdź czy wszystkie wpływy na konto bankowe są fakturowane.", [revenue_change_pct * 100, prev_revenue, curr_revenue, cost_change_pct * 100, prev_costs, curr_costs])]
+} {
+    prev_revenue := object.get(input.jdg_entrepreneur, "prev_period_revenue", 0)
+    curr_revenue := object.get(input.jdg_entrepreneur, "current_period_revenue", 0)
+    prev_costs := object.get(input.jdg_entrepreneur, "prev_period_costs", 0)
+    curr_costs := object.get(input.jdg_entrepreneur, "current_period_costs", 0)
+    prev_revenue > 10000
+    revenue_change_pct := (prev_revenue - curr_revenue) / prev_revenue
+    cost_change_pct := abs(prev_costs - curr_costs) / max([prev_costs, 1])
+    # Spadek przychodów >50% przy spadku kosztów <15%
+    revenue_change_pct > 0.50
+    cost_change_pct < 0.15
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # P11: vat_carousel_detection — Wykrywanie karuzel VAT (MR-2 v7.0)
 # Używa danych wstrzykniętych przez PreOPACarouselChecker przed ewaluacją OPA

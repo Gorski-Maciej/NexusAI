@@ -142,6 +142,18 @@ import data.jdg.lifecycle_manager
 import data.jdg.hyper_plan45_meta
 import data.jdg.wis_api
 import data.jdg.epuap
+# ── PAS 17: Enterprise v7.0 Audit Implementation (2026-07-25) ──
+# CR1: R&D Relief (Art. 26e PIT) | CR2: IP Box (Art. 30ca PIT) | CR3: Thermo Relief (Art. 26h PIT)
+# H4: Donation Relief Enterprise | S5: Cross-Relief Optimizer | S8: Tax Loss Harvesting
+# S15: Family Tax Optimizer + CR4: Estonian CIT | M6: Tax Form Optimizer + Cash-Flow
+import data.jdg.pit.thermo_relief
+import data.jdg.pit.rd_relief
+import data.jdg.pit.ipbox
+import data.jdg.pit.cross_relief
+import data.jdg.pit.donation_relief
+import data.jdg.pit.tax_loss_harvesting
+import data.jdg.pit.family_estonian
+import data.jdg.form_optimizer
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
@@ -562,5 +574,15 @@ final_verdict_enriched = object.union(final_verdict_with_conflicts,
     # ── PAS 16: Enterprise v7.0 FAZA 3 Meta Layer (2026-07-25) ──
     object.union(hyper_plan45_meta.decide,
     object.union(wis_api.decide,
-        epuap.decide
-    ))))
+    object.union(epuap.decide,
+    # ── PAS 17: Enterprise v7.0 Audit Full Implementation (2026-07-25) ──
+    # CR1-CR4, H1-H7, M1-M6, I1-I5: 8 pakietów — ulgi, optymalizacja, symulacja
+    object.union(thermo_relief.decide,
+    object.union(rd_relief.decide,
+    object.union(ipbox.decide,
+    object.union(cross_relief.decide,
+    object.union(donation_relief.decide,
+    object.union(tax_loss_harvesting.decide,
+    object.union(family_estonian.decide,
+        form_optimizer.decide
+    ))))))))))

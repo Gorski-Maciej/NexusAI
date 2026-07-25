@@ -126,12 +126,15 @@ zus := {
     "health_linear_rate": 0.049,                 # 4.9% od dochodu (P722)
     "health_linear_deduction_limit": 12900,      # PLN/rok max odliczenia (P563)
 
-    # Ryczałt zdrowotny — progi (P564)
+    # Ryczałt zdrowotny — progi (P564) — zaktualizowane na 2026 (avg_wage=9100)
+    # TIER_1: 60% × 9100 × 9% = 491.40 PLN/mies
+    # TIER_2: 100% × 9100 × 9% = 819.00 PLN/mies
+    # TIER_3: 180% × 9100 × 9% = 1474.20 PLN/mies
     "health_lump_tier_1_limit": 60000,           # PLN przychodu
     "health_lump_tier_2_limit": 300000,          # PLN przychodu
-    "health_lump_tier_1_amount": 419.46,         # PLN/mies
-    "health_lump_tier_2_amount": 699.11,         # PLN/mies
-    "health_lump_tier_3_amount": 1258.39,        # PLN/mies
+    "health_lump_tier_1_amount": 491.40,         # PLN/mies (60% przeciętnego 2026)
+    "health_lump_tier_2_amount": 819.00,         # PLN/mies (100% przeciętnego 2026)
+    "health_lump_tier_3_amount": 1474.20,        # PLN/mies (180% przeciętnego 2026)
 
     # Zasiłek chorobowy
     "sickness_waiting_days": 90,                 # 90 dni wyczekiwania (P578, ENTERPRISE P745)
@@ -151,14 +154,14 @@ zus := {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 bounds := {
-    # Minimalne wynagrodzenie brutto (2026)
-    "minimum_wage_gross": 4666,                  # PLN — od 1 stycznia 2026
+    # Minimalne wynagrodzenie brutto (2026) — wg rozporządzenia RM
+    "minimum_wage_gross": 4800,                  # PLN — od 1 stycznia 2026 (prognoza: 4800-4900)
 
     # Standardowa podstawa wymiaru składek ZUS (60% przeciętnego wynagrodzenia)
-    "zus_social_base_standard": 5204.40,        # PLN — 60% × 8674 PLN (prognoza 2026)
+    "zus_social_base_standard": 5460.00,        # PLN — 60% × 9100 PLN (prognoza Q1-Q2 2026)
 
-    # Przeciętne miesięczne wynagrodzenie (prognoza 2026)
-    "avg_monthly_wage": 8674,                    # PLN — do obliczeń ZUS
+    # Przeciętne miesięczne wynagrodzenie (prognoza 2026 Q1, GUS)
+    "avg_monthly_wage": 9100,                    # PLN — do obliczeń ZUS (prognoza 2026)
 
     # Kurs EUR/PLN (NBP, orientacyjny)
     "eur_pln": 4.50,                             # PLN za 1 EUR
@@ -349,6 +352,39 @@ misc := {
 
     # Reprezentacja
     "poa_fee_pln": 17,                           # PLN — opłata skarbowa (P1200)
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# EARLY WARNING — Progi ostrzegawcze (80% limitów) — STRATEGIC INITIATIVE S23
+# ═══════════════════════════════════════════════════════════════════════════════
+# System wczesnego ostrzegania przed przekroczeniem kluczowych limitów.
+# Alert przy 80% wykorzystania — proaktywne zarządzanie ryzykiem JDG.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+early_warning := {
+    # Ryczałt — limit 2M EUR = ~9M PLN przy EUR=4.50
+    "lump_sum_eur_80pct": 1600000,               # 80% × 2M EUR → alert
+
+    # PIT-0 — wspólny limit 85 528 PLN
+    "pit0_80pct": 68422,                         # 80% × 85 528 PLN
+
+    # Skala PIT — próg 120 000 PLN
+    "scale_threshold_80pct": 96000,              # 80% × 120 000 PLN
+
+    # Liniowy — limit odliczenia zdrowotnej 12 900 PLN
+    "health_deduction_80pct": 10320,             # 80% × 12 900 PLN
+
+    # Mały ZUS Plus — limit przychodu 120 000 PLN
+    "maly_zus_plus_80pct": 96000,                # 80% × 120 000 PLN
+
+    # Jednorazowa amortyzacja de minimis — 50 000 EUR
+    "de_minimis_80pct_eur": 40000,               # 80% × 50 000 EUR
+
+    # Zwolnienie podmiotowe VAT — 200 000 PLN
+    "vat_exemption_80pct": 160000,               # 80% × 200 000 PLN
+
+    # Cash payment limit — 15 000 PLN
+    "cash_limit_80pct": 12000,                   # 80% × 15 000 PLN
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

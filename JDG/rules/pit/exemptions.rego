@@ -89,6 +89,33 @@ else := {
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
     cum := object.get(input.jdg_entrepreneur, "cumulative_income_current_year", 0)
     cum <= 85528
+    # Guard źródła dochodu: ulga dla młodych dotyczy TYLKO pracy/działalności/zlecenia, NIE najmu prywatnego
+    income_source := object.get(input.jdg_entrepreneur, "income_source_type", "EMPLOYMENT")
+    income_source in {"EMPLOYMENT", "JDG", "ZLECENIE"}
+}
+
+# ── P581: pit_exemption_young_revoked — Ulga dla młodych ANULOWANA (przekroczenie limitu) ──
+else := {
+    "matched": true, "rule_id": "jdg.pit.exemptions.young_revoked",
+    "package": "jdg.pit.exemptions", "priority": 581,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "exemption": "YOUNG_REVOKED",
+    "exemption_revoked_reason": "LIMIT_EXCEEDED",
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": sprintf("Ulga dla młodych ANULOWANA — przekroczony limit 85 528 PLN (dochód: %.2f PLN)", [cum]),
+    "_legal_basis": "Art. 21 ust. 1 pkt 148 PIT",
+    "_warnings": [sprintf("ULGA DLA MŁODYCH ANULOWANA! Dochód %.2f PLN przekroczył limit 85 528 PLN. Od nadwyżki zapłacisz PIT 12%%. Dopłać zaległy podatek w najbliższym terminie płatności.", [cum])]
+} {
+    age := object.get(input.jdg_entrepreneur, "age", 99)
+    age <= 26
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    cum := object.get(input.jdg_entrepreneur, "cumulative_income_current_year", 0)
+    cum > 85528
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -112,6 +139,30 @@ else := {
     used_years := object.get(input.jdg_entrepreneur, "return_years_used", 0)
     used_years < 4
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    cum := object.get(input.jdg_entrepreneur, "cumulative_income_current_year", 0)
+    cum <= 85528
+    income_source := object.get(input.jdg_entrepreneur, "income_source_type", "EMPLOYMENT")
+    income_source in {"EMPLOYMENT", "JDG", "ZLECENIE"}
+}
+
+# ── P583: pit_exemption_return_revoked — Ulga na powrót ANULOWANA (limit) ──
+else := {
+    "matched": true, "rule_id": "jdg.pit.exemptions.return_revoked",
+    "package": "jdg.pit.exemptions", "priority": 583,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "0.12", "pit_bracket": "LOW",
+    "kus_qualification": "", "kus_percent": 0,
+    "exemption": "RETURN_REVOKED",
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "Ulga na powrót ANULOWANA — limit przekroczony",
+    "_legal_basis": "Art. 21 ust. 1 pkt 152 PIT",
+    "_warnings": ["Ulga na powrót — przekroczono limit 85 528 PLN. Dopłać zaległy PIT."]
+} {
+    input.jdg_entrepreneur.return_from_emigration == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    cum := object.get(input.jdg_entrepreneur, "cumulative_income_current_year", 0)
+    cum > 85528
+}
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -134,6 +185,29 @@ else := {
     children := object.get(input.jdg_entrepreneur, "children_count", 0)
     children >= 4
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    cum := object.get(input.jdg_entrepreneur, "cumulative_income_current_year", 0)
+    cum <= 85528
+    income_source := object.get(input.jdg_entrepreneur, "income_source_type", "EMPLOYMENT")
+    income_source in {"EMPLOYMENT", "JDG", "ZLECENIE"}
+}
+
+# ── P585: pit_exemption_family_4plus_revoked — Ulga 4+ ANULOWANA ──
+else := {
+    "matched": true, "rule_id": "jdg.pit.exemptions.family_4plus_revoked",
+    "package": "jdg.pit.exemptions", "priority": 585,
+    "pit_form": pit_form, "pit_rate": "0.12", "pit_bracket": "LOW",
+    "exemption": "FAMILY_4PLUS_REVOKED",
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "Ulga 4+ ANULOWANA — limit przekroczony",
+    "_legal_basis": "Art. 21 ust. 1 pkt 153 PIT",
+    "_warnings": ["Ulga 4+ — przekroczono limit 85 528 PLN. Dopłać PIT od nadwyżki."]
+} {
+    children := object.get(input.jdg_entrepreneur, "children_count", 0)
+    children >= 4
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    cum := object.get(input.jdg_entrepreneur, "cumulative_income_current_year", 0)
+    cum > 85528
+}
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -162,3 +162,56 @@ else := {
 } {
     input.jdg_entrepreneur.uses_pkpir == true
 }
+
+# ══════ P985: ksef_duplicate_detection — Wykrywanie duplikatów XML+PDF (v7.0 Audit Faza 1) ══════
+# Raport v7.0 LUKA: Brak wykrywania duplikatów faktur KSeF (XML + PDF dla tego samego nr)
+# Reguła wykrywa gdy istnieje zarówno faktura XML (KSeF) jak i PDF dla tego samego numeru
+else := {
+    "matched":true,"rule_id":"jdg.ksef_jpk.ksef_duplicate_detected",
+    "package":"jdg.ksef_jpk","priority":985,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ksef_invoice_number":ksef_number,
+    "ksef_duplicate":true,
+    "ksef_duplicate_forms":duplicate_forms,
+    "_routing":"BLOCK_AND_ALERT",
+    "_routing_reason":sprintf("DUPLIKAT KSeF: Faktura nr %s istnieje w formatach: %s. Ryzyko podwójnego księgowania!", [ksef_number, concat(" + ", duplicate_forms)]),
+    "_legal_basis":"Art. 106na-106nq VAT (KSeF 2.0), Art. 22 UoR (zasada wiernego odzwierciedlenia)",
+    "_warnings":[sprintf("DUPLIKAT KSeF WYKRYTY! Faktura nr %s (%.2f PLN) istnieje w formatach: %s. NIE księguj dwukrotnie! Zachowaj tylko wersję KSeF XML — PDF archiwizuj jako kopię zapasową (nie księgową).", [ksef_number, invoice_amount, concat(" + ", duplicate_forms)])]
+} {
+    ksef_number := object.get(input.invoice,"ksef_number","")
+    ksef_number != ""
+    has_xml := object.get(input.invoice,"has_ksef_xml",false)
+    has_pdf := object.get(input.invoice,"has_pdf_copy",false)
+    has_xml == true
+    has_pdf == true
+    invoice_amount := object.get(input.invoice,"amount_gross",0)
+    # Zbierz formaty duplikatu
+    duplicate_forms := []
+    duplicate_forms := array.concat(duplicate_forms,["XML (KSeF)"]) { has_xml }
+    duplicate_forms := array.concat(duplicate_forms,["PDF"]) { has_pdf }
+}
+
+# ══════ P986: ksef_offline_pkpir_sync — Procedura awaryjna KSeF dla PKPiR (v7.0 Audit) ══════
+# Raport v7.0 LUKA: Brak trybu offline dla PKPiR z późniejszą synchronizacją
+else := {
+    "matched":true,"rule_id":"jdg.ksef_jpk.ksef_offline_pkpir",
+    "package":"jdg.ksef_jpk","priority":986,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","ksef_offline_mode":true,"ksef_pkpir_deferred":true,
+    "ksef_sync_deadline_days":7,
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason":"Awaria KSeF — wpisy PKPiR zaksięgowane offline, synchronizacja po przywróceniu",
+    "_legal_basis":"Art. 106ne VAT (tryb awaryjny), Art. 24a PIT (PKPiR)",
+    "_warnings":[sprintf("KSeF OFFLINE — PKPiR: Wpis księgowy z dnia %s zaksięgowany w trybie offline. Synchronizacja z KSeF wymagana w ciągu 7 dni od przywrócenia systemu. Zachowaj dowód księgowy w formie PDF jako backup.", [transaction_date])]
+} {
+    input.system.ksef_status == "OFFLINE"
+    input.jdg_entrepreneur.uses_pkpir == true
+    transaction_date := object.get(input.invoice,"transaction_date","")
+    transaction_date != ""
+}

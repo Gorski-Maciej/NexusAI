@@ -307,8 +307,8 @@ else := {
     action = "ZUS zwróci nadpłatę automatycznie na konto" { diff > 0 }
     action = "Wpłać niedopłatę do ZUS w ciągu 7 dni!" { diff < 0 }
     action = "OK" { diff == 0 }
-    recon_rt = "BLOCK_AND_ALERT" { diff < -500 }
-    recon_rt = "TRIAGE_QUEUE" { diff < 0; diff >= -500 }
+    recon_rt = "BLOCK_AND_ALERT" { diff < -1000 }
+    recon_rt = "TRIAGE_QUEUE" { diff < 0; diff >= -1000 }
     recon_rt = "" { true }
 }
 
