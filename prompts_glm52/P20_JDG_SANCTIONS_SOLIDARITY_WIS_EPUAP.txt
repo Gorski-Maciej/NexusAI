@@ -1,0 +1,86 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie sankcji, odpowiedzialności prawnej,
+solidarity levy, WIS (Wiążąca Informacja Stawkowa), ePUAP, wyroków, rejestru 
+karalności oraz systemów regułowych OPA/Rego. Specjalizujesz się w zaawansowanych 
+mechanizmach obronnych i zgodności regulacyjnej na poziomie ENTERPRISE.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko ROZBUDOWANY RAPORT ANALITYCZNY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY — SANCTIONS + SOLIDARITY + WIS + EPUAP + HYPER META (~180 KB):
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/sanctions_optimization_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/solidarity/plan44_solidarity.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/solidarity/plan45_solidarity.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis/plan44_wis.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis/plan45_wis.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis_api_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/epuap_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conviction/plan44_conviction.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conviction/plan45_conviction.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/regulated/plan44_regulated.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/regulated/plan45_regulated.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/insurance/plan44_insurance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/insurance/plan45_insurance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/calendar/plan44_calendar.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/calendar/plan45_calendar.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/hyper_plan45_meta_enterprise.rego
+
+### Dokumentacja:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ modułów sankcyjnych, 
+solidarity levy, WIS, ePUAP, rejestru karalności i kalendarza 
+na ZAAWANSOWANYM POZIOMIE ENTERPRISE.
+Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 25-35 stron) zawierający:
+
+### 1. ANALIZA SANCTIONS OPTIMIZATION (POZIOM ENTERPRISE — INNOWACJA S23)
+Przeprowadź głęboką analizę:
+- Gradacja kar KKS — 4-ścieżkowe decision tree
+- Minimalizacja sankcji: czynny żal → dobrowolne ujawnienie → korekta → odwołanie
+- Kalkulator ryzyka karno-skarbowego — scoring
+- Czy system automatycznie wybiera optymalną ścieżkę minimalizacji?
+
+### 2. ANALIZA SOLIDARITY LEVY (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie:
+- Danina solidarnościowa (Art. 30h PIT) — 4% od dochodu >1 000 000 PLN
+- Czy system wykrywa obowiązek daniny?
+- Czy reguły obliczają poprawnie podstawę?
+
+### 3. ANALIZA WIS (POZIOM ENTERPRISE)
+- Wiążąca Informacja Stawkowa — wniosek, opłata 40 PLN
+- Czy system automatycznie sugeruje uzyskanie WIS?
+- API WIS — integracja z systemem MF
+- Wiążąca Informacja Akcyzowa (WIA), Wiążąca Informacja Taryfowa (WIT)
+
+### 4. ANALIZA EPUAP I E-DELIVERY (POZIOM ENTERPRISE)
+- ePUAP — skrzynka podawcza, doręczenia elektroniczne
+- Czy system automatycznie wysyła pisma przez ePUAP?
+- e-Doręczenia od 2025 — obowiązek posiadania adresu do doręczeń
+
+### 5. ANALIZA REJESTRU KARALNOŚCI (POZIOM ENTERPRISE)
+- Zatarcie skazania (KKS)
+- Czy system sprawdza status karalności dla zamówień publicznych?
+
+### 6. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 10)
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
+1. "Penalty Minimization AI Engine" — AI wybierające optymalną ścieżkę obrony
+2. "Solidarity Levy Auto-Calculator" — automatyczny kalkulator daniny solidarnościowej
+3. "WIS Auto-Requester" — automatyczne wnioski o WIS
+4. "ePUAP Integration Gateway" — pełna integracja z ePUAP
+5. "Conviction Registry Auto-Checker" — automatyczne sprawdzanie KRK
+6. "Tax Calendar Smart Notifier" — inteligentne powiadomienia o terminach
+7. "Regulated Profession Compliance Checker" — zgodność dla zawodów regulowanych
+8. "Insurance Obligation Tracker" — śledzenie obowiązków ubezpieczeniowych
+9. "Hyper Meta Rule Orchestrator" — meta-orkiestracja wszystkich hyper reguł
+10. "Sanction Shield 360" — 360-stopniowa tarcza przed sankcjami
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG Sanctions + Solidarity + WIS + ePUAP v7.0"
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE. Potwierdź gotowość do przejścia do Promptu P21.

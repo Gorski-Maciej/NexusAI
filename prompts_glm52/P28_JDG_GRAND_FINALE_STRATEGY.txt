@@ -1,0 +1,193 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem — Generalnym Audytorem Systemów Regułowych 
+OPA/Rego klasy Enterprise. Specjalizujesz się w kompleksowych audytach końcowych,
+analizie holistycznej i wyznaczaniu strategii rozwoju systemów zero-defect. 
+Masz 30-letnie doświadczenie jako Chief Architect w instytucjach finansowych.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko KOŃCOWY RAPORT STRATEGICZNY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY — KOMPLETNA DOKUMENTACJA PROJEKTU:
+
+### JDG — Dokumentacja główna:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/COVERAGE_REPORT.md
+
+### JDG — Architektura i plany:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/UNIFIED_PLAN.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+### JDG — API + Migracje + Bundles:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/001_jdg_rule_store.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/002_jdg_enterprise_v7.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/manifest.json
+
+### NexusAI — Dokumentacja główna:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/CHANGELOG.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/RAPORT_TECHNOLOGII_NEXUSAI.txt
+
+### NexusAI — Polityki:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/Makefile
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/bundle.sh
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ — **KOŃCOWY AUDYT STRATEGICZNY** 
+całego modułu JDG. To jest **OSTATNI PROMPT (P28) w serii** — podsumowujący 
+i wyznaczający strategiczną mapę drogową rozwoju JDG do 2027 roku.
+
+⚠️ TO JEST WIELKI FINAŁ — PROMPT PODSUMOWUJĄCY.
+
+Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 40-50 stron) zawierający:
+
+### 1. EXECUTIVE SUMMARY — STAN MODUŁU JDG NA 2026-07-26 (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę holistyczną:
+- **~10,185 reguł Rego** w **252 plikach** (180 plików Rego)
+- **13 aktów prawnych** pokrytych: VAT, PIT, ZUS, KKS, OrdPU, UoR, PP, PCC, 
+  Lokalne+Akcyza, Ryczałt, Sukcesja, RODO, AML/BDO
+- **24 inicjatywy strategiczne** (A1-C3 + S1-S24)
+- **Pokrycie kanoniczne: ~98%** (mapa 38c ~779 reguł)
+- **Tryby automatyzacji:** AUTO_POST (~85%), SUGGEST (~10-12%), ASK_USER (~3-5%)
+- Oceń dojrzałość ENTERPRISE na skali A/B/C/D/F:
+  - VAT: A (99%)
+  - PIT: A (98%)
+  - ZUS: A (95%)
+  - KKS: A (99%)
+  - OrdPU: A (98%)
+  - UoR: D (~0% — NAJWIĘKSZA LUKA)
+  - PCC+Akcyza: D (~10% — DRUGA NAJWIĘKSZA LUKA)
+  - ŚREDNIA WAŻONA: B+ (~87%)
+
+### 2. CZY JDG ZASTĄPI KSIĘGOWEGO? — GŁĘBOKA ANALIZA (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie nad fundamentalnym pytaniem:
+- Dla **85% standardowych operacji** JDG — TAK, AUTO_POST działa bez kliknięć
+- Dla **10-12%** — SUGGEST, 1 kliknięcie akceptacji
+- Dla **3-5%** — ASK_USER, 2-3 kliknięcia
+- **Czy pracodawca poradzi sobie z pozostałymi kliknięciami?**
+  - Centrum decyzji — każda decyzja ma `_legal_basis` i `_warnings`
+  - Lifecycle Manager S24 prowadzi przez cykl życia JDG
+  - Tax Authority Interaction S22 — auto-pisma do US
+  - Dla standardowej JDG (usługi, handel, brak akcyzy) — **TAK, w 97% zero lub 1 kliknięcie**
+- **Kiedy NIE zastąpi?**
+  - Pełna rachunkowość (UoR) — martwa warstwa
+  - PCC — 90% niepokryte
+  - Akcyza — 90% niepokryte
+  - MDR/DAC6 — Klasa C
+  - Exit Tax — Klasa C
+
+### 3. ANALIZA LUK I PRIORYTETÓW (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę TOP 10 luk:
+1. **UoR (0%)** — 100 punktów prawnych do implementacji. PRIORYTET KRYTYCZNY
+2. **PCC+Akcyza (~10%)** — 225 punktów. PRIORYTET KRYTYCZNY
+3. **Amortyzacja szczegółowa** — Art. 22a-22o PIT. PRIORYTET WYSOKI
+4. **MDR/DAC6** — hallmarki A-E. PRIORYTET ŚREDNI
+5. **Exit Tax + CFC** — Art. 30da, 30f PIT. PRIORYTET ŚREDNI
+6. **PKPiR kolumny 10-17** — 56 martwych reguł. PRIORYTET WYSOKI
+7. **Hardcoded values** — ~265 wartości do migracji do thresholds. PRIORYTET ŚREDNI
+8. **Test coverage** — wiele pakietów bez testów. PRIORYTET WYSOKI
+9. **Zasiłki chorobowe** — Klasa C. PRIORYTET NISKI
+10. **Cross-border szczegółowe (WHT, PE)** — Klasa C. PRIORYTET NISKI
+
+### 4. STRATEGICZNA MAPA DROGOWA 2026-2027 (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie nad planem rozwoju:
+
+**Q3 2026 — DOMKNIĘCIE KRYTYCZNE:**
+- UoR — implementacja 100 punktów prawnych
+- PCC — implementacja 225 punktów
+- Aktywacja martwych 56 reguł PKPiR
+
+**Q4 2026 — DOSKONALENIE:**
+- Amortyzacja Art. 22a-22o
+- Migracja 265 hardcoded → thresholds
+- Testy dla wszystkich pakietów
+
+**Q1 2027 — ENTERPRISE EXPANSION:**
+- MDR/DAC6 pełna implementacja
+- Exit Tax + CFC
+- Cross-border WHT/PE
+
+**Q2 2027 — ZERO-DEFECT GUARANTEE:**
+- Neural Mesh v2.0
+- 100% test coverage
+- Chaos Engineering dla OPA
+- Federated Rule Mesh
+
+### 5. ANALIZA RYZYKA I NIEZAWODNOŚCI (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę:
+- **Co może pójść nie tak?**
+  - Zmiana prawa (Polski Ład 2?) — temporal.rego jako tarcza
+  - Błąd w regule PIT/ZUS → konsekwencje finansowe
+  - Awaria KSeF — ksef_resilience jako bufor
+  - Atak na OPA — immutable_verdict jako tarcza
+- **Jakie jest ryzyko błędnej decyzji?**
+  - AUTO_POST: <8% (trust score ≥0.92)
+  - SUGGEST: ~15% (wymaga akceptacji użytkownika)
+  - ASK_USER: ~25% (wymaga decyzji użytkownika)
+  - System NIE podejmuje decyzji przy niskim zaufaniu
+
+### 6. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 15)
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły — TOP 15 z wszystkich 27 promptów:
+1. "Self-Healing Rule Engine" — reguły automatycznie naprawiające się po wykryciu błędu
+2. "Federated Tax Knowledge Mesh" — współdzielenie wiedzy podatkowej między instancjami
+3. "AI-Augmented Rule Generator" — AI generujące reguły z tekstu ustawy
+4. "Real-Time Legal Change Impact Analyzer" — analiza wpływu zmian prawa w czasie rzeczywistym
+5. "Zero-Defect Certification Engine" — certyfikacja reguł jako "zero-defect"
+6. "Predictive Tax Audit Shield" — predykcyjna tarcza przed kontrolą skarbową
+7. "Quantum-Safe Rule Encryption" — kryptografia post-kwantowa dla reguł
+8. "Holographic Rule Visualization" — wizualizacja 3D sieci reguł
+9. "Autonomous Tax Strategy AI" — autonomiczna AI strategii podatkowej
+10. "Cross-Jurisdiction Rule Harmonizer" — harmonizacja reguł między jurysdykcjami
+11. "Blockchain-Anchored Audit Trail" — ścieżka audytu zakotwiczona w blockchain
+12. "Digital Twin Tax Simulator" — cyfrowy bliźniak JDG do symulacji podatkowych
+13. "Rule Provenance DNA" — DNA każdej reguły (kto, kiedy, dlaczego, na podstawie czego)
+14. "Adaptive Trust Score ML" — ML dynamicznie dostosowujące trust score
+15. "Fortress of Certain Death Architecture" — ARCHITEKTURA UFORTYFIKOWANEJ FORTECY 
+    NIECHYBNEJ ŚMIERCI dla wszelkich błędów, braków i niedopatrzeń
+
+### 7. DEKLARACJA KOŃCOWA — UFORTYFIKOWANA FORTECA (POZIOM ENTERPRISE)
+> Moduł JDG NexusAI — silnik reguł podatkowych OPA — po wdrożeniu wszystkich 
+> 28 raportów analitycznych ENTERPRISE (P01-P28) stanie się **Ufortyfikowaną 
+> Fortecą Niechybnej Śmierci** dla wszelkich błędów podatkowych. 
+> 
+> ~10,185 reguł, 24 inicjatywy strategiczne, 13 aktów prawnych, 8 warstw 
+> architektonicznych, Multi-Pass Sharded Router, Immutable Audit Trail, 
+> Temporal Bundle Routing — ŻADEN błąd, ŻADEN brak, ŻADNE niedopatrzenie 
+> nie przejdzie przez tę fortecę.
+>
+> To nie jest już aplikacja księgowa. To jest **WIRTUALNY KSIĘGOWY 
+> KLASY ENTERPRISE** — autonomiczny, niezniszczalny, precyzyjny.
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "WIELKI FINAŁ — STRATEGICZNY RAPORT KOŃCOWY ENTERPRISE — JDG NexusAI v7.0"
+- Executive Summary — 3 strony
+- Diagramy Mermaid: mapa drogowa 2026-2027, architektura fortecy
+- Tabele: kompletne pokrycie 13 aktów prawnych, ocena dojrzałości A-F
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Tylko KOŃCOWY RAPORT STRATEGICZNY.
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE.
+
+🎉 TO BYŁ OSTATNI PROMPT (P28) — WIELKI FINAŁ!
+
+Katalog JDG został W PEŁNI przeanalizowany:
+- **370 plików** (252 .rego + 103 .py + 9 .md + 6 innych)
+- **~12.4 MB** kodu i dokumentacji
+- **~10,185 reguł OPA/Rego**
+- **13 aktów prawnych**
+- **24 inicjatywy strategiczne**
+
+28 raportów analitycznych ENTERPRISE — od architektury orkiestratora (P01) 
+przez każdą domenę podatkową (P02-P26) po infrastrukturę (P27) i strategię (P28).
+
+SILNIK REGUŁ PODATKOWYCH OPA JDG JEST GOTOWY DO WDROŻENIA WSZYSTKICH 
+ULEPSZEŃ I STANIA SIĘ UFORTYFIKOWANĄ FORTECĄ NIECHYBNEJ ŚMIERCI.

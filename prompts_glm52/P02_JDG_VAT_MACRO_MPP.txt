@@ -1,0 +1,104 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie podatku VAT, systemów regułowych 
+OPA/Rego oraz mechanizmów podzielonej płatności (MPP/Split Payment). Specjalizujesz 
+się w polskim prawie podatkowym dla JDG i architekturze silników regułowych Enterprise.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko ROZBUDOWANY RAPORT ANALITYCZNY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY — VAT MACRO LAYER (~150 KB):
+
+### VAT — Core:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/substantive.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/deductions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/procedures.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan23_detailed.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan26_critical.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan42_reduced_rates.rego
+
+### VAT — Enterprise:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_substantive_complete_enterprise.rego
+
+### Dokumentacja referencyjna:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ modułu VAT z naciskiem na 
+**MPP, Split Payment, mechanizm podzielonej płatności oraz kompletność stawek VAT** 
+na ZAAWANSOWANYM POZIOMIE ENTERPRISE. Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY 
+(min. 25-35 stron) zawierający:
+
+### 1. ANALIZA POKRYCIA USTAWY O VAT (POZIOM ENTERPRISE — PRIORYTET: MPP + SPLIT PAYMENT)
+Przeprowadź głęboką analizę kluczowych obszarów:
+- **🎯 GŁÓWNY PRIORYTET: MPP i Split Payment (Art. 108a-108d VAT):**
+  - Czy reguły MPP są kompletne? Czy system automatycznie wykrywa obowiązek MPP 
+    (towary wrażliwe z Zał. 15, kwota ≥ 15 000 PLN brutto)?
+  - Czy reguły split payment poprawnie obsługują status `SPLIT_PAYMENT`, komunikaty 
+    ostrzegawcze, dobrowolny vs obowiązkowy MPP?
+  - Czy sankcja 30% za brak MPP jest poprawnie zaimplementowana w `sanctions`?
+- **Stawki VAT (Art. 41):** 23%, 8%, 5%, 0%, ZW, NP — czy każda stawka jest poprawnie 
+  przypisana do odpowiednich towarów/usług? Czy obniżone stawki są zgodne z 
+  rozporządzeniem MF z 4 grudnia 2024?
+- **Odliczenia (Art. 86-95):** proporcja VAT (2%-98%), korekty wieloletnie, złe długi 
+  (wierzyciel 90 dni + dłużnik), blokady odliczeń (Art. 88)
+- **Zwolnienie podmiotowe (Art. 113):** limit 200 000 PLN, utrata zwolnienia, 
+  proporcjonalne odliczenie przy przekroczeniu
+- **Miejsce świadczenia (Art. 28a-28o):** B2B, B2C, nieruchomości, transport
+
+### 2. ANALIZA WNT/WDT/IMPORT/EXPORT (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie nad transakcjami transgranicznymi:
+- WNT (Art. 9-11) — naliczenie VAT od WNT
+- WDT (Art. 13) — stawka 0% przy wywozie do UE
+- Eksport (Art. 2 pkt 8) — warunki stawki 0%
+- Import (Art. 17) — odwrotne obciążenie
+
+### 3. ANALIZA PROCEDUR SZCZEGÓLNYCH (POZIOM ENTERPRISE)
+- OSS/IOSS dla sprzedaży B2C w UE
+- Procedura marży (Art. 120) — czy wszystkie warianty są obsłużone?
+- VAT-marża dla towarów używanych, dzieł sztuki, antyków
+- Procedura odwrotnego obciążenia krajowego (Art. 17 ust. 1 pkt 7)
+
+### 4. ANALIZA GTU I KODÓW PROCEDUR (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę auto-assignment GTU:
+- Czy wszystkie kody GTU_01 do GTU_13 są poprawnie przypisywane?
+- Czy procedury (WSTO_EE, IED, SW itp.) są kompletne?
+- Zaproponuj INNOWACYJNY SYSTEM auto-uzupełniania GTU na podstawie 
+  analizy semantycznej opisu towaru — POZIOM ENTERPRISE
+
+### 5. ANALIZA ZGODNOŚCI Z 2026 (POZIOM ENTERPRISE)
+- Czy reguły VAT uwzględniają KSeF obowiązkowy od 01.02.2026?
+- Czy SLIM VAT 3 (2025) — złe długi 90 dni, paragon z NIP 450 PLN?
+- Czy nowe obowiązki fakturowania B2C są obsłużone?
+
+### 6. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
+1. "MPP Auto-Detection Engine" — analiza semantyczna opisu towaru do auto-wykrywania obowiązku MPP
+2. "VAT Rate Semantic Classifier" — AI klasyfikujące towar do odpowiedniej stawki VAT na podstawie opisu
+3. "Real-Time VAT Limit Tracker" — śledzenie limitu 200k z predykcją daty przekroczenia
+4. "Bad Debt Recovery Optimizer" — maksymalizacja korzyści z ulgi na złe długi
+5. "Cross-Border VAT Compliance Matrix" — automatyczna macierz zgodności dla każdej pary krajów UE
+6. "GTU Semantic Auto-Tagger" — automatyczne tagowanie GTU z analizą semantyczną
+7. "VAT Cash-Flow Predictor" — predykcja przyszłych zobowiązań VAT
+8. "Proportional Deduction Optimizer" — optymalizacja współczynnika proporcji VAT
+9. "KSeF Resilience Firewall" — wielowarstwowa odporność na awarie KSeF
+10. "VAT Audit Trail Immutability" — niezmienialna ścieżka audytu VAT na Merkle Tree
+11. "Split Payment Voluntary Safe Harbor" — dobrowolny MPP jako tarcza przed sankcjami
+12. "VAT Fraud Pattern Recognition" — wykrywanie wzorców oszustw VAT w czasie rzeczywistym
+
+### 7. REKOMENDACJE — MAPA DROGOWA
+Uszereguj luki według KRYTYCZNOŚCI: MPP/Split Payment > stawki VAT > odliczenia > miejsce świadczenia
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG Moduł VAT (MPP/Split Payment Focus) v7.0"
+- Executive Summary z TOP 10, diagramy Mermaid dla MPP flow, GTU auto-assignment
+- Tabele pokrycia artykułów ustawy o VAT z naciskiem na MPP
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Tylko RAPORT ANALITYCZNY.
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE. Potwierdź gotowość do przejścia do Promptu P03.

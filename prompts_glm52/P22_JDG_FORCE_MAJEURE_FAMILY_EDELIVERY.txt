@@ -1,0 +1,88 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie force majeure, ulg rodzinnych, 
+e-Delivery, podpisu elektronicznego, seasonal business, tax-free, family benefits
+oraz systemów regułowych OPA/Rego. Specjalizujesz się w sytuacjach nadzwyczajnych 
+i specjalnych JDG na poziomie ENTERPRISE.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko ROZBUDOWANY RAPORT ANALITYCZNY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY — FORCE MAJEURE + FAMILY + E-DELIVERY + ESIG + SEASONAL + TAXFREE (~180 KB):
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/force_majeure/plan44_force_majeure.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/force_majeure/plan45_force_majeure.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/family/plan44_family.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/family/plan45_family.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery/plan44_edelivery.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery/plan45_edelivery.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/esig/plan44_esig.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/esig/plan45_esig.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/seasonal/plan44_seasonal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/seasonal/plan45_seasonal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/taxfree/plan44_taxfree.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/taxfree/plan45_taxfree.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/employer.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/representation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/restructuring.rego
+
+### Dokumentacja:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ modułów sytuacji nadzwyczajnych,
+rodzinnych, e-Delivery, podpisu elektronicznego i sytuacji specjalnych JDG
+na ZAAWANSOWANYM POZIOMIE ENTERPRISE.
+Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 25-35 stron) zawierający:
+
+### 1. ANALIZA FORCE MAJEURE (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę:
+- Przedłużenie terminów podatkowych (COVID-19 precedens)
+- Powódź, pożar, pandemia — jako przesłanki siły wyższej
+- Dokumentacja siły wyższej wymagana przez US
+- Czy system automatycznie wykrywa zdarzenia force majeure?
+- Czy terminy są automatycznie przedłużane?
+
+### 2. ANALIZA ULG RODZINNYCH (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie:
+- Ulga prorodzinna (Art. 27f PIT) — 1112.04 PLN / 12 na dziecko
+- Ulga dla rodzin 4+ (Art. 21 ust. 1 pkt 153) — limit 85 528 PLN
+- Ulga dla samotnych rodziców (Art. 6 ust. 4 PIT)
+- Czy reguły family prawidłowo obliczają wszystkie ulgi?
+
+### 3. ANALIZA E-DELIVERY I PODPISU (POZIOM ENTERPRISE)
+- e-Doręczenia — obowiązek od 2025 dla JDG
+- Podpis elektroniczny kwalifikowany — wymogi prawne
+- Profile zaufane ePUAP
+- Czy system automatycznie podpisuje dokumenty?
+
+### 4. ANALIZA SEZONOWOŚCI I TAX-FREE (POZIOM ENTERPRISE)
+- Działalność sezonowa — zawieszenie poza sezonem
+- Tax-free dla turystów — eksport towarów poza UE
+- Czy reguły seasonal obsługują specyfikę sezonową?
+
+### 5. ANALIZA PRACODAWCY I REPREZENTACJI (POZIOM ENTERPRISE)
+- `employer.rego` — obowiązki pracodawcy JDG
+- `representation.rego` — prokura, pełnomocnictwa
+- Czy system obsługuje zatrudnienie pracowników?
+
+### 6. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 10)
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
+1. "Force Majeure Auto-Detector + Deadline Extender" — automatyczne przedłużanie terminów
+2. "Family Benefits Maximizer" — maksymalizacja ulg rodzinnych
+3. "e-Delivery Auto-Integration" — pełna integracja z e-Doręczeniami
+4. "Digital Signature Auto-Applicator" — automatyczne podpisywanie dokumentów
+5. "Seasonal Business Optimizer" — optymalizacja dla działalności sezonowej
+6. "Tax-Free Tourist Auto-Processor" — automatyczne tax-free dla turystów
+7. "Employer Obligation Tracker" — śledzenie obowiązków pracodawcy
+8. "Power of Attorney Manager" — zarządzanie pełnomocnictwami
+9. "Restructuring Tax Impact Analyzer" — analiza podatkowa restrukturyzacji
+10. "Special Situation Decision Tree" — drzewo decyzyjne sytuacji specjalnych
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG Force Majeure + Family + e-Delivery v7.0"
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE. Potwierdź gotowość do przejścia do Promptu P23.

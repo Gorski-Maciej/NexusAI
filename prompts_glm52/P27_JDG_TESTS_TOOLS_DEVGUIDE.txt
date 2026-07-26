@@ -1,0 +1,140 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie testowania systemów regułowych
+OPA/Rego, Quality Assurance, pokrycia testowego, Continuous Integration,
+narzędzi deweloperskich OPA oraz infrastruktury deweloperskiej JDG.
+Specjalizujesz się w audycie jakości testów i narzędzi na poziomie ENTERPRISE.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO/NIE GENERUJ TESTÓW** — generujesz tylko RAPORT ANALITYCZNY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY — TESTY JDG + NARZĘDZIA (~1.6 MB, 100 plików):
+
+### Testy główne (JDG/tests/):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_temporal_validity.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_temporal_manager.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_phase5_modules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_strategic_v2_modules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_ksef_generator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_tax_pipeline.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_tax_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_tax_audit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_risk_guard.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_risk_api.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_risk_guard_integration.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_semantic_guard.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_priority_engine.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_fraud_graph_scanner.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_facts_aggregator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_payment_priority_service.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_pkpir_uor_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_pcc_excise_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_vat_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_kks_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_crossborder_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_rodo_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_aml_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_edge_cases_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_bdo_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_conflicts_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_hyper_plan45_enterprise.py
+
+### Testy Auto-Block (JDG/tests/auto/): 52 pliki
+(Pełna lista: test_auto_block_accounting, allowances, api_fallback, audit, business, calendar, compliance, conflicts, conviction, corrections, crossborder, digital, edelivery, edge_cases, employer, environmental, exit_tax, family, insurance, kks, ksef_jpk, ksef_resilience, liability, lifecycle, limitations, local, local_taxes, mdr, micro, nkup, payments, pit, pkpir_live, procurement, regulated, representation, residency, restructuring, retention, risk, rodo, rodo_extended, routing, sanctions, solidarity, statute, tax_interaction, temporal, tp, validation, vat, vat_complete, wis, zus — WSZYSTKIE w JDG/tests/auto/)
+
+### Narzędzia (JDG/tools/):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_micro_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/crossref_plan50.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_from_plan50.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_massive_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_crawler.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/lint_rego_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_manifest.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_test_suite.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/temporal_drift_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_impact_simulator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/cross_package_conflict_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/judgment_predictor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/llm_bridge.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/convert_true_to_conditions.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/parse_plan33_and_generate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/fix_hyper_legal_basis.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/fix_micro_plan33_legal_basis.py
+
+### Developer Guide:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/OPA_REGO_DEVELOPER_GUIDE.md
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ infrastruktury testowej i narzędziowej JDG
+na ZAAWANSOWANYM POZIOMIE ENTERPRISE. 
+
+⚠️ TO JEST PROMPT UZUPEŁNIAJĄCY — domyka 100% pokrycia wszystkich plików JDG.
+
+Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 25-35 stron) zawierający:
+
+### 1. AUDYT INFRASTRUKTURY TESTOWEJ (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę 82 plików testowych:
+- **28 testów głównych** — test_temporal_validity (40/40 PASS), test_phase5, test_strategic_v2, itd.
+  — Czy testy pokrywają wszystkie pakiety JDG?
+- **52 testy auto-block** — test_auto_block_vat, pit, zus, kks, itd.
+  — Czy każdy pakiet JDG ma odpowiadający test auto-block?
+- Jakie pakiety NIE mają testów? (luka w pokryciu testowym)
+- Czy 40/40 temporal_validity PASS to jedyny zweryfikowany wynik?
+- Zaproponuj INNOWACYJNY SYSTEM automatycznej generacji testów dla niepokrytych pakietów
+
+### 2. ANALIZA JAKOŚCI TESTÓW (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie:
+- Czy testy są wystarczająco rygorystyczne dla modułu ENTERPRISE?
+- Czy istnieją testy integracyjne między pakietami?
+- Czy testy pokrywają edge cases i scenariusze ekstremalne?
+- Jakie typy testów brakują: fuzz testing, chaos engineering, property-based?
+
+### 3. AUDYT NARZĘDZI DEWELOPERSKICH (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę 18 narzędzi:
+- `generate_micro_rules.py` — czy generuje poprawnie mikro-reguły?
+- `isap_crawler.py` — czy crawler ISAP jest funkcjonalny?
+- `lint_rego_rules.py` — czy linter wykrywa wszystkie problemy?
+- `temporal_drift_detector.py` — czy detektor driftu temporalnego działa?
+- `rule_impact_simulator.py` — czy symulator wpływu reguł jest użyteczny?
+- `cross_package_conflict_detector.py` — czy wykrywa konflikty między pakietami?
+- `judgment_predictor.py` — czy predyktor orzeczeń jest oparty na ML?
+- `llm_bridge.py` — czy most LLM integruje AI z OPA?
+- Które narzędzia są PRODUKCYJNE a które EKSPERYMENTALNE?
+
+### 4. ANALIZA OPA REGO DEVELOPER GUIDE (POZIOM ENTERPRISE)
+- Czy developer guide jest kompletny dla nowych deweloperów?
+- Czy zawiera konwencje nazewnicze (ADR-008), struktury else-chain, safe_merge?
+- Czy opisuje architekturę Multi-Pass i Sharded Router?
+
+### 5. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
+1. "Auto-Test Generator for All 252 Rego Files" — automatyczne testy dla każdego pliku .rego
+2. "CI/CD Pipeline with OPA Check" — pipeline CI/CD z walidacją OPA
+3. "Test Coverage Heatmap" — mapa cieplna pokrycia testowego
+4. "Fuzz Testing Engine for Rego" — silnik fuzz testingu dla reguł Rego
+5. "Temporal Drift Auto-Fixer" — automatyczna naprawa driftu temporalnego
+6. "Cross-Package Impact Analyzer" — analizator wpływu zmian między pakietami
+7. "ISAP Legal Change Auto-Notifier" — automatyczne powiadomienia o zmianach prawnych
+8. "Rule Quality Scoring Dashboard" — dashboard oceny jakości reguł
+9. "Chaos Engineering for OPA" — chaos engineering dla silnika OPA
+10. "Developer Onboarding Auto-Tutorial" — automatyczny tutorial dla nowych deweloperów
+11. "Real-Time Rule Drift Monitor" — monitor driftu reguł w czasie rzeczywistym
+12. "Zero-Defect Test Guarantee System" — system gwarantujący brak defektów
+
+### 6. REKOMENDACJE
+Test coverage (luki) > Auto-test generation > Developer Guide > Narzędzia
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG Testy + Narzędzia + Developer Guide (Uzupełnienie P27) v7.0"
+- Executive Summary z TOP 12 rekomendacji
+- Tabele: pokrycie testowe per pakiet, status narzędzi
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU. NIE MODYFIKUJ PLIKÓW. Tylko RAPORT ANALITYCZNY.
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE. Potwierdź gotowość do przejścia do Promptu P28.

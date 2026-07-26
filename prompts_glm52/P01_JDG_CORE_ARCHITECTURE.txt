@@ -1,0 +1,104 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem Architektem Systemów Regułowych OPA/Rego, 
+specjalizującym się w silnikach decyzyjnych klasy Enterprise dla polskiego 
+prawa podatkowego JDG. Jesteś Architektem Głównym z 25-letnim doświadczeniem 
+w projektowaniu systemów zero-defect dla instytucji finansowych.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — Twoim zadaniem jest wyłącznie analiza i wygenerowanie 
+   ROZBUDOWANEGO RAPORTU ANALITYCZNEGO w formacie Markdown.
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz istniejący kod, nie tworzysz nowego.
+3. Raport ma być gotowy do wykorzystania przez zespół developerski.
+
+## 📂 PLIKI DO ANALIZY — ORKIESTRATOR I INFRASTRUKTURA (~150 KB):
+
+### Orkiestrator główny:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_metadata_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_helpers_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/routing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/validation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/api_fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+
+### Dokumentacja architektury:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ architektury orkiestratora JDG 
+na ZAAWANSOWANYM POZIOMIE ENTERPRISE. Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY 
+(min. 25-35 stron) zawierający:
+
+### 1. AUDYT ARCHITEKTURY MULTI-PASS (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie nad architekturą Dual-Layer Multi-Pass:
+- Oceń mechanizm First-Match-Wins `else`-chain w main_jdg.rego — czy kolejność 
+  pakietów w łańcuchu `final_verdict` jest optymalna dla wszystkich scenariuszy?
+- Przeanalizuj Sharded Router (B1) — czy routing `DOMESTIC_SALE` vs `DOMESTIC_PURCHASE` 
+  vs `full_final_verdict` jest deterministyczny i wolny od błędów?
+- Oceń architekturę `safe_merge` — czy ochrona `immutable_verdict` jest wystarczająca?
+- Czy architektura 17 PAS-ów jest optymalna? Zaproponuj INNOWACYJNE USPRAWNIENIA 
+  WYPRZEDZAJĄCE PROFESJONALISTÓW na poziomie ENTERPRISE.
+
+### 2. ANALIZA SYSTEMU PRIORYTETÓW (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę hierarchii priorytetów (priority 100-9999):
+- Czy wszystkie pakiety mają spójne priorytety?
+- Czy `BLOCK_AND_ALERT` działa przed jakimkolwiek innym werdyktem?
+- Zaproponuj INNOWACYJNY SYSTEM dynamicznych priorytetów na ZAAWANSOWANYM POZIOMIE ENTERPRISE.
+
+### 3. ANALIZA TEMPORALNA (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę `temporal.rego` i `_metadata_jdg.rego`:
+- Czy mechanizm `valid_from`/`valid_to` jest kompletny dla wszystkich zmian prawnych?
+- Czy SLIM VAT 3 (2023), Polski Ład (2022), KSeF mandatory (2026-02-01) są poprawnie obsłużone?
+- Zaproponuj INNOWACYJNY SYSTEM Temporal Bundle Routing na ZAAWANSOWANYM POZIOMIE ENTERPRISE.
+
+### 4. ANALIZA SYSTEMU THRESHOLDÓW (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie nad `thresholds_jdg.rego`:
+- Czy wszystkie progi (stawki, limity, kwoty) są skonfigurowane jako `data.thresholds.*`?
+- Czy w architekturze nadal występują hardcoded wartości? (~265 wykrytych wcześniej)
+- Oceń kompletność thresholdów vs mapa kanoniczna 38c (~779 reguł).
+
+### 5. ANALIZA SYSTEMU WALIDACJI I FALLBACK (POZIOM ENTERPRISE)
+- Oceń `validation.rego`, `fallback.rego`, `api_fallback.rego` — czy zapewniają 
+  bezpieczeństwo przy awarii któregokolwiek pakietu?
+- Czy `fallback.decide` jest wystarczający jako ostatnia deska ratunku?
+
+### 6. ANALIZA PROVENANCE I AUDYTU (POZIOM ENTERPRISE)
+- Oceń `provenance.rego` — czy zapewnia pełną ścieżkę decyzyjną?
+- Czy Immutable Audit Trail (ADR-006) jest prawidłowo zaimplementowany?
+
+### 7. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 10)
+POTĘŻNE, ROZBUDOWANE NA POZIOMIE ENTERPRISE pomysły:
+1. System "Self-Healing Router" — automatyczne wykrywanie i omijanie uszkodzonych pakietów
+2. Mechanizm "Predictive Pre-Loading" — ładowanie pakietów zanim są potrzebne
+3. "Confidence Cascade" — dynamiczne dostosowywanie poziomu ufności na podstawie historii
+4. "Temporal Snapshot Engine" — automatyczne snapshoty stanu prawnego na każdą datę
+5. "Cross-Package Dependency Graph" — wizualizacja i walidacja zależności między pakietami
+6. "Rule Provenance Chain" — pełna identyfikowalność każdej decyzji do artykułu ustawy
+7. "Adaptive Priority Engine" — priorytety dostosowujące się do profilu ryzyka JDG
+8. "Zero-Downtime Rule Hot-Swap" — wymiana reguł bez przerywania ewaluacji
+9. "Deterministic Chaos Engineering" — automatyczne testy odporności na awarie pakietów
+10. "Federated Rule Mesh" — współdzielenie reguł między instancjami z zachowaniem prywatności
+
+### 8. REKOMENDACJE PRIORYTETÓW
+- Uszereguj luki według KRYTYCZNOŚCI
+- Dla każdego problemu: SZACOWANY CZAS NAPRAWY, wpływ, ryzyko.
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG Architektura Orkiestratora v7.0"
+- Executive Summary (1 strona) z TOP 10 rekomendacji
+- Diagramy Mermaid dla architektury Multi-Pass, Sharded Router, safe_merge
+- Tabele pokrycia thresholdów
+- Sekcja "Genialne Pomysły ENTERPRISE" jako osobny rozdział
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Tylko RAPORT ANALITYCZNY.
+
+## 🔄 NA KONIEC:
+Po wygenerowaniu kompletnego raportu, WYCZYŚĆ OKNO KONTEKSTOWE aby przygotować 
+model do następnego Promptu. Potwierdź gotowość do przejścia do Promptu P02.

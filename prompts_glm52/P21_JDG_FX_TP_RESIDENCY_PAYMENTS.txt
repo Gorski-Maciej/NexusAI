@@ -1,0 +1,86 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie kursów walut (FX), cen transferowych
+(TP), rezydencji podatkowej, płatności, reklamy, zamówień publicznych (procurement)
+oraz systemów regułowych OPA/Rego. Specjalizujesz się w operacjach finansowych JDG 
+na poziomie ENTERPRISE.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko ROZBUDOWANY RAPORT ANALITYCZNY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY — FX + TP + RESIDENCY + PAYMENTS + ADVERTISING + PROCUREMENT (~160 KB):
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fx/plan44_fx.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fx/plan45_fx.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan44_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan45_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/residency/plan44_residency.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/residency/plan45_residency.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/payments/plan44_payments.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/payments/plan45_payments.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/advertising/plan44_advertising.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/advertising/plan45_advertising.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/procurement/plan44_procurement.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/procurement/plan45_procurement.rego
+
+### Dokumentacja:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ modułów FX, TP, rezydencji, 
+płatności, reklamy i zamówień publicznych na ZAAWANSOWANYM POZIOMIE ENTERPRISE.
+Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 25-35 stron) zawierający:
+
+### 1. ANALIZA RÓŻNIC KURSOWYCH (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę `fx/plan45_fx.rego`:
+- Art. 14 ust. 2c PIT — różnice kursowe od transakcji walutowych
+- Metoda podatkowa vs bilansowa
+- Kurs NBP z ostatniego dnia roboczego przed transakcją
+- Czy reguły automatycznie obliczają różnice kursowe?
+- Zaproponuj INNOWACYJNY SYSTEM automatycznego monitoringu kursów
+
+### 2. ANALIZA CEN TRANSFEROWYCH (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie:
+- Dokumentacja Local File (próg 10 000 000 PLN)
+- Dokumentacja Master File (próg 200 000 000 PLN)
+- TP-R (uproszczone sprawozdanie)
+- Metody: porównywalna niekontrolowana, ceny odprzedaży, koszt+, TNMM
+- Czy system rozpoznaje podmioty powiązane?
+
+### 3. ANALIZA REZYDENCJI PODATKOWEJ (POZIOM ENTERPRISE)
+- Ośrodek interesów życiowych (centrum interesów osobistych i gospodarczych)
+- 183 dni pobytu w Polsce
+- Certyfikat rezydencji podatkowej
+- Podwójne opodatkowanie — umowy o unikaniu (UPO)
+
+### 4. ANALIZA PŁATNOŚCI (POZIOM ENTERPRISE)
+- Terminy płatności (14, 30, 60 dni)
+- Kary za opóźnienia (odsetki ustawowe)
+- Biała Lista VAT — weryfikacja przed przelewem >15 000 PLN
+- Split payment — dobrowolny i obowiązkowy
+
+### 5. ANALIZA REKLAMY (POZIOM ENTERPRISE)
+- Reklama vs reprezentacja — kluczowe rozróżnienie dla KUP
+- Limit KUP dla reklamy (Art. 23 ust. 1 pkt 23 PIT)
+- Czy reguły prawidłowo rozróżniają reklamę od reprezentacji?
+
+### 6. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 10)
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
+1. "Real-Time FX Monitor + Auto-Calculator" — automatyczne różnice kursowe
+2. "TP Documentation Auto-Generator" — automatyczna dokumentacja TP
+3. "Tax Residency Auto-Determinator" — automatyczne ustalanie rezydencji
+4. "Payment Deadline Smart Tracker" — śledzenie terminów płatności
+5. "Advertising vs Representation AI Classifier" — AI rozróżniające reklamę
+6. "White List Auto-Verifier" — automatyczna weryfikacja Białej Listy
+7. "Procurement Tax Optimizer" — optymalizacja podatkowa zamówień publicznych
+8. "FX Hedge Strategy Advisor" — doradztwo hedgingu walutowego
+9. "Cross-Border Payment Tax Analyzer" — analiza podatkowa płatności transgranicznych
+10. "Ad Spend vs Tax Deduction Maximizer" — maksymalizacja odliczeń reklamowych
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG FX + TP + Residency + Payments v7.0"
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE. Potwierdź gotowość do przejścia do Promptu P22.

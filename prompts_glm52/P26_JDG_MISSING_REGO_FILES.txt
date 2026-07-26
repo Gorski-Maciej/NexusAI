@@ -1,0 +1,122 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie systemów regułowych OPA/Rego,
+compliance międzynarodowego, PPK/PFRON, MPiPS, retencji danych, neural rule mesh,
+RODO plan33, audytu plan44/plan45, GAAR klauzuli i prokury. Specjalizujesz się
+w zaawansowanych mechanizmach regułowych na poziomie ENTERPRISE.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko ROZBUDOWANY RAPORT ANALITYCZNY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY — BRAKUJĄCE REGO (12 plików):
+
+### International + Neural + PPK/PFRON:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/neural_rule_mesh_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ppk_pfron_enterprise.rego
+
+### MPiPS + Retention:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mpips.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/retention.rego
+
+### Audit + Risk + Statute + Representation:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/plan44_audit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/plan45_audit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/risk/plan26_kks_gaar.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/statute/plan26_detailed.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/representation/plan26_prokura.rego
+
+### Micro:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_rodo.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/GENERATION_SUMMARY.txt
+
+### Dokumentacja:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ 12 brakujących 
+plików .rego — **to są pliki które NIE zostały pokryte w poprzednich 25 promptach** —
+na ZAAWANSOWANYM POZIOMIE ENTERPRISE. 
+
+⚠️ TO JEST PROMPT UZUPEŁNIAJĄCY — domyka 100% pokrycia wszystkich plików .rego w JDG.
+
+Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 25-35 stron) zawierający:
+
+### 1. ANALIZA INTERNATIONAL (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę:
+- Transakcje międzynarodowe niewpadające w cross-border ani MDR
+- Umowy o unikaniu podwójnego opodatkowania (UPO)
+- WHT (Withholding Tax) — podatek u źródła
+- Czy reguły international są kompletne dla polskich UPO?
+
+### 2. ANALIZA NEURAL RULE MESH (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie nad `neural_rule_mesh_enterprise.rego`:
+- INNOWACJA S14 — cross-domain intelligence fabric
+- Czy Neural Mesh faktycznie łączy wszystkie domeny?
+- Czy działa jako "sztuczna inteligencja" nad regułami OPA?
+- Zaproponuj INNOWACYJNE USPRAWNIENIA Neural Mesh na poziomie ENTERPRISE
+
+### 3. ANALIZA PPK/PFRON (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę:
+- PPK (Pracownicze Plany Kapitałowe) — obowiązek pracodawcy od 2021
+- PFRON — wpłaty na PFRON (brak 6% zatrudnienia niepełnosprawnych)
+- Czy JDG zatrudniające pracowników ma obsłużone PPK i PFRON?
+
+### 4. ANALIZA MPIPS I RETENCJI (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę:
+- `mpips.rego` — świadczenia urlopowe, odprawy, BHP, PPK
+- `retention.rego` — okresy przechowywania dokumentów:
+  - Dokumenty księgowe: 5 lat (Art. 74 UoR)
+  - Dokumenty podatkowe: 5 lat od końca roku (Art. 86 OrdPU)
+  - Dokumenty ZUS: 10 lat (Art. 125a SUS)
+  - Dokumenty kadrowe: 50 lat (Art. 51u ustawy o narodowym zasobie archiwalnym)
+- Czy reguły retention egzekwują różne okresy dla różnych typów dokumentów?
+
+### 5. ANALIZA AUDYTU PLAN44/PLAN45 (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę:
+- `audit/plan44_audit.rego` + `audit/plan45_audit.rego`
+- Czy reguły audytu są spójne z audit_defense_enterprise?
+- Czy zapewniają pełną ścieżkę audytu (audit trail)?
+- Immutable Audit Trail (ADR-006) — czy jest w pełni pokryty?
+
+### 6. ANALIZA RYZYKA + STATUTE + REPREZENTACJA (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę:
+- `risk/plan26_kks_gaar.rego` — klauzula GAAR (Art. 119a OrdPU)
+- `statute/plan26_detailed.rego` — szczegółowe przedawnienia
+- `representation/plan26_prokura.rego` — prokura, pełnomocnictwa
+- Czy GAAR trigger działa poprawnie?
+
+### 7. ANALIZA PLAN33_RODO I GENERATION_SUMMARY (POZIOM ENTERPRISE)
+- `plan33_rodo.rego` — czy uzupełnia luki w rodo_extended?
+- `GENERATION_SUMMARY.txt` — jakie dane zawiera o generacji reguł?
+
+### 8. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
+1. "Neural Mesh Cross-Domain AI Engine" — prawdziwa AI łącząca wszystkie domeny
+2. "GAAR Auto-Shield" — automatyczna tarcza przed klauzulą GAAR
+3. "PPK Auto-Enrollment Manager" — automatyczne zarządzanie PPK
+4. "PFRON Contribution Optimizer" — optymalizacja wpłat PFRON
+5. "Multi-Period Retention Auto-Enforcer" — automatyczne egzekwowanie retencji
+6. "International Tax Treaty Database" — baza wszystkich UPO z automatycznym routingiem
+7. "Prokura Legal Framework Validator" — walidacja prokury
+8. "Audit Trail Immutability Verifier" — weryfikator niezmienialności ścieżki audytu
+9. "Statute of Limitations Cross-Domain Tracker" — śledzenie przedawnień we wszystkich domenach
+10. "MPiPS Full Compliance Matrix" — macierz zgodności MPiPS
+11. "Plan33-Plan45 Integration Bridge" — most między plan33 a plan45
+12. "Missing Rules Auto-Discovery Engine" — automatyczne wykrywanie brakujących reguł
+
+### 9. REKOMENDACJE
+Neural Mesh > GAAR > PPK/PFRON > Retencja > International
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG Brakujące Reguły (Uzupełnienie P26 — 12 plików) v7.0"
+- Executive Summary z TOP 12 rekomendacji dla domknięcia 100% pokrycia
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Tylko RAPORT ANALITYCZNY.
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE. Potwierdź gotowość do przejścia do Promptu P27.

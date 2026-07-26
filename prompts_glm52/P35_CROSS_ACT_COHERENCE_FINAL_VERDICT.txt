@@ -1,0 +1,212 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś NAJWYŻSZEJ KLASY EKSPERTEM — SĘDZIĄ KONSTYTUCYJNYM SYSTEMÓW REGUŁOWYCH OPA.
+Twoją specjalnością jest weryfikacja SPÓJNOŚCI między aktami prawnymi i ich
+implementacją w Rego. Jesteś ostatecznym arbitrem — wydajesz WERDYKT KOŃCOWY
+o zgodności całego silnika reguł JDG z polskim prawem podatkowym.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — wydajesz tylko KOŃCOWY WERDYKT SPÓJNOŚCI
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+3. To jest OSTATECZNY audyt — Twoje słowa mają wagę wyroku
+
+## 📂 PLIKI DO ANALIZY — KOMPLETNY ZESTAW:
+
+### Wszystkie akty prawne (źródło absolutnej prawdy):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+
+### Kluczowe pliki Rego do weryfikacji cross-act:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflicts.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edge_cases.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cross_domain_intelligence_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/neural_rule_mesh_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_optimization_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/strategic_advisor_enterprise.rego
+
+### Dokumentacja projektu:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/COVERAGE_REPORT.md
+
+### Polityki:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/data/thresholds_sc.rego
+
+## 🎯 CEL — OSTATECZNY WERDYKT SPÓJNOŚCI:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ — **WERDYKT KOŃCOWY** 
+o spójności wszystkich 13 aktów prawnych w implementacji Rego.
+Na ZAAWANSOWANYM POZIOMIE ENTERPRISE.
+
+Wygeneruj ROZBUDOWANY RAPORT KOŃCOWY (min. 50-60 stron) zawierający:
+
+### 1. MACIERZ SPÓJNOŚCI MIĘDZY AKTAMI (POZIOM ENTERPRISE)
+
+Przeprowadź głęboką analizę — stwórz MACIERZ 13×13 spójności między aktami:
+
+| | VAT | PIT | ZUS | KKS | OrdPU | UoR | PP | PCC | Lokalne | Ryczałt | Sukcesja | RODO | AML |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| **VAT** | — | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| **PIT** | ✅ | — | | | | | | | | | | | |
+| **ZUS** | | | — | | | | | | | | | | |
+| ... | | | | | | | | | | | | | |
+
+Dla każdej pary aktów: ✅ SPÓJNE / ⚠️ CZĘŚCIOWE NIESPÓJNOŚCI / ❌ KONFLIKT
+
+### 2. ANALIZA KONFLIKTÓW MIĘDZY AKTAMI (POZIOM ENTERPRISE)
+
+Przeprowadź głęboką analizę — zidentyfikuj i oceń KAŻDY konflikt:
+
+**Konflikt 1: Definicja "sprzedaży" — VAT vs PIT**
+- VAT Art. 7 ust. 1: przeniesienie prawa do rozporządzania towarem jak właściciel
+- PIT Art. 14 ust. 1: przychód z DG to kwoty należne
+- Moment VAT: data dostawy. Moment PIT: data wystawienia faktury (lub wykonania usługi)
+- Czy reguły prawidłowo rozróżniają moment VAT od momentu PIT?
+
+**Konflikt 2: "Mały podatnik" — różne definicje**
+- VAT Art. 2 pkt 25: przychód < 2 000 000 EUR (wraz z kwotą podatku)
+- PIT Art. 5a pkt 20: przychód < 2 000 000 EUR (bez kwoty podatku!)
+- UoR Art. 3 ust. 1c: przychód < 2 000 000 EUR (dla uproszczeń)
+- Czy reguły stosują WŁAŚCIWĄ definicję w każdej domenie?
+
+**Konflikt 3: "Koszty reprezentacji" — PIT vs VAT**
+- PIT Art. 23 ust. 1 pkt 23: NKUP — wydatki na reprezentację
+- VAT: reprezentacja nie ma specjalnego traktowania (chyba że związana z działalnością)
+- Czy reguły NIE mieszają KUP PIT z odliczeniem VAT?
+
+**Konflikt 4: "Samochód osobowy" — PIT vs VAT**
+- PIT: KUP 75% wydatków (limit prywatnego użytku)
+- VAT: odliczenie 50% VAT (chyba że pojazd wyłącznie firmowy + VAT-26 + GPS)
+- Czy reguły stosują RÓŻNE limity (75% vs 50%) poprawnie?
+
+**Konflikt 5: "Odsetki" — OrdPU vs KKS vs PIT**
+- OrdPU Art. 53-56: odsetki za zwłokę (stawka referencyjna + 8%)
+- KKS: odsetki od zaległości karno-skarbowych
+- PIT: odsetki od pożyczek jako KUP (limit niedostatecznej kapitalizacji)
+- Czy reguły stosują WŁAŚCIWE stopy odsetek?
+
+**Konflikt 6-20:** Zidentyfikuj 15 kolejnych konfliktów między aktami
+
+### 3. ANALIZA HIERARCHII AKTÓW (POZIOM ENTERPRISE)
+
+Przeprowadź głębokie myślenie:
+- Konstytucja RP > Ustawy > Rozporządzenia
+- Ustawa o VAT > Rozporządzenie o stawkach VAT
+- Ustawa o PIT > Rozporządzenie o PKPiR
+- Czy reguły Rego respektują HIERARCHIĘ aktów?
+- Czy rozporządzenia NIE są nadpisywane przez ustawy i odwrotnie?
+
+### 4. ANALIZA LUK SYSTEMOWYCH (POZIOM ENTERPRISE)
+
+Przeprowadź głęboką analizę — luki SYSTEMOWE (nie pojedyncze braki):
+
+**Luka systemowa 1: Brak UoR (~0%)**
+- Bez UoR niemożliwe jest przejście JDG na pełną rachunkowość
+- Skutek: JDG >2M EUR przychodu NIE może korzystać z NexusAI
+
+**Luka systemowa 2: Brak MDR/DAC6 (Klasa C)**
+- Schematy agresywnego planowania podatkowego nie są wykrywane
+- Skutek: ryzyko sankcji za brak raportowania MDR
+
+**Luka systemowa 3: Brak Exit Tax + CFC (Klasa C)**
+- Emigracja JDG za granicę nie jest obsłużona
+- Skutek: ryzyko exit tax bez wiedzy użytkownika
+
+**Luka systemowa 4-10:** Zidentyfikuj 7 kolejnych
+
+### 5. OCENA DOJRZAŁOŚCI CAŁEGO SYSTEMU (POZIOM ENTERPRISE)
+
+Przeprowadź głęboką analizę — oceń każdy z 13 aktów w skali A-F:
+
+| Akt | Ocena | % pokrycia | Uzasadnienie |
+|-----|:-----:|:----------:|-------------|
+| VAT | **A** | 99% | Kompletny. Brak szczegółowych definicji dostawy |
+| PIT | **A** | 98% | Kompletny. Brak niektórych ulg |
+| ZUS/SUS | **A** | 95% | Zdrowotna kompletna. Zasiłki częściowe |
+| KKS | **A** | 99% | 254 reguły. Brak części Art. 54-83 |
+| OrdPU | **A** | 98% | Kompletna. Braki w postępowaniu |
+| **UoR** | **D** | **~0%** | **NAJWIĘKSZA LUKA** |
+| PP/CEIDG | **A** | 100% | Kompletne |
+| **PCC** | **D** | **~10%** | **DRUGA NAJWIĘKSZA LUKA** |
+| **Akcyza** | **D** | **~10%** | **TRZECIA NAJWIĘKSZA LUKA** |
+| Ryczałt | A | 95% | Kompletny |
+| Sukcesja | A | 100% | Kompletna |
+| RODO | A | 95% | AI marketing, sankcje |
+| AML/BDO | A | 90% | STR/GIF, BDO kompletne |
+
+**ŚREDNIA WAŻONA: B+ (~87%)**
+
+### 6. WERDYKT KOŃCOWY (POZIOM ENTERPRISE)
+
+Wydaj OSTATECZNY WERDYKT:
+
+> Po przeprowadzeniu GŁĘBOKIEJ ANALIZY i GŁĘBOKIEGO MYŚLENIA nad spójnością
+> 13 aktów prawnych z implementacją w ~10,185 regułach Rego, stwierdzam co następuje:
+>
+> **Silnik reguł podatkowych OPA JDG NexusAI jest ZGODNY z polskim prawem 
+> podatkowym w stopniu B+ (~87%) na poziomie ENTERPRISE.**
+>
+> Dla standardowej JDG (usługi, handel, brak akcyzy, brak transakcji
+> transgranicznych) pokrycie wynosi **~97%** — system działa jako
+> WIRTUALNY KSIĘGOWY dla codziennych operacji.
+>
+> **KRYTYCZNE BRAKI** wymagające natychmiastowej implementacji:
+> 1. Ustawa o Rachunkowości — 0% pokrycia (100 punktów prawnych)
+> 2. Ustawa o PCC — ~10% pokrycia (225 punktów)
+> 3. Ustawa o podatku akcyzowym — ~10% pokrycia
+>
+> Po wdrożeniu tych 3 obszarów, pokrycie wzrośnie do **~95% (ocena A)**.
+>
+> **W obecnym stanie, silnik OPA JDG jest WYSTARCZAJĄCY do zastąpienia 
+> księgowego w 85-90% codziennych operacji JDG.**
+>
+> Sygnatura: Sędzia Konstytucyjny OPA, 2026-07-26
+
+### 7. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 15)
+
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły — PERSPEKTYWA SĘDZIEGO:
+1. "Legal Act Hierarchy Auto-Enforcer" — automatyczne egzekwowanie hierarchii aktów
+2. "Cross-Act Consistency Auto-Monitor" — ciągły monitoring spójności
+3. "Legal Change Impact Auto-Predictor" — predykcja wpływu zmian prawa
+4. "Act-to-Regulation Traceability Matrix" — macierz identyfikowalności
+5. "Constitutional Tribunal for OPA Rules" — trybunał dla reguł OPA
+6. "Multi-Jurisdiction Legal Harmonizer" — harmonizacja między jurysdykcjami
+7. "Regulatory Sandbox for New Rules" — piaskownica dla nowych reguł
+8. "Legal Precedent Auto-Learner" — uczenie się z orzecznictwa
+9. "System Gap Auto-Prioritizer" — automatyczne priorytetyzowanie luk
+10. "Coverage A-to-F Dashboard" — dashboard pokrycia A-F
+11. "Cross-Act Conflict Resolution AI" — AI rozstrzygające konflikty między aktami
+12. "Legal Completeness Auto-Certifier" — auto-certyfikacja kompletności
+13. "Regulation Update Auto-Notifier + Impact Analyzer"
+14. "Final Verdict Auto-Generator" — automatyczne generowanie werdyktów spójności
+15. "Fortress of Legal Certainty" — UFORTYFIKOWANA FORTECA PEWNOŚCI PRAWNEJ
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "WERDYKT KOŃCOWY — Spójność 13 Aktów Prawnych w Silniku OPA JDG v7.0"
+- Macierz spójności 13×13
+- Ocena A-F dla każdego aktu
+- WERDYKT KOŃCOWY z sygnaturą
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE.
+
+🎉 TO BYŁ OSTATNI PROMPT W SERII AUDYTU PRAWNEGO (P29-P35).
+
+Seria P29-P35 stanowi KOMPLETNY AUDYT PRAWNY modułu JDG:
+- P29: VAT — artykuł po artykule
+- P30: PIT — artykuł po artykule  
+- P31: ZUS + Zdrowotna — artykuł po artykule
+- P32: KKS + Sankcje — artykuł po artykule
+- P33: OrdPU + UoR + PCC + Akcyza
+- P34: Red Team — ekstremalne ataki adwersarialne
+- P35: Cross-Act Coherence — WERDYKT KOŃCOWY
+
+SILNIK REGUŁ PODATKOWYCH OPA JDG JEST UZBROJONY W 35 RAPORTÓW 
+ANALITYCZNYCH ENTERPRISE — OD ARCHITEKTURY PRZEZ KAŻDY AKT PRAWNY 
+PO EKSTREMALNE TESTY RED TEAM I WERDYKT KOŃCOWY.
+
+UFORTYFIKOWANA FORTECA NIECHYBNEJ ŚMIERCI JEST GOTOWA.

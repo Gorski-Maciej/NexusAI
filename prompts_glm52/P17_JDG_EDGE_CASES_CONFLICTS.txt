@@ -1,0 +1,92 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie edge cases, konfliktów między domenami
+podatkowymi, korekt deklaracji, przedawnień oraz systemów regułowych OPA/Rego.
+Specjalizujesz się w wykrywaniu anomalii i sytuacji granicznych w JDG na poziomie ENTERPRISE.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko ROZBUDOWANY RAPORT ANALITYCZNY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY — EDGE CASES + CONFLICTS + CORRECTIONS (~250 KB):
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edge_cases.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflicts.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/corrections.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/statute_of_limitations.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/risk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/liability.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances/plan23_reliefs.rego
+
+### Dokumentacja:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ modułu edge cases (187 reguł!),
+konfliktów między domenami, korekt deklaracji i przedawnień
+na ZAAWANSOWANYM POZIOMIE ENTERPRISE.
+Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 30-40 stron) zawierający:
+
+### 1. ANALIZA EDGE CASES (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę 187 reguł edge cases:
+- Grupa D: VAT — przekroczenie limitu 200k w trakcie roku, proporcja przy starcie
+- Grupa E: PIT — zmiana formy w trakcie roku, remanent przy zmianie
+- Grupa I: Cross-border — VAT-UE korygowany, odwrotne obciążenie
+- Czy edge cases pokrywają wszystkie znane sytuacje graniczne?
+- Które edge cases są niepokryte?
+- Zaproponuj kategoryzację 187 reguł na ZAAWANSOWANYM POZIOMIE ENTERPRISE
+
+### 2. ANALIZA KONFLIKTÓW MIĘDZY DOMENAMI (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie nad `conflicts.rego`:
+- Konflikty VAT vs PIT (27 reguł)
+- IP Box vs B+R na tym samym dochodzie
+- Reprezentacja vs marketing — rozróżnienie
+- Auto VAT 50% vs KUP 75% — asymetria
+- Złe długi — wierzyciel vs dłużnik (VAT vs PIT timing)
+- Severity scoring: CRITICAL (100) vs HIGH (70) vs INFO (40)
+- Czy wszystkie możliwe konflikty są wykrywane?
+
+### 3. ANALIZA KOREKT (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę `corrections.rego`:
+- Korekta VAT (Art. 89a-89b) — wierzyciel i dłużnik
+- Korekta JPK_V7 — korekta deklaracji
+- Korekta PIT — korekta zeznania rocznego
+- Czy terminy korekt są poprawne (przedawnienie 5 lat)?
+
+### 4. ANALIZA PRZEDAWNIEŃ (POZIOM ENTERPRISE)
+- Ordynacja Podatkowa Art. 70 — przedawnienie zobowiązań 5 lat
+- KKS Art. 44 — przedawnienie karalności 5 lat
+- Czy temporalność przedawnień jest spójna z `temporal.rego`?
+
+### 5. ANALIZA RYZYKA (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę `risk.rego`:
+- GAAR (klauzula przeciw unikaniu opodatkowania, Art. 119a OrdPU)
+- Schematy agresywnego planowania podatkowego
+- Czy scoring ryzyka jest adekwatny?
+
+### 6. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
+1. "Edge Case Auto-Discovery Engine" — automatyczne odkrywanie nowych edge cases
+2. "Cross-Domain Conflict Resolution Matrix" — macierz rozstrzygania wszystkich konfliktów
+3. "Correction Auto-Suggester" — automatyczne sugerowanie korekt deklaracji
+4. "Statute of Limitations Countdown Timer" — odliczanie do przedawnienia
+5. "Risk Heatmap Generator" — mapa cieplna ryzyka podatkowego
+6. "GAAR Trigger Detector" — wykrywanie triggerów klauzuli GAAR
+7. "Conflict Severity Auto-Grader" — automatyczna gradacja severity konfliktów
+8. "Edge Case Coverage Guarantee" — gwarancja pokrycia wszystkich edge cases
+9. "Correction Chain Tracker" — śledzenie łańcucha korekt
+10. "Limitation Period Cross-Reference" — krzyżowa referencja przedawnień
+11. "Proactive Risk Mitigation Engine" — proaktywna mitigacja ryzyka
+12. "Edge Case Test Auto-Generator" — automatyczne generowanie testów edge cases
+
+### 7. REKOMENDACJE
+Edge cases (niepokryte) > Konflikty > Korekty > Przedawnienia > Ryzyko
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG Edge Cases + Conflicts + Corrections v7.0"
+- Diagramy Mermaid: macierz konfliktów VAT vs PIT, flow korekt deklaracji
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE. Potwierdź gotowość do przejścia do Promptu P18.

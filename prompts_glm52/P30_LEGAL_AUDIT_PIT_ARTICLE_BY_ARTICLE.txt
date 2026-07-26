@@ -1,0 +1,175 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś NAJWYŻSZEJ KLASY EKSPERTEM-DETEKTYWEM PRAWNYM w dziedzinie ustawy o PIT,
+systemów regułowych OPA/Rego oraz audytu zgodności prawnej. Twoją specjalnością
+jest wykrywanie NAJMNIEJSZYCH rozbieżności między literalnym brzmieniem ustawy 
+o PIT a implementacją w kodzie Rego. Jesteś bezlitosny — znajdujesz KAŻDY błąd.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko ROZBUDOWANY RAPORT AUDYTOWY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY:
+
+### AKTY PRAWNE:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+
+### REGUŁY PIT — WSZYSTKIE WARSTWY:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/forms.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/kup.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/advances_returns.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/exemptions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/transitions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan23_exemptions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan23_tax_form_change.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan26_detailed.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/art21_exemptions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/elearning.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/thermo_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/rd_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/ipbox_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/cross_relief_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/donation_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/tax_loss_harvesting_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/family_estonian_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/tax_form_transition_intelligence.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pit/pit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_pit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_pit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/nkup_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_transition_simulator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/annual_declaration_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/exit_tax_mdr_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cashflow_tax_predictor_enterprise.rego
+
+### MIKRO — AMORTYZACJA:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22a.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22i.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22k.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22n.rego
+
+### POLITYKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/Makefile
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/data/thresholds_sc.rego
+
+## 🎯 CEL AUDYTU:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ — **BEZLITOSNY AUDYT PRAWNY PIT**.
+To jest operacja chirurgiczna na poziomie ZAAWANSOWANEGO POZIOMU ENTERPRISE,
+która ma znaleźć KAŻDĄ najmniejszą niezgodność między ustawą o PIT a regułami Rego.
+
+Wygeneruj ROZBUDOWANY RAPORT AUDYTOWY (min. 40-50 stron) zawierający:
+
+### 1. WERYFIKACJA ARTYKUŁ PO ARTYKULE — USTAWA O PIT (POZIOM ENTERPRISE)
+
+Przeprowadź głęboką analizę dla KAŻDEGO artykułu z JDG/docs/Bbb:
+
+**Rozdział 1 — Podmiot i przedmiot (Art. 1-9a):**
+- Art. 1 (zakres podmiotowy — osoby fizyczne)
+- Art. 3 (nieograniczony/ograniczony obowiązek podatkowy — rezydencja, 183 dni)
+- Art. 5a (definicje: działalność gospodarcza, mały podatnik, B+R, kwalifikowane IP) — 43 punkty!
+- Art. 9 (strata podatkowa, 5 lat, max 50% rocznie)
+- Art. 9a (wybór formy opodatkowania — skala/liniowy/ryczałt/karta)
+
+**Rozdział 2 — Źródła przychodów (Art. 10-20):**
+- Art. 10 (źródła przychodów — 9 punktów, DG jako odrębne źródło)
+- Art. 14 (przychody z DG — 3c ustępy: moment powstania, różnice kursowe, zwroty)
+- Art. 17 (przychody z kapitałów pieniężnych)
+
+**Rozdział 3 — Koszty uzyskania przychodu (Art. 22-23) — NAJWIĘKSZY OBSZAR:**
+Przeprowadź głęboką analizę KAŻDEGO z 57 punktów Art. 23 NKUP:
+- Art. 22 (KUP — definicja, koszty bezpośrednie/pośrednie, moment potrącenia)
+- Art. 23 ust. 1 pkt 1-57 (NKUP) — KAŻDY PUNKT musi być zweryfikowany!
+  - pkt 23: reprezentacja (limit 150 000 PLN dla CIT? A dla PIT?)
+  - pkt 36: odsetki od pożyczek (niedostateczna kapitalizacja)
+  - pkt 38: wydatki na nabycie/wytworzenie środków trwałych
+  - pkt 43: podatek VAT (NKUP gdy VAT jest odliczany)
+  - pkt 46: samochód osobowy — 75% limitu (zmiana 2025?)
+  - pkt 47: opłaty leasingowe — limit 150 000 PLN
+  - pkt 49: koszty reprezentacji (ponownie!)
+  - pkt 55: niewypłacone wynagrodzenia po terminie
+
+**Rozdział 4 — Dochód (Art. 24-25):**
+- Art. 24 (dochód — definicja, nadwyżka przychodów nad kosztami)
+- Art. 24a (obowiązek prowadzenia PKPiR)
+
+**Rozdział 5 — Ulgi (Art. 26-26h) — KRYTYCZNY dla optymalizacji:**
+- Art. 26 (ulga rehabilitacyjna — 9 rodzajów wydatków)
+- Art. 26e (ulga B+R — 100%/150%/200% kosztów kwalifikowanych)
+- Art. 26eb (ulga na prototyp — 30%)
+- Art. 26ec (ulga na ekspansję)
+- Art. 26gb (ulga na robotyzację — 50%)
+- Art. 26h (ulga termomodernizacyjna — 53 000 PLN)
+
+**Rozdział 6 — Skala podatkowa (Art. 27):**
+- Art. 27 (skala 12%/32%, kwota wolna 30 000 PLN, próg 120 000 PLN)
+- Art. 27f (ulga prorodzinna — 1112.04 PLN/12 na dziecko)
+
+**Rozdział 7 — Podatek liniowy i IP Box (Art. 30c-30ca):**
+- Art. 30c (liniowy 19%, wyłączenie byłego pracodawcy)
+- Art. 30ca (IP Box 5%, nexus approach: (a+b+c)×1.3/(a+b+c+d)×dochód)
+- Art. 30da (Exit Tax 19%, próg 4 000 000 PLN)
+- Art. 30f (CFC, kontrola >50%, przychody pasywne >33%)
+
+**Rozdział 8 — Pobór podatku (Art. 44-45):**
+- Art. 44 (zaliczki: miesięczne/20-dzień, kwartalne, uproszczone)
+- Art. 45 (zeznania roczne PIT-36/36L/28 do 30 kwietnia)
+
+### 2. EKSTREMALNE TESTY — PIT (POZIOM ENTERPRISE)
+
+Przeprowadź głęboką analizę — **20 ekstremalnych scenariuszy PIT**:
+
+**SCENARIUSZ 1: Próg 120 000 PLN — 1 grosz powyżej**
+- Dochód 120 000.01 PLN. Podatek: 12%×120 000 - 3 600 (kwota zmniejszająca) + 32%×0.01
+- Czy reguły poprawnie obliczają podatek z 1 grosza w drugim progu?
+
+**SCENARIUSZ 2: IP Box — koszty zerowe (nexus = nieskończoność?)**
+- Dochód IP Box 100 000 PLN, koszty kwalifikowane 0, koszty niekwalifikowane 100 000
+- Czy reguły nie dzielą przez zero? Jaka jest poprawna interpretacja nexus?
+
+**SCENARIUSZ 3: Ulga B+R + IP Box na tym samym dochodzie**
+- Czy reguły cross_relief poprawnie rozstrzygają konflikt?
+
+**SCENARIUSZ 4: Strata podatkowa — 5 lat, ale JDG zmieniło formę**
+- Strata ze skali 2021, JDG przeszło na liniowy 2022-2025, wraca na skalę 2026
+- Czy stratę ze skali można odliczyć tylko od dochodu ze skali?
+
+**SCENARIUSZ 5: Kwota wolna — dochód 29 999 vs 30 001 PLN**
+- Czy reguły poprawnie degresywnie zmniejszają kwotę wolną przy dochodzie >30 000?
+
+**SCENARIUSZ 6-20:** Wygeneruj 15 kolejnych ekstremalnych scenariuszy
+
+### 3. ANALIZA ULGI DLA MŁODYCH + 4+ + POWRÓT + EMERYT (POZIOM ENTERPRISE)
+
+Przeprowadź głęboką analizę limitów łącznych 85 528 PLN:
+- Ulga dla młodych (do 26 lat), ulga na powrót (4 lata), ulga 4+, ulga emerycka
+- Czy WSZYSTKIE te ulgi mają wspólny limit 85 528 PLN?
+- Czy kolejność stosowania ulg jest poprawna?
+
+### 4. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 15)
+
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
+1. "PIT Article-to-Rego Gap Detector" — wykrywanie niepokrytych artykułów PIT
+2. "Tax Bracket Precision Engine" — precyzyjne obliczanie progu 120 000 PLN
+3. "IP Box Nexus Auto-Calculator + Division-by-Zero Shield"
+4. "Cross-Relief Conflict Resolution AI" — AI rozstrzygające konflikty ulg
+5. "Loss Carry-Forward Multi-Year Optimizer" — optymalizacja strat
+6. "NKUP 57-Point Completeness Verifier" — weryfikator wszystkich 57 punktów NKUP
+7. "Shared Limit 85 528 PLN Multi-Relief Tracker"
+8. "Tax Form Transition Impact Simulator 2.0"
+9. "Exit Tax Pre-Migration Shield"
+10. "R&D Cost Auto-Qualifier" — automatyczna kwalifikacja kosztów B+R
+11. "Family Relief Stacking Optimizer"
+12. "Estonian CIT Eligibility Predictor"
+13. "Thermo Relief 53 000 PLN Cap Enforcer"
+14. "Advance Tax Payment Precision Engine"
+15. "PIT Zero-Defect Certification"
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT AUDYTOWY ENTERPRISE — PIT: Artykuł po Artykule vs Rego + Ekstremalne Testy v7.0"
+- Tabele: KAŻDY artykuł PIT z ✅/⚠️/❌
+
+## 🔄 WYCZYŚĆ OKNO KONTEKSTOWE. → P31.

@@ -1,0 +1,203 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś NAJWYŻSZEJ KLASY EKSPERTEM w dziedzinie EXTREME ADVERSARIAL TESTING
+systemów regułowych OPA/Rego. Jesteś "Czerwonym Zespołem" (Red Team) — Twoim
+zadaniem jest ZNISZCZYĆ, ZŁAMAĆ, OBEJŚĆ każdą regułę JDG. Symulujesz NAJGORSZE
+możliwe scenariusze — ataki, błędy, sytuacje graniczne, sprzeczności między
+aktami prawnymi. Jesteś BEZWZGLĘDNY — każda znaleziona luka to Twoje zwycięstwo.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko RAPORT RED TEAM
+2. **NIE MODYFIKUJ PLIKÓW** — atakujesz logicznie, nie fizycznie
+3. Każdy znaleziony problem = potencjalna sankcja finansowa dla JDG
+
+## 📂 PLIKI DO ANALIZY — CAŁY KATALOG JDG JAKO KONTEKST:
+
+### Orkiestrator i infrastruktura:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/routing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflicts.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edge_cases.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/validation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fallback.rego
+
+### Akty prawne (źródło prawdy):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+
+### Polityki OPA:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/data/thresholds_sc.rego
+
+## 🎯 CEL — RED TEAM ATTACK:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ — **ATAK RED TEAM na cały moduł JDG**.
+Masz znaleźć KAŻDĄ lukę, KAŻDY błąd, KAŻDĄ niespójność w regułach Rego.
+Na ZAAWANSOWANYM POZIOMIE ENTERPRISE.
+
+Wygeneruj ROZBUDOWANY RAPORT RED TEAM (min. 40-50 stron) zawierający:
+
+### 1. ATAKI NA ARCHITEKTURĘ ORKIESTRATORA (POZIOM ENTERPRISE)
+
+Przeprowadź głęboką analizę ataków na `main_jdg.rego`:
+
+**ATAK 1: Obejście Sharded Routera**
+- Co się stanie gdy `routing_context` zwróci nieprawidłowy `transaction_type`?
+- Czy można wymusić `DOMESTIC_SALE` dla transakcji transgranicznej 
+  (pominięcie crossborder)?
+- Co gdy `entity_status` = "ACTIVE" ale JDG jest faktycznie zawieszone?
+
+**ATAK 2: Zatrucie safe_merge**
+- Czy można nadać `immutable_verdict: true` dla nie-ZUS-owego pakietu?
+- Czy bezpieczny merge działa gdy OBYDWA werdykty mają immutable?
+- Co gdy risk.decide ustawi `zus_health_rate` na złośliwą wartość?
+
+**ATAK 3: Wyścig między PAS-ami**
+- Czy możliwy jest race condition między PAS 0 (RISK) a PAS 7 (ZUS)?
+- Czy BLOCK_AND_ALERT w PAS 0 naprawdę zatrzymuje wszystkie kolejne PAS-y?
+
+**ATAK 4: Przepełnienie łańcucha else**
+- Co się stanie gdy żadna reguła w łańcuchu nie pasuje?
+- Czy `fallback.decide` jest ZAWSZE osiągalny?
+- Czy możliwy jest deadlock (żadna reguła nie pasuje + fallback też nie)?
+
+**ATAK 5: Manipulacja priorytetami**
+- Czy można wymusić niższy priorytet dla BLOCK_AND_ALERT?
+- Czy kolejność w safe_merge zawsze respektuje priority?
+
+### 2. ATAKI CROSS-DOMAIN — SPRZECZNOŚCI MIĘDZY AKTAMI PRAWNYMI (POZIOM ENTERPRISE)
+
+Przeprowadź głęboką analizę — NAJGROŹNIEJSZE ataki:
+
+**ATAK 6: VAT vs PIT — różne definicje "sprzedaży"**
+- VAT: moment wydania towaru (Art. 19a VAT)
+- PIT: moment wystawienia faktury (Art. 14 PIT)
+- Co gdy faktura wystawiona 31.12.2025 a towar wydany 02.01.2026?
+- Czy reguły poprawnie rozpoznają różnicę międzyokresową?
+
+**ATAK 7: ZUS vs PIT — różne podstawy "dochodu"**
+- ZUS zdrowotna: dochód = przychód − KUP + składki społeczne
+- PIT: dochód = przychód − KUP (bez odejmowania składek społecznych!)
+- Czy reguły używają PRAWIDŁOWEJ definicji dochodu dla każdej domeny?
+
+**ATAK 8: KKS vs OrdPU — podwójny czynny żal**
+- Art. 16 KKS ≠ Art. 16 OrdPU — DWIE RÓŻNE instytucje!
+- Czy reguły rozróżniają czynny żal karno-skarbowy od podatkowego?
+
+**ATAK 9: UoR vs PIT — różne zasady amortyzacji**
+- UoR: stawki wg okresu ekonomicznej użyteczności
+- PIT: stawki wg Wykazu KŚT
+- Czy reguły stosują WŁAŚCIWE stawki do właściwych celów?
+
+**ATAK 10: PCC vs VAT — wyłączenie z PCC dla transakcji VAT**
+- Art. 2 pkt 4 PCC: transakcje opodatkowane VAT są wyłączone z PCC
+- Co gdy transakcja podlega VAT (stawka 23%) ale sprzedawca jest ZWOLNIONY 
+  podmiotowo? Czy PCC się należy?
+
+### 3. ATAKI TEMPORALNE — ZMIANY PRAWA W CZASIE (POZIOM ENTERPRISE)
+
+Przeprowadź głęboką analizę ataków na `temporal.rego`:
+
+**ATAK 11: Transakcja z datą wsteczną po zmianie prawa**
+- Faktura z datą 31.12.2021 (stary Polski Ład — odliczenie zdrowotnej)
+- Księgowana 15.01.2022 (nowy Polski Ład — brak odliczenia)
+- Które prawo stosować? Datę faktury czy datę księgowania?
+
+**ATAK 12: Zmiana stawki VAT w trakcie dostawy ciągłej**
+- Umowa roczna od 01.01.2026, zmiana stawki VAT od 01.07.2026
+- Czy reguły dzielą dostawę na dwie części z różnymi stawkami?
+
+**ATAK 13: Luka czasowa w thresholds**
+- Co gdy threshold nie ma `valid_from`/`valid_to`?
+- Czy brak temporalności = reguła stosowana do wszystkich okresów (błędnie)?
+
+### 4. ATAKI NA PROGI I ZAOKRĄGLENIA (POZIOM ENTERPRISE)
+
+**ATAK 14: Granica 15 000 PLN MPP — 14 999.995 PLN**
+- Zaokrąglenie: 14 999.995 → 15 000.00 (zaokrąglenie do 2 miejsc)
+- Czy MPP jest obowiązkowe? (kwota PO zaokrągleniu = 15 000.00)
+
+**ATAK 15: Granica 200 000 PLN VAT — 199 999.99 PLN**
+- Czy 1 grosz decyduje o obowiązku rejestracji VAT?
+
+**ATAK 16: Granica 120 000 PLN PIT — 120 000.01 PLN**
+- Czy 1 grosz w drugim progu = 32% od 1 grosza = 0.0032 PLN podatku?
+- Czy zaokrąglenie podatku do pełnych złotych = 0 PLN?
+
+**ATAK 17: Granica 85 528 PLN ulg łącznych**
+- Ulga młodych: 85 527 PLN + ulga na powrót: 1 PLN = 85 528 PLN
+- Która ulga ma pierwszeństwo? Czy obie się mieszczą?
+
+### 5. ATAKI NA WEJŚCIE (INPUT FUZZING) (POZIOM ENTERPRISE)
+
+**ATAK 18: NIP z nieprawidłową sumą kontrolną**
+- NIP: 123-456-78-19 (nieprawidłowa suma kontrolna)
+- Czy reguły walidują NIP przed podjęciem decyzji?
+
+**ATAK 19: Ujemna kwota faktury**
+- Kwota netto: -10 000 PLN
+- Czy reguły obsługują faktury korygujące ujemne?
+
+**ATAK 20: Data w przyszłości**
+- Data faktury: 2027-12-31 (za 1.5 roku)
+- Czy reguły dopuszczają transakcje z przyszłą datą?
+
+### 6. ATAKI NA WYJŚCIE (OUTPUT FALSIFICATION) (POZIOM ENTERPRISE)
+
+**ATAK 21: Zatrucie werdyktu**
+- Co jeśli złośliwy pakiet zwróci `matched: true` z nieprawidłową stawką VAT?
+
+**ATAK 22: Obejście immutowalności**
+- Czy można usunąć `immutable_verdict: true` przed mergem?
+
+### 7. ATAKI EKSTREMALNE — SCENARIUSZE KATASTROFICZNE (POZIOM ENTERPRISE)
+
+**ATAK 23: KSeF down przez 30 dni**
+- Awaria KSeF od 01.02.2026 do 03.03.2026
+- KSeF obowiązkowy, ale system nie działa
+- Czy reguły `ksef_resilience` zapewniają 7-dniowy grace period?
+- Co po 7 dniach?
+
+**ATAK 24: Hiperinflacja — stawka VAT zmienia się co tydzień**
+- VAT: 23% → 25% → 28% → 30% w ciągu miesiąca
+- Czy temporal.rego obsługuje zmiany co-tygodniowe?
+
+**ATAK 25: Masowa korekta — 10 000 faktur jednocześnie**
+- Czy system nie ulega przeciążeniu?
+- Czy wszystkie korekty są spójne?
+
+### 8. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 15)
+
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły — RED TEAM PERSPECTIVE:
+1. "Adversarial Input Fuzzing Engine" — automatyczny fuzzing wejść Rego
+2. "Cross-Domain Contradiction Auto-Detector" — wykrywanie sprzeczności między aktami
+3. "Temporal Gap Auto-Scanner" — skanowanie luk czasowych
+4. "Boundary Precision Tester (1-grosz tests)" — tester precyzji granic
+5. "Chaos Engineering for OPA" — chaos engineering dla silnika OPA
+6. "Race Condition Detector for Multi-Pass" — detektor wyścigów między PAS-ami
+7. "Fallback Deadlock Preventer" — zapobieganie deadlockom fallback
+8. "NIP/REGON/IBAN Formal Validator Shield" — tarcza walidacji formalnej
+9. "KSeF Resilience Multi-Layer Buffer + Grace Period Enforcer"
+10. "Output Falsification Detector" — detektor zatrutych werdyktów
+11. "Hyperinflation Scenario Simulator"
+12. "Mass Correction Stress Test Engine"
+13. "Red Team Continuous Attack Pipeline"
+14. "Zero-Day Vulnerability Auto-Scanner for Rego"
+15. "Fortress Penetration Testing Certification"
+
+### 9. RANKING ZNALEZIONYCH PODATNOŚCI (POZIOM ENTERPRISE)
+
+Uszereguj od KRYTYCZNYCH (możliwość sankcji finansowej):
+- 🔴 CRITICAL: luki powodujące błędną decyzję podatkową
+- 🟠 HIGH: luki powodujące nieoptymalną decyzję
+- 🟡 MEDIUM: luki w walidacji wejścia
+- 🟢 LOW: luki kosmetyczne
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT RED TEAM ENTERPRISE — Ekstremalne Ataki Adwersarialne na JDG OPA v7.0"
+- Executive Summary: liczba znalezionych podatności wg severity
+- Każdy atak: nazwa, kategoria, severity, opis, oczekiwane vs rzeczywiste zachowanie
+
+## 🔄 WYCZYŚĆ OKNO KONTEKSTOWE. → P35 (OSTATNI).

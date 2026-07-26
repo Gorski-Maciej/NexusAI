@@ -1,0 +1,201 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś NAJWYŻSZEJ KLASY EKSPERTEM-DETEKTYWEM PRAWNYM w dziedzinie Ordynacji
+Podatkowej, Ustawy o Rachunkowości, podatku PCC, podatków lokalnych, akcyzy,
+systemów regułowych OPA/Rego oraz audytu zgodności prawnej. Specjalizujesz się
+w wykrywaniu NAJMNIEJSZYCH luk w najsłabiej pokrytych obszarach JDG.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko ROZBUDOWANY RAPORT AUDYTOWY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY:
+
+### AKTY PRAWNE:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+
+### Ordynacja Podatkowa:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ord/ord.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ord.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_ord.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_authority_interaction_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_optimization_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/corrections.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/liability.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/representation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/representation/plan26_prokura.rego
+
+### Ustawa o Rachunkowości + PKPiR:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/uor_enterprise_live.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_live.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_validation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_validator.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/depreciation_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/plan23_leasing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/plan42_uor.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/uor/uor.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_kolumny.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_przychody.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_koszty.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_nkup.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_remanent.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_korekty.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22a.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22i.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22k.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22n.rego
+
+### PCC + Lokalne + Akcyza:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_excise_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/excise_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/local_procedures_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/plan26_local.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/real_estate.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pcc/plan42_pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pcc/pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/akcyza/akcyza.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_prop.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_prop_transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_agricultural_tax.rego
+
+## 🎯 CEL AUDYTU:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ — **BEZLITOSNY AUDYT OrdPU + UoR + PCC + Akcyza**.
+To są NAJSŁABIEJ pokryte obszary JDG (UoR ~0%, PCC ~10%, Akcyza ~10%).
+Na ZAAWANSOWANYM POZIOMIE ENTERPRISE.
+
+Wygeneruj ROZBUDOWANY RAPORT AUDYTOWY (min. 45-55 stron) zawierający:
+
+### 1. WERYFIKACJA ORDYNACJI PODATKOWEJ (POZIOM ENTERPRISE)
+
+Przeprowadź głęboką analizę KAŻDEGO istotnego artykułu:
+
+**Dział I — Przepisy ogólne:**
+- Art. 1-15 (zakres, słowniczek, definicje)
+
+**Dział II — Organy podatkowe:**
+- Art. 13-15 (właściwość miejscowa, rzeczowa)
+
+**Dział III — Zobowiązania podatkowe (NAJWAŻNIEJSZE):**
+- Art. 16-16b (czynny żal w OrdPU — WIERCIADLANE ODBICIE KKS!)
+  - Czy reguły rozróżniają czynny żal KKS od czynnego żalu OrdPU?
+- Art. 20-21 (zaległość podatkowa, nadpłata)
+- Art. 26 (solidarna odpowiedzialność)
+- Art. 48 (odroczenie terminu płatności)
+- Art. 51 (umorzenie zaległości)
+- Art. 53-56 (odsetki za zwłokę — stawka referencyjna NBP + 8%)
+- Art. 67a-67e (ulgi w spłacie: raty, odroczenie, umorzenie)
+- Art. 70-71 (przedawnienie zobowiązań — 5 lat + przerwanie biegu)
+  - Czy reguły rozpoznają WSZYSTKIE zdarzenia przerywające bieg przedawnienia?
+- Art. 72-80 (nadpłata — zwrot w 30 dni, oprocentowanie)
+- Art. 81-81b (korekta deklaracji)
+- Art. 86 (przechowywanie dokumentów)
+- Art. 119a (klauzula GAAR — przeciwdziałanie unikaniu opodatkowania)
+
+**Dział IV — Postępowanie podatkowe:**
+- Art. 120-129, 138a-138o (pełnomocnictwa PPS-1/UPL-1)
+- Art. 193a (JPK na żądanie)
+
+### 2. WERYFIKACJA UoR (POZIOM ENTERPRISE — NAJWIĘKSZA LUKA, ~0%)
+
+Przeprowadź głęboką analizę — UoR jest praktycznie NIEPOKRYTY:
+
+**Rozdział 1 — Przepisy ogólne:**
+- Art. 2 (jednostki zobowiązane — próg ~2M EUR dla JDG)
+
+**Rozdział 2 — Zasady rachunkowości:**
+- Art. 4 (fundamentalne zasady: memoriał, współmierność, ostrożność, 
+  ciągłość, istotność, przewaga treści nad formą)
+- Art. 4 ust. 4 (uproszczenia dla małych jednostek)
+
+**Rozdział 3 — Dowody księgowe:**
+- Art. 20-21 (co najmniej 15 elementów dowodu księgowego!)
+- Art. 22 (podwójny zapis Wn/Ma — FUNDAMENT księgowości)
+
+**Rozdział 4 — Inwentaryzacja:**
+- Art. 26 (coroczna inwentaryzacja, metody)
+
+**Rozdział 5 — Wycena:**
+- Art. 28 (wycena aktywów i pasywów)
+
+**Rozdział 6 — Amortyzacja:**
+- Art. 32 (amortyzacja wg KŚT)
+
+**Rozdział 7 — Sprawozdawczość:**
+- Art. 45-52 (bilans, RZiS, informacja dodatkowa)
+
+**Rozdział 8 — Przechowywanie:**
+- Art. 74 (5 lat przechowywania dokumentacji)
+
+Dla KAŻDEGO: najprawdopodobniej ❌ BRAK. Oszacuj % pokrycia.
+
+### 3. WERYFIKACJA PCC (POZIOM ENTERPRISE — DRUGA NAJWIĘKSZA LUKA)
+
+Przeprowadź głęboką analizę ustawy o PCC:
+- Art. 1 (przedmiot opodatkowania — 10 rodzajów czynności!)
+  - Umowa sprzedaży, pożyczka, darowizna, zamiana, spółka, renta...
+- Art. 2 (wyłączenia — transakcje VAT, zbycie przedsiębiorstwa)
+- Art. 3 (obowiązek podatkowy)
+- Art. 4 (moment powstania obowiązku)
+- Art. 6-7 (stawki: 0.5%, 1%, 2%)
+  - Pożyczka od rodziny: 0.5% powyżej 36 120 PLN (zgłoszenie PCC-3!)
+  - Zakup auta od osoby prywatnej: 2% (PCC-3 w 14 dni!)
+- Art. 9 (zwolnienia podmiotowe i przedmiotowe)
+- Art. 10 (deklaracja PCC-3 — 14 dni od zawarcia umowy)
+
+### 4. WERYFIKACJA PODATKU OD NIERUCHOMOŚCI I TRANSPORTU
+
+- Ustawa o podatkach i opłatach lokalnych, Art. 2-7 (nieruchomości)
+  - Grunty firmowe: ~33 zł/m² vs mieszkalne: ~1.15 zł/m²
+  - Budynki: różne stawki, DN-1
+- Ustawa o podatkach i opłatach lokalnych, Art. 8-14 (transport)
+  - Samochody ciężarowe >3.5t
+
+### 5. WERYFIKACJA AKCYZY
+
+- Ustawa o podatku akcyzowym:
+  - Paliwa silnikowe, alkohol etylowy, wyroby tytoniowe, energia elektryczna
+  - Skład podatkowy, procedura zawieszenia akcyzy
+
+### 6. EKSTREMALNE TESTY (POZIOM ENTERPRISE)
+
+**SCENARIUSZ 1: Przedawnienie — ostatni dzień**
+- Zobowiązanie z 31.12.2020. Przedawnienie: 31.12.2025.
+- Korekta złożona 31.12.2025 — CZY PRZERYWA BIEG PRZEDAWNIENIA?
+
+**SCENARIUSZ 2: PCC — pożyczka od 3 członków rodziny**
+- Po 30 000 PLN od każdego (łącznie 90 000 PLN)
+- Czy każda osobno zwolniona? Czy łącznie przekraczają 36 120?
+
+**SCENARIUSZ 3-10:** Wygeneruj 8 kolejnych
+
+### 7. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+
+Potężne pomysły na poziomie ENTERPRISE:
+1. "UoR Article-to-Rego Ground-Up Builder" — budowa UoR od zera
+2. "PCC Auto-Detector + PCC-3 Auto-Filler"
+3. "Statute of Limitations Cross-Domain Countdown"
+4. "GAAR Shield + Artificial Scheme Detector"
+5. "Double-Entry Auto-Validator (Wn/Ma)"
+6. "Excise Warehouse Digital Twin"
+7. "Property Tax Firm/Private Auto-Classifier"
+8. "OrdPU Full Compliance Matrix"
+9. "Tax Authority Correspondence Auto-Engine"
+10. "Full Accounting Transition Auto-Pilot (PKPiR → Księgi)"
+11. "Inventory Auto-Reconciler (Art. 26 UoR)"
+12. "PCC + VAT Exclusion Firewall (Art. 2 pkt 4 PCC)"
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT AUDYTOWY ENTERPRISE — OrdPU + UoR + PCC + Akcyza: Artykuł po Artykule v7.0"
+- EXECUTIVE SUMMARY: UoR ~0%, PCC ~10%, Akcyza ~10% — PRIORYTET KRYTYCZNY
+
+## 🔄 WYCZYŚĆ OKNO. → P34.

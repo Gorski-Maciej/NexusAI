@@ -1,0 +1,112 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie compliance, RODO, AML (przeciwdziałanie
+praniu pieniędzy), BDO (Baza Danych Odpadowych), ochrony środowiska oraz systemów
+regułowych OPA/Rego. Specjalizujesz się w zgodności regulacyjnej dla JDG na poziomie ENTERPRISE.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko ROZBUDOWANY RAPORT ANALITYCZNY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY — COMPLIANCE + RODO + AML + BDO (~330 KB):
+
+### Compliance + RODO:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance/aml_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rodo.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rodo_extended.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rodo/plan42_rodo.rego
+
+### AML — Micro:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/aml/aml.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/aml/aml_cbdd.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/aml/aml_ryzyko.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/aml/aml_str_gif.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/aml/aml_transakcje.rego
+
+### RODO — Micro:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo_erasure.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo_podprocesorzy.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo_zatrudnienie.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo_ai_marketing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo_sankcje.rego
+
+### Environmental + BDO:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/environmental.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/environmental/bdo_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_rejestracja.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_ewc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_ewidencja.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_zezwolenia.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_weee_baterie.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/srodowisko/srodowisko.rego
+
+### Dokumentacja:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ modułów compliance, RODO, AML i BDO
+na ZAAWANSOWANYM POZIOMIE ENTERPRISE.
+Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 30-40 stron) zawierający:
+
+### 1. ANALIZA RODO (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę kompletności RODO:
+- Rejestr czynności przetwarzania (Art. 30 RODO)
+- Zgody marketingowe — czy system rozróżnia zgodę od obowiązku?
+- Prawo do usunięcia danych (Art. 17 RODO) — `rodo_erasure.rego`
+- Podprocesorzy (Art. 28 RODO) — `rodo_podprocesorzy.rego`
+- Zatrudnienie — `rodo_zatrudnienie.rego`
+- AI marketing — `rodo_ai_marketing.rego`
+- Sankcje RODO (do 20 000 000 EUR lub 4% obrotu) — `rodo_sankcje.rego`
+- Notyfikacja naruszeń (Art. 33 RODO) — 72 godziny do UODO
+- Retencja danych — czy reguły egzekwują okresy przechowywania?
+- Transfer danych do EOG — czy system blokuje nieautoryzowane transfery?
+
+### 2. ANALIZA AML (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie nad AML:
+- Centralny Baza Danych Dłużników (CBDD) — `aml_cbdd.rego`
+- STR/GIF — zgłaszanie podejrzanych transakcji do GIIF
+- Transakcje powyżej 15 000 EUR — obowiązek identyfikacji i raportowania
+- Ocena ryzyka AML — scoring ryzyka klienta/kontrahenta
+- Środki bezpieczeństwa finansowego (Art. 9b-9f AML)
+- Beneficjent rzeczywisty — weryfikacja w CRBR
+
+### 3. ANALIZA BDO (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę:
+- Rejestracja BDO — kto, kiedy, jak?
+- Ewidencja odpadów (BDO) — kody EWC, ilości
+- Transport odpadów — zezwolenia
+- WEEE i baterie — obowiązki producenta
+- Sankcje BDO (do 1 000 000 PLN)
+
+### 4. ANALIZA COMPLIANCE (POZIOM ENTERPRISE)
+- Biała Lista VAT — weryfikacja przed przelewem >15 000 PLN
+- Split payment — dobrowolny safe harbor
+- Whistleblower — dyrektywa o sygnalistach (2021)
+
+### 5. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
+1. "GDPR Auto-Compliance Engine" — automatyczna zgodność RODO
+2. "AML Risk Scoring Matrix" — macierz scoringu ryzyka AML per kontrahent
+3. "BDO Waste Auto-Classifier" — automatyczna klasyfikacja odpadów EWC
+4. "Data Subject Request Auto-Processor" — automatyczna obsługa żądań RODO
+5. "Suspicious Transaction Pattern Detector" — AI wykrywające podejrzane transakcje
+6. "Privacy-by-Design Rule Enforcer" — egzekwowanie prywatności na poziomie reguł
+7. "Cross-Border Data Transfer Blocker" — blokada nieautoryzowanych transferów
+8. "AML/KYC Auto-Onboarding" — automatyczne KYC dla kontrahentów
+9. "Consent Lifecycle Manager" — zarządzanie cyklem życia zgód RODO
+10. "Breach Notification Auto-Drafter" — automatyczne przygotowanie zgłoszenia naruszenia
+11. "Environmental Fee Calculator" — kalkulator opłat środowiskowych
+12. "Regulatory Change Impact Analyzer" — analiza wpływu zmian regulacyjnych
+
+### 6. REKOMENDACJE
+RODO (AI marketing, sankcje) > AML (STR/GIF) > BDO > Compliance ogólne
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG Compliance + RODO + AML + BDO v7.0"
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE. Potwierdź gotowość do przejścia do Promptu P15.

@@ -1,0 +1,134 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie dokumentacji technicznej systemów 
+regułowych OPA/Rego, architektury JDG, planów strategicznych i roadmap rozwoju. 
+Specjalizujesz się w analizie kompletności i spójności dokumentacji projektowej
+dla systemów klasy Enterprise. Jesteś Chief Architect i Technical Writer 
+z 20-letnim doświadczeniem.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — Twoim zadaniem jest wyłącznie analiza dokumentacji
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+3. Raport ma służyć jako ostateczny audyt dokumentacji JDG
+
+## 📂 PLIKI DO ANALIZY — DOKUMENTACJA JDG + MANIFEST (~950 KB):
+
+### Dokumentacja główna:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/COVERAGE_REPORT.md
+
+### Dokumentacja architektury i pokrycia:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/UNIFIED_PLAN.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+### Narzędzia pomocnicze:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_manifest.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/generate_coverage_report.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/generate_missing_rules.py
+
+### API + Migracje + Bundles:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/001_jdg_rule_store.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/002_jdg_enterprise_v7.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/manifest.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/bundle.sh
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ całej dokumentacji JDG —
+**README (Executive Summary), MANIFEST (Tracker Pokrycia ~9750 reguł), 
+COVERAGE_REPORT, dokumenty architektoniczne, API, migracje** —
+na ZAAWANSOWANYM POZIOMIE ENTERPRISE. 
+To jest PODSUMOWUJĄCY AUDYT DOKUMENTACJI — ostatni prompt w serii.
+Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 30-40 stron) zawierający:
+
+### 1. AUDYT MANIFESTU (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę `MANIFEST.md` (885 KB!):
+- Czy manifest jest kompletny wobec stanu faktycznego plików (247 plików Rego)?
+- Czy liczba reguł per plik jest zgodna z rzeczywistością?
+- Czy system BLOCK/TRIAGE jest spójny z regułami?
+- Czy manifest jest auto-generowany czy ręcznie utrzymywany?
+- Zaproponuj INNOWACYJNY SYSTEM auto-generacji i auto-walidacji manifestu
+
+### 2. AUDYT COVERAGE REPORT (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę `COVERAGE_REPORT.md`:
+- Pokrycie kanoniczne: 44/509 punktów (8%) — czy to dokładne?
+- Dlaczego tylko 8% Doc 50 jest pokryte?
+- Które punkty krytyczne (🔴) są niepokryte?
+- Czy raport odzwierciedla stan faktyczny z lipca 2026?
+- Zaproponuj plan doprowadzenia do 95% pokrycia
+
+### 3. AUDYT LEGAL COVERAGE I LEGAL REFERENCE (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę:
+- `LEGAL_COVERAGE.md` — 1935 punktów prawnych, 13 aktów
+- Klasa A (31%, 600 pkt) vs Klasa B (57%, 1100 pkt) vs Klasa C (12%, 235 pkt)
+- Czy klasyfikacja A/B/C jest aktualna?
+- `LEGAL_REFERENCE_ACTS.md` i `Bbb` — czy lista aktów prawnych jest kompletna?
+- Zaproponuj INNOWACYJNY SYSTEM automatycznej aktualizacji Legal Coverage
+
+### 4. AUDYT ARCHITEKTURY I UNIFIED PLAN (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie:
+- `ARCHITECTURE.md` — 8 ADR-ów czy są nadal aktualne?
+- `UNIFIED_PLAN.md` — Faza A ✅, Faza B ⬜, Faza C ⬜ — jaki jest realny postęp?
+- Czy Unified Plan jest spójny z rzeczywistością 2026?
+- Czy potrzebne są nowe ADR-y (ADR-009+)?
+- Zaproponuj aktualizację Unified Plan do wersji v8.0
+
+### 5. AUDYT NARZĘDZI (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę narzędzi:
+- `generate_manifest.py` — czy poprawnie generuje manifest?
+- `validate_rules.py` — czy walidacja jest wystarczająco rygorystyczna?
+- `generate_coverage_report.py` — czy raport pokrycia jest dokładny?
+- `generate_missing_rules.py` — czy wykrywa wszystkie braki?
+
+### 6. AUDYT API, MIGRACJI I BUNDLES (POZIOM ENTERPRISE)
+- API (`openapi.yaml`) — czy endpointy są kompletne?
+- Migracje — czy 001 i 002 pokrywają cały schemat bazy?
+- Bundles — czy OPA Bundle działa?
+
+### 7. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
+1. "Auto-Generating Living Manifest" — manifest auto-aktualizujący się z kodu
+2. "Coverage Gap Auto-Detector" — automatyczne wykrywanie niepokrytych punktów prawnych
+3. "Documentation-to-Code Consistency Validator" — walidacja spójności docs ↔ code
+4. "ADR Auto-Proposer" — automatyczne proponowanie nowych ADR
+5. "Legal Coverage Heatmap" — mapa cieplna 1935 punktów prawnych
+6. "API Documentation Auto-Generator" — auto-generacja dokumentacji API z kodu
+7. "Migration Impact Analyzer" — analiza wpływu migracji
+8. "Manifest Completeness Score" — scoring kompletności manifestu
+9. "Cross-Document Reference Validator" — walidacja referencji między dokumentami
+10. "Doc-to-Rego Traceability Matrix" — macierz identyfikowalności docs → rego
+11. "Unified Plan Progress Tracker" — tracker postępu Unified Plan
+12. "Enterprise Documentation Dashboard" — dashboard stanu dokumentacji ENTERPRISE
+
+### 8. REKOMENDACJE KOŃCOWE
+Prioritet: MANIFEST → COVERAGE_REPORT → LEGAL_COVERAGE → ARCHITECTURE → API
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG Kompletna Dokumentacja + Audyt Końcowy v7.0"
+- Executive Summary — TOP 15 rekomendacji dla całego modułu JDG
+- Diagramy Mermaid: struktura dokumentacji, flow generacji manifestu
+- **SEKCJA PODSUMOWUJĄCA**: Stan modułu JDG na 2026-07-26 — co jest GOTOWE, co WYMAGA POPRAWY, 
+  co jest PLANOWANE. Ocena dojrzałości ENTERPRISE: A/B/C/D/F
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Tylko RAPORT ANALITYCZNY.
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE. 
+
+🎉 GRATULACJE! To był ostatni Prompt (P25) w serii analizy modułu JDG.
+Cały katalog JDG (~12.4 MB, 370 plików, ~10,185 reguł, 13 aktów prawnych)
+został przeanalizowany w 25 częściach.
+
+Zebrane raporty z P01-P25 stanowią KOMPLETNĄ DOKUMENTACJĘ ANALITYCZNĄ 
+modułu JDG na ZAAWANSOWANYM POZIOMIE ENTERPRISE.
+
+Silnik reguł podatkowych OPA JDG jest gotowy do wdrożenia ulepszeń 
+i stania się Ufortyfikowaną Fortecą Niechybnej Śmierci dla wszelkich 
+błędów, braków i niedopatrzeń.

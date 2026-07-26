@@ -1,0 +1,109 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie składek ZUS, ubezpieczeń społecznych, 
+składki zdrowotnej dla JDG oraz systemów regułowych OPA/Rego. Specjalizujesz się 
+w Polskim Ładzie, reformie składki zdrowotnej i zaawansowanej architekturze reguł 
+ubezpieczeniowych na poziomie ENTERPRISE.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko ROZBUDOWANY RAPORT ANALITYCZNY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY — ZUS MACRO + ENTERPRISE (~160 KB):
+
+### ZUS — Core:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/plan23_interactions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/plan42_benefits.rego
+
+### ZUS — Enterprise:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/enterprise_benefits.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/sickness_benefits_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_contribution_enterprise.rego
+
+### Dokumentacja:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ modułu ZUS z absolutnym naciskiem na 
+**SKŁADKĘ ZDROWOTNĄ (Polski Ład) i wszystkie cztery jej warianty** 
+na ZAAWANSOWANYM POZIOMIE ENTERPRISE. To jest KRYTYCZNY moduł — błędy w składce 
+zdrowotnej mają bezpośredni wpływ finansowy. Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY 
+(min. 30-40 stron) zawierający:
+
+### 1. ANALIZA SKŁADKI ZDROWOTNEJ (POZIOM ENTERPRISE — ABSOLUTNY PRIORYTET)
+Przeprowadź głęboką analizę `health_contribution_enterprise.rego`:
+- **Skala podatkowa (9% od dochodu):**
+  - Czy podstawa wymiaru (dochód z DG pomniejszony o składki społeczne) jest poprawna?
+  - Czy minimalna podstawa (100% przeciętnego wynagrodzenia) jest egzekwowana?
+  - Czy dochód jest liczony narastająco od początku roku?
+- **Podatek liniowy (4,9% od dochodu):**
+  - Czy limit roczny 12 900 PLN składki jest obsłużony? (UWAGA: aktualna wartość!)
+  - Czy po przekroczeniu limitu składka spada do 0?
+  - Czy reguły poprawnie rozliczają nadpłatę składki?
+- **Ryczałt (4,9% od podstawy progowej — 3 progi):**
+  - TIER_1: ≤60 000 PLN przychodu → podstawa 60% przeciętnego wynagrodzenia
+  - TIER_2: 60 001-300 000 PLN → podstawa 100% przeciętnego wynagrodzenia
+  - TIER_3: >300 000 PLN → podstawa 180% przeciętnego wynagrodzenia
+  - Czy progi są poprawnie zaimplementowane? Czy przejścia między progami są płynne?
+- **Karta podatkowa (9% od minimalnego wynagrodzenia):**
+  - Czy podstawa jest poprawna (minimalne wynagrodzenie)?
+
+### 2. ANALIZA SKŁADEK SPOŁECZNYCH (POZIOM ENTERPRISE)
+Przeprowadź głębokie myślenie nad składkami społecznymi:
+- Emerytalna 19,52%, rentowa 8%, chorobowa 2,45%, wypadkowa 1,67%
+- Czy stopy procentowe są zgodne z ustawą o SUS?
+- Ulga na start (Art. 18a SUS) — 6 miesięcy bez składek społecznych
+- Preferencyjny ZUS (Art. 18c SUS) — 24 miesiące, 30% minimalnego
+- Mały ZUS+ — 36 miesięcy, 30% minimalnego wynagrodzenia
+- Działalność nieewidencjonowana — zwolnienie z ZUS
+- Czy przejścia między ulgami są poprawnie obsłużone?
+
+### 3. ANALIZA ZBIEGÓW TYTUŁÓW (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę:
+- Etat + JDG — tylko składka zdrowotna z JDG (Art. 9 SUS)
+- Kilka JDG — zbieg tytułów, składki od najstarszej działalności
+- Zlecenie + JDG — czy reguły poprawnie rozpoznają zbieg?
+
+### 4. ANALIZA ZASIŁKÓW (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę `sickness_benefits_enterprise.rego`:
+- Zasiłek chorobowy (80%/100% podstawy)
+- Zasiłek macierzyński (100%/80%/60% w zależności od długości)
+- Zasiłek opiekuńczy (80%, max 60 dni w roku)
+- Czy okres wyczekiwania (90 dni dla chorobowego dobrowolnego) jest obsłużony?
+
+### 5. ANALIZA ZGODNOŚCI Z NAJNOWSZYM STANEM PRAWNYM (POZIOM ENTERPRISE)
+- Polski Ład 2022: czy składka zdrowotna jest zgodna z ustawą?
+- Czy zmiany 2025/2026 są uwzględnione?
+- Nowe limity i podstawy wymiaru na 2026 rok
+
+### 6. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
+1. "Health Insurance Optimizer" — automatyczny wybór najkorzystniejszego wariantu składki zdrowotnej
+2. "ZUS Relief Transition Manager" — płynne przejścia między ulgami START/Preferencyjny/Mały ZUS+/Standard
+3. "Multi-Title Contribution Minimizer" — minimalizacja składek przy zbiegu tytułów
+4. "Sickness Benefit Predictor" — predykcja wysokości zasiłku chorobowego
+5. "ZUS Calendar Auto-Notification" — powiadomienia o terminach ZUS
+6. "Health Contribution Reconciliation Engine" — automatyczne roczne uzgadnianie składki zdrowotnej
+7. "ZUS Audit Shield" — niezmienialna ścieżka audytu decyzji ZUS
+8. "Preferential Period Tracker" — śledzenie pozostałych miesięcy ulg ZUS
+9. "Cross-Border Social Insurance Matrix" — macierz ubezpieczeń transgranicznych UE
+10. "ZUS Budget Forecaster" — prognoza składek ZUS na kolejne 12 miesięcy
+11. "Health Contribution Tier Optimizer" — optymalizacja progu ryczałtowego
+12. "Immutability Firewall for ZUS" — wielowarstwowa ochrona niemutowalności werdyktów ZUS
+
+### 7. REKOMENDACJE
+Składka zdrowotna (4 warianty) > Składki społeczne > Zbiegi tytułów > Zasiłki
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG Moduł ZUS (Składka Zdrowotna Focus) v7.0"
+- Executive Summary z TOP 12, diagramy Mermaid dla 4 wariantów zdrowotnej
+- Tabele stawek, progów, limitów
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Tylko RAPORT ANALITYCZNY.
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE. Potwierdź gotowość do przejścia do Promptu P08.

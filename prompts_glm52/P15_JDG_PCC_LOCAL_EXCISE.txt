@@ -1,0 +1,99 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2:
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie PCC (podatek od czynności cywilnoprawnych),
+podatków lokalnych (od nieruchomości, transport), akcyzy (paliwa, alkohol, tytoń, energia)
+oraz systemów regułowych OPA/Rego. Specjalizujesz się w podatkach lokalnych i akcyzie
+dla JDG na poziomie ENTERPRISE.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU REGO** — generujesz tylko ROZBUDOWANY RAPORT ANALITYCZNY
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz
+
+## 📂 PLIKI DO ANALIZY — PCC + LOKALNE + AKCYZA (~400 KB):
+
+### Local Taxes — Macro + Enterprise:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_excise_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/excise_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/local_procedures_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/plan26_local.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/real_estate.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pcc/plan42_pcc.rego
+
+### Micro:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pcc/pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/akcyza/akcyza.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_prop.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_prop_transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_agricultural_tax.rego
+
+### Dokumentacja:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+## 🎯 CEL ANALIZY:
+
+Przeprowadź GŁĘBOKIE MYŚLENIE i GŁĘBOKĄ ANALIZĘ modułów PCC, podatków lokalnych
+i akcyzy — **NAJWIĘKSZEJ LUKI w pokryciu JDG (~90% niepokryte)** —
+na ZAAWANSOWANYM POZIOMIE ENTERPRISE.
+Wygeneruj ROZBUDOWANY RAPORT ANALITYCZNY (min. 30-40 stron) zawierający:
+
+### 1. ANALIZA PCC (POZIOM ENTERPRISE — NAJWIĘKSZA LUKA)
+Przeprowadź głęboką analizę `pcc_enterprise_complete.rego`:
+- Art. 1-2 PCC — przedmiot opodatkowania: umowy sprzedaży, pożyczki, zamiany, darowizny
+- Art. 4 PCC — obowiązek podatkowy (moment zawarcia umowy)
+- Art. 6-7 PCC — stawki: 0.5%, 1%, 2%
+- PCC-3 — deklaracja w 14 dni od zawarcia umowy
+- Zakup auta od osoby prywatnej — 2% PCC, PCC-3 w 14 dni!
+- Pożyczka od rodziny — zwolnienie do 36 120 PLN (zgłoszenie PCC-3)
+- Umowa spółki — 0.5% PCC
+- Transakcje VAT wyłączone z PCC (Art. 2 pkt 4) — czy system poprawnie wyklucza?
+- Zaproponuj INNOWACYJNY SYSTEM auto-wykrywania obowiązku PCC
+
+### 2. ANALIZA PODATKU OD NIERUCHOMOŚCI (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę `real_estate.rego`:
+- Grunty związane z działalnością — wyższa stawka (~33 zł/m² vs ~1.15 zł)
+- Budynki mieszkalne vs niemieszkalne — różne stawki
+- Budowle — 2% wartości
+- Deklaracja DN-1 — terminy
+- Czy system rozpoznaje nieruchomość firmową od prywatnej?
+
+### 3. ANALIZA PODATKU OD TRANSPORTU (POZIOM ENTERPRISE)
+- Samochody ciężarowe >3.5t — czy system rozpoznaje obowiązek?
+- Stawki uzależnione od DMC, rodzaju zawieszenia, roku produkcji
+- Deklaracja DT-1
+
+### 4. ANALIZA AKCYZY (POZIOM ENTERPRISE)
+Przeprowadź głęboką analizę `excise_enterprise_complete.rego`:
+- Paliwa silnikowe — stawki, zwolnienia
+- Alkohol etylowy — skład podatkowy, procedura zawieszenia akcyzy
+- Wyroby tytoniowe — banderole, stawki
+- Energia elektryczna — akcyza dla firm
+- Czy każdy rodzaj wyrobu akcyzowego ma reguły?
+
+### 5. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
+1. "PCC Auto-Detection Engine" — automatyczne wykrywanie transakcji podlegających PCC
+2. "PCC-3 Auto-Filler" — automatyczne wypełnianie deklaracji PCC-3
+3. "Real Estate Tax Classifier" — automatyczna klasyfikacja nieruchomości firmowej
+4. "Excise Warehouse Tracker" — śledzenie składu podatkowego akcyzy
+5. "Transport Tax Auto-Calculator" — automatyczny kalkulator podatku transportowego
+6. "PCC Exemption Analyzer" — analiza zwolnień PCC (rodzina, spadki)
+7. "Multi-Tax Local Calendar" — kalendarz wszystkich podatków lokalnych
+8. "Excise Suspension Procedure Manager" — zarządzanie procedurą zawieszenia akcyzy
+9. "Property Tax Appeal Auto-Drafter" — automatyczne odwołanie od decyzji podatkowej
+10. "Local Tax Rate Auto-Updater" — automatyczna aktualizacja stawek gminnych
+11. "Cross-Border Excise Compliance" — zgodność akcyzowa transgraniczna UE
+12. "PCC + VAT Exclusion Firewall" — firewall wykluczający podwójne opodatkowanie
+
+### 6. REKOMENDACJE
+PCC (luka 90%!) > Akcyza > Nieruchomości > Transport
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG PCC + Podatki Lokalne + Akcyza v7.0"
+
+## 🔄 NA KONIEC:
+WYCZYŚĆ OKNO KONTEKSTOWE. Potwierdź gotowość do przejścia do Promptu P16.
