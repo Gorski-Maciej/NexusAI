@@ -288,9 +288,12 @@ filterwarnings = [
     "ignore::PendingDeprecationWarning",
 ]
 markers = [
+    "unit: Unit test — no external dependencies, runs in isolation",
     "integration: Integration test (requires DB/NATS/TigerBeetle)",
+    "e2e: End-to-end test — requires full nexus_ai environment",
     "anyio: Async test using anyio backend (built-in)",
     "slow: Slow test (>5s), skipped by default, use --run-slow to run",
+    "rego: Rego rule test — validates JDG policy rules",
 ]
 # pytest-anyio: natywna asynchroniczność (anyio backend)
 # Zastępuje pytest-asyncio — testy działają na anyio, tej samej warstwie co kod produkcyjny

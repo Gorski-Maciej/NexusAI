@@ -78,3 +78,28 @@ repos:
       - id: check-ast
         name: check-python-ast
         files: \.py$
+
+  # ── JDG Rego Quality Gates — v7.0 Audit P0.1 ────────────────────────────
+  - repo: local
+    hooks:
+      - id: lint-rego-rules
+        name: Lint Rego Rules (B3)
+        entry: python JDG/tools/lint_rego_rules.py
+        args: ["--check", "legal_basis_required", "--check", "rule_id_canonical", "--check", "no_hardcoded_integers", "--ci"]
+        language: system
+        files: ^JDG/rules/.*\.rego$
+        pass_filenames: false
+      - id: validate-rego-rules
+        name: Validate Rego Rules
+        entry: python JDG/tools/validate_rules.py
+        args: ["--strict"]
+        language: system
+        files: ^JDG/rules/.*\.rego$
+        pass_filenames: false
+      - id: check-manifest
+        name: Check Manifest Consistency
+        entry: python JDG/tools/generate_manifest.py
+        args: ["--check"]
+        language: system
+        files: ^JDG/rules/.*\.rego$
+        pass_filenames: false

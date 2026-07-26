@@ -140,6 +140,24 @@ def build_pre_opa_pipeline(
         ksef_b2c_engine=b2c_engine,
     )
 
+    # 5. Judgment Predictor C1 (Pass 0: SHADOW_PREDICT) — v7.0 Audit P1.1
+    try:
+        from JDG.tools.judgment_predictor import JudgmentPredictor
+        pipeline.judgment_predictor = JudgmentPredictor()
+        logger.info("[PRE-OPA WIRING] Judgment Predictor C1: Shadow Mode active (9 risk categories)")
+    except ImportError as exc:
+        logger.info("[PRE-OPA WIRING] Judgment Predictor C1 not available: %s", exc)
+        pipeline.judgment_predictor = None
+
+    # 6. LLM Bridge C2 (Pass 9: EXPLAIN) — v7.0 Audit P1.2
+    try:
+        from JDG.tools.llm_bridge import LLMBridge
+        pipeline.llm_bridge = LLMBridge(model="gemini-flash")
+        logger.info("[PRE-OPA WIRING] LLM Bridge C2: Gemini 2.0 Flash active (5 explanation styles)")
+    except ImportError as exc:
+        logger.info("[PRE-OPA WIRING] LLM Bridge C2 not available: %s", exc)
+        pipeline.llm_bridge = None
+
     logger.info(
         "[PRE-OPA WIRING] Pipeline built: mpp=%s fraud=%s carousel=%s gtu=%s ksef_b2c=%s",
         mpp_bridge is not None,

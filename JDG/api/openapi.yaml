@@ -298,6 +298,9 @@ paths:
     get:
       tags: [Health]
       summary: System health and dependency status
+      description: |
+        Zwraca status systemu JDG: wersję OPA, stan DuckDB, stan zewnętrznych
+        API (Biała Lista, CEIDG, KSeF, NBP), licznik reguł, wersję bundle.
       operationId: healthCheck
       responses:
         '200':
@@ -306,6 +309,115 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HealthResponse'
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # POST /jdg/explain — LLM Bridge C2
+  # ═════════════════════════════════════════════════════════════════════════════
+  /jdg/explain:
+    post:
+      tags: [Decision]
+      summary: Translate OPA verdict to natural language via LLM
+      description: |
+        C2 LLM Bridge. Tłumaczy techniczny werdykt OPA na język naturalny
+        w jednym z 5 styli: advisor, compliance, educational, executive, eli5.
+        Obsługuje modele: Gemini 2.0 Flash, Claude 3.5 Haiku, GPT-4o-mini.
+      operationId: explainVerdict
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [verdict]
+              properties:
+                verdict:
+                  $ref: '#/components/schemas/VerdictResponse'
+                style:
+                  type: string
+                  enum: [advisor, compliance, educational, executive, eli5]
+                  default: advisor
+                model:
+                  type: string
+                  enum: [gemini-flash, claude-haiku, gpt-4o-mini]
+                  default: gemini-flash
+                provenance_tree:
+                  type: object
+                  description: Opcjonalne drzewo proweniencji z A1
+      responses:
+        '200':
+          description: Natural language explanation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  explanation:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                      summary:
+                        type: string
+                      body:
+                        type: string
+                      recommendation:
+                        type: string
+                      risk_level:
+                        type: string
+                      style:
+                        type: string
+                      model_used:
+                        type: string
+                      legal_disclaimer:
+                        type: string
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # GET /jdg/thresholds — Threshold Management (B2)
+  # ═════════════════════════════════════════════════════════════════════════════
+  /jdg/thresholds:
+    get:
+      tags: [Decision]
+      summary: List all active tax thresholds
+      description: |
+        B2 Decoupled Thresholds. Zwraca listę wszystkich aktywnych progów
+        podatkowych z DuckDB RuleStore: VAT, PIT, ZUS, OrdPU, KSeF, CFC.
+      operationId: listThresholds
+      parameters:
+        - name: scope
+          in: query
+          schema:
+            type: string
+            enum: [vat, pit, zus, ordpu, ksef, cfc, all]
+          description: Scope filter
+      responses:
+        '200':
+          description: List of active thresholds
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  thresholds:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        threshold_id:
+                          type: string
+                        description:
+                          type: string
+                        value_numeric:
+                          type: number
+                        value_unit:
+                          type: string
+                        legal_basis:
+                          type: string
+                        valid_from:
+                          type: string
+                  total:
+                    type: integer
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # COMPONENTS — Schemas

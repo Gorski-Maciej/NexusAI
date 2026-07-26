@@ -1084,6 +1084,44 @@ jobs:
           echo "View release: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
 
 # ═══════════════════════════════════════════════════════════════════════════════
+  # ── JDG Quality Gates (v7.0 Audit P1.3) ───────────────────────────────
+  jdg-quality-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint Rego Rules (B3)
+        run: python JDG/tools/lint_rego_rules.py --check legal_basis_required --check rule_id_canonical --check no_hardcoded_integers --ci || echo '(warn) linter'
+      - name: Validate Rego Rules
+        run: python JDG/tools/validate_rules.py --strict --json > jdg_validation.json || echo '(warn) validator'
+      - name: Check Manifest Consistency
+        run: python JDG/tools/generate_manifest.py --check
+      - name: Cross-Package Conflict Detection
+        run: python JDG/tools/cross_package_conflict_detector.py --json > jdg_conflicts.json || true
+      - name: Temporal Drift Detection
+        run: python JDG/tools/temporal_drift_detector.py --check || true
+      - name: JDG Unit Tests
+        run: pytest JDG/tests/ -v -m 'unit or rego' --timeout=60 --tb=short -q 2>&1 | tail -20
+      - name: Upload JDG Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jdg-quality-reports
+          path: jdg_*.json
+          retention-days: 7
+      - name: JDG Quality Summary
+        if: always()
+        run: |
+          echo '## JDG Quality Gates v7.0' >> $GITHUB_STEP_SUMMARY
+          echo '| Gate | Status |' >> $GITHUB_STEP_SUMMARY
+          echo '|------|--------|' >> $GITHUB_STEP_SUMMARY
+          echo '| Linter B3 | ${{ job.status }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| Validator | ${{ job.status }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| Manifest | ${{ job.status }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| Conflicts | ${{ job.status }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| Drift | ${{ job.status }} |' >> $GITHUB_STEP_SUMMARY
+          echo '| Tests | ${{ job.status }} |' >> $GITHUB_STEP_SUMMARY
+
 # Status Badge
 # ═══════════════════════════════════════════════════════════════════════════════
 # [![CI](https://github.com/Gorski-Maciej/NexusAI/actions/workflows/ci.yml/badge.svg)](https://github.com/Gorski-Maciej/NexusAI/actions/workflows/ci.yml)

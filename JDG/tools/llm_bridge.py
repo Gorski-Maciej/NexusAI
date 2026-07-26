@@ -457,9 +457,158 @@ class LLMBridge:
         self, ctx: VerdictContext, style: ExplanationStyle, template: str, prompt: str
     ) -> Explanation:
         """
-        Symulacja odpowiedzi LLM.
-        W produkcji: wywołanie API (Gemini/Claude/GPT) z promptem.
+        Odpowiedź LLM — próbuje realnego API, fallback do symulacji.
         """
+        # Próbuj realnego API (Gemini / Claude / GPT)
+        try:
+            real_response = self._call_real_api(ctx, prompt)
+            if real_response:
+                return real_response
+        except Exception:
+            pass  # Fallback do symulacji
+
+        return self._build_simulated_explanation(ctx, style, prompt)
+
+    def _call_real_api(self, ctx: VerdictContext, prompt: str) -> Explanation | None:
+        """
+        Wywołuje rzeczywiste API modelu LLM.
+        Obsługuje Gemini, Claude Haiku, GPT-4o-mini.
+        """
+        if "gemini" in self.model:
+            return self._call_gemini_api(ctx, prompt)
+        elif "claude" in self.model:
+            return self._call_claude_api(ctx, prompt)
+        elif "gpt" in self.model:
+            return self._call_openai_api(ctx, prompt)
+        return None
+
+    def _call_gemini_api(self, ctx: VerdictContext, prompt: str) -> Explanation | None:
+        """Wywołuje Google Gemini API."""
+        import os
+        api_key = os.environ.get("GEMINI_API_KEY", "")
+        if not api_key:
+            return None
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel(
+                "gemini-2.0-flash",
+                system_instruction=self.templates.SYSTEM_PROMPT,
+            )
+            response = model.generate_content(
+                prompt,
+                generation_config={"temperature": 0.2, "max_output_tokens": 1000},
+            )
+            body = response.text if response.text else ""
+            return Explanation(
+                verdict_id=ctx.rule_id,
+                style=ExplanationStyle.ADVISOR,
+                title=f"Analiza: {ctx.rule_id}",
+                summary=body[:200] + "..." if len(body) > 200 else body,
+                body=body,
+                recommendation=self._extract_recommendation(body),
+                risk_level=self._classify_risk_from_response(body),
+                legal_disclaimer=self.templates.DISCLAIMER,
+                model_used=f"{self.model_config['name']} (Gemini API)",
+                token_count=len(prompt) // 4,
+                timestamp="",
+            )
+        except ImportError:
+            return None
+        except Exception:
+            return None
+
+    def _call_claude_api(self, ctx: VerdictContext, prompt: str) -> Explanation | None:
+        """Wywołuje Anthropic Claude API."""
+        import os
+        api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+        if not api_key:
+            return None
+        try:
+            import anthropic
+            client = anthropic.Anthropic(api_key=api_key)
+            response = client.messages.create(
+                model="claude-3-5-haiku-latest",
+                max_tokens=1000,
+                system=self.templates.SYSTEM_PROMPT,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            body = response.content[0].text if response.content else ""
+            return Explanation(
+                verdict_id=ctx.rule_id,
+                style=ExplanationStyle.COMPLIANCE,
+                title=f"Analiza prawna: {ctx.rule_id}",
+                summary=body[:200] + "..." if len(body) > 200 else body,
+                body=body,
+                recommendation=self._extract_recommendation(body),
+                risk_level=self._classify_risk_from_response(body),
+                legal_disclaimer=self.templates.DISCLAIMER,
+                model_used=f"{self.model_config['name']} (Claude API)",
+                token_count=len(prompt) // 4,
+                timestamp="",
+            )
+        except ImportError:
+            return None
+        except Exception:
+            return None
+
+    def _call_openai_api(self, ctx: VerdictContext, prompt: str) -> Explanation | None:
+        """Wywołuje OpenAI API."""
+        import os
+        api_key = os.environ.get("OPENAI_API_KEY", "")
+        if not api_key:
+            return None
+        try:
+            import openai
+            client = openai.OpenAI(api_key=api_key)
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": self.templates.SYSTEM_PROMPT},
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=1000,
+                temperature=0.2,
+            )
+            body = response.choices[0].message.content if response.choices else ""
+            return Explanation(
+                verdict_id=ctx.rule_id,
+                style=ExplanationStyle.EDUCATIONAL,
+                title=f"Wyjaśnienie: {ctx.rule_id}",
+                summary=body[:200] + "..." if len(body) > 200 else body,
+                body=body,
+                recommendation=self._extract_recommendation(body),
+                risk_level=self._classify_risk_from_response(body),
+                legal_disclaimer=self.templates.DISCLAIMER,
+                model_used=f"{self.model_config['name']} (OpenAI API)",
+                token_count=len(prompt) // 4,
+                timestamp="",
+            )
+        except ImportError:
+            return None
+        except Exception:
+            return None
+
+    def _extract_recommendation(self, text: str) -> str:
+        """Próbuje wyciągnąć rekomendację z odpowiedzi LLM."""
+        import re
+        match = re.search(r'(?:Rekomendacj|Zalecam|Sugeruj)[^.]*\.', text, re.IGNORECASE)
+        return match.group(0) if match else "Skonsultuj się z doradcą podatkowym."
+
+    def _classify_risk_from_response(self, text: str) -> str:
+        """Klasyfikuje poziom ryzyka na podstawie odpowiedzi."""
+        text_lower = text.lower()
+        if any(w in text_lower for w in ["krytyczne", "poważne", "przestępstwo", "pozbawienie"]):
+            return "🔴 KRYTYCZNE"
+        if any(w in text_lower for w in ["wysokie", "znaczne", "grzywna", "kara"]):
+            return "🟠 WYSOKIE"
+        if any(w in text_lower for w in ["średnie", "umiarkowane", "korekta", "weryfikacj"]):
+            return "🟡 ŚREDNIE"
+        return "🟢 NISKIE"
+
+    def _build_simulated_explanation(
+        self, ctx: VerdictContext, style: ExplanationStyle, prompt: str
+    ) -> Explanation:
         # Wybierz tytuł i body w zależności od typu
         if ctx.verdict_type == VerdictType.BLOCK_AND_ALERT:
             title = f"🚫 ALERT: {ctx.rule_id}"

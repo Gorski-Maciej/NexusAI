@@ -75,11 +75,65 @@ def collect_all_rules() -> dict:
             total_files += 1
             total_rules += len(rules)
 
+    # Build enterprise initiatives summary (S1-S24)
+    enterprise_summary = build_enterprise_summary(all_rules)
+
     return {
         "files": total_files,
         "rules": total_rules,
         "by_file": dict(all_rules),
+        "enterprise": enterprise_summary,
     }
+
+
+# ── Enterprise Initiatives S1-S24 ────────────────────────────────────────────
+
+ENTERPRISE_PACKAGES = {
+    "S1":  ("tax_optimization_enterprise.rego", "Tax Optimization Engine"),
+    "S2":  ("banking_automation_enterprise.rego", "Banking Automation"),
+    "S3":  ("cashflow_tax_predictor_enterprise.rego", "Cashflow Tax Predictor"),
+    "S4":  ("jpk_v7_autogen_enterprise.rego", "JPK_V7 Auto-Generation"),
+    "S5":  ("ksef_resilience_enterprise.rego", "KSeF Resilience"),
+    "S6":  ("annual_declaration_enterprise.rego", "Annual Declaration"),
+    "S7":  ("form_transition_simulator_enterprise.rego", "Form Transition Simulator"),
+    "S8":  ("audit_defense_enterprise.rego", "Audit Defense"),
+    "S9":  ("strategic_advisor_enterprise.rego", "Strategic Advisor"),
+    "S10": ("neural_rule_mesh_enterprise.rego", "Neural Rule Mesh"),
+    "S11": ("legislative_monitor_enterprise.rego", "Legislative Monitor"),
+    "S12": ("cross_domain_intelligence_enterprise.rego", "Cross-Domain Intelligence"),
+    "S13": ("judicial_interpretations_enterprise.rego", "Judicial Interpretations"),
+    "S14": ("lifecycle_manager_enterprise.rego", "Lifecycle Manager"),
+    "S15": ("sanctions_optimization_enterprise.rego", "Sanctions Optimization"),
+    "S16": ("tax_authority_interaction_enterprise.rego", "Tax Authority Interaction"),
+    "S17": ("exit_tax_mdr_enterprise.rego", "Exit Tax & MDR"),
+    "S18": ("ppk_pfron_enterprise.rego", "PPK & PFRON"),
+    "S19": ("vat_substantive_complete_enterprise.rego", "VAT Substantive Complete"),
+    "S20": ("nkup_enterprise_complete.rego", "NKUP Enterprise Complete"),
+    "S21": ("environmental/bdo_enterprise.rego", "BDO Environmental"),
+    "S22": ("compliance/aml_enterprise.rego", "AML Compliance"),
+    "S23": ("pit/art21_exemptions_enterprise.rego", "PIT Art.21 Exemptions"),
+    "S24": ("pit/family_estonian_enterprise.rego", "Family & Estonian CIT Relief"),
+}
+
+
+def build_enterprise_summary(all_rules: dict) -> list[dict]:
+    """Buduje podsumowanie inicjatyw Enterprise S1-S24."""
+    summary = []
+    for sid, (filepath, description) in ENTERPRISE_PACKAGES.items():
+        rules = all_rules.get(filepath, [])
+        block_count = sum(1 for r in rules if r.get("routing") == "BLOCK_AND_ALERT")
+        triage_count = sum(1 for r in rules if r.get("routing") == "TRIAGE_QUEUE")
+        status = "✅" if rules else "⏳"
+        summary.append({
+            "id": sid,
+            "description": description,
+            "file": filepath,
+            "rules": len(rules),
+            "block": block_count,
+            "triage": triage_count,
+            "status": status,
+        })
+    return summary
 
 
 def generate_manifest(data: dict) -> str:
@@ -110,6 +164,20 @@ def generate_manifest(data: dict) -> str:
 
     lines.extend([
         f"| **RAZEM** | **{data['rules']}** | — | — |",
+        "",
+        "---",
+        "",
+        "## 🏢 ENTERPRISE INITIATIVES (S1-S24)",
+        "",
+        "| ID | Inicjatywa | Plik | Reguł | BLOCK | TRIAGE | Status |",
+        "|:--:|-----------|------|:-----:|:-----:|:------:|:------:|",
+    ])
+    for s in data.get("enterprise", []):
+        lines.append(
+            f"| {s['id']} | {s['description']} | `{s['file']}` "
+            f"| {s['rules']} | {s['block']} | {s['triage']} | {s['status']} |"
+        )
+    lines.extend([
         "",
         "---",
         "",
