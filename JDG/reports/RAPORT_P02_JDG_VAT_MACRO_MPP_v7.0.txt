@@ -1,0 +1,952 @@
+RAPORT ANALITYCZNY ENTERPRISE — JDG Moduł VAT (MPP/Split Payment Focus) v7.0
+=============================================================
+Typ:           Raport analityczny modulu VAT (read-only, audit)
+Wersja:        7.0
+Data:          2026-07-27
+Zakres:        VAT Macro Layer — 7 plikow Rego (3444 linie) + 2 dok.
+Focus:         MPP / Split Payment (Art. 108a-108f VAT) — PRIORYTET #1
+Autor:         Ekspert VAT + OPA/Rego Enterprise (25 lat)
+Powiazane:     ADR-001..ADR-008, B1 Sharded Router, B2 Decoupled
+               Thresholds, LEGAL_COVERAGE.md, Bbb (akty prawne 2026)
+Status:        RAPORT ANALITYCZNY — nie modyfikuje kodu, nie generuje Rego
+=============================================================
+
+SPIS TRESCI
+=============================================================
+1.  Executive Summary + TOP 10 Rekomendacji (MPP-priority)
+2.  Metodologia i zakres analizy
+3.  ANALIZA POKRYCIA USTAWY O VAT — PRIORYTET: MPP + SPLIT PAYMENT
+    3.1 MPP / Split Payment (Art. 108a-108f) — GLOWNY PRIORYTET
+    3.2 Stawki VAT (Art. 41) — 23/8/5/0/ZW/NP
+    3.3 Odliczenia (Art. 86-95) — proporcja, korekty, zle dlugi
+    3.4 Zwolnienie podmiotowe (Art. 113) — limit 200 000 PLN
+    3.5 Miejsce swiadczenia (Art. 28a-28o)
+4.  ANALIZA WNT/WDT/IMPORT/EXPORT
+5.  ANALIZA PROCEDUR SZCZEGOLNYCH (OSS/IOSS/marza/RC krajowy)
+6.  ANALIZA GTU I KODOW PROCEDUR
+7.  ANALIZA ZGODNOSCI Z 2026 (KSeF/SLIM VAT 3/B2C)
+8.  GENIALNE POMYSLY ENTERPRISE — 12 innowacji MPP-focused
+9.  REKOMENDACJE — MAPA DROGOWA (MPP > stawki > odliczenia > miejsce)
+10. Podsumowanie koncowe
+=============================================================
+
+
+=============================================================
+1. EXECUTIVE SUMMARY
+=============================================================
+
+Modul VAT JDG (7 plikow, 3444 linie) to najszerszy i najbardziej
+dojrzaly komponent systemu. Realizuje pokrycie ustawy o VAT na
+poziomie PAS 4a/4b/4c (ADR-007), z naciskiem na MPP/Split Payment
+(Art. 108a-108f), stawki VAT (Art. 41), odliczenia (Art. 86-95),
+zle dlugi (Art. 89a-89b), zwolnienie podmiotowe (Art. 113) oraz
+transakcje transgraniczne (WNT/WDT/Import/Export).
+
+Wynik audytu: modul VAT jest KONCEPCYJNIE ZAAWANSOWANY i w obszarze
+MPP/Split Payment WYPRZEDZA wiekszosc implementacji rynkowych —
+obowiazkowy MPP, dobrowolny MPP (safe harbor), sankcja 30%, solidarna
+odpowiedzialnosc (Art. 105a-105c), wykrywanie obchodzenia MPP (KKS
+Art. 57), blokada odliczen, flagi JPK_V7M, CN-bridge dla towarow
+wrazliwych. Jednakze WDROZENIE wykazuje LACUNY KRYTYCZNE:
+
+Trzy najpoważniejsze odkrycia (dowodne, plik:linia):
+
+  [KRYTYCZNE-1] MPP: PROG 15 000 PLN I SANKCJA 30% HARDCODED —
+    naruszenie ADR-002. substantive.rego (L726: amount_gross > 15000,
+    L776: vat_amount * 0.30), compliance.rego (L74, L109), edge_cases
+    .rego (L527 limit_value 15000) uzywaja literalow liczbowych
+    zamiast data.jdg.thresholds.vat.mpp_mandatory_threshold (ktory
+    NIE ISTNIEJE w thresholds_jdg.rego) oraz data.jdg.thresholds.vat
+    .bad_debt_sanction_30pct (ktory ISTNIEJE = 0.30, ale nie jest
+    czytany przez substantive.rego). W konsekwencji zmiana progu MPP
+    (np. przyszla nowelizacja) wymaga edycji ~6 plikow Rego zamiast
+    jednego pliku danych — dokladnie to, czemu mial zapobiec ADR-002.
+
+  [KRYTYCZNE-2] DATA SLIM VAT 3 NIESPOJNA MIEDZY PLIKAMI.
+    substantive.rego (L260, L273) poprawnie uzywa granicy
+    "2023-01-01" dla 150->90 dni (Art. 89a). deductions.rego (L249,
+    L268) rowniez poprawnie "2023-01-01". ALE thresholds_jdg.rego
+    (L398-404) temporal_thresholds.bad_debt_days ma valid_from
+    "2025-07-01" z reason "SLIM VAT 3/2025" — BLEDNA data (SLIM VAT 3
+    weszl w zycie 01.07.2023). LEGAL_COVERAGE.md powtarza blad
+    "SLIM VAT 3/2025-07-01". _metadata_jdg.rego (L243-247) mial
+    "2023-07-01" (tez bledne — powinno byc 2023-01-01 dla bad_debt,
+    2023-07-01 dla niektorych innych zmian SLIM VAT 3). Trzy rozne
+    daty w trzech plikach dla tej samej zmiany prawnej.
+
+  [KRYTYCZNE-3] GTU KOLIZJA + BRAK GTU_03 + NP NIE OBSLUZONE.
+    substantive.rego gtu_map (L578-591): FOOD i WASTE oba mapowane
+    na GTU_07 — KOLIZJA (GTU_07 = odpady/sektora wtorny; zywnosc
+    powinna byc GTU_06 lub bez GTU). GTU_03 (srodki transportu
+    uzywane) NIE ISTNIEJE w mapie (brakuje). Stawka "NP" (nie podlega
+    / out of scope) NIE jest obsluzona jako vat_rate nigdzie w
+    substantive.rego — jedynie komentarz w enterprise. Zatem
+    transakcja NP trafia do fallback 23% (P67) — CICHE zastosowanie
+    23% do transakcji niepodlegajacej VAT.
+
+Pozostale odkrycia istotne (szczegoly w sekcjach 3-7):
+  - Dobrowolny MPP (safe harbor) zaimplementowany POPRAWNIE
+    (compliance.rego P25b, Art. 108a ust. 1d) — zwolnienie z
+    solidarnej odpowiedzialnosci. DOBRZE.
+  - Wykrywanie obchodzenia MPP (split payment evasion): kks.rego
+    P275 (L787-801), Art. 57 KKS — dzielenie transakcji >15k na
+    mniejsze faktury. DOBRZE, ale wykrycie wymaga zewnetrznej flagi
+    input.invoice.split_payment_evasion_detected (nie detekcja
+    wewnetrzna Rego).
+  - Solidarna odpowiedzialnosc (Art. 105a-105c): substantive.rego
+    P103 (L940-964) — BLOCK_AND_ALERT + rekomendacja MPP. DOBRZE.
+  - JPK_V7M flagi MPP/GTU/FP: substantive.rego P111 (L804-824).
+    DOBRZE, ale mpp_flag = "TAK"/"" (binarnie) — brak wartosci
+    "DOBROWOLNY"/"OBOWIAZKOWY".
+  - Plan23_detailed.rego i plan26_critical.rego sa IDENTYCZNE
+    (package jdg.vat, te same 16 regul) — DUPLIKAT. Import obu do
+    OPA powoduje konflikt definicji package jdg.vat (compile error
+    lub nieokreslone zachowanie).
+  - plan42_reduced_rates.rego (package jdg.vat.reduced_rates, 39
+    linii) — walidacja obnizonych stawek 8/5%, ale NIE czyta
+    kodow CN z danych — jedynie sprawdza vat_rate==0.08/0.05 i
+    generuje WARNING. Nie poprawia stawki.
+  - WNT/WDT/Import/Export: substantive.rego P80-P93 — KOMPLETNE
+    (WNT standard/nowy pojazd/akcyza, transakcja trojstronna,
+    import uslug B2B/UE/spoza UE, import towarow SAD). DOBRZE.
+  - Procedury szczegolne: procedures.rego — OSS (P67), IOSS (P68),
+    marza uzywane (P66/MARGIN_USED_GOODS). BRAK: marza dziela
+    sztuki/antyki, biuro podrozy (travel agency margin), WSTO_EE,
+    IED, SW, TW, MR, PKZT.
+  - Miejsce swiadczenia (Art. 28a-28o): BRAK dedykowanych regul —
+    import_of_services ustawia place_of_supply=="PL" z gory, ale
+    brak reguly B2B/B2C/nieruchomosci/transport/e-uslugi z
+    wlasciwym miejscem wg Art. 28a-28o.
+  - KSeF: ksef_jpk.rego P950 (obowiazek od 2026-02-01), P952
+    (B2C od 2026-07-01 v7.0 NEW), edge_cases P593/P647 (sankcja
+    100%), P666 (offline 7 dni). DOBRZE, ale data 2026-02-01 jest
+    HARDCODED ("2026-02-01" literal) — powinna byc z thresholds.vat
+    .ksef_mandatory_from (ISTNIEJE w thresholds).
+
+OCENA OGOLNA: 7.8 / 10 (MPP 8.5/10, stawki 7/10, odliczenia 8/10,
+GTU 6/10, miejsce swiadczenia 5/10, 2026-zgodnosc 7/10). Potencjal:
+9.5/10 po naprawie 3 odkryc krytycznych + wdrozeniu innowacji MPP
+z sekcji 8.
+
+-------------------------------------------------------------
+TOP 10 REKOMENDACJI (uszeregowane: MPP > stawki > odliczenia > miejsce)
+-------------------------------------------------------------
+ 1. [KRYTYCZNE/MPP] Eksternalizowac prog MPP 15 000 PLN i sankcje 30%
+    do thresholds_jdg.rego (dodac mpp_mandatory_threshold + czytac
+    bad_debt_sanction_30pct w substantive/compliance/edge_cases).
+    Czas: 4h. Wplyw: ADR-002 spelniony dla MPP.
+ 2. [KRYTYCZNE] Ujednolicic date SLIM VAT 3 na 2023-01-01 (bad_debt)
+    we WSZYSTKICH plikach (thresholds_jdg, _metadata, LEGAL_COVERAGE,
+    komentarze). Czas: 1h.
+ 3. [KRYTYCZNE/GTU] Naprawic gtu_map: FOOD -> GTU_06 (nie GTU_07),
+    dodac GTU_03 (srodki transportu uzywane), dodac stawke "NP"
+    (nie podlega) jako wyodrebniony werdykt (nie fallback 23%).
+    Czas: 4h.
+ 4. [WYSOKIE/MPP] Rozroznic w JPK_V7M mpp_flag: "OBOWIAZKOWY" vs
+    "DOBROWOLNY" (obecnie binarne "TAK"/""). Czas: 2h.
+ 5. [WYSOKIE/MPP] Wewnetrzna detekcja obchodzenia MPP w Rego (sumowanie
+    faktur tego samego kontrahenta w oknie 30 dni >15k PLN) zamiast
+    polegania na zewnetrznej fladze. Czas: 1 dzien.
+ 6. [WYSOKIE] Usunac duplikat plan23/plan26 (identyczne package
+    jdg.vat) — konflikt kompilacji OPA. Czas: 30 min.
+ 7. [WYSOKIE] Dodac reguli miejsca swiadczenia Art. 28a-28o (B2B
+    28b, B2C 28a/e-uslugi, nieruchomosci 28e, transport 29-30).
+    Czas: 2 dni.
+ 8. [SREDNIE] Rozszerzyc procedury: marza dziela sztuki/antyki
+    (Art. 120 ust. 4-5), biuro podrozy (Art. 119), WSTO_EE/IED/SW/
+    TW/MR. Czas: 1-2 dni.
+ 9. [SREDNIE] KSeF data 2026-02-01: czytac z thresholds.vat.
+    ksef_mandatory_from zamiast literal. Czas: 1h.
+10. [SREDNIE] plan42_reduced_rates: czytac kody CN z danych i
+    walidowac stawke (nie tylko WARNING). Czas: 1 dzien.
+
+
+=============================================================
+2. METODOLOGIA I ZAKRES ANALIZY
+=============================================================
+
+2.1 ANALIZOWANE PLIKI (7 Rego + 2 dok., lacznie ~3700 linii)
+-------------------------------------------------------------
+  vat/substantive.rego              1301  stawki, zwolnienia, GTU, MPP, WNT
+  vat/deductions.rego                705  odliczenia, zle dlugi, auta, WNT-ded
+  vat_substantive_complete_enterprise.rego  764  Enterprise v7.0 (marza, sankcje)
+  vat/procedures.rego                457  tax point, OSS, IOSS, marza, VAT-Z
+  vat/plan23_detailed.rego            89  DUPLIKAT plan26 (package jdg.vat)
+  vat/plan26_critical.rego            89  DUPLIKAT plan23 (package jdg.vat)
+  vat/plan42_reduced_rates.rego       39  walidacja 8/5% (WARNING only)
+  LEGAL_COVERAGE.md                 267  pokrycie 13 ustaw / 1935 punktow
+  Bbb                               238  akty prawne 2026 (6 sekcji)
+  ---                              ----
+                                   3749
+
+2.2 METODYKA
+-------------------------------------------------------------
+  (a) Statyczna analiza: czytanie pelne 7 plikow VAT + LEGAL_COVERAGE
+      + Bbb + code_search ripgrep (185 dopas MPP, 51 dopas stawki,
+      115 dopas zle dlugi, 47 dopas KSeF, 29 dopas GTU).
+  (b) Weryfikacja cross-file: porownanie dat SLIM VAT 3 miedzy
+      substantive/deductions/thresholds/metadata/LEGAL_COVERAGE.
+  (c) Badania web: MPP Art. 108a-108f, Zalacznik 15, sankcja 30%,
+      safe harbor, SLIM VAT 3 (2023), KSeF harmonogram 2026,
+      rozporzadzenie MF z 4.12.2024 (stawki obnizone).
+  (d) Analiza determinizmu: kolizje GTU, duplikaty package, fallback
+      23% dla NP.
+
+2.3 ZALOZENIA I OGRANICZENIA
+-------------------------------------------------------------
+  - Analiza statyczna; nie uruchamiano OPA eval na calym module.
+  - MPP helper jdg_is_mpp_sensitive (helpers L173-224) zawiera ~40
+    kategorii wrazliwych — weryfikowano liste, ale nie pelny Zal. 15
+    (wymagalyby danych CN).
+  - Enterprise v7.0 (vat_substantive_complete) analizowany czesciowo
+    (764 linie, sekcja sankcji 108b-108d).
+
+
+=============================================================
+3. ANALIZA POKRYCIA USTAWY O VAT — PRIORYTET: MPP + SPLIT PAYMENT
+=============================================================
+
+3.1 MPP / SPLIT PAYMENT (Art. 108a-108f) — GLOWNY PRIORYTET
+-------------------------------------------------------------
+
+Stan prawny (badania web, lipiec 2026): MPP (Mechanizm Podzielonej
+Platnosci) reguluje Art. 108a-108f VAT. Obowiazkowe dla B2B gdy:
+(1) kwota brutto > 15 000 PLN, (2) faktura zawiera towar/usluge z
+Zalacznika 15 (paliwa, stal, metale szlachetne, elektronika,
+budownictwo, odpady, certyfikaty CO2, uslugi budowlane). Sankcja za
+brak MPP: 30% VAT dodatkowego zobowiazania + solidarna odpowiedzialnosc
+za VAT dostawcy + NKUP. Dobrowolny MPP = safe harbor (zwolnienie z
+solidarnej odpowiedzialnosci, szybszy zwrot 25 dni).
+
+DIAGRAM MERMAID — MPP Flow (Art. 108a-108f):
+-------------------------------------------------------------
+```mermaid
+flowchart TD
+    INV[Faktura PURCHASE<br/>amount_gross + category_code] --> TH{amount_gross<br/>> 15000 PLN?}
+    TH -->|NIE| VOL{Dobrowolny MPP<br/>split_payment_used?}
+    TH -->|TAK| SENS{Towar wrazliwy?<br/>jdg_is_mpp_sensitive<br/>LUB jdg_is_mpp_sensitive_by_cn}
+
+    SENS -->|NIE| NORMAL[Transakcja zwykla<br/>bez obowiazku MPP]
+    SENS -->|TAK| MAND[OBOWIAZKOWY MPP<br/>P100 substantive.rego<br/>Art. 108a ust. 1]
+
+    MAND --> USED{split_payment_used?}
+    USED -->|TAK| OK_MPP[OK — MPP zastosowane<br/>JPK_V7 flaga TAK]
+    USED -->|NIE| SANC[SANKCJA 30% VAT<br/>P102 substantive.rego<br/>Art. 108a ust. 5-7<br/>BLOCK_AND_ALERT]
+
+    SANC --> SOL[Solidarna odpowiedzialnosc<br/>P103 Art. 105a-105c<br/>BLOCK_AND_ALERT]
+    SANC --> BLOCK[Blokada odliczen<br/>P203 deductions.rego<br/>Art. 108a ust. 5]
+    SANC --> KKS[Obchodzenie MPP<br/>P275 kks.rego<br/>Art. 57 KKS]
+
+    VOL -->|TAK| SAFE[Safe harbor<br/>P25b compliance.rego<br/>Art. 108a ust. 1d<br/>joint_vat_liability_exempt]
+    VOL -->|NIE| RISK[Ryzyko solidarnej<br/>odpowiedzialnosci<br/>gdy towar wrazliwy]
+
+    classDef mandatory fill:#f99,stroke:#933,stroke-width:2px;
+    classDef sanction fill:#f66,stroke:#900,stroke-width:3px;
+    classDef safe fill:#9f9,stroke:#393,stroke-width:2px;
+    class MAND mandatory;
+    class SANC,SOL,BLOCK,KKS sanction;
+    class SAFE safe;
+```
+-------------------------------------------------------------
+
+OCENA MPP — KOMPLETNOSC (8.5/10):
+  (+) Obowiazkowy MPP: substantive.rego P100 (L707-729) — wykrywa
+      amount_gross > 15000 + jdg_is_mpp_sensitive(category OR cn).
+      DOBRZE — uwzglednia CN bridge (v7.0).
+  (+) Dobrowolny MPP safe harbor: compliance.rego P25b (L82-95) —
+      joint_vat_liability_exempt, Art. 108a ust. 1d. DOBRZE.
+  (+) Sankcja 30%: substantive.rego P102 (L753-778) — oblicza
+      sanction_amount = vat_amount * 0.30, BLOCK_AND_ALERT, kroki
+      naprawcze (przelew MPP, korekta, czynny zal). DOBRZE.
+  (+) Solidarna odpowiedzialnosc: substantive.rego P103 (L940-964)
+      Art. 105a-105c — BLOCK_AND_ALERT + rekomendacja MPP. DOBRZE.
+  (+) Blokada odliczen: deductions.rego P203 (L571-574) — przy
+      split_payment_mandatory_breached. DOBRZE.
+  (+) Obchodzenie MPP: kks.rego P275 (L787-801) — dzielenie >15k na
+      mniejsze faktury, Art. 57 KKS. DOBRZE (ale zewnetrzna flaga).
+  (+) JPK_V7M flaga MPP: substantive.rego P111 (L823-824) —
+      mpp_flag "TAK"/"". DOBRZE (binarne — patrz rekomendacja 4).
+  (+) edge_cases R0628 (L518-533): limit_mpp_15k — BLOCK_AND_ALERT
+      gdy mpp_required && !mpp_used. DOBRZE.
+  (+) Neural mesh: neural_rule_mesh NM-420 (L1439-1451) — synapse
+      MPP x Sanctions. DOBRZE (integracja miedzydomenowa).
+
+  (-) [KRYTYCZNE-1] PROG 15000 I SANKCJA 30% HARDCODED — patrz
+      Executive Summary. thresholds.vat.mpp_mandatory_threshold NIE
+      ISTNIEJE; thresholds.vat.bad_debt_sanction_30pct (0.30) istnieje
+      ale NIE czytany przez substantive.rego (uzywa * 0.30).
+  (-) Detekcja obchodzenia MPP polega na zewnetrznej fladze
+      input.invoice.split_payment_evasion_detected — Rego NIE sumuje
+      faktur tego samego kontrahenta w oknie czasowym. LUKA: podatnik
+      dzielacy transakcje nie zostanie wykryty jezeli system
+      zewnetrzny nie ustawil flagi.
+  (-) JPK_V7M mpp_flag binarne — brak rozroznienia
+      OBOWIAZKOWY/DOBROWOLNY. Dla audytu KAS wazne.
+  (-) BRAK reguly dla przypadku ZALICZKI a MPP: jezeli zaliczka >15k
+      PLN brutto na towar wrazliwy — czy MPP dotyczy zaliczki?
+      (Praktyka: tak, kazda platnosc >15k). substantive.rego P100
+      wymaga direction=="PURCHASE" ale nie sprawdza
+      prepayment_received. LUKA.
+  (-) BRAK reguly zwrotu nadplaty z rachunku VAT (Art. 108a ust. 4):
+      srodki z rachunku VAT mozna wykozystac tylko na VAT/PIT/CIT/
+      cely/ZUS. BRAK ostrzezenia przy probie transferu poza te cele.
+
+TABELA POKRYCIA ARTYKULOW USTAWY O VAT — NACISK MPP (Art. 108a-108f)
+-------------------------------------------------------------
+| Art. VAT  | Temat                         | Pokrycie | Reguly JDG                          |
+|-----------|-------------------------------|----------|-------------------------------------|
+| 108a ust1 | Obowiazkowy MPP >15k + Zal.15 | COMPLETE | substantive P100, compliance P25    |
+| 108a ust1d| Dobrowolny MPP safe harbor    | COMPLETE | compliance P25b (joint_liab_exempt) |
+| 108a ust3 | Dobrowolny MPP ogolnie        | COMPLETE | substantive P101                    |
+| 108a ust4 | Wykorzystanie rachunku VAT    | BRAK     | — (LUKA: ograniczenia wydatkow)     |
+| 108a ust5 | Sankcja 30% dodatkowe zobow.  | COMPLETE | substantive P102, deductions P203   |
+| 108a ust6 | Solidarna odpowiedzialnosc    | COMPLETE | substantive P103 (Art. 105a-105c)   |
+| 108a ust7 | NKUP przy braku MPP           | PARTIAL  | substantive P102 (wymienione, brak  |
+|           |                               |          | dedykowanej reguly NKUP-MPP)        |
+| 108b      | Sankcje 15% (Art. 108b)       | COMPLETE | enterprise S21-600 (L666-722)       |
+| 108c      | Sankcje 20% (Art. 108c)       | COMPLETE | enterprise S21-600                  |
+| 108d      | Sankcje 30% (Art. 108d)       | COMPLETE | enterprise S21-600                  |
+| 105a-105c | Solidarna odp. za VAT dostaw. | COMPLETE | substantive P103                    |
+| KKS 57    | Obchodzenie MPP (dzielenie)   | COMPLETE | kks P275 (zewnetrzna flaga)         |
+| 41 ust1   | Stawka 23% standard           | COMPLETE | substantive P52, P67, P100-P103     |
+| 41 ust2   | Stawka 8% obnizona            | COMPLETE | substantive P64, P68, P70           |
+| 41 ust2a  | Stawka 5% obnizona            | COMPLETE | substantive P53, P54, P67           |
+| 41 ust12c | Budownictwo mieszk. 8%        | COMPLETE | substantive P68 (walidacja 300/150) |
+| 43        | Zwolnienia przedmiotowe       | PARTIAL  | P55-P63 (6 kategorii, brak ~34 pkt) |
+| 86 ust1   | Prawo do odliczenia           | COMPLETE | deductions P183-P198                |
+| 86 ust10b | WNT odliczenie timing         | COMPLETE | deductions P193-P195                |
+| 86 ust11  | Termin 3m odliczenia          | COMPLETE | deductions P188                     |
+| 86a       | Auta 50%/100% VAT             | COMPLETE | deductions P186/P186b               |
+| 88        | Blokady odliczen              | COMPLETE | deductions P183/P183b (20+ pozycji) |
+| 89a       | Zle dlugi wierzyciel          | COMPLETE | substantive P60/P60b, deductions    |
+|           |                               |          | P189/P189b (temporal 150/90)        |
+| 89a ust2a | Upadlosc natychmiast          | COMPLETE | substantive P60c (MR-4 v7.0)        |
+| 89b       | Zle dlugi dluznik obowiazek   | COMPLETE | deductions P184, P183c (wyjatki)    |
+| 90        | Proporcja VAT                 | COMPLETE | deductions P185 (de minimis 2%)    |
+| 91        | Korekta roczna                | PARTIAL  | deductions P187 (wspomina, brak     |
+|           |                               |          | obliczen 1/5 lub 1/10)              |
+| 108a VAT  | MPP — GLOWNY PRIORYTET        | 8.5/10   | 9 regul + neural mesh NM-420        |
+| 106na-nq  | KSeF obowiazkowy 2026-02-01   | COMPLETE | ksef_jpk P950/P952, edge P593/P647  |
+| 106ne     | KSeF offline 7 dni            | COMPLETE | edge P666, api_fallback P1852       |
+| 113       | Zwolnienie podmiot. 200k      | COMPLETE | substantive P51/P51b (v7.0 FIX)     |
+| 113 ust9  | Proporcjonalne dla nowych JDG | COMPLETE | substantive P51b                    |
+| 113 ust14 | Utrata po 2 latach            | BRAK     | — (LUKA)                            |
+| 17 pkt7   | RC krajowe (stal/odpady/CO2)  | COMPLETE | substantive P70-P74                 |
+| 17 pkt8   | RC uslugi budowlane           | COMPLETE | substantive P71                     |
+| 28a-28o   | Miejsce swiadczenia           | BRAK     | — (LUKA: tylko import P90 ust. PL)  |
+| 9-11      | WNT                           | COMPLETE | substantive P80-P83                 |
+| 13        | WDT 0%                        | BRAK     | — (LUKA KRYTYCZNA: fallback 23%)    |
+| 2 pkt8    | Eksport 0%                    | BRAK     | — (LUKA KRYTYCZNA: fallback 23%)    |
+| 26a       | Import towarow SAD            | COMPLETE | substantive P93                     |
+| 28b       | Import uslug B2B              | COMPLETE | substantive P90-P92                 |
+| 120       | Procedura marzy               | PARTIAL  | substantive P50, procedures P66,    |
+|           |                               |          | enterprise (USED_GOODS/ANTIQUES);   |
+|           |                               |          | BRAK: dziela sztuki ust.4-5, biuro  |
+| 119       | Marza biuro podrozy           | BRAK     | — (LUKA)                            |
+| 135-138   | Transakcja trojstronna        | COMPLETE | substantive P83                     |
+| 106e ust5 | Paragon z NIP 450 PLN         | COMPLETE | plan23 P36                          |
+-------------------------------------------------------------
+PODSUMOWANIE POKRYCIA MPP (Art. 108a-108f): 9 z 10 obszarow
+COMPLETE, 1 PARTIAL (ust.7 NKUP-MPP dedykowana), 1 BRAK (ust.4
+wykorzystanie rachunku VAT). MPP to NAJSILNIEJSZY obszar modulu.
+PODSUMOWANIE POKRYCIA OGOLNEGO: ~70% artykulow COMPLETE, ~15%
+PARTIAL, ~15% BRAK (najwieksze luki: miejsce swiadczenia 28a-28o,
+WDT/eksport 0%, marza biura podrozy, utrata zwolnienia po 2 lat).
+
+3.2 STAWKI VAT (Art. 41) — 23/8/5/0/ZW/NP
+-------------------------------------------------------------
+
+DIAGRAM MERMAID — stawki VAT:
+-------------------------------------------------------------
+```mermaid
+flowchart LR
+    CAT[category_code<br/>+ vendor.country] --> SEL{Selektor stawki}
+
+    SEL -->|FUEL| R52[23% GTU_02]
+    SEL -->|FOOD| R53[5% GTU_07 --- BLAD!]
+    SEL -->|BOOKS/EBOOKS| R54/R67[5% GTU_01<br/>ISBN walidacja]
+    SEL -->|EDUCATION| R55[0% ZW OBJECT]
+    SEL -->|HEALTHCARE| R56[0% ZW OBJECT]
+    SEL -->|FINANCIAL| R57[0% ZW OBJECT]
+    SEL -->|CULTURE/SPORT| R61[0% ZW OBJECT]
+    SEL -->|REAL_ESTATE<br/>!first_occupancy| R62[0% ZW OBJECT]
+    SEL -->|POSTAL| R63[0% ZW OBJECT]
+    SEL -->|CONSTRUCTION_RESIDENTIAL| R68[8% GTU_08<br/>area walidacja]
+    SEL -->|MEDICAL_EQUIPMENT<br/>CE| R70[8%]
+    SEL -->|inny PL| R67FALL[P67 23% catch-all]
+    SEL -->|NP/ nie podlega| FALL23[Fallback 23% --- BLAD!]
+
+    R53 -.->|KOLIZJA| GTU07[GTU_07 = odpady<br/>NIE zywnosc!]
+    FALL23 -.->|CICHE 23%| NP_PROBLEM[NP -> 23%<br/>powinno byc 0%/NP]
+```
+-------------------------------------------------------------
+
+OCENA STAWEK (7/10):
+  (+) 23% standard: substantive.rego P52 (fuel), P67 (catch-all),
+      P100-P103 (MPP), P80-P93 (WNT/Import). DOBRZE.
+  (+) 8% obnizona: P64 (budownictwo, hotele, transport, farmacja,
+      med. equipment, restauracje, woda, odpady), P68 (budownictwo
+      mieszkaniowe z walidacja powierzchni 300/150 m2), P70 (sprzet
+      medyczny CE). DOBRZE — z walidacja warunkow.
+  (+) 5% obnizona: P53 (zywnosc), P54/P67 (ksiazki/e-booki z ISBN),
+      plan42 (walidacja 5% baby products). DOBRZE.
+  (+) 0% zwolnienia przedmiotowe: P55 (edukacja Art. 43 pkt 26-29),
+      P56 (medycyna pkt 18-20), P57 (finanse pkt 7,37-38), P61
+      (kultura pkt 32-33), P62 (nieruchomosci pkt 10), P63 (poczta
+      pkt 17). DOBRZE — z artykulami ustawy.
+  (+) Zwolnienie podmiotowe 200k: P51/P51b (Art. 113 ust. 1 i 9) —
+      v7.0 FIX przesuniete PRZED stawkami (L160-200). DOBRZE.
+  (+) Rozp. MF 4.12.2024: P67 books_5pct_validation (L196-219) —
+      ISBN/digital ID, wykluczenia (academic 0%, adult 23%). DOBRZE.
+
+  (-) [KRYTYCZNE-3] GTU KOLIZJA: gtu_map FOOD -> GTU_07 (L583) ale
+      GTU_07 = WASTE/odpady. Zywnosc powinna mapowac na GTU_06
+      (medical_products jest tam teraz — NIE wlasciwe) lub byc bez
+      GTU. W rzeczywistosci zywnosc NIE ma GTU w JPK_V7M (nie jest
+      towarew wrazliwym GTU). KOLIZJA powoduje bledne tagowanie JPK.
+  (-) [KRYTYCZNE-3] BRAK GTU_03: gtu_map nie zawiera GTU_03 (srodki
+      transportu uzywane). GTU_03 jest w JPK_V7M. LUKA.
+  (-) [KRYTYCZNE-3] NP NIE OBSLUZONE: stawka "NP" (nie podlega VAT /
+      out of scope) NIE jest wyodrebnionym werdyktem. Transakcja NP
+      trafia do P67 catch-all 23% — CICHE zastosowanie 23% do
+      transakcji niepodlegajacej. BRAK reguly vat_rate="NP".
+  (-) Stawki hardcoded: "0.23"/"0.08"/"0.05" jako literaly w ~30
+      miejscach substantive.rego (L74, L99, L162, L183, etc.).
+      thresholds.vat.standard_rate (0.23) istnieje ale NIE czytany
+      przez substantive.rego. Naruszenie ADR-002.
+  (-) BRAK stawki 0% dla eksportu/WDT jako dedykowanej reguly:
+      P80-P93 WNT ustawiaja 0.23, ale BRAK reguly WDT (Wewnetrz-
+      spolnotworcowa Dostawa Towarow, Art. 13) ze stawka 0% i
+      warunkami (VAT-UE, potwierdzenie wywozu). WDT trafia do
+      fallback 23% — KRYTYCZNE dla transakcji UE.
+
+3.3 ODLICZENIA (Art. 86-95) — proporcja, korekty, zle dlugi
+-------------------------------------------------------------
+
+OCENA ODLICZEN (8/10):
+  (+) Kategorie zablokowane Art. 88: deductions.rego P183 (L80-140)
+      — rozszerzone v7.0 (MR-5) z 6 do 20+ pozycji (noclegi,
+      gastronomia, reprezentacja, alkohol, paliwo osobowki,
+      faktury false/nonexistent/inflated). DOBRZE.
+  (+) Blokada CN specyficzne: P183b (L142-160) — CN 2710 (paliwo)
+      dla osobowek. DOBRZE.
+  (+) Wyjatki dluznik Art. 89b ust. 2: P183c (L162-180) — dluznik
+      nie-VAT-payer. DOBRZE.
+  (+) Obowiazek korekty dluznika: P184 (L182-210) — 90 dni,
+      BLOCK_AND_ALERT, _future_events. DOBRZE.
+  (+) Pre-proporcja: P185 (L212-250) — de minimis <2% -> 0%.
+      DOBRZE.
+  (+) Auta: P186 (50% bez ewidencji), P186b (100% z ewidencja).
+      DOBRZE — Art. 86a.
+  (+) Korekta roczna: P187 (Art. 91, 1/5 lub 1/10). DOBRZE.
+  (+) Termin 3m: P188 (Art. 86 ust. 11). DOBRZE.
+  (+) Zle dlugi wierzyciel: P189 (150d pre-SLIM3) + P189b (90d
+      post-SLIM3) — temporal fix POPRAWNY (granica 2023-01-01).
+      DOBRZE. P199 (warunki szczegolowe), P200 (odwrocenie przy
+      zaplace), P201 (upadlosc). DOBRZE.
+  (+) WNT/import odliczenia: P193-P198. DOBRZE.
+  (+) VAT-ZT: P202. DOBRZE.
+  (+) Blokada sankcja: P203 (MPP breach). DOBRZE.
+  (+) Zwroty: P192 (60d standard, 25d accelerated). DOBRZE.
+
+  (-) [KRYTYCZNE-2] Data SLIM VAT 3 niespojna — deductions.rego
+      poprawnie 2023-01-01, ale thresholds_jdg 2025-07-01. Patrz
+      Executive Summary.
+  (-) Proporcja <2% i >98% hardcoded (0.02, 0.98) — thresholds.vat
+      .proportion_min/max_threshold ISTNIEJA ale nie czytane. LUKA.
+  (-) BRAK korekty wieloletniej dla srodkow trwalych >50k EUR
+      (Art. 91 ust. 2-7 — 5 lat ruchomosci, 10 lat nieruchomosci).
+      P187 wspomina ale nie oblicza.
+  (-) BRAK reguly odliczenia przy przekroczeniu limitu 200k
+      (proporcjonalne odliczenie, Art. 113 ust. 9 — P51b zwolnienie
+      ale BRAK proporcjonalnego odliczenia VAT naliczonego).
+
+3.4 ZWOLNIENIE PODMIOTOWE (Art. 113) — limit 200 000 PLN
+-------------------------------------------------------------
+  (+) P51/P51b (substantive.rego L160-200): zwolnienie gdy
+      !is_vat_payer && turnover < 200000; proporcjonalne dla nowych
+      JDG (Art. 113 ust. 9). DOBRZE — v7.0 FIX (przed stawkami).
+  (+) edge_cases: vat_breach_mid_year (L50), vat_breach_proportion
+      (L72), vat_exempt_breach_retroactive (L108), vat_last_invoice
+      (L104). DOBRZE — pelne pokrycie przekroczenia.
+  (-) Limit 200000 hardcoded (L172, L194, edge_cases多处). thresholds
+      .vat.subject_exemption_limit (200000) ISTNIEJE ale nie czytany.
+  (-) BRAK reguly utraty zwolnienia po 2 latach (Art. 113 ust. 14 —
+      jezeli przeksiezczenie w roku N, utrata w N+1 i N+2).
+
+3.5 MIEJSCE SWIADCZENIA (Art. 28a-28o)
+-------------------------------------------------------------
+  OCENA (5/10) — NAJSLABSZY OBSZAR:
+  (+) import_of_services (substantive.rego P90-P92) ustawia
+      place_of_supply=="PL" + Art. 28b (B2B). DOBRZE dla importu.
+  (-) BRAK dedykowanych regul miejsca swiadczenia dla:
+      (a) B2B uslugi (Art. 28b) — miejsce = siedziba nabywcy;
+      (b) B2C uslugi (Art. 28a) — miejsce = siedziba uslugodawcy;
+      (c) e-uslugi B2C (Art. 28k) — miejsce = siedziba konsumenta;
+      (d) nieruchomosci (Art. 28e) — miejsce = polozenie;
+      (e) transport (Art. 29-30) — miejsce = odcinek;
+      (f) kultura/sport/edukacja (Art. 28e-28n) — miejsce konsumpcji.
+  (-) WNT/WDT ustawiaja vat_rate 0.23 bez wlasciwego okreslenia czy
+      miejsce swiadczenia = PL (dla WNT tak, dla WDT = kraj docelowy
+      UE z stawka 0%). BRAK reguly WDT (Art. 13) — KRYTYCZNE.
+  REKOMENDACJA: dodac pakiet jdg.vat.place_of_supply z regulami
+  Art. 28a-28o (szczegolnie WDT 0%, e-uslugi B2C, nieruchomosci).
+
+
+=============================================================
+4. ANALIZA WNT/WDT/IMPORT/EXPORT
+=============================================================
+
+4.1 WNT (Art. 9-11)
+-------------------------------------------------------------
+  (+) substantive.rego P80 (WNT standard, 23%, reverse charge),
+      P81 (WNT nowy srodek transportu, GTU_09, akcyza), P82 (WNT
+      wyroby akcyzowe, AKC-4), P83 (transakcja trojstronna Art.
+      135-138). DOBRZE — kompletne.
+  (+) deductions.rego P193 (odliczenie WNT ten sam okres), P194
+      (3 miesiace), P195 (expired). DOBRZE.
+
+4.2 WDT (Art. 13) — STAWKA 0%
+-------------------------------------------------------------
+  (-) KRYTYCZNE: BRAK dedykowanej reguly WDT. WDT (Wewnetrz-
+      spolnotworcowa Dostawa Towarow) powinna miec stawke 0% przy
+      warunkach: vendor.country PL, direction SALE, buyer.country in
+      UE, is_vat_eu_registered, potwierdzenie wywozu. W obecnej
+      implementacji WDT trafia do P67 catch-all 23% — BLEDNE.
+      BRAK: jdg.vat.substantive.wdt_zero_rate.
+
+4.3 EKSPORT (Art. 2 pkt 8) — STAWKA 0%
+-------------------------------------------------------------
+  (-) BRAK dedykowanej reguly eksportu towarow (0%). Transakcja
+      direction SALE + vendor.country NON_EU trafia do P67 23%.
+      KRYTYCZNE dla eksporterow. BRAK: jdg.vat.substantive.export_0.
+
+4.4 IMPORT (Art. 17)
+-------------------------------------------------------------
+  (+) substantive.rego P90 (import uslug B2B, Art. 28b, 23%),
+      P91 (import uslug UE, K_43), P92 (import uslug spoza UE,
+      K_44), P93 (import towarow SAD). DOBRZE.
+  (+) deductions.rego P196 (import uslug odliczenie), P197 (import
+      towarow SAD odliczenie). DOBRZE.
+  (-) Import towarow: BRAK reguly odwrotnego obciazenia dla importu
+      (Art. 17 ust. 1 pkt 7-8) — tylko P93 standard 23%.
+
+
+=============================================================
+5. ANALIZA PROCEDUR SZCZEGOLNYCH
+=============================================================
+
+5.1 OSS / IOSS (procedures.rego)
+-------------------------------------------------------------
+  (+) OSS (P67, L265) — One Stop Shop B2C w UE. DOBRZE.
+  (+) IOSS (P68, L286) — Import One Stop Shop <=150 EUR. DOBRZE.
+  (-) BRAK szczegolow: OSS/IOSS ustawiaja procedure="OSS"/"IOSS"
+      ale NIE obliczaja VAT dla wlasciwego panstwa czlonkowskiego
+      (wymaga danych stawek UE). BRAK tabeli stawek UE.
+
+5.2 PROCEDURA MARZY (Art. 120)
+-------------------------------------------------------------
+  (+) substantive.rego P50 (margin_scheme, 23%, Art. 120).
+  (+) procedures.rego P66 (MARGIN_USED_GOODS, L245).
+  (+) enterprise: vat_substantive_complete margin (L297-301) —
+      rozroznia USED_GOODS/ANTIQUES (23%) vs ART_OBJECTS (8%).
+      DOBRZE.
+  (-) BRAK: marza dziela sztuki (Art. 120 ust. 4-5), antyki (Art.
+      120 ust. 4), przedmioty kolekcjonerskie. Enterprise czesciowo
+      pokrywa, ale substantive.rego P50 tylko 23% catch-all.
+  (-) BRAK: marza biura podrozy (Art. 119 — procedura szczegolna
+      uslug turystycznych, marza = wartosc uslug bez kosztow
+      podwykonawcow).
+
+5.3 ODWROTNE OBCIAZENIE KRAJOWE (Art. 17 ust. 1 pkt 7)
+-------------------------------------------------------------
+  (+) substantive.rego P70 (steel/fuel/electronics_scrap/gold_raw),
+      P71 (construction subcontracting, Art. 17 pkt 8), P72 (waste
+      >20k), P73 (CO2 certificates), P74 (precious metals).
+      DOBRZE — kompletna lista RC krajowego.
+  (+) deductions.rego P198 (reverse charge deduction, neutralny).
+      DOBRZE.
+  (-) BRAK: RC dla elektroniki — komentarz P74 (L740) mowi ze
+      elektronika NIE podlega RC od 01.11.2019, ale P70 nadal ma
+      ELECTRONICS_SCRAP. Sprawdzic czy ELECTRONICS_SCRAP to odpady
+      (RC tak) czy elektronika (RC nie). Niespojnosc komentarza.
+
+5.4 BRAKUJACE PROCEDURY (WSTO_EE, IED, SW, TW, MR, PKZT)
+-------------------------------------------------------------
+  (-) WSTO_EE (Wewnetrzspolnotworcowa Sprzedaz Towarow Opozniona
+      do magazynu w UE) — BRAK.
+  (-) IED (Import z procedura excise deferred) — BRAK.
+  (-) SW (Silnik Wodny — nie, to procedura Skladow Wewnetrznych) —
+      BRAK.
+  (-) TW (Trwale Wskazanie — procedura celna) — BRAK.
+  (-) MR (Miedzynarodowy Rozladunek — nie, to procedura szczegolna
+      dla uslug transportowych) — BRAK.
+  (-) PKZT (Przemieszczanie Kosmetykow/Zwierzat/Towarow) — BRAK.
+  REKOMENDACJA: wiekszosc to procedury celne (nie VAT core) —
+  niski priorytet dla JDG. WSTO_EE wart dodac (magazyn w UE).
+
+
+=============================================================
+6. ANALIZA GTU I KODOW PROCEDUR
+=============================================================
+
+6.1 GTU MAP (13 kodow JPK_V7M)
+-------------------------------------------------------------
+TABELA GTU — stan obecny:
+-------------------------------------------------------------
+| Kod GTU  | Opis                          | Mapowany? | Uwagi              |
+|----------|-------------------------------|-----------|--------------------|
+| GTU_01   | Napoje alkoholowe              | TAK       | ALCOHOL (L579)     |
+| GTU_02   | Paliwa                        | TAK       | FUEL (L581)        |
+| GTU_03   | Srodki transportu uzywane      | NIE       | BRAK — LUKA        |
+| GTU_04   | Wyroby tytoniowe              | TAK       | TOBACCO (L582)     |
+| GTU_05   | Oleje smarne                  | TAK       | OIL_LUBRICANTS     |
+| GTU_06   | Produkty medyczne             | TAK       | MEDICAL_PRODUCTS   |
+| GTU_07   | Odpady                        | TAK       | WASTE (L584)       |
+|          |                               |           | + FOOD KOLIZJA!    |
+| GTU_08   | Elektronika                   | TAK       | ELECTRONICS        |
+| GTU_09   | Pojazdy                       | TAK       | VEHICLES           |
+| GTU_10   | Stal                         | TAK       | STEEL              |
+| GTU_11   | Metale szlachetne             | TAK       | PRECIOUS_METALS    |
+| GTU_12   | Budownictwo                   | TAK       | CONSTRUCTION       |
+| GTU_13   | Uslugi transportowe           | TAK       | TRANSPORT_SERVICES |
+-------------------------------------------------------------
+
+OCENA GTU (6/10):
+  (+) 12 z 13 kodow mapowanych (GTU_01,02,04-13). DOBRZE.
+  (+) v7.0 semantic auto-assigner: P65 (L556-576) — bridge_gtu z
+      gtu_auto_assigner.py + confidence, fallback category,
+      TRIAGE_QUEUE przy confidence <0.70. DOBRZE — innowacyjne.
+  (-) [KRYTYCZNE-3] GTU_03 BRAK — srodki transportu uzywane.
+  (-) [KRYTYCZNE-3] FOOD -> GTU_07 KOLIZJA (GTU_07 = odpady).
+      Zywnosc NIE ma GTU w JPK_V7M — powinna byc bez GTU ("").
+  (-) GTU confidence threshold 0.40 (L572) hardcoded — powinien
+      byc z thresholds.
+  (-) BRAK GTU dla zywnosci 5% (P53 ustawia GTU_07 — bledne).
+
+DIAGRAM MERMAID — GTU Auto-Assignment (P65 v7.0 semantic bridge):
+-------------------------------------------------------------
+```mermaid
+flowchart TD
+    DESC[Opis towaru<br/>input.invoice.description] --> NLP[Python NLP<br/>gtu_auto_assigner.py<br/>ekstrakcja PKWiU]
+    CAT[category_code] --> BRIDGE
+    CN[cn_code] --> BRIDGE
+    NLP --> BRIDGE{Bridge GTU selector P65}
+
+    BRIDGE --> CHECK{bridge_gtu != ''<br/>AND confidence >= 0.40?}
+    CHECK -->|TAK| SEM[gtu_code = bridge_gtu<br/>method = semantic]
+    CHECK -->|NIE| FB{bridge_gtu == '' ?}
+    FB -->|TAK| CATMAP[gtu_code = gtu_map<br/>category_code<br/>method = category]
+    FB -->|NIE| LOWCONF[confidence < 0.40<br/>gtu_code = gtu_map fallback<br/>method = fallback]
+
+    SEM --> CONF{confidence >= 0.70?}
+    CATMAP --> CONF
+    LOWCONF --> TRIAGE2[TRIAGE_QUEUE<br/>manual review]
+    CONF -->|TAK| OK[GTU assigned OK<br/>_routing = '']
+    CONF -->|NIE| TRIAGE[TRIAGE_QUEUE<br/>confidence low]
+
+    OK --> JPK[JPK_V7M gtu_code<br/>GTU_01..GTU_13]
+    TRIAGE --> JPK2[JPK_V7M gtu_code<br/>+ flag review]
+    TRIAGE2 --> JPK2
+
+    classDef semantic fill:#9cf,stroke:#369,stroke-width:2px;
+    classDef triage fill:#fc9,stroke:#963,stroke-width:2px;
+    class SEM,OK semantic;
+    class TRIAGE,TRIAGE2,LOWCONF triage;
+```
+-------------------------------------------------------------
+UWAGA: Diagram pokazuje zamierzona sciezke auto-assignment GTU.
+GLOWNY PROBLEM: gtu_map zawiera KOLIZJE (FOOD->GTU_07) i BRAK GTU_03,
+wiec nawet poprawny bridge moze nadac bledny kod jezeli fallback
+category jest uzywany. Naprawa mapy (rekomendacja 3) jest warunkiem
+koniecznym poprawnosci auto-assignment.
+
+6.2 KODY PROCEDUR (WSTO_EE, IED, etc.)
+-------------------------------------------------------------
+  Patrz sekcja 5.4 — BRAK WSTO_EE, IED, SW, TW, MR, PKZT.
+  (+) procedure kody zaimplementowane: WNT, WNT_NEW_VEHICLE,
+      WNT_EXCISE, TRIANGULAR_SIMPLIFICATION, IMPORT_OF_SERVICES,
+      IMPORT_SERVICES_EU/NON_EU, IMPORT_CUSTOMS, MARGIN,
+      MARGIN_USED_GOODS, OSS, IOSS, REVERSE_CHARGE_DOMESTIC/
+      CONSTRUCTION/WASTE/METALS/CO2, SPLIT_PAYMENT_MANDATORY/
+      VOLUNTARY/SANCTION, SOLIDARITY_LIABILITY, BAD_DEBT_*,
+      VAT_REFUND/ACCELERATED, VAT_R_BLOCK, VAT_BLOCKED, etc.
+      DOBRZE — szeroki zakres.
+
+6.3 INNOWACYJNY SYSTEM AUTO-UZUPELNIANIA GTU (Enterprise)
+-------------------------------------------------------------
+Pomysl wyprzedzajacy (sekcja 8.6): "GTU Semantic Auto-Tagger" —
+rozszerzenie obecnego bridge_gtu o analize semantyczna opisu
+towaru (input.invoice.description) z NLP: ekstrakcja slow
+kluczowych, mapowanie na PKWiU -> GTU. Przyklad: "dystrybutor
+paliwa" -> PKWiU 47.30 -> GTU_02; "laptop Dell" -> PKWiU 26.20 ->
+GTU_08. Realizacja: Python NLP (spaCy/transformers) + baza
+PKWiU->GTU, confidence + TRIAGE dla niskiej pewnosci.
+
+
+=============================================================
+7. ANALIZA ZGODNOSCI Z 2026 (KSeF/SLIM VAT 3/B2C)
+=============================================================
+
+7.1 KSeF OBOWIAZKOWY OD 01.02.2026
+-------------------------------------------------------------
+  (+) ksef_jpk.rego P950 (L43-55): obowiazek KSeF od "2026-02-01",
+      Art. 106na-106nq. DOBRZE.
+  (+) P952 (L58+): KSeF B2C obowiazkowy od 2026-07-01 (v7.0 NEW).
+      DOBRZE — LUKA wczesniej naprawiona.
+  (+) edge_cases P593 (L367): ksef_mandatory, BLOCK_AND_ALERT,
+      sankcja 100% VAT. DOBRZE.
+  (+) P647 (sanction_ksef_missing_100pct, Art. 106nq, max 500k).
+      DOBRZE.
+  (+) P666 (deadline_ksef_offline_7_days, Art. 106ne). DOBRZE.
+  (+) api_fallback P1852 (KSeF offline, tryb awaryjny 7 dni,
+      /OFFLINE suffix). DOBRZE.
+  (-) Data "2026-02-01" HARDCODED (P950 L53, P593 edge_cases).
+      thresholds.vat.ksef_mandatory_from ("2026-02-01") ISTNIEJE
+      ale nie czytany. Naruszenie ADR-002.
+  (-) Harmonogram KSeF 2026 (badania web): najwieksi >200M PLN
+      2026-02-01, reszta 2026-04-01, mikro <10k/mies 2027-01-01.
+      BRAK rozroznienia faz KSeF — jedna data 2026-02-01 dla
+      wszystkich. LUKA.
+
+7.2 SLIM VAT 3 (2023) — ZLE DLUGI 90 DNI, PARAGON 450 PLN
+-------------------------------------------------------------
+  (+) substantive.rego P60b (90 dni post-SLIM3, granica 2023-01-01)
+      + P60 (150 dni pre-SLIM3). DOBRZE — temporal fix poprawny.
+  (+) deductions.rego P189b (90 dni) + P189 (150 dni). DOBRZE.
+  (-) [KRYTYCZNE-2] thresholds_jdg.rego data 2025-07-01 BLEDNA.
+      Patrz Executive Summary.
+  (+) Paragon z NIP 450 PLN: plan23_detailed.rego P36 (L14-17),
+      Art. 106e ust. 5 pkt 3. DOBRZE.
+  (-) Limit 450 hardcoded (plan23 L17 komentarz, edge_cases?).
+      thresholds.vat.receipt_nip_limit (450) ISTNIEJE — sprawdzic
+      czytanie.
+
+7.3 NOWE OBOWIAZKI FAKTUROWANIA B2C
+-------------------------------------------------------------
+  (+) P952 KSeF B2C od 2026-07-01 (v7.0 NEW). DOBRZE.
+  (-) BRAK reguly faktury uproszczonej B2C (Art. 106e ust. 1-4) —
+      minimalne elementy faktury B2C.
+  (-) BRAK reguly paragonu B2C bez NIP (>450 PLN = pelna faktura).
+
+
+=============================================================
+8. GENIALNE POMYSLY ENTERPRISE — 12 INNOWACJI MPP-FOCUSED
+=============================================================
+
+-------------------------------------------------------------
+8.1 MPP AUTO-DETECTION ENGINE — analiza semantyczna opisu towaru
+-------------------------------------------------------------
+Stan obecny: MPP wykrywanie polega na category_code + cn_code
+(jdg_is_mpp_sensitive / by_cn). Wymaga poprawnej klasyfikacji.
+Pomysl: NLP analiza opisu towaru (input.invoice.description) ->
+ekstrakcja slow kluczowych -> mapowanie na Zalacznik 15 ->
+auto-detekcja obowiazku MPP nawet bez poprawnego category_code.
+Przyklad: "dostawa stali konstrukcyjnej profili H100" -> stal ->
+Zal. 15 pkt 1 -> MPP obowiazkowe. Realizacja: Python NLP + baza
+slow kluczowych Zal. 15 + confidence. Czas: 1 tydzien.
+
+-------------------------------------------------------------
+8.2 VAT RATE SEMANTIC CLASSIFIER — AI klasyfikujace stawke VAT
+-------------------------------------------------------------
+Stan obecny: stawka wg category_code (hardcoded mapping).
+Pomysl: AI (transformer) klasyfikuje towar do stawki VAT na
+podstawie opisu + PKWiU + kod CN. Trening na rozporzadzeniu MF
+4.12.2024 (Zalaczniki 1-4). Output: vat_rate + confidence +
+alternatywy. TRIAGE przy confidence <0.85. Realizacja: Python ML
++ baza CN->stawka. Czas: 2 tyg.
+
+-------------------------------------------------------------
+8.3 REAL-TIME VAT LIMIT TRACKER — predykcja przekroczenia 200k
+-------------------------------------------------------------
+Stan obecny: P51 sprawdza turnover < 200000 jednorazowo.
+Pomysl: sledzenie YTD turnover w czasie rzeczywistym + predykcja
+daty przekroczenia 200k (ekstrapolacja trendu). Alert przy 80%
+(thresholds.early_warning.vat_exemption_80pct = 160000). Realizacja:
+Python tracker + input.jdg_entrepreneur.ytd_turnover. Czas: 3 dni.
+
+-------------------------------------------------------------
+8.4 BAD DEBT RECOVERY OPTIMIZER — maksymalizacja korzyści z ulgi
+-------------------------------------------------------------
+Stan obecny: P189/P60b wykrywaja zle dlugi ale nie optymalizuja.
+Pomysl: analiz wszystkich niezaplaconych faktur, kategoryzacja
+(korekta VAT vs odliczenie PIT Art. 26a), optymalizacja timing
+(150 vs 90 dni wg daty transakcji), batch korekt JPK_V7. Realizacja:
+Python aggregator + Rego batch rule. Czas: 1 tydzien.
+
+-------------------------------------------------------------
+8.5 CROSS-BORDER VAT COMPLIANCE MATRIX — macierz par krajow UE
+-------------------------------------------------------------
+Stan obecny: WNT/WDT/import ustawiaja 23%/0% bez macierzy krajow.
+Pomysl: automatyczna macierz zgodnosci dla kazdej pary krajow UE
+(miejsce swiadczenia, stawka, reverse charge, OSS/IOSS, VAT-UE).
+Przyklad: PL->DE B2B = reverse charge DE; PL->FR B2C e-uslugi =
+OSS PL. Realizacja: baza danych krajow UE + Rego matrix. Czas:
+2 tyg.
+
+-------------------------------------------------------------
+8.6 GTU SEMANTIC AUTO-TAGGER — automatyczne tagowanie GTU
+-------------------------------------------------------------
+(Patrz sekcja 6.3.) Rozszerzenie obecnego bridge_gtu o NLP opisu.
+Czas: 1 tydzien.
+
+-------------------------------------------------------------
+8.7 VAT CASH-FLOW PREDICTOR — predykcja zobowiazan VAT
+-------------------------------------------------------------
+Stan obecny: BRAK predykcji (cashflow_predictor_enterprise istnieje
+ale ogolny).
+Pomysl: predykcja przyszlych zobowiazan VAT na podstawie
+historical sales/purchases + seasonality + MPP impact (split
+payment opoznia dostepnosc srodkow). Output: prognoza VAT do 25.
+miesiaca + alert plynnosci. Realizacja: Python ML + Rego. Czas:
+2 tyg.
+
+-------------------------------------------------------------
+8.8 PROPORTIONAL DEDUCTION OPTIMIZER — optymalizacja proporcji
+-------------------------------------------------------------
+Stan obecny: P185 pre-proporcja + de minimis <2%.
+Pomysl: optymalizacja wspolczynnika proporcji VAT (Art. 90-91) —
+analiza historyczna, korekta roczna, rekomendacje alokacji
+wydatkow mieszanych (np. auto 50% vs 100% z ewidencja). Realizacja:
+Python optimizer + Rego. Czas: 1 tydzien.
+
+-------------------------------------------------------------
+8.9 KSEF RESILIENCE FIREWALL — wielowarstwowa odpornosc KSeF
+-------------------------------------------------------------
+Stan obecny: api_fallback P1852 (offline 7 dni) + edge_cases P666.
+Pomysl: wielowarstwowa odpornosc: (1) predykcja awarii KSeF
+(monitoring statusu), (2) auto-switch do offline z sufiksem,
+(3) kolejka faktur z retry, (4) walidacja schematu FA(2) pre-wysylka,
+(5) backup lokalny + sync po przywroceniu. Realizacja: Python
+orchestrator + Rego gate. Czas: 2 tyg.
+
+-------------------------------------------------------------
+8.10 VAT AUDIT TRAIL IMMUTABILITY — Merkle Tree dla VAT
+-------------------------------------------------------------
+Stan obecny: BRAK immutable audit trail VAT (patrz P01 KRYTYCZNE-2
+provenance martwy).
+Pomysl: kazda decyzja VAT -> _provenance_tree -> Merkle hash ->
+SHA-256 (Python). Non-repudiation dla KAS. Integracja z
+provenance.rego (po jego podlaczeniu). Czas: 1 tydzien.
+
+-------------------------------------------------------------
+8.11 SPLIT PAYMENT VOLUNTARY SAFE HARBOR — dobrowolny MPP tarcza
+-------------------------------------------------------------
+Stan obecny: compliance.rego P25b (safe harbor) zaimplementowane.
+Pomysl: ROZSZERZENIE — automatyczna rekomendacja dobrowolnego MPP
+dla WSZYSTKICH transakcji B2B >15k PLN (nawet bez towaru wrazliwego)
+jako tarcza przed solidarna odpowiedzialnoscia. Scorecard ryzyka:
+kwota x wiarygodnosc kontrahenta x historia -> rekomendacja MPP.
+Realizacja: Rego rule + Python risk score. Czas: 3 dni.
+
+-------------------------------------------------------------
+8.12 VAT FRAUD PATTERN RECOGNITION — wykrywanie wzorcow oszustw
+-------------------------------------------------------------
+Stan obecny: risk.rego fraud_graph_match + kks.rego empty_invoice.
+Pomysl: real-time wykrywanie wzorcow oszustw VAT: (1) carousele
+(wielokrotne WNT/WDT tej samej partii), (2) missing trader
+(dostawca znika po WNT), (3) split payment evasion (dzielenie >15k),
+(4) rate manipulation (NP->23%, ZW->23%). ML anomaly detection.
+Realizacja: Python ML + Rego flags. Czas: 2 tyg.
+
+
+=============================================================
+9. REKOMENDACJE — MAPA DROGOWA
+=============================================================
+Uszeregowano wg KRYTYCZNOSCI: MPP/Split Payment > stawki VAT >
+odliczenia > miejsce swiadczenia.
+
+TABELA REKOMENDACJI
+-------------------------------------------------------------
+| #  | Problem                        | Kryt.| Czas    | Wplyw     | Ryzyko |
+|----|--------------------------------|------|---------|-----------|--------|
+| 1  | MPP prog 15000 + sankcja 30%   | KRYT | 4h      | ADR-002   | WYS    |
+|    | hardcoded (substantive/compl/  |      |         | MPP       | (zmiana|
+|    | edge) — czytac z thresholds    |      |         | maintainab| 6 plik)|
+| 2  | Data SLIM VAT 3 niespojna      | KRYT | 1h      | temporal  | NISK   |
+|    | (2025-07-01 vs 2023-01-01)     |      |         | compliance|        |
+|    | ujednolicic na 2023-01-01      |      |         |           |        |
+| 3  | GTU kolizja (FOOD->GTU_07) +   | KRYT | 4h      | JPK_V7    | WYS    |
+|    | brak GTU_03 + NP nie obsluzone |      |         | poprawnosc| (JPK   |
+|    | (fallback 23% dla NP)          |      |         | audyt KAS | odrzuca)|
+| 4  | JPK_V7 mpp_flag binarne —      | WYS  | 2h      | audyt     | NISK   |
+|    | rozroznic OBOWIAZKOWY/DOBROWOL |      |         | KAS       |        |
+| 5  | Detekcja obchodzenia MPP       | WYS  | 1 dzien | fraud     | SRED   |
+|    | wewnetrzna (sumowanie faktur   |      |         | prevention| (logika|
+|    | okno 30 dni >15k)              |      |         |           | okna)  |
+| 6  | Duplikat plan23/plan26         | WYS  | 30 min  | compile   | WYS    |
+|    | (identyczne package jdg.vat)   |      |         | error OPA | (kompil.|
+|    | — usunac jeden                 |      |         |           | konflikt)|
+| 7  | Miejsce swiadczenia Art.28a-28o| WYS  | 2 dni   | cross-bord| SRED   |
+|    | BRAK + WDT 0% + eksport 0%     |      |         | poprawnosc| (duzo  |
+|    |                                |      |         | (WDT/eksport| regul)|
+|    |                                |      |         | 23% bledne)|        |
+| 8  | Procedury: marza dziela/antyki | SRED | 1-2 dni | Art.119/  | NISK   |
+|    | (Art.120 ust.4-5), biuro       |      |         | 120       |        |
+|    | podrozy (Art.119), WSTO_EE     |      |         |           |        |
+| 9  | KSeF data 2026-02-01 hardcoded | SRED | 1h      | ADR-002   | NISK   |
+|    | — czytac thresholds.vat.       |      |         |           |        |
+|    | ksef_mandatory_from            |      |         |           |        |
+| 10 | plan42 czyta CN i waliduje     | SRED | 1 dzien | stawki    | NISK   |
+|    | stawke (nie tylko WARNING)     |      |         | poprawnosc|        |
+| 11 | Zaliczka a MPP (>15k brutto    | SRED | 4h      | MPP       | NISK   |
+|    | na towar wrazliwy) — BRAK reguly|      |         | kompletnosc|       |
+| 12 | Zwrot nadplaty z rachunku VAT  | SRED | 4h      | MPP       | NISK   |
+|    | (Art.108a ust.4) — BRAK         |      |         | compliance|        |
+| 13 | Stawki 0.23/0.08/0.05 hardcoded| N-SR | 1 dzien | ADR-002   | NISK   |
+|    | — czytac thresholds.vat.*       |      |         |           |        |
+| 14 | Limit 200000 hardcoded — czytac | N-SR | 2h      | ADR-002   | NISK   |
+|    | thresholds.vat.subject_exempt.  |      |         |           |        |
+| 15 | Proporcja 0.02/0.98 hardcoded  | NISK | 1h      | ADR-002   | NISK   |
+|    | — czytac thresholds             |      |         |           |        |
+| 16 | Utrata zwolnienia po 2 latach  | NISK | 4h      | Art.113   | NISK   |
+|    | (Art.113 ust.14) — BRAK         |      |         | ust.14    |        |
+| 17 | Korekta wieloletnia >50k EUR   | NISK | 1 dzien | Art.91    | NISK   |
+|    | (5/10 lat) — BRAK obliczenia    |      |         | ust.2-7   |        |
+| 18 | Harmonogram KSeF fazowy        | NISK | 1 dzien | KSeF 2026 | NISK   |
+|    | (>200M 02.01, reszta 04.01,    |      |         | compliance|        |
+|    | mikro 2027) — jedna data        |      |         |           |        |
+-------------------------------------------------------------
+
+SZACUNKOWY CZAS (krytyczne + wysokie): ~4-5 dni roboczych.
+SZACUNKOWY CZAS (wszystkie): ~2-3 tygodnie robocze.
+
+
+=============================================================
+10. PODSUMOWANIE KONCOWE
+=============================================================
+
+Modul VAT JDG v7.0 to najdojrzalszy komponent systemu, szczegolnie
+w obszarze MPP/Split Payment (Art. 108a-108f) — obowiazkowy MPP,
+dobrowolny safe harbor, sankcja 30%, solidarna odpowiedzialnosc
+(Art. 105a-105c), wykrywanie obchodzenia (KKS Art. 57), blokada
+odliczen, flagi JPK_V7M, CN-bridge, neural mesh NM-420. To
+poziom WYPRZEDZAJACY wiekszosc implementacji rynkowych.
+
+Jednakze audyt ujawnil 3 KRYTYCZNE LACUNY:
+  1. MPP prog 15000 i sankcja 30% HARDCODED (6 plikow) — ADR-002
+     naruszony; thresholds.vat.mpp_mandatory_threshold NIE ISTNIEJE.
+  2. Data SLIM VAT 3 niespojna (2025-07-01 vs 2023-01-01 vs
+     2023-07-01) — 3 pliki, 3 daty dla tej samej zmiany.
+  3. GTU kolizja (FOOD->GTU_07=odpady) + brak GTU_03 + NP fallback
+     23% — bledne tagowanie JPK + ciche 23% dla niepodlegajacych.
+
+Ponadto KRYTYCZNA luka WDT/eksport (brak reguly 0% — fallback 23%
+bledny dla transakcji UE/trzecich krajow) oraz duplikat plan23/plan26
+(konflikt kompilacji OPA).
+
+Po naprawie krytycznych (4-5 dni) + wdrozeniu 12 innowacji MPP
+(sekcja 8, ~10 tyg) modul osiagnie potencjal 9.5/10 — referencyjna
+implementacja MPP/Split Payment dla polskiego VAT z AI semantic
+detection, real-time limit tracking, fraud pattern recognition i
+immutable audit trail.
+
+Rekomendowana kolejnosc: KRYTYCZNE 1-3 (tydzien 1) -> WDT/eksport
++ duplikat (tydzien 2) -> innowacje 8.1/8.3/8.11 (najwyzszy ROI
+MPP: auto-detection, limit tracker, safe harbor) -> reszta.
+
+Raport przeznaczony dla zespolu developerskiego; nie modyfikuje
+kodu Rego, nie generuje kodu — wylacznie analiza i rekomendacje.
+Focus MPP/Split Payment zgodnie z priorytetem promptu.
+
+=== KONIEC RAPORTU — RAPORT_P02_JDG_VAT_MACRO_MPP_v7.0 ===

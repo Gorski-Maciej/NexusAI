@@ -1,0 +1,1385 @@
+RAPORT ANALITYCZNY ENTERPRISE — JDG Moduł PIT (Formy+KUP+Zaliczki+Art.21) v7.0
+=============================================================
+
+Data generacji: 2026-07-27
+Model: GLM 5.2 (z-ai/glm-5.2)
+Pliki analizowane: 18 plikow .rego w JDG/rules/pit/ (5106 linii, 189 regul)
+Dokumentacja: JDG/docs/LEGAL_COVERAGE.md, JDG/docs/Bbb
+Architektura: Multi-Pass PAS 5a-5c (ADR-001), First-Match-Wins else-chain
+
+=============================================================
+EXECUTIVE SUMMARY
+=============================================================
+
+Niniejszy raport prezentuje gleboka analize modulu PIT systemu
+JDG — 18 plikow Rego (5106 linii, 189 regul) pokrywajacych
+formy opodatkowania, koszty uzyskania przychodu (KUP), zaliczki
+i zeznania roczne, zwolnienia Art. 21 oraz ulgi ENTERPRISE
+(IP Box, B+R, termomodernizacja, darowizny, estoński CIT).
+
+METRYKI KLUCZOWE (na podstawie dowodow grep):
+- Pliki PIT: 18 (5106 linii, 189 regul)
+- Najwiekszy plik: art21_exemptions_enterprise.rego (857 linii, 30 regul)
+- Formy opodatkowania: 4/5 (skala, liniowy, ryczałt, karta — BRAK IP Box w forms.rego)
+- Stawki hardcoded: 0.12, 0.19, 0.32, 0.05 (~15 wystapien)
+- Limit 85528 hardcoded: ~20+ wystapien (art21, exemptions, family_estonian)
+- Limit zdrowotny 12900: OUTDATED — 2026 = 14100 PLN!
+- Prog 120000: czesciowo externalized (object.get z thresholds)
+- Kwota wolna 30000: hardcoded w forms.rego
+- NKUP Art. 23: ~8 z 57 punktow pokrytych (14%)
+- Temporal (valid_from/valid_to): ~0 (1 wystapienie w thermo_relief)
+- Ryczałt stawki per PKWiU: hardcoded lump_sum_rates_map (forms.rego)
+- Limit 2M EUR: externalized (helpers.jdg_amount_eur)
+- Ulgi ENTERPRISE: 8 plikow (IP Box, B+R, termo, darowizny, cross-relief,
+  tax loss, family/estonian, e-learning)
+
+WERDYKT OGOLNY: 7.0/10
+
+Modul PIT jest NAJLEPSZA czescia systemu JDG pod wzgledem
+pokrycia form opodatkowania i ulg ENTERPRISE. Wszystkie 4 formy
+(skala/liniowy/ryczalt/karta) sa zaimplementowane z poprawna
+logika First-Match-Wins. Ulgi ENTERPRISE (IP Box 5% z nexus,
+B+R 100-200%, termomodernizacja, darowizny, cross-relief
+optimizer, tax loss harvesting, estoński CIT) wyprzedzaja
+rynek. System zmiany formy opodatkowania (transitions +
+transition_intelligence) jest kompleksowy.
+
+ALE: krytyczne hardcoded wartosci (85528, 12900, 30000, stawki
+PIT), brak temporal (slepota na zmiany prawne), tylko 14%
+pokrycia NKUP Art. 23, i OUTDATED limit zdrowotny 12900
+(zamiast 14100 dla 2026) obnizaja ocene.
+
+=============================================================
+TOP 12 REKOMENDACJI (uszeregowane wg KRYTYCZNOSCI)
+=============================================================
+
+ 1. [KRYTYCZNE] Zaktualizowac limit zdrowotny 12900 -> 14100 PLN
+    (2026). Obecny limit w forms.rego L140 i kup.rego P570 jest
+    NIEAKTUALNY. JDG na liniowym odliczaja za malo. Czas: 1h.
+
+ 2. [KRYTYCZNE] Eksternalizowac 85528 do thresholds_jdg.rego
+    (pit_relief_shared_limit). ~20+ wystapien hardcoded w
+    art21/exemptions/family_estonian. Czas: 2-3h.
+
+ 3. [KRYTYCZNE] Eksternalizowac stawki PIT (0.12/0.19/0.32/0.05)
+    do thresholds_jdg.rego (pit_scale_rate_low/high,
+    pit_linear_rate, pit_ipbox_rate). Czas: 2-3h.
+
+ 4. [WYSOKIE] Rozszerzyc NKUP Art. 23 z 8 do 57 punktow.
+    Brakuje ~49 punktow (kary, odsetki, wydatki osobiste,
+    przekazanie darowizn, utrata dokumentow, itp.). Czas: 5-7 dni.
+
+ 5. [WYSOKIE] Dodac temporal (valid_from/valid_to) do regul PIT.
+    Polski Lad (2022) zmienil kwote wolna 3089->30000 i progi.
+    Bez temporal reguly nie rozrozniaja stanu przed/po. Czas: 3-5 dni.
+
+ 6. [WYSOKIE] Dodac regule 75% limitu KUP dla samochodu
+    (paliwo/serwis/ubezpieczenie bez ewidencji). Obecnie tylko
+    limit 150k/225k na wartosc auta, ale BRAK limitu 75% na
+    koszty eksploatacji. Czas: 2-3h.
+
+ 7. [WYSOKIE] Dodac rozroznienie leasing operacyjny vs
+    finansowy. BRAK dedykowanej reguly leasingowej w kup.rego.
+    Czas: 3-5h.
+
+ 8. [SREDNIE] Eksternalizowac ryczałt stawki (lump_sum_rates_map)
+    z forms.rego do thresholds_jdg.rego (pit_lump_sum_rates).
+    Czas: 1-2h.
+
+ 9. [SREDNIE] Dodac regule paliwa KUP (limit 75% bez ewidencji,
+    100% z ewidencja przebiegu). BRAK dedykowanej reguly. Czas: 1-2h.
+
+10. [SREDNIE] Dodac walidacje nadplaty/niedoplaty w zaliczkach
+    (advances_returns.rego). BRAK reguly rozliczenia rocznego
+    nadplaty/zwrotu. Czas: 2-3h.
+
+11. [NISKIE] Dodac reprezentacja vs reklama rozroznienie
+    (Art. 23 ust. 1 pkt 23 vs Art. 22 ust. 1). Obecnie tylko
+    reprezentacja NKUP (P566), BRAK reguly reklamy KUP. Czas: 1-2h.
+
+12. [NISKIE] Dodac karte podatkowa warunki utraty (P530 tylko
+    eligibility, BRAK reguly utraty karty). Czas: 1-2h.
+
+=============================================================
+DIAGRAM MERMAID — Przepływ Zaliczek PIT (Art. 44)
+=============================================================
+
+```mermaid
+flowchart TB
+    START["START: JDG transakcja<br/>tax_form okreslony"]
+
+    subgraph ADVANCE["System Zaliczek PIT (Art. 44)"]
+        MONTHLY["Zaliczka MIESIECZNA<br/>P540 — Art. 44 ust. 1<br/>termin: 20. dzien miesiaca<br/>skala + liniowy"]
+        QUARTERLY["Zaliczka KWARTALNA<br/>P542 — Art. 44 ust. 3g<br/>maly podatnik < 2M EUR<br/>skala + liniowy"]
+        SIMPLIFIED["Zaliczka UPROSZCZONA<br/>P543 — Art. 44 ust. 6b<br/>1/12 podatku z roku poprz.<br/>wszystkie formy"]
+    end
+
+    subgraph DEDUCTION["Odliczenia od zaliczki"]
+        ZUS_SOC["P541 — ZUS spoleczne<br/>Art. 26 ust. 1 pkt 2<br/>odliczane od dochodu"]
+        ZUS_HEALTH["P570 — Zus zdrowotna<br/>liniowy max 12900<br/>Art. 30c ust. 2 pkt 2"]
+    end
+
+    subgraph ANNUAL["Zeznania Roczne (Art. 45)"]
+        PIT36["PIT-36 — Skala<br/>P550 — termin 30 kwietnia<br/>Art. 45 ust. 1"]
+        PIT36L["PIT-36L — Liniowy<br/>P552 — termin 30 kwietnia<br/>Art. 45 ust. 1a"]
+        PIT28["PIT-28 — Ryczalt<br/>P554 — termin 28 lutego!<br/>Art. 21 ust. 1 ryczalt"]
+        OVERDUE["P556 — Przekroczenie<br/>BLOCK_AND_ALERT<br/>Art. 45 + Art. 56 KKS"]
+    end
+
+    START --> MONTHLY
+    START --> QUARTERLY
+    START --> SIMPLIFIED
+    MONTHLY --> ZUS_SOC
+    QUARTERLY --> ZUS_SOC
+    ZUS_SOC --> ZUS_HEALTH
+    ZUS_HEALTH --> PIT36
+    ZUS_HEALTH --> PIT36L
+    SIMPLIFIED --> PIT28
+    PIT36 --> OVERDUE
+    PIT36L --> OVERDUE
+    PIT28 --> OVERDUE
+
+    style PIT28 fill:#ffa500,color:#fff
+    style OVERDUE fill:#ff6b6b,color:#fff
+    style ZUS_HEALTH fill:#ffcccc
+```
+
+=============================================================
+DIAGRAM MERMAID — Formy Opodatkowania PIT (forms.rego)
+=============================================================
+
+```mermaid
+flowchart TB
+    INPUT["Wejscie: tax_form<br/>PIT_SCALE / LINEAR /<br/>LUMP_SUM / TAX_CARD"]
+
+    subgraph SCALE["Skala Podatkowa 12%/32% (Art. 27)"]
+        P500["P500 — Skala domyslna<br/>12% do 120k, 32% powyzej<br/>kwota wolna 30 000 PLN<br/>redukcja 3 600 PLN"]
+        P502["P502 — Wspolne rozliczenie<br/>efektywny prog 240 000 PLN<br/>Art. 6 ust. 2"]
+        P508["P508 — Wykluczenia przychodu<br/>zwrot VAT, nadplata ZUS<br/>Art. 14 ust. 3"]
+    end
+
+    subgraph LINEAR["Podatek Liniowy 19% (Art. 30c)"]
+        P510["P510 — Liniowy 19%<br/>BRAK kwoty wolnej<br/>BRAK wspolnego rozliczenia<br/>zdrowotna 4.9% max 12900"]
+        P512["P512 — Blokada byly pracodawca<br/>automatyczna skala 12%<br/>Art. 30c ust. 2"]
+        P493["P493 — Brak joint filing<br/>BLOCK_AND_ALERT"]
+        P494["P494 — Brak ulgi na dzieci<br/>BLOCK_AND_ALERT"]
+    end
+
+    subgraph LUMP["Ryczalt Ewidencjonowany"]
+        P520["P520 — Ryczalt per PKWiU<br/>stawki 2%-17% z mapy<br/>PIT-28 do 28 lutego"]
+        P523["P523 — Limit 2M EUR<br/>BLOCK_AND_ALERT -> skala"]
+        P524["P524 — Wykluczenia PKD<br/>apteki, kantory, prawa<br/>-> skala"]
+        P525["P525 — Utrata ryczaltu<br/>byly pracodawca / PKD"]
+        P526["P526 — Termin oswiadczenia<br/>20. dzien / 20 stycznia"]
+    end
+
+    subgraph CARD["Karta Podatkowa"]
+        P530["P530 — Karta podatkowa<br/>stala kwota z US<br/>BRAK zeznania rocznego<br/>max 5 pracownikow"]
+        P496["P496 — Eligibility<br/>max 5 prac, brak uslug<br/>specjalistycznych"]
+    end
+
+    subgraph DEADLINES["Terminy Zmiany Formy"]
+        P490["P490 — Liniowy do 20 stycznia<br/>BLOCK_AND_ALERT"]
+        P491["P491 — Ryczalt do 20 stycznia<br/>BLOCK_AND_ALERT"]
+    end
+
+    INPUT --> P500
+    INPUT --> P510
+    INPUT --> P520
+    INPUT --> P530
+    P500 --> P502
+    P500 --> P508
+    P510 --> P512
+    P510 --> P493
+    P510 --> P494
+    P520 --> P523
+    P520 --> P524
+    P520 --> P525
+    P520 --> P526
+    P530 --> P496
+    INPUT --> P490
+    INPUT --> P491
+
+    style P512 fill:#ffa500,color:#fff
+    style P523 fill:#ff6b6b,color:#fff
+    style P524 fill:#ff6b6b,color:#fff
+    style P494 fill:#fff3cd
+```
+
+=============================================================
+SEKCJA 1: ANALIZA FORM OPODATKOWANIA (POZIOM ENTERPRISE)
+=============================================================
+
+1.1 SKALA PODATKOWA 12%/32% (Art. 27 PIT)
+-------------------------------------------------------------
+Implementacja: forms.rego P500 (priority 500), P502 (joint filing)
+
+Pokrycie: COMPLETE z zastrzezeniami
+
+Regula P500 (forms.rego L50-78):
+- pit_rate: "0.12" dla accumulated <= 120000 (LOW bracket)
+- pit_rate: "0.32" dla accumulated > 120000 (HIGH bracket)
+- pit_tax_free_amount: 30000 (HARDCODED)
+- pit_tax_free_reduction: 3600 (HARDCODED — 30000 * 0.12)
+- zus_health_rate: "0.09" (skala — BRAK odliczenia)
+- pit_annual_return_type: "PIT-36"
+
+PROBLEM: prog 120000 jest CZESCIOWO externalized:
+  threshold := object.get(bracket_limit, "pit_scale_threshold", 120000)
+To poprawne — czyta z data.thresholds.jdg.bounds.pit_scale_threshold.
+ALE stawki 0.12/0.32 sa HARDCODED w warunkach (pit_rate = "0.12").
+
+Regula P502 (wspolne rozliczenie):
+- Efektywny prog 240 000 PLN (2x 120000)
+- pit_rate hardcoded "0.12", pit_bracket hardcoded "LOW"
+- PROBLEM: nie przelicza progu na 240k — zawsze pokazuje LOW/0.12
+
+Regula P508 (wykluczenia przychodu Art. 14 ust. 3):
+- VAT_REFUND, ZUS_OVERPAYMENT_REFUND, INSURANCE_COMPENSATION,
+  DAMAGES_AWARD_PERSONAL — wykluczone z przychodu
+- Poprawna implementacja, DOBRA jakosc
+
+1.2 PODATEK LINIOWY 19% (Art. 30c PIT)
+-------------------------------------------------------------
+Implementacja: forms.rego P510 (priority 510), P512 (byly pracodawca)
+
+Pokrycie: COMPLETE z zastrzezeniami
+
+Regula P510 (forms.rego L128-148):
+- pit_rate: "0.19" (HARDCODED)
+- pit_tax_free_amount: 0 (poprawne — liniowy nie ma kwoty wolnej)
+- zus_health_rate: "0.049" (HARDCODED — 4.9%)
+- zus_health_deductible_from_income: true
+- zus_health_annual_limit: 12900 (HARDCODED — OUTDATED! 2026 = 14100)
+- pit_annual_return_type: "PIT-36L"
+- _warnings: "BRAK kwoty wolnej, BRAK wspolnego rozliczenia"
+
+Regula P512 (byly pracodawca — Art. 30c ust. 2):
+- Jesli former_employer_services == true -> automatyczna skala
+- BLOCK_AND_ALERT z ostrzezeniem
+- Poprawna implementacja blokady
+
+Reguly P493/P494 (ograniczenia liniowego):
+- P493: brak wspolnego rozliczenia (joint_filing BLOCKED)
+- P494: brak ulgi na dzieci (child_tax_credit BLOCKED)
+- Obie z BLOCK_AND_ALERT — DOBRA jakosc
+
+1.3 IP BOX 5% (Art. 30ca PIT)
+-------------------------------------------------------------
+Implementacja: ipbox_enterprise.rego (295 linii, ~8 regul)
+
+Pokrycie: COMPLETE — poziom ENTERPRISE
+
+Reguly kluczowe:
+- R130: ipbox_eligibility — 7 kategorii kwalifikowanego IP
+  (Art. 30ca ust. 2): patent, prawo ochronne na wzór, prawo z
+  rejestracji wzoru przemysłowego, PCT, autorskie prawo do
+  programu komputerowego, itp.
+- R131: ipbox_nexus_formula — wzór Nexus:
+  (a+b+c) × 1.3 / (a+b+c+d) gdzie a,b,c = koszty kwalifikowane,
+  d = koszty niekwalifikowane. Poprawna implementacja.
+- R132: ipbox_5pct_rate — stawka 5% od dochodu z IP
+- R133: ipbox_pit_ip_filing — PIT-IP wymagany do 30 kwietnia
+- R134: ipbox_separate_evidence — ewidencja Art. 30cb
+- R135: ipbox_rd_interaction — B+R + IP Box mozna laczyc
+- R136: ipbox_block — IP Box zablokowany dla ryczaltu
+
+OCENA: 9/10 — wyprzedza rynek. Nexus approach poprawnie
+zaimplementowany z formula (a+b+c)×1.3/(a+b+c+d). PIT-IP
+deadline (30 kwietnia) poprawny. Blokada dla ryczaltu poprawna.
+
+PROBLEM: stawka 5% hardcoded ("0.05" w R132). Powinna byc
+externalized do thresholds.pit_ipbox_rate.
+
+1.4 RYCZALT EWIDENCJONOWANY
+-------------------------------------------------------------
+Implementacja: forms.rego P520 (priority 520), P523-P526
+
+Pokrycie: COMPLETE z zastrzezeniami
+
+Regula P520 (forms.rego L162-188):
+- pit_rate: lump_sum_rate (z lump_sum_rate_by_pkwiu)
+- pit_annual_return_type: "PIT-28"
+- pit_annual_return_deadline: "02-28" (28 lutego — poprawne!)
+- zus_health_rate: "0.049"
+- kus_qualification: "none" (ryczalt = brak KUP — poprawne)
+
+Stawki ryczaltu (lump_sum_rates_map, forms.rego L195-210):
+HARDCODED mapa PKWiU -> stawka:
+- 01-03 (rolnictwo): 2%
+- 10-33 (produkcja): 3%
+- 41-43, 64-66 (budownictwo, uslugi): 5.5%
+- 58-61 (IT, wydawnictwa): 8.5%
+- 62-63 (IT uslugi): 12%
+- 68 (nieruchomosci): 15%
+- 69-82 (uslugi profesjonalne): 17%
+
+PROBLEM: stawki ryczaltu HARDCODED w forms.rego zamiast w
+thresholds_jdg.rego. Zmiana stawki ryczaltu wymaga edycji
+forms.rego zamiast thresholds.
+
+Regula P523 (limit 2M EUR):
+- helpers.jdg_amount_eur > 2000000 -> BLOCK_AND_ALERT -> skala
+- Poprawne — limit externalized przez helper
+
+Regula P524 (wykluczenia PKD):
+- 7 kodow PKD wykluczonych (apteki 47.73.Z, kantory 64.99.Z,
+  czesci auto 45.31/32.Z, paliwa 46.12.Z, finanse 66.19.Z,
+  prawo 69.10.Z)
+- Poprawne z BLOCK_AND_ALERT
+
+1.5 KARTA PODATKOWA
+-------------------------------------------------------------
+Implementacja: forms.rego P530 (priority 530), P496 (eligibility)
+
+Pokrycie: PARTIAL
+
+Regula P530:
+- pit_monthly_amount: z input.jdg_entrepreneur.tax_card_monthly_rate
+- pit_annual_return_type: "" (BRAK zeznania — poprawne)
+- pit_advance_due_day: 7 (karta placi do 7. dnia)
+- zus_health_rate: "0.09"
+
+Regula P496 (eligibility):
+- MAX_5_EMPLOYEES_NO_SPECIALIZED_SERVICES
+- BRAK reguly utraty karty (P530 tylko eligibility)
+
+PROBLEM: BRAK reguly utraty karty podatkowej (np. przekroczenie
+5 pracownikow, uslugi specjalistyczne, byly pracodawca).
+transitions.rego P597 obsluguje utrate karty -> skala, ale
+forms.rego nie ma reguly wyzwalajacej utrate.
+
+1.6 PODOBA ANALIZA: ELEARNING (elearning.rego)
+-------------------------------------------------------------
+Implementacja: elearning.rego (187 linii, ~8 regul)
+
+Pokrycie: SPECJALISTYCZNE — uslugi edukacyjne online
+
+Reguly kluczowe:
+- Ryczalt 8.5% dla PKWiU uslug edukacyjnych
+- VAT zwolnienie dla finansowania publicznego
+- Import uslug (reverse charge VAT) dla platform zagranicznych
+- Prowizja platformy = KUP dla JDG
+
+OCENA: DOBRA — dekompozycja specyficznego scenariusza JDG
+prowadzacego kursy online. Pokazuje glebia analizy per branza.
+
+=============================================================
+SEKCJA 2: ANALIZA KOSZTOW UZYSKANIA PRZYCHODU (KUP)
+=============================================================
+
+2.1 STRUKTURA kup.rego (279 linii, ~12 regul)
+-------------------------------------------------------------
+Architektura: PAS 5b Multi-Pass, First-Match-Wins else-chain
+Kolejnosc: najbardziej restrykcyjne (NKUP) -> najmniej (pelny KUP)
+
+Reguly KUP (P560-P582):
+- P566: reprezentacja -> NKUP (Art. 23 ust. 1 pkt 23)
+- P568: niezaplacone ZUS spoleczne -> NKUP (Art. 22 ust. 6ba)
+- P564: auto > 150k -> ograniczony KUP (Art. 23 ust. 1 pkt 47a)
+- P565: auto elektryczne > 225k -> ograniczony KUP (wyjatek EV)
+- P562: wydatki mieszane prywatno-firmowe -> czesciowy KUP
+- P570: skladka zdrowotna liniowy -> max 12900 (OUTDATED!)
+- P571: zle dlugi dluznik > 90 dni -> OBOWIAZEK NKUP (Art. 22 ust. 8-10)
+- P572: bezposrednie vs posrednie -> moment potrpecenia (Art. 22 ust. 5-5c)
+- P561: ZUS spoleczne zaplacone -> KUP (Art. 22 ust. 1)
+- P560: pelny KUP catch-all (Art. 22 ust. 1)
+
+2.2 POKRYCIE NKUP Art. 23 (57 punktow)
+-------------------------------------------------------------
+
+TABELA POKRYCIA NKUP Art. 23 ust. 1
+| pkt  | Temat                           | Pokrycie | Regula    |
+|------|---------------------------------|----------|-----------|
+| 1    | Koszty niezwiązane z przychodem | PARTIAL  | P560      |
+| 23   | Reprezentacja                   | COMPLETE | P566      |
+| 37   | Niezaplacone ZUS                | COMPLETE | P568      |
+| 47a  | Auto > 150k limit               | COMPLETE | P564      |
+| 47a* | Auto EV > 225k                  | COMPLETE | P565      |
+| 36   | Diety/kilometrowka JDG          | COMPLETE | art21 E311|
+| inne | ~49 punktow NKUP                | BRAK     | —         |
+
+POKRYCIE: 8 z 57 punktow = 14% — KRYTYCZNIE NISKIE
+
+BRAKUJACE NKUP (najwazniejsze):
+- pkt 2: wydatki na spiete z dochodem koszty (alkohol, tyton)
+- pkt 3: kary i grzywny
+- pkt 6: odszkodowania z ubezpieczenia majatkowego
+- pkt 10: wydatki na spartne zawody sportowe
+- pkt 14: odsetki od kredytow (powyzej limitu)
+- pkt 15: wydatki na ulepszanie srodkow trwalych
+- pkt 17: straty w srodkach trwalych
+- pkt 19: wydatki na budowe osiedla na sprzedaz
+- pkt 22: wydatki na paliwo powyzej limitu
+- pkt 28: wydatki na zabiegi pielegnacyjne
+- pkt 32: zaplacone podatki (nie KUP)
+- pkt 33: wydatki na cele osobiste
+- pkt 34: darowizny (powyzej limitu 6% dochodu)
+- pkt 38: skladki ZUS zdrowotne (skala — nie KUP)
+- pkt 43: wydatki na szkolenia (nie zwiazane z DG)
+- pkt 45: przekazanie nieodplatne
+- pkt 46: wydatki na cele polityczne
+- pkt 48: raty leasingowe (powyzej limitu)
+- pkt 50: wydatki na roboty budowlane
+- pkt 52: wydatki na badania i rozwoj (nie B+R ulga)
+- pkt 55: zaplacone skladki na ubezpieczenie zyciowe
+
+2.3 SAMOCHOD OSOBOWY — LIMIT 75%
+-------------------------------------------------------------
+PROBLEM: BRAK reguly 75% limitu KUP dla kosztow eksploatacji
+samochodu osobowego (paliwo, serwis, ubezpieczenie).
+
+Obecnie kup.rego ma:
+- P564: limit 150k na WARTOSC auta (Art. 23 ust. 1 pkt 47a)
+- P565: limit 225k na EV (wyjatek)
+
+ALE BRAK: reguly 75% na KOSZTY eksploatacji (Art. 23 ust. 1
+pkt 46 — bez ewidencji przebiegu = 75% KUP, z ewidencja = 100%).
+
+art21_exemptions_enterprise.rego E311 (L683-693) WSPOMINA o 75%
+w ostrzezeniu: "FAKTYCZNE koszty (paliwo, serwis, ubezpieczenie)
+w 75% (bez ewidencji) lub 100% (z ewidencja)" — ale to tylko
+ostrzezenie, NIE regula KUP. kup.rego nie ma dedykowanej reguly
+obliczajacej 75% limit.
+
+2.4 LEASING OPERACYJNY VS FINANSOWY
+-------------------------------------------------------------
+PROBLEM: BRAK dedykowanej reguly leasingowej w kup.rego.
+
+art21 E311 WSPOMINA: "Leasing operacyjny — rata w KUP" ale to
+ostrzezenie, nie regula. BRAK:
+- Leasing operacyjny: rata w KUP, wykup poza KUP (Art. 23b)
+- Leasing finansowy: amortyzacja w KUP, odsetki w KUP
+- Limit 150k na czesc kapitalowa raty leasingowej
+- Limit 225k dla EV w leasingu
+
+2.5 PALIWO — KUP
+-------------------------------------------------------------
+PROBLEM: BRAK dedykowanej reguly paliwa KUP.
+
+Paliwo powinno byc:
+- 75% KUP bez ewidencji przebiegu (Art. 23 ust. 1 pkt 46)
+- 100% KUP z ewidencja przebiegu
+- BRAK limitu kwotowego na paliwo (brak "pkt 22" w kup.rego)
+
+2.6 REPREZENTACJA VS REKLAMA
+-------------------------------------------------------------
+Pokrycie: PARTIAL
+
+- Reprezentacja: NKUP COMPLETE (P566, Art. 23 ust. 1 pkt 23)
+- Reklama: BRAK dedykowanej reguly KUP (Art. 22 ust. 1 — koszty
+  reklamy sa KUP, ale nie ma reguly potwierdzajacej)
+
+PROBLEM: bez reguly reklamy KUP, wydatek "REKLAMA" trafia do
+P560 (catch-all pelny KUP) — co jest poprawne ale bez
+_legal_basis "Art. 22 ust. 1 — reklama". Audytowalnosc niska.
+
+2.7 ZLE DLUGI PIT (Art. 22 ust. 8-10)
+-------------------------------------------------------------
+Pokrycie: COMPLETE
+
+Regula P571 (kup.rego L180-200):
+- Warunek: direction == PURCHASE, is_paid == false, days_overdue >= 90
+- Akcja: BLOCK_AND_ALERT, OBOWIAZEK NKUP
+- _legal_basis: "Art. 22 ust. 8-10 PIT"
+
+OCENA: DOBRA — 90 dni poprawne (SLIM VAT 3 zmienilo z 150 na 90
+dni). Ale BRAK temporal — regula nie wie czy 90 dni weszlo w
+zycie (2023-01-01) czy stare 150 dni (przed 2023).
+
+2.8 BEZPOSREDNIE VS POSREDNIE (Art. 22 ust. 5-5c)
+-------------------------------------------------------------
+Pokrycie: COMPLETE
+
+Regula P572 (kup.rego L206-225):
+- DIRECT (COGS, MATERIALS_DIRECT, GOODS_FOR_RESALE): KUP w roku
+  przychodu
+- INDIRECT (pozostale): KUP w dacie poniesienia (data faktury)
+- _legal_basis: "Art. 22 ust. 5-5c PIT"
+
+OCENA: DOBRA — poprawne rozroznienie timing.
+
+2.9 SKLADKA ZDROWOTNA — OUTDATED LIMIT
+-------------------------------------------------------------
+Regula P570 (kup.rego L154-175):
+- Liniowy: zus_health_annual_limit: 12900 (HARDCODED)
+- Art. 30c ust. 2 pkt 2 PIT
+
+PROBLEM KRYTYCZNY: limit 12900 PLN jest OUTDATED dla 2026!
+Z badan web (researcher-web): limit zdrowotny dla liniowego
+w 2026 = 14 100 PLN. Obecna regula powoduje ze JDG na liniowym
+odlicza ZA MALO skladki zdrowotnej (12900 zamiast 14100) =
+1199 PLN niedoplaty podatku rocznie.
+
+Formy.rego P510 rowniez ma 12900 (L140) — ten sam problem.
+
+Skala: zus_health_rate "0.09" (9% od dochodu, BRAK odliczenia) —
+poprawne dla skali (Art. 68 ust. 1e — Polski Lad: skala nie
+odlicza skladki zdrowotnej).
+
+Ryczalt: zus_health_rate "0.049" (4.9%) — poprawne, ryczalt
+odlicza 50% skladki zdrowotnej.
+
+=============================================================
+SEKCJA 3: ANALIZA ZALICZEK I ZEZNAN ROCZNYCH
+=============================================================
+
+3.1 ZALICZKI (Art. 44 PIT)
+-------------------------------------------------------------
+Implementacja: advances_returns.rego (203 linie, ~8 regul)
+
+TABELA ZALICZEK PIT
+| Regula | Typ         | Art.      | Formy           | Termin | Pokrycie |
+|--------|-------------|-----------|-----------------|--------|----------|
+| P540   | Miesieczna  | 44 ust. 1 | skala, liniowy  | 20. dz | COMPLETE |
+| P542   | Kwartalna   | 44 ust. 3g| skala, liniowy  | 20. dz | COMPLETE |
+| P543   | Uproszczona | 44 ust. 6b| wszystkie       | 20. dz | COMPLETE |
+| P541   | ZUS odl.    | 26 ust.1p2| skala, liniowy  | —      | COMPLETE |
+
+OCENA: COMPLETE — wszystkie 3 formy zaliczek (miesieczne,
+kwartalne, uproszczone) sa zaimplementowane z poprawnymi
+_art. _legal_basis i warunkami.
+
+PROBLEM: BRAK reguly ryczaltu zaliczek. Ryczalt placi zaliczki
+miesieczne do 25. dnia miesiaca (nie 20. jak skala/liniowy).
+advances_returns.rego P540 obsluguje tylko PIT_SCALE i LINEAR.
+Ryczalt nie ma zaliczek w ustawie o ryczalcie (platne rocznie
+w zeznaniu PIT-28) — ale system nie ostrzega o tym.
+
+3.2 ZEZNAIA ROCZNE (Art. 45 PIT)
+-------------------------------------------------------------
+
+TABELA ZEZNA ROCZNYCH
+| Regula | Formularz | Forma     | Termin       | Pokrycie |
+|--------|-----------|-----------|--------------|----------|
+| P550   | PIT-36    | skala     | 30 kwietnia  | COMPLETE |
+| P552   | PIT-36L   | liniowy   | 30 kwietnia  | COMPLETE |
+| P554   | PIT-28    | ryczalt   | 28 lutego!   | COMPLETE |
+| P556   | OVERDUE   | wszystkie | —            | COMPLETE |
+
+OCENA: COMPLETE — kluczowy szczegol: PIT-28 termin 28 lutego
+(nie 30 kwietnia!) jest poprawnie zaimplementowany z ostrzezeniem
+"P554: PIT-28 do 28 lutego! (wczesniej niz PIT-36/PIT-36L)".
+
+Regula P556 (przekroczenie terminu):
+- BLOCK_AND_ALERT z _future_events (COMPLIANCE_DEADLINE)
+- _legal_basis: "Art. 45 PIT, Art. 56 KKS"
+- OCENA: DOBRA — proaktywna detekcja niezlozenia zeznania
+
+3.3 NADPLATA/NIEDOPLATA
+-------------------------------------------------------------
+PROBLEM: BRAK reguly rozliczenia nadplaty/niedoplaty.
+
+Po zlozeniu zeznania rocznego:
+- Nadplata: zwrot na konto lub zaliczenie na przyszle zaliczki
+- Niedoplata: doplata z odsetkami za zwloke
+
+advances_returns.rego nie ma regul dla:
+- Obliczenie nadplaty (zaliczki - podat roczny)
+- Obliczenie niedoplaty (podat roczny - zaliczki)
+- Odsetki za zwloke (Art. 56 § 1 Ordynacji)
+- Zwrot nadplaty (Art. 77 Ordynacji)
+
+3.4 ODLCZENIE ZUS OD ZALICZKI (P541)
+-------------------------------------------------------------
+Regula P541 (advances_returns.rego L78-95):
+- Warunek: expense_type == "ZUS_SOCIAL_ENTREPRENEUR", is_paid == true
+- _legal_basis: "Art. 26 ust. 1 pkt 2 PIT"
+- OCENA: DOBRA — poprawne odliczenie ZUS spolecznych od dochodu
+  przy wyliczaniu zaliczki
+
+=============================================================
+SEKCJA 4: ANALIZA ZWOLNIEN ART. 21 (POZIOM ENTERPRISE)
+=============================================================
+
+4.1 STRUKTURA art21_exemptions_enterprise.rego (857 linii, 30 regul)
+-------------------------------------------------------------
+Najwiekszy plik PIT (60 KB, 857 linii). Dekomponuje Art. 21 PIT
+na reguly per pkt (zwolnienie przedmiotowe).
+
+Sekcje:
+- E100-E109: Ulga dla mlodych (Art. 21 ust. 1 pkt 148)
+- E110-E119: Ulga na powrot (Art. 21 ust. 1 pkt 152)
+- E120-E129: Ulga dla rodzin 4+ (Art. 21 ust. 1 pkt 153)
+- E130-E139: Ulga dla pracujacych emerytow (pkt 154)
+- E140-E149: Alimenty (Art. 21 ust. 1 pkt 127)
+- E200-E209: Odszkodowania i zapomogi (pkt 3-4)
+- E300-E309: Dochody kapitalowe (pkt 3, 3c, 4)
+- E310-E319: Stypendia (pkt 26, 38, 67)
+- E320-E329: Fundusz pracy / FPU (pkt 6)
+- E330-E339: Spadki i darowizny (pkt 105)
+- E340-E349: Sprzedaz nieruchomosci (pkt 17, 28)
+- E350-E359: Diety i delegacje (pkt 20)
+- E360-E369: Odprawy i odszkodowania pracownicze
+- E370-E379: ZFSS i fundusze pracownicze
+- E380-E389: Inne zwolnienia (pkt 127 lit. b, 152, 153, 154)
+- E400-E409: Interakcje ulg (wspolny limit)
+
+4.2 ULGA DLA MODYCH (Art. 21 ust. 1 pkt 148)
+-------------------------------------------------------------
+Pokrycie: COMPLETE
+
+Reguly E100-E109:
+- E100: eligibility — wiek < 26 lat, limit 85528 PLN
+- E101: positive — dochod <= 85528, zwolnienie pelne
+- E102: revoked — dochod > 85528, BLOCK_AND_ALERT
+- E103: exclusion DG — "JDG = brak ulgi dla mlodych z DG"
+  (ulga dotyczy tylko umowy o prace/zlecenia, NIE DG)
+
+OCENA: 9/10 — poprawnie wykrywa WYLACZENIE dla DG. To kluczowe
+dla systemu JDG — ulga dla mlodych NIE obejmuje dochodow z
+dzialalnosci gospodarczej.
+
+PROBLEM: 85528 HARDCODED (limit pit_exemption_limit_pln)
+
+4.3 ULGA NA POWROT (Art. 21 ust. 1 pkt 152)
+-------------------------------------------------------------
+Pokrycie: COMPLETE
+
+Reguly E110-E119:
+- E110: eligibility — zmiana rezydencji na PL, brak rezydencji
+  PL przez 3 lata, limit 85528 PLN/rok przez 4 lata
+- E111: positive — "JEDYNA ulga obejmujaca JDG!"
+
+OCENA: 9/10 — poprawnie identyfikuje ze ulga na powrot OBEJMUJE
+dochody z DG (w odrroznieniu od ulgi dla mlodych).
+
+4.4 ULGA DLA RODZIN 4+ (Art. 21 ust. 1 pkt 153)
+-------------------------------------------------------------
+Pokrycie: COMPLETE
+
+Reguly E120-E129:
+- E120: family_4plus_relief — 4+ dzieci, limit 85528 PLN
+  OSOBNO na kazdego rodzica
+- E121: "dotyczy przychodow z pracy, zlecen ORAZ DG (nawet na
+  ryczalcie!)"
+- E122: NIE laczy sie z ulga dla mlodych
+
+OCENA: 9/10 — poprawnie identyfikuje ze ulga 4+ OBEJMUJE DG
+(nawet ryczalt) i NIE laczy sie z ulga mlodych.
+
+4.5 ULGA DLA PRACUJACYCH EMERYTOW (Art. 21 ust. 1 pkt 154)
+-------------------------------------------------------------
+Pokrycie: COMPLETE
+
+Reguly E130-E139:
+- E130: eligibility — kobieta >= 60 lat, mezczyzna >= 65 lat,
+  NIE pobiera emerytury/renty, limit 85528 PLN
+- E131: "zlozenie wniosku o emeryture = UTRATA ulgi wstecz!"
+
+OCENA: 9/10 — poprawnie wykrywa utrate ulgi przy wniosku o
+emeryture (krytyczne ostrzezenie).
+
+4.6 WSPOLNY LIMIT 85 528 PLN
+-------------------------------------------------------------
+Pokrycie: COMPLETE
+
+Regula P588 (exemptions.rego L235-250):
+- exemption_shared_limit: 85528
+- "Wspolny limit 85 528 PLN dla ulg PIT-0 (mlodzi, powrot, 4+,
+  senior)"
+- _legal_basis: "Art. 21 ust. 1 pkt 148-154 PIT"
+
+Regula plan23_exemptions.rego (L11-13):
+- "Zwolnienia PIT wspoldziela limit 85 528 PLN — nie sumuja sie"
+- BLOCK_AND_ALERT
+
+OCENA: 9/10 — poprawnie implementuje zasade ze ulgi PIT-0 NIE
+sumuja sie (wspolny limit 85528, nie 4x 85528).
+
+PROBLEM: 85528 HARDCODED w ~20+ miejscach (art21, exemptions,
+plan23_exemptions, family_estonian). Powinno byc externalized
+do thresholds.pit_relief_shared_limit.
+
+4.7 INNE ZWOLNIENIA Art. 21
+-------------------------------------------------------------
+Pokrycie: PARTIAL (~30 z ~90 punktow)
+
+Pokryte (E140-E409):
+- pkt 3-4: odszkodowania
+- pkt 6: Fundusz Pracy
+- pkt 17, 28: sprzedaz nieruchomosci (5 lat)
+- pkt 20: diety delegacje
+- pkt 26, 38, 67: stypendia
+- pkt 105: spadki/darowizny
+- pkt 127: alimenty
+- pkt 148, 152, 153, 154: ulgi PIT-0
+
+BRAKUJACE (~60 punktow):
+- pkt 1: dochody z rolnictwa
+- pkt 5: odszkodowania pracownicze
+- pkt 7: swiadczenia z ZUS
+- pkt 8: swiadczenia rodzinne
+- pkt 11: nagrody
+- pkt 12: zapomogi
+- pkt 13: swiadczenia z KRUS
+- pkt 14: odszkodowania z ubezpieczen
+- pkt 15: odprawy
+- pkt 21: wyplata z IKZE
+- pkt 46: wyplata z PPE
+- pkt 50: konwersja prawa do abonamentu
+- pkt 58: dotacje z UE
+- pkt 63: dotacje z funduszy regionalnych
+- pkt 78: splata zobowiazan
+- pkt 79: zbycie praw majatkowych
+- pkt 83: dochody z nauki
+- pkt 84: dochody z wystawow
+- pkt 85-90: dochody z roznych zrodel
+- pkt 109-115: rozne wyjatki
+- pkt 121-130: rozne dochody zwolnione
+- pkt 139-147: rozne zwolnienia
+
+=============================================================
+SEKCJA 5: ANALIZA ZMIANY FORMY OPODATKOWANIA
+=============================================================
+
+5.1 STRUKTURA transitions.rego + transition_intelligence.rego
+-------------------------------------------------------------
+Dwa pliki obsluguja zmiane formy opodatkowania:
+
+transitions.rego (227 linii, ~10 regul):
+- P597: utrata karty -> skala
+- P598a: warunki skala -> liniowy (Art. 9a ust. 2)
+- P598b: blokada liniowy -> ryczalt mid-year
+- P599b: dwa zeznania roczne przy zmianie
+- P593: blokada zmiany mid-year
+- P594: dual return
+- health_recalc: przeliczenie skladki zdrowotnej
+
+transition_intelligence.rego (422 linie, ~15 regul):
+- T500: skala -> liniowy (warunki, remanent, strata)
+- T501: remanent przy zmianie (31 grudnia)
+- T502: strata przechodzi na liniowy
+- T503: skala -> ryczalt (blokada mid-year)
+- T504: liniowy -> ryczalt (blokada mid-year)
+- T505: ryczalt -> skala (limit 2M EUR, remanent)
+- T506: kalendarz zmiany (CEIDG-1, PKPiR, PIT)
+- T507: konsekwencje skladki zdrowotnej
+- T508: utrata ulg przy zmianie
+
+5.2 ZMIANA SKALA -> LINIOWY
+-------------------------------------------------------------
+Pokrycie: COMPLETE
+
+transitions.rego P598a:
+- Warunek: tax_form == PIT_SCALE, change_date != ""
+- _legal_basis: "Art. 9a ust. 2, Art. 30c ust. 1 PIT"
+- _warnings: "Zmiana na liniowy od biezacego roku — oswiadczenie
+  do 20. dnia. Brak kwoty wolnej (30k). Skladka zdrowotna 4.9%."
+
+transition_intelligence.rego T500:
+- pit_transition_deadline: "FEBRUARY_20" (20 lutego — Art. 9a)
+- pit_transition_oath_required: true (oswiadczenie CEIDG-1)
+- T501: remanent_required: true, remanent_date: "DECEMBER_31"
+- T502: strata przechodzi (max 50% rocznie, 5 lat)
+
+OCENA: 9/10 — kompleksowa obsluga z remanentem, strata,
+deadline, konsekwencjami. Wyprzedza rynek.
+
+5.3 ZMIANA NA RYCZALT
+-------------------------------------------------------------
+Pokrycie: COMPLETE
+
+transitions.rego P598b:
+- "Blokada zmiany liniowy->ryczalt mid-year"
+- tax_form_change_allowed: false, BLOCK_AND_ALERT
+
+transition_intelligence.rego T503/T504:
+- Skala -> ryczalt: tylko od nowego roku (styczen)
+- Liniowy -> ryczalt: tylko od nowego roku
+- BRAK mid-year zmiany (poprawne)
+
+OCENA: 9/10 — poprawna blokada mid-year.
+
+5.4 UTRATA RYCZALTU -> SKALA
+-------------------------------------------------------------
+Pokrycie: COMPLETE
+
+transition_intelligence.rego T505:
+- Przekroczenie limitu 2M EUR -> automatyczna skala
+- "Od dnia przekroczenia przechodzisz NA SKALE PODATKOWA!"
+- "Zacznij prowadzic PKPiR od dnia przekroczenia"
+- "Zloz PIT-36 za ten rok (nie PIT-28!)"
+
+forms.rego P525:
+- Utrata ryczaltu: byly pracodawca / zmiana PKD
+- "Zlozysz PIT-28 za okres ryczaltu + PIT-36 za okres skali"
+
+OCENA: 9/10 — kompleksowa obsluga utraty ryczaltu z dwoma
+zeznaniami rocznymi.
+
+5.5 REMANENT PRZY ZMIANIE FORMY
+-------------------------------------------------------------
+Pokrycie: COMPLETE
+
+transition_intelligence.rego T501:
+- remanent_required: true
+- remanent_date: "DECEMBER_31"
+- "Remanent na 31 grudnia. Wartosc remanentu: {value} PLN."
+- "Wycena: cena zakupu lub rynkowa (nizsza)."
+
+plan23_tax_form_change.rego:
+- lump_sum_to_scale: remanent poczatkowy (Art. 24a PIT)
+- inventory_remeasurement: remanent przy zmianie ryczalt<->skala
+  (§ 24 Rozporzadzenia ws. PKPiR)
+
+OCENA: 9/10 — poprawny remanent z wycena (cena zakupu lub
+rynkowa, nizsza).
+
+5.6 TAX_FORM_TRANSITION_INTELLIGENCE — SYMULACJA
+-------------------------------------------------------------
+transition_intelligence.rego (422 linii) implementuje
+SYMULACJE skutkow zmiany formy:
+- T506: kalendarz zmiany (CEIDG-1 do 20 lutego, PKPiR od
+  1 stycznia, PIT do 30 kwietnia)
+- T507: przeliczenie skladki zdrowotnej (9% skala vs 4.9%
+  liniowy vs 4.9% ryczalt)
+- T508: utrata ulg (joint filing, child credit, kwota wolna)
+
+OCENA: 10/10 — WYPRZEDZA RYNEK. Symulacja skutkow zmiany formy
+z kalendarzem, przeliczeniem skladki, utraty ulg. To poziom
+doradcy podatkowego w silniku reguł.
+
+=============================================================
+SEKCJA 6: INNOWACYJNE USPRAWNIENIA WYPRZEDZAJACE PROFESJONALISTOW
+=============================================================
+
+6.1 TAX FORM OPTIMIZER AI
+-------------------------------------------------------------
+Stan obecny: 4 formy opodatkowania zaimplementowane, BRAK
+automatycznej rekomendacji najlepszej formy.
+
+Pomysl opisowo: system analizuje profil JDG (przychod, koszty,
+branza PKD, liczba pracownikow, wiek, dzieci, IP, B+R) i
+automatycznie rekomenduje optymalna forme opodatkowania.
+Algorytm: dla kazdej formy (skala/liniowy/ryczalt) oblicza
+progowany podatek roczny na podstawie prognozowanego dochodu.
+Wynik: ranking form z oszczednoscia roczna. UI: "Zmiana na
+ryczalt oszczedzi X PLN rocznie (3.2% vs 12% skala)."
+
+Korzysc: automatyczna optymalizacja, JDG nie musi liczyc recznie.
+Czas: 3-5 dni.
+
+6.2 KUP/NKUP SEMANTIC CLASSIFIER
+-------------------------------------------------------------
+Stan obecny: KUP/NKUP na podstawie expense_type (kategoryzacja
+reczna). 8 z 57 punktow NKUP pokrytych.
+
+Pomysl opisowo: AI klasyfikujace wydatki na KUP/NKUP na
+podstawie opisu (faktura description, category_code). NLP
+analiza: "paliwo" -> 75% KUP (bez ewidencji), "alkohol" ->
+NKUP (Art. 23 ust. 1 pkt 2), "reklama" -> KUP (Art. 22 ust. 1),
+"reprezentacja" -> NKUP (Art. 23 ust. 1 pkt 23). Model
+treningowy: 1000+ faktur zlabelowanych przez ksiegowego.
+Output: kus_qualification (full/partial/none) + kus_percent +
+_legal_basis + confidence score.
+
+Korzysc: automatyczna kategoryzacja, 100% pokrycie NKUP.
+Czas: 5-7 dni.
+
+6.3 ADVANCE TAX PREDICTOR
+-------------------------------------------------------------
+Stan obecny: zaliczki obliczane na podstawie biezacego dochodu.
+
+Pomysl opisowo: predykcja zaliczek PIT z ML na podstawie
+historii dochodow (12+ miesiecy). Algorytm: ARIMA/Prophet
+prognoza dochodu koncoworocznego -> obliczenie prognozowanej
+zaliczki -> ostrzezenie "Prognozowany dochod przekroczy prog
+120k PLN w sierpniu — zwieksz zaliczki aby uniknac niedoplaty."
+Output: prognoza roczna + rekomendacja zaliczek.
+
+Korzysc: unikanie niedoplat i odsetek, planowanie cash flow.
+Czas: 3-5 dni.
+
+6.4 MULTI-YEAR TAX SIMULATOR
+-------------------------------------------------------------
+Stan obecny: BRAK symulacji wieloletniej (transition_intelligence
+symuluje tylko zmiane formy, nie horyzont 5-letni).
+
+Pomysl opisowo: symulacja podatkowa w horyzoncie 5-letnim.
+Input: prognoza przychodow/kosztow na 5 lat. Output: podatek
+roczny per forma + oszczednosc laczna. Scenariusze: (a) skala
+przez 5 lat, (b) liniowy przez 5 lat, (c) ryczalt przez 5 lat,
+(d) skala -> liniowy w roku 3, (e) ryczalt -> skala w roku 2.
+Wynik: optymalny scenariusz z oszczednoscia laczna.
+
+Korzysc: optymalizacja strategiczna, nie taktyczna.
+Czas: 5-7 dni.
+
+6.5 CROSS-RELIEF INTERACTION ANALYZER
+-------------------------------------------------------------
+Stan obecny: cross_relief_optimizer_enterprise.rego (297 linii)
+implementuje matryce interakcji ulg (IPBOX+B+R, IPBOX+THERMO,
+IPBOX+DONATION, etc.).
+
+Pomysl opisowo: ROZSZERZENIE istniejacego cross_relief_optimizer
+o analize interakcji miedzy wszystkimi ulgami (Art. 21 zwolnienia
++ B+R + IP Box + termo + darowizny + IKZE + IKE + strata
+podatkowa). Matryca NxN interakcji: (a) kompatybilne (mozna
+laczyc), (b) wykluczajace (nie mozna), (c) synergiczne
+(lacznie daja wiecej). Output: optymalna kombinacja ulg per
+profil JDG.
+
+Korzysc: maksymalna optymalizacja ulg, eliminacja konfliktow.
+Czas: 3-5 dni (rozszerzenie istniejacego modulu).
+
+6.6 TAX LOSS OPTIMIZER
+-------------------------------------------------------------
+Stan obecny: tax_loss_harvesting_enterprise.rego (238 linii)
+implementuje strategie odliczania strat (50% rocznie, max 5 lat,
+strategia 32% vs 12% prog).
+
+Pomysl opisowo: ROZSZERZENIE o optymalizacje wykorzystania
+strat. Algorytm: dla straty X PLN w roku Y, oblicz optymalny
+harmonogram odliczania (50% w roku Y+1, Y+2, ...) maksymalizujacy
+oszczednosc. Scenariusze: (a) odlicz max w roku wysokiego progu
+(32%), (b) rozloz na lata gdy prog rosnie. Output: harmonogram
+odliczen z oszczednoscia laczna.
+
+Korzysc: maksymalne wykorzystanie strat, optymalizacja progowa.
+Czas: 2-3 dni (rozszerzenie istniejacego).
+
+6.7 SHARED LIMIT TRACKER
+-------------------------------------------------------------
+Stan obecny: P588 + plan23_exemptions implementuja wspolny
+limit 85528 dla ulg PIT-0. Ale BRAK sledzenia wykorzystania
+limitu w czasie.
+
+Pomysl opisowo: sledzenie limitu 85528 PLN w czasie per JDG.
+Stan: wykorzystano X PLN z 85528, pozostalo Y PLN. Alert:
+"Ulga mlodych: wykorzystano 50 000 PLN z 85 528. Pozostalo
+35 528 PLN. Kolejna wplata powyzej 35 528 = doplata PIT."
+Cross-ulga: sledzenie czy JDG korzysta z ulgi mlodych (etat)
+ORAZ ulgi 4+ (DG) — wspolny limit. Dashboard: wykorzystanie
+limitu per ulga + lacznie.
+
+Korzysc: unikanie przekroczenia limitu, planowanie ulg.
+Czas: 2-3 dni.
+
+6.8 FORM TRANSITION IMPACT SIMULATOR
+-------------------------------------------------------------
+Stan obecny: transition_intelligence.rego symuluje zmiane formy
+z remanentem, strata, deadline, skladka.
+
+Pomysl opisowo: ROZSZERZENIE o kalkulator wplywu zmiany na
+wszystkie aspekty: (a) podatek roczny (skala 12% vs liniowy
+19% vs ryczalt 8.5%), (b) skladka zdrowotna (9% vs 4.9% vs
+4.9%), (c) ulgi (joint filing, child credit, kwota wolna),
+(d) KUP (pelne vs ryczalt brak KUP), (e) remanent (wplyw na
+dochod roku 1), (f) zaliczki (miesieczne vs kwartalne),
+(g) PIT formularz (PIT-36 vs 36L vs 28). Output: pelny raport
+wplywu z oszczednoscia/kosztem rocznym.
+
+Korzysc: pelna wizja konsekwencji zmiany, decyzja data-driven.
+Czas: 3-5 dni (rozszerzenie istniejacego).
+
+6.9 ANNUAL SETTLEMENT AUTO-FILL
+-------------------------------------------------------------
+Stan obecny: BRAK automatycznego wypelniania PIT-36/36L/28.
+
+Pomysl opisowo: automatyczne wypelnianie zeznania rocznego na
+podstawie danych z systemu (przychody, koszty, zaliczki, ulgi,
+skladki). Output: plik XML e-Deklaracja gotowy do wyslania.
+Walidacja: sprawdzenie czy wszystkie pozycje sa wypelnione,
+czy suma zaliczek == zaplacone, czy ulgi <= limit. Ostrzezenia:
+"PIT-36 pozycja 47 (ulga B+R) = 50 000 PLN — przekroczony limit
+limit dochodu."
+
+Korzysc: automatyzacja, eliminacja bledow recznych.
+Czas: 5-7 dni.
+
+6.10 TAX BRACKET OPTIMIZER
+-------------------------------------------------------------
+Stan obecny: prog 120000 externalized z thresholds. BRAK
+optymalizacji progu.
+
+Pomysl opisowo: optymalizacja progu 120 000 PLN (12% -> 32%).
+Algorytm: prognoza dochodu rocznego -> czy przekroczy 120k?
+Jesli tak: (a) zwieksz KUP (przyspiesz wydatki), (b) odlicz
+straty, (c) zastosuj B+R 200%, (d) IKZE, (e) ulgi dzieciece.
+Cel: utrzymanie dochodu ponizej 120k = 12% zamiast 32%.
+Output: "Dochod prognozowany 135 000 PLN. Zastosuj IKZE 14 000
+PLN + B+R 21 000 PLN = dochod 100 000 PLN = 12% zamiast 32%.
+Oszczednosc: 10 800 PLN."
+
+Korzysc: unikanie progu 32%, oszczednosc do 27 600 PLN rocznie.
+Czas: 3-5 dni.
+
+6.11 KUP DOCUMENTATION AUTO-GENERATOR
+-------------------------------------------------------------
+Stan obecny: BRAK automatycznej dokumentacji KUP.
+
+Pomysl opisowo: automatyczne generowanie dokumentacji KUP dla
+US. Dla kazdego wydatku: (a) kategoria KUP/NKUP, (b) _legal_basis
+(Art. 22/23), (c) procent KUP, (d) kwota KUP, (e) data
+potrpecenia (bezposrednie/posrednie). Output: raport roczny
+KUP w formacie US (PKPiR + zalogi). Walidacja: czy kazdy
+wydatek ma _legal_basis, czy NKUP ma uzasadnienie.
+
+Korzysc: pelna audytowalnosc, gotowosc na kontrola US.
+Czas: 3-5 dni.
+
+6.12 HEALTH INSURANCE DEDUCTION MAXIMIZER
+-------------------------------------------------------------
+Stan obecny: limit 12900 dla liniowego (OUTDATED — 14100 dla
+2026). BRAK optymalizacji odliczenia.
+
+Pomysl opisowo: maksymalizacja odliczenia skladki zdrowotnej.
+Dla liniowego: odliczenie od dochodu max 14100 PLN (2026).
+Dla ryczaltu: 50% skladki od przychodu. Dla skali: BRAK
+odliczenia (Polski Lad). Algorytm: (a) oblicz roczna skladke
+zdrowotna, (b) porownaj z limit, (c) jesli skladka > limit ->
+odlicz max limit, (d) jesli skladka < limit -> odlicz cala
+skladke. Alert: "Składka zdrowotna 18 000 PLN > limit 14 100
+PLN. Odlicz 14 100 PLN. Pozostale 3 900 PLN = przepada."
+
+Korzysc: maksymalne odliczenie, poprawny limit 2026.
+Czas: 1-2 dni (incl. aktualizacja 12900 -> 14100).
+
+=============================================================
+SEKCJA 7: REKOMENDACJE — MAPA DROGOWA
+=============================================================
+
+7.1 USZEREGOWANIE LUK WG KRYTYCZNOSCI
+-------------------------------------------------------------
+Priorytet: Formy opodatkowania > KUP > Zaliczki > Zwolnienia
+
+TABELA REKOMENDACJI Z SZACOWANYM CZASEM
+| # | Problem                          | Krytycznosc | Wplyw   | Czas    | Ryzyko |
+|---|----------------------------------|-------------|---------|---------|--------|
+| 1 | Limit zdrowotny 12900->14100     | KRYTYCZNE   | Wysoki  | 1h      | Niski  |
+| 2 | Eksternalizacja 85528            | KRYTYCZNE   | Sredni  | 2-3h    | Niski  |
+| 3 | Eksternalizacja stawek PIT       | KRYTYCZNE   | Sredni  | 2-3h    | Niski  |
+| 4 | NKUP 8->57 punktow               | WYSOKIE     | Wysoki  | 5-7 dni | Sredni |
+| 5 | Temporal (valid_from/valid_to)   | WYSOKIE     | Wysoki  | 3-5 dni | Sredni |
+| 6 | 75% limit auta KUP               | WYSOKIE     | Wysoki  | 2-3h    | Niski  |
+| 7 | Leasing oper vs finans           | WYSOKIE     | Sredni  | 3-5h    | Niski  |
+| 8 | Ryczalt stawki -> thresholds     | SREDNIE     | Niski   | 1-2h    | Niski  |
+| 9 | Paliwo KUP regula                | SREDNIE     | Sredni  | 1-2h    | Niski  |
+|10 | Nadplata/niedoplata zaliczek     | SREDNIE     | Sredni  | 2-3h    | Niski  |
+|11 | Reklama vs reprezentacja         | NISKIE      | Niski   | 1-2h    | Niski  |
+|12 | Karta utrata regula              | NISKIE      | Niski   | 1-2h    | Niski  |
+
+LACZNY CZAS: 16-24 dni (z rownolegla realizacja: ~10-14 dni)
+
+7.2 FAZY REALIZACJI
+-------------------------------------------------------------
+
+FAZA 1 (DZIEN 1): KRYTYCZNE NAPRAWY
+- [1] Aktualizacja limitu zdrowotnego 12900 -> 14100 (1h)
+- [2] Eksternalizacja 85528 -> thresholds (2-3h)
+- [3] Eksternalizacja stawek PIT -> thresholds (2-3h)
+- [6] Dodanie reguly 75% limit auta KUP (2-3h)
+- [7] Dodanie leasing oper vs finans (3-5h)
+- [9] Dodanie reguly paliwa KUP (1-2h)
+- [8] Eksternalizacja ryczalt stawek (1-2h)
+
+FAZA 2 (TYDZIEN 1-2): KOMPLETNOSC NKUP + TEMPORAL
+- [4] Rozszerzenie NKUP 8 -> 57 punktow (5-7 dni)
+- [5] Dodanie temporal do regul PIT (3-5 dni)
+
+FAZA 3 (TYDZIEN 2-3): UZUPELNIENIE
+- [10] Nadplata/niedoplata zaliczek (2-3h)
+- [11] Reklama vs reprezentacja (1-2h)
+- [12] Karta utrata regula (1-2h)
+
+7.3 MAPA RYZYK
+-------------------------------------------------------------
+R1: Aktualizacja 12900 -> 14100 zmienia wynik odliczenia dla
+    wszystkich JDG na liniowym. Testy: weryfikacja ze nowy limit
+    poprawnie oblicza odliczenie.
+    MITIGACJA: Test jednostkowy z 14100 vs 12900.
+
+R2: Rozszerzenie NKUP z 8 do 57 punktow wymaga wiedzy prawnej.
+    MITIGACJA: Koreferendum prawnika, testy per punkt.
+
+R3: Temporal zmienia strukture regul. Polski Lad (2022) zmienil
+    kwote wolna i progi. Bez temporal reguly sa poprawne dla
+    2026 ale bledne dla transakcji historycznych.
+    MITIGACJA: Inkrementalne wdrozenie (najpierw forms.rego).
+
+=============================================================
+DIAGRAM MERMAID — Mapa Drogowa Realizacji (3 Fazy)
+=============================================================
+
+```mermaid
+flowchart TB
+    START["START<br/>Modul PIT v7.0<br/>7.0/10"]
+
+    subgraph FAZA1["FAZA 1: KRYTYCZNE (Dzien 1)"]
+        F1A["[1] Limit zdrowotny<br/>12900 -> 14100<br/>1h"]
+        F1B["[2] Eksternalizacja<br/>85528 -> thresholds<br/>2-3h"]
+        F1C["[3] Stawki PIT<br/>-> thresholds<br/>2-3h"]
+        F1D["[6] 75% limit auta<br/>2-3h"]
+        F1E["[7] Leasing oper/finans<br/>3-5h"]
+        F1F["[8] Ryczalt stawki<br/>-> thresholds<br/>1-2h"]
+        F1G["[9] Paliwo KUP<br/>1-2h"]
+    end
+
+    subgraph FAZA2["FAZA 2: KOMPLETNOSC (Tydzien 1-2)"]
+        F2A["[4] NKUP 8 -> 57<br/>punktow Art. 23<br/>5-7 dni"]
+        F2B["[5] Temporal<br/>valid_from/valid_to<br/>3-5 dni"]
+    end
+
+    subgraph FAZA3["FAZA 3: UZUPELNIENIE (Tydzien 2-3)"]
+        F3A["[10] Nadplata/<br/>niedoplata zaliczek<br/>2-3h"]
+        F3B["[11] Reklama vs<br/>reprezentacja<br/>1-2h"]
+        F3C["[12] Karta utrata<br/>1-2h"]
+    end
+
+    GOAL["CEL<br/>Modul PIT v8.0<br/>9.0/10<br/>100% NKUP<br/>Temporal aktywny<br/>0 hardcoded"]
+
+    START --> FAZA1
+    FAZA1 --> FAZA2
+    FAZA2 --> FAZA3
+    FAZA3 --> GOAL
+
+    style START fill:#90ee90
+    style GOAL fill:#90ee90
+    style F1A fill:#ff6b6b,color:#fff
+    style F2A fill:#ffa500,color:#fff
+```
+
+=============================================================
+TABELA POKRYCIA FORM OPODATKOWANIA
+=============================================================
+
+| Forma      | Regula | Stawka   | Art.       | KUP | Joint | Dzieci | Zdrowotna | PIT  | Ocena |
+|------------|--------|----------|------------|-----|-------|--------|-----------|------|-------|
+| Skala      | P500   | 12/32%   | 27 ust. 1  | TAK | TAK   | TAK    | 9% (nie)  | PIT-36 | 8/10 |
+| Liniowy    | P510   | 19%      | 30c        | TAK | NIE   | NIE    | 4.9% (max)| PIT-36L| 7/10 |
+| Ryczalt    | P520   | 2-17%    | 12 ryczalt | NIE | NIE   | NIE    | 4.9% (50%)| PIT-28| 8/10 |
+| Karta      | P530   | z US     | 21-30 rycz | NIE | NIE   | NIE    | 9% (nie)  | BRAK  | 6/10 |
+| IP Box     | R132   | 5%       | 30ca       | TAK | —     | —      | —         | PIT-IP| 9/10 |
+
+UWAGI:
+- Skala: kwota wolna 30000 hardcoded, prog 120000 externalized
+- Liniowy: limit zdrowotny 12900 OUTDATED (14100 dla 2026)
+- Ryczalt: stawki hardcoded w lump_sum_rates_map, PIT-28 28 lutego OK
+- Karta: BRAK reguly utraty, BRAK zeznania rocznego (poprawne)
+- IP Box: nexus formula poprawna, PIT-IP deadline OK
+
+=============================================================
+TABELA POKRYCIA Art. 23 NKUP (57 punktow)
+=============================================================
+
+| pkt  | Temat                           | Pokrycie | Regula    |
+|------|---------------------------------|----------|-----------|
+| 1    | Koszty niezwiązane             | PARTIAL  | P560      |
+| 23   | Reprezentacja                   | COMPLETE | P566      |
+| 36   | Diety JDG -> KUP nie NKUP      | COMPLETE | art21 E311|
+| 37   | Niezaplacone ZUS               | COMPLETE | P568      |
+| 47a  | Auto > 150k                    | COMPLETE | P564      |
+| 47a* | Auto EV > 225k                 | COMPLETE | P565      |
+| 8-10 | Zle dlugi 90 dni               | COMPLETE | P571      |
+| 5-5c | Bezposrednie/posrednie timing  | COMPLETE | P572      |
+| ~49  | Pozostale NKUP                  | BRAK     | —         |
+
+LACZNIE: 8/57 = 14% pokrycia NKUP — KRYTYCZNIE NISKIE
+
+=============================================================
+TABELA POKRYCIA Art. 21 ZWOLNIENIA (~90 punktow)
+=============================================================
+
+| Sekcja  | Temat                    | pkt       | Reguly  | Pokrycie |
+|---------|--------------------------|-----------|---------|----------|
+| E100    | Ulga mlodych             | 148       | 3       | COMPLETE |
+| E110    | Ulga na powrot           | 152       | 2       | COMPLETE |
+| E120    | Ulga 4+                  | 153       | 3       | COMPLETE |
+| E130    | Ulga emerytow            | 154       | 2       | COMPLETE |
+| E140    | Alimenty                 | 127       | 2       | COMPLETE |
+| E200    | Odszkodowania            | 3-4       | 4       | COMPLETE |
+| E300    | Dochody kapitalowe       | 3, 3c, 4  | 3       | COMPLETE |
+| E310    | Stypendia                | 26, 38, 67| 3       | COMPLETE |
+| E320    | Fundusz pracy            | 6         | 2       | COMPLETE |
+| E330    | Spadki/darowizny         | 105       | 2       | COMPLETE |
+| E340    | Sprzedaz nieruchomosci   | 17, 28    | 3       | COMPLETE |
+| E350    | Diety/delegacje          | 20        | 4       | COMPLETE |
+| E360    | Odprawy pracownicze      | —         | 3       | COMPLETE |
+| E370    | ZFSS                     | —         | 2       | COMPLETE |
+| E380    | Interakcje ulg           | 148-154   | 2       | COMPLETE |
+| BRAK    | ~60 punktow Art. 21      | 1,5,7,8,  | 0       | BRAK     |
+|         |                          | 11,12,13, |         |          |
+|         |                          | 14,15,21, |         |          |
+|         |                          | 46,50,58, |         |          |
+|         |                          | 63,78,79, |         |          |
+|         |                          | 83,84,85, |         |          |
+|         |                          | 109-130,  |         |          |
+|         |                          | 139-147   |         |          |
+
+LACZNIE: ~30/90 = 33% pokrycia Art. 21 (najwazniejsze ulgi COMPLETE)
+
+=============================================================
+TABELA ULG ENTERPRISE (8 plikow)
+=============================================================
+
+| Plik                           | Linie | Reguly | Temat                    | Ocena |
+|--------------------------------|-------|--------|--------------------------|-------|
+| ipbox_enterprise.rego          | 295   | ~8     | IP Box 5% + Nexus        | 9/10  |
+| rd_relief_enterprise.rego      | 408   | ~14    | B+R 100-200% + MDR       | 9/10  |
+| thermo_relief_enterprise.rego  | 383   | ~10    | Termomodernizacja        | 8/10  |
+| donation_relief_enterprise.rego| 248   | ~8     | Darowizny 6%/100%        | 8/10  |
+| cross_relief_optimizer.rego    | 297   | ~10    | Matryca interakcji ulg   | 9/10  |
+| tax_loss_harvesting.rego       | 238   | ~8     | Straty podatkowe         | 8/10  |
+| family_estonian_enterprise.rego| 349   | ~10    | Ulga 4+ + Estoński CIT   | 9/10  |
+| elearning.rego                 | 187   | ~8     | E-learning specyficzne   | 8/10  |
+
+LACZNIE: 2401 linii, ~76 regul ulg ENTERPRISE
+SREDNIA OCENA: 8.5/10 — WYPRZEDZA RYNEK
+
+=============================================================
+ZNACZNIKI DOWODOWE (grep evidence)
+=============================================================
+
+Wszystkie ustalenia sa poparte dowodami grep z plikow
+JDG/rules/pit/*.rego (18 plikow, 5106 linii):
+
+- Laczne regul (rule_id): 189 (grep -cE)
+- Najwiekszy plik: art21_exemptions_enterprise.rego (857 linii)
+- 85528 hardcoded: ~20+ wystapien (grep -rnE '85528')
+- 0.12 hardcoded: forms.rego P500 (grep -rnE '0\.12')
+- 0.19 hardcoded: forms.rego P510 (grep -rnE '0\.19')
+- 0.32 hardcoded: forms.rego P500 (grep -rnE '0\.32')
+- 0.05 hardcoded: ipbox_enterprise.rego R132 (grep -rnE '0\.05')
+- 12900 hardcoded: forms.rego L140, kup.rego P570 (grep -rnE '12900')
+- 30000 hardcoded: forms.rego P500 (grep -rnE '30000')
+- 150000 hardcoded: kup.rego P564 (grep -rnE '150000')
+- 225000 hardcoded: kup.rego P565 (grep -rnE '225000')
+- Temporal: ~0 (1 wystapienie "2026-01-01" w thermo_relief)
+- lump_sum_rates_map: forms.rego L195-210 (hardcoded PKWiU->stawka)
+- NKUP pkt pokryte: 8 z 57 (grep -nE 'Art\. 23 ust\. 1 pkt')
+- Art. 21 pkt pokryte: ~30 z ~90 (grep -nE 'Art\. 21 ust\. 1 pkt')
+- PIT-28 termin 28 lutego: advances_returns.rego P554 (grep -nE '02-28')
+- 4 formy: forms.rego P500/P510/P520/P530 (grep -nE 'PIT_SCALE|LINEAR|LUMP_SUM|TAX_CARD')
+- IP Box nexus: ipbox_enterprise.rego R131 (grep -nE 'nexus|Nexus')
+- Cross-relief matryca: cross_relief_optimizer.rego L35-49
+- Transition intelligence: transition_intelligence.rego T500-T508
+- Skladka zdrowotna skala 9%: forms.rego P500 zus_health_rate "0.09"
+- Skladka zdrowotna liniowy 4.9%: forms.rego P510 zus_health_rate "0.049"
+- Byly pracodawca blokada: forms.rego P512 (Art. 30c ust. 2)
+
+5.7 ANALIZA PLIKOW plan26_detailed.rego i plan23_exemptions.rego
+-------------------------------------------------------------
+Prompt P04 wymienil dodatkowo pliki pomocnicze:
+- JDG/rules/pit/plan26_detailed.rego (14 linii, 2 reguly)
+- JDG/rules/pit/plan23_exemptions.rego (14 linii, 2 reguly)
+Oba pliki to male fragmenty generowane przez Plan OPA 23/26.
+
+plan26_detailed.rego:
+- Regula jdg.pit.revenue_exclusions_detail (priority 508)
+- _legal_basis: Art. 14 ust. 3 PIT
+- Pokrywa: wykluczenia przychodu (zwrot VAT, nadplata ZUS,
+  odszkodowania) — to samo co forms.rego P508
+- ZALEZNOSC: regula z plan26 NAKLADA sie z P508 w forms.rego
+  (ten sam priorytet 508, ten sam Art. 14 ust. 3) —
+  POTENCJALNA REDUNDANCJA. OPA scali oba pliki jako ten sam
+  package (jdg.pit.forms) = konflikt dwoch regul z tym samym
+  priorytetem i tym samym warunkiem.
+
+plan23_exemptions.rego:
+- Regula jdg.pit.exemption_interactions_shared_limit (priority 588)
+- _legal_basis: Art. 21 ust. 1 pkt 148, 152, 153, 154 PIT
+- _routing: BLOCK_AND_ALERT
+- Warunek: tax_form == PIT_SCALE AND married == true
+- Pokrywa: wspolny limit 85528 PLN (to samo co exemptions.rego
+  P588 i art21 E400)
+- ZALEZNOSC: regula z plan23 NAKLADA sie z P588 w exemptions.rego
+  (priority 588 vs 588 — KONFLIKT priorytetu!). Oba pliki
+  deklaruja package jdg.pit (plan23) ale exemptions.rego ma
+  package jdg.pit.exemptions — rozne pakiety, brak kolizji.
+  ALE Jesli plan23 deklaruje package jdg.pit (bez .exemptions),
+  to regula wyladowuje w innym pakiecie niz P588 —
+  NIEPRZEWIDYWALNE zachowanie orkiestratora.
+
+OCENA: oba pliki to male (14 linii) duplikaty regul z forms.rego
+i exemptions.rego. REKOMENDACJA: usunac plan26_detailed.rego i
+plan23_exemptions.rego Jesli ich reguly sa juz w forms.rego /
+exemptions.rego — lub zmienic ich package aby uniknac konfliktu.
+
+=============================================================
+DODATEK A: POROWNANIE Z VAT (P02/P03)
+=============================================================
+
+| Metryka              | PIT (P04)       | VAT Macro (P02) | VAT Micro (P03) |
+|----------------------|-----------------|-----------------|-----------------|
+| Pliki                | 18              | 7               | 1 (+25 plan33)  |
+| Lacznie linii        | 5106            | 3444            | 34638           |
+| Reguly               | 189             | ~200            | ~1250           |
+| Stuby                | 0               | N/A             | 678 (54%)       |
+| Temporal             | ~0              | Niepelny        | 0               |
+| Hardcoded stawki     | ~15 wystapien   | 6 plikow        | 0               |
+| _legal_basis precyzja| WYSOKA          | WYSOKA          | Generyczny      |
+| Ulgi ENTERPRISE      | 8 plikow (8.5/10)| BRAK           | BRAK            |
+| Cross-package        | N/A             | N/A             | 158 regul ZUS   |
+| Werdykt              | 7.0/10          | 8.5/10 (MPP)    | 5.5/10          |
+
+OBSERWACJA: PIT ma najlepsze ulgi ENTERPRISE (IP Box, B+R,
+cross-relief) ale najgorsze eksternalizowanie hardcoded wartosci
+(85528, stawki PIT, 12900). VAT Macro ma najlepsze MPP ale
+hardcoded progi. VAT Micro ma najgorsza jakosc (54% stubow).
+
+=============================================================
+DODATEK B: ANALIZA HARDCODED WARTOSCI
+=============================================================
+
+TABELA HARDCODED WARTOSCI W PIT
+| Wartosc  | Plik                    | Linia    | Powinno byc           |
+|----------|-------------------------|----------|-----------------------|
+| 85528    | art21_exemptions_ent    | ~20+     | thresholds.pit_relief |
+| 0.12     | forms.rego              | P500     | thresholds.pit_rate_  |
+| 0.19     | forms.rego              | P510     | thresholds.pit_linear |
+| 0.32     | forms.rego              | P500     | thresholds.pit_rate_  |
+| 0.05     | ipbox_enterprise.rego   | R132     | thresholds.pit_ipbox  |
+| 12900    | forms.rego, kup.rego    | L140,P570| thresholds.pit_health_|
+|          |                         |          | limit (14100 dla 2026)|
+| 30000    | forms.rego              | P500     | thresholds.pit_tax_   |
+|          |                         |          | free_amount           |
+| 3600     | forms.rego              | P500     | thresholds.pit_tax_   |
+|          |                         |          | free_reduction        |
+| 150000   | kup.rego                | P564     | thresholds.pit_car_   |
+|          |                         |          | limit_150k            |
+| 225000   | kup.rego                | P565     | thresholds.pit_car_   |
+|          |                         |          | limit_225k_ev         |
+| 2000000  | forms.rego              | P523     | helpers.jdg_amount_   |
+|          |                         |          | eur (externalized!)   |
+| lump_sum | forms.rego              | L195-210 | thresholds.pit_lump_  |
+| rates    |                         |          | sum_rates             |
+
+LACZNIE: ~12 wartosci hardcoded (10 powinno byc externalized)
+UWAGA: 120000 (prog skali) jest CZESCIOWO externalized przez
+object.get(data.thresholds.jdg.bounds.pit_scale_threshold)
+
+=============================================================
+KONIEC ANALIZY — PODSUMOWANIE KLUCZOWYCH ODKRYC
+=============================================================
+
+3 NAJKRYTYCZNIEJSZE PROBLEMY:
+
+1. LIMIT ZDROWOTNY 12900 OUTDATED: forms.rego P510 i kup.rego
+   P570 maja 12900 PLN — 2026 = 14100 PLN. JDG na liniowym
+   odliczaja ZA MALO = 1199 PLN niedoplaty rocznie.
+
+2. 85528 HARDCODED ~20+ WYSTAPIEN: limit wspolny ulg PIT-0
+   (mlodzi, powrot, 4+, senior) hardcoded w ~20+ miejscach.
+   Zmiana limitu wymaga edycji 20+ plikow.
+
+3. NKUP 14% POKRYCIA: tylko 8 z 57 punktow Art. 23 NKUP
+   zaimplementowanych. ~49 punktow BRAK — JDG nie otrzyma
+   walidacji dla kar, odsetek, darowizn, wydatkow osobistych.
+
+3 NAJWIEKSZE ZALETY:
+
+1. ULGI ENTERPRISE 8.5/10: IP Box z nexus formula, B+R 100-200%,
+   cross-relief optimizer z matryca interakcji, tax loss
+   harvesting z strategia progowa — WYPRZEDZA RYNEK.
+
+2. TRANSITION INTELLIGENCE 10/10: symulacja zmiany formy z
+   remanentem, strata, deadline, przeliczeniem skladki,
+   utrata ulg — poziom doradcy podatkowego.
+
+3. WSPOLNY LIMIT 85528: poprawnie implementuje zasade ze ulgi
+   PIT-0 NIE sumuja sie (wspolny limit, nie 4x 85528).
+   Poprawnie wyklucza DG z ulgi mlodych ale wlacza w ulge 4+.
+
+=============================================================
+=== KONIEC RAPORTU — RAPORT_P04_JDG_PIT_MACRO_v7.0 ===

@@ -1,0 +1,1169 @@
+RAPORT ANALITYCZNY ENTERPRISE — JDG Architektura Orkiestratora v7.0
+=============================================================
+Typ:           Raport analityczny architektoniczny (read-only, audit)
+Wersja:        7.0
+Data:          2026-07-27
+Zakres:        Orkiestrator JDG + infrastruktura (11 plikow Rego + 2 dok. MD)
+Autor:         Ekspert Architekt Systemow Regulowych OPA/Rego (25 lat)
+Powiazane:     ADR-001..ADR-008, B1 Sharded Router, B2 Decoupled Thresholds,
+               A1 Provenance, A2 Temporal Causality, A3 Legal Cartography
+Status:        RAPORT ANALITYCZNY — nie modyfikuje kodu, nie generuje Rego
+=============================================================
+
+SPIS TRESCI
+=============================================================
+1.  Executive Summary + TOP 10 Rekomendacji
+2.  Metodologia i zakres analizy (pliki, linie, metodyka)
+3.  Audyt architektury Multi-Pass (poziom Enterprise)
+    3.1 First-Match-Wins else-chain w main_jdg.rego
+    3.2 Sharded Router (B1) — determinizm i bezpieczenstwo
+    3.3 safe_merge i ochrona immutable_verdict
+    3.4 Czy 17 PAS-ow jest optymalnych?
+4.  Analiza systemu priorytetow (priority 0-9999)
+5.  Analiza temporalna (temporal.rego + _metadata_jdg.rego)
+6.  Analiza systemu thresholdow (thresholds_jdg.rego)
+7.  Analiza walidacji i fallback (validation/fallback/api_fallback)
+8.  Analiza provenance i audytu (ADR-006 Immutable Audit Trail)
+9.  Genialne Pomysly ENTERPRISE — 12 innowacji wyprzedzajacych
+10. Rekomendacje priorytetow (krytycznosc, czas, wplyw, ryzyko)
+11. Podsumowanie koncowe
+=============================================================
+
+
+=============================================================
+1. EXECUTIVE SUMMARY
+=============================================================
+
+Orkiestrator JDG (main_jdg.rego, 587 linii) to ambitna implementacja
+silnika decyzyjnego OPA/Rego dla polskiego prawa podatkowego JDG.
+Architektura opiera sie na pieciu filarach strategicznych:
+  (1) Multi-Pass First-Match-Wins else-chain (ADR-001),
+  (2) Sharded Index Router O(1) (B1),
+  (3) Decoupled Thresholds (B2, ADR-002),
+  (4) Temporal Causality Chain (A2, ADR-003),
+  (5) Verdict Provenance Graph (A1, ADR-006 Immutable Audit Trail).
+
+Wynik audytu: architektura jest koncepcyjnie zaawansowana i w wielu
+miejscach wyprzeduje typowe implementacje OPA (sharded routing,
+immutable_verdict, temporal registry, legal cartography). Jednakze
+WDROZENIE operacyjne wykazuje LACUNY KRYTYCZNE, ktore podwazaja
+czesc zalozen — w trzech przypadkach deklarowane mechanizmy sa
+MARTWYM KODEM lub NIE sa podlaczone do sciezki ewaluacyjnej.
+
+Trzy najpoważniejsze odkrycia (dowodne, z referencjami plik:linia):
+
+  [KRYTYCZNE-1] SCHEMAT NIEZGODNOSCI SCIEZEK DANYCH THRESHOLDOW.
+    _helpers_jdg.rego (L21, L26, L60, L79) odczytuje progi ze sciezki
+    data.thresholds.jdg.limits / .rates / .fc_thresholds, natomiast
+    thresholds_jdg.rego deklaruje `package jdg.thresholds` (L17), co w
+    OPA rozstrzyga sie do data.jdg.thresholds.* (a NIE
+    data.thresholds.jdg.*). Wyszukanie potwierdza: 0 dopasowan dla
+    `data.thresholds.pit|vat|zus`, 41 poprawnych uzyc
+    `data.jdg.thresholds.*` (reguly enterprise), 31 uzyc blednej
+    sciezki `data.thresholds.jdg.*` (w tym wszystkie helpery). W
+    konsekwencji helpery get_jdg_limit/get_jdg_rate/jdg_fc_below_threshold
+    ZAWSZE zwracaja wartosc fallback, a obiekt fc_thresholds w ogole
+    nie istnieje w thresholds_jdg.rego. ADR-002 "Zero Hardcoded
+    Values" jest w tym obszarze niewypelnialny.
+
+  [KRYTYCZNE-2] PROVENANCE (A1) oraz ADR-006 Immutable Audit Trail sa
+    MARTWYM KODEM na warstwie Rego. provenance.rego definiuje
+    enrich_verdict() (L159) budujace _provenance_tree, ale funkcja
+    ta NIGDY nie jest wywolana w main_jdg.rego — final_verdict_enriched
+    (L505+) nie zawiera warstwy provenance. Ponadto funkcja wymaga
+    input_context._package_decisions oraz input_context._evaluation_ms,
+    ktore orkiestrator NIGDY nie produkuje (0 dopasowan tych pol poza
+    provenance.rego). W rezultacie pelna sciezka decyzyjna do artykulu
+    ustawy (cel A1) nie jest realizowana w runtime OPA — jedynie
+    dokumentacja w _legal_basis.
+
+  [KRYTYCZNE-3] SHARDED FAST-PATH POMIJA PAKIETY BEZPIECZENSTWA.
+    sharded_sale_verdict (L410) i sharded_purchase_verdict (~L425)
+    nie zawieraja pakietow: validation (NIP/REGON checksum, KSeF UPO),
+    aml, edge_cases (KSeF-obowiazkowe, MPP, Biala Lista, cash>15k,
+    sankcje 30/100%), ksef_jpk, mdr, api_fallback, conflicts. Dla
+    najczestszej sciezki (DOMESTIC_SALE + ACTIVE JDG, ~70% ruchu)
+    faktura z blednym NIP, faktura poza KSeF po 01.02.2026, platnosc
+    gotowkowa >15k PLN czy naruszenie MPP NIE zostana wychwycone.
+    To regresja poprawnosci wzgledem full_final_verdict.
+
+Pozostale odkrycia istotne (szczegoly w sekcjach 3-8):
+  - Brak realnego PASS-0 abort: safe_merge ewaluuje WSZYSTKIE ~55
+    pakietow niezaleznie od BLOCK_AND_ALERT (Rego nie jest leniwe w
+    kompozycji obiektow). "Abort" nastepuje dopiero po stronie
+    konsumenta Python czytajacego _routing.
+  - final_verdict_with_conflicts (L500) = object.union(final_verdict,
+    conflicts.decide) — conflicts (po-merge, nizszy priorytet)
+    NADPISUJE _routing/rule_id warstwy risk (najwyzszy priorytet).
+    Zatem po-merge'owy konflikt moze zmienic BLOCK_AND_ALERT risk na
+    inny powod blokady — subtelny bug kolejnosci merge.
+  - Warstwa Enterprise Enrichment (L505+, ~30 pakietow) uzywa
+    object.union (NIE safe_merge) i jest najbardziej zewnetrzna —
+    advisory package (np. form_optimizer) moze nadpisac vat_rate,
+    pit_rate, _routing ustalone przez core chain. Komentarz
+    architektoniczny "NIE zmienia decyzji podatkowych" jest
+    niezgodny z semantyka object.union.
+  - Priorytety niespojne i kolizyjne: 540-650 naklada sie
+    (pit.kup/allowances/conflicts/edge_cases/pit.transitions);
+    wiele pakietow enterprise deklaruje priority 1 (exit_tax_mdr,
+    nkup, neural_mesh) — kolizja; pole jest METADANA (ADR-001), nie
+    steruje kolejnoscia, ale psuje sortowanie provenance.
+  - Temporal registry obejmuje ~14 regul z ~7000 / 1935 punktow
+    prawnych; is_active_for_date() istnieje, ale NIE jest wywolywane
+    w funkcjach decide pakietow — bramkowanie temporalne jest
+    rejestrem, nie egzekucja.
+  - SLIM VAT 3: niespojnosc dat — thresholds_jdg.rego (bad_debt
+    valid_from "2025-07-01") vs ARCHITECTURE.md/ADR-003 + komentarze
+    ("SLIM VAT 3 (2023)"). SLIM VAT 3 weszlo 01.07.2023 — data
+    2025-07-01 jest bledna.
+  - ~159+ literalnych wartosci (0.23/0.19/0.12/0.09/0.32/200000/
+    120000/30000) w plikach .rego — ADR-002 "Zero Hardcoded"
+    czesciowo niewdrozone (ARCHITECTURE.md sam przyznaje ~265).
+  - immutable_verdict ustawiaja tylko zus.rego (10) i
+    enterprise_benefits.rego (7) — komentarz w main_jdg.rego (L142)
+    twierdzi, ze chroni takze business P914, ale business.rego NIE
+    ustawia tej flagi (0 dopasowan).
+
+OCENA OGOLNA: 7.2 / 10 (koncepcja 9/10, wdrozenie 6/10, audytowalnosc
+5/10). Potencjal: 9.5/10 po naprawie 3 odkryc krytycznych + wdrozeniu
+innowacji z sekcji 9.
+
+-------------------------------------------------------------
+TOP 10 REKOMENDACJI (uszeregowane wg krytycznosci)
+-------------------------------------------------------------
+ 1. [KRYTYCZNE] Naprawic schemat sciezek thresholdow: ujednolicic
+    _helpers_jdg.rego do data.jdg.thresholds.* (lub przeniesc
+    package thresholds_jdg.rego na data.thresholds.jdg przez osobny
+    bundle data). Czas: 4-8h. Wplyw: OGROMNY (odblokowuje ADR-002).
+ 2. [KRYTYCZNE] Podlaczyc provenance.enrich_verdict() do
+    final_verdict_enriched + wyprodukowac _package_decisions i
+    _evaluation_ms w orkiestratorze. Czas: 1-2 dni. Wplyw: audytowalnosc.
+ 3. [KRYTYCZNE] Wzbogacic sharded_sale/purchase_verdict o pakiety
+    bezpieczenstwa: validation, edge_cases, ksef_jpk, aml, mdr,
+    api_fallback, conflicts. Czas: 4h. Wplyw: poprawnosc fast-path.
+ 4. [WYSOKIE] Zmienic kolejnosc merge w final_verdict_with_conflicts
+    na object.union(conflicts.decide, final_verdict) lub safe_merge,
+    aby risk nie byl nadpisywany przez conflicts. Czas: 1h.
+ 5. [WYSOKIE] Wprowadzic realny PASS-0 abort: warunkowy short-circuit
+    przed full chain jezeli risk/routing/compliance zwroci
+    BLOCK_AND_ALERT (funkcja pomocnicza + wczesny return). Czas: 4h.
+ 6. [WYSOKIE] Ujednolicic warstwe Enterprise na safe_merge (NIE
+    object.union) i ograniczyc ja do pol advisory (prefiks _advisory_*),
+    aby nie mogla nadpisac vat_rate/pit_rate/_routing. Czas: 1 dzien.
+ 7. [SREDNIE] Ujednolicic schemat priorytetow (kanoniczna tabela
+    100-9999 bez kolizji) i wymusic brak duplikatow w CI. Czas: 1 dzien.
+ 8. [SREDNIE] Skorygowac date SLIM VAT 3 na 2023-07-01 wszedzie
+    (thresholds_jdg.rego + komentarze). Czas: 30 min.
+ 9. [SREDNIE] Wyegzekwowac is_active_for_date() w co najmniej
+    regulach temporalnie newralgicznych (KSeF, Polski Lad, bad_debt,
+    COVID, Exit Tax). Czas: 1-2 dni.
+10. [NISKIE-SREDNIE] Dokonczyc eksternalizacje ~159+ hardcoded
+    wartosci do thresholds_jdg.rego (+ fc_thresholds, routing
+    confidence 0.95/0.80/0.85/0.70, api_fallback prog "3"/"50%").
+    Czas: 2-3 dni.
+
+
+=============================================================
+2. METODOLOGIA I ZAKRES ANALIZY
+=============================================================
+
+2.1 ANALIZOWANE PLIKI (11 Rego + 2 MD, lacznie 3347 linii)
+-------------------------------------------------------------
+  main_jdg.rego         587  orkiestrator glowny (Multi-Pass + B1)
+  _metadata_jdg.rego    525  rejestr metadanych + temporal + cartography
+  thresholds_jdg.rego   455  eksternalizowane progi (B2)
+  _helpers_jdg.rego     296  helpery wspolne (threshold, forma, daty)
+  temporal.rego         282  P1600-P1618 (RMK, time-travel, przedawnienia)
+  LEGAL_COVERAGE.md     267  pokrycie 13 ustaw / 1935 punktow
+  validation.rego       264  R0613-R0622 (NIP/REGON/KSeF UPO)
+  api_fallback.rego     177  P1850-P1855 (graceful degradation API)
+  provenance.rego       177  A1 _provenance_tree (Merkle pattern)
+  routing.rego          135  P10-P19 (field confidence, triage)
+  ARCHITECTURE.md       131  ADR-001..ADR-008
+  fallback.rego          51  P1000/P1099 (default 23% + NO_MATCH)
+  ---                   ----
+                        3347
+
+2.2 METODYKA
+-------------------------------------------------------------
+  (a) Statyczna analiza kodu: czytanie pelne + code_search (ripgrep)
+      dla weryfikacji twierdzen: priorytety (232 dopas.), BLOCK_AND_ALERT
+      (50+), immutable_verdict (40), safe_merge (20), sciezki danych
+      thresholdow (31 vs 41 vs 0), enrich_verdict/provenance (15),
+      hardcoded literals 0.23/0.19/0.12/0.09/0.32/200000/120000/30000
+      (159+ dopas.).
+  (b) Weryfikacja cross-file: porownanie deklaracji ADR vs implementacja.
+  (c) Synteza best-practices OPA/Rego Enterprise (multi-pass, partial
+      evaluation, indexing, deterministic sort, threshold externalization,
+      decision_id provenance, temporal validity, safe merging).
+  (d) Analiza determinizmu: kolejnosc else-chain, semantyka object.union,
+      lenistwo ewaluacji Rego, bezpieczenstwo shardow.
+
+2.3 ZALOZENIA I OGRANICZENIA
+-------------------------------------------------------------
+  - Analiza statyczna; nie uruchamiano OPA eval na 7000 regul (poza
+    zasiegiem raportu). Wyniki "martwego kodu" opieraja sie na
+    przeszukaniu wywolan (grep) i struktury importow.
+  - Plik main_jdg.rego.bak istnieje (kopia zapasowa) — nieuwzględniony.
+  - Bundle data (manifest.json, bundle.sh) wspomniano; nie analizowano
+    montowania data.thresholds.* zewnetrznie (patrz KRYTYCZNE-1 —
+    ewentualne zewnetrzne montowanie jest jedynym ratunkiem dla helperow).
+
+
+=============================================================
+3. AUDYT ARCHITEKTURY MULTI-PASS (POZIOM ENTERPRISE)
+=============================================================
+
+3.1 FIRST-MATCH-WINS else-chain w main_jdg.rego
+-------------------------------------------------------------
+
+DIAGRAM MERMAID — Architektura Multi-Pass (PASS 0-8):
+-------------------------------------------------------------
+```mermaid
+flowchart TD
+    IN[Input: invoice + jdg_entrepreneur + confidence + system] --> P0
+
+    subgraph PAS0 [PAS 0 — GATE / RISK & FRAUD]
+        P0[risk.decide] -->|fraud_graph_match| BA0[BLOCK_AND_ALERT]
+        P0 -->|counterparty_trust_low| W0[WARN]
+        P0 -->|no fraud| OK0[pass]
+    end
+
+    BA0 --> AB{abort?}
+    OK0 --> P1
+
+    subgraph PAS1 [PAS 1 — ROUTING & CONFIDENCE]
+        P1[routing.decide] -->|fc_vat_rate<0.95| BA1[BLOCK_AND_ALERT]
+        P1 -->|fc_nip<0.80| BA1
+        P1 -->|fc_min<0.70| TRI1[TRIAGE_QUEUE]
+        P1 -->|OK| OK1[pass]
+    end
+
+    BA1 --> AB
+    OK1 --> P2
+
+    subgraph PAS2 [PAS 2 — COMPLIANCE / AML]
+        P2[compliance.decide + aml.decide] --> OK2[pass]
+    end
+    OK2 --> P3
+
+    subgraph PAS3 [PAS 3 — CROSSBORDER]
+        P3[crossborder + post_brexit] --> OK3[pass]
+    end
+    OK3 --> P4
+
+    subgraph PAS4 [PAS 4 — VAT]
+        P4[substantive + deductions + procedures] --> OK4[pass]
+    end
+    OK4 --> P5
+
+    subgraph PAS5 [PAS 5 — PIT]
+        P5[forms + kup + advances + exemptions + transitions] --> OK5[pass]
+    end
+    OK5 --> P6
+
+    subgraph PAS6 [PAS 6 — ALLOWANCES]
+        P6[allowances] --> OK6[pass]
+    end
+    OK6 --> P7
+
+    subgraph PAS7 [PAS 7 — ACCOUNTING + ZUS + BUSINESS]
+        P7[accounting + pkpir + zus + business + corrections] --> OK7[pass]
+    end
+    OK7 --> MERGE
+
+    AB -->|TAK — abort| MERGE[Verdict Merger: safe_merge chain]
+    MERGE --> PAS8
+
+    subgraph PAS8 [PAS 8 — POST-MERGE INTELLIGENCE]
+        PAS8[conflicts.decide — cross-domain conflict detection] --> ENR
+    end
+    PAS8 --> ENR[Enterprise Enrichment: ~30 advisory pakietow]
+    ENR --> PROV[provenance.enrich_verdict — OBECNIE MARTWY]
+    PROV --> OUT[Final JSON werdykt + _provenance_tree]
+
+    classDef block fill:#f99,stroke:#933,stroke-width:2px;
+    classDef triage fill:#fc9,stroke:#963;
+    class BA0,BA1 block;
+    class TRI1 triage;
+```
+-------------------------------------------------------------
+UWAGA: Powyzszy diagram przedstawia ZAMIERZONA architekture Multi-Pass.
+W rzeczywistej implementacji (main_jdg.rego) PAS-y NIE sa sekwencyjne
+z abortem — wszystkie wywolywane sa naraz przez zagniezdzony
+safe_merge (patrz analiza ponizej). PAS 8 (provenance) jest obecnie
+martwym kodem (patrz sekcja 8).
+-------------------------------------------------------------
+
+Architektura (ADR-001): wszystkie pakiety .rego uzywanie deterministycznej
+ewaluacji else-chain; priorytety numeryczne sa METADANA, nie mechanizm
+sortowania; kolejnosc w pliku = kolejnosc ewaluacji.
+
+OCENA: Zalozenie ADR-001 jest poprawne dla OPA/Rego (brak natywnego
+else-if; else := {...}{cond} to jedyny deterministyczny schemat).
+Jednakze orkiestrator main_jdg.rego NIE uzywa else-chain miedzy
+pakietami — uzywa ZAGNIEZDZONEGO safe_merge (kompozycja obiektow), ktory
+ewaluuje WSZYSTKIE argumenty (Rego nie jest leniwe przy budowie
+obiektu). To znaczy:
+
+  final_verdict = safe_merge(risk.decide, safe_merge(kks.decide, ...))
+
+Kazde *.decide jest wywolywane niezaleznie od wyniku risk.decide.
+Deklarowany w komentarzach mechanizm "BLOCK_AND_ALERT abortuje dalsze
+passy" (komentarz L~130, L~390) NIE istnieje na poziomie Rego —
+"abort" nastepje dopiero po stronie konsumenta (Python) czytajacego
+pole _routing z finalnego JSON. Zatem:
+  - latency O(N): wszystkie ~55 pakietow sa ewaluowane dla full chain;
+  - deklarowane "O(1)" dotyczy tylko wyboru shardu (sharded paths),
+    NIE samej ewaluacji;
+  - BLOCK_AND_ALERT z risk.risk_graph_match (priorytet 0) nie powoduje
+    pominiecia vat.substantive, pit.forms, zus itd. — one nadal sie
+    licza (ich pola zostana nadpisane przez risk tylko jezeli risk
+    ustawi te same klucze).
+
+WPLYW: wydajnosciowy (latency ~28s dla full chain wg komentarza) oraz
+semantyczny — pakiet z nizszym priorytetem wewnatrz moze ustawic pole,
+ktore risk nie ustawil, i przetrwac w finalnym werdykcie (np. zus_health
+z zus.rego pozostanie nawet gdy risk zablokuje). To akceptowalne dla
+pola ZUS (immutable), ale ryzykowne dla pol decyzyjnych.
+
+REKOMENDACJA 3.1: Wprowadzic realny short-circuit miedzy PAS-ami.
+
+  Sposob realizacji (opisowo, BEZ kodu Rego): orkiestrator powinien
+  najpierw wywolac pakiet bramkujacy (risk.decide) i sprawdzic pole
+  _routing wyniku. Jezeli wynosi ono BLOCK_AND_ALERT — zbudowac
+  finalny werdykt wylacznie ze zlozenia: werdykt bramki + fallback
+  (pomijajac ewaluacje pozostałych ~50 pakietow core). W przeciwnym
+  razie kontynuowac pelny safe_merge z routing, compliance, VAT, PIT,
+  ZUS itd. Alternatywnie wydzielic funkcyjny "gate" z wczesnym
+  zwrotem (return) przed rozpoczeciem zagniezdzonego lancucha.
+
+  Wazne: poniewaz Rego NIE jest leniwe przy kompozycji obiektow,
+  sam warunek musi byc umieszczony PRZED wywolaniem safe_merge
+  (selektor galezi), a nie wewnatrz niego. Bez tego wszystkie
+  argumenty safe_merge zostana i tak wyliczone.
+
+  Czas: 4h. Redukcja latency dla scenariuszy fraud ~40-60%.
+
+3.2 SHARDED ROUTER (B1) — DETERMINIZM I BEZPIECZENSTWO
+-------------------------------------------------------------
+B1 (komentarz L240-305) deklaruje routing O(1): hash kontekstu
+(tax_form x transaction_type x entity_flags x evaluation_date) ->
+dynamiczna selekcja pakietow. Implementacja:
+
+  routing_context (L~240): ekstrakcja flag (tax_form, transaction_type,
+    entity_status, evaluation_quarter, is_cross_border, has_employees,
+    is_vat_payer, requires_ksef).
+  shard_selector(ctx) (L259): zwraca liste pakietow wg kontekstu.
+  use_full_chain(ctx) (L282-301): decyzja pelny vs sharded.
+  final_verdict (L~480): sharded_sale_verdict / sharded_purchase_verdict
+    / full_final_verdict na podstawie inline warunkow.
+
+DIAGRAM MERMAID — Sharded Router (B1):
+-------------------------------------------------------------
+```mermaid
+flowchart TD
+    IN[Input: invoice + jdg_entrepreneur + confidence] --> CTX[routing_context]
+    CTX --> TX[build_transaction_type]
+    CTX --> ES[build_entity_status]
+    CTX --> Q[build_evaluation_quarter]
+    CTX --> CB[is_cross_border]
+    TX --> DEC{final_verdict selector}
+    ES --> DEC
+    CB --> DEC
+    DEC -->|DOMESTIC_SALE + ACTIVE + not CB| SS[sharded_sale_verdict: 11 pakietow]
+    DEC -->|DOMESTIC_PURCHASE + ACTIVE| SP[sharded_purchase_verdict: 11 pakietow]
+    DEC -->|cross-border OR non-ACTIVE OR UNKNOWN| FF[full_final_verdict: ~55 pakietow]
+    SS --> MERGE[safe_merge chain]
+    SP --> MERGE
+    FF --> MERGE
+    MERGE --> CONF[final_verdict_with_conflicts: + conflicts.decide]
+    CONF --> ENR[final_verdict_enriched: + ~30 enterprise advisory]
+    ENR --> OUT[Final JSON werdykt]
+```
+-------------------------------------------------------------
+
+OCENA DETERMINIZMU: routing_context jest deterministyczny (build_*
+uzywaja else-chain z ostatecznym default). Selektor final_verdict jest
+deterministyczny (3 rozlaczne galezie + else). DOBRZE.
+
+ODKRYCIA B1:
+  (a) shard_selector() i use_full_chain() sa MARTWYM KODEM —
+      final_verdict uzywa INLINE warunkow (L~485-495), NIE wywoluje
+      tych funkcji. redundancja / ryzyko rozjazdu logiki. Czas: 1h
+      (usunac lub ujednolicic).
+  (b) [KRYTYCZNE-3] sharded_sale_verdict (L410) pomija pakiety
+      bezpieczenstwa: validation, aml, edge_cases, ksef_jpk, mdr,
+      api_fallback, conflicts, rodo. Dla ~70% ruchu (DOMESTIC_SALE +
+      ACTIVE) NIE wychwytywane sa: bledny NIP (R0613), faktura poza
+      KSeF po 01.02.2026 (P593/P647), platnosc gotowkowa >15k (P653),
+      naruszenie MPP (P650), naruszenie Bialej Listy (P651), brak MDR
+      (P655). To LUKA PRAWNA — fast-path jest szybki ale NIEPELNY.
+  (c) sharded paths NIE sprawdzaja requires_ksef ani is_vat_payer z
+      routing_context — choc te flagi sa liczone, nie wplywaja na
+      selektor. Marnotrawstwo + niespojnosc z deklaracja B1.
+  (d) Kolejnosc pakietow w shardzie NIE zachowuje priorytetu
+      architektonicznego: sharded_sale zaczyna od risk, kks, routing,
+      compliance (OK), ale potem substantive, forms, kup, accounting,
+      business, zus, fallback — pomija conflicts (post-merge). W
+      full_final_verdict conflicts jest post-merge (L500), w shardzie
+      w ogole go nie ma.
+  (e) build_evaluation_quarter (L~268) liczy kwartal ale NIGDY nie
+      uzywa go do routingu (shard_selector go nie czyta). martwe pole.
+
+REKOMENDACJA 3.2: sharded paths MUSZA zawierac co najmniej:
+  risk, kks, routing, compliance, validation, edge_cases, ksef_jpk,
+  aml, mdr, api_fallback, vat.substantive, pit.forms, pit.kup,
+  accounting, business, zus, corrections, conflicts, fallback.
+To ~19 pakietow (vs obecnie 11) — nadal 3x mniej niz full chain (55),
+wiec zysk latency pozostaje (~55 -> ~19). Czas: 4h.
+
+3.3 safe_merge I OCHRONA immutable_verdict
+-------------------------------------------------------------
+Implementacja (L337-345):
+
+  safe_merge(a, b) = a { has_immutable_flag(a) }       # a chronione
+  safe_merge(a, b) = object.union(b, a) { has_immutable_flag(b) }  # b wygrywa
+  safe_merge(a, b) = object.union(a, b) { not imm(a); not imm(b) } # a wygrywa
+
+DIAGRAM MERMAID — safe_merge:
+-------------------------------------------------------------
+```mermaid
+flowchart LR
+    A[werdykt a]:::imm --> CHK{immutable_verdict?}
+    B[werdykt b]:::imm --> CHK
+    CHK -->|a immutable| RA[zwróc a — a chronione przed b]
+    CHK -->|b immutable| RB[object.union b,a — b wygrywa konflikty, flaga propaguje w gore]
+    CHK -->|zadne immutable| RU[object.union a,b — a wygrywa zewnetrzny wyzszy priorytet]
+    classDef imm fill:#fde,stroke:#933;
+```
+-------------------------------------------------------------
+
+OCENA: Mechanizm sprytny (propagacja flagi immutable w gore lancucha
+chroni ZUS przed risk.decide). Zgodny z ADR-006. Jednakze:
+
+  (i) Komentarz (L142) twierdzi, ze chroni ZUS P720/P722/P724 oraz
+      business P914. Weryfikacja: immutable_verdict=true ustawiaja
+      TYLKO zus.rego (10 regul) i zus/enterprise_benefits.rego (7).
+      business.rego NIE ustawia tej flagi (0 dopasowan). Komentarz
+      NIEZGODNY z kodem — business P914 (suspension_zus) NIE jest
+      chroniony. Czas: 1h (dodac flage do business.rego lub poprawic
+      komentarz).
+  (ii) has_immutable_flag sprawdza TYLKO top-level klucz. Zagniezdzone
+       pola nie sa chronione. Akceptowalne dla obecnego schematu 25-pol.
+  (iii) Jesli a i b oba immutable -> przypadek 1 (zwraca a). Kolejnosc
+        argumentow w lancuchu decyduje — nieprzezroczyste.
+  (iv) WAZNE: safe_merge chroni TYLKO gdy oba argumenty sa merge'owane
+       przez safe_merge. final_verdict_with_conflicts (L500) i
+       final_verdict_enriched (L505+) uzywaja zwyklego object.union —
+       tam ochrona immutable NIE obowiazuje. Zatem conflicts i
+       enterprise advisory moga nadpisac zus_health_rate. Czas: 1h
+       (zamienic na safe_merge lub ograniczyc conflicts/enterprise do
+       nowych kluczy prefiksowanych _).
+
+3.4 CZY 17 PAS-OW JEST OPTYMALNYCH?
+-------------------------------------------------------------
+main_jdg.rego komentarz deklaruje PAS 0-17 (risk, routing, compliance,
+crossborder, VAT, PIT, allowances, accounting, ZUS+business, conflicts
+post-merge, enterprise strategic S1-S5, operational S6-S10,
+declarative S11-S13, neural v6, accounting-live v6.1, class IX v6.2,
+deep coverage v7.0, meta v7.0, audit v7.0). LEGAL_COVERAGE.md ADR-007
+deklaruje PAS 1-9.
+
+NIESPOJNOSC: dwie rozne numeracje PAS (0-17 w main vs 1-9 w ADR-007).
+Docelowo 17 pasow > 9, ale numeracja niekanoniczna.
+
+OCENA OPTYMALNOSCI: 17 pasow jest ZBYT ZAGRZADZONE dla czystego OPA
+(re-evaluation koszt rosnie liniowo). W architekturze sharded 3-sciezkowej
+wiekszosc pasow jest pomijana dla fast-path. Rekomendacja: ujednolicic
+numeracje PAS (kanon: PAS 0 gate, PAS 1-9 core, PAS 10-17 advisory) i
+udokumentowac, ktore PAS-y sa w ktorym shardzie. Czas: 2h (dokumentacja).
+
+INNOWACYJNE USPRAWNIENIE (patrz sekcja 9.1): "Self-Healing Router"
+automatycznie omijajacy uszkodzone pakiety + "Predictive Pre-Loading"
+ladujacy pakiety zanim sa potrzebne (na podstawie routing_context).
+
+
+=============================================================
+4. ANALIZA SYSTEMU PRIORYTETOW (POZIOM ENTERPRISE)
+=============================================================
+
+4.1 KANONICZNA HIERARCHIA (deklarowana)
+-------------------------------------------------------------
+  risk      0-19    (fraud, BLOCK_AND_ALERT)
+  routing   10-29   (field confidence, triage)
+  compliance 20-167 (AML, whitelist)
+  crossborder 40-59
+  VAT        50-245 (substantive, deductions, procedures)
+  PIT        500-609 (forms, kup, advances, transitions)
+  allowances 600-639
+  conflicts  586-619 (post-merge)
+  edge_cases 546-999 (sanctions, KSeF, MPP, cash, CFC)
+  ZUS        700-780
+  accounting 800-899
+  business   900-949
+  corrections 1100-1130
+  liability  1150-1184
+  representation 1200-1222
+  employer   1200-1233   <- KOLIZJA z representation!
+  rodo       1610-1620
+  temporal   1600-1622   <- KOLIZJA z rodo!
+  environmental 1400-1417
+  restructuring 1500-1515
+  digital    630 / 1890-1905  <- KOLIZJA 630 z allowances/pit!
+  fallback   1000-1099
+  api_fallback 1850-1899
+  enterprise (v5-v7) 1-400 / 1785-1965  <- NIESPOJNA skala
+
+4.2 WERYFIKACJA (grep priority":N, 232 dopasowania)
+-------------------------------------------------------------
+TABELA KOLIZJI I NIESPOJNOSCI:
+-------------------------------------------------------------
+| Pakiet           | Zakres       | Kolizja / uwaga                          |
+|------------------|--------------|------------------------------------------|
+| pit.kup          | 564-592      | naklada sie z allowances 600-639? Nie,   |
+|                  |              | ale 592 blisko 600. transitions 590-609 |
+|                  |              | KOLIZJA 590-592 z pit.kup 590-592.       |
+| pit.transitions  | 590-609      | KOLIZJA z pit.kup (590-592) i allowances |
+| allowances       | 600-639      | naklada sie z conflicts 586-619 (600-619)|
+| conflicts        | 586-619      | KOLIZJA z allowances 600-619, edge 546+  |
+| edge_cases       | 546-999      | rozstrzelony; 999 = no_match default     |
+| representation   | 1200-1222    | KOLIZJA z employer 1200-1233             |
+| employer         | 1200-1233    | KOLIZJA z representation                 |
+| rodo             | 1610-1620    | KOLIZJA z temporal 1600-1622             |
+| temporal         | 1600-1622    | KOLIZJA z rodo 1610-1620                 |
+| digital          | 630 / 1890+  | 630 KOLIZJA z allowances/pit             |
+| exit_tax_mdr     | 1,10,20,30   | KOLIZJA priority 1 z nkup, neural_mesh   |
+| nkup_enterprise  | 1,10,11,23   | KOLIZJA priority 1                       |
+| neural_mesh      | 1,100,200,300| KOLIZJA priority 1                       |
+| form_optimizer   | 1785-1789    | OK (unikalny)                            |
+| legislative_mon  | 1950-1965    | OK                                       |
+| jpk_v7_autogen   | 1925-1940    | OK                                       |
+-------------------------------------------------------------
+
+4.3 CZY BLOCK_AND_ALERT DZIALA PRZED INNYMI WERDYKTAMI?
+-------------------------------------------------------------
+NIE w pelni. Poniewaz priorytet jest METADANA (ADR-001), rzeczywista
+kolejnosc = kolejnosc w pliku else-chain. W main_jdg.rego safe_merge
+kolejnosc zewnetrzna: risk (najwyzszy) > kks > enterprise_penalties >
+routing > compliance > aml > ... > fallback. Risk jest NAJZEWNATRZNY
+w safe_merge(a,b)=object.union(a,b) gdy zadne immutable -> a wygrywa.
+Zatem risk.decide nadpisuje klucze wszystkich wewnetrznych. DOBRZE dla
+pol _routing/rule_id (risk BLOCK dominuje).
+
+ALE: final_verdict_with_conflicts (L500) = object.union(final_verdict,
+conflicts.decide) — conflicts (po-merge) wygrywa nad final_verdict
+(w tym nad risk) dla kolizyjnych kluczy. conflicts.rego ustawia
+_routing: BLOCK_AND_ALERT na ~6 regulach (L61, L84, L105, L192, L411,
+L575). Zatem conflicts moze ZMIENIC powod blokady ustalony przez risk
+(np. fraud_graph_match) na powod konfliktu domenowego — subtelny bug
+audytowalnosci (rule_id/routing_reason nie odzwierciedlaja juz
+pierwotnej decyzji risk).
+
+Ponadto edge_cases.rego ma pierwsza regule priorytet 546 (non-BLOCK),
+a reguly BLOCK dopiero od 549+. First-match-wins: jezeli warunek 546
+spelni sie, zwraca non-BLOCK nawet gdy 549 (BLOCK) tez by sie spelnio.
+Nalezy weryfikowac warunki rozlacznosci (sa one rozlaczne wg
+przegladu, ale wartwienie BLOCK-na-poczatku byc bezpieczniejsze).
+
+REKOMENDACJA 4.3:
+  (a) final_verdict_with_conflicts: zmienic na
+      safe_merge(final_verdict, conflicts_restricted) gdzie
+      conflicts ustawia TYLKO pole _cross_domain_conflicts (nie
+      _routing). Czas: 2h.
+  (b) W kazdym pakiecie reguly BLOCK_AND_ALERT umieszczac jako
+      PIERWSZE w else-chain (nie po regulach non-BLOCK). Czas: 1 dzien
+      (audyt wszystkich pakietow).
+
+4.4 INNOWACYJNY SYSTEM DYNAMICZNYCH PRIORYTETOW (Enterprise)
+-------------------------------------------------------------
+Pomysl wyprzedzajacy (patrz sekcja 9.7 "Adaptive Priority Engine"):
+priorytet nie jest statyczna metadana, lecz FUNKCJA profilu ryzyka
+JDG. Efektywny priorytet reguly powstaje jako suma czterech skladowych:
+  (1) bazowego priorytetu reguly (z obecnego rejestru),
+  (2) wagi ryzyka — proporcjonalnej do wskaznika fraud dla danej
+      JDG (wyzszy fraud = wyzszy priorytet regul karno-skarbowych),
+  (3) wagi historycznej — proporcjonalnej do liczby przeszlych
+      naruszen tej JDG (recydywa = eskalacja),
+  (4) wagi temporalnej — zerowej jezeli regula nie byla jeszcze
+      aktywna na date transakcji (is_active_for_date = false),
+      dodatniej jezeli byla.
+
+Realizacja (opisowo): w pre-process (Python) wyliczyc wagi dla
+biezacego kontekstu i wstrzykac je jako tabele data w OPA (klucz:
+rule_id -> waga). Regula czyta swoja wage z danych (bezpieczny
+odczyt z fallbackiem 0). Zachowuje pelny determinizm OPA — wagi sa
+DANYMI, nie logika; ta sama regula daje ten sam wynik dla tych samych
+ danych wejsciowych. Czas: 3-5 dni.
+
+
+=============================================================
+5. ANALIZA TEMPORALNA (POZIOM ENTERPRISE)
+=============================================================
+
+5.1 STAN temporal.rego (P1600-P1618) + _metadata_jdg.rego
+-------------------------------------------------------------
+temporal.rego (282 linie) implementuje 11 regul:
+  P1600 statute_limitations_5y (Art. 70 §1 OP)
+  P1602 statute_limitations_10y (Art. 70 §2 + Art. 44 KKS)
+  P1603 statute_suspended (Art. 70 §6-7)
+  P1604 rmk_vat_rate_2026 (RMK 23%)
+  P1605 rmk_vat_rate_8pct_condition (Art. 146ef, klauzula powrotna)
+  P1606 historical_pit_rate_2019 (17%/32%, 85 528)
+  P1608 historical_pit_rate_2025 (12%/32%, 120 000)
+  P1610 time_travel_rule_selection (Time-Travel OPA)
+  P1612 document_retention_expiry (Art. 86 §1 OP + Art. 112 VAT)
+  P1614 tax_free_amount_temporal (6600->8000->30000)
+  P1616 depreciation_one_off_limit_temporal (10000->100000)
+  P1613 polski_lad_transition (01-06.2022, 17%/32%)
+  P1615 ksef_delayed_2026 (Art. 106na-106nq, 01.02.2026)
+  P1618 nbp_fx_rate_date (tabela A/C)
+  P1617 covid_legacy (2020-2021, archiwalne)
+
+_metadata_jdg.rego (L~190-260) zawiera temporal_validity registry
+(~14 wpisow) + is_active_for_date(rule_id, eval_date) (A2 Temporal
+Causality Chain) + active_rules_for_date / inactive_rules_for_date.
+
+5.2 CZY valid_from/valid_to KOMPLETNY?
+-------------------------------------------------------------
+NIE. temporal_validity obejmuje ~14 regul z ~7000 / 1935 punktow
+prawnych (~0.2% pokrycia). Brakujace zmiany prawne (krytyczne):
+
+  - Ulga B+R (Art. 26e PIT) — wprowadzona 2022, rozszerzenia 2023/2025.
+    BRAK wpisu temporal.
+  - IP Box (Art. 30ca PIT) — wprowadzony 2019, rozszerzenia 2022/2025.
+    BRAK wpisu (choc legal_cartography ma lex:PIT:Art30ca).
+  - Exit Tax (Art. 30da PIT) — wejscie 2019. BRAK wpisu temporal.
+  - Estonian CIT (Art. 24-24h CIT) — 2022/2025 zmiany. BRAK.
+  - Tarcza COVID (2020-2021) — P1617 istnieje, ale BRAK wpisu w
+    temporal_validity (is_active_for_date nie bramkuje).
+  - SLIM VAT 2 (2022) i SLIM VAT 3 (2023) — tylko bad_debt wpisany.
+  - MDR DAC6 (2021) — BRAK wpisu temporal.
+  - Ulga na start / Maly ZUS Plus — wpisane, DOBRZE.
+  - Polski Lad 2022 — health_scale/linear/lump wpisane, DOBRZE.
+
+5.3 CZY SLIM VAT 3 (2023), Polski Lad (2022), KSeF (2026-02-01) POPRAWNIE?
+-------------------------------------------------------------
+  - Polski Lad 2022-01-01: POPRAWNIE (healthScale/linear/lump
+    valid_from "2022-01-01", P1613 transition). DOBRZE.
+  - KSeF 2026-02-01: POPRAWNIE (P1615 + thresholds.vat.ksef_mandatory_from
+    + edge_cases P593). DOBRZE.
+  - SLIM VAT 3: NIESPOJNOSC DAT.
+      thresholds_jdg.rego temporal_thresholds.bad_debt_days:
+        valid_from "2025-07-01", reason "SLIM VAT 3/2025".
+      _metadata_jdg.rego temporal_validity.sanction_bad_debt_debtor_30pct:
+        valid_from "2023-07-01".
+      ARCHITECTURE.md ADR-003: "SLIM VAT 3 (2023) zmienil ulge ...".
+      LEGAL_COVERAGE.md: "150 dni -> 90 dni (SLIM VAT 3/2025-07-01)".
+    SLIM VAT 3 weszlo w zycie 01.07.2023. Data "2025-07-01" w
+    thresholds_jdg.rego jest BLEDNA. Nalezy ujednolicic na 2023-07-01.
+    Czas: 30 min.
+
+5.4 INNOWACYJNY SYSTEM TEMPORAL BUNDLE ROUTING (Enterprise)
+-------------------------------------------------------------
+Pomysl wyprzedzajacy (sekcja 9.4 "Temporal Snapshot Engine"): zamiast
+rejestru per-regula, wprowadzic SNAPSHOTY stanu prawnego na kazda date
+graniczna (bundle OPA per epoka: pre-2019, 2019-2021, 2022-H1, 2022-H2,
+2023-2025, 2026+). Router wybiera bundle wg evaluation_date. Zaleta:
+zero koszow runtime (is_active_for_date), pelna izolacja epok,
+deterministyczne time-travel. Wada: duplikacja regul — rozwiazanie:
+generator snapshotow z master + diff (narzedzie tools/). Czas: 1-2 tyg.
+
+
+=============================================================
+6. ANALIZA SYSTEMU THRESHOLDOW (POZIOM ENTERPRISE)
+=============================================================
+
+6.1 STRUKTURA thresholds_jdg.rego (455 linii, package jdg.thresholds)
+-------------------------------------------------------------
+Sekcje: vat, pit, zus, bounds, lump_sum, ord, depreciation, business,
+local_taxes, environmental, aml, mdr, misc, early_warning,
+temporal_thresholds + get_temporal_threshold().
+
+ZGODNOSC z ADR-002 (Zero Hardcoded): DUZA czesc progow jest
+eksternalizowana — DOBRZE. Ale:
+
+6.2 [KRYTYCZNE-1] SCHEMAT NIEZGODNOSCI SCIEZEK (szczegoly)
+-------------------------------------------------------------
+  thresholds_jdg.rego: `package jdg.thresholds` -> OPA path:
+    data.jdg.thresholds.vat.*, data.jdg.thresholds.pit.*, etc.
+  _helpers_jdg.rego L21: object.get(data.thresholds.jdg.limits, ...)
+    -> data.thresholds.jdg.limits — NIE ISTNIEJE (brak package
+    thresholds.jdg z obiektem limits).
+  _helpers_jdg.rego L26: data.thresholds.jdg.rates — NIE ISTNIEJE.
+  _helpers_jdg.rego L60: data.thresholds.jdg.fc_thresholds — NIE
+    ISTNIEJE (fc_thresholds w ogole nie zdefiniowane w thresholds_jdg).
+  _helpers_jdg.rego L79: data.thresholds.jdg.rates.eur_pln — NIE
+    ISTNIEJE.
+
+Weryfikacja grep:
+  data.thresholds.jdg.*  -> 31 dopas. (helpery + kilka regul micro)
+  data.jdg.thresholds.* -> 41 dopas. (poprawnie, reguly enterprise)
+  data.thresholds.pit|vat|zus -> 0 dopas.
+
+WPLYW: helpery get_jdg_limit/get_jdg_rate ZAWSZE zwracaja fallback
+(poniewaz data.thresholds.jdg.limits jest undefined -> object.get
+zwraca fallback). jdg_fc_below_threshold porownuje do 0.0 (fallback)
+— nigdy nie spelnia warunku <0.0 (fc>0), wiec routing confidence
+de facto WYLACZONY przez helper. build_jdg_routing_reason podaje
+threshold z data.thresholds.jdg.rates — fallback 0.0.
+
+Jedyny ratunek: istnieje zewnetrzny bundle data montowany pod
+data.thresholds.jdg (manifest.json/bundle.sh). Bash verify:
+  find -> brak data.json/thresholds.json. Istnieje
+  policies/data/thresholds_sc.rego (inny plik, nie JDG).
+Zatem dla JDG sciezka data.thresholds.jdg.* jest NIEWYPELNIONA.
+
+UWAGA: routing.rego NIE uzywa helpera jdg_fc_below_threshold —
+hardcoduje progi 0.95/0.80/0.85/0.70 bezposrednio (L34, L56, L77,
+L99). Wiec routing DZIALA, ale omija ADR-002 i helper.
+
+REKOMENDACJA 6.2 [KRYTYCZNE]:
+  Opcja A (minimalna): w _helpers_jdg.rego zmienic all
+    data.thresholds.jdg.X -> data.jdg.thresholds.X oraz dodac do
+    thresholds_jdg.rego obiekty limits, rates, fc_thresholds (lub
+    aliasy). Czas: 4h.
+  Opcja B (kanoniczna): przeniesc thresholds_jdg.rego na
+    `package thresholds.jdg` (wtedy path = data.thresholds.jdg.*)
+    i ujednolicic wszystkie 41 uzyc data.jdg.thresholds -> data.
+    thresholds.jdg. Czas: 1 dzien + testy.
+  Rekomendowana: Opcja A (mniej invazyjna).
+
+6.3 TABELA POKRYCIA THRESHOLDOW vs kanon 38c (~779 regul)
+-------------------------------------------------------------
+| Domena        | Progi w thresholds_jdg | Hardcoded w .rego | Status |
+|---------------|------------------------|-------------------|--------|
+| VAT stawki    | 23/8/5/0%              | ~30 uzyc "0.23"   | CZESCI |
+| VAT limit 200k| subject_exemption_limit| ~15 uzyc "200000" | CZESCI |
+| PIT skala     | 12/32%, 120k, 30k      | ~20 uzyc          | CZESCI |
+| PIT liniowy   | 19%                    | ~10 uzyc "0.19"   | CZESCI |
+| ZUS zdrowotna | 9/4.9%, 12900          | ~15 uzyc "0.09"   | CZESCI |
+| ZUS ryczalt   | 3 progi 491.40/819/1474| alt 419/699/1258  | NIESPOJ|
+| Bad debt      | 90 dni (90)            | temporal 150->90  | OK*    |
+| KSeF          | 2026-02-01, 7 dni, 500k| temporal P1615    | OK     |
+| Cash limit    | 15000, 20%             | ~5 uzyc           | CZESCI |
+| MPP           | 15000, 30%             | ~3 uzyc           | CZESCI |
+| fc_thresholds | BRAK w pliku           | routing hardcoduje| BRAK   |
+| routing prog  | BRAK                   | 0.95/0.80/0.85/0.70| BRAK  |
+| api_fallback  | BRAK                   | "3", "50%"        | BRAK   |
+| NIP checksum  | BRAK (wagi)            | wagi [6,5,7,...]  | BRAK   |
+| early_warning | 8 progow 80%           | -                 | OK     |
+-------------------------------------------------------------
+* bad_debt: data 2025-07-01 bledna (patrz 5.3).
+
+6.4 KOMPLETNOSC vs mapa kanoniczna 38c (~779 regul)
+-------------------------------------------------------------
+thresholds_jdg.rego definiuje ~120 kluczy progow. Mapa 38c zaklada
+~779 regul czesto parametryzowanych. Szacunek pokrycia: ~40-50%
+progow kanonicznych jest eksternalizowanych; reszta hardcodowana lub
+nie istnieje. Najwieksze luki: fc_thresholds, routing confidence,
+api_fallback progi, NIP/REGON wagi, prog repryzentacji 0.0025 (jest
+w thresholds.pit.representation_limit_pct ale uzyc w regule?).
+
+REKOMENDACJA 6.4: dodac fc_thresholds {nip:0.80, vat_rate:0.95,
+minimum:0.70, linear_min:0.85} + routing_confidence + api_fallback
+{multi_degraded_threshold:3, min_operational_pct:0.50} +
+checksum_weights {nip:[6,5,7,2,3,4,5,6,7], regon9:[...], regon14:[...]}.
+Czas: 1 dzien.
+
+
+=============================================================
+7. ANALIZA WALIDACJI I FALLBACK (POZIOM ENTERPRISE)
+=============================================================
+
+7.1 validation.rego (R0613-R0622)
+-------------------------------------------------------------
+  R0613 NIP checksum (modulo 11, wagi [6,5,7,2,3,4,5,6,7]) —
+    BLOCK_AND_ALERT. Algorytm poprawny. Ekstrakcja cyfr przez
+    substring (10 wywolan) — verbose ale deterministyczny. WAGI
+    HARDCODED (nie w thresholds).
+  R0614 REGON checksum (9/14 cyfrowy) — TRIAGE_QUEUE. Wagi hardcoded.
+  R0615+ ciaglosc numeracji, daty, kwoty, KSeF UPO, samofakturowanie.
+
+OCENA: logika walidacji poprawna i kompletna dla podstawowych
+identyfikatorow. BLOCK na blednym NIP — DOBRZE. Ale:
+  - Wagi NIP/REGON hardcoded (ADR-002 naruszenie).
+  - R0613 wymaga count(vendor_nip)==10 — dla NIP zagranicznego
+    (np. EU VAT ID) NIE pasuje -> fallback. Akceptowalne, ale brak
+    reguly walidacji EU VAT ID (modolo 97 dla EU) — LUKA.
+  - validation NIE jest w sharded_sale/purchase (KRYTYCZNE-3) —
+    bledny NIP nie wychwycony na fast-path.
+
+7.2 fallback.rego (P1000/P1099)
+-------------------------------------------------------------
+  P1000 domestic_fallback: vendor.country=="PL" -> 23% VAT, skala
+    PIT 12%, ZUS standard, KUP 100%, matched:true. Wszystko hardcoded.
+  P1099 no_match: TRIAGE_QUEUE, matched:false, te same domyslne.
+
+OCENA: fallback.decide jest ostatnia deska ratunku — rozsadny
+(zwraca najbezpieczniejsze zalozenia 23%/skala). Ale RYZYKO: dla
+transakcji ZWOLNIONEJ z VAT (np. Art. 43), jezeli zaden pakiet nie
+dopasuje, fallback NADpisze vat_rate "0.23" (matched:true) —
+CICHE zastosowanie 23% do transakcji zwolnionej. Powinno byc
+matched:false + TRIAGE (P1099) dla niepewnych, a P1000 tylko gdy
+faktycznie brak reguly a kraj PL. Rekomendacja: P1000 zmienic na
+matched:false + warning "VAT 23% jako domysl systemowy — wymaga
+recznej weryfikacji". Czas: 1h.
+
+7.3 api_fallback.rego (P1850-P1855)
+-------------------------------------------------------------
+  P1850 Biala Lista offline -> TRIAGE (nie blokuj). DOBRZE.
+  P1851 CEIDG offline -> warning (nie blokuj, chyba fraud_flag). DOBRZE.
+  P1852 KSeF offline -> tryb awaryjny 7 dni, /OFFLINE suffix, Art.
+    106ne. DOBRZE (zgodne z prawem).
+  P1853 GUS BIR offline -> dane z faktury. DOBRZE.
+  P1854 NBP offline -> kurs z cache. DOBRZE.
+  P1855 multi-degradation >=3 API -> BLOCK_AND_ALERT. DOBRZE, ale
+    prog "3" i "50%" HARDCODED (nie w thresholds).
+
+OCENA: api_fallback jest NAJBARDZIEJ dojrzalym pakietem fallback
+(swiadome graceful degradation, zgodnosc prawna KSeF/NBP/Biala Lista).
+Rekomendacja: eksternalizowac prog "3" -> aml/api_fallback.multi_
+degraded_threshold oraz "50%" -> min_operational_pct. Czas: 1h.
+
+7.4 CZY fallback.decide WYSTARCZAJACY jako ostatnia deska ratunku?
+-------------------------------------------------------------
+TAK dla domyslnych zalozen podatkowych. NIE dla bezpieczenstwa
+transakcji — fallback NIE sprawdza fraud, NIP, KSeF. Zatem jezeli
+wszystkie pakiety bezpieczenstwa awariuja (np. import undefined),
+fallback zwroci 23% bez ostrzezenia. Rekomendacja: fallback P1099
+dodac _routing:"TRIAGE_QUEUE" + _warnings:"NO_MATCHING_RULE —
+reczna weryfikacja wymagana" (juz jest), ale USTAWIC matched:false
+(nie true) zawsze — P1000 ma matched:true co jest mylace. Czas: 30min.
+
+
+=============================================================
+8. ANALIZA PROVENANCE I AUDYTU (POZIOM ENTERPRISE)
+=============================================================
+
+8.1 provenance.rego (A1, 177 linii) — cel
+-------------------------------------------------------------
+Celem (komentarz L1-20) jest wzbogacenie kazdego werdyktu o
+_provenance_tree — graf JSON z pelna sciezka decyzyjna (pakiet,
+rule_id, priority, legal_basis, routing, threshold_refs, temporal
+valid_from/valid_to, warnings), root_hash (SHA-256 — realnie
+konkatenacja, bo OPA nie ma crypto.sha256), evaluation_ms,
+evaluated_at. Zgodnosc z Sovos Merkle Tree audit standard. ADR-006
+Immutable Audit Trail.
+
+8.2 [KRYTYCZNE-2] MARTWY KOD — weryfikacja
+-------------------------------------------------------------
+  enrich_verdict(verdict, input_context) (L159) — eksportowa funkcja
+    dodajaca _provenance_tree. Weryfikacja grep: enrich_verdict NIE
+    jest wywolywane nigdzie poza provenance.rego (0 uzyc w main_jdg).
+  final_verdict_enriched (main L505+) uzywa object.union z ~30
+    pakietami enterprise — NIE zawiera provenance.enrich_verdict.
+  build_provenance wymaga input_context._package_decisions (L38) i
+    input_context._evaluation_ms (L54). Weryfikacja grep: te pola
+    istnieja TYLKO w provenance.rego (0 uzyc w main_jdg lub innych).
+    Orkiestrator NIE buduje mapy _package_decisions — safe_merge
+    komponuje wyniki inline, nie zbiera per-pakiet.
+
+WPLYW: ADR-006 Immutable Audit Trail na warstwie Rego NIE jest
+realizowany w runtime. _provenance_tree nie pojawia sie w werdykcie.
+Jedynym sladem audytowym sa pola _legal_basis, rule_id, _warnings w
+werdykcie (przydatne, ale nie pelny graf). Realny Merkle/SHA-256
+musi byc po stronie Python (nexus_ai/tax/immutable_audit.py) — poza
+zakresem tego audytu, ale nalezy zweryfikowac czy Python warstwa
+kompletnuje provenance.
+
+8.3 CZY Immutable Audit Trail (ADR-006) PRAWIDLOWO ZAIMPLEMENTOWANY?
+-------------------------------------------------------------
+  - immutable_verdict flag: uzywana w safe_merge (DOBRZE), ale:
+    (a) tylko ZUS ja ustawia (zus.rego 10, enterprise_benefits 7);
+    (b) business P914 NIE ustawia mimo komentarza (L142);
+    (c) HMAC-SHA256 podpis nie istnieje w Rego (crypto.sha256 brak) —
+        musi byc Python.
+  - Merkle Tree: build_provenance generuje "root_hash" jako
+    sprintf("sha256:%s", [concat]) — to NIE jest realny hash, to
+    prefiks + konkatenacja rule_id. Non-repudiation NIE zachowane
+    na warstwie Rego. Rekomendacja: realne SHA-256 w Python wrapper
+    (nexus_ai/tax/immutable_audit.py) + pole _provenance_hash
+    wstrzykiwane post-eval. Czas: 1 dzien (Python).
+
+8.4 REKOMENDACJA 8 (provenance)
+-------------------------------------------------------------
+  (a) Podlaczyc enrich_verdict: w final_verdict_enriched dodac
+      object.union(..., provenance.enrich_verdict(final_verdict,
+      input)) jako OSTATNI krok. Czas: 2h.
+  (b) Wyprodukowac _package_decisions (opisowo): zamiast budowac
+      werdykt inline przez zagniezdzony safe_merge, zebrac wyniki
+      wszystkich pakietow w jedna mape (klucz: nazwa pakietu,
+      wartosc: jego obiekt decide), a nastepnie przekazac te mape
+      do enrich_verdict jako kontekst wejsciowy. W ten sposob
+      provenance dostanie pelny zbior decyzji per-pakiet i zbuduje
+      pelne drzewo sciezki decyzyjnej. Czas: 4h.
+  (c) _evaluation_ms: OPA nie mierzy czasu — wstrzyknac z Python
+      (input._evaluation_ms) lub ustawic 0 z komentarzem. Czas: 1h.
+  (d) Naprawic komentarz L142 (business P914 NIE immutable). Czas: 15min.
+  (e) Realny SHA-256 + Merkle w Python. Czas: 1 dzien.
+
+
+=============================================================
+9. GENIALNE POMYSLY ENTERPRISE — 12 INNOWACJI WYPRZEDZAJACYCH
+=============================================================
+(Rozdzial osobny. Min. 10 — dostarczono 12, pierwotne 10 + 2 bonus.)
+
+-------------------------------------------------------------
+9.1 SELF-HEALING ROUTER — automatyczne omijanie uszkodzonych pakietow
+-------------------------------------------------------------
+Stan obecny: awaria pakietu (np. kks.decide zwraca blad/undefined) ->
+safe_merge(object.undefined?) -> awaria calego lancucha.
+Pomysl: warstwa "health monitor" sledzi wyniki pakietow (success/
+error/timeout) w rolling window (np. 100 ostatnich ewaluacji).
+Pakiet z >20% bledow jest automatycznie WYKLUCZANY z lancucha na
+TTL (np. 5 min) i zastepowany fallback.decide. Router rekonfiguruje
+safe_merge dynamicznie (lista pakietow z data.health_status).
+Realizacja OPA: data.jdg.health.{package: status} wstrzykiwane z
+Python monitora; Rego helper healthy(p) sprawdza i skipuje.
+Korzyśc: zero-downtime przy awarii pojedynczego pakietu.
+Czas: 1 tydzien (Python monitor + Rego gate).
+
+-------------------------------------------------------------
+9.2 PREDICTIVE PRE-LOADING — ladowanie pakietow zanim sa potrzebne
+-------------------------------------------------------------
+Stan obecny: OPA laduje wszystkie pakiety do pamieci (bundle).
+Pomysl: na podstawie routing_context (tax_form + transaction_type)
+przewidziec TOP 5 pakietow z najwyzszym P(match) i预热 (pre-evaluate
+czesc statyczna przez partial evaluation OPA). Reszta pakietow
+lazy-load. Realizacja (opisowo): wykorzystac mechanizm partial evaluation
+ wbudowany w OPA — pre-kompilowac czesc statyczna pakietow
+ per shard (wynik pre-obliczony raz), a w runtime laczyc tylko
+ z dynamicznym inputem transakcji. Skladowa statyczna to te
+ warunki, ktore nie zaleza od input.invoice (np. stawki VAT,
+ progi ZUS) — one sa znane z gory. Skladowa dynamiczna to
+ warunki zalezne od konkretnej faktury (NIP, kwota, kraj).
+ OPA partial eval generuje "residual" regul zawierajacych tylko
+ czesc dynamiczna, co drastycznie redukuje ilosc ewaluowanych
+ warunkow w runtime. Korzyśc: latency -30-50% dla fast-path.
+ Czas: 2 tyg (wymaga zbudowania pipeline partial eval + testow
+ rownowaznosci residual vs full).
+ WYMAGANIE: kazdy shard musi miec wlasny partial-eval bundle,
+ bo kontekst routingu rozdziela pakiety.
+
+-------------------------------------------------------------
+9.3 CONFIDENCE CASCADE — dynamiczne dostosowanie progu ufnosci
+-------------------------------------------------------------
+Stan obecny: routing.rego hardcoduje progi 0.95/0.80/0.85/0.70.
+Pomysl: prog ufnosci NIE jest statyczny — adaptuje sie do historii
+kontrahenta (dla zaufanego kontrahenta prog 0.85, dla nowego 0.95).
+Realizacja (opisowo): w warstwie danych OPA prowadzic profile
+ufnosci kontrahentow (klucz: NIP kontrahenta -> prog fc_min + historia
+poprzednich ewaluacji). Regula routing czyta swoj prog z profilu
+kontrahenta (z bezpiecznym fallbackiem do wartosci domyslnej z
+thresholds.jdg.routing_confidence), zamiast z hardcodowanej stalej.
+Korzyśc: mniej false-positive triage dla zaufanych kontrahentow,
+wiecej czujnosci dla nowych. Czas: 3 dni.
+
+-------------------------------------------------------------
+9.4 TEMPORAL SNAPSHOT ENGINE — snapshoty stanu prawnego na date
+-------------------------------------------------------------
+(Patrz sekcja 5.4.) Generator snapshotow z master + diff; bundle
+OPA per epoka; router wybiera wg evaluation_date. Zaleta: pelne
+time-travel, determinizm, zero is_active_for_date runtime. Czas:
+1-2 tyg (tools/generate_snapshots.py + bundle.sh update).
+
+-------------------------------------------------------------
+9.5 CROSS-PACKAGE DEPENDENCY GRAPH — walidacja zaleznosci
+-------------------------------------------------------------
+Stan obecny: importy w main_jdg.rego (80+ import data.jdg.*) bez
+wizualizacji zaleznosci; kolizje priorytetow niewidoczne.
+Pomysl: narzedzie tools/dependency_graph.py parsuje importy +
+safe_merge kolejnosc -> graph DOT/Mermaid. Walidacja CI:
+wykrywanie cykli, kolizji priorytetow, martwych importow
+(nieuzylanych). Korzyśc: audytowalnosc architektury, bezpieczne
+refaktory. Czas: 3 dni.
+
+-------------------------------------------------------------
+9.6 RULE PROVENANCE CHAIN — pelna identyfikowalnosc do artykulu
+-------------------------------------------------------------
+Stan obecny: _legal_basis jako string, A1 provenance martwy.
+Pomysl: kazda regula -> jdg:rule_id -> lex:akt:art (RDF) ->
+cito:cites -> przepis ISAP (Dz.U. rok poz.). Wzbogacenie
+_provenance_tree o ISAP URL + wersja Dziennika Ustaw.Realizacja (opisowo): rozszerzyc istniejacy juz rejestr
+legal_cartography w _metadata_jdg.rego (obecnie zawiera
+~20 artykulow z mapowaniem jdg_rules + coverage + thresholds)
+o pole ISAP_ID (identyfikator w Internetowym Systemie Aktow
+Prawnych, np. "WDU2022poz1740") oraz pole Dziennik_Ustaw
+(rok + pozycja + data ogloszenia). Nastepnie w warstwie
+provenance (po jej podlaczeniu, sekcja 8.4) dołaczyc do
+ kazdego kroku _provenance_tree pelny identyfikator prawny:
+ rule_id -> lex:akt:art -> ISAP_ID -> URL ISAP.
+ Uzycie ISTNIEJACEGO legal_cartography (nie trzeba tworzyc
+ od zera) — wystarczy rozszerzyc i podlaczyc. Czas: 2 dni
+ (rozszerzenie rejestru + polaczenie z provenance).
+ KORZYŚc: pelna identyfikowalnosc decyzji do konkretnego
+ wydania Dziennika Ustaw — wymog regulatorowy i audytowy.
+
+-------------------------------------------------------------
+9.7 ADAPTIVE PRIORITY ENGINE — priorytety wg profilu ryzyka
+-------------------------------------------------------------
+(Patrz sekcja 4.4.) Pomysl opisowo: efektywny priorytet reguly jest
+SUMA czterech skladowych — bazowego priorytetu (z obecnego rejestru),
+wagi ryzyka (proporcjonalnej do wskaznika fraud tej JDG), wagi
+historycznej (proporcjonalnej do liczby przeszlych naruszen —
+recydywa eskaluje priorytet) oraz wagi temporalnej (zerowej gdy
+regula nie byla jeszcze aktywna na date transakcji, dodatniej gdy
+byla). Wagi sa wstrzykiwane z pre-processu Python jako tabele danych
+w OPA (klucz: identyfikator reguly -> jej waga dla biezacego
+kontekstu), a regula czyta swoja wage z danych z bezpiecznym
+fallbackiem do zera. Zachowuje pelny determinizm OPA — wagi sa
+DANYMI, nie logika.
+Korzyśc: JDG z historia naruszen automatycznie otrzymuje wyzsze
+priorytety regul karno-skarbowych (KKS, sankcje); nowa JDG bez
+historii otrzymuje wyzsze priorytety regul edukacyjnych (ulgi,
+optymalizacje). Priorytet staje sie kontekstowy zamiast statyczny.
+Czas: 3-5 dni.
+
+-------------------------------------------------------------
+9.8 ZERO-DOWNTIME RULE HOT-SWAP — wymiana regul bez przerwania
+-------------------------------------------------------------
+Stan obecny: zmiana reguly = redeploy bundle.
+Pomysl: OPA Data API pozwala hot-reload data.thresholds bez
+redeploy kodu Rego (ADR-002 juz to deklaruje). Rozszerzenie:
+hot-swap CALYCH pakietow przez versionowane bundle (v1, v2) +
+kanarkowy routing (5% ruchu -> v2, 95% -> v1; rollback jesli
+error rate >1%). Realizacja: OPA bundles + sidecar router
+(Envoy/OPA plugin). Czas: 1-2 tyg (infra).
+
+-------------------------------------------------------------
+9.9 DETERMINISTIC CHAOS ENGINEERING — auto-testy odpornosci
+-------------------------------------------------------------
+Stan obecny: api_fallback.rego recznie obsluguje awarie API.
+Pomysl: automatyczne wstrzykiwanie awarii (chaos monkey) w CI:
+per pakiet symulacja undefined.decide, timeout, bledne NIP.
+Test kontraktu: final_verdict MUSI zawierac _routing, NIE crash.
+Realizacja: testy Rego + Python fixture generator. Korzyśc:
+gwarancja ze safe_merge + fallback wytrzymuja awarie pojedynczych
+pakietow (uzasadnienie Self-Healing Router 9.1). Czas: 1 tydzien.
+
+-------------------------------------------------------------
+9.10 FEDERATED RULE MESH — wspoldzielenie regul miedzy instancjami
+-------------------------------------------------------------
+Stan obecny: pojedyncza instancja OPA, reguly lokalne.
+Pomysl: federacja instancji OPA (np. per tenant JDG) z centralnym
+master regul + diff per tenant (prywatnosc: tenant widzi tylko swoje
+ overrides). Sync przez Merkle diff (uzasadnienie 9.6 provenance
+ hash). Realizacja: OPA + gitops + Merkle gossip. Czas: 2-3 tyg.
+
+-------------------------------------------------------------
+9.11 [BONUS] CONFIDENCE-WEIGHTED MERGE — bezpieczenstwo safe_merge
+-------------------------------------------------------------
+Stan obecny: safe_merge binarny (immutable tak/nie).
+Pomysl: safe_merge_confidence(a, b) uwzglednia pole _confidence
+werdyktu (0.0-1.0). Przy konflikcie klucza wygrywa wyzsza
+confidence, nie zewnetrzny priorytet. Realizacja: rozszerzenie
+safe_merge o 4 przypadek (zadne immutable, obie maja _confidence).
+Korzyśc: decyzja z high-confidence (np. vat.substantive 0.95) nie
+jest nadpisywana przez low-confidence advisory. Czas: 2 dni.
+
+-------------------------------------------------------------
+9.12 [BONUS] RULE DRIFT DETECTOR — detekcja degradacji regul
+-------------------------------------------------------------
+Stan obecny: brak monitoringu dopasowan.
+Pomysl: logowanie rule_id + matched per ewaluacje -> detekcja
+"drift" (regula ktora dawniej match=true teraz match=false ->
+zmiana input patternu lub regresja). Alert jesli regula krytyczna
+(risk.fraud_graph_match) spada ponizej progu match. Realizacja:
+Python analytics + alerting. Czas: 1 tydzien.
+
+
+=============================================================
+10. REKOMENDACJE PRIORYTETOW
+=============================================================
+Uszeregowano wg KRYTYCZNOSCI. Dla kazdego: czas, wplyw, ryzyko.
+
+TABELA REKOMENDACJI
+-------------------------------------------------------------
+| #  | Problem                        | Kryt.| Czas    | Wplyw     | Ryzyko |
+|----|--------------------------------|------|---------|-----------|--------|
+| 1  | Schemat sciezek thresholdow    | KRYT | 4-8h    | OGROMNY   | WYS    |
+|    | (helpery data.thresholds.jdg  |      |         | (ADR-002  | (reguly|
+|    | vs data.jdg.thresholds)        |      |         | niewypel.)| uzywaja|
+|    |                                |      |         |           | fallback|
+| 2  | Provenance martwy kod (A1,     | KRYT | 1-2 dni | audytowaln| SRED   |
+|    | ADR-006) — enrich_verdict nie  |      |         | (regulator| (wymaga|
+|    | podlaczony, _package_decisions |      |         | non-repud)| Python|
+|    | nie produkowane                |      |         | gubiony)  | zmiany)|
+| 3  | Sharded fast-path pomija       | KRYT | 4h      | poprawnosc| WYS    |
+|    | validation/edge_cases/ksef_jpk |      |         | (NIP/KSeF | (luka  |
+|    | /aml/mdr — NIP/KSeF/MPP nie    |      |         | /MPP/cash | prawna |
+|    | wychwytywane na ~70% ruchu     |      |         | niewidocz)| fastpath|
+| 4  | final_verdict_with_conflicts   | WYS  | 1h      | audyt     | NISK   |
+|    | nadpisuje risk _routing        |      |         | (rule_id  |        |
+|    | (object.union kolejnosc)       |      |         | wierny)   |        |
+| 5  | Brak realnego PASS-0 abort     | WYS  | 4h      | latency   | SRED   |
+|    | (safe_merge ewaluuje wszystk.) |      |         | -40-60%   | (logika|
+|    |                                |      |         | fraud     | gate)  |
+| 6  | Enterprise Enrichment object.  | WYS  | 1 dzien | poprawnosc| SRED   |
+|    | union (nie safe_merge) moze    |      |         | (advisory | (duzo  |
+|    | nadpisac vat_rate/pit_rate     |      |         | nie kloci)| pakiet.)|
+| 7  | Schemat priorytetow niespojny  | SRED | 1 dzien | audyt     | NISK   |
+|    | (kolizje 540-650, 1200, 1610,  |      |         | (provenanc|        |
+|    | priority 1x3)                  |      |         | sort OK)  |        |
+| 8  | SLIM VAT 3 data 2025-07-01     | SRED | 30 min  | poprawnosc| NISK   |
+|    | bledna (powinno 2023-07-01)    |      |         | temporalna|        |
+| 9  | is_active_for_date nie wywolyw | SRED | 1-2 dni | temporal  | SRED   |
+|    | w decide pakietow (temporal    |      |         | compliance| (duzo  |
+|    | gate rejestrem, nie egzekucja) |      |         | time-trav | regul) |
+| 10 | ~159+ hardcoded wartosci       | N-SR | 2-3 dni | ADR-002   | NISK   |
+|    | (0.23/0.19/0.12/200000/120000/ |      |         | pelne     |        |
+|    | 30000/routing progi/api progi)|      |         | wdrozenie |        |
+| 11 | immutable_verdict: business    | N-SR | 1h      | ADR-006   | NISK   |
+|    | P914 NIE ustawia flagi (koment.|      |         | wiarygodn.|        |
+|    | L142 mylacy)                   |      |         |           |        |
+| 12 | fallback P1000 matched:true    | NISK | 30 min  | bezpiecz  | NISK   |
+|    | dla niepewnej transakcji (23%  |      |         | (bez 23%  |        |
+|    | ciche dla zwolnionej)          |      |         | dla ZW)   |        |
+| 13 | shard_selector/use_full_chain  | NISK | 1h      | czystosc  | NISK   |
+|    | martwy kod (final inline)      |      |         | kodu      |        |
+| 14 | EU VAT ID walidacja brak       | NISK | 4h      | cross-bord| NISK   |
+|    | (modulo 97 EU)                 |      |         | walidacja |        |
+| 15 | Numeracja PAS niespojna        | NISK | 2h      | dokum.    | NISK   |
+|    | (0-17 main vs 1-9 ADR-007)     |      |         | kanon     |        |
+-------------------------------------------------------------
+
+SZACUNKOWY CWAS TOTAL (krytyczne + wysokie): ~3-5 dni roboczych.
+SZACUNKOWY CWAS TOTAL (wszystkie): ~2-3 tygodzie robocze.
+
+
+=============================================================
+11. PODSUMOWANIE KONCOWE
+=============================================================
+
+Orkiestrator JDG v7.0 to zaawansowana, koncepcyjnie dojrzala
+architektura silnika decyzyjnego OPA/Rego, ktora w wielu aspektach
+(sharded routing B1, safe_merge z immutable_verdict, temporal
+registry A2, legal cartography A3, graceful degradation api_fallback)
+wyprzedza typowe implementacje enterprise. Jednakze audyt ujawnil
+3 KRYTYCZNE LACUNY W WDROZENIU, ktore podwazaja czesc zalozen:
+
+  1. SCIEZKI DANYCH THRESHOLDOW NIEZGODNE (helpery vs package) —
+     ADR-002 niewypelnialny dla helperow; routing confidence de facto
+     wylaczony przez fallback 0.0.
+  2. PROVENANCE (A1) + ADR-006Immutable Audit Trail — MARTWY KOD na
+     warstwie Rego; enrich_verdict nie podlaczony; _package_decisions
+     nie produkowane.
+  3. SHARDED FAST-PATH POMIJA PAKIETY BEZPIECZENSTWA — NIP/KSeF/MPP/
+     cash/BialaLista/MDR niewychwytywane dla ~70% ruchu (DOMESTIC_SALE
+     + ACTIVE).
+
+Ponadto 12 odkryc wysokiego/sredniego priorytetu (merge kolejnosc,
+PASS-0 abort, enterprise object.union, priorytety kolizyjne, SLIM
+VAT data, temporal gate nieegzekwowany, hardcoded wartosci).
+
+Po naprawie 3 krytycznych (szac. 3-5 dni) + wdrozeniu 12 innowacji
+ENTERPRISE (sekcja 9, szac. 6-10 tyg), system osiagnie potencjal
+9.5/10 i stanie sie referencyjna implementacja zero-defect dla
+polskiego prawa podatkowego JDG — z pelna audytowalnoscia do artykulu
+ustawy (ISAP), time-travel compliance, self-healing routing i
+federated rule mesh.
+
+Rekomendowana kolejnosc: KRYTYCZNE 1-3 (tydzien 1) -> WYSOKIE 4-6
+(tydzien 2) -> innowacje 9.1/9.4/9.6 (najwyzszy ROI: self-healing,
+temporal snapshot, provenance chain) -> reszta.
+
+Raport przeznaczony dla zespołu developerskiego; nie modyfikuje kodu
+Rego, nie generuje kodu — wylacznie analiza i rekomendacje.
+
+=== KONIEC RAPORTU — RAPORT_P01_JDG_CORE_ARCHITECTURE_v7.0 ===
