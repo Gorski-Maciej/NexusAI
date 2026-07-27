@@ -148,4 +148,22 @@ Potężne, rozbudowane na poziomie ENTERPRISE pomysły:
 - Tytuł: "RAPORT AUDYTOWY ENTERPRISE — ZUS + Zdrowotna: Artykuł po Artykule + Ekstremalne Testy v7.0"
 - Tabele: KAŻDY artykuł SUS z ✅/⚠️/❌
 
+## 💾 WYJŚCIE — FORMAT I PLIK:
+
+**OBOWIĄZKOWY ZAPIS raportu jako odrębnego pliku `.txt`:**
+
+- **Pełna ścieżka pliku:** `JDG/reports/RAPORT_P31_LEGAL_AUDIT_ZUS_HEALTH_ARTICLE_BY_ARTICLE_v7.0.txt`
+  (utwórz katalog `mkdir -p JDG/reports` jeśli nie istnieje)
+- **Typ pliku:** czysty tekst `.txt` (plain text, UTF-8) — **BEZ** formatowania Markdown / HTML / PDF
+- **Kodowanie:** UTF-8, LF (Unix)
+- **Tytuł (linia 1 pliku):** dokładny tytuł raportu z sekcji `## 📐 FORMAT RAPORTU:`
+- **Separatory sekcji:** linia 65 znaków `=============================================================`
+- **Stopka (ostatnia linia pliku):** `=== KONIEC RAPORTU — RAPORT_P31_LEGAL_AUDIT_ZUS_HEALTH_ARTICLE_BY_ARTICLE_v7.0 ===`
+
+Ten prompt ma **STAŁĄ i UNIKALNĄ nazwę pliku wyjściowego**:
+→ **`JDG/reports/RAPORT_P31_LEGAL_AUDIT_ZUS_HEALTH_ARTICLE_BY_ARTICLE_v7.0.txt`**
+
+Po wygenerowaniu raportu w oknie kontekstowym ZAPISZ go jako pojedynczy plik
+`.txt` w powyższej ścieżce (czysty tekst UTF-8, BEZ Markdown / HTML / PDF).
+
 ## 🔄 WYCZYŚĆ OKNO KONTEKSTOWE. → P32.

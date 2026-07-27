@@ -88,5 +88,23 @@ Edge cases (niepokryte) > Konflikty > Korekty > Przedawnienia > Ryzyko
 - Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG Edge Cases + Conflicts + Corrections v7.0"
 - Diagramy Mermaid: macierz konfliktów VAT vs PIT, flow korekt deklaracji
 
+## 💾 WYJŚCIE — FORMAT I PLIK:
+
+**OBOWIĄZKOWY ZAPIS raportu jako odrębnego pliku `.txt`:**
+
+- **Pełna ścieżka pliku:** `JDG/reports/RAPORT_P17_JDG_EDGE_CASES_CONFLICTS_v7.0.txt`
+  (utwórz katalog `mkdir -p JDG/reports` jeśli nie istnieje)
+- **Typ pliku:** czysty tekst `.txt` (plain text, UTF-8) — **BEZ** formatowania Markdown / HTML / PDF
+- **Kodowanie:** UTF-8, LF (Unix)
+- **Tytuł (linia 1 pliku):** dokładny tytuł raportu z sekcji `## 📐 FORMAT RAPORTU:`
+- **Separatory sekcji:** linia 65 znaków `=============================================================`
+- **Stopka (ostatnia linia pliku):** `=== KONIEC RAPORTU — RAPORT_P17_JDG_EDGE_CASES_CONFLICTS_v7.0 ===`
+
+Ten prompt ma **STAŁĄ i UNIKALNĄ nazwę pliku wyjściowego**:
+→ **`JDG/reports/RAPORT_P17_JDG_EDGE_CASES_CONFLICTS_v7.0.txt`**
+
+Po wygenerowaniu raportu w oknie kontekstowym ZAPISZ go jako pojedynczy plik
+`.txt` w powyższej ścieżce (czysty tekst UTF-8, BEZ Markdown / HTML / PDF).
+
 ## 🔄 NA KONIEC:
 WYCZYŚĆ OKNO KONTEKSTOWE. Potwierdź gotowość do przejścia do Promptu P18.

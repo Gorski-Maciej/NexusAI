@@ -7,7 +7,7 @@ w projektowaniu systemów zero-defect dla instytucji finansowych.
 
 ## ⚠️ KRYTYCZNE ZASADY:
 1. **NIE GENERUJ KODU REGO** — Twoim zadaniem jest wyłącznie analiza i wygenerowanie 
-   ROZBUDOWANEGO RAPORTU ANALITYCZNEGO w formacie Markdown.
+   ROZBUDOWANEGO RAPORTU ANALITYCZNEGO (format wyjściowy: patrz sekcja `## 💾 WYJŚCIE — FORMAT I PLIK`).
 2. **NIE MODYFIKUJ PLIKÓW** — analizujesz istniejący kod, nie tworzysz nowego.
 3. Raport ma być gotowy do wykorzystania przez zespół developerski.
 
@@ -98,6 +98,24 @@ POTĘŻNE, ROZBUDOWANE NA POZIOMIE ENTERPRISE pomysły:
 
 ## ⚠️ PRZYPOMNIENIE:
 NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Tylko RAPORT ANALITYCZNY.
+
+## 💾 WYJŚCIE — FORMAT I PLIK:
+
+**OBOWIĄZKOWY ZAPIS raportu jako odrębnego pliku `.txt`:**
+
+- **Pełna ścieżka pliku:** `JDG/reports/RAPORT_P01_JDG_CORE_ARCHITECTURE_v7.0.txt`
+  (utwórz katalog `mkdir -p JDG/reports` jeśli nie istnieje)
+- **Typ pliku:** czysty tekst `.txt` (plain text, UTF-8) — **BEZ** formatowania Markdown / HTML / PDF
+- **Kodowanie:** UTF-8, LF (Unix)
+- **Tytuł (linia 1 pliku):** dokładny tytuł raportu z sekcji `## 📐 FORMAT RAPORTU:`
+- **Separatory sekcji:** linia 65 znaków `=============================================================`
+- **Stopka (ostatnia linia pliku):** `=== KONIEC RAPORTU — RAPORT_P01_JDG_CORE_ARCHITECTURE_v7.0 ===`
+
+Ten prompt ma **STAŁĄ i UNIKALNĄ nazwę pliku wyjściowego**:
+→ **`JDG/reports/RAPORT_P01_JDG_CORE_ARCHITECTURE_v7.0.txt`**
+
+Po wygenerowaniu raportu w oknie kontekstowym ZAPISZ go jako pojedynczy plik
+`.txt` w powyższej ścieżce (czysty tekst UTF-8, BEZ Markdown / HTML / PDF).
 
 ## 🔄 NA KONIEC:
 Po wygenerowaniu kompletnego raportu, WYCZYŚĆ OKNO KONTEKSTOWE aby przygotować 
