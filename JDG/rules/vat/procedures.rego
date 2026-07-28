@@ -252,8 +252,50 @@ else := {
     "_legal_basis": "Art. 120 ust. 4 VAT",
     "_warnings": ["Procedura marży — towary używane"]
 } {
-    input.invoice.category_code in {"USED_GOODS", "ANTIQUES", "COLLECTORS_ITEMS", "ARTWORKS"}
+    input.invoice.category_code in {"USED_GOODS", "ANTIQUES", "COLLECTORS_ITEMS"}
     input.invoice.procedure == "MARGIN"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P66a: VAT-marża — dzieła sztuki (8% stawka obniżona wg Art. 120 ust. 4-5)
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.procedures.margin_art_objects",
+    "package": "jdg.vat.procedures", "priority": 66,
+    "vat_rate": "0.08", "rounding_level": "total", "gtu_code": "", "procedure": "MARGIN_ART_OBJECTS",
+    "vat_exemption": "", "vat_margin_scheme": "ART_OBJECTS_8PCT",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 120 ust. 4-5 VAT (stawka obniżona 8% dla dzieł sztuki)",
+    "_warnings": ["Procedura marży — dzieła sztuki (8% VAT). Wymagana dokumentacja: imię/nazwisko twórcy, data nabycia, cena zakupu."]
+} {
+    input.invoice.category_code == "ARTWORKS"
+    input.invoice.procedure == "MARGIN"
+    input.invoice.is_original_artwork == true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P66b: VAT-marża — biuro podróży (Art. 119 VAT)
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.procedures.margin_travel_agency",
+    "package": "jdg.vat.procedures", "priority": 66,
+    "vat_rate": "0.23", "rounding_level": "total", "gtu_code": "", "procedure": "MARGIN_TRAVEL_AGENCY",
+    "vat_exemption": "", "vat_margin_scheme": "TRAVEL_AGENCY_ART119",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 119 VAT (procedura marży dla usług turystycznych)",
+    "_warnings": ["Procedura marży — biuro podróży. Podstawa opodatkowania = marża (cena - koszty podwykonawców). Faktura oznaczona 'procedura marży dla usług turystycznych'."]
+} {
+    input.invoice.category_code == "TRAVEL_SERVICES"
+    input.invoice.procedure == "MARGIN"
+    input.invoice.is_travel_package == true
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

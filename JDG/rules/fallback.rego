@@ -14,8 +14,10 @@ import data.jdg.helpers
 default decide := {"matched":false,"rule_id":"jdg.fallback.no_match","package":"jdg.fallback","priority":1099}
 
 # ══════ P1000: domestic_fallback_jdg — Domyślna stawka 23% VAT PL ══════
+# v7.0 FIX: matched:false — domyślna stawka 23% wymaga ręcznej weryfikacji
+# (transakcja zwolniona z VAT nie powinna być automatycznie objęta 23%)
 decide := {
-    "matched":true,"rule_id":"jdg.fallback.domestic_23pct",
+    "matched":false,"rule_id":"jdg.fallback.domestic_23pct",
     "package":"jdg.fallback","priority":1000,
     "vat_rate":"0.23","rounding_level":"position","gtu_code":"",
     "vat_exemption":"","procedure":"",
@@ -24,7 +26,8 @@ decide := {
     "kus_qualification":"full","kus_percent":100,
     "zus_social_base_type":"STANDARD","zus_health_rate":"0.09",
     "business_status":"ACTIVE",
-    "_routing":"","_routing_reason":"Domyślna stawka VAT 23% PL — żadna szczegółowa reguła nie pasuje",
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason":"Domyślna stawka VAT 23% PL — wymaga ręcznej weryfikacji (transakcja może być zwolniona)",
     "_legal_basis":"Art. 41 ust. 1 VAT, Art. 27 ust. 1 PIT (domyślnie skala)",
     "_warnings":["Domyślne założenia: VAT 23%, PIT skala 12%, ZUS standard, pełny KUP"]
 } {

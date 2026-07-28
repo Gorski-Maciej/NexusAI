@@ -20,11 +20,15 @@
 package jdg.validation
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 default decide := {
     "matched": false, "rule_id": "jdg.validation.no_match",
     "package": "jdg.validation", "priority": 999
 }
+
+# v7.0 ADR-002 FIX: Wagi NIP/REGON pobierane z data.jdg.thresholds.checksum_weights
+# zamiast hardcoded wartości w kodzie. Aktualizacja wag = zmiana thresholds_jdg.rego.
 
 # ══════ R0613: nip_checksum_validation — Suma kontrolna NIP (modulo 11) ══════
 decide := {
@@ -56,8 +60,9 @@ decide := {
     d8 := to_number(substring(vendor_nip, 8, 1))
     d9 := to_number(substring(vendor_nip, 9, 1))
 
-    # Wagi: [6,5,7,2,3,4,5,6,7]
-    weighted_sum := d0*6 + d1*5 + d2*7 + d3*2 + d4*3 + d5*4 + d6*5 + d7*6 + d8*7
+    # Wagi NIP z thresholds (ADR-002: Zero Hardcoded)
+    nip_weights := object.get(data.jdg.thresholds.checksum_weights, "nip", [6,5,7,2,3,4,5,6,7])
+    weighted_sum := d0*nip_weights[0] + d1*nip_weights[1] + d2*nip_weights[2] + d3*nip_weights[3] + d4*nip_weights[4] + d5*nip_weights[5] + d6*nip_weights[6] + d7*nip_weights[7] + d8*nip_weights[8]
     checksum := weighted_sum % 11
     checksum_ok := checksum == d9
     checksum_ok == false
@@ -92,19 +97,22 @@ else := {
     rd7 := to_number(substring(regon, 7, 1))
     rd8 := to_number(substring(regon, 8, 1))
 
-    # REGON 9-cyfrowy: wagi [8,9,2,3,4,5,6,7], modulo 11
-    checksum_9 := (rd0*8 + rd1*9 + rd2*2 + rd3*3 + rd4*4 + rd5*5 + rd6*6 + rd7*7) % 11
+    # REGON 9-cyfrowy: wagi z thresholds (ADR-002)
+    regon9_w := object.get(data.jdg.thresholds.checksum_weights, "regon9", [8,9,2,3,4,5,6,7])
+    checksum_9 := (rd0*regon9_w[0] + rd1*regon9_w[1] + rd2*regon9_w[2] + rd3*regon9_w[3] + rd4*regon9_w[4] + rd5*regon9_w[5] + rd6*regon9_w[6] + rd7*regon9_w[7]) % 11
     checksum_ok_9 := checksum_9 == rd8
 
-    # REGON 14-cyfrowy: dodatkowe cyfry + wagi [2,4,8,5,0,9,7,3,6,1,2,4,8], modulo 11
+    # REGON 14-cyfrowy: wagi z thresholds (ADR-002)
     rd9 := to_number(substring(regon, 9, 1))
     rd10 := to_number(substring(regon, 10, 1))
     rd11 := to_number(substring(regon, 11, 1))
     rd12 := to_number(substring(regon, 12, 1))
     rd13 := to_number(substring(regon, 13, 1))
 
-    checksum_14 := (rd0*2 + rd1*4 + rd2*8 + rd3*5 + rd4*0 + rd5*9 + rd6*7 +
-                    rd7*3 + rd8*6 + rd9*1 + rd10*2 + rd11*4 + rd12*8) % 11
+    regon14_w := object.get(data.jdg.thresholds.checksum_weights, "regon14", [2,4,8,5,0,9,7,3,6,1,2,4,8])
+    checksum_14 := (rd0*regon14_w[0] + rd1*regon14_w[1] + rd2*regon14_w[2] + rd3*regon14_w[3] +
+                    rd4*regon14_w[4] + rd5*regon14_w[5] + rd6*regon14_w[6] + rd7*regon14_w[7] +
+                    rd8*regon14_w[8] + rd9*regon14_w[9] + rd10*regon14_w[10] + rd11*regon14_w[11] + rd12*regon14_w[12]) % 11
     checksum_ok_14 := checksum_14 == rd13
 
     checksum_ok = checksum_ok_9 { regon_len == 9 }

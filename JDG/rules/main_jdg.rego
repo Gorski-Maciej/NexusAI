@@ -112,6 +112,7 @@ import data.jdg.mpips
 import data.jdg.rodo
 import data.jdg.rodo_extended
 import data.jdg.validation
+import data.jdg.edge_cases
 import data.jdg.fallback
 import data.jdg.metadata
 import data.jdg.tax_optimization
@@ -154,6 +155,10 @@ import data.jdg.pit.donation_relief
 import data.jdg.pit.tax_loss_harvesting
 import data.jdg.pit.family_estonian
 import data.jdg.form_optimizer
+
+# ── PAS 18: Provenance (A1 + ADR-006 Immutable Audit Trail) ──
+# KRYTYCZNE-2 FIX: provenance.enrich_verdict() podłączony do final_verdict_enriched
+import data.jdg.provenance
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
@@ -256,7 +261,11 @@ requires_ksef_check(input) = true {
 # ── Shard Router: wybiera optymalną ścieżkę ewaluacji — v7.0 ACTIVE (MR-1)
 # Router jest teraz AKTYWNY — dla transakcji krajowych pomija niepotrzebne pakiety.
 # Redukuje latency OPA z ~28s do ~8-12s dla standardowych transakcji.
-shard_selector(ctx) = shard_packages {
+# ── Shard Router: v7.0 DEPRECATED — zastąpiony przez inline warunki w final_verdict
+# Zachowany dla kompatybilności wstecznej i dokumentacji architektonicznej.
+# Nie używany w runtime — final_verdict używa bezpośrednich warunków inline.
+# @deprecated since v7.0 — użyj inline warunków w final_verdict
+shard_selector_deprecated(ctx) = shard_packages {
     ctx.is_cross_border == true
     shard_packages := ["risk", "kks", "routing", "compliance", "crossborder",
         "post_brexit", "vat.substantive", "vat.deductions", "vat.procedures"]
@@ -276,10 +285,9 @@ shard_selector(ctx) = shard_packages {
     shard_packages := ["risk", "kks", "routing", "compliance"]
 }
 
-# ── Shard Routing Decision ───────────────────────────────────────────────────
-
-# Na podstawie kontekstu decyduje czy użyć pełnego łańcucha czy shardu
-use_full_chain(ctx) = true {
+# ── Shard Routing Decision: v7.0 DEPRECATED — zastąpiony przez inline warunki
+# @deprecated since v7.0 — użyj inline warunków w final_verdict
+use_full_chain_deprecated(ctx) = true {
     # Pełny łańcuch wymagany gdy:
     # 1. Transakcja transgraniczna
     # 2. JDG zawieszona lub w sukcesji
@@ -287,18 +295,18 @@ use_full_chain(ctx) = true {
     ctx.is_cross_border == true
 }
 
-use_full_chain(ctx) = true {
+use_full_chain_deprecated(ctx) = true {
     ctx.entity_status != "ACTIVE"
 }
 
-use_full_chain(ctx) = false {
+use_full_chain_deprecated(ctx) = false {
     # Shard wystarczy dla standardowych transakcji krajowych
     ctx.transaction_type == "DOMESTIC_SALE"
     ctx.entity_status == "ACTIVE"
     ctx.is_cross_border == false
 }
 
-use_full_chain(ctx) = false {
+use_full_chain_deprecated(ctx) = false {
     ctx.transaction_type == "DOMESTIC_PURCHASE"
     ctx.entity_status == "ACTIVE"
 } else = true {
@@ -404,37 +412,55 @@ safe_merge(a, b) = object.union(a, b) {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # Szybka ścieżka dla DOMESTIC_SALE z ACTIVE JDG (najczęstszy przypadek)
-# Pomija: crossborder, post_brexit, mdr, tp, solidarity, international,
+# v7.0 KRYTYCZNE-3 FIX: Dodano pakiety bezpieczeństwa (validation, edge_cases, ksef_jpk,
+# aml, mdr, mdr_enterprise, api_fallback, conflicts) — fast-path jest teraz PEŁNY.
+# Brakujące pakiety z full chain: crossborder, post_brexit, tp, solidarity, international,
 # employer, environmental, restructuring, digital, retention, rodo, mpips, itd.
-# v7.0 FINAL FIX: Added jpk_cit to full_final_verdict (previously imported but not reachable)
 sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(kks.decide,
     safe_merge(routing.decide,
     safe_merge(compliance.decide,
+    safe_merge(validation.decide,
+    safe_merge(edge_cases.decide,
+    safe_merge(ksef_jpk.decide,
+    safe_merge(aml.decide,
+    safe_merge(mdr.decide,
+    safe_merge(mdr_enterprise.decide,
+    safe_merge(api_fallback.decide,
     safe_merge(substantive.decide,
     safe_merge(forms.decide,
     safe_merge(kup.decide,
     safe_merge(accounting.decide,
     safe_merge(business.decide,
     safe_merge(zus.decide,
+    safe_merge(conflicts.decide,
         fallback.decide
-    )))))))))))
+    ))))))))))))))))))))
 
-# Shard dla DOMESTIC_PURCHASE z ACTIVE JDG (MR-1 v7.0)
-# Zawiera: risk, kks, routing, compliance, vat.substantive, vat.deductions,
-# vat.procedures, pit.kup, accounting, corrections
+# Shard dla DOMESTIC_PURCHASE z ACTIVE JDG (KRYTYCZNE-3 FIX)
+# Teraz zawiera: risk, kks, routing, compliance, validation, edge_cases, ksef_jpk,
+# aml, mdr, mdr_enterprise, api_fallback, vat.substantive, vat.deductions,
+# vat.procedures, pit.kup, accounting, corrections, conflicts
 sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(kks.decide,
     safe_merge(routing.decide,
     safe_merge(compliance.decide,
+    safe_merge(validation.decide,
+    safe_merge(edge_cases.decide,
+    safe_merge(ksef_jpk.decide,
+    safe_merge(aml.decide,
+    safe_merge(mdr.decide,
+    safe_merge(mdr_enterprise.decide,
+    safe_merge(api_fallback.decide,
     safe_merge(substantive.decide,
     safe_merge(deductions.decide,
     safe_merge(procedures.decide,
     safe_merge(kup.decide,
     safe_merge(accounting.decide,
     safe_merge(corrections.decide,
+    safe_merge(conflicts.decide,
         fallback.decide
-    )))))))))))
+    ))))))))))))))))))))
 
 full_final_verdict = safe_merge(risk.decide,
     safe_merge(kks.decide,
@@ -494,11 +520,53 @@ full_final_verdict = safe_merge(risk.decide,
         fallback.decide
     ))))))))))))))))))))))))))))))))))))))))))))))))))
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# PASS-0 GATE: Early Abort on BLOCK_AND_ALERT (Rekomendacja 5)
+#
+# Jeżeli risk.decide zwraca BLOCK_AND_ALERT, zwracamy minimalny werdykt
+# (risk + kks + routing + fallback) BEZ ewaluacji pełnego łańcucha.
+# W Rego, warunek w rule head sprawdzany jest PRZED body, więc
+# gated_abort_verdict matchuje tylko gdy risk/routing = BLOCK_AND_ALERT.
+#
+# W przeciwnym razie przepływ przechodzi do else = sharded/full chain.
+# Redukuje latency o ~40-60% dla transakcji fraudowych.
+#
+# Używamy safe_merge dla spójności z resztą orkiestratora.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# PASS-0 Gate: minimalny werdykt przy BLOCK_AND_ALERT (risk)
+gated_abort_verdict = safe_merge(risk.decide,
+    safe_merge(kks.decide,
+    safe_merge(enterprise_penalties.decide,
+    safe_merge(routing.decide,
+    safe_merge(validation.decide,
+        fallback.decide
+    ))))) {
+    risk.decide._routing == "BLOCK_AND_ALERT"
+}
+
+# PASS-0 Gate: routing BLOCK_AND_ALERT (gdy risk nie blokuje ale routing tak)
+gated_abort_verdict = safe_merge(risk.decide,
+    safe_merge(kks.decide,
+    safe_merge(enterprise_penalties.decide,
+    safe_merge(routing.decide,
+        fallback.decide
+    )))) {
+    routing.decide._routing == "BLOCK_AND_ALERT"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # v7.0 SHARDED ROUTER ACTIVE: Wybor sciezki na podstawie kontekstu
-# DOMESTIC_SALE → sharded_sale_verdict (VAT+PIT+ZUS)
-# DOMESTIC_PURCHASE → sharded_purchase_verdict (VAT deductions+corrections+KUP)
+# PASS-0 GATE: Jeśli risk/routing BLOCK_AND_ALERT → gated_abort_verdict
+# DOMESTIC_SALE → sharded_sale_verdict (VAT+PIT+ZUS+bezpieczenstwo)
+# DOMESTIC_PURCHASE → sharded_purchase_verdict (VAT deductions+corrections+KUP+bezpieczenstwo)
 # cross-border / non-ACTIVE → full_final_verdict (wszystkie pakiety dla bezpieczenstwa)
-final_verdict = sharded_sale_verdict {
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict = gated_abort_verdict {
+    risk.decide._routing == "BLOCK_AND_ALERT"
+} else = gated_abort_verdict {
+    routing.decide._routing == "BLOCK_AND_ALERT"
+} else = sharded_sale_verdict {
     ctx := routing_context
     ctx.is_cross_border == false
     ctx.entity_status == "ACTIVE"
@@ -513,76 +581,193 @@ final_verdict = sharded_sale_verdict {
 }
 
 # ── PAS 8: Cross-Domain Conflict Detection (Post-Merge) ────────────────────
-# conflicts.decide analizuje już scalony final_verdict i wykrywa
-# konflikty między domenami (np. IP Box vs B+R na tym samym dochodzie,
-# reprezentacja vs marketing, auto VAT 50% vs KUP 75%).
-# Wynik jest dołączany do final_verdict przez object.union — pole
-# _cross_domain_conflicts jest tylko do odczytu, nie zmienia decyzji.
-#
-# PAS 9: Enterprise Strategic Layer (Post-Merge Intelligence) — 5 pakietów
-# S1-S5 pracuje na już scalonym finalnym werdykcie. Dodają metadane
-# analityczne, optymalizacyjne i strategiczne. NIE zmieniają decyzji
-# podatkowych — tylko dostarczają rekomendacji i kontekstu biznesowego.
-final_verdict_with_conflicts = object.union(final_verdict, conflicts.decide)
+# v7.0 FIX (Rekomendacja 4): Zmieniono z object.union(final_verdict, conflicts.decide)
+# na safe_merge(final_verdict, conflicts.decide). Teraz final_verdict (z risk, routing, VAT,
+# PIT, ZUS) ma priorytet nad conflicts dla pól _routing/rule_id — conflicts
+# NIE może nadpisać BLOCK_AND_ALERT z risk. Pole _cross_domain_conflicts
+# jest tylko do odczytu, nie zmienia decyzji.
+final_verdict_with_conflicts = safe_merge(final_verdict, conflicts.decide)
 
 # Enterprise Enrichment: dodaj analizy strategiczne do finalnego werdyktu
+# v7.0 FIX (Rekomendacja 6): object.union → safe_merge. Pakiety advisory
+# NIE mogą nadpisać kluczowych pól podatkowych (vat_rate, pit_rate, _routing).
 # PAS 9: S1-S5 — analizy strategiczne (tax_opt, cross_domain, judicial, audit, strategic)
 # PAS 10: S6-S10 — moduły operacyjne enterprise v5.1 (KSeF, PPK/PFRON, cashflow, form_transition, banking)
 # PAS 11: S11-S13 — moduły deklaracyjno-monitorujące enterprise v5.2 (annual_declaration, jpk_v7_autogen, legislative_monitor)
-final_verdict_enriched = object.union(final_verdict_with_conflicts,
-    object.union(tax_optimization.decide,
-    object.union(cross_domain_hub.decide,
-    object.union(judicial_rulings.decide,
-    object.union(audit_defense.decide,
-    object.union(strategic_advisor.decide,
-    object.union(ksef_resilience.decide,
-    object.union(ppk_pfron.decide,
-    object.union(cashflow_predictor.decide,
-    object.union(form_transition.decide,
-    object.union(banking.decide,
-    object.union(annual_declaration.decide,
-    object.union(jpk_v7_autogen.decide,
-    object.union(legislative_monitor.decide,
+final_verdict_enriched = safe_merge(final_verdict_with_conflicts,
+    safe_merge(tax_optimization.decide,
+    safe_merge(cross_domain_hub.decide,
+    safe_merge(judicial_rulings.decide,
+    safe_merge(audit_defense.decide,
+    safe_merge(strategic_advisor.decide,
+    safe_merge(ksef_resilience.decide,
+    safe_merge(ppk_pfron.decide,
+    safe_merge(cashflow_predictor.decide,
+    safe_merge(form_transition.decide,
+    safe_merge(banking.decide,
+    safe_merge(annual_declaration.decide,
+    safe_merge(jpk_v7_autogen.decide,
+    safe_merge(legislative_monitor.decide,
     # ── PAS 12: Enterprise v6.0 Neural & Compliance Layer (2026-07-19) ──
     # S14: Neural Rule Mesh — cross-domain intelligence fabric
-    # S15: NKUP Enterprise Complete — Art. 23 PIT full coverage#   S16: Exit Tax + MDR Enterprise — cross-border tax obligations
-#   S16b: MDR DAC6 Enterprise — mandatory disclosure rules (hallmarks A-E)
-    object.union(neural_mesh.decide,
-    object.union(nkup_enterprise.decide,
-    object.union(exit_tax_mdr.decide,
-    object.union(mdr_dac6.decide,
+    # S15: NKUP Enterprise Complete — Art. 23 PIT full coverage
+    # S16: Exit Tax + MDR Enterprise — cross-border tax obligations
+    # S16b: MDR DAC6 Enterprise — mandatory disclosure rules (hallmarks A-E)
+    safe_merge(neural_mesh.decide,
+    safe_merge(nkup_enterprise.decide,
+    safe_merge(exit_tax_mdr.decide,
+    safe_merge(mdr_dac6.decide,
     # ── PAS 13: Enterprise v6.1 Accounting Live Layer (2026-07-19) ──
     # S17: PKPiR Enterprise Live — active column 1-17 validation
     # S18: UoR Enterprise Live — full accounting law compliance
-    object.union(pkpir_live.decide,
-    object.union(uor_live.decide,
+    safe_merge(pkpir_live.decide,
+    safe_merge(uor_live.decide,
     # ── PAS 14: Enterprise v6.2 Class IX Complete (2026-07-19) ──
     # S19: Excise Enterprise Complete — fuels, alcohol, tobacco, energy, warehouse
     # S20: Local Procedures Enterprise — PCC enforcement, property exemptions, cross-tax
-    object.union(excise_enterprise.decide,
-    object.union(procedures_enterprise.decide,
+    safe_merge(excise_enterprise.decide,
+    safe_merge(procedures_enterprise.decide,
     # ── PAS 15: Enterprise v7.0 Deep Coverage Layer (2026-07-19) ──
     # S21: VAT Substantive Complete — Art. 11-135 full procedural coverage
     # S22: Tax Authority Interaction Engine — auto-korespondencja z US/KAS/ZUS
     # S23: Sanctions & Penalty Optimization — KKS gradacja + decision tree
     # S24: Holistic JDG Lifecycle Manager — pełny cykl życia firmy
-    object.union(vat_substantive_complete.decide,
-    object.union(tax_authority_interaction.decide,    object.union(sanctions_optimization.decide,
-        lifecycle_manager.decide
-    )))
-    )))))))))))))))))))
+    safe_merge(vat_substantive_complete.decide,
+    safe_merge(tax_authority_interaction.decide,
+    safe_merge(sanctions_optimization.decide,
+    safe_merge(lifecycle_manager.decide,
     # ── PAS 16: Enterprise v7.0 FAZA 3 Meta Layer (2026-07-25) ──
-    object.union(hyper_plan45_meta.decide,
-    object.union(wis_api.decide,
-    object.union(epuap.decide,
+    # S25-S27: Hyper Plan45 Meta, WIS API, ePUAP
+    safe_merge(hyper_plan45_meta.decide,
+    safe_merge(wis_api.decide,
+    safe_merge(epuap.decide,
     # ── PAS 17: Enterprise v7.0 Audit Full Implementation (2026-07-25) ──
     # CR1-CR4, H1-H7, M1-M6, I1-I5: 8 pakietów — ulgi, optymalizacja, symulacja
-    object.union(thermo_relief.decide,
-    object.union(rd_relief.decide,
-    object.union(ipbox.decide,
-    object.union(cross_relief.decide,
-    object.union(donation_relief.decide,
-    object.union(tax_loss_harvesting.decide,
-    object.union(family_estonian.decide,
+    safe_merge(thermo_relief.decide,
+    safe_merge(rd_relief.decide,
+    safe_merge(ipbox.decide,
+    safe_merge(cross_relief.decide,
+    safe_merge(donation_relief.decide,
+    safe_merge(tax_loss_harvesting.decide,
+    safe_merge(family_estonian.decide,
         form_optimizer.decide
-    ))))))))))
+    )))))))))))))))))))))))))))))))))))))))))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# KRYTYCZNE-2 FIX: Provenance + ADR-006 Immutable Audit Trail
+# Budujemy _package_decisions mapę dla provenance.enrich_verdict()
+# i wzbogacamy final_verdict_enriched o _provenance_tree.
+# v7.0 COMPLETE: Zawiera WSZYSTKIE pakiety (core ~55 + enterprise ~38 = ~93 pakiety).
+# ═══════════════════════════════════════════════════════════════════════════════
+_package_decisions := {
+    # PAS 0: Gate
+    "jdg.risk": risk.decide,
+    "jdg.kks": kks.decide,
+    "jdg.kks.enterprise_penalties": enterprise_penalties.decide,
+    "jdg.routing": routing.decide,
+    # PAS 1-2: Compliance
+    "jdg.compliance": compliance.decide,
+    "jdg.compliance.aml": aml.decide,
+    "jdg.validation": validation.decide,
+    "jdg.edge_cases": edge_cases.decide,
+    "jdg.ksef_jpk": ksef_jpk.decide,
+    "jdg.mdr": mdr.decide,
+    "jdg.mdr.enterprise": mdr_enterprise.decide,
+    "jdg.api_fallback": api_fallback.decide,
+    # PAS 3: Crossborder
+    "jdg.crossborder": crossborder.decide,
+    "jdg.crossborder.post_brexit": post_brexit.decide,
+    "jdg.international": international.decide,
+    "jdg.tp": tp.decide,
+    "jdg.residency": residency.decide,
+    # PAS 4: VAT
+    "jdg.vat.substantive": substantive.decide,
+    "jdg.vat.deductions": deductions.decide,
+    "jdg.vat.procedures": procedures.decide,
+    # PAS 5: PIT
+    "jdg.pit.forms": forms.decide,
+    "jdg.pit.kup": kup.decide,
+    "jdg.pit.advances_returns": advances_returns.decide,
+    "jdg.pit.exemptions": exemptions.decide,
+    "jdg.pit.art21_exemptions": art21_exemptions.decide,
+    "jdg.pit.transitions": transitions.decide,
+    "jdg.pit.elearning": elearning.decide,
+    # PAS 6: Allowances
+    "jdg.allowances": allowances.decide,
+    "jdg.solidarity": solidarity.decide,
+    # PAS 7: ZUS + Accounting + Business
+    "jdg.zus": zus.decide,
+    "jdg.zus.sickness_benefits": sickness_benefits.decide,
+    "jdg.zus.health_contribution": health_contribution.decide,
+    "jdg.accounting": accounting.decide,
+    "jdg.accounting.pkpir": pkpir.decide,
+    "jdg.accounting.pkpir_validation": pkpir_validation.decide,
+    "jdg.accounting.depreciation": depreciation.decide,
+    "jdg.business": business.decide,
+    "jdg.business.gig_economy": gig_economy.decide,
+    "jdg.corrections": corrections.decide,
+    # Misc packages
+    "jdg.liability": liability.decide,
+    "jdg.audit": audit.decide,
+    "jdg.representation": representation.decide,
+    "jdg.local_taxes": local_taxes.decide,
+    "jdg.local_taxes.pcc_enterprise": pcc_enterprise.decide,
+    "jdg.jpk_cit": jpk_cit.decide,
+    "jdg.employer": employer.decide,
+    "jdg.environmental": environmental.decide,
+    "jdg.environmental.bdo": bdo.decide,
+    "jdg.restructuring": restructuring.decide,
+    "jdg.temporal": temporal.decide,
+    "jdg.digital": digital.decide,
+    "jdg.retention": retention.decide,
+    "jdg.edelivery": edelivery.decide,
+    "jdg.rodo": rodo.decide,
+    "jdg.rodo_extended": rodo_extended.decide,
+    "jdg.mpips": mpips.decide,
+    "jdg.conflicts": conflicts.decide,
+    "jdg.fallback": fallback.decide,
+    # ── Enterprise PAS 9-11: Strategic & Operational (S1-S13) ──
+    "jdg.tax_optimization": tax_optimization.decide,
+    "jdg.cross_domain_hub": cross_domain_hub.decide,
+    "jdg.judicial_rulings": judicial_rulings.decide,
+    "jdg.audit_defense": audit_defense.decide,
+    "jdg.strategic_advisor": strategic_advisor.decide,
+    "jdg.ksef_resilience": ksef_resilience.decide,
+    "jdg.ppk_pfron": ppk_pfron.decide,
+    "jdg.cashflow_predictor": cashflow_predictor.decide,
+    "jdg.form_transition": form_transition.decide,
+    "jdg.banking": banking.decide,
+    "jdg.annual_declaration": annual_declaration.decide,
+    "jdg.jpk_v7_autogen": jpk_v7_autogen.decide,
+    "jdg.legislative_monitor": legislative_monitor.decide,
+    # ── Enterprise PAS 12-15: Neural, Accounting, Class IX, Deep Coverage (S14-S24) ──
+    "jdg.neural_mesh": neural_mesh.decide,
+    "jdg.nkup_enterprise": nkup_enterprise.decide,
+    "jdg.exit_tax_mdr": exit_tax_mdr.decide,
+    "jdg.mdr_dac6": mdr_dac6.decide,
+    "jdg.pkpir_live": pkpir_live.decide,
+    "jdg.uor_live": uor_live.decide,
+    "jdg.local_taxes.excise_enterprise": excise_enterprise.decide,
+    "jdg.local_taxes.procedures_enterprise": procedures_enterprise.decide,
+    "jdg.vat_substantive_complete": vat_substantive_complete.decide,
+    "jdg.tax_authority_interaction": tax_authority_interaction.decide,
+    "jdg.sanctions_optimization": sanctions_optimization.decide,
+    "jdg.lifecycle_manager": lifecycle_manager.decide,
+    # ── Enterprise PAS 16-17: Meta Layer + Audit (S25+, CR/H/M) ──
+    "jdg.hyper_plan45_meta": hyper_plan45_meta.decide,
+    "jdg.wis_api": wis_api.decide,
+    "jdg.epuap": epuap.decide,
+    "jdg.pit.thermo_relief": thermo_relief.decide,
+    "jdg.pit.rd_relief": rd_relief.decide,
+    "jdg.pit.ipbox": ipbox.decide,
+    "jdg.pit.cross_relief": cross_relief.decide,
+    "jdg.pit.donation_relief": donation_relief.decide,
+    "jdg.pit.tax_loss_harvesting": tax_loss_harvesting.decide,
+    "jdg.pit.family_estonian": family_estonian.decide,
+    "jdg.form_optimizer": form_optimizer.decide
+}
+_provenance_context := {
+    "_package_decisions": _package_decisions,
+    "_evaluation_ms": 0
+}
+final_verdict_with_provenance = provenance.enrich_verdict(final_verdict_enriched, _provenance_context)

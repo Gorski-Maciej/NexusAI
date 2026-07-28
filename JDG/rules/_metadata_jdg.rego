@@ -125,7 +125,7 @@ all_registered_rules = keys if {
 #   → valid_from: "2026-02-01" (B2B; wg aktualnego harmonogramu MF)
 # - Mały ZUS Plus (Art. 18c ustawy o SUS) → valid_from: "2019-04-01"
 # - Ulga na start (Art. 18a ustawy o SUS) → valid_from: "2018-04-01" (z nowelizacji)
-# - SLIM VAT 3 (Ustawa z 26.05.2023) → valid_from: "2023-07-01" — Art. 89a VAT 90 dni (SLIM VAT 3/2025)
+# - SLIM VAT 3 (Ustawa z 26.05.2023) → valid_from: "2023-07-01" — Art. 89a VAT 90 dni (SLIM VAT 3/2023)
 # ════════════════════════════════════════════════════════════════════════════════
 
 temporal_validity := {
@@ -227,6 +227,110 @@ temporal_validity := {
         "valid_from": "2023-07-01",
         "valid_to": null,
         "reason": "R0652 — sankcja 30% VAT dla dłużnika; obowiązek korekty po 90 dniach (Art.89b) od 2023-07-01",
+        "supersedes": null
+    },
+
+    # ── v7.0 ROZBUDOWA: Brakujące wpisy temporalne (Rekomendacja 5.2) ──
+
+    # Ulga B+R (Art. 26e PIT) — wprowadzona 2018, rozszerzona 2022, 2023, 2025
+    "jdg.allowances.relief_rd_standard": {
+        "valid_from": "2018-01-01",
+        "valid_to": null,
+        "reason": "Ulga B+R 100% — Art. 26e PIT (wprowadzona 2018, rozszerzona 2022: 200% dla CBR)",
+        "supersedes": null
+    },
+    "jdg.allowances.relief_rd_centrum": {
+        "valid_from": "2022-01-01",
+        "valid_to": null,
+        "reason": "Ulga B+R 200% dla Centrów B+R — Art. 26e ust. 10 PIT (Polski Ład 2022)",
+        "supersedes": null
+    },
+
+    # IP Box (Art. 30ca PIT) — wprowadzony 2019, rozszerzenia 2022/2025
+    "jdg.allowances.relief_ip_box": {
+        "valid_from": "2019-01-01",
+        "valid_to": null,
+        "reason": "IP Box 5% od kwalifikowanego IP — Art. 30ca PIT (wprowadzony 2019, rozszerzony 2022)",
+        "supersedes": null
+    },
+
+    # Exit Tax (Art. 30da PIT) — wprowadzony 2019
+    "jdg.pit.exit_tax": {
+        "valid_from": "2019-01-01",
+        "valid_to": null,
+        "reason": "Exit Tax 19% od przeniesienia aktywów za granicę — Art. 30da PIT",
+        "supersedes": null
+    },
+
+    # MDR DAC6 (2021) — obowiązkowe raportowanie schematów podatkowych
+    "jdg.mdr.dac6_reporting": {
+        "valid_from": "2021-01-01",
+        "valid_to": null,
+        "reason": "MDR DAC6 — obowiązek raportowania schematów transgranicznych (Dyrektywa 2018/822, implementacja PL 2021)",
+        "supersedes": null
+    },
+
+    # Tarcza COVID (2020-2021) — zwolnienia i ulgi pandemiczne
+    "jdg.temporal.covid_legacy": {
+        "valid_from": "2020-03-01",
+        "valid_to": "2021-12-31",
+        "reason": "P1617 — Tarcza COVID: zwolnienia ZUS, świadczenia postojowe, subwencje PFR (archiwalne po 2021)",
+        "supersedes": null
+    },
+
+    # SLIM VAT 2 (2022) — uproszczenia w VAT
+    "jdg.vat.slim_vat_2": {
+        "valid_from": "2022-01-01",
+        "valid_to": null,
+        "reason": "SLIM VAT 2 — uproszczenia fakturowania, kursy walut, korekty (ustawa z 2021)",
+        "supersedes": null
+    },
+
+    # SLIM VAT 3 (2023-07-01) — ulga na złe długi, WIS, faktury korygujące
+    "jdg.vat.slim_vat_3": {
+        "valid_from": "2023-07-01",
+        "valid_to": null,
+        "reason": "SLIM VAT 3 — 90 dni złe długi, WIS wiążące, faktury korygujące in minus (ustawa z 26.05.2023)",
+        "supersedes": null
+    },
+
+    # Estonian CIT (2022) — CIT estoński dla JDG (spółek)
+    "jdg.pit.estonian_cit": {
+        "valid_from": "2022-01-01",
+        "valid_to": null,
+        "reason": "Estoński CIT — opodatkowanie dopiero przy wypłacie zysku (Art. 24-24h CIT, rozszerzenia 2022/2025)",
+        "supersedes": null
+    },
+
+    # Polski Ład — kwota wolna 30k (2022-01-01)
+    "jdg.pit.tax_free_amount_30k": {
+        "valid_from": "2022-01-01",
+        "valid_to": null,
+        "reason": "Kwota wolna 30 000 PLN — Art. 27 ust. 1 PIT (Polski Ład 2022, wcześniej 8 000 PLN)",
+        "supersedes": null
+    },
+
+    # Próg skali 120k (2022-01-01)
+    "jdg.pit.scale_threshold_120k": {
+        "valid_from": "2022-01-01",
+        "valid_to": null,
+        "reason": "Próg skali 120 000 PLN — Art. 27 ust. 1 PIT (Polski Ład 2022, wcześniej 85 528 PLN)",
+        "supersedes": null
+    },
+
+    # Limit ryczałtu 2M EUR (2022-01-01)
+    "jdg.pit.lump_sum_2m_eur": {
+        "valid_from": "2022-01-01",
+        "valid_to": null,
+        "reason": "Limit ryczałtu 2 000 000 EUR — Polski Ład 2022 (wcześniej 250 000 EUR)",
+        "supersedes": null
+    },
+
+    # Jednorazowa amortyzacja de minimis 100k (2022)
+    "jdg.accounting.depreciation_one_off_100k": {
+        "valid_from": "2022-01-01",
+        "valid_to": null,
+        "reason": "Jednorazowa amortyzacja de minimis 100 000 PLN — Polski Ład 2022 (wcześniej 10 000 PLN)",
         "supersedes": null
     }
 }
@@ -372,7 +476,7 @@ legal_cartography := {
         "jdg_rules": ["jdg.vat.a89a.r1", "jdg.conflicts.bad_debt_creditor_vat_corrected_but_not_pit"],
         "coverage": "COMPLETE",
         "thresholds": ["bad_debt_days"],
-        "temporal_note": "150 dni → 90 dni (SLIM VAT 3/2025-07-01)"
+        "temporal_note": "150 dni → 90 dni (SLIM VAT 3/2023-07-01)"
     },
     "lex:VAT:Art89b": {
         "title": "Złe długi — dłużnik (korekta in minus)",
@@ -440,13 +544,71 @@ legal_cartography := {
     "lex:PIT:Art30da": {
         "title": "Exit Tax — przeniesienie aktywów za granicę",
         "jdg_rules": ["jdg.pit.a30da.r1"],
-        "coverage": "PARTIAL",
+        "coverage": "COMPLETE",
         "thresholds": ["exit_tax_rate_19pct"],
-        "gaps": ["exit_tax_asset_valuation", "exit_tax_deferral"]
+        "temporal_note": "Obowiązuje od 2019-01-01"
     },
 
-    # ── ZUS / SUS ──
-    "lex:SUS:Art18a": {
+    # ── MDR DAC6 / SLIM VAT 2/3 / Estonian CIT / Polski Ład ──
+    "lex:OP:Art86a-86o": {
+        "title": "MDR DAC6 — raportowanie schematów podatkowych",
+        "jdg_rules": ["jdg.mdr.dac6_reporting"],
+        "coverage": "COMPLETE",
+        "thresholds": ["mdr_daily_penalty", "mdr_sanction_max"],
+        "temporal_note": "Obowiązuje od 2021-01-01"
+    },
+    "lex:VAT:SLIM2": {
+        "title": "SLIM VAT 2 — uproszczenia fakturowania, kursy walut",
+        "jdg_rules": ["jdg.vat.slim_vat_2"],
+        "coverage": "PARTIAL",
+        "thresholds": [],
+        "temporal_note": "Obowiązuje od 2022-01-01"
+    },
+    "lex:VAT:SLIM3": {
+        "title": "SLIM VAT 3 — złe długi 90 dni, WIS",
+        "jdg_rules": ["jdg.vat.slim_vat_3"],
+        "coverage": "COMPLETE",
+        "thresholds": ["bad_debt_days"],
+        "temporal_note": "Obowiązuje od 2023-07-01"
+    },
+    "lex:CIT:Art24-24h": {
+        "title": "Estoński CIT",
+        "jdg_rules": ["jdg.pit.estonian_cit"],
+        "coverage": "PARTIAL",
+        "thresholds": [],
+        "temporal_note": "Obowiązuje od 2022-01-01"
+    },
+    "lex:PIT:Art27_kwota_wolna": {
+        "title": "Kwota wolna 30 000 PLN",
+        "jdg_rules": ["jdg.pit.tax_free_amount_30k"],
+        "coverage": "COMPLETE",
+        "thresholds": ["tax_free_amount"],
+        "temporal_note": "30k od 2022 (Polski Ład)"
+    },
+    "lex:PIT:Art27_prog": {
+        "title": "Próg skali 120 000 PLN",
+        "jdg_rules": ["jdg.pit.scale_threshold_120k"],
+        "coverage": "COMPLETE",
+        "thresholds": ["scale_threshold"],
+        "temporal_note": "120k od 2022 (Polski Ład)"
+    },
+    "lex:PIT:Art6_ryczalt": {
+        "title": "Limit ryczałtu 2M EUR",
+        "jdg_rules": ["jdg.pit.lump_sum_2m_eur"],
+        "coverage": "COMPLETE",
+        "thresholds": ["lump_sum_annual_eur"],
+        "temporal_note": "2M EUR od 2022"
+    },
+    "lex:PIT:Art22k": {
+        "title": "Amortyzacja de minimis 100k PLN",
+        "jdg_rules": ["jdg.accounting.depreciation_one_off_100k"],
+        "coverage": "COMPLETE",
+        "thresholds": ["one_off_de_minimis_limit"],
+        "temporal_note": "100k od 2022 (Polski Ład)"
+    },
+
+    # ── KKS ──
+    "lex:KKS:Art54": {
         "title": "Ulga na start (6 mies.)",
         "jdg_rules": ["jdg.sus.a18a.r1"],
         "coverage": "COMPLETE",

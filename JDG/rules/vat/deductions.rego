@@ -29,6 +29,7 @@
 package jdg.vat.deductions
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 # ── Default ────────────────────────────────────────────────────────────────────
 default decide := {
@@ -220,8 +221,8 @@ else := {
     vat_proportion := object.get(input.jdg_entrepreneur, "vat_proportion", 1.0)
     vat_deduction_percent := floor(vat_proportion * 100)
 
-    # De minimis: < 2% → 0%
-    vat_proportion >= 0.02
+    # De minimis: < 2% → 0% (próg z thresholds)
+    vat_proportion >= thresholds.vat.proportion_min_threshold
 } else := {
     "matched": true, "rule_id": "jdg.vat.deductions.pre_proportion_de_minimis",
     "package": "jdg.vat.deductions", "priority": 185,
@@ -237,7 +238,7 @@ else := {
     "_warnings": ["Proporcja VAT < 2% — brak prawa do odliczenia"]
 } {
     vat_proportion := object.get(input.jdg_entrepreneur, "vat_proportion", 1.0)
-    vat_proportion < 0.02
+    vat_proportion < thresholds.vat.proportion_min_threshold
     vat_proportion > 0
 }
 

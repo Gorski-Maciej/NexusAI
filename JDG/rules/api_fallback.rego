@@ -24,6 +24,12 @@
 package jdg.api_fallback
 
 import data.jdg.helpers
+import data.jdg.thresholds
+
+# Helper: pobiera próg API fallback z thresholds
+get_api_fallback_threshold(key, fallback) = val {
+    val := object.get(data.jdg.thresholds.api_fallback, key, fallback)
+}
 
 default decide := {
     "matched": false, "rule_id": "jdg.api_fallback.no_match",
@@ -172,6 +178,6 @@ else := {
     ]
 } {
     degraded_count := object.get(input.system, "degraded_api_count", 0)
-    degraded_count >= 3
+    degraded_count >= object.get(data.jdg.thresholds.api_fallback, "multi_degraded_threshold", 3)
     degraded_list := object.get(input.system, "degraded_api_list", "unknown")
 }

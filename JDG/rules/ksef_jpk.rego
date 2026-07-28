@@ -2,6 +2,7 @@
 # NexusAI JDG Policies — KSeF i JPK (P950-P989)
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.ksef_jpk
+import data.jdg.thresholds
 #
 # METADATA
 # title: JDG Package — ksef_jpk
@@ -50,7 +51,7 @@ decide := {
     "_routing":"","_routing_reason":"","_legal_basis":"Art. 106na-106nq VAT",
     "_warnings":["Faktura sprzedaży musi być wystawiona przez KSeF od 01.02.2026"]
 } {
-    input.invoice.transaction_date >= "2026-02-01"
+    input.invoice.transaction_date >= thresholds.vat.ksef_mandatory_from
     input.jdg_entrepreneur.is_vat_payer == true
     input.invoice.direction == "SALE"
 }
@@ -71,7 +72,7 @@ else := {
     "_legal_basis":"Art. 106na-106nq VAT (rozszerzenie B2C od 2026-07-01)",
     "_warnings":[sprintf("KSeF B2C OBOWIĄZKOWY od 2026-07-01 — faktura B2C %.2f PLN wymaga KSeF. Wyjątki: paragon <450 PLN, okazjonalna <1000 PLN, rolnicy ryczałtowi. Konsument musi wyrazić zgodę (opt-in).", [amount_gross])]
 } {
-    input.invoice.transaction_date >= "2026-07-01"
+    input.invoice.transaction_date >= "2026-07-01"  # KSeF B2C — data ustawowa (odrebną od B2B)
     input.vendor.is_b2c == true
     input.invoice.direction == "SALE"
     input.invoice.document_type == "INVOICE"

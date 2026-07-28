@@ -20,6 +20,7 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.compliance
 import data.jdg.helpers
+import data.jdg.thresholds
 default decide := {"matched":false,"rule_id":"jdg.compliance.no_match","package":"jdg.compliance","priority":167}
 
 # ══════ P1730: whistleblower_procedure_check — Sygnaliści ≥50 os. (standalone advisory) ══════
@@ -69,7 +70,7 @@ decide := {
     "_legal_basis":"Art. 96b VAT, Art. 117ba Ordynacji podatkowej",
     "_warnings":["Brak kontrahenta na Białej Liście MF — odpowiedzialność solidarna przedsiębiorcy!"]
 } {
-    input.invoice.amount_gross >= 15000
+    input.invoice.amount_gross >= thresholds.misc.mpp_mandatory_threshold
     input.vendor.on_whitelist == false
 }
 
@@ -87,7 +88,7 @@ else := {
     "_legal_basis":"Art. 117ba § 1 Ordynacji podatkowej",
     "_warnings":[]
 } {
-    input.invoice.amount_gross >= 15000
+    input.invoice.amount_gross >= thresholds.misc.mpp_mandatory_threshold
     input.vendor.on_whitelist == true
     input.vendor.account_on_whitelist == false
 }
@@ -105,11 +106,10 @@ else := {
     "mpp_required":true,
     "_routing":"BLOCK_AND_ALERT",
     "_routing_reason":"MPP OBOWIĄZKOWY — brak split payment przy transakcji >15k z Załącznika 15",
-    "_legal_basis":"Art. 108a ust. 1-1d VAT, Art. 105a-105c VAT",
-    "_warnings":[sprintf("BRAK MPP! Faktura %.2f PLN brutto, kategoria %s z Załącznika 15. Sankcja 30%% VAT: %.2f PLN. NKUP PIT/CIT: %.2f PLN. Solidarna odpowiedzialność za VAT dostawcy. Wykonaj przelew MPP.", [amount_gross, category, vat_amount * 0.30, amount_net])]
+    "_legal_basis":"Art. 108a ust. 1-1d VAT, Art. 105a-105c VAT",    "_warnings": [sprintf("BRAK MPP! Faktura %.2f PLN brutto, kategoria %s z Załącznika 15. Sankcja 30%% VAT: %.2f PLN. NKUP PIT/CIT: %.2f PLN. Solidarna odpowiedzialność za VAT dostawcy. Wykonaj przelew MPP.", [amount_gross, category, vat_amount * thresholds.misc.mpp_sanction_rate, amount_net])]
 } {
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross >= 15000
+    amount_gross >= thresholds.misc.mpp_mandatory_threshold
     category := input.invoice.category_code
     helpers.jdg_is_mpp_sensitive(category)
     input.invoice.split_payment_used == false
@@ -132,7 +132,7 @@ else := {
     "_legal_basis":"Art. 108a VAT",
     "_warnings":["MPP zastosowany prawidłowo — zwolnienie z odpowiedzialności solidarnej za VAT kontrahenta"]
 } {
-    input.invoice.amount_gross >= 15000
+    input.invoice.amount_gross >= thresholds.misc.mpp_mandatory_threshold
     helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
     input.invoice.split_payment_used == true
 }
@@ -151,7 +151,7 @@ else := {
     "_legal_basis":"Art. 108a ust. 1d VAT",
     "_warnings":["Dobrowolny MPP — zwolnienie z odpowiedzialności solidarnej za VAT kontrahenta"]
 } {
-    input.invoice.amount_gross < 15000
+    input.invoice.amount_gross < thresholds.misc.mpp_mandatory_threshold
     input.invoice.voluntary_split_payment_used == true
 }
 
@@ -169,7 +169,7 @@ else := {
     "_warnings":["Płatność gotówkowa powyżej 15 000 PLN — wydatek NIE stanowi KUP!"]
 } {
     input.invoice.is_cash_payment == true
-    input.invoice.amount_gross >= 15000
+    input.invoice.amount_gross >= thresholds.misc.cash_payment_limit
 }
 
 # ══════ P36: vat_simplified_receipt — Paragon z NIP jako faktura uproszczona ══════

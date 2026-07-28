@@ -32,7 +32,7 @@ vat := {
     "zero_rate": 0.00,                           # 0% (P544)
     "exempt": "ZW",                              # Zwolnione
 
-    # Art. 89a-89b VAT — ulga na złe długi (SLIM VAT 3/2025)
+    # Art. 89a-89b VAT — ulga na złe długi (SLIM VAT 3/2023)
     "bad_debt_days": 90,                         # 90 dni po terminie (P189, P60b)
     "bad_debt_sanction_30pct": 0.30,             # Sankcja 30% dla dłużnika (P652)
 
@@ -100,6 +100,9 @@ pit := {
 
     # Art. 30da PIT — Exit Tax
     "exit_tax_rate": 0.19,                      # 19%
+
+    # Art. 21 ust. 1 pkt 148-154 PIT — wspólny limit ulg PIT-0 (mlodzi, powrót, 4+, senior)
+    "pit_relief_shared_limit": 85528,            # PLN — limit łączny ulg PIT-0 (2026)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -124,7 +127,7 @@ zus := {
     # Składka zdrowotna (Polski Ład 2022)
     "health_scale_rate": 0.09,                   # 9% od dochodu (P720) — NIE odlicza się
     "health_linear_rate": 0.049,                 # 4.9% od dochodu (P722)
-    "health_linear_deduction_limit": 12900,      # PLN/rok max odliczenia (P563)
+    "health_linear_deduction_limit": 14100,      # PLN/rok max odliczenia (P563) — 2026=14100
 
     # Ryczałt zdrowotny — progi (P564) — zaktualizowane na 2026 (avg_wage=9100)
     # TIER_1: 60% × 9100 × 9% = 491.40 PLN/mies
@@ -355,6 +358,143 @@ misc := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# FC THRESHOLDS — Field Confidence progi dla routingu (Recomendacja 6.4)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+fc_thresholds := {
+    "nip": 0.80,                                 # NIP confidence threshold
+    "vat_rate": 0.95,                            # VAT rate confidence threshold
+    "minimum": 0.70,                             # General minimum confidence
+    "linear_min": 0.85,                          # Linear tax confidence threshold
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ROUTING CONFIDENCE — Progi ufności dla poszczególnych pól (Recomendacja 6.4)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+routing_confidence := {
+    "vat_rate_block": 0.95,                      # BLOCK_AND_ALERT poniżej
+    "nip_block": 0.80,                           # BLOCK_AND_ALERT poniżej
+    "minimum_triage": 0.70,                      # TRIAGE_QUEUE poniżej
+    "linear_min_block": 0.85,                    # BLOCK dla liniowego
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# API FALLBACK — Progi degradacji API (Recomendacja 6.4)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+api_fallback := {
+    "multi_degraded_threshold": 3,               # Liczba API offline → BLOCK
+    "min_operational_pct": 0.50,                 # 50% API musi działać
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CHECKSUM WEIGHTS — Wagi dla NIP/REGON (Rekomendacja 6.4)
+# Eksternalizacja z validation.rego (wcześniej hardcoded).
+# ═══════════════════════════════════════════════════════════════════════════════
+
+checksum_weights := {
+    # NIP: modulo 11, wagi [6,5,7,2,3,4,5,6,7]
+    "nip": [6, 5, 7, 2, 3, 4, 5, 6, 7],
+    # REGON 9-cyfrowy: wagi [8,9,2,3,4,5,6,7], modulo 11
+    "regon9": [8, 9, 2, 3, 4, 5, 6, 7],
+    # REGON 14-cyfrowy: wagi [2,4,8,5,0,9,7,3,6,1,2,4,8], modulo 11
+    "regon14": [2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8]
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AGGREGATED LIMITS — Zagregowane progi dla helperów get_jdg_limit()
+# Klucze mapują się na wartości z powyższych sekcji domenowych.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+limits := {
+    "vat_subject_exemption": vat.subject_exemption_limit,
+    "pit_scale_threshold": pit.scale_threshold,
+    "pit_tax_free_amount": pit.tax_free_amount,
+    "car_value_limit_standard": pit.car_value_limit_standard,
+    "car_value_limit_ev": pit.car_value_limit_ev,
+    "car_lease_insurance_limit": pit.car_lease_insurance_limit,
+    "representation_limit_pct": pit.representation_limit_pct,
+    "donation_limit_pct": pit.donation_limit_pct,
+    "maly_zus_plus_income_limit": zus.maly_zus_plus_income_limit,
+    "maly_zus_plus_revenue_limit": zus.maly_zus_plus_revenue_limit,
+    "health_linear_deduction_limit": zus.health_linear_deduction_limit,
+    "pit_relief_shared_limit": pit.pit_relief_shared_limit,
+    "health_lump_tier_1_limit": zus.health_lump_tier_1_limit,
+    "health_lump_tier_2_limit": zus.health_lump_tier_2_limit,
+    "sickness_waiting_days": zus.sickness_waiting_days,
+    "start_relief_months": zus.start_relief_months,
+    "maly_zus_plus_months": zus.maly_zus_plus_months,
+    "preferential_months": zus.preferential_months,
+    "cash_payment_limit": misc.cash_payment_limit,
+    "mpp_mandatory_threshold": misc.mpp_mandatory_threshold,
+    "one_off_low_value": depreciation.one_off_low_value_limit,
+    "one_off_de_minimis": depreciation.one_off_de_minimis_limit,
+    "improvement_threshold": depreciation.improvement_threshold,
+    "de_minimis_annual_eur": depreciation.de_minimis_annual_limit_eur,
+    "lump_sum_annual_eur": lump_sum.annual_limit_eur,
+    "statute_of_limitations_years": ord.statute_of_limitations_years,
+    "suspension_max_months": business.suspension_max_months,
+    "succession_default_months": business.succession_default_months,
+    "succession_extended_months": business.succession_extended_months,
+    "succession_remnant_tax_rate": business.succession_remnant_tax_rate,
+    "minimum_wage_gross": bounds.minimum_wage_gross,
+    "avg_monthly_wage": bounds.avg_monthly_wage,
+    "zus_social_base_standard": bounds.zus_social_base_standard,
+    "trust_auto_post": 0.92,                     # Próg auto-post dla risk.rego P1
+    "pkpir_integrity_min": 0.70,                 # Min integrity score PKPiR
+    "kks_discrepancy_threshold": 0.30,           # Próg rozbieżności KKS Art.54
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AGGREGATED RATES — Zagregowane stawki dla helperów get_jdg_rate()
+# ═══════════════════════════════════════════════════════════════════════════════
+
+rates := {
+    "vat_standard": vat.standard_rate,
+    "vat_reduced_8": vat.reduced_rate_8,
+    "vat_reduced_5": vat.reduced_rate_5,
+    "vat_zero": vat.zero_rate,
+    "pit_scale_low": pit.scale_low_rate,
+    "pit_scale_high": pit.scale_high_rate,
+    "pit_linear": pit.linear_rate,
+    "pit_ip_box": pit.ip_box_rate,
+    "pit_exit_tax": pit.exit_tax_rate,
+    "car_vat_deduction_no_log": vat.car_vat_deduction_no_log,
+    "car_vat_deduction_with_log": vat.car_vat_deduction_with_log,
+    "car_kup_no_log": pit.car_kup_no_log,
+    "car_kup_with_log": pit.car_kup_with_log,
+    "health_scale": zus.health_scale_rate,
+    "health_linear": zus.health_linear_rate,
+    "health_lump_tier_1": zus.health_lump_tier_1_amount,
+    "health_lump_tier_2": zus.health_lump_tier_2_amount,
+    "health_lump_tier_3": zus.health_lump_tier_3_amount,
+    "sickness_benefit": zus.sickness_benefit_rate,
+    "sickness_hospital": zus.sickness_hospital_rate,
+    "pension": zus.pension_rate,
+    "disability": zus.disability_rate,
+    "sickness_voluntary": zus.sickness_voluntary_rate,
+    "accident": zus.accident_rate,
+    "labour_fund": zus.labour_fund_rate,
+    "eur_pln": bounds.eur_pln,
+    "mileage_rate": bounds.mileage_rate_per_km,
+    "business_trip_diet": bounds.business_trip_diet,
+    "lump_2pct": lump_sum.rate_2pct,
+    "lump_3pct": lump_sum.rate_3pct,
+    "lump_5_5pct": lump_sum.rate_5_5pct,
+    "lump_8_5pct": lump_sum.rate_8_5pct,
+    "lump_12pct": lump_sum.rate_12pct,
+    "lump_15pct": lump_sum.rate_15pct,
+    "lump_17pct": lump_sum.rate_17pct,
+    "bad_debt_sanction": vat.bad_debt_sanction_30pct,
+    "cash_sanction": misc.cash_sanction_rate,
+    "mpp_sanction": misc.mpp_sanction_rate,
+    "additional_tax": ord.additional_tax_rate_pct,
+    "tax_interest": ord.tax_interest_rate,
+    "unregistered_revenue": ord.unregistered_revenue_pct,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # EARLY WARNING — Progi ostrzegawcze (80% limitów) — STRATEGIC INITIATIVE S23
 # ═══════════════════════════════════════════════════════════════════════════════
 # System wczesnego ostrzegania przed przekroczeniem kluczowych limitów.
@@ -371,8 +511,8 @@ early_warning := {
     # Skala PIT — próg 120 000 PLN
     "scale_threshold_80pct": 96000,              # 80% × 120 000 PLN
 
-    # Liniowy — limit odliczenia zdrowotnej 12 900 PLN
-    "health_deduction_80pct": 10320,             # 80% × 12 900 PLN
+    # Liniowy — limit odliczenia zdrowotnej 14 100 PLN (2026)
+    "health_deduction_80pct": 11280,             # 80% × 14 100 PLN
 
     # Mały ZUS Plus — limit przychodu 120 000 PLN
     "maly_zus_plus_80pct": 96000,                # 80% × 120 000 PLN
@@ -395,13 +535,13 @@ early_warning := {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 temporal_thresholds := {
-    # P189 — złe długi: 150 dni → 90 dni (SLIM VAT 3/2025-07-01)
+    # P189 — złe długi: 150 dni → 90 dni (SLIM VAT 3/2023-07-01)
     "bad_debt_days": {
-        "valid_from": "2025-07-01",
+        "valid_from": "2023-01-01",
         "value": 90,
         "previous_value": 150,
-        "previous_valid_from": "2023-07-01",
-        "reason": "SLIM VAT 3/2025 — obniżenie z 150 do 90 dni"
+        "previous_valid_from": "2020-01-01",
+        "reason": "SLIM VAT 3 (2023-01-01) — obniżenie z 150 do 90 dni dla ulgi na złe długi"
     },
 
     # P500 — kwota wolna: 30k (Polski Ład 2022)

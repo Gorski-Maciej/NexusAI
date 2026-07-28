@@ -20,10 +20,16 @@
 package jdg.routing
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 default decide := {
     "matched": false, "rule_id": "jdg.routing.no_match",
     "package": "jdg.routing", "priority": 29
+}
+
+# Pobiera próg routingu z thresholds (z fallbackiem do wartości domyślnych)
+get_routing_threshold(key, fallback) = val {
+    val := object.get(data.jdg.thresholds.routing_confidence, key, fallback)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -44,7 +50,7 @@ decide := {
 } {
     input.jdg_entrepreneur.tax_form == "PIT_SCALE"
     fc_vat := object.get(input.confidence, "fc_vat_rate", 1.0)
-    fc_vat < 0.95
+    fc_vat < get_routing_threshold("vat_rate_block", 0.95)
     fc_vat > 0
 }
 
@@ -65,7 +71,7 @@ else := {
     "_warnings": []
 } {
     fc_nip := object.get(input.confidence, "fc_vendor_nip", 1.0)
-    fc_nip < 0.80
+    fc_nip < get_routing_threshold("nip_block", 0.80)
     fc_nip > 0
 }
 
@@ -87,7 +93,7 @@ else := {
 } {
     input.jdg_entrepreneur.tax_form == "LINEAR"
     fc_min := object.get(input.confidence, "fc_minimum", 1.0)
-    fc_min < 0.85
+    fc_min < get_routing_threshold("linear_min_block", 0.85)
     fc_min > 0
 }
 
@@ -109,7 +115,7 @@ else := {
 } {
     input.jdg_entrepreneur.tax_form == "LUMP_SUM"
     fc_vat := object.get(input.confidence, "fc_vat_rate", 1.0)
-    fc_vat < 0.95
+    fc_vat < get_routing_threshold("vat_rate_block", 0.95)
     fc_vat > 0
 }
 
@@ -130,6 +136,6 @@ else := {
     "_warnings": []
 } {
     fc_min := object.get(input.confidence, "fc_minimum", 1.0)
-    fc_min < 0.70
+    fc_min < get_routing_threshold("minimum_triage", 0.70)
     fc_min > 0
 }

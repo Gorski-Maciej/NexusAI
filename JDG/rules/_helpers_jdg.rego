@@ -16,14 +16,14 @@ import data.jdg.metadata
 
 # ── Threshold Helpers ─────────────────────────────────────────────────────────
 
-# Bezpieczny odczyt progu z data.thresholds.jdg.limits
+# Bezpieczny odczyt progu z data.jdg.thresholds.limits
 get_jdg_limit(key, fallback) = value  if {
-    value := object.get(data.thresholds.jdg.limits, key, fallback)
+    value := object.get(data.jdg.thresholds.limits, key, fallback)
 }
 
-# Bezpieczny odczyt stawki z data.thresholds.jdg.rates
+# Bezpieczny odczyt stawki z data.jdg.thresholds.rates
 get_jdg_rate(key, fallback) = rate  if {
-    rate := object.get(data.thresholds.jdg.rates, key, fallback)
+    rate := object.get(data.jdg.thresholds.rates, key, fallback)
 }
 
 # ── Tax Form Detection ────────────────────────────────────────────────────────
@@ -57,7 +57,7 @@ is_tax_card = true if {
 
 # Sprawdza czy confidence pola jest poniżej progu JDG
 jdg_fc_below_threshold(fc_field, threshold_key)  if {
-    object.get(input.confidence, fc_field, 1.0) < object.get(data.thresholds.jdg.fc_thresholds, threshold_key, 0.0)
+    object.get(input.confidence, fc_field, 1.0) < object.get(data.jdg.thresholds.fc_thresholds, threshold_key, 0.0)
     object.get(input.confidence, fc_field, 1.0) > 0
 }
 
@@ -76,7 +76,7 @@ build_jdg_routing_reason(tax_form, field_name, confidence, threshold) = reason  
 
 # Konwertuje kwotę brutto na EUR używając kursu z thresholds
 jdg_amount_eur = eur  if {
-    eur := input.invoice.amount_gross / object.get(data.thresholds.jdg.rates, "eur_pln", 4.5)
+    eur := input.invoice.amount_gross / object.get(data.jdg.thresholds.bounds, "eur_pln", 4.5)
 }
 
 # ── Date Helpers ───────────────────────────────────────────────────────────────
@@ -92,13 +92,13 @@ days_between(date1, date2) = days  if {
 
 # Sprawdza czy data transakcji mieści się w okresie obowiązywania reguły JDG
 jdg_is_valid_period(date_str)  if {
-    date_str >= object.get(data.thresholds.jdg, "valid_from", "2000-01-01")
-    not object.get(data.thresholds.jdg, "valid_to", null)
+    date_str >= object.get(data.jdg.thresholds, "valid_from", "2000-01-01")
+    not object.get(data.jdg.thresholds, "valid_to", null)
 }
 
 jdg_is_valid_period(date_str)  if {
-    date_str >= object.get(data.thresholds.jdg, "valid_from", "2000-01-01")
-    date_str <= object.get(data.thresholds.jdg, "valid_to", "2099-12-31")
+    date_str >= object.get(data.jdg.thresholds, "valid_from", "2000-01-01")
+    date_str <= object.get(data.jdg.thresholds, "valid_to", "2099-12-31")
 }
 
 # ── Per-Rule Temporal Validity (Doc 34 §0.1 Temporalność) ──────────────────
@@ -293,4 +293,90 @@ build_warnings(info_msg, warning_msg, condition) = warnings  if {
     warnings := [info_msg, warning_msg]
 } else = [info_msg]  if {
     warnings := [info_msg]
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SELF-HEALING ROUTER — Health Monitor (Innowacja 9.1)
+#
+# Warstwa monitorowania zdrowia pakietów. Wstrzykiwana z Python health monitora
+# (rolling window 100 ewaluacji). Pakiet z >20% błędów jest automatycznie
+# wykluczany na TTL 5 min i zastępowany fallback.decide.
+#
+# Użycie:
+#   import data.jdg.helpers
+#   is_healthy("jdg.kks")  # true jeśli pakiet działa poprawnie
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Sprawdza czy pakiet jest zdrowy (health status z Python bridge)
+# Używa defensywnego dostępu do data.jdg.health (może nie istnieć w testach)
+is_package_healthy(package_name) = true {
+    health_data := object.get(object.get(data, "jdg", {}), "health", {})
+    not health_data[package_name]
+} else = true {
+    health_data := object.get(object.get(data, "jdg", {}), "health", {})
+    health := health_data[package_name]
+    object.get(health, "error_rate", 0) < object.get(health, "max_error_rate", 0.20)
+} else = false {
+    true
+}
+
+# Zwraca pakiet lub fallback jeśli niezdrowy (Innowacja 9.1)
+healthy_or_fallback(package_name, package_result, fallback_result) = result {
+    is_package_healthy(package_name)
+    result := package_result
+} else = result {
+    result := fallback_result
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ADAPTIVE PRIORITY ENGINE — Dynamiczne priorytety (Innowacja 9.7)
+#
+# Efektywny priorytet = bazowy + waga ryzyka + waga historyczna + waga temporalna.
+# Wagi wstrzykiwane z Python pre-processora jako data.jdg.priority_weights.
+# Reguła czyta swoją wagę z danych (fallback 0).
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Oblicza efektywny priorytet dynamiczny dla reguły
+get_adaptive_priority(rule_id, base_priority) = effective {
+    weights := object.get(object.get(data, "jdg", {}), "priority_weights", {})
+    risk_weight := object.get(weights, sprintf("%s.risk", [rule_id]), 0)
+    history_weight := object.get(weights, sprintf("%s.history", [rule_id]), 0)
+    temporal_weight := object.get(weights, sprintf("%s.temporal", [rule_id]), 0)
+    effective := base_priority + risk_weight + history_weight + temporal_weight
+} else = base_priority {
+    true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TEMPORAL SNAPSHOT ENGINE — Routing epok prawnych (Innowacja 9.4)
+#
+# Zamiast rejestru per-reguła, wybiera bundle OPA dla epoki prawnej.
+# Epoki: pre-2019, 2019-2021, 2022-H1, 2022-H2, 2023-2025, 2026+.
+# Router wybiera snapshot wg evaluation_date.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Wybiera snapshot epoki prawnej dla daty ewaluacji
+get_temporal_snapshot(eval_date) = snapshot {
+    eval_date >= "2026-01-01"
+    snapshot := "2026_PLUS"
+} else = snapshot {
+    eval_date >= "2023-01-01"
+    snapshot := "2023_2025"
+} else = snapshot {
+    eval_date >= "2022-07-01"
+    snapshot := "2022_H2"
+} else = snapshot {
+    eval_date >= "2022-01-01"
+    snapshot := "2022_H1"
+} else = snapshot {
+    eval_date >= "2019-01-01"
+    snapshot := "2019_2021"
+} else = "PRE_2019" {
+    true
+}
+
+# Zwraca nazwę bundle OPA dla danej epoki temporalnej
+get_temporal_bundle(eval_date) = bundle {
+    snapshot := get_temporal_snapshot(eval_date)
+    bundle := concat("", ["jdg.snapshot.", snapshot])
 }

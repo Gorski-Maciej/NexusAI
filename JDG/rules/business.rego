@@ -206,15 +206,16 @@ else := {
 }
 
 # ══════ P914: business_suspension_zus — Zawieszenie → społeczne=0, zdrowotna NADAL ══════
-# Architektura: main_jdg.rego używa object.union (multi-pass). Ponieważ business.decide
-# jest mergowane PO zus.decide, usunięcie zus_health_rate z P914 sprawia, że object.union
+# v7.0 FIX: Dodano immutable_verdict=true — chroni werdykt ZUS w zawieszeniu
+# przed nadpisaniem przez risk.decide i inne pakiety z wyższym priorytetem.
+# Architektura: main_jdg.rego używa safe_merge. Ponieważ business.decide
+# jest mergowane PO zus.decide, usunięcie zus_health_rate z P914 sprawia, że safe_merge
 # zachowuje stawkę zdrowotną już ustawioną przez pakiet zus (P720/P722/P724).
-# ⚠️ Edge case: jeśli zus.decide zwróci default no_match (brak zus_health_rate),
-# merged verdict będzie miał zus_health_due:true bez stawki. W praktyce nie występuje
-# (P720-P724 pokrywają wszystkie 4 formy opodatkowania), ale warto mieć świadomość.
+# immutable_verdict=true gwarantuje, że ZUS zawieszenia nie zostanie nadpisany.
 else := {
     "matched":true,"rule_id":"jdg.business.suspension_zus",
     "package":"jdg.business","priority":914,
+    "immutable_verdict": true,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,

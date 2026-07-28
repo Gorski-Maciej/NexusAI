@@ -201,3 +201,47 @@ else := {
     input.jdg_entrepreneur.tax_return_filed_current == false
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P557: pit_annual_settlement — Rozliczenie nadpłaty/niedopłaty rocznej
+# Art. 45 ust. 6 PIT + Art. 77-78 Ordynacji Podatkowej
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.advances.annual_settlement",
+    "package": "jdg.pit.advances", "priority": 557,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "pit_settlement_type": settlement_type,
+    "pit_settlement_amount": abs(settlement_diff),
+    "pit_overpayment_refund_days": refund_days,
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": routing_action,
+    "_routing_reason": sprintf("Rozliczenie roczne — %s: %.2f PLN", [settlement_type, abs(settlement_diff)]),
+    "_legal_basis": "Art. 45 ust. 6 PIT, Art. 77 § 1 OrdPU",
+    "_warnings": [sprintf("ROZLICZENIE ROCZNE — %s %.2f PLN. %s", [settlement_type, abs(settlement_diff), settlement_action])]
+} {
+    input.jdg_entrepreneur.tax_return_filed_current == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    annual_tax := object.get(input.jdg_entrepreneur, "annual_tax_calculated", 0)
+    advances_paid := object.get(input.jdg_entrepreneur, "cumulative_advances_paid", 0)
+    settlement_diff := annual_tax - advances_paid
+
+    settlement_type = "NADPŁATA" { settlement_diff < 0 }
+    settlement_type = "NIEDOPŁATA" { settlement_diff > 0 }
+    settlement_type = "ZEROWE" { settlement_diff == 0 }
+
+    routing_action = "" { settlement_type == "NADPŁATA" }
+    routing_action = "BLOCK_AND_ALERT" { settlement_type == "NIEDOPŁATA" }
+    routing_action = "" { settlement_type == "ZEROWE" }
+
+    refund_days = 45 { settlement_diff < 0 }
+    refund_days = 0 { settlement_diff >= 0 }
+
+    settlement_action = sprintf("Zwrot na konto w ciągu %d dni od złożenia zeznania", [refund_days]) { settlement_type == "NADPŁATA" }
+    settlement_action = sprintf("Dopłać natychmiast + odsetki %.1f%% rocznie od terminu płatności", [0.145]) { settlement_type == "NIEDOPŁATA" }
+    settlement_action = "Rozliczenie zerowe — brak dopłaty/zwrotu" { settlement_type == "ZEROWE" }
+
+    settlement_diff != 0
+}

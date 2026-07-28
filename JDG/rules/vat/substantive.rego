@@ -30,6 +30,7 @@
 package jdg.vat.substantive
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 # ── Default: no matching VAT rate rule ──────────────────────────────────────
 default decide := {
@@ -181,7 +182,7 @@ else := {
     "matched": true, "rule_id": "jdg.vat.substantive.food_pl",
     "package": "jdg.vat.substantive", "priority": 53,
     "vat_rate": "0.05", "rounding_level": "position",
-    "gtu_code": "GTU_07", "procedure": "",
+    "gtu_code": "", "procedure": "",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -193,6 +194,30 @@ else := {
 } {
     input.invoice.category_code in {"FOOD", "GROCERIES", "FOOD_BASIC"}
     input.vendor.country == "PL"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P66: vat_np_not_subject — Transakcja nie podlega VAT (NP / out of scope)
+# v7.0 FIX P02-Ś9: Wcześniej transakcje NP trafiały do catch-all P67 23% —
+# ciche zastosowanie 23% do transakcji niepodlegającej VAT. Teraz jawnie NP.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.np_not_subject",
+    "package": "jdg.vat.substantive", "priority": 66,
+    "vat_rate": "NP", "rounding_level": "total",
+    "gtu_code": "", "procedure": "NP_NOT_SUBJECT",
+    "vat_exemption": "OUT_OF_SCOPE", "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "vat_not_subject": true,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "Transakcja nie podlega VAT (NP) — out of scope. Zweryfikuj poprawność klasyfikacji.",
+    "_legal_basis": "Art. 5-6 VAT (poza zakresem opodatkowania)",
+    "_warnings": ["TRANSAKCJA NP — nie podlega VAT. Upewnij się że klasyfikacja NP jest prawidłowa. Błędne oznaczenie NP może skutkować zaległością VAT."]
+} {
+    input.invoice.vat_rate == "NP"
 }
 
 # ══ P67: vat_books_5pct_validation — Książki/e-booki 5% (Doc 42: walidacja CN) ══
@@ -582,6 +607,8 @@ gtu_map := {
     "FUEL_HEATING": "GTU_02",
     "OIL_LUBRICANTS": "GTU_05",
     "MEDICAL_PRODUCTS": "GTU_06",
+    "USED_VEHICLES": "GTU_03",
+    "USED_TRANSPORT": "GTU_03",
     "WASTE": "GTU_07",
     "ELECTRONICS": "GTU_08",
     "VEHICLES": "GTU_09",
@@ -900,7 +927,7 @@ else := {
 } {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > 15000
+    amount_gross > thresholds.misc.mpp_mandatory_threshold
     # v7.0 CN bridge: MPP sensitivity by category OR CN code
     mpp_matched { helpers.jdg_is_mpp_sensitive(input.invoice.category_code) }
     mpp_matched { helpers.jdg_is_mpp_sensitive_by_cn(input.invoice.cn_code) }
@@ -926,7 +953,7 @@ else := {
 } {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross <= 15000
+    amount_gross <= thresholds.misc.mpp_mandatory_threshold
     input.invoice.split_payment_used == true
 }
 
@@ -949,7 +976,7 @@ else := {
 } {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > 15000
+    amount_gross > thresholds.misc.mpp_mandatory_threshold
     helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
     input.invoice.split_payment_used == false
     amount_net := object.get(input.invoice, "amount_net", 0)
@@ -957,7 +984,7 @@ else := {
     mpp_matched { helpers.jdg_is_mpp_sensitive_by_cn(input.invoice.cn_code) }
     mpp_matched
     vat_amount := amount_gross - amount_net
-    sanction_amount := vat_amount * 0.30
+    sanction_amount := vat_amount * thresholds.misc.mpp_sanction_rate
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -981,7 +1008,7 @@ else := {
 } {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > 15000
+    amount_gross > thresholds.misc.mpp_mandatory_threshold
     category := input.invoice.category_code
     mpp_matched { helpers.jdg_is_mpp_sensitive(category) }
     mpp_matched { helpers.jdg_is_mpp_sensitive_by_cn(input.invoice.cn_code) }
@@ -1031,9 +1058,11 @@ else := {
     "_warnings": [sprintf("JPK_V7 FLAGI: FP=%s, MPP=%s, GTU=%s. Sprawdź poprawność przed wysyłką.", [fp_flag, mpp_flag, gtu_flag])]
 } {
     input.jdg_entrepreneur.is_vat_payer == true
+    amount_gross := object.get(input.invoice, "amount_gross", 0)
     fp_flag = "Faktura zaliczkowa / końcowa" { input.invoice.invoice_type in {"ADVANCE", "FINAL"} }
     fp_flag = "" { input.invoice.invoice_type not in {"ADVANCE", "FINAL"} }
-    mpp_flag = "TAK" { input.invoice.split_payment_used == true }
+    mpp_flag = "OBOWIĄZKOWY" { input.invoice.split_payment_used == true; amount_gross > thresholds.misc.mpp_mandatory_threshold }
+    mpp_flag = "DOBROWOLNY" { input.invoice.split_payment_used == true; amount_gross <= thresholds.misc.mpp_mandatory_threshold }
     mpp_flag = "" { input.invoice.split_payment_used == false }
     gtu_flag := object.get(input.invoice, "gtu_code", "")
 }
@@ -1269,6 +1298,131 @@ else := {
         "LEGAL_SERVICES", "ACCOUNTING_SERVICES", "TRANSPORT_GOODS",
         "CONSTRUCTION_MATERIALS", "MAINTENANCE", "SECURITY"
     }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PLACE OF SUPPLY — Art. 28a-28o VAT (P94-P96)
+# Rekomendacja W7 z P02: miejsce świadczenia B2B/B2C/nieruchomości/e-usługi
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── EU countries set (local copy for place_of_supply rules) ────────────────────
+eu_countries := {
+    "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
+    "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
+    "PL", "PT", "RO", "SK", "SI", "ES", "SE"
+}
+
+# ══ P94: place_of_supply_B2B — Miejsce świadczenia B2B (Art. 28b VAT) ══
+# Zasada ogólna B2B: miejsce = siedziba nabywcy (reverse charge w kraju nabywcy)
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.place_of_supply_b2b",
+    "package": "jdg.vat.substantive", "priority": 94,
+    "vat_rate": "NP", "rounding_level": "", "gtu_code": "", "procedure": "",
+    "vat_exemption": "OUT_OF_SCOPE", "place_of_supply": buyer_country,
+    "vat_reverse_charge": true,
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": sprintf("Miejsce świadczenia B2B — %s (Art. 28b)", [buyer_country]),
+    "_legal_basis": "Art. 28b ust. 1 VAT",
+    "_warnings": [sprintf("MIEJSCE ŚWIADCZENIA B2B — usługa dla podatnika z %s. Miejsce opodatkowania = %s (reverse charge). Faktura bez VAT, z adnotacją 'odwrotne obciążenie'.", [buyer_country, buyer_country])]
+} {
+    input.invoice.direction == "SALE"
+    input.vendor.country == "PL"
+    input.invoice.is_service == true
+    buyer_country := object.get(input.buyer, "country", "PL")
+    buyer_country in eu_countries
+    buyer_country != "PL"
+    input.buyer.is_vat_payer == true
+}
+
+# ══ P95: place_of_supply_B2C — Miejsce świadczenia B2C (Art. 28a VAT) ══
+# Zasada ogólna B2C: miejsce = siedziba usługodawcy (PL)
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.place_of_supply_b2c",
+    "package": "jdg.vat.substantive", "priority": 95,
+    "vat_rate": "0.23", "rounding_level": "position", "gtu_code": "", "procedure": "",
+    "vat_exemption": "", "place_of_supply": "PL",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "Miejsce świadczenia B2C — PL (Art. 28a)",
+    "_legal_basis": "Art. 28a VAT",
+    "_warnings": ["MIEJSCE ŚWIADCZENIA B2C — usługa dla konsumenta. Miejsce opodatkowania = PL (siedziba usługodawcy). Obowiązek VAT w PL."]
+} {
+    input.invoice.direction == "SALE"
+    input.vendor.country == "PL"
+    input.invoice.is_service == true
+    buyer_country := object.get(input.buyer, "country", "PL")
+    buyer_country == "PL"
+    input.buyer.is_vat_payer == false
+}
+
+# ══ P95a: place_of_supply_real_estate — Nieruchomości (Art. 28e VAT) ══
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.place_of_supply_real_estate",
+    "package": "jdg.vat.substantive", "priority": 95,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "",
+    "vat_exemption": "", "place_of_supply": property_country,
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": sprintf("Miejsce świadczenia — nieruchomość w %s (Art. 28e)", [property_country]),
+    "_legal_basis": "Art. 28e VAT",
+    "_warnings": [sprintf("NIERUCHOMOŚĆ — miejsce świadczenia = %s (położenie nieruchomości). VAT według przepisów kraju położenia. Skonsultuj z doradcą podatkowym w %s.", [property_country, property_country])]
+} {
+    input.invoice.category_code in {"REAL_ESTATE", "REAL_ESTATE_SALE", "CONSTRUCTION", "RENOVATION"}
+    property_country := object.get(input.invoice, "property_country", "PL")
+    property_country != "PL"
+}
+
+# ══ P95b: place_of_supply_e_services_B2C — E-usługi B2C (Art. 28k VAT) ══
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.place_of_supply_e_services_b2c",
+    "package": "jdg.vat.substantive", "priority": 95,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "OSS",
+    "vat_exemption": "", "place_of_supply": consumer_country,
+    "vat_oss_recommended": true,
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": sprintf("E-usługi B2C — miejsce świadczenia = %s (OSS)", [consumer_country]),
+    "_legal_basis": "Art. 28k VAT (e-usługi dla konsumentów UE)",
+    "_warnings": [sprintf("E-USŁUGI B2C — konsument z %s. Miejsce opodatkowania = %s. Zarejestruj się w OSS (One Stop Shop) aby rozliczać VAT w PL dla wszystkich krajów UE.", [consumer_country, consumer_country])]
+} {
+    input.invoice.direction == "SALE"
+    input.vendor.country == "PL"
+    input.invoice.is_e_service == true
+    consumer_country := object.get(input.buyer, "country", "PL")
+    consumer_country in eu_countries
+    consumer_country != "PL"
+    input.buyer.is_vat_payer == false
+}
+
+# ══ P95c: place_of_supply_transport — Transport (Art. 29-30 VAT) ══
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.place_of_supply_transport",
+    "package": "jdg.vat.substantive", "priority": 95,
+    "vat_rate": "0.23", "rounding_level": "position", "gtu_code": "GTU_13", "procedure": "",
+    "vat_exemption": "", "place_of_supply": transport_place,
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": sprintf("Transport — miejsce świadczenia: %s", [transport_place]),
+    "_legal_basis": "Art. 29-30 VAT (transport towarów i osób)",
+    "_warnings": [sprintf("TRANSPORT — miejsce świadczenia = %s. Transport krajowy PL = VAT 23%%. Transport międzynarodowy (poza UE) = 0%%.", [transport_place])]
+} {
+    input.invoice.category_code in {"TRANSPORT_SERVICES", "TRANSPORT_GOODS", "TRANSPORT_PASSENGERS"}
+    input.invoice.direction == "SALE"
+    input.vendor.country == "PL"
+    route_pl_only := object.get(input.invoice, "transport_route_domestic_only", true)
+    transport_place = "PL" { route_pl_only == true }
+    transport_place = "INTL_MIXED" { route_pl_only == false }
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -32,6 +32,7 @@
 package jdg.pit.kup
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 # ── Default ────────────────────────────────────────────────────────────────────
 default decide := {
@@ -39,6 +40,28 @@ default decide := {
     "rule_id": "jdg.pit.kup.no_match",
     "package": "jdg.pit.kup",
     "priority": 592
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P567: kup_advertising_full — Reklama → KUP (Art. 22 ust. 1 PIT)
+# Odróżnienie od reprezentacji (P566 NKUP). Reklama = wydatek na promocję
+# firmy/produktów — stanowi KUP w 100%.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.kup.advertising_full",
+    "package": "jdg.pit.kup", "priority": 567,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "full", "kus_percent": 100,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
+    "_routing": "", "_routing_reason": "Reklama → 100% KUP",
+    "_legal_basis": "Art. 22 ust. 1 PIT (reklama ≠ reprezentacja)",
+    "_warnings": ["Wydatki na reklamę — STANOWIĄ KUP w 100%. Uwaga: reprezentacja (P566) jest NKUP. Granica: reklama promuje firmę/produkt, reprezentacja buduje wizerunek przez wystawność/okazałość."]
+} {
+    input.invoice.expense_type == "ADVERTISING"
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -154,6 +177,77 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# P563: kup_car_operating_75pct — Koszty eksploatacji auta → 75% KUP bez ewidencji
+# Art. 23 ust. 1 pkt 46 PIT: bez ewidencji przebiegu = 75% KUP, z ewidencją = 100%
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.kup.car_operating_75pct",
+    "package": "jdg.pit.kup", "priority": 563,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "car_operating_no_log", "kus_percent": ku_pct,
+    "kus_car_mileage_log_required": true,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
+    "_routing": "", "_routing_reason": sprintf("Koszty eksploatacji auta — %.0f%% KUP (brak ewidencji przebiegu)", [ku_pct]),
+    "_legal_basis": "Art. 23 ust. 1 pkt 46 PIT",
+    "_warnings": [sprintf("Koszty eksploatacji auta (paliwo, serwis, ubezpieczenie) — %.0f%% KUP bez ewidencji przebiegu. Prowadź ewidencję kilometrową aby odliczyć 100%%.", [ku_pct])]
+} {
+    input.invoice.direction == "PURCHASE"
+    expense_type := object.get(input.invoice, "expense_type", "")
+    expense_type in {"CAR_FUEL", "CAR_SERVICE", "CAR_INSURANCE", "CAR_OPERATING"}
+    has_mileage_log := object.get(input.jdg_entrepreneur, "car_mileage_log_active", false)
+    has_mileage_log == false
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    ku_pct := floor(thresholds.pit.car_kup_no_log * 100)
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P569: kup_leasing_operational_vs_financial — Leasing operacyjny vs finansowy
+# Leasing operacyjny: rata leasingowa w KUP, wykup poza KUP (Art. 23b PIT)
+# Leasing finansowy: amortyzacja w KUP, część odsetkowa w KUP
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.kup.leasing_operational",
+    "package": "jdg.pit.kup", "priority": 569,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "full", "kus_percent": 100,
+    "kus_leasing_type": "OPERATIONAL", "kus_leasing_buyout_nkup": true,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
+    "_routing": "", "_routing_reason": "Leasing operacyjny — rata w KUP, wykup poza KUP",
+    "_legal_basis": "Art. 23b PIT (leasing operacyjny)",
+    "_warnings": [sprintf("LEASING OPERACYJNY — rata %.2f PLN w KUP. UWAGA: wykup przedmiotu leasingu po zakończeniu umowy = NIE jest KUP! Limit wartości auta: %.0f PLN (EV: %.0f PLN).", [amount_net, thresholds.pit.car_value_limit_standard, thresholds.pit.car_value_limit_ev])]
+} {
+    input.invoice.direction == "PURCHASE"
+    input.invoice.expense_type == "LEASING_OPERATIONAL"
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    amount_net := object.get(input.invoice, "amount_net", 0)
+}
+else := {
+    "matched": true, "rule_id": "jdg.pit.kup.leasing_financial",
+    "package": "jdg.pit.kup", "priority": 569,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "partial", "kus_percent": interest_pct,
+    "kus_leasing_type": "FINANCIAL", "kus_leasing_depreciation_kup": true,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
+    "_routing": "", "_routing_reason": "Leasing finansowy — amortyzacja + odsetki w KUP",
+    "_legal_basis": "Art. 22 ust. 1, Art. 23f PIT (leasing finansowy)",
+    "_warnings": [sprintf("LEASING FINANSOWY — amortyzacja środka trwałego w KUP + część odsetkowa (%.0f%%) w KUP. Część kapitałowa raty = NIE KUP. Limit wartości auta %.0f PLN dotyczy części kapitałowej.", [interest_pct, thresholds.pit.car_value_limit_standard])]
+} {
+    input.invoice.direction == "PURCHASE"
+    input.invoice.expense_type == "LEASING_FINANCIAL"
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    interest_pct := object.get(input.invoice, "leasing_interest_percent", 0)
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # P570: kup_health_contrib_linear_deduction — Składka zdrowotna przy liniowym
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
@@ -162,15 +256,15 @@ else := {
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "LINEAR", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "partial_health_limit", "kus_percent": 100,
-    "zus_social_base_type": "", "zus_health_rate": "0.049",
-    "zus_health_annual_limit": 12900, "zus_health_deductible_from_income": true,
+    "zus_social_base_type": "",    "zus_health_rate": "0.049",
+    "zus_health_annual_limit": thresholds.zus.health_linear_deduction_limit, "zus_health_deductible_from_income": true,
     "business_status": "", "ceidg_registration_required": false,
-    "relief_type": "", "relief_limit": 12900,
-    "relief_deductible": min([health_paid, 12900]),
+    "relief_type": "", "relief_limit": thresholds.zus.health_linear_deduction_limit,
+    "relief_deductible": min([health_paid, thresholds.zus.health_linear_deduction_limit]),
     "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
     "_legal_basis": "Art. 30c ust. 2 pkt 2 PIT",
-    "_warnings": [sprintf("Składka zdrowotna liniowy — odliczenie od dochodu max 12 900 PLN (zapłacono %.2f)", [health_paid])]
+    "_warnings": [sprintf("Składka zdrowotna liniowy — odliczenie od dochodu max %.0f PLN (zapłacono %.2f)", [thresholds.zus.health_linear_deduction_limit, health_paid])]
 } {
     input.jdg_entrepreneur.tax_form == "LINEAR"
     input.invoice.expense_type == "ZUS_HEALTH_ENTREPRENEUR"

@@ -28,6 +28,7 @@
 package jdg.pit.forms
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 # ── Default ────────────────────────────────────────────────────────────────────
 default decide := {
@@ -136,8 +137,8 @@ else := {
     "pit_annual_return_type": "PIT-36L",
     "pit_tax_free_amount": 0, "pit_tax_free_reduction": 0,
     "kus_qualification": "full", "kus_percent": 100,
-    "zus_social_base_type": "", "zus_health_rate": "0.049",
-    "zus_health_deductible_from_income": true, "zus_health_annual_limit": 12900,
+    "zus_social_base_type": "",    "zus_health_rate": "0.049",
+    "zus_health_deductible_from_income": true, "zus_health_annual_limit": thresholds.zus.health_linear_deduction_limit,
     "business_status": "", "ceidg_registration_required": false,
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
@@ -192,30 +193,22 @@ else := {
     lump_sum_rate := lump_sum_rate_by_pkwiu(pkwiu)
 }
 
-# ── Lump sum rate determination by PKWiU ──────────────────────────────────────
+# ── Lump sum rate determination by PKWiU (from thresholds — ADR-002) ──────────
 lump_sum_rate_by_pkwiu(pkwiu) = rate {
-    rate := object.get(lump_sum_rates_map, pkwiu_2digit(pkwiu), "0.085")
+    code := pkwiu_2digit(pkwiu)
+    rate = thresholds.rates.lump_2pct    { code in {"01", "02", "03"} }
+    else = thresholds.rates.lump_3pct    { code in {"10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","56"} }
+    else = thresholds.rates.lump_5_5pct  { code in {"41", "42", "43", "64", "65", "66"} }
+    else = thresholds.rates.lump_12pct   { code in {"62", "63"} }
+    else = thresholds.rates.lump_8_5pct  { code in {"58", "59", "60", "61", "72"} }
+    else = thresholds.rates.lump_15pct   { code == "68" }
+    else = thresholds.rates.lump_17pct   { code in {"69","70","71","73","74","75","77","78","79","80","81","82"} }
+    else = thresholds.rates.lump_8_5pct  # default fallback
 }
 
 pkwiu_2digit(pkwiu) = code {
     parts := split(pkwiu, ".")
     code := parts[0]
-}
-
-lump_sum_rates_map := {
-    "01": "0.02", "02": "0.02", "03": "0.02",
-    "41": "0.055", "42": "0.055", "43": "0.055",
-    "64": "0.055", "65": "0.055", "66": "0.055",
-    "62": "0.12", "63": "0.12",
-    "58": "0.085", "59": "0.085", "60": "0.085", "61": "0.085",
-    "68": "0.15", "69": "0.17", "70": "0.17", "71": "0.17",
-    "72": "0.085", "73": "0.17", "74": "0.17", "75": "0.17",
-    "77": "0.17", "78": "0.17", "79": "0.17", "80": "0.17", "81": "0.17", "82": "0.17",
-    "10": "0.03", "11": "0.03", "12": "0.03", "13": "0.03", "14": "0.03", "15": "0.03",
-    "16": "0.03", "17": "0.03", "18": "0.03", "19": "0.03", "20": "0.03", "21": "0.03",
-    "22": "0.03", "23": "0.03", "24": "0.03", "25": "0.03", "26": "0.03", "27": "0.03",
-    "28": "0.03", "29": "0.03", "30": "0.03", "31": "0.03", "32": "0.03", "33": "0.03",
-    "56": "0.03"
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -385,3 +378,6 @@ else := {"matched":true,"rule_id":"jdg.pit.forms.lump_sum_no_tax_free","package"
 
 # P496: tax_form_tax_card_eligibility — Karta podatkowa — warunki
 else := {"matched":true,"rule_id":"jdg.pit.forms.tax_card_eligibility","package":"jdg.pit.forms","priority":496,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"TAX_CARD","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","tax_card_conditions":"MAX_5_EMPLOYEES_NO_SPECIALIZED_SERVICES","_routing":"","_routing_reason":"","_legal_basis":"Rozdział 3 ustawy o zryczałtowanym PIT","_warnings":["Karta podatkowa — max 5 pracowników, brak usług specjalistycznych dla byłego pracodawcy. Sztywna kwota podatku."]} {input.jdg_entrepreneur.tax_form=="TAX_CARD"}
+
+# ══ P497: tax_card_loss_of_right — Utrata prawa do karty podatkowej ══
+else := {"matched":true,"rule_id":"jdg.pit.forms.tax_card_loss","package":"jdg.pit.forms","priority":497,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"SCALE","pit_rate":"0.12","pit_bracket":"LOW","pit_annual_return_type":"PIT-36","kus_qualification":"full","kus_percent":100,"zus_social_base_type":"","zus_health_rate":"","business_status":"","tax_card_retained":false,"tax_card_loss_reason":loss_reason,"_routing":"BLOCK_AND_ALERT","_routing_reason":sprintf("UTRATA KARTY PODATKOWEJ — %s. Automatycznie: skala PIT.",[loss_reason]),"_legal_basis":"Art. 25-30 ustawy o zryczałtowanym PIT","_warnings":[sprintf("UTRATA KARTY PODATKOWEJ! %s Od dnia utraty obowiązuje skala podatkowa (12%%/32%%). Złóż PIT-36 za ten rok.",[loss_reason])]} {input.jdg_entrepreneur.tax_form=="TAX_CARD";employees:=object.get(input.jdg_entrepreneur,"employee_count",0);uses_specialized:=object.get(input.jdg_entrepreneur,"provides_specialized_services",false);services_former_employer:=object.get(input.jdg_entrepreneur,"former_employer_services",false);(employees>5)|(services_former_employer==true)|(uses_specialized==true);loss_reason=sprintf("Przekroczono limit 5 pracowników (obecnie %d)",[employees]){employees>5};loss_reason=sprintf("Usługi dla byłego pracodawcy — karta WYKLUCZONA",[]){employees<=5;services_former_employer==true};loss_reason=sprintf("Usługi specjalistyczne — karta WYKLUCZONA",[]){employees<=5;not services_former_employer;uses_specialized==true}}
