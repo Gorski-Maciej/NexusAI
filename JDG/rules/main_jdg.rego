@@ -149,6 +149,11 @@ import data.jdg.p34_innovations
 import data.jdg.p35_coherence
 import data.jdg.p35_gaps
 import data.jdg.p35_innovations
+import data.jdg.p33_uor_supplement
+import data.jdg.p33_pcc_complete
+import data.jdg.p33_excise_supplement
+import data.jdg.p33_ordpu_kks_supplement
+import data.jdg.p3233_innovations
 # ── PAS 17: Enterprise v7.0 Audit Implementation (2026-07-25) ──
 # CR1: R&D Relief (Art. 26e PIT) | CR2: IP Box (Art. 30ca PIT) | CR3: Thermo Relief (Art. 26h PIT)
 # H4: Donation Relief Enterprise | S5: Cross-Relief Optimizer | S8: Tax Loss Harvesting
@@ -480,9 +485,11 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(accounting.decide,
     safe_merge(business.decide,
     safe_merge(zus.decide,
-    safe_merge(p35_coherence.decide,
-    safe_merge(p35_gaps.decide,
-    safe_merge(p35_innovations.decide,
+    safe_merge(p33_uor_supplement.decide,
+    safe_merge(p33_pcc_complete.decide,
+    safe_merge(p33_excise_supplement.decide,
+    safe_merge(p33_ordpu_kks_supplement.decide,
+    safe_merge(p3233_innovations.decide,
     safe_merge(p35_coherence.decide,
     safe_merge(p35_gaps.decide,
     safe_merge(p35_innovations.decide,
@@ -491,7 +498,8 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))
+
 
 # Shard dla DOMESTIC_PURCHASE z ACTIVE JDG (KRYTYCZNE-3 FIX)
 # Teraz zawiera: risk, kks, routing, compliance, validation, edge_cases, ksef_jpk,
@@ -514,9 +522,11 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(kup.decide,
     safe_merge(accounting.decide,
     safe_merge(corrections.decide,
-    safe_merge(p35_coherence.decide,
-    safe_merge(p35_gaps.decide,
-    safe_merge(p35_innovations.decide,
+    safe_merge(p33_uor_supplement.decide,
+    safe_merge(p33_pcc_complete.decide,
+    safe_merge(p33_excise_supplement.decide,
+    safe_merge(p33_ordpu_kks_supplement.decide,
+    safe_merge(p3233_innovations.decide,
     safe_merge(p35_coherence.decide,
     safe_merge(p35_gaps.decide,
     safe_merge(p35_innovations.decide,
@@ -525,7 +535,8 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))
+
 
 full_final_verdict = safe_merge(risk.decide,
     safe_merge(kks.decide,
@@ -582,11 +593,17 @@ full_final_verdict = safe_merge(risk.decide,
     safe_merge(rodo_extended.decide,
     safe_merge(mpips.decide,
     safe_merge(validation.decide,
+    safe_merge(p33_uor_supplement.decide,
+    safe_merge(p33_pcc_complete.decide,
+    safe_merge(p33_excise_supplement.decide,
+    safe_merge(p33_ordpu_kks_supplement.decide,
+    safe_merge(p3233_innovations.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PASS-0 GATE: Early Abort on BLOCK_AND_ALERT (Rekomendacja 5)
@@ -608,26 +625,38 @@ gated_abort_verdict = safe_merge(risk.decide,
     safe_merge(enterprise_penalties.decide,
     safe_merge(routing.decide,
     safe_merge(validation.decide,
+    safe_merge(p33_uor_supplement.decide,
+    safe_merge(p33_pcc_complete.decide,
+    safe_merge(p33_excise_supplement.decide,
+    safe_merge(p33_ordpu_kks_supplement.decide,
+    safe_merge(p3233_innovations.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    ))))))))) {
+    )))))))))))) {
     risk.decide._routing == "BLOCK_AND_ALERT"
 }
+
 
 # PASS-0 Gate: routing BLOCK_AND_ALERT (gdy risk nie blokuje ale routing tak)
 gated_abort_verdict = safe_merge(risk.decide,
     safe_merge(kks.decide,
     safe_merge(enterprise_penalties.decide,
     safe_merge(routing.decide,
+    safe_merge(p33_uor_supplement.decide,
+    safe_merge(p33_pcc_complete.decide,
+    safe_merge(p33_excise_supplement.decide,
+    safe_merge(p33_ordpu_kks_supplement.decide,
+    safe_merge(p3233_innovations.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    ))))))) {
+    ))))))))))) {
     routing.decide._routing == "BLOCK_AND_ALERT"
 }
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # v7.0 SHARDED ROUTER ACTIVE: Wybor sciezki na podstawie kontekstu
@@ -725,7 +754,7 @@ final_verdict_enriched = safe_merge(final_verdict_with_conflicts,
     safe_merge(tax_loss_harvesting.decide,
     safe_merge(family_estonian.decide,
         form_optimizer.decide
-    )))))))))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # KRYTYCZNE-2 FIX: Provenance + ADR-006 Immutable Audit Trail
@@ -806,6 +835,11 @@ _package_decisions := {
     "jdg.p35_coherence": p35_coherence.decide,
     "jdg.p35_gaps": p35_gaps.decide,
     "jdg.p35_innovations": p35_innovations.decide,
+    "jdg.p33_uor_supplement": p33_uor_supplement.decide,
+    "jdg.p33_pcc_complete": p33_pcc_complete.decide,
+    "jdg.p33_excise_supplement": p33_excise_supplement.decide,
+    "jdg.p33_ordpu_kks_supplement": p33_ordpu_kks_supplement.decide,
+    "jdg.p3233_innovations": p3233_innovations.decide,
     # ── Enterprise PAS 9-11: Strategic & Operational (S1-S13) ──
     "jdg.tax_optimization": tax_optimization.decide,
     "jdg.cross_domain_hub": cross_domain_hub.decide,
