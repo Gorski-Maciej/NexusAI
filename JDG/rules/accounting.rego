@@ -23,15 +23,31 @@ package jdg.accounting
 import data.jdg.helpers
 default decide := {"matched":true,"rule_id":"jdg.accounting.no_match","package":"jdg.accounting","priority":899,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","ceidg_registration_required":false,"_routing":"","_routing_reason":"","_legal_basis":"N/A — no accounting rule matched","_warnings":["Brak dopasowania reguły księgowej — transakcja nie wymaga specjalnego traktowania PKPiR/KŚT/UoR"]}
 
+# ── CORRECTED pkpir_map per Rozporządzenie MF PKPiR (17 columns) ──
+# Kol 1-5: LP, data zdarzenia, data wpisu, nr dowodu, kontrahent
+# Kol 6-9: Opis, sprzedaż towarów/usług, pozostałe przychody, uwagi
+# Kol 10-14: Zakup towarów, koszty uboczne, wynagrodzenia, pozostałe wydatki, razem wydatki
+# Kol 15-17: Wartość początkowa ŚT, odpisy amortyzacyjne, uwagi
 pkpir_map := {
-    "GOODS_REVENUE":10, "OTHER_REVENUE":11, "GOODS_PURCHASE":12,
-    "ANCILLARY_COSTS":13, "SALARIES":14, "OTHER_EXPENSES":15,
-    "NON_KUP":16, "FIXED_ASSET":17, "ZUS_SOCIAL_ENTREPRENEUR":15,
-    "ZUS_HEALTH_ENTREPRENEUR":16, "RENT":15, "UTILITIES":15,
-    "OFFICE_SUPPLIES":15, "SOFTWARE":15, "ACCOUNTING_SERVICES":15,
-    "LEGAL_SERVICES":15, "MARKETING":15, "ADVERTISING":15,
-    "CONSULTING":15, "TRAINING":15, "TELECOMMUNICATIONS":15,
-    "TRANSPORT_GOODS":15, "MAINTENANCE":15, "SECURITY":15
+    # ── Kolumny przychodowe (6-9) ──
+    "GOODS_REVENUE":7, "OTHER_REVENUE":8,
+    # ── Kolumny kosztowe (10-13) ──
+    "GOODS_PURCHASE":10, "MATERIALS":10, "RAW_MATERIALS":10,
+    "ANCILLARY_COSTS":11, "TRANSPORT_IN":11, "INSURANCE_TRANSIT":11,
+    "CUSTOMS_DUTY":11, "PACKAGING":11,
+    "SALARIES":12, "WAGES":12, "BONUSES":12,
+    "OTHER_EXPENSES":13, "RENT":13, "UTILITIES":13,
+    "OFFICE_SUPPLIES":13, "SOFTWARE":13, "ACCOUNTING_SERVICES":13,
+    "LEGAL_SERVICES":13, "MARKETING":13, "ADVERTISING":13,
+    "CONSULTING":13, "TRAINING":13, "TELECOMMUNICATIONS":13,
+    "TRANSPORT_GOODS":13, "MAINTENANCE":13, "SECURITY":13,
+    "ZUS_SOCIAL_ENTREPRENEUR":13,
+    # ── Kolumna 15: Środki trwałe ──
+    "FIXED_ASSET":15,
+    # ── NKUP: kolumna 14 to razem wydatki; NKUP śledzone osobno w ewidencji ──
+    "NON_KUP":14, "ZUS_HEALTH_ENTREPRENEUR":14,
+    # ── Kolumna 16: odpisy amortyzacyjne ──
+    "DEPRECIATION":16,
 }
 
 # ══════ P800: pkpir_column_mapping — Mapowanie wydatku na kolumnę PKPiR ══════
@@ -134,43 +150,43 @@ else := {
     input.invoice.expense_type in {"GOODS_PURCHASE","MATERIALS"}
 }
 
-# P814: pkpir_col8_goods_purchase — Kolumna 8: zakup towarów i materiałów
+# P814: pkpir_col10_purchase_validation — Kolumna 10: zakup towarów i materiałów
 else := {
-    "matched":true,"rule_id":"jdg.accounting.pkpir_col8_goods_purchase",
+    "matched":true,"rule_id":"jdg.accounting.pkpir_col10_goods_purchase",
     "package":"jdg.accounting","priority":814,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
     "business_status":"",
-    "pkpir_column":8,
+    "pkpir_column":10,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"§ 10 ust. 1 pkt 8 rozporządzenia PKPiR",
-    "_warnings":["Kol. 8 PKPiR: zakup towarów i materiałów — ujęto w kolumnie zakupów"]
+    "_legal_basis":"§ 10 ust. 1 pkt 10 rozporządzenia PKPiR",
+    "_warnings":["Kol. 10 PKPiR: zakup towarów handlowych i materiałów — ujęto w kolumnie zakupów"]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type in {"GOODS_PURCHASE","MATERIALS","RAW_MATERIALS"}
     input.invoice.direction == "PURCHASE"
 }
 
-# P815: pkpir_col14_notes_mandatory — Kolumna 14: uwagi OBOWIĄZKOWE od 2025
+# P815: pkpir_col17_notes_mandatory — Kolumna 17: uwagi OBOWIĄZKOWE (nie kol14!)
 else := {
-    "matched":true,"rule_id":"jdg.accounting.pkpir_col14_notes_mandatory",
+    "matched":true,"rule_id":"jdg.accounting.pkpir_col17_notes_mandatory",
     "package":"jdg.accounting","priority":815,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
     "business_status":"",
-    "pkpir_validation_error":"COL14_NOTES_MISSING",
-    "_routing":"TRIAGE_QUEUE","_routing_reason":"Kolumna 14 PKPiR — brak wymaganych uwag",
-    "_legal_basis":"§ 10 ust. 1 pkt 14 rozporządzenia PKPiR (od 2025)",
-    "_warnings":["Kol. 14 PKPiR: OBOWIĄZKOWE uwagi od 2025 — wpisz opis nietypowej transakcji"]
+    "pkpir_validation_error":"COL17_NOTES_MISSING",
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Kolumna 17 PKPiR — brak wymaganych uwag",
+    "_legal_basis":"§ 10 ust. 1 pkt 17 rozporządzenia PKPiR",
+    "_warnings":["Kol. 17 PKPiR: uwagi — wpisz opis nietypowej transakcji"]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.transaction_date >= "2025-01-01"
     input.invoice.expense_type in {"NON_KUP","PRIVATE_MIXED","FIXED_ASSET"}
-    input.invoice.pkpir_col14_notes == ""
+    input.invoice.pkpir_col17_notes == ""
 }
 
 # P816: pkpir_remnant_midyear_check — Remanent: kontrola śródroczna (TRIAGE)
@@ -238,11 +254,12 @@ else := {
     input.jdg_entrepreneur.uses_pkpir == true
     is_period_end := object.get(input.invoice,"is_period_end",false)
     is_period_end == true
-    col10 := object.get(input.invoice,"pkpir_col10_total",0)  # przychód
-    col11 := object.get(input.invoice,"pkpir_col11_total",0)  # zakupy
-    col12 := object.get(input.invoice,"pkpir_col12_total",0)  # koszty uboczne
-    col13 := object.get(input.invoice,"pkpir_col13_total",0)  # wynagrodzenia
-    col14 := object.get(input.invoice,"pkpir_col14_total",0)  # pozostałe
+    col10 := object.get(input.invoice,"pkpir_col7_total",0)   # sprzedaż
+    col11 := object.get(input.invoice,"pkpir_col8_total",0)   # pozostałe przychody
+    col12 := object.get(input.invoice,"pkpir_col10_total",0)  # zakup towarów
+    col13 := object.get(input.invoice,"pkpir_col11_total",0)  # koszty uboczne
+    col14 := object.get(input.invoice,"pkpir_col12_total",0)  # wynagrodzenia
+    col15 := object.get(input.invoice,"pkpir_col13_total",0)  # pozostałe wydatki
     remnant_start := object.get(input.invoice,"remnant_start_value",0)
     remnant_end := object.get(input.invoice,"remnant_end_value",0)
     total_costs = col11 + col12 + col13 + col14
@@ -272,55 +289,55 @@ else := {
 # ║  P819-P829 — PKPiR KOLUMNY 10-19 — SZCZEGÓŁOWE WALIDACJE               ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
-# P819: pkpir_col10_revenue_validation — Kolumna 10: przychód ze sprzedaży
+# P819: pkpir_col7_revenue_validation — Kolumna 7: przychód ze sprzedaży towarów/usług
 else := {
-    "matched":true,"rule_id":"jdg.accounting.pkpir_col10_revenue",
+    "matched":true,"rule_id":"jdg.accounting.pkpir_col7_revenue",
     "package":"jdg.accounting","priority":819,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","pkpir_column":10,
-    "pkpir_validation_error":"COL10_REVENUE_MISMATCH",
-    "_routing":"TRIAGE_QUEUE","_routing_reason":"Kol. 10 PKPiR — niespójność przychodu",
-    "_legal_basis":"§ 10 ust. 1 pkt 10 rozporządzenia PKPiR",
-    "_warnings":["Kol. 10 PKPiR: przychód ze sprzedaży — ujmij tylko przychody z działalności JDG. Nie uwzględniaj: najmu prywatnego, sprzedaży majątku osobistego, odsetek bankowych."]
+    "business_status":"","pkpir_column":7,
+    "pkpir_validation_error":"COL7_REVENUE_MISMATCH",
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Kol. 7 PKPiR — przychód spoza JDG",
+    "_legal_basis":"§ 10 ust. 1 pkt 7 rozporządzenia PKPiR",
+    "_warnings":["Kol. 7 PKPiR: sprzedaż towarów i usług — ujmij tylko przychody z działalności JDG. Nie uwzględniaj: najmu prywatnego, sprzedaży majątku osobistego, odsetek bankowych."]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
-    input.invoice.pkpi_col10_entry > 0
+    input.invoice.pkpi_col7_entry > 0
     input.invoice.transaction_type in {"PRIVATE_RENTAL","PERSONAL_ASSET_SALE","BANK_INTEREST"}
 }
 
 # P820: pkpir_col11_other_revenue — Kolumna 11: pozostałe przychody
 else := {
-    "matched":true,"rule_id":"jdg.accounting.pkpir_col11_other_revenue",
+    "matched":true,"rule_id":"jdg.accounting.pkpir_col8_other_revenue",
     "package":"jdg.accounting","priority":820,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","pkpir_column":11,
+    "business_status":"","pkpir_column":8,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"§ 10 ust. 1 pkt 11 rozporządzenia PKPiR",
-    "_warnings":[sprintf("Kol. 11 PKPiR: pozostałe przychody — %.2f PLN. Obejmuje: dotacje, refundacje, odszkodowania związane z działalnością, różnice kursowe dodatnie.",[col11_value])]
+    "_legal_basis":"§ 10 ust. 1 pkt 8 rozporządzenia PKPiR",
+    "_warnings":[sprintf("Kol. 8 PKPiR: pozostałe przychody — %.2f PLN. Obejmuje: dotacje, refundacje, odszkodowania związane z działalnością, różnice kursowe dodatnie.",[col8_value])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
-    col11_value := object.get(input.invoice,"pkpir_col11_total",0)
-    col11_value > 0
+    col8_value := object.get(input.invoice,"pkpir_col8_total",0)
+    col8_value > 0
 }
 
-# P821: pkpir_col12_purchase_cost — Kolumna 12: koszt zakupu towarów
+# P821: pkpir_col10_purchase_cost_check — Kolumna 10: zakup towarów — nie na ŚT >10k
 else := {
-    "matched":true,"rule_id":"jdg.accounting.pkpir_col12_purchase_cost",
+    "matched":true,"rule_id":"jdg.accounting.pkpir_col10_purchase_check",
     "package":"jdg.accounting","priority":821,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","pkpir_column":12,
+    "business_status":"","pkpir_column":10,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"§ 10 ust. 1 pkt 12 rozporządzenia PKPiR",
-    "_warnings":["Kol. 12 PKPiR: koszt zakupu towarów i materiałów wg cen nabycia. NIE obejmuje: środków trwałych (>10k PLN), wyposażenia, kosztów ubocznych zakupu."]
+    "_legal_basis":"§ 10 ust. 1 pkt 10 rozporządzenia PKPiR",
+    "_warnings":["Kol. 10 PKPiR: zakup towarów i materiałów wg cen nabycia. NIE wrzucaj tu ŚT >10k PLN — to kol. 15!"]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type in {"GOODS_PURCHASE","MATERIALS","RAW_MATERIALS"}
@@ -329,10 +346,45 @@ else := {
     object.get(input.invoice,"is_fixed_asset",false) == true
 }
 
-# P822: pkpir_col13_ancillary_costs — Kolumna 13: koszty uboczne zakupu
+# P822: pkpir_col11_ancillary_costs — Kolumna 11: koszty uboczne zakupu
 else := {
-    "matched":true,"rule_id":"jdg.accounting.pkpir_col13_ancillary",
+    "matched":true,"rule_id":"jdg.accounting.pkpir_col11_ancillary",
     "package":"jdg.accounting","priority":822,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","pkpir_column":11,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"§ 10 ust. 1 pkt 11 rozporządzenia PKPiR",
+    "_warnings":["Kol. 11 PKPiR: koszty uboczne zakupu — transport, załadunek, ubezpieczenie w drodze, cło, opakowania."]
+} {
+    input.jdg_entrepreneur.uses_pkpir == true
+    input.invoice.expense_type in {"TRANSPORT_IN","INSURANCE_TRANSIT","CUSTOMS_DUTY","PACKAGING"}
+}
+
+# P823: pkpir_col12_wages — Kolumna 12: wynagrodzenia brutto
+else := {
+    "matched":true,"rule_id":"jdg.accounting.pkpir_col12_wages",
+    "package":"jdg.accounting","priority":823,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","pkpir_column":12,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"§ 10 ust. 1 pkt 12 rozporządzenia PKPiR",
+    "_warnings":["Kol. 12 PKPiR: wynagrodzenia BRUTTO + składki ZUS pracodawcy. NIE obejmuje: wynagrodzenia własnego JDG (to NIE jest KUP)."]
+} {
+    input.employment.has_employees == true
+    input.invoice.expense_type == "SALARIES"
+    input.invoice.is_own_wage == true
+}
+
+# P824: pkpir_col13_other_expenses — Kolumna 13: pozostałe wydatki
+else := {
+    "matched":true,"rule_id":"jdg.accounting.pkpir_col13_other_expenses",
+    "package":"jdg.accounting","priority":824,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
@@ -340,42 +392,7 @@ else := {
     "business_status":"","pkpir_column":13,
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 10 ust. 1 pkt 13 rozporządzenia PKPiR",
-    "_warnings":["Kol. 13 PKPiR: koszty uboczne zakupu — transport, załadunek, ubezpieczenie w drodze, cło, opakowania. Te koszty ZWIĘKSZAJĄ wartość towaru w kol. 12."]
-} {
-    input.jdg_entrepreneur.uses_pkpir == true
-    input.invoice.expense_type in {"TRANSPORT_IN","INSURANCE_TRANSIT","CUSTOMS_DUTY","PACKAGING"}
-}
-
-# P823: pkpir_col14_wages — Kolumna 14: wynagrodzenia brutto
-else := {
-    "matched":true,"rule_id":"jdg.accounting.pkpir_col14_wages",
-    "package":"jdg.accounting","priority":823,
-    "vat_rate":"","rounding_level":"","gtu_code":"",
-    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
-    "kus_qualification":"","kus_percent":0,
-    "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","pkpir_column":14,
-    "_routing":"","_routing_reason":"",
-    "_legal_basis":"§ 10 ust. 1 pkt 14 rozporządzenia PKPiR",
-    "_warnings":["Kol. 14 PKPiR: wynagrodzenia BRUTTO + składki ZUS pracodawcy. NIE obejmuje: wynagrodzenia własnego JDG (to NIE jest KUP), umów o dzieło z własną firmą."]
-} {
-    input.employment.has_employees == true
-    input.invoice.expense_type == "SALARIES"
-    input.invoice.is_own_wage == true
-}
-
-# P824: pkpir_col15_other_expenses — Kolumna 15: pozostałe wydatki
-else := {
-    "matched":true,"rule_id":"jdg.accounting.pkpir_col15_other_expenses",
-    "package":"jdg.accounting","priority":824,
-    "vat_rate":"","rounding_level":"","gtu_code":"",
-    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
-    "kus_qualification":"","kus_percent":0,
-    "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","pkpir_column":15,
-    "_routing":"","_routing_reason":"",
-    "_legal_basis":"§ 10 ust. 1 pkt 15 rozporządzenia PKPiR",
-    "_warnings":[sprintf("Kol. 15 PKPiR: pozostałe wydatki — %.2f PLN. Kategoria: %s. Uwzględniaj TYLKO wydatki firmowe. Dokumentuj każdy wydatek!",[expense_amount,expense_cat])]
+    "_warnings":[sprintf("Kol. 13 PKPiR: pozostałe wydatki — %.2f PLN. Kategoria: %s. Uwzględniaj TYLKO wydatki firmowe.",[expense_amount,expense_cat])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type in {"RENT","UTILITIES","OFFICE_SUPPLIES","SOFTWARE","TELECOMMUNICATIONS","MARKETING","LEGAL_SERVICES","ACCOUNTING_SERVICES","CONSULTING","TRAINING"}
@@ -384,18 +401,18 @@ else := {
     expense_amount > 0
 }
 
-# P825: pkpir_col16_non_kup — Kolumna 16: wydatki niestanowiące KUP
+# P825: pkpir_col14_non_kup — Kolumna 14: razem wydatki (NKUP śledzone osobno)
 else := {
-    "matched":true,"rule_id":"jdg.accounting.pkpir_col16_non_kup",
+    "matched":true,"rule_id":"jdg.accounting.pkpir_col14_total_expenses",
     "package":"jdg.accounting","priority":825,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"NKUP","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","pkpir_column":16,
-    "_routing":"TRIAGE_QUEUE","_routing_reason":"Kol. 16 PKPiR — wydatek NKUP",
+    "business_status":"","pkpir_column":14,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Koszt NKUP — nie obniża dochodu",
     "_legal_basis":"Art. 23 PIT",
-    "_warnings":[sprintf("Kol. 16 PKPiR: WYDATEK NKUP — %.2f PLN (%s). Nie obniża dochodu do opodatkowania. Przykłady NKUP: reprezentacja, kary umowne, odsetki budżetowe, darowizny, składki ZUS właściciela.",[nkup_amount,nkup_reason])]
+    "_warnings":[sprintf("NKUP: %.2f PLN (%s). Nie obniża dochodu. Przykłady: reprezentacja, kary, odsetki budżetowe, darowizny.",[nkup_amount,nkup_reason])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.kus_qualification == "NKUP"
@@ -404,18 +421,18 @@ else := {
     nkup_amount > 0
 }
 
-# P826: pkpir_col17_fixed_asset — Kolumna 17: środki trwałe
+# P826: pkpir_col15_fixed_asset — Kolumna 15: wartość początkowa ŚT
 else := {
-    "matched":true,"rule_id":"jdg.accounting.pkpir_col17_fixed_asset",
+    "matched":true,"rule_id":"jdg.accounting.pkpir_col15_fixed_asset",
     "package":"jdg.accounting","priority":826,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","pkpir_column":17,
+    "business_status":"","pkpir_column":15,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"§ 10 ust. 1 pkt 16 rozporządzenia PKPiR (kolumna 17 to ewidencja ŚT)",
-    "_warnings":[sprintf("Kol. 17 PKPiR / Ewidencja ŚT: %.2f PLN — amortyzacja za %s. Ujęta w kosztach pośrednio poprzez odpis amortyzacyjny. Prowadź ewidencję ŚT osobno!",[depreciation_amount,period])]
+    "_legal_basis":"§ 10 ust. 1 pkt 15 rozporządzenia PKPiR",
+    "_warnings":[sprintf("Kol. 15 PKPiR / Wartość początkowa ŚT: %.2f PLN. Amortyzacja w kol. 16.",[depreciation_amount])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "FIXED_ASSET"
@@ -446,23 +463,23 @@ else := {
     remnant_end > 0
 }
 
-# P828: pkpir_col19_remarks — Kolumna 19: uwagi dotyczące nietypowych transakcji
+# P828: pkpir_col17_remarks — Kolumna 17: uwagi (ostatnia kolumna PKPiR)
 else := {
-    "matched":true,"rule_id":"jdg.accounting.pkpir_col19_remarks",
+    "matched":true,"rule_id":"jdg.accounting.pkpir_col17_remarks",
     "package":"jdg.accounting","priority":828,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","pkpir_column":19,
+    "business_status":"","pkpir_column":17,
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 10 ust. 1 pkt 17 rozporządzenia PKPiR",
-    "_warnings":["Kol. 19 PKPiR: UWAGI — opisz nietypowe transakcje: sprzedaż eksportowa, odwrotne obciążenie, korekty storna, transakcje walutowe, transakcje z podmiotami powiązanymi."]
+    "_warnings":["Kol. 17 PKPiR: UWAGI — opisz nietypowe transakcje: eksport, odwrotne obciążenie, korekty, transakcje walutowe."]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
     has_notes := object.get(input.invoice,"pkpir_has_unusual_transaction",false)
     has_notes == true
-    notes_empty := object.get(input.invoice,"pkpir_col19_notes","")
+    notes_empty := object.get(input.invoice,"pkpir_col17_notes","")
     notes_empty == ""
 }
 
@@ -475,21 +492,21 @@ else := {
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
     "business_status":"",
-    "pkpir_cross_check":"COL10+11 ≠ COL12+13+14+15",
+    "pkpir_cross_check":"KOL7+8 ≠ KOL10+11+12+13",
     "_routing":"TRIAGE_QUEUE","_routing_reason":"PKPiR — niespójność suma przychodów ≠ suma kosztów + remanent",
     "_legal_basis":"§ 10-21 rozporządzenia PKPiR, Art. 24 PIT",
-    "_warnings":[sprintf("SPÓJNOŚĆ PKPiR: przychody (kol.10+11)=%.2f PLN, koszty (kol.12+13+14+15)=%.2f PLN, remanent Δ=%.2f PLN. Dochód=%.2f PLN. Sprawdź czy remanent poprawnie ujęty.",[total_revenue,total_costs,remnant_delta,total_revenue-total_costs+remnant_delta])]
+    "_warnings":[sprintf("SPÓJNOŚĆ PKPiR: przychody (kol.7+8)=%.2f PLN, koszty (kol.10+11+12+13)=%.2f PLN, remanent Δ=%.2f PLN. Dochód=%.2f PLN. Sprawdź czy remanent poprawnie ujęty.",[total_revenue,total_costs,remnant_delta,total_revenue-total_costs+remnant_delta])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_period_end == true
-    col10 := object.get(input.invoice,"pkpir_col10_total",0)
-    col11 := object.get(input.invoice,"pkpir_col11_total",0)
-    col12 := object.get(input.invoice,"pkpir_col12_total",0)
-    col13 := object.get(input.invoice,"pkpir_col13_total",0)
-    col14 := object.get(input.invoice,"pkpir_col14_total",0)
-    col15 := object.get(input.invoice,"pkpir_col15_total",0)
-    total_revenue = col10 + col11
-    total_costs = col12 + col13 + col14 + col15
+    col7 := object.get(input.invoice,"pkpir_col7_total",0)   # sprzedaż
+    col8 := object.get(input.invoice,"pkpir_col8_total",0)   # pozostałe przychody
+    col10 := object.get(input.invoice,"pkpir_col10_total",0)  # zakup towarów
+    col11 := object.get(input.invoice,"pkpir_col11_total",0)  # koszty uboczne
+    col12 := object.get(input.invoice,"pkpir_col12_total",0)  # wynagrodzenia
+    col13 := object.get(input.invoice,"pkpir_col13_total",0)  # pozostałe wydatki
+    total_revenue = col7 + col8
+    total_costs = col10 + col11 + col12 + col13
     rem_start := object.get(input.invoice,"remnant_start_value",0)
     rem_end := object.get(input.invoice,"remnant_end_value",0)
     remnant_delta = rem_end - rem_start

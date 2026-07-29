@@ -1,0 +1,3 @@
+RAPORT INN03 — Sickness Duration Tracker
+Limits: 182/270 sick, 37 maternity, 60/14 care
+Alerts: 0

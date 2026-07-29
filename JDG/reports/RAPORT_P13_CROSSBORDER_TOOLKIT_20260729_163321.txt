@@ -1,0 +1,120 @@
+======================================================================
+  RAPORT P13 — CROSS-BORDER + MDR + EXIT TAX TOOLKIT v8.0
+  Data: 2026-07-29 16:33:21
+======================================================================
+
+─── INN01_crossborder ───
+{
+  "wnt": "VAT należny 23% + odliczenie",
+  "wdt": "0% z dokumentacją",
+  "mdr": "DAC6 DE→PL",
+  "seller": "PL",
+  "buyer": "DE",
+  "amount_eur": 50000,
+  "vat_due": 11500.0
+}
+
+─── INN02_mdr ───
+{
+  "must_report": true,
+  "deadline": "30 dni od udostępnienia schematu",
+  "detected_hallmarks": [
+    {
+      "hallmark": "A",
+      "name": "Korzyść podatkowa jako główny cel",
+      "matched_indicators": [
+        "tax_saving_primary"
+      ]
+    },
+    {
+      "hallmark": "C",
+      "name": "Transgraniczne transakcje między podmiotami powiązanymi",
+      "matched_indicators": [
+        "cross_border_related"
+      ]
+    }
+  ],
+  "report_to": "Szef KAS (MDR-1)",
+  "legal_basis": "DAC6 (2018/822/UE), Art. 86a-86o OrdPU"
+}
+
+─── INN03_exit_tax ───
+{
+  "total_assets_pln": 5000000,
+  "threshold_pln": 4000000,
+  "exceeds_threshold": true,
+  "unrealized_gain": 4000000,
+  "exit_tax": 760000.0,
+  "installments": [
+    {
+      "year": 1,
+      "amount": 152000.0,
+      "due": "31.03.2027"
+    },
+    {
+      "year": 2,
+      "amount": 152000.0,
+      "due": "31.03.2028"
+    },
+    {
+      "year": 3,
+      "amount": 152000.0,
+      "due": "31.03.2029"
+    },
+    {
+      "year": 4,
+      "amount": 152000.0,
+      "due": "31.03.2030"
+    },
+    {
+      "year": 5,
+      "amount": 152000.0,
+      "due": "31.03.2031"
+    }
+  ],
+  "legal_basis": "Art. 30da-30db PIT — Exit tax"
+}
+
+─── INN04_cfc ───
+{
+  "ownership_pct": 60,
+  "passive_income_pct": 50,
+  "country": "CY",
+  "tax_paid_pct": 10,
+  "is_cfc": true,
+  "cfc_thresholds": {
+    "ownership": "≥50%",
+    "passive_income": ">33%",
+    "tax_rate": "<14.25%"
+  },
+  "legal_basis": "Art. 30f PIT — CFC"
+}
+
+─── INN05_tp ───
+{
+  "amount": 800000,
+  "threshold": 500000,
+  "is_related_party": true,
+  "country": "DE",
+  "needs_local_file": true,
+  "documentation": "Local File + Master File (jeśli grupa > 200M PLN)",
+  "deadline": "10 miesięcy po zakończeniu roku"
+}
+
+─── INN09_vies ───
+{
+  "vat_number": "DE12345678",
+  "country": "DE",
+  "is_valid_eu": true,
+  "check_via": "VIES (https://ec.europa.eu/taxation_customs/vies)"
+}
+
+─── INN10_brexit ───
+{
+  "brexit_applies": true,
+  "vat_treatment": "Import/Export (UK poza EU od 2021)",
+  "customs_required": true,
+  "eori_required": true,
+  "tariff_check": "TCA (Trade Cooperation Agreement) — zerowe cła na towary pochodzące z UK/UE",
+  "legal_basis": "EU-UK TCA 2021; UK nie jest w EU VAT area"
+}

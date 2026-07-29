@@ -1,0 +1,6 @@
+RAPORT INN02 — Health Tier Dynamic Recalculator
+Przeciętne wynagrodzenie: 8190.0 PLN
+
+TIER_I: 442.26 PLN/mies.
+TIER_II: 737.10 PLN/mies.
+TIER_III: 1326.78 PLN/mies.

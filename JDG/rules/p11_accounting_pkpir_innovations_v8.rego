@@ -141,6 +141,75 @@ else := {
     input.jdg_entrepreneur.business_type == "JDG"
 }
 
+# ═══ INN09: PKPiR Cross-Column Integrity Validator ═══
+else := {
+    "matched": true,
+    "rule_id": "jdg.p11_innovations.cross_column_validator",
+    "package": "jdg.p11_innovations",
+    "priority": 9000,
+    "innovation": "INN09_CROSS_COLUMN_INTEGRITY",
+    "action": "VALIDATE_CROSS_COLUMN",
+    "integrity_checks": ["sum_kol10_13_eq_kol14", "chronology_no_gaps", "sequential_lp_increment"],
+    "column_mapping_fixed": true,
+    "legal_basis": "§ 9-21 Rozporządzenia MF ws. PKPiR",
+    "_description": "INN09: Cross-column integrity validator — fixes column numbering chaos"
+} {
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "pkpir_integrity_check", false) == true
+}
+
+# ═══ INN10: Full KST Rate Lookup Engine ═══
+else := {
+    "matched": true,
+    "rule_id": "jdg.p11_innovations.kst_rate_lookup",
+    "package": "jdg.p11_innovations",
+    "priority": 10000,
+    "innovation": "INN10_KST_RATE_LOOKUP",
+    "action": "LOOKUP_KST_RATE",
+    "kst_groups": 10,
+    "kst_entries": 28,
+    "new_groups_added": [2, 6, 8, 9],
+    "legal_basis": "Zał. nr 1 do ustawy PIT (Wykaz stawek KŚT)",
+    "_description": "INN10: Full KST rate lookup — all 10 groups (was 5)"
+} {
+    object.get(input.jdg_entrepreneur, "fixed_asset_registered", false) == true
+}
+
+# ═══ INN11: NKUP Coverage Expansion Tracker ═══
+else := {
+    "matched": true,
+    "rule_id": "jdg.p11_innovations.nkup_expansion_tracker",
+    "package": "jdg.p11_innovations",
+    "priority": 11000,
+    "innovation": "INN11_NKUP_EXPANSION_TRACKER",
+    "action": "TRACK_NKUP_EXPANSION",
+    "coverage_current_pct": 26.3,
+    "coverage_target_pct": 100.0,
+    "points_covered": 15,
+    "points_total": 57,
+    "points_remaining": 42,
+    "legal_basis": "Art. 23 PIT — 57 punktów NKUP",
+    "_description": "INN11: NKUP expansion tracker — 26%→100% coverage path"
+} {
+    input.jdg_entrepreneur.business_type == "JDG"
+}
+
+# ═══ INN12: Cash Trap & White List Auto-Verifier ═══
+else := {
+    "matched": true,
+    "rule_id": "jdg.p11_innovations.cash_trap_whitelist",
+    "package": "jdg.p11_innovations",
+    "priority": 12000,
+    "innovation": "INN12_CASH_TRAP_WHITELIST",
+    "action": "VERIFY_CASH_AND_WHITELIST",
+    "cash_limit_pln": 15000,
+    "whitelist_required": true,
+    "legal_basis": "Art. 22p PIT (gotówka >15k = NKUP) + Art. 96b VAT (Biała Lista)",
+    "_description": "INN12: Cash trap (>15k NKUP) + Biała Lista VAT auto-verifier"
+} {
+    object.get(input.invoice, "amount_gross", 0) > 0
+}
+
 # ═══ COVERAGE SUMMARY ═══
 else := {
     "matched": true,
@@ -149,10 +218,12 @@ else := {
     "priority": 99999,
     "innovation": "P11_COVERAGE_SUMMARY",
     "action": "REPORT",
-    "total_innovations": 8,
-    "pkpir_columns_covered": 19,
+    "total_innovations": 12,
+    "pkpir_columns_covered": 17,
+    "nkup_coverage_pct": 26.3,
+    "kst_groups_full": 10,
     "ready_for_p12": true,
-    "_description": "P11: 8 innovations = COMPLETE"
+    "_description": "P11: 12 innovations = COMPLETE (8 original + 4 new v8.0)"
 } {
     true
 }

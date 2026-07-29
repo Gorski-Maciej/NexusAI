@@ -1,0 +1,3 @@
+RAPORT INN06 — Cross-Act ZUS Coherence Checker
+Score: 85.7%
+Consistent: 6/7

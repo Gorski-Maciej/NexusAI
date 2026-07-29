@@ -26,6 +26,7 @@
 package jdg.kks
 
 import data.jdg.helpers
+import data.jdg.kks.rates
 
 default decide := {
     "matched": false, "rule_id": "jdg.kks.no_match",
@@ -1991,14 +1992,14 @@ else := { "matched": true, "rule_id": "jdg.kks.penalty_calculation_input_p395", 
     fine_rates := object.get(input.jdg_entrepreneur, "kks_recommended_daily_rates", 10)
     impr_range := object.get(input.jdg_entrepreneur, "kks_imprisonment_range", "brak")
     monthly_income := object.get(input.jdg_entrepreneur, "kks_monthly_income_estimate", 5000)
-    daily_rate_pln := monthly_income / 30
+    daily_rate_pln := data.jdg.kks.rates.kks_daily_rate_min   # FIXED P09: min_wage/30 per Art. 23 §1 KKS (was: monthly_income/30)
     daily_rate_pln >= 50
 }
 
 # P396: pre_misdemeanor_screening — Badanie przed-wykroczeniowe
 else := { "matched": true, "rule_id": "jdg.kks.pre_misdemeanor_screening_p396", "package": "jdg.kks", "priority": 396, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_pre_screening_result": result, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Badanie kwalifikacyjne przed-wykroczeniowe", "_legal_basis": "Art. 53, 77-83 KKS — granica przestępstwo/wykroczenie", "_warnings": [sprintf("BADANIE PRZED-WYKROCZENIOWE — %s. Kwota: %.2f PLN, próg: %.2f PLN. %s", [result, amount, threshold, recommendation])] } {
     amount := object.get(input.invoice, "tax_shortfall_pln", 0)
-    threshold := object.get(input.jdg_entrepreneur, "kks_crime_threshold_pln", 200000)
+    threshold := object.get(input.jdg_entrepreneur, "kks_crime_threshold_pln", data.jdg.kks.rates.kks_crime_threshold_correct)  # FIXED P09: 200× min_wage (was: hardcoded 200000)
     severity := object.get(input.invoice, "kks_offense_severity", "LOW")
     result = "WYKROCZENIE" { amount <= threshold; severity in {"LOW", "MEDIUM"} }
     result = "PRZESTĘPSTWO" { amount > threshold }
@@ -2428,7 +2429,7 @@ else := {
     "kks_daily_rate_calculated": calculated_rate,
     "_routing": "", "_routing_reason": "",
     "_legal_basis": "Art. 23 § 3 KKS",
-    "_warnings": [sprintf("Stawka dzienna KKS: %.2f - %.2f PLN (przyjęto %.2f PLN na podstawie dochodu %.2f PLN/mies.)", [daily_rate_min, daily_rate_max, calculated_rate, monthly_income])]
+    "_warnings": [sprintf("Stawka dzienna KKS: min %.2f PLN (1/30 min. wynagrodzenia), oszacowana %.2f PLN (z dochodu), max %.2f PLN", [daily_rate_min, calculated_rate, daily_rate_max])]
 } {
     monthly_income := object.get(input.jdg_entrepreneur, "monthly_income_avg_12m", 0)
     monthly_income > 0

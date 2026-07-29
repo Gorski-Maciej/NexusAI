@@ -1,0 +1,453 @@
+=================================================================
+RAPORT ANALITYCZNY ENTERPRISE — JDG Edge Cases + Conflicts + Corrections v7.0
+=================================================================
+Data: 2026-07-29
+Ekosystem: 12 plików Rego + 12 innowacji Python
+
+--- INN01_EDGE_DISCOVERY ---
+{
+  "total_categories": 8,
+  "categories_fully_covered": 8,
+  "total_rules_discovered": 91,
+  "discovery_timestamp": "2026-07-29",
+  "categories": {
+    "GRUPA_A_VAT": {
+      "category": "GRUPA_A_VAT",
+      "description": "VAT Edge Cases — przekroczenie limitu, proporcja, tax point, waluty, KSeF",
+      "expected_range": "R0546-R0559",
+      "rules_found": 14,
+      "coverage_pct": 100.0,
+      "status": "COMPLETE"
+    },
+    "GRUPA_B_PIT": {
+      "category": "GRUPA_B_PIT",
+      "description": "PIT Edge Cases — pierwszy rok, zamknięcie, podwójne opodatkowanie, straty",
+      "expected_range": "R0560-R0573",
+      "rules_found": 14,
+      "coverage_pct": 100.0,
+      "status": "COMPLETE"
+    },
+    "GRUPA_C_ZUS": {
+      "category": "GRUPA_C_ZUS",
+      "description": "ZUS Edge Cases — przejścia między ulgami, zbiegi tytułów, zawieszenie",
+      "expected_range": "R0574-R0585",
+      "rules_found": 12,
+      "coverage_pct": 100.0,
+      "status": "COMPLETE"
+    },
+    "GRUPA_D_VAT_EXEMPTION": {
+      "category": "GRUPA_D_VAT_EXEMPTION",
+      "description": "VAT Zwolnienie Podmiotowe — wyłączenia, utrata, ponowne nabycie, ViDA",
+      "expected_range": "R0586-R0594",
+      "rules_found": 9,
+      "coverage_pct": 100.0,
+      "status": "COMPLETE"
+    },
+    "GRUPA_E_PIT_EXTENDED": {
+      "category": "GRUPA_E_PIT_EXTENDED",
+      "description": "PIT Edge Rozszerzenie — ulgi, najem, waluty, darowizny",
+      "expected_range": "R0595-R0601",
+      "rules_found": 7,
+      "coverage_pct": 100.0,
+      "status": "COMPLETE"
+    },
+    "GRUPA_G_SANCTIONS": {
+      "category": "GRUPA_G_SANCTIONS",
+      "description": "Sankcje KKS — progi, stawki, czynny żal",
+      "expected_range": "R0646-R0655",
+      "rules_found": 10,
+      "coverage_pct": 100.0,
+      "status": "COMPLETE"
+    },
+    "GRUPA_H_DEADLINES": {
+      "category": "GRUPA_H_DEADLINES",
+      "description": "Terminy — VAT, PIT, ZUS, deklaracje",
+      "expected_range": "R0656-R0672",
+      "rules_found": 17,
+      "coverage_pct": 100.0,
+      "status": "COMPLETE"
+    },
+    "GRUPA_I_CROSSBORDER": {
+      "category": "GRUPA_I_CROSSBORDER",
+      "description": "Cross-border — TP, CFC, WHT, rezydencja",
+      "expected_range": "R0673-R0680",
+      "rules_found": 8,
+      "coverage_pct": 100.0,
+      "status": "COMPLETE"
+    }
+  }
+}
+
+--- INN02_CONFLICT_MATRIX ---
+{
+  "matrix_size": 7,
+  "total_possible_pairs": 7,
+  "conflicts_found": 7,
+  "resolution_summary": {
+    "PREFER_ONE": 1,
+    "DOCUMENT_BUSINESS_PURPOSE": 1,
+    "ACCEPT_ASYMMETRY": 1,
+    "BOTH_CORRECTIONS": 1,
+    "SEPARATE_RECORDS": 1,
+    "PREFER_CUSTOMS_TABLE_C": 1,
+    "BLOCK_NON_RD_ALLOWANCES": 1
+  },
+  "conflicts": [
+    {
+      "conflict_id": "jdg.conflicts.allowances_vs_allowances",
+      "domain_a": "allowances",
+      "domain_b": "allowances",
+      "description": "IP Box vs B+R",
+      "legal_basis": "Art. 30ca PIT vs Art. 26e PIT",
+      "resolution_strategy": "PREFER_ONE",
+      "severity": "CRITICAL"
+    },
+    {
+      "conflict_id": "jdg.conflicts.pit_vs_accounting",
+      "domain_a": "pit",
+      "domain_b": "accounting",
+      "description": "Reprezentacja vs Marketing",
+      "legal_basis": "Art. 23 ust. 1 pkt 23 PIT",
+      "resolution_strategy": "DOCUMENT_BUSINESS_PURPOSE",
+      "severity": "HIGH"
+    },
+    {
+      "conflict_id": "jdg.conflicts.vat_vs_pit",
+      "domain_a": "vat",
+      "domain_b": "pit",
+      "description": "Auto VAT 50% vs KUP 75%",
+      "legal_basis": "Art. 86a VAT vs Art. 23 PIT",
+      "resolution_strategy": "ACCEPT_ASYMMETRY",
+      "severity": "INFO"
+    },
+    {
+      "conflict_id": "jdg.conflicts.vat_vs_vat",
+      "domain_a": "vat",
+      "domain_b": "vat",
+      "description": "Złe długi wierzyciel vs dłużnik",
+      "legal_basis": "Art. 89a vs 89b VAT",
+      "resolution_strategy": "BOTH_CORRECTIONS",
+      "severity": "HIGH"
+    },
+    {
+      "conflict_id": "jdg.conflicts.pit_vs_vat",
+      "domain_a": "pit",
+      "domain_b": "vat",
+      "description": "Amortyzacja PIT vs UoR",
+      "legal_basis": "Art. 22a-22o PIT vs Art. 28-34 UoR",
+      "resolution_strategy": "SEPARATE_RECORDS",
+      "severity": "HIGH"
+    },
+    {
+      "conflict_id": "jdg.conflicts.accounting_vs_vat",
+      "domain_a": "accounting",
+      "domain_b": "vat",
+      "description": "Kurs FX NBP A vs C",
+      "legal_basis": "Art. 14c PIT vs Art. 30a-c VAT",
+      "resolution_strategy": "PREFER_CUSTOMS_TABLE_C",
+      "severity": "WARNING"
+    },
+    {
+      "conflict_id": "jdg.conflicts.pit_vs_pit",
+      "domain_a": "pit",
+      "domain_b": "pit",
+      "description": "Ulgi vs strata",
+      "legal_basis": "Art. 26 PIT",
+      "resolution_strategy": "BLOCK_NON_RD_ALLOWANCES",
+      "severity": "HIGH"
+    }
+  ]
+}
+
+--- INN03_CORRECTION_EXAMPLE ---
+{
+  "tax_type": "VAT",
+  "amount": 50000,
+  "direction": "DECREASE",
+  "days_overdue": 120,
+  "suggestions": [
+    {
+      "correction_type": "INVOICE_IN_MINUS",
+      "method": "Wystaw fakturę korygującą in-minus",
+      "period": "Okres otrzymania potwierdzenia odbioru przez nabywcę",
+      "deadline_days": "Bez terminu (bieżący okres JPK)",
+      "basis": "Art. 106j VAT",
+      "interest": ""
+    }
+  ],
+  "within_statute": true
+}
+
+--- INN04_STATUTE_EXAMPLE ---
+{
+  "tax_year": "2019",
+  "liability_type": "TAX_OBLIGATION",
+  "statute_years": 5,
+  "legal_basis": "Art. 70 § 1 OrdPU",
+  "starts_from": "END_OF_TAX_YEAR",
+  "deadline_date": "2024-12-31",
+  "days_remaining": 0,
+  "is_expired": true,
+  "status": "EXPIRED",
+  "urgency": "CRITICAL",
+  "recommendation": "Zobowiązanie przedawnione. US nie może prowadzić egzekucji. Dokumenty można zniszczyć po 5 latach od przedawnienia."
+}
+
+--- INN05_RISK_EXAMPLE ---
+{
+  "total_risk_score": 240,
+  "max_possible_score": 300,
+  "overall_risk_pct": 80.0,
+  "overall_risk_level": "RED",
+  "active_flags": 3,
+  "flags": [
+    {
+      "risk_id": "GAAR",
+      "description": "Sztuczna struktura GAAR",
+      "score": 95,
+      "level": "RED",
+      "legal_basis": "Art. 119a OrdPU",
+      "mitigation": "Uzyskaj opinię zabezpieczającą (Art. 119zb OrdPU) przed transakcją."
+    },
+    {
+      "risk_id": "HIDDEN_INCOME",
+      "description": "Ukryte dochody",
+      "score": 80,
+      "level": "RED",
+      "legal_basis": "Art. 54 KKS",
+      "mitigation": "Skoryguj deklaracje PIT/VAT. Rozważ czynny żal."
+    },
+    {
+      "risk_id": "LOW_TRUST",
+      "description": "Niski trust score",
+      "score": 65,
+      "level": "YELLOW",
+      "legal_basis": "Art. 22 UoR",
+      "mitigation": "Zweryfikuj kontrahenta w CEIDG, KRS, Wykazie VAT. Zażądaj dodatkowej dokumentacji."
+    }
+  ],
+  "hotspots": [
+    {
+      "risk_id": "GAAR",
+      "description": "Sztuczna struktura GAAR",
+      "score": 95,
+      "level": "RED",
+      "legal_basis": "Art. 119a OrdPU",
+      "mitigation": "Uzyskaj opinię zabezpieczającą (Art. 119zb OrdPU) przed transakcją."
+    },
+    {
+      "risk_id": "HIDDEN_INCOME",
+      "description": "Ukryte dochody",
+      "score": 80,
+      "level": "RED",
+      "legal_basis": "Art. 54 KKS",
+      "mitigation": "Skoryguj deklaracje PIT/VAT. Rozważ czynny żal."
+    }
+  ]
+}
+
+--- INN06_GAAR_EXAMPLE ---
+{
+  "gaar_score": 30.6,
+  "gaar_risk_level": "MEDIUM",
+  "triggers_activated": 2,
+  "total_triggers_possible": 9,
+  "triggers": [
+    {
+      "trigger_id": "related_party",
+      "description": "Transakcja z podmiotem powiązanym",
+      "weight": 35,
+      "status": "TRIGGERED"
+    },
+    {
+      "trigger_id": "artificial_scheme",
+      "description": "Sztuczna struktura bez uzasadnienia ekonomicznego",
+      "weight": 40,
+      "status": "TRIGGERED"
+    }
+  ],
+  "recommendation": "ŚREDNIE RYZYKO GAAR — udokumentuj ekonomiczne uzasadnienie transakcji. Zachowaj analizę porównawczą cen rynkowych."
+}
+
+--- INN08_COVERAGE ---
+{
+  "total_categories": 8,
+  "known_edge_cases_estimate": 91,
+  "potential_gaps_found": 10,
+  "high_priority_gaps": 5,
+  "coverage_confidence": 89.0,
+  "gaps": [
+    {
+      "gap_id": "P17_GAP_001",
+      "area": "VAT",
+      "desc": "Korekta VAT po zmianie formy opodatkowania (JDG→Sp. z o.o.)",
+      "priority": "HIGH",
+      "suggested_rule_id": "jdg.edge_cases.vat_form_change_correction"
+    },
+    {
+      "gap_id": "P17_GAP_002",
+      "area": "PIT",
+      "desc": "Zasiłek chorobowy a zaliczka PIT — interakcja z JDG",
+      "priority": "MEDIUM",
+      "suggested_rule_id": "jdg.edge_cases.pit_sickness_benefit_advance"
+    },
+    {
+      "gap_id": "P17_GAP_003",
+      "area": "ZUS",
+      "desc": "ZUS po wznowieniu działalności po 5+ latach",
+      "priority": "MEDIUM",
+      "suggested_rule_id": "jdg.edge_cases.zus_long_hiatus_resume"
+    },
+    {
+      "gap_id": "P17_GAP_004",
+      "area": "CROSS_BORDER",
+      "desc": "Podwójna rezydencja podatkowa — tie-breaker rules",
+      "priority": "HIGH",
+      "suggested_rule_id": "jdg.edge_cases.dual_residency_tiebreaker"
+    },
+    {
+      "gap_id": "P17_GAP_005",
+      "area": "KKS",
+      "desc": "Nadpłata a czynny żal — czy nadpłata wyklucza czynny żal?",
+      "priority": "WARNING",
+      "suggested_rule_id": "jdg.edge_cases.overpayment_vs_voluntary_disclosure"
+    },
+    {
+      "gap_id": "P17_GAP_006",
+      "area": "TEMPORAL",
+      "desc": "RMK powrót stawek 8%/5% — automatyczny trigger reguł",
+      "priority": "HIGH",
+      "suggested_rule_id": "jdg.temporal.rmk_rate_restoration_trigger"
+    },
+    {
+      "gap_id": "P17_GAP_007",
+      "area": "FAMILY",
+      "desc": "Rozwód a rozliczenie JDG — podział majątku wspólnego",
+      "priority": "MEDIUM",
+      "suggested_rule_id": "jdg.edge_cases.divorce_asset_split_jdg"
+    },
+    {
+      "gap_id": "P17_GAP_008",
+      "area": "FORCE_MAJEURE",
+      "desc": "Klęska żywiołowa a terminy podatkowe — automatyczne przedłużenie",
+      "priority": "WARNING",
+      "suggested_rule_id": "jdg.edge_cases.force_majeure_deadline_extension"
+    },
+    {
+      "gap_id": "P17_GAP_009",
+      "area": "E_DELIVERY",
+      "desc": "e-Doręczenia — fikcja doręczenia po 14 dniach",
+      "priority": "HIGH",
+      "suggested_rule_id": "jdg.edge_cases.edelivery_fiction_of_service"
+    },
+    {
+      "gap_id": "P17_GAP_010",
+      "area": "LIABILITY",
+      "desc": "Odpowiedzialność solidarna małżonka po ustaniu wspólności",
+      "priority": "HIGH",
+      "suggested_rule_id": "jdg.edge_cases.spouse_liability_after_separation"
+    }
+  ]
+}
+
+--- INN10_XREF ---
+{
+  "reference_year": "2020",
+  "periods": {
+    "TAX_OBLIGATION": {
+      "event_year": "2020",
+      "statute_years": 5,
+      "deadline": "2025-12-31",
+      "days_remaining": 0,
+      "expired": true,
+      "legal_basis": "Art. 70 § 1 OrdPU"
+    },
+    "TAX_CRIME": {
+      "event_year": "2020",
+      "statute_years": 10,
+      "deadline": "2030-12-31",
+      "days_remaining": 1616,
+      "expired": false,
+      "legal_basis": "Art. 70 § 2 OrdPU + Art. 44 KKS"
+    },
+    "KKS_PROSECUTION": {
+      "event_year": "2020",
+      "statute_years": 5,
+      "deadline": "2025-12-31",
+      "days_remaining": 0,
+      "expired": true,
+      "legal_basis": "Art. 44 § 1 KKS"
+    },
+    "KKS_PROSECUTION_EXTENDED": {
+      "event_year": "2020",
+      "statute_years": 10,
+      "deadline": "2030-12-31",
+      "days_remaining": 1616,
+      "expired": false,
+      "legal_basis": "Art. 44 § 2 KKS"
+    },
+    "DOCUMENT_RETENTION": {
+      "event_year": "2020",
+      "statute_years": 5,
+      "deadline": "2025-12-31",
+      "days_remaining": 0,
+      "expired": true,
+      "legal_basis": "Art. 86 OrdPU"
+    },
+    "CORRECTION_WINDOW": {
+      "event_year": "2020",
+      "statute_years": 5,
+      "deadline": "2025-12-31",
+      "days_remaining": 0,
+      "expired": true,
+      "legal_basis": "Art. 81 OrdPU"
+    }
+  },
+  "cross_reference_discrepancies": [
+    {
+      "pair": "TAX_OBLIGATION vs TAX_CRIME",
+      "discrepancy": "TAX_OBLIGATION EXPIRED vs TAX_CRIME ACTIVE",
+      "impact": "Asymetria przedawnień — jedno zobowiązanie przedawnione, drugie nie"
+    },
+    {
+      "pair": "TAX_OBLIGATION vs KKS_PROSECUTION_EXTENDED",
+      "discrepancy": "TAX_OBLIGATION EXPIRED vs KKS_PROSECUTION_EXTENDED ACTIVE",
+      "impact": "Asymetria przedawnień — jedno zobowiązanie przedawnione, drugie nie"
+    },
+    {
+      "pair": "TAX_CRIME vs KKS_PROSECUTION",
+      "discrepancy": "TAX_CRIME ACTIVE vs KKS_PROSECUTION EXPIRED",
+      "impact": "Asymetria przedawnień — jedno zobowiązanie przedawnione, drugie nie"
+    },
+    {
+      "pair": "TAX_CRIME vs DOCUMENT_RETENTION",
+      "discrepancy": "TAX_CRIME ACTIVE vs DOCUMENT_RETENTION EXPIRED",
+      "impact": "Asymetria przedawnień — jedno zobowiązanie przedawnione, drugie nie"
+    },
+    {
+      "pair": "TAX_CRIME vs CORRECTION_WINDOW",
+      "discrepancy": "TAX_CRIME ACTIVE vs CORRECTION_WINDOW EXPIRED",
+      "impact": "Asymetria przedawnień — jedno zobowiązanie przedawnione, drugie nie"
+    },
+    {
+      "pair": "KKS_PROSECUTION vs KKS_PROSECUTION_EXTENDED",
+      "discrepancy": "KKS_PROSECUTION EXPIRED vs KKS_PROSECUTION_EXTENDED ACTIVE",
+      "impact": "Asymetria przedawnień — jedno zobowiązanie przedawnione, drugie nie"
+    },
+    {
+      "pair": "KKS_PROSECUTION_EXTENDED vs DOCUMENT_RETENTION",
+      "discrepancy": "KKS_PROSECUTION_EXTENDED ACTIVE vs DOCUMENT_RETENTION EXPIRED",
+      "impact": "Asymetria przedawnień — jedno zobowiązanie przedawnione, drugie nie"
+    },
+    {
+      "pair": "KKS_PROSECUTION_EXTENDED vs CORRECTION_WINDOW",
+      "discrepancy": "KKS_PROSECUTION_EXTENDED ACTIVE vs CORRECTION_WINDOW EXPIRED",
+      "impact": "Asymetria przedawnień — jedno zobowiązanie przedawnione, drugie nie"
+    }
+  ],
+  "earliest_expiry": "2025-12-31",
+  "latest_expiry": "2030-12-31"
+}
+
+=================================================================
+=== KONIEC RAPORTU — RAPORT_P17_JDG_EDGE_CASES_CONFLICTS_v7.0 ===

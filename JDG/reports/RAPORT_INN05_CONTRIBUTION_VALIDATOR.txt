@@ -1,0 +1,2 @@
+RAPORT INN05 — Contribution Base Auto-Validator
+Minima: standard=4914.0, pref=1399.8
