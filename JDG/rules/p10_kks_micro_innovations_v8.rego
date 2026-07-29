@@ -144,6 +144,25 @@ else := {
     input.jdg_entrepreneur.business_type == "JDG"
 }
 
+# ═══ INN09: Cross-Package Zero-FP Auto-Drafts (v2.0) ═══
+else := {
+    "matched": true,
+    "rule_id": "jdg.p10_innovations.cross_package_zero_fp",
+    "package": "jdg.p10_innovations",
+    "priority": 9000,
+    "innovation": "INN09_CROSS_PACKAGE_ZERO_FP",
+    "action": "GENERATE_AUTO_DRAFTS",
+    "cross_package_links": ["KKS→VAT (art.54→VAT sanctions)", "KKS→PIT (art.56→NKUP)", "KKS→ZUS (art.61→contributions)", "KKS→UoR (art.57→books)"],
+    "zero_fp_target": true,
+    "auto_drafts": ["CZYNNY_ŻAL", "KOREKTA_DEKLARACJI", "WNIOSEK_O_UGODĘ"],
+    "draft_templates_available": 3,
+    "routing": "DRAFT_QUEUE",
+    "legal_basis": "Art. 16-16a KKS, Art. 54-62 KKS",
+    "_description": "INN09: Cross-package zero-FP auto-draft generator — cross-links KKS→VAT/PIT/ZUS/UoR"
+} {
+    object.get(input.jdg_entrepreneur, "kks_auto_draft_enabled", false) == true
+}
+
 # ═══ GAP FIX: Art. 58-59 KKS — Document destruction ═══
 else := {
     "matched": true,
@@ -167,10 +186,14 @@ else := {
     "priority": 99999,
     "innovation": "P10_COVERAGE_SUMMARY",
     "action": "REPORT",
-    "total_innovations": 8,
+    "total_innovations": 10,
     "gap_fixes": 1,
+    "cross_package_integrations": 4,
+    "zero_fp_target": true,
+    "auto_draft_templates": 3,
+    "version": "v2.0",
     "ready_for_p11": true,
-    "_description": "P10: 8 innovations + 1 gap fix = COMPLETE"
+    "_description": "P10 v2.0: 10 innovations + 1 gap fix + cross-package + zero-FP + auto-drafts = COMPLETE"
 } {
     true
 }
