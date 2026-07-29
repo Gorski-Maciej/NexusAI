@@ -32,6 +32,7 @@
 package jdg.pit.kup
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 # ── Default ────────────────────────────────────────────────────────────────────
 default decide := {
@@ -163,14 +164,14 @@ else := {
     "pit_form": "LINEAR", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "partial_health_limit", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "0.049",
-    "zus_health_annual_limit": 12900, "zus_health_deductible_from_income": true,
+    "zus_health_annual_limit": thresholds.zus.health_linear_deduction_limit, "zus_health_deductible_from_income": true,
     "business_status": "", "ceidg_registration_required": false,
-    "relief_type": "", "relief_limit": 12900,
-    "relief_deductible": min([health_paid, 12900]),
+    "relief_type": "", "relief_limit": thresholds.zus.health_linear_deduction_limit,
+    "relief_deductible": min([health_paid, thresholds.zus.health_linear_deduction_limit]),
     "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
     "_legal_basis": "Art. 30c ust. 2 pkt 2 PIT",
-    "_warnings": [sprintf("Składka zdrowotna liniowy — odliczenie od dochodu max 12 900 PLN (zapłacono %.2f)", [health_paid])]
+    "_warnings": [sprintf("Składka zdrowotna liniowy — odliczenie od dochodu max %.0f PLN (zapłacono %.2f)", [thresholds.zus.health_linear_deduction_limit, health_paid])]
 } {
     input.jdg_entrepreneur.tax_form == "LINEAR"
     input.invoice.expense_type == "ZUS_HEALTH_ENTREPRENEUR"

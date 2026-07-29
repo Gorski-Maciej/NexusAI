@@ -26,6 +26,7 @@
 package jdg.edge_cases
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 default decide := {
     "matched": false, "rule_id": "jdg.edge_cases.no_match",
@@ -181,7 +182,7 @@ else := { "matched": true, "rule_id": "jdg.edge_cases.pit_last_year_before_closu
 
 else := { "matched": true, "rule_id": "jdg.edge_cases.pit_double_taxation_abroad", "package": "jdg.edge_cases", "priority": 562, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "double_tax_method_required": true, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Dochód zagraniczny — metoda unikania podwójnego opodatkowania", "_legal_basis": "Art. 27 ust. 8-9 PIT + UPO", "_warnings": ["Dochód zagraniczny — sprawdź umowę UPO. Metoda: proporcjonalne odliczenie lub wyłączenie z progresją"] } { object.get(input.jdg_entrepreneur, "foreign_income", 0) > 0; object.get(input.jdg_entrepreneur, "tax_residence", "") == "PL" }
 
-else := { "matched": true, "rule_id": "jdg.edge_cases.pit_linear_health_underpayment", "package": "jdg.edge_cases", "priority": 563, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "LINEAR", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Liniowy: odliczenie zdrowotnej max 12 900 PLN", "_legal_basis": "Art. 30c ust. 2 PIT", "_warnings": ["Podatek liniowy — max odliczenie składki zdrowotnej 12 900 PLN rocznie"] } { input.jdg_entrepreneur.tax_form == "LINEAR"; object.get(input.jdg_entrepreneur, "zus_health_paid_ytd", 0) > 12900 }
+else := { "matched": true, "rule_id": "jdg.edge_cases.pit_linear_health_underpayment", "package": "jdg.edge_cases", "priority": 563, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "LINEAR", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "_routing": "TRIAGE_QUEUE", "_routing_reason": sprintf("Liniowy: odliczenie zdrowotnej max %.0f PLN", [thresholds.zus.health_linear_deduction_limit]), "_legal_basis": "Art. 30c ust. 2 PIT", "_warnings": [sprintf("Podatek liniowy — max odliczenie składki zdrowotnej %.0f PLN rocznie", [thresholds.zus.health_linear_deduction_limit])] } { input.jdg_entrepreneur.tax_form == "LINEAR"; object.get(input.jdg_entrepreneur, "zus_health_paid_ytd", 0) > thresholds.zus.health_linear_deduction_limit }
 
 else := { "matched": true, "rule_id": "jdg.edge_cases.pit_lump_sum_health_progressive", "package": "jdg.edge_cases", "priority": 564, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "LUMP_SUM", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "health_tier_change": true, "_routing": "", "_routing_reason": "", "_legal_basis": "Art. 81 ust. 2e ustawy o świadczeniach zdrowotnych", "_warnings": ["Ryczałt: przekroczenie progu przychodu — zmiana składki zdrowotnej. Roczne rozliczenie do 22 maja"] } { object.get(input.jdg_entrepreneur, "lump_sum_revenue_tier_changed", false) == true }
 
@@ -845,9 +846,9 @@ else := {
     object.get(input.invoice, "car_type", "") == "ELECTRIC"
 }
 
-# R0633: limit_health_linear_deduction_12900 — Max odliczenie zdrowotnej liniowy
+# R0633: limit_health_linear_deduction — Max odliczenie zdrowotnej liniowy (2026=14100)
 else := {
-    "matched": true, "rule_id": "jdg.edge_cases.limit_health_linear_12900",
+    "matched": true, "rule_id": "jdg.edge_cases.limit_health_linear",
     "package": "jdg.edge_cases", "priority": 633,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "LINEAR", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
@@ -858,13 +859,13 @@ else := {
     "health_paid": health_paid, "deductible": deduct,
     "_routing": "", "_routing_reason": "",
     "_legal_basis": "Art. 30c ust. 2 PIT",
-    "_warnings": [sprintf("Liniowy: zapłacona zdrowotna %.2f PLN, max odliczenie 12 900 PLN. Odliczasz %.2f PLN", [health_paid, deduct])]
+    "_warnings": [sprintf("Liniowy: zapłacona zdrowotna %.2f PLN, max odliczenie %.0f PLN. Odliczasz %.2f PLN", [health_paid, data.jdg.thresholds.limits.health_linear_deduction_limit, deduct])]
 } {
     input.jdg_entrepreneur.tax_form == "LINEAR"
     health_paid := object.get(input.jdg_entrepreneur, "zus_health_paid_ytd", 0)
     health_paid > 10000
-    deduct = health_paid { health_paid <= 12900 }
-    deduct = 12900 { health_paid > 12900 }
+    deduct = health_paid { health_paid <= data.jdg.thresholds.limits.health_linear_deduction_limit }
+    deduct = data.jdg.thresholds.limits.health_linear_deduction_limit { health_paid > data.jdg.thresholds.limits.health_linear_deduction_limit }
 }
 
 # R0634: limit_rd_relief_capped — Ulga B+R max 100% dochodu
@@ -965,22 +966,22 @@ else := {
     expansion_costs > 500000
 }
 
-# R0639: limit_pit0_combined_85528 — PIT-0 łączny limit 85 528 PLN
+# R0639: limit_pit0_combined — PIT-0 łączny limit (2026=85528)
 else := {
-    "matched": true, "rule_id": "jdg.edge_cases.limit_pit0_combined_85528",
+    "matched": true, "rule_id": "jdg.edge_cases.limit_pit0_combined",
     "package": "jdg.edge_cases", "priority": 639,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "",
     "business_status": "", "ceidg_registration_required": false,
-    "limit_name": "PIT0_COMBINED", "limit_value": 85528,
+    "limit_name": "PIT0_COMBINED", "limit_value": data.jdg.thresholds.pit.pit_relief_shared_limit,
     "_routing": "TRIAGE_QUEUE", "_routing_reason": "Łączny limit PIT-0 przekroczony",
     "_legal_basis": "Art. 21 ust. 1 pkt 148-154 PIT",
-    "_warnings": [sprintf("PIT-0: łączna kwota zwolnień %.2f PLN przekracza limit 85 528 PLN. Nadwyżka opodatkowana.", [pit0_total])]
+    "_warnings": [sprintf("PIT-0: łączna kwota zwolnień %.2f PLN przekracza limit %.0f PLN. Nadwyżka opodatkowana.", [pit0_total, data.jdg.thresholds.pit.pit_relief_shared_limit])]
 } {
     pit0_total := object.get(input.jdg_entrepreneur, "pit0_total_exempt", 0)
-    pit0_total > 85528
+    pit0_total > data.jdg.thresholds.pit.pit_relief_shared_limit
 }
 
 # R0640: limit_loss_50pct_annual — Strata max 50% rocznie

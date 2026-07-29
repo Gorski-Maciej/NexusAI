@@ -144,6 +144,7 @@ zus := {
     "sickness_waiting_days": 90,                 # 90 dni wyczekiwania (P578, ENTERPRISE P745)
     "sickness_benefit_rate": 0.80,               # 80% podstawy
     "sickness_hospital_rate": 0.70,              # 70% w szpitalu
+    "sickness_annual_limit": 85528,              # PLN/rok — limit podstawy wymiaru zasiłku (2026)
 
     # Stopy procentowe składek społecznych
     "pension_rate": 0.1952,                      # 19.52% — emerytalna

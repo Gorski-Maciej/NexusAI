@@ -707,7 +707,7 @@ else := {
     age <= 26
     input.jdg_entrepreneur.tax_form == "PIT_SCALE"
     cum_income := object.get(input.jdg_entrepreneur, "cumulative_income_current_year", 0)
-    pit_limit := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "pit_young_exemption_limit", 85528)
+    pit_limit := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "pit_young_exemption_limit", data.thresholds.pit.pit_relief_shared_limit)
     cum_income <= pit_limit
 }
 
@@ -742,7 +742,7 @@ else := {
     years_used < 4
     input.jdg_entrepreneur.tax_form == "PIT_SCALE"
     cum_income := object.get(input.jdg_entrepreneur, "cumulative_income_current_year", 0)
-    pit_limit := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "pit_return_exemption_limit", 85528)
+    pit_limit := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "pit_return_exemption_limit", data.thresholds.pit.pit_relief_shared_limit)
     cum_income <= pit_limit
 }
 
@@ -765,7 +765,7 @@ else := {
     "kus_percent": 0,
     "relief_type": "PIT_0_COORDINATION",
     "pit_exemption_active": "MULTIPLE_ELIGIBLE",
-    "pit_exemption_shared_limit": 85528,
+    "pit_exemption_shared_limit": data.thresholds.pit.pit_relief_shared_limit,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Wiele ulg PIT-0 — wybierz jedną",
     "_legal_basis": "Art. 21 ust. 1 pkt 148, 152, 153, 154 PIT",

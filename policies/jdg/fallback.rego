@@ -11,6 +11,7 @@ package jdg.fallback
 # deprecated: false
 #
 import data.jdg.helpers
+import data.jdg.thresholds
 default decide := {"matched":false,"rule_id":"jdg.fallback.no_match","package":"jdg.fallback","priority":1099}
 
 # ══════ P1000: domestic_fallback_jdg — Domyślna stawka 23% VAT PL ══════
@@ -19,7 +20,7 @@ decide := {
     "package":"jdg.fallback","priority":1000,
     "vat_rate":"0.23","rounding_level":"position","gtu_code":"",
     "vat_exemption":"","procedure":"",
-    "pit_form":"SCALE","pit_rate":"0.12","pit_bracket":"LOW",
+    "pit_form":"SCALE","pit_rate":sprintf("%.2f", [thresholds.rates.pit_scale_low]),"pit_bracket":"LOW",
     "pit_annual_return_type":"PIT-36",
     "kus_qualification":"full","kus_percent":100,
     "zus_social_base_type":"STANDARD","zus_health_rate":"0.09",

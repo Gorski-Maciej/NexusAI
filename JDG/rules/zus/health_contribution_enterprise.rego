@@ -114,7 +114,7 @@ else := {
     "zus_health_basis_pln": health_basis,
     "zus_health_monthly_pln": health_monthly,
     "zus_health_deductible": true,
-    "zus_health_max_annual_deduction_pln": 12900,
+    "zus_health_max_annual_deduction_pln": data.thresholds.zus.health_linear_deduction_limit,
     "_routing": "",
     "_routing_reason": sprintf("Składka zdrowotna liniowy: %.2f PLN/mies (4.9%% × %.2f PLN)", [health_monthly, health_basis]),
     "_legal_basis": "Art. 81 ust. 2c ustawy o świadczeniach",
@@ -139,7 +139,7 @@ else := {
     "pit_form": "LINEAR",
     "zus_health_deductible": true,
     "zus_health_annual_paid_pln": annual_paid,
-    "zus_health_deduction_limit_pln": 12900,
+    "zus_health_deduction_limit_pln": data.thresholds.zus.health_linear_deduction_limit,
     "zus_health_deduction_used_pln": deduction_used,
     "zus_health_deduction_remaining_pln": deduction_remaining,
     "_routing": "",
@@ -150,8 +150,8 @@ else := {
     input.jdg_entrepreneur.tax_form == "LINEAR"
     input.jdg_entrepreneur.health_contribution_active == true
     annual_paid := object.get(input.jdg_entrepreneur, "health_annual_paid", 0)
-    deduction_used := min([annual_paid, 12900])
-    deduction_remaining := max([0, 12900 - annual_paid])
+    deduction_used := min([annual_paid, data.thresholds.zus.health_linear_deduction_limit])
+    deduction_remaining := max([0, data.thresholds.zus.health_linear_deduction_limit - annual_paid])
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗

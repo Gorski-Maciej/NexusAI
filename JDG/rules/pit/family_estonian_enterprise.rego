@@ -150,7 +150,7 @@ else := {
     children := object.get(input.jdg_entrepreneur, "children_count", 0)
     has_4plus := children >= 4
     annual_income := object.get(input.jdg_entrepreneur, "annual_taxable_income", 85000)
-    limit_remaining := max([85528 - annual_income, 0])
+    limit_remaining := max([data.thresholds.pit.pit_relief_shared_limit - annual_income, 0])
     comparison = "Ulga 4+ ZWALNIA z PIT do 85 528 PLN — może być lepsza niż ulga na dzieci dla dochodu < 85k" { has_4plus }
     comparison = "Nie dotyczy — mniej niż 4 dzieci" { not has_4plus }
     combined_note = "Połącz ulgę 4+ (zwolnienie dochodu) z ulgą na dzieci (odliczenie od podatku) dla MAKSYMALNEJ oszczędności!" { has_4plus }

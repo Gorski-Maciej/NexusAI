@@ -44,7 +44,7 @@ decide := {
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Zmiana formy: SKALA → LINIOWY. Wymaga oświadczenia do 20 lutego!",
     "_legal_basis": "Art. 9a ust. 2, Art. 30c PIT",
-    "_warnings": [sprintf("ZMIANA FORMY: SKALA 12/32%% → LINIOWY 19%%. %s. Kluczowe zmiany: (1) Stawka 19%% niezależnie od dochodu, (2) Utrata kwoty wolnej 30k, (3) Utrata ulgi na dzieci i wspólnego rozliczenia z małżonkiem, (4) Składka zdrowotna spada z 9%% do 4.9%% (oszczędność ~%.0f PLN/rok), (5) Możliwość odliczenia zdrowotnej od dochodu (max 12900 PLN). Oświadczenie CEIDG-1 do 20 lutego!", [timing_note, health_savings])]
+    "_warnings": [sprintf("ZMIANA FORMY: SKALA 12/32%% → LINIOWY 19%%. %s. Kluczowe zmiany: (1) Stawka 19%% niezależnie od dochodu, (2) Utrata kwoty wolnej 30k, (3) Utrata ulgi na dzieci i wspólnego rozliczenia z małżonkiem, (4) Składka zdrowotna spada z 9%% do 4.9%% (oszczędność ~%.0f PLN/rok), (5) Możliwość odliczenia zdrowotnej od dochodu (max %.0f PLN). Oświadczenie CEIDG-1 do 20 lutego!", [timing_note, health_savings])]
 } {
     input.jdg_entrepreneur.tax_form_change_requested == true
     input.jdg_entrepreneur.tax_form_change_to == "LINEAR"

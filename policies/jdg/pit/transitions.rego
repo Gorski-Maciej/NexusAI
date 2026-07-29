@@ -18,6 +18,8 @@
 
 package jdg.pit.transitions
 
+import data.jdg.thresholds
+
 default decide := {
     "matched": false, "rule_id": "jdg.pit.transitions.no_match",
     "package": "jdg.pit.transitions", "priority": 609
@@ -94,7 +96,7 @@ else := {
     "matched": true, "rule_id": "jdg.pit.transitions.scale_to_linear",
     "package": "jdg.pit.transitions", "priority": 590,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "LINEAR", "pit_rate": "0.19", "pit_bracket": "",
+    "pit_form": "LINEAR", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_linear]), "pit_bracket": "",
     "pit_annual_return_type": "PIT-36L",
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "0.049",
@@ -114,7 +116,7 @@ else := {
     "matched": true, "rule_id": "jdg.pit.transitions.lump_sum_loss_to_scale",
     "package": "jdg.pit.transitions", "priority": 592,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_form": "SCALE", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_scale_low]), "pit_bracket": "LOW",
     "pit_annual_return_type": "PIT-36",
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "0.09",

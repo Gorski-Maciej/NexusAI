@@ -123,7 +123,7 @@ else := {
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "",
     "zus_sickness_taxable": true,
-    "zus_sickness_annual_limit": 85528,
+    "zus_sickness_annual_limit": data.thresholds.zus.sickness_annual_limit,
     "zus_sickness_pit_form": pit_form_label,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "",

@@ -161,8 +161,8 @@ else := {
     annual_profit := object.get(input.jdg_entrepreneur, "annual_profit_projected", 100000)
 
     # Skala: PIT 12% + zdrowotna 9% (nieodliczalna)
-    # Liniowy: PIT 19% + zdrowotna 4.9% (odliczalna do 12900)
-    # Break-even: PIT_scale + 9% = PIT_linear + 4.9% - min(4.9%, 12900)
+    # Liniowy: PIT 19% + zdrowotna 4.9% (odliczalna do limitu w thresholds.zus.health_linear_deduction_limit)
+    # Break-even: PIT_scale + 9% = PIT_linear + 4.9% - min(4.9%, thresholds.zus.health_linear_deduction_limit)
     # Uproszczony break-even dla typowych dochodów
     breakeven_income := 110000
 
@@ -212,7 +212,7 @@ else := {
 
     # Zdrowotna liniowy — limit 12 900
     health_warn := object.get(early_w, "health_deduction_80pct", 10320)
-    active_warnings := array.concat(active_warnings, [sprintf("⚠️ Odliczenie zdrowotnej: %.0f PLN — %.0f%% limitu 12 900 PLN. Niewykorzystany limit przepada!", [health_deduction_used, health_deduction_used / 12900 * 100])]) { health_deduction_used > health_warn }
+    active_warnings := array.concat(active_warnings, [sprintf("⚠️ Odliczenie zdrowotnej: %.0f PLN — %.0f%% limitu %.0f PLN. Niewykorzystany limit przepada!", [health_deduction_used, health_deduction_used / data.thresholds.zus.health_linear_deduction_limit * 100, data.thresholds.zus.health_linear_deduction_limit])]) { health_deduction_used > health_warn }
 
     monitor_rt = "TRIAGE_QUEUE" { count(active_warnings) >= 2 }
     monitor_rt = "" { true }

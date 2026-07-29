@@ -28,6 +28,7 @@
 package jdg.pit.forms
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 # ── Default ────────────────────────────────────────────────────────────────────
 default decide := {
@@ -46,7 +47,7 @@ decide := {
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "SCALE", "pit_rate": pit_rate, "pit_bracket": pit_bracket,
     "pit_annual_return_type": "PIT-36",
-    "pit_tax_free_amount": 30000, "pit_tax_free_reduction": 3600,
+    "pit_tax_free_amount": thresholds.limits.pit_tax_free_amount, "pit_tax_free_reduction": floor(thresholds.limits.pit_tax_free_amount * thresholds.rates.pit_scale_low),
     "kus_qualification": "full", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "0.09",
     "business_status": "", "ceidg_registration_required": false,
@@ -62,9 +63,9 @@ decide := {
     threshold := object.get(bracket_limit, "pit_scale_threshold", 120000)
 
     pit_bracket = "LOW" { accumulated <= threshold }
-    pit_rate = "0.12" { accumulated <= threshold }
+    pit_rate = sprintf("%.2f", [thresholds.rates.pit_scale_low]) { accumulated <= threshold }
     pit_bracket = "HIGH" { accumulated > threshold }
-    pit_rate = "0.32" { accumulated > threshold }
+    pit_rate = sprintf("%.2f", [thresholds.rates.pit_scale_high]) { accumulated > threshold }
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -74,9 +75,9 @@ else := {
     "matched": true, "rule_id": "jdg.pit.forms.scale_joint_filing",
     "package": "jdg.pit.forms", "priority": 502,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_form": "SCALE", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_scale_low]), "pit_bracket": "LOW",
     "pit_annual_return_type": "PIT-36",
-    "pit_tax_free_amount": 30000, "pit_tax_free_reduction": 3600,
+    "pit_tax_free_amount": thresholds.limits.pit_tax_free_amount, "pit_tax_free_reduction": floor(thresholds.limits.pit_tax_free_amount * thresholds.rates.pit_scale_low),
     "kus_qualification": "full", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "0.09",
     "business_status": "", "ceidg_registration_required": false,
@@ -97,12 +98,12 @@ else := {
     "matched": true, "rule_id": "jdg.pit.forms.linear",
     "package": "jdg.pit.forms", "priority": 510,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "LINEAR", "pit_rate": "0.19", "pit_bracket": "",
+    "pit_form": "LINEAR", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_linear]), "pit_bracket": "",
     "pit_annual_return_type": "PIT-36L",
     "pit_tax_free_amount": 0, "pit_tax_free_reduction": 0,
     "kus_qualification": "full", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "0.049",
-    "zus_health_deductible_from_income": true, "zus_health_annual_limit": 12900,
+    "zus_health_deductible_from_income": true, "zus_health_annual_limit": thresholds.zus.health_linear_deduction_limit,
     "business_status": "", "ceidg_registration_required": false,
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
@@ -119,7 +120,7 @@ else := {
     "matched": true, "rule_id": "jdg.pit.forms.linear_former_employer_block",
     "package": "jdg.pit.forms", "priority": 512,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_form": "SCALE", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_scale_low]), "pit_bracket": "LOW",
     "pit_annual_return_type": "PIT-36",
     "kus_qualification": "full", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "",
@@ -190,7 +191,7 @@ else := {
     "matched": true, "rule_id": "jdg.pit.forms.lump_sum_limit_exceeded",
     "package": "jdg.pit.forms", "priority": 523,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_form": "SCALE", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_scale_low]), "pit_bracket": "LOW",
     "pit_annual_return_type": "PIT-36",
     "kus_qualification": "full", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "",

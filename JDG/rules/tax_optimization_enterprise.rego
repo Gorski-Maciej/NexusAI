@@ -57,7 +57,7 @@ decide := {
     ],
     "_optimization_details": {
         "scale": {"rate": "12%/32%", "tax_free": 30000, "health_rate": 0.09},
-        "linear": {"rate": "19%", "health_rate": 0.049, "deductible_cap": 12900},
+        "linear": {"rate": "19%", "health_rate": 0.049, "deductible_cap": data.thresholds.zus.health_linear_deduction_limit},
         "lump_sum": {"rate": "3-17%", "health_rate": "3 tiers", "no_cost_deduction": true}
     }
 } {
@@ -112,7 +112,7 @@ decide := {
     optimal_total := object.get(totals, optimal_form, scale_total)
     savings := current_total - optimal_total
 
-    health_impact := sprintf("Składka zdrowotna: skala=%.2f PLN, liniowy=%.2f PLN (max 12900), ryczałt=%.2f PLN", [scale_health, linear_health, lump_health])
+    health_impact := sprintf("Składka zdrowotna: skala=%.2f PLN, liniowy=%.2f PLN (max %.0f), ryczałt=%.2f PLN", [scale_health, linear_health, data.thresholds.zus.health_linear_deduction_limit, lump_health])
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -63,9 +63,9 @@ decide := {
     scale_tax := income_after_costs * 0.12 { income_after_costs <= 120000 }
     scale_tax := 14400 + (income_after_costs - 120000) * 0.32 { income_after_costs > 120000 }
     scale_tax := max([0, scale_tax - 3600])
-    # Liniowy: 19% + odliczenie zdrowotnej do 12900
+    # Liniowy: 19% + odliczenie zdrowotnej do limitu z thresholds
     linear_tax := income_after_costs * 0.19
-    linear_health_deduction := min([annual_zus * 0.049, 12900])
+    linear_health_deduction := min([annual_zus * 0.049, data.thresholds.zus.health_linear_deduction_limit])
     linear_tax_effective := max([0, linear_tax - linear_health_deduction])
     # Ryczałt: % przychodu (nie dochodu!) — różne stawki
     lump_rate := 0.12 { is_b2b }
