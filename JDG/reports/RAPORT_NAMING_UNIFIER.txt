@@ -1,3 +1,0 @@
-RAPORT — ZUS Naming Consistency Unifier
-Pattern: jdg.micro.zus.a*.r*
-Issues: 299
