@@ -143,6 +143,12 @@ import data.jdg.lifecycle_manager
 import data.jdg.hyper_plan45_meta
 import data.jdg.wis_api
 import data.jdg.epuap
+import data.jdg.security.fortress
+import data.jdg.p34_remaining
+import data.jdg.p34_innovations
+import data.jdg.p35_coherence
+import data.jdg.p35_gaps
+import data.jdg.p35_innovations
 # ── PAS 17: Enterprise v7.0 Audit Implementation (2026-07-25) ──
 # CR1: R&D Relief (Art. 26e PIT) | CR2: IP Box (Art. 30ca PIT) | CR3: Thermo Relief (Art. 26h PIT)
 # H4: Donation Relief Enterprise | S5: Cross-Relief Optimizer | S8: Tax Loss Harvesting
@@ -191,21 +197,47 @@ routing_context := {
     "requires_ksef": requires_ksef_check(input)
 }
 
-# Pomocnicze
+# v7.0 P34 FIX (Atak 1): delivery.country, service_performed_country, vat_place_of_supply
 build_transaction_type(input) = tx_type {
     input.invoice.direction == "SALE"
     input.invoice.procedure == "EXPORT"
     tx_type := "EXPORT"
 } else = tx_type {
     input.invoice.direction == "SALE"
-    input.vendor.country != "PL"
+    vendor_country := object.get(input.vendor, "country", "PL")
+    delivery_country := object.get(input.delivery, "country", vendor_country)
+    service_country := object.get(input.invoice, "service_performed_country", delivery_country)
+    supply_country := object.get(input.invoice, "vat_place_of_supply", "PL")
+    vendor_country != "PL"
+    tx_type := "CROSS_BORDER_SALE"
+} else = tx_type {
+    input.invoice.direction == "SALE"
+    delivery_country := object.get(input.delivery, "country", "PL")
+    delivery_country != "PL"
+    tx_type := "CROSS_BORDER_SALE"
+} else = tx_type {
+    input.invoice.direction == "SALE"
+    service_country := object.get(input.invoice, "service_performed_country", "PL")
+    service_country != "PL"
+    tx_type := "CROSS_BORDER_SALE"
+} else = tx_type {
+    input.invoice.direction == "SALE"
+    supply_country := object.get(input.invoice, "vat_place_of_supply", "PL")
+    supply_country != "PL"
     tx_type := "CROSS_BORDER_SALE"
 } else = tx_type {
     input.invoice.direction == "SALE"
     tx_type := "DOMESTIC_SALE"
 } else = tx_type {
     input.invoice.direction == "PURCHASE"
-    input.vendor.country != "PL"
+    vendor_country := object.get(input.vendor, "country", "PL")
+    delivery_country := object.get(input.delivery, "country", vendor_country)
+    vendor_country != "PL"
+    tx_type := "IMPORT"
+} else = tx_type {
+    input.invoice.direction == "PURCHASE"
+    delivery_country := object.get(input.delivery, "country", "PL")
+    delivery_country != "PL"
     tx_type := "IMPORT"
 } else = tx_type {
     input.invoice.direction == "PURCHASE"
@@ -237,7 +269,15 @@ build_evaluation_quarter(input) = quarter {
 }
 
 is_cross_border_transaction(input) = true {
-    input.vendor.country != "PL"
+    object.get(input.vendor, "country", "PL") != "PL"
+} else = true {
+    object.get(input.delivery, "country", "PL") != "PL"
+} else = true {
+    object.get(input.invoice, "service_performed_country", "PL") != "PL"
+} else = true {
+    object.get(input.invoice, "vat_place_of_supply", "PL") != "PL"
+} else = true {
+    input.invoice.procedure == "EXPORT"
 } else = false {
     true
 }
@@ -324,9 +364,16 @@ use_full_chain_deprecated(ctx) = false {
 # jego wartości NIE są nadpisywane przez drugi argument.
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# Helper: sprawdza czy werdykt ma flagę immutable_verdict
+# P34 FIX (Atak 2+35): Immutable Verdict Allowlist
+immutable_verdict_allowlist := {
+    "jdg.zus", "jdg.zus.sickness_benefits", "jdg.zus.enterprise_benefits",
+    "jdg.zus.health_contribution", "jdg.business", "jdg.security.fortress"
+}
+
 has_immutable_flag(v) {
     object.get(v, "immutable_verdict", false) == true
+    pkg := object.get(v, "package", "")
+    immutable_verdict_allowlist[pkg]
 }
 
 # safe_merge(a, b): bezpieczny merge dwóch werdyktów.
@@ -433,9 +480,18 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(accounting.decide,
     safe_merge(business.decide,
     safe_merge(zus.decide,
+    safe_merge(p35_coherence.decide,
+    safe_merge(p35_gaps.decide,
+    safe_merge(p35_innovations.decide,
+    safe_merge(p35_coherence.decide,
+    safe_merge(p35_gaps.decide,
+    safe_merge(p35_innovations.decide,
+    safe_merge(p34_remaining.decide,
+    safe_merge(fortress.decide,
+    safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    ))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))
 
 # Shard dla DOMESTIC_PURCHASE z ACTIVE JDG (KRYTYCZNE-3 FIX)
 # Teraz zawiera: risk, kks, routing, compliance, validation, edge_cases, ksef_jpk,
@@ -458,9 +514,18 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(kup.decide,
     safe_merge(accounting.decide,
     safe_merge(corrections.decide,
+    safe_merge(p35_coherence.decide,
+    safe_merge(p35_gaps.decide,
+    safe_merge(p35_innovations.decide,
+    safe_merge(p35_coherence.decide,
+    safe_merge(p35_gaps.decide,
+    safe_merge(p35_innovations.decide,
+    safe_merge(p34_remaining.decide,
+    safe_merge(fortress.decide,
+    safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    ))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))
 
 full_final_verdict = safe_merge(risk.decide,
     safe_merge(kks.decide,
@@ -517,8 +582,11 @@ full_final_verdict = safe_merge(risk.decide,
     safe_merge(rodo_extended.decide,
     safe_merge(mpips.decide,
     safe_merge(validation.decide,
+    safe_merge(p34_remaining.decide,
+    safe_merge(p34_innovations.decide,
+    safe_merge(fortress.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PASS-0 GATE: Early Abort on BLOCK_AND_ALERT (Rekomendacja 5)
@@ -540,8 +608,11 @@ gated_abort_verdict = safe_merge(risk.decide,
     safe_merge(enterprise_penalties.decide,
     safe_merge(routing.decide,
     safe_merge(validation.decide,
+    safe_merge(p34_remaining.decide,
+    safe_merge(p34_innovations.decide,
+    safe_merge(fortress.decide,
         fallback.decide
-    ))))) {
+    ))))))))) {
     risk.decide._routing == "BLOCK_AND_ALERT"
 }
 
@@ -550,8 +621,11 @@ gated_abort_verdict = safe_merge(risk.decide,
     safe_merge(kks.decide,
     safe_merge(enterprise_penalties.decide,
     safe_merge(routing.decide,
+    safe_merge(p34_remaining.decide,
+    safe_merge(p34_innovations.decide,
+    safe_merge(fortress.decide,
         fallback.decide
-    )))) {
+    ))))))) {
     routing.decide._routing == "BLOCK_AND_ALERT"
 }
 
@@ -726,6 +800,12 @@ _package_decisions := {
     "jdg.mpips": mpips.decide,
     "jdg.conflicts": conflicts.decide,
     "jdg.fallback": fallback.decide,
+    "jdg.security.fortress": fortress.decide,
+    "jdg.p34_remaining": p34_remaining.decide,
+    "jdg.p34_innovations": p34_innovations.decide,
+    "jdg.p35_coherence": p35_coherence.decide,
+    "jdg.p35_gaps": p35_gaps.decide,
+    "jdg.p35_innovations": p35_innovations.decide,
     # ── Enterprise PAS 9-11: Strategic & Operational (S1-S13) ──
     "jdg.tax_optimization": tax_optimization.decide,
     "jdg.cross_domain_hub": cross_domain_hub.decide,

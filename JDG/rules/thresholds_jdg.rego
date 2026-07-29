@@ -55,6 +55,15 @@ vat := {
     "ksef_mandatory_from": "2026-02-01",        # Data obowiązku KSeF
     "ksef_offline_grace_days": 7,               # 7 dni na przesłanie po awarii
     "ksef_sanction_max_pln": 500000,            # Max sankcja za brak KSeF
+
+    # P34 FIX (Atak 24): Osobne definicje małego podatnika dla VAT, PIT, UoR
+    # VAT: Art. 2 pkt 25 — przychód < 2M EUR z VATem (z podatkiem należnym!)
+    # PIT: Art. 5a pkt 20 — przychód < 2M EUR bez VATu (wartość netto)
+    # UoR: Art. 3 ust. 1c — przychód < 2M EUR (uproszczenia księgowe)
+    "small_taxpayer_threshold_eur": 2000000,     # EUR — próg wspólny
+    "small_taxpayer_vat_includes_vat": true,     # VAT: przychód Z VATem
+    "small_taxpayer_pit_excludes_vat": true,     # PIT: przychód BEZ VATu
+    "small_taxpayer_uor_excludes_vat": true,     # UoR: przychód BEZ VATu
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
