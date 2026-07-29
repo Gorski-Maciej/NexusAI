@@ -1,3 +1,0 @@
-P10 KKS Micro Sanctions Toolkit v2.0
-10 innovations + cross-package + zero-FP + auto-drafts
-80 bugfixes in plan33_kks.rego applied
