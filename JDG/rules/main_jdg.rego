@@ -154,7 +154,17 @@ import data.jdg.p33_pcc_complete
 import data.jdg.p33_excise_supplement
 import data.jdg.p33_ordpu_kks_supplement
 import data.jdg.p3233_innovations
+import data.jdg.p01_innovations
+import data.jdg.p02_innovations
+import data.jdg.p03_innovations
+import data.jdg.p04_innovations
 import data.jdg.p05_innovations
+import data.jdg.p06_innovations
+import data.jdg.p07_innovations
+import data.jdg.p08_innovations
+import data.jdg.p09_innovations
+import data.jdg.p10_innovations
+import data.jdg.p11_innovations
 # ── PAS 17: Enterprise v7.0 Audit Implementation (2026-07-25) ──
 # CR1: R&D Relief (Art. 26e PIT) | CR2: IP Box (Art. 30ca PIT) | CR3: Thermo Relief (Art. 26h PIT)
 # H4: Donation Relief Enterprise | S5: Cross-Relief Optimizer | S8: Tax Loss Harvesting
@@ -491,7 +501,17 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(p33_excise_supplement.decide,
     safe_merge(p33_ordpu_kks_supplement.decide,
     safe_merge(p3233_innovations.decide,
+    safe_merge(p01_innovations.decide,
+    safe_merge(p02_innovations.decide,
+    safe_merge(p03_innovations.decide,
+    safe_merge(p04_innovations.decide,
     safe_merge(p05_innovations.decide,
+    safe_merge(p06_innovations.decide,
+    safe_merge(p07_innovations.decide,
+    safe_merge(p08_innovations.decide,
+    safe_merge(p09_innovations.decide,
+    safe_merge(p10_innovations.decide,
+    safe_merge(p11_innovations.decide,
     safe_merge(p35_coherence.decide,
     safe_merge(p35_gaps.decide,
     safe_merge(p35_innovations.decide,
@@ -529,7 +549,17 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(p33_excise_supplement.decide,
     safe_merge(p33_ordpu_kks_supplement.decide,
     safe_merge(p3233_innovations.decide,
+    safe_merge(p01_innovations.decide,
+    safe_merge(p02_innovations.decide,
+    safe_merge(p03_innovations.decide,
+    safe_merge(p04_innovations.decide,
     safe_merge(p05_innovations.decide,
+    safe_merge(p06_innovations.decide,
+    safe_merge(p07_innovations.decide,
+    safe_merge(p08_innovations.decide,
+    safe_merge(p09_innovations.decide,
+    safe_merge(p10_innovations.decide,
+    safe_merge(p11_innovations.decide,
     safe_merge(p35_coherence.decide,
     safe_merge(p35_gaps.decide,
     safe_merge(p35_innovations.decide,
@@ -601,7 +631,17 @@ full_final_verdict = safe_merge(risk.decide,
     safe_merge(p33_excise_supplement.decide,
     safe_merge(p33_ordpu_kks_supplement.decide,
     safe_merge(p3233_innovations.decide,
+    safe_merge(p01_innovations.decide,
+    safe_merge(p02_innovations.decide,
+    safe_merge(p03_innovations.decide,
+    safe_merge(p04_innovations.decide,
     safe_merge(p05_innovations.decide,
+    safe_merge(p06_innovations.decide,
+    safe_merge(p07_innovations.decide,
+    safe_merge(p08_innovations.decide,
+    safe_merge(p09_innovations.decide,
+    safe_merge(p10_innovations.decide,
+    safe_merge(p11_innovations.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
@@ -844,7 +884,17 @@ _package_decisions := {
     "jdg.p33_excise_supplement": p33_excise_supplement.decide,
     "jdg.p33_ordpu_kks_supplement": p33_ordpu_kks_supplement.decide,
     "jdg.p3233_innovations": p3233_innovations.decide,
+    "jdg.p01_innovations": p01_innovations.decide,
+    "jdg.p02_innovations": p02_innovations.decide,
+    "jdg.p03_innovations": p03_innovations.decide,
+    "jdg.p04_innovations": p04_innovations.decide,
     "jdg.p05_innovations": p05_innovations.decide,
+    "jdg.p06_innovations": p06_innovations.decide,
+    "jdg.p07_innovations": p07_innovations.decide,
+    "jdg.p08_innovations": p08_innovations.decide,
+    "jdg.p09_innovations": p09_innovations.decide,
+    "jdg.p10_innovations": p10_innovations.decide,
+    "jdg.p11_innovations": p11_innovations.decide,
     # ── Enterprise PAS 9-11: Strategic & Operational (S1-S13) ──
     "jdg.tax_optimization": tax_optimization.decide,
     "jdg.cross_domain_hub": cross_domain_hub.decide,

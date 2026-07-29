@@ -8,7 +8,7 @@
 #   ENTERPRISE v5.0 — Wypełnia lukę 25 punktów Klasy XII (Zdrowotna+Zasiłkowa).
 #   Szczegółowe reguły naliczania składki zdrowotnej dla każdej formy PIT:
 #   - H100-H109: Skala PIT — 9% od dochodu, NIEodliczalna, min. podstawa
-#   - H110-H119: Liniowy PIT — 4.9% od dochodu, odliczenie max 12 900 PLN/rok
+#   - H110-H119: Liniowy PIT — 4.9% od dochodu, odliczenie max 14 100 PLN/rok
 #   - H120-H129: Ryczałt — 3 progi kwotowe od przychodu rocznego
 #   - H130-H139: Karta podatkowa — 9% od minimalnego wynagrodzenia
 #   - H140-H149: Minimum base, roczne rozliczenie, nadpłata/zwrot
@@ -56,7 +56,7 @@ decide := {
     input.jdg_entrepreneur.health_contribution_active == true
     # thresholds loaded via global data document (package jdg.thresholds)
     monthly_income := object.get(input.jdg_entrepreneur, "monthly_income_net", 0)
-    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
     avg_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "avg_monthly_wage", 8674)
     min_wage_75pct := floor(avg_wage * 0.75 * 100) / 100
     min_base := floor(min_wage * 0.75 * 100) / 100
@@ -98,7 +98,7 @@ else := {
     input.jdg_entrepreneur.monthly_income_net <= 0
     input.jdg_entrepreneur.health_contribution_active == true
     # thresholds loaded via global data document (package jdg.thresholds)
-    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
     health_monthly := floor(min_wage * 0.09 * 100) / 100
 }
 
@@ -118,13 +118,13 @@ else := {
     "_routing": "",
     "_routing_reason": sprintf("Składka zdrowotna liniowy: %.2f PLN/mies (4.9%% × %.2f PLN)", [health_monthly, health_basis]),
     "_legal_basis": "Art. 81 ust. 2c ustawy o świadczeniach",
-    "_warnings": [sprintf("SKŁADKA ZDROWOTNA — LINIOWY 4.9%%. Dochód: %.2f PLN/mies → składka: %.2f PLN/mies. MOŻNA ODLICZYĆ od dochodu do 12 900 PLN/rok! Efektywny koszt po odliczeniu: %.2f PLN/mies.", [monthly_income, health_monthly, effective_cost])]
+    "_warnings": [sprintf("SKŁADKA ZDROWOTNA — LINIOWY 4.9%%. Dochód: %.2f PLN/mies → składka: %.2f PLN/mies. MOŻNA ODLICZYĆ od dochodu do 14 100 PLN/rok! Efektywny koszt po odliczeniu: %.2f PLN/mies.", [monthly_income, health_monthly, effective_cost])]
 } {
     input.jdg_entrepreneur.tax_form == "LINEAR"
     input.jdg_entrepreneur.health_contribution_active == true
     # thresholds loaded via global data document (package jdg.thresholds)
     monthly_income := object.get(input.jdg_entrepreneur, "monthly_income_net", 0)
-    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
     min_base := floor(min_wage * 0.75 * 100) / 100
     health_basis := max([monthly_income, min_base])
     health_monthly := floor(health_basis * 0.049 * 100) / 100
@@ -143,15 +143,37 @@ else := {
     "zus_health_deduction_used_pln": deduction_used,
     "zus_health_deduction_remaining_pln": deduction_remaining,
     "_routing": "",
-    "_routing_reason": sprintf("Odliczenie zdrowotnej: %.2f PLN wykorzystane z 12 900 PLN (%.2f PLN pozostało)", [deduction_used, deduction_remaining]),
+    "_routing_reason": sprintf("Odliczenie zdrowotnej: %.2f PLN wykorzystane z %.0f PLN (%.2f PLN pozostało)", [deduction_used, data.thresholds.zus.health_linear_deduction_limit, deduction_remaining]),
     "_legal_basis": "Art. 30c ust. 2 PIT (odliczenie składki zdrowotnej przy liniowym)",
-    "_warnings": [sprintf("ODLICZENIE ZDROWOTNEJ LINIOWY — Zapłacono: %.2f PLN/rok. Limit: 12 900 PLN. Odliczono: %.2f PLN. Pozostało: %.2f PLN. Maksymalizuj odliczenie = płać składkę zdrowotną terminowo! Niewykorzystany limit przepada.", [annual_paid, deduction_used, deduction_remaining])]
+    "_warnings": [sprintf("ODLICZENIE ZDROWOTNEJ LINIOWY — Zapłacono: %.2f PLN/rok. Limit: %.0f PLN. Odliczono: %.2f PLN. Pozostało: %.2f PLN. Maksymalizuj odliczenie = płać składkę zdrowotną terminowo! Niewykorzystany limit przepada.", [annual_paid, data.thresholds.zus.health_linear_deduction_limit, deduction_used, deduction_remaining])]
 } {
     input.jdg_entrepreneur.tax_form == "LINEAR"
     input.jdg_entrepreneur.health_contribution_active == true
     annual_paid := object.get(input.jdg_entrepreneur, "health_annual_paid", 0)
+    annual_paid < data.thresholds.zus.health_linear_deduction_limit
     deduction_used := min([annual_paid, data.thresholds.zus.health_linear_deduction_limit])
     deduction_remaining := max([0, data.thresholds.zus.health_linear_deduction_limit - annual_paid])
+}
+
+# ── H112: health_linear_limit_exceeded — Po przekroczeniu limitu odliczenia składka 0 PLN ──
+else := {
+    "matched": true, "rule_id": "jdg.zus.health.linear_limit_exceeded",
+    "package": "jdg.zus.health_contribution", "priority": 112,
+    "pit_form": "LINEAR", "zus_health_rate": "0.049",
+    "zus_health_monthly_pln": 0,
+    "zus_health_basis_pln": 0,
+    "zus_health_deductible": false,
+    "zus_health_annual_paid_pln": annual_paid,
+    "zus_health_deduction_limit_pln": data.thresholds.zus.health_linear_deduction_limit,
+    "_routing": "WARNING",
+    "_routing_reason": sprintf("LIMIT ODLICZENIA OSIĄGNIĘTY — Zapłacono %.2f PLN z limitu %.0f PLN. Składka zdrowotna = 0 PLN/mies do końca roku.", [annual_paid, data.thresholds.zus.health_linear_deduction_limit]),
+    "_legal_basis": "Art. 30c ust. 2 PIT",
+    "_warnings": [sprintf("✅ LIMIT ODLICZENIA WYCZERPANY — Zapłacono %.2f PLN (limit %.0f PLN/rok). Składka zdrowotna 0 PLN do końca roku.", [annual_paid, data.thresholds.zus.health_linear_deduction_limit])]
+} {
+    input.jdg_entrepreneur.tax_form == "LINEAR"
+    input.jdg_entrepreneur.health_contribution_active == true
+    annual_paid := object.get(input.jdg_entrepreneur, "health_annual_paid", 0)
+    annual_paid >= data.thresholds.zus.health_linear_deduction_limit
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -170,15 +192,15 @@ else := {
     "_routing": lump_rt,
     "_routing_reason": sprintf("Ryczałt — próg %s: %.2f PLN/mies", [tier, health_monthly]),
     "_legal_basis": "Art. 81 ust. 2e ustawy o świadczeniach",
-    "_warnings": [sprintf("SKŁADKA ZDROWOTNA — RYCZAŁT. Przychód roczny: %.2f PLN → próg %s → składka: %.2f PLN/mies. Progi 2026: (1) ≤60k PLN = 419.46 PLN/mies (60%% przeciętnego), (2) 60-300k PLN = 699.11 PLN/mies (100%% przeciętnego), (3) >300k PLN = 1 258.39 PLN/mies (180%% przeciętnego). Roczne rozliczenie do 22 maja! Nadpłata = zwrot z ZUS.", [annual_revenue, tier, health_monthly])]
+    "_warnings": [sprintf("SKŁADKA ZDROWOTNA — RYCZAŁT. Przychód roczny: %.2f PLN → próg %s → składka: %.2f PLN/mies. Progi 2026: (1) ≤60k PLN = 491.40 PLN/mies (60%% przeciętnego), (2) 60-300k PLN = 819.00 PLN/mies (100%% przeciętnego), (3) >300k PLN = 1 474.20 PLN/mies (180%% przeciętnego). Roczne rozliczenie do 22 maja! Nadpłata = zwrot z ZUS.", [annual_revenue, tier, health_monthly])]
 } {
     input.jdg_entrepreneur.tax_form == "LUMP_SUM"
     input.jdg_entrepreneur.health_contribution_active == true
     # thresholds loaded via global data document (package jdg.thresholds)
     annual_revenue := object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)
-    tier1 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_1_amount", 419.46)
-    tier2 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_2_amount", 699.11)
-    tier3 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_3_amount", 1258.39)
+    tier1 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_1_amount", 491.40)
+    tier2 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_2_amount", 819.00)
+    tier3 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_3_amount", 1474.20)
     limit1 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_1_limit", 60000)
     limit2 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_2_limit", 300000)
     tier = "I (≤60k)" { annual_revenue <= limit1 }
@@ -208,9 +230,9 @@ else := {
 } {
     input.jdg_entrepreneur.tax_form == "LUMP_SUM"
     input.jdg_entrepreneur.health_annual_settlement == true
-    monthly_paid := object.get(input.jdg_entrepreneur, "health_monthly_paid", 419.46)
+    monthly_paid := object.get(input.jdg_entrepreneur, "health_monthly_paid", 491.40)
     total_paid := monthly_paid * 12
-    correct_tier := object.get(input.jdg_entrepreneur, "health_correct_tier_monthly", 419.46)
+    correct_tier := object.get(input.jdg_entrepreneur, "health_correct_tier_monthly", 491.40)
     total_due := correct_tier * 12
     balance := total_paid - total_due
     overpayment := max([0, balance])
@@ -220,9 +242,9 @@ else := {
     balance_type = "ZGODNE" { balance == 0 }
     settle_rt = "TRIAGE_QUEUE" { underpayment > 0 }
     settle_rt = "" { true }
-    tier = "I" { correct_tier == 419.46 }
-    tier = "II" { correct_tier == 699.11 }
-    tier = "III" { correct_tier == 1258.39 }
+    tier = "I" { correct_tier == object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_1_amount", 491.40) }
+    tier = "II" { correct_tier == object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_2_amount", 819.00) }
+    tier = "III" { correct_tier == object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_3_amount", 1474.20) }
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -244,7 +266,7 @@ else := {
     input.jdg_entrepreneur.tax_form == "TAX_CARD"
     input.jdg_entrepreneur.health_contribution_active == true
     # thresholds loaded via global data document (package jdg.thresholds)
-    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
     health_monthly := floor(min_wage * 0.09 * 100) / 100
 }
 
@@ -267,7 +289,7 @@ else := {
     tax_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
     tax_form in {"PIT_SCALE", "LINEAR"}
     # thresholds loaded via global data document (package jdg.thresholds)
-    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
     min_base := floor(min_wage * 0.75 * 100) / 100
     monthly_income := object.get(input.jdg_entrepreneur, "monthly_income_net", 0)
     applies_min_base := monthly_income < min_base

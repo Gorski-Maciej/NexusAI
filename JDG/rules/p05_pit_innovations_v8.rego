@@ -840,20 +840,50 @@ else := {
     combos_tested := 0
     combos_tested := 2 ^ n { n > 0 } else = 0
 
-    # Generuj TOP kombinacje (uproszczone — w praktyce pełna enumeracja)
-    top_combos := []
-    top_combos := array.concat(top_combos, ["IP Box + B+R + Termo + Darowizny → ef. stawka 4.2% (oszcz. 48 000 PLN)"]) { has_ipbox; has_rd; has_thermo; has_donation }
-    top_combos := array.concat(top_combos, ["IP Box + B+R + Prototyp → ef. stawka 4.8% (oszcz. 41 000 PLN)"]) { has_ipbox; has_rd; has_proto }
-    top_combos := array.concat(top_combos, ["IP Box + B+R → ef. stawka 5.1% (oszcz. 38 000 PLN)"]) { has_ipbox; has_rd }
-    top_combos := array.concat(top_combos, ["B+R + Termo + Darowizny → ef. stawka 8.5% (oszcz. 25 000 PLN)"]) { has_rd; has_thermo; has_donation }
-    top_combos := array.concat(top_combos, ["B+R + Robotyzacja → ef. stawka 9.2% (oszcz. 20 000 PLN)"]) { has_rd; has_robot }
+    # DYNAMICZNY scoring kombinacji - obliczamy realne oszczędności zamiast hardcodowanych
+    # Każda ulga daje określoną oszczędność zależną od dochodu
+    rd_savings := 0.0
+    rd_savings := min([object.get(input.jdg_entrepreneur, "rd_total_qualified_costs", 50000) * 1.0, income]) * 0.12 { has_rd }
+    ipbox_savings := 0.0
+    ipbox_savings := min([object.get(input.jdg_entrepreneur, "ip_box_qualifying_income", 80000), income]) * 0.07 { has_ipbox }
+    thermo_savings := 0.0
+    thermo_savings := min([object.get(input.jdg_entrepreneur, "thermo_expenses_annual_total", 30000), 53000]) * 0.12 { has_thermo }
+    donation_savings := 0.0
+    donation_savings := object.get(input.jdg_entrepreneur, "donations_opp_total", 5000) * 0.12 { has_donation }
+    proto_savings := 0.0
+    proto_savings := object.get(input.jdg_entrepreneur, "prototype_costs", 20000) * 0.30 * 0.12 { has_proto }
+    robot_savings := 0.0
+    robot_savings := object.get(input.jdg_entrepreneur, "robotization_costs", 30000) * 0.50 * 0.12 { has_robot }
+
+    # Kombinacje z dynamicznym scoringiem
+    combo_all := rd_savings + ipbox_savings + thermo_savings + donation_savings
+    combo_ip_rd_proto := rd_savings + ipbox_savings + proto_savings
+    combo_ip_rd := rd_savings + ipbox_savings
+    combo_rd_thermo_don := rd_savings + thermo_savings + donation_savings
+    combo_rd_robot := rd_savings + robot_savings
+
+    # Buduj top_combos z dynamicznymi wartościami — unikalne zmienne per krok
+    # (unikamy konfliktów wielokrotnego przypisania w Rego)
+    tc0 := []
+    tc1 := array.concat(tc0, [sprintf("IP Box + B+R + Termo + Darowizny -> oszcz. %.0f PLN (ef. stawka %.1f%%)", [combo_all, (income - combo_all) / income * 100])]) { has_ipbox; has_rd; has_thermo; has_donation } else := tc0
+    tc2 := array.concat(tc1, [sprintf("IP Box + B+R + Prototyp -> oszcz. %.0f PLN (ef. stawka %.1f%%)", [combo_ip_rd_proto, (income - combo_ip_rd_proto) / income * 100])]) { has_ipbox; has_rd; has_proto } else := tc1
+    tc3 := array.concat(tc2, [sprintf("IP Box + B+R -> oszcz. %.0f PLN (ef. stawka %.1f%%)", [combo_ip_rd, (income - combo_ip_rd) / income * 100])]) { has_ipbox; has_rd } else := tc2
+    tc4 := array.concat(tc3, [sprintf("B+R + Termo + Darowizny -> oszcz. %.0f PLN (ef. stawka %.1f%%)", [combo_rd_thermo_don, (income - combo_rd_thermo_don) / income * 100])]) { has_rd; has_thermo; has_donation } else := tc3
+    tc5 := array.concat(tc4, [sprintf("B+R + Robotyzacja -> oszcz. %.0f PLN (ef. stawka %.1f%%)", [combo_rd_robot, (income - combo_rd_robot) / income * 100])]) { has_rd; has_robot } else := tc4
+    top_combos := tc5
+
+    # Unikalne zmienne per kombinacja + max() — unikamy konfliktów wielokrotnego przypisania w Rego
+    bs_all := combo_all
+    bs_ip_rd_proto := combo_ip_rd_proto
+    bs_ip_rd := combo_ip_rd
+    bs_rd_thermo_don := combo_rd_thermo_don
+    bs_rd_robot := combo_rd_robot
+
+    best_savings := max([bs_all, bs_ip_rd_proto, bs_ip_rd, bs_rd_thermo_don, bs_rd_robot])
 
     best_combo_name := object.get(top_combos, 0, "Brak dostępnych kombinacji")
-    best_savings := 48000.0
-    best_savings := 41000.0 { not (has_ipbox; has_rd; has_thermo; has_donation); has_ipbox; has_rd; has_proto }
-    best_savings := 38000.0 { not has_ipbox }
-    best_savings := 25000.0 { not (has_ipbox or has_rd); has_thermo }
-    best_rate := floor(best_savings / income * 1000) / 10
+    # Efektywna stawka = (dochod - oszczednosc) * 12% / dochod = (1 - oszczednosc/dochod) * 12%
+    best_rate := (income - best_savings) / income * 12 { income > 0 } else := 12
 }
 
 build_what_if_warnings(tested, top, best_name, savings, rate) = warnings {
@@ -866,7 +896,7 @@ build_what_if_warnings(tested, top, best_name, savings, rate) = warnings {
     lines := array.concat(lines, [sprintf("   🥇 %s", [t]) | t := top[_]])
     lines := array.concat(lines, [
         "",
-        sprintf("   💰 NAJLEPSZA: %s — oszczędność %.0f PLN/rok (efektywna stawka %.1f%%)", [best_name, savings, 12 - rate]),
+        sprintf("   💰 NAJLEPSZA: %s — oszczędność %.0f PLN/rok (efektywna stawka %.1f%%)", [best_name, savings, rate]),
         "",
         "💡 Zastosuj tę kombinację w zeznaniu rocznym, aby zmaksymalizować oszczędności!",
     ])
@@ -910,52 +940,44 @@ else := {
     y4_income := object.get(input.jdg_entrepreneur, "projected_income_2029", 180000)
     y5_income := object.get(input.jdg_entrepreneur, "projected_income_2030", 200000)
 
-    # Optymalizacja wieloletnia: odliczaj WIĘCEJ w latach z wyższym progiem
-    yearly_incomes := [y1_income, y2_income, y3_income, y4_income, y5_income]
-    remaining_loss := total_loss
-
-    # Plan odliczeń: priorytetyzuj lata z 32% progiem
-    plan_yearly := []
-    plan_desc := []
-
-    # Year 1
-    deduct_y1 := min([y1_income * 0.50, remaining_loss])
+    # Niemutowalne zmienne - każdy krok używa unikalnej nazwy
+    rl0 := total_loss
+    deduct_y1 := min([y1_income * 0.50, rl0])
     bracket_y1 := 0.32 { y1_income > 120000 } else = 0.12
     save_y1 := deduct_y1 * bracket_y1
-    remaining_loss := remaining_loss - deduct_y1
-    plan_yearly := array.concat(plan_yearly, [deduct_y1])
-    plan_desc := array.concat(plan_desc, [sprintf("2026: odlicz %.0f PLN @ %d%% → oszczędność %.0f PLN", [deduct_y1, floor(bracket_y1 * 100), save_y1])])
+    rl1 := max([rl0 - deduct_y1, 0])
 
-    # Year 2
-    deduct_y2 := min([y2_income * 0.50, max([remaining_loss, 0])])
+    deduct_y2 := min([y2_income * 0.50, rl1])
     bracket_y2 := 0.32 { y2_income > 120000 } else = 0.12
     save_y2 := deduct_y2 * bracket_y2
-    remaining_loss := max([remaining_loss - deduct_y2, 0])
-    plan_desc := array.concat(plan_desc, [sprintf("2027: odlicz %.0f PLN @ %d%% → oszczędność %.0f PLN", [deduct_y2, floor(bracket_y2 * 100), save_y2])])
+    rl2 := max([rl1 - deduct_y2, 0])
 
-    # Year 3
-    deduct_y3 := min([y3_income * 0.50, max([remaining_loss, 0])])
+    deduct_y3 := min([y3_income * 0.50, rl2])
     bracket_y3 := 0.32 { y3_income > 120000 } else = 0.12
     save_y3 := deduct_y3 * bracket_y3
-    remaining_loss := max([remaining_loss - deduct_y3, 0])
-    plan_desc := array.concat(plan_desc, [sprintf("2028: odlicz %.0f PLN @ %d%% → oszczędność %.0f PLN", [deduct_y3, floor(bracket_y3 * 100), save_y3])])
+    rl3 := max([rl2 - deduct_y3, 0])
 
-    # Year 4
-    deduct_y4 := min([y4_income * 0.50, max([remaining_loss, 0])])
+    deduct_y4 := min([y4_income * 0.50, rl3])
     bracket_y4 := 0.32 { y4_income > 120000 } else = 0.12
     save_y4 := deduct_y4 * bracket_y4
-    plan_desc := array.concat(plan_desc, [sprintf("2029: odlicz %.0f PLN @ %d%% → oszczędność %.0f PLN", [deduct_y4, floor(bracket_y4 * 100), save_y4])])
+    rl4 := max([rl3 - deduct_y4, 0])
 
-    # Year 5
-    deduct_y5 := min([y5_income * 0.50, max([remaining_loss - deduct_y4, 0])])
+    deduct_y5 := min([y5_income * 0.50, rl4])
     bracket_y5 := 0.32 { y5_income > 120000 } else = 0.12
     save_y5 := deduct_y5 * bracket_y5
-    plan_desc := array.concat(plan_desc, [sprintf("2030: odlicz %.0f PLN @ %d%% → oszczędność %.0f PLN", [deduct_y5, floor(bracket_y5 * 100), save_y5])])
 
+    # Priorytetyzacja lat z 32% progiem dla max oszczędności
     total_savings := save_y1 + save_y2 + save_y3 + save_y4 + save_y5
-    vs_now := current_income * 0.50 * 0.12
+    vs_now := min([y1_income * 0.50, total_loss]) * 0.12
 
-    optimal_plan := plan_desc
+    optimal_plan := [
+        sprintf("2026: odlicz %.0f PLN @ %d%% -> oszcz. %.0f PLN", [deduct_y1, floor(bracket_y1 * 100), save_y1]),
+        sprintf("2027: odlicz %.0f PLN @ %d%% -> oszcz. %.0f PLN", [deduct_y2, floor(bracket_y2 * 100), save_y2]),
+        sprintf("2028: odlicz %.0f PLN @ %d%% -> oszcz. %.0f PLN", [deduct_y3, floor(bracket_y3 * 100), save_y3]),
+        sprintf("2029: odlicz %.0f PLN @ %d%% -> oszcz. %.0f PLN", [deduct_y4, floor(bracket_y4 * 100), save_y4]),
+        sprintf("2030: odlicz %.0f PLN @ %d%% -> oszcz. %.0f PLN", [deduct_y5, floor(bracket_y5 * 100), save_y5]),
+        sprintf("\n💡 RAZEM 5 lat: %.0f PLN oszcz. vs %.0f PLN (odliczając wszystko w 2026)", [total_savings, vs_now])
+    ]
 }
 
 build_multi_year_warnings(plan, savings, vs_now) = warnings {
