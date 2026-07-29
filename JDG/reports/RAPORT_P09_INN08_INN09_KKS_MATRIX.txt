@@ -1,2 +1,0 @@
-P09 INN08+INN09 — KKS Completeness + Gradation
-Coverage: 65.9%
