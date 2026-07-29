@@ -98,7 +98,7 @@ decide := {
 
     # ══════════ PODATEK LINIOWY (19%) ══════════
     linear_tax := annual_profit * 0.19
-    linear_health := min([annual_profit * 0.049, 12900])
+    linear_health := min([annual_profit * 0.049, data.jdg.thresholds.limits.health_linear_deduction_limit])
     linear_zus := object.get(input.jdg_entrepreneur, "annual_zus_total_linear", 21600)
     linear_total := linear_tax + linear_health + linear_zus
 
@@ -431,7 +431,7 @@ else := {
     pit_tax := annual_profit * 0.19 { current_form == "PIT_SCALE"; annual_profit > 120000 }
     pit_tax := max([annual_profit - 30000, 0]) * 0.12 { current_form == "PIT_SCALE"; annual_profit <= 120000 }
     health_jdg := annual_profit * 0.09 { current_form == "PIT_SCALE" }
-    health_jdg := min([annual_profit * 0.049, 12900]) { current_form == "LINEAR" }
+    health_jdg := min([annual_profit * 0.049, data.jdg.thresholds.limits.health_linear_deduction_limit]) { current_form == "LINEAR" }
     zus_jdg := 21600
     jdg_annual := pit_tax + health_jdg + zus_jdg
 
@@ -489,7 +489,7 @@ else := {
     health_scale := annual_profit * 0.09
 
     health_linear := annual_profit * 0.049
-    health_linear_ded := min([health_linear, 12900])
+    health_linear_ded := min([health_linear, data.jdg.thresholds.limits.health_linear_deduction_limit])
 
     health_lump := floor(avg_wage * 0.60 * 0.09 * 100) / 100 * 12 { annual_revenue <= 60000 }
     health_lump := floor(avg_wage * 1.00 * 0.09 * 100) / 100 * 12 { annual_revenue > 60000; annual_revenue <= 300000 }

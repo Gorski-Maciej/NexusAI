@@ -86,7 +86,7 @@ decide := {
     # ── LINIOWY ──
     linear_tax := annual_profit * 0.19
     linear_health := annual_profit * 0.049
-    linear_health_ded := min([linear_health, 12900])
+    linear_health_ded := min([linear_health, data.jdg.thresholds.limits.health_linear_deduction_limit])
     linear_total := linear_tax + linear_health - linear_health_ded
 
     # ── RYCZAŁT ──
@@ -255,7 +255,7 @@ else := {
     pit_tax := annual_profit * 0.19 { tax_form == "LINEAR" }
 
     health := annual_profit * 0.09 { tax_form == "PIT_SCALE" }
-    health := min([annual_profit * 0.049, 12900]) { tax_form == "LINEAR" }
+    health := min([annual_profit * 0.049, data.jdg.thresholds.limits.health_linear_deduction_limit]) { tax_form == "LINEAR" }
 
     zus_monthly := 1800
     zus_annual := zus_monthly * 12

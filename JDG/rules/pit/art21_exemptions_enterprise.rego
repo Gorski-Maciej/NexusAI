@@ -25,6 +25,7 @@
 package jdg.pit.art21_exemptions
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 default decide := {
     "matched": false, "rule_id": "jdg.pit.art21.no_match",
@@ -45,20 +46,20 @@ decide := {
     "zus_social_base_type": "", "zus_health_rate": "",
     "pit_exemption_type": "YOUNG_RELIEF",
     "pit_exemption_applies": is_eligible,
-    "pit_exemption_limit_pln": 85528,
+    "pit_exemption_limit_pln": thresholds.pit.pit_relief_shared_limit,
     "pit_exemption_used_pln": exemption_used,
     "pit_exemption_remaining_pln": exemption_remaining,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": exemption_routing,
-    "_routing_reason": sprintf("Ulga dla młodych: %s — limit %.0f PLN, wykorzystano %.0f PLN", [status, 85528.0, exemption_used]),
+    "_routing_reason": sprintf("Ulga dla młodych: %s — limit %.0f PLN, wykorzystano %.0f PLN", [status, thresholds.pit.pit_relief_shared_limit, exemption_used]),
     "_legal_basis": "Art. 21 ust. 1 pkt 148 PIT",
-    "_warnings": [sprintf("ULGA DLA MŁODYCH (do 26 lat) — %s. Limit: 85 528 PLN rocznie. Obejmuje: przychody z umowy o pracę, zlecenia, praktyk. NIE obejmuje: działalności gospodarczej! JDG = brak ulgi dla młodych z DG.", [status_detail])]
+    "_warnings": [sprintf("ULGA DLA MŁODYCH (do 26 lat) — %s. Limit: %.0f PLN rocznie. Obejmuje: przychody z umowy o pracę, zlecenia, praktyk. NIE obejmuje: działalności gospodarczej! JDG = brak ulgi dla młodych z DG.", [status_detail, thresholds.pit.pit_relief_shared_limit])]
 } {
     input.jdg_entrepreneur.age_at_year_start <= 26
     input.jdg_entrepreneur.tax_year_as_int >= 2020  # Ulga od 1 sierpnia 2019, w pełni od 2020
     annual_income := object.get(input.jdg_entrepreneur, "annual_income_net", 0)
-    exemption_used := min([annual_income, 85528])
-    exemption_remaining := max([0, 85528 - annual_income])
+    exemption_used := min([annual_income, thresholds.pit.pit_relief_shared_limit])
+    exemption_remaining := max([0, thresholds.pit.pit_relief_shared_limit - annual_income])
     is_eligible := true
     status = "PRZYSŁUGUJE" { is_eligible == true; exemption_remaining > 0 }
     status = "LIMIT WYCZERPANY" { exemption_remaining <= 0 }
@@ -102,7 +103,7 @@ else := {
     "zus_social_base_type": "", "zus_health_rate": "",
     "pit_exemption_type": "RETURN_RELIEF",
     "pit_exemption_applies": is_eligible,
-    "pit_exemption_limit_pln": 85528,
+    "pit_exemption_limit_pln": thresholds.pit.pit_relief_shared_limit,
     "pit_exemption_years": 4,
     "pit_exemption_years_remaining": years_remaining,
     "business_status": "", "ceidg_registration_required": false,
@@ -120,7 +121,7 @@ else := {
     is_eligible := years_remaining > 0
     status = "PRZYSŁUGUJE" { is_eligible == true }
     status = "WYGASŁA" { is_eligible == false }
-    status_detail = sprintf("Limit %.0f PLN/rok, pozostało %d lat", [85528.0, years_remaining]) { is_eligible }
+    status_detail = sprintf("Limit %.0f PLN/rok, pozostało %d lat", [thresholds.pit.pit_relief_shared_limit, years_remaining]) { is_eligible }
     status_detail = "Okres 4 lat od powrotu minął" { not is_eligible }
 }
 
@@ -138,11 +139,11 @@ else := {
     "zus_social_base_type": "", "zus_health_rate": "",
     "pit_exemption_type": "FAMILY_4PLUS",
     "pit_exemption_applies": is_eligible,
-    "pit_exemption_limit_pln": 85528,
+    "pit_exemption_limit_pln": thresholds.pit.pit_relief_shared_limit,
     "pit_exemption_children_count": children_count,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "",
-    "_routing_reason": sprintf("Ulga dla rodzin 4+: %s — %d dzieci. Limit %.0f PLN na rodzica.", [status, children_count, 85528.0]),
+    "_routing_reason": sprintf("Ulga dla rodzin 4+: %s — %d dzieci. Limit %.0f PLN na rodzica.", [status, children_count, thresholds.pit.pit_relief_shared_limit]),
     "_legal_basis": "Art. 21 ust. 1 pkt 153 PIT",
     "_warnings": [sprintf("ULGA DLA RODZIN 4+ — %s. (1) Limit 85 528 PLN rocznie OSOBNO na każdego rodzica, (2) Dotyczy przychodów z pracy, zleceń ORAZ DG (nawet na ryczałcie!), (3) Dzieci do 18 lat (lub do 25 lat jeśli się uczą), (4) NIE łączy się z ulgą dla młodych!", [status_detail])]
 } {
@@ -150,7 +151,7 @@ else := {
     children_count >= 4
     is_eligible := true
     status = "PRZYSŁUGUJE" { is_eligible == true }
-    status_detail = sprintf("%d dzieci — zwolnienie %.0f PLN/rok na rodzica", [children_count, 85528.0])
+    status_detail = sprintf("%d dzieci — zwolnienie %.0f PLN/rok na rodzica", [children_count, thresholds.pit.pit_relief_shared_limit])
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -167,7 +168,7 @@ else := {
     "zus_social_base_type": "", "zus_health_rate": "",
     "pit_exemption_type": "WORKING_SENIOR",
     "pit_exemption_applies": is_eligible,
-    "pit_exemption_limit_pln": 85528,
+    "pit_exemption_limit_pln": thresholds.pit.pit_relief_shared_limit,
     "pit_exemption_conditions": ["WIEK_EMERYTALNY", "NIE_OTRZYMUJE_EMERYTURY", "PRACUJE"],
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "",

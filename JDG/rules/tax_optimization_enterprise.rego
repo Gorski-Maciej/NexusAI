@@ -87,7 +87,7 @@ decide := {
     linear_income := annual_income - annual_costs
     linear_tax := linear_income * linear_rate
     linear_health_floor := floor(linear_income * 0.049 * 100) / 100
-    linear_health := min([linear_health_floor, 12900])
+    linear_health := min([linear_health_floor, data.jdg.thresholds.limits.health_linear_deduction_limit])
     linear_total := linear_tax + linear_health
 
     # Obliczenia dla RYCZAŁTU
@@ -280,7 +280,7 @@ else := {
     zus_scale_health := annual_profit * 0.09
     zus_scale_total := zus_scale_health
 
-    zus_linear_health := min([annual_profit * 0.049, 12900])
+    zus_linear_health := min([annual_profit * 0.049, data.jdg.thresholds.limits.health_linear_deduction_limit])
     zus_linear_total := zus_linear_health
 
     zus_lump_health := floor(avg_wage * 0.60 * 0.09 * 100) / 100 * 12 { annual_revenue <= 60000 }
@@ -507,7 +507,7 @@ else := {
     # Liniowy: 4.9% od dochodu, podlega odliczeniu max 12 900 PLN/rok
     health_rate := "0.049" { pit_form == "LINEAR" }
     health_annual := monthly_income * 0.049 * 12 { pit_form == "LINEAR" }
-    health_deductible := min([health_annual, 12900]) { pit_form == "LINEAR" }
+    health_deductible := min([health_annual, data.jdg.thresholds.limits.health_linear_deduction_limit]) { pit_form == "LINEAR" }
     health_net_cost := health_annual - health_deductible { pit_form == "LINEAR" }
     deduction_info := sprintf("Liniowy: składka 4.9%% podlega odliczeniu od PIT (max 12 900 PLN). Odliczasz %.0f PLN.", [health_deductible]) { pit_form == "LINEAR" }
     strategy_hint := "Rozważ zwiększenie dochodu (odliczenie rośnie z dochodem do limitu 12 900 PLN)." { pit_form == "LINEAR" }

@@ -260,7 +260,7 @@ else := {
 
     tax_due := taxable_income * 0.19
     health_total := object.get(input.jdg_entrepreneur, "annual_health_contributions_paid", 6000)
-    health_deductible := min([health_total, 12900])
+    health_deductible := min([health_total, data.jdg.thresholds.limits.health_linear_deduction_limit])
     social_deductible := object.get(input.jdg_entrepreneur, "annual_zus_social_paid", 18000)
 
     has_rd_costs := object.get(input.jdg_entrepreneur, "has_rd_costs", false)

@@ -307,7 +307,7 @@ else := {
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "0.049",
     "zus_health_base": "INCOME", "zus_health_limit_type": "LINEAR_LIMITED",
-    "zus_health_annual_deduction_limit": 12900, "zus_health_deductible_from_income": true,
+    "zus_health_annual_deduction_limit": data.jdg.thresholds.limits.health_linear_deduction_limit, "zus_health_deductible_from_income": true,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
     "_legal_basis": "Art. 79 ust. 2, art. 81 ust. 2, art. 30c ust. 2 pkt 2 PIT",

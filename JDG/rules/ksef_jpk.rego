@@ -39,7 +39,13 @@ decide := {
     input.invoice.direction == "SALE"
 }
 
-# ══════ P950: ksef_structured_mandatory — Obowiązek KSeF od 01.02.2026 ══════
+# ══════ P950: ksef_structured_mandatory — Obowiązek KSeF z harmonogramem fazowym (v7.0 R3)
+# v7.0 ENHANCED: Rozróżnienie faz KSeF wg wielkości przedsiębiorstwa:
+#   - Faza 1: >200M PLN obrotu → od 2026-02-01
+#   - Faza 2: pozostali czynni VAT → od 2026-04-01
+#   - Faza 3: mikroprzedsiębiorcy (<10k/mies) → od 2027-01-01
+# Data odczytywana z thresholds.vat.ksef_mandatory_from (ADR-002)
+# ══════
 decide := {
     "matched":true,"rule_id":"jdg.ksef_jpk.ksef_mandatory",
     "package":"jdg.ksef_jpk","priority":950,
@@ -48,12 +54,35 @@ decide := {
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
     "business_status":"","ksef_required":true,
+    "ksef_phase": ksef_phase,
+    "ksef_mandatory_from": ksef_from,
     "_routing":"","_routing_reason":"","_legal_basis":"Art. 106na-106nq VAT",
-    "_warnings":["Faktura sprzedaży musi być wystawiona przez KSeF od 01.02.2026"]
+    "_warnings":[sprintf("KSeF OBOWIĄZKOWY — Faza %s od %s. Faktura musi być wystawiona przez KSeF. Sankcja za brak: 100%% VAT (max %d PLN).", [ksef_phase, ksef_from, thresholds.vat.ksef_sanction_max_pln])]
 } {
-    input.invoice.transaction_date >= thresholds.vat.ksef_mandatory_from
     input.jdg_entrepreneur.is_vat_payer == true
     input.invoice.direction == "SALE"
+
+    # Określ fazę KSeF na podstawie wielkości przedsiębiorstwa
+    annual_turnover := object.get(input.jdg_entrepreneur, "annual_turnover_net", 0)
+    monthly_avg := object.get(input.jdg_entrepreneur, "monthly_avg_turnover", 0)
+
+    # Faza 1: duzi >200M PLN → 2026-02-01
+    ksef_phase = "1" { annual_turnover > 200000000 }
+    ksef_from = thresholds.vat.ksef_mandatory_from { annual_turnover > 200000000 }
+
+    # Faza 2: pozostali → 2026-04-01
+    ksef_phase = "2" { annual_turnover <= 200000000; monthly_avg >= 10000 }
+    ksef_from = "2026-04-01" { annual_turnover <= 200000000; monthly_avg >= 10000 }
+
+    # Faza 3: mikro <10k/mies → 2027-01-01
+    ksef_phase = "3" { monthly_avg < 10000; monthly_avg > 0 }
+    ksef_from = "2027-01-01" { monthly_avg < 10000; monthly_avg > 0 }
+
+    # Fallback: użyj ogólnej daty z thresholds
+    ksef_phase = "2" { annual_turnover == 0; monthly_avg == 0 }
+    ksef_from = thresholds.vat.ksef_mandatory_from { annual_turnover == 0; monthly_avg == 0 }
+
+    input.invoice.transaction_date >= ksef_from
 }
 
 # ══════ P952: ksef_b2c_mandatory_2026 — KSeF B2C obowiązkowy od 2026-07-01 (v7.0 NEW) ══════

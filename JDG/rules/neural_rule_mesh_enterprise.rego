@@ -459,7 +459,7 @@ else := {
     # Health contribution costs per form
     health_scale := annual_profit * 0.09 { annual_profit > 0 }
     health_scale := 0 { annual_profit <= 0 }
-    health_linear := min([annual_profit * 0.049, 12900]) { annual_profit > 0 }
+    health_linear := min([annual_profit * 0.049, thresholds.limits.health_linear_deduction_limit]) { annual_profit > 0 }
     health_linear := 0 { annual_profit <= 0 }
     health_lump := 419 * 12 { annual_income <= 60000 }
     health_lump := 699 * 12 { annual_income > 60000; annual_income <= 300000 }

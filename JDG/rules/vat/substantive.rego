@@ -14,7 +14,7 @@
 # legal_basis: Art. 41-43, 89a, 113, 120 VAT
 # edge_cases:
 #   - P58: zwolnienie podmiotowe tylko gdy !is_vat_payer AND turnover < 200k
-#   - P60: bad_debt_creditor wymaga >90 dni (SLIM VAT 3/2025) + debtor_notified
+#   - P60: bad_debt_creditor wymaga >90 dni (SLIM VAT 3/2023) + debtor_notified
 #   - P67: standard 23% = catch-all dla PL
 # package: jdg.vat.substantive
 # deprecated: false
@@ -72,7 +72,7 @@ decide := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.wnt_reverse_charge_buyer",
     "package": "jdg.vat.substantive", "priority": 7,
-    "vat_rate": "0.23", "rounding_level": "position", "gtu_code": "",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "position", "gtu_code": "",
     "procedure": "WNT_REVERSE_CHARGE",
     "vat_exemption": "", "vat_mechanism": "REVERSE_CHARGE",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
@@ -97,7 +97,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.margin_scheme",
     "package": "jdg.vat.substantive", "priority": 50,
-    "vat_rate": "0.23", "rounding_level": "total",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "total",
     "gtu_code": "", "procedure": "MARGIN",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -155,12 +155,12 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# P52: vat_rate_fuel_pl — Paliwo → 23% + GTU_02 (v7.0 FIX: GTU_02=paliwa, GTU_04=wyroby tytoniowe)
+# P52: vat_rate_fuel_pl — Paliwo → 23% + GTU_02 (v7.0 ADR-002: thresholds.vat.standard_rate)
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.fuel_pl",
     "package": "jdg.vat.substantive", "priority": 52,
-    "vat_rate": "0.23", "rounding_level": "position",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "position",
     "gtu_code": "GTU_02", "procedure": "",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -181,7 +181,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.food_pl",
     "package": "jdg.vat.substantive", "priority": 53,
-    "vat_rate": "0.05", "rounding_level": "position",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.reduced_rate_5]), "rounding_level": "position",
     "gtu_code": "", "procedure": "",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -223,15 +223,14 @@ else := {
 # ══ P67: vat_books_5pct_validation — Książki/e-booki 5% (Doc 42: walidacja CN) ══
 else := {
     "matched":true,"rule_id":"jdg.vat.substantive.books_5pct_validation",
-    "package":"jdg.vat.substantive","priority":67,
-    "vat_rate":"0.05","rounding_level":"position",
-    "gtu_code":"GTU_01","procedure":"",
-    "vat_exemption":"","pit_form":"","pit_rate":"",
-    "pit_bracket":"","pit_annual_return_type":"",
-    "kus_qualification":"","kus_percent":0,
-    "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","ceidg_registration_required":false,
-    "books_5pct_valid":true,"books_cn_validated":true,
+    "package":"jdg.vat.substantive","priority":67,    "vat_rate": sprintf("%.2f", [thresholds.vat.reduced_rate_5]), "rounding_level": "position",
+    "gtu_code": "GTU_01", "procedure": "",
+    "vat_exemption": "", "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "books_5pct_valid": true, "books_cn_validated": true,
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Rozp. MF z 4.12.2024 r., Załącznik nr 2 + Art. 41 ust. 2a VAT",
     "_warnings":["Książka/e-book 5% VAT — ISBN/digital ID potwierdzony. Wyłączenia: podręczniki akademickie (0%), treści dla dorosłych (23%)"]
@@ -249,7 +248,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.books_pl",
     "package": "jdg.vat.substantive", "priority": 54,
-    "vat_rate": "0.05", "rounding_level": "position",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.reduced_rate_5]), "rounding_level": "position",
     "gtu_code": "GTU_01", "procedure": "",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -474,10 +473,9 @@ else := {
 # ══ P68: vat_construction_8pct_validation — Budownictwo mieszkaniowe 8% ══
 else := {
     "matched":true,"rule_id":"jdg.vat.substantive.construction_8pct_validation",
-    "package":"jdg.vat.substantive","priority":68,
-    "vat_rate":"0.08","rounding_level":"position",
-    "gtu_code":"GTU_08","procedure":"",
-    "vat_exemption":"","pit_form":"","pit_rate":"",
+    "package":"jdg.vat.substantive","priority":68,    "vat_rate": sprintf("%.2f", [thresholds.vat.reduced_rate_8]), "rounding_level": "position",
+    "gtu_code": "GTU_08", "procedure": "",
+    "vat_exemption": "","pit_form":"","pit_rate":"",
     "pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
@@ -498,15 +496,14 @@ else := {
 # ══ P70: vat_medical_equipment_8pct_validation — Sprzęt medyczny 8% ══
 else := {
     "matched":true,"rule_id":"jdg.vat.substantive.medical_equipment_8pct_validation",
-    "package":"jdg.vat.substantive","priority":70,
-    "vat_rate":"0.08","rounding_level":"position",
-    "gtu_code":"","procedure":"",
-    "vat_exemption":"","pit_form":"","pit_rate":"",
-    "pit_bracket":"","pit_annual_return_type":"",
-    "kus_qualification":"","kus_percent":0,
-    "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","ceidg_registration_required":false,
-    "medical_device_valid":true,"medical_ce_marked":true,
+    "package":"jdg.vat.substantive","priority":70,    "vat_rate": sprintf("%.2f", [thresholds.vat.reduced_rate_8]), "rounding_level": "position",
+    "gtu_code": "", "procedure": "",
+    "vat_exemption": "", "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "medical_device_valid": true, "medical_ce_marked": true,
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Rozp. MF z 4.12.2024 r., Załącznik nr 1, poz. 87-105",
     "_warnings":["Sprzęt medyczny 8% VAT — certyfikat CE + zgłoszenie URPL. Wyłączenie: fitness/wellness (23%), używany (procedura marży)"]
@@ -524,7 +521,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.rate_8pct",
     "package": "jdg.vat.substantive", "priority": 64,
-    "vat_rate": "0.08", "rounding_level": "position",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.reduced_rate_8]), "rounding_level": "position",
     "gtu_code": "", "procedure": "",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -550,7 +547,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.gtu_mapping",
     "package": "jdg.vat.substantive", "priority": 65,
-    "vat_rate": "0.23", "rounding_level": "position",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "position",
     "gtu_code": gtu_code, "procedure": "",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -736,7 +733,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.wnt_goods_from_eu",
     "package": "jdg.vat.substantive", "priority": 80,
-    "vat_rate": "0.23", "rounding_level": "position", "gtu_code": "",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "position", "gtu_code": "",
     "procedure": "WNT",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -759,7 +756,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.wnt_new_vehicle",
     "package": "jdg.vat.substantive", "priority": 81,
-    "vat_rate": "0.23", "rounding_level": "position", "gtu_code": "GTU_09",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "position", "gtu_code": "GTU_09",
     "procedure": "WNT_NEW_VEHICLE",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -779,7 +776,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.wnt_excise_goods",
     "package": "jdg.vat.substantive", "priority": 82,
-    "vat_rate": "0.23", "rounding_level": "position", "gtu_code": "GTU_01",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "position", "gtu_code": "GTU_01",
     "procedure": "WNT_EXCISE",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -822,7 +819,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.import_of_services_b2b",
     "package": "jdg.vat.substantive", "priority": 90,
-    "vat_rate": "0.23", "rounding_level": "position", "gtu_code": "",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "position", "gtu_code": "",
     "procedure": "IMPORT_OF_SERVICES",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -844,7 +841,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.import_of_services_eu",
     "package": "jdg.vat.substantive", "priority": 91,
-    "vat_rate": "0.23", "rounding_level": "position", "gtu_code": "",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "position", "gtu_code": "",
     "procedure": "IMPORT_SERVICES_EU",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -866,7 +863,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.import_of_services_non_eu",
     "package": "jdg.vat.substantive", "priority": 92,
-    "vat_rate": "0.23", "rounding_level": "position", "gtu_code": "",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "position", "gtu_code": "",
     "procedure": "IMPORT_SERVICES_NON_EU",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -887,7 +884,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.substantive.import_goods_customs",
     "package": "jdg.vat.substantive", "priority": 93,
-    "vat_rate": "0.23", "rounding_level": "position", "gtu_code": "",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "position", "gtu_code": "",
     "procedure": "IMPORT_CUSTOMS",
     "vat_exemption": "", "pit_form": "", "pit_rate": "",
     "pit_bracket": "", "pit_annual_return_type": "",
@@ -1218,6 +1215,126 @@ else := {
 
     # Stawka VAT z paragonu — domyślnie pusta (oznacza: sprawdź treść paragonu)
     receipt_vat_rate := object.get(input.invoice, "vat_rate", "")
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P140: vat_account_usage_restriction — Ograniczenia rachunku VAT (Art. 108a ust. 4) ★★★ v7.0 R13
+# Środki z rachunku VAT można wykorzystać tylko na: VAT/PIT/CIT/cło/ZUS.
+# Przelew poza te cele = BLOCK_AND_ALERT.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.vat_account_restriction",
+    "package": "jdg.vat.substantive", "priority": 140,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "VAT_ACCOUNT_RESTRICTION",
+    "vat_exemption": "", "vat_account_transfer_restricted": true,
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": sprintf("Środki z rachunku VAT nie mogą być użyte na cel: %s. Dozwolone: VAT, PIT, CIT, cło, ZUS.", [transfer_purpose]),
+    "_legal_basis": "Art. 108a ust. 4 VAT",
+    "_warnings": [sprintf("OGRANICZENIE RACHUNKU VAT: próba transferu %.2f PLN na cel '%s'. Środki z rachunku VAT można wykorzystać WYŁĄCZNIE na: (1) VAT do US, (2) PIT/CIT do US, (3) cło, (4) ZUS. Inne przelewy są ZABRONIONE!", [transfer_amount, transfer_purpose])]
+} {
+    input.invoice.category_code == "VAT_ACCOUNT_TRANSFER"
+    transfer_purpose := object.get(input.invoice, "transfer_purpose", "")
+    allowed_purposes := {"VAT", "PIT", "CIT", "CUSTOMS", "ZUS", "TAX_OFFICE"}
+    not transfer_purpose in allowed_purposes
+    transfer_amount := object.get(input.invoice, "amount_gross", 0)
+    transfer_amount > 0
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P141: vat_exemption_loss_after_2_years — Utrata zwolnienia podmiotowego po 2 latach ★★★ v7.0 R13
+# Art. 113 ust. 14 VAT: Jeżeli podatnik utracił prawo do zwolnienia w roku N,
+# nie może ponownie skorzystać ze zwolnienia w latach N+1 i N+2.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.exemption_loss_2_years",
+    "package": "jdg.vat.substantive", "priority": 141,
+    "vat_rate": "0.23", "rounding_level": "position",
+    "gtu_code": "", "procedure": "EXEMPTION_LOSS_2Y",
+    "vat_exemption": "", "vat_exemption_suspended": true,
+    "vat_exemption_suspended_years": 2,
+    "vat_exemption_suspended_until": suspended_until_year,
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": sprintf("Utrata zwolnienia VAT — nie możesz ponownie skorzystać ze zwolnienia do końca %d", [suspended_until_year]),
+    "_legal_basis": "Art. 113 ust. 14 VAT",
+    "_warnings": [sprintf("UTRATA ZWOLNIENIA VAT NA 2 LATA: przekroczyłeś limit 200 000 PLN w roku %d. Nie możesz ponownie skorzystać ze zwolnienia podmiotowego do końca %d. Musisz być czynnym podatnikiem VAT przez minimum 2 pełne lata.", [loss_year, suspended_until_year])]
+} {
+    input.jdg_entrepreneur.is_vat_payer == false
+    vat_exemption_loss_year := object.get(input.jdg_entrepreneur, "vat_exemption_loss_year", 0)
+    current_year := object.get(input.jdg_entrepreneur, "tax_year_as_int", 2026)
+    # Utrata zwolnienia w roku N → nie można do końca N+2
+    vat_exemption_loss_year > 0
+    current_year <= vat_exemption_loss_year + 2
+    loss_year := vat_exemption_loss_year
+    suspended_until_year := vat_exemption_loss_year + 2
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P142: vat_nkup_mpp_breach — NKUP przy braku MPP (Art. 108a ust. 7 VAT) ★★★ v7.0 R13
+# Jeżeli brak MPP przy obowiązku → wydatek netto stanowi NKUP w PIT/CIT.
+# Reguła flaguje transakcję jako NKUP-MPP.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.nkup_mpp_breach",
+    "package": "jdg.vat.substantive", "priority": 142,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "NKUP_MPP_BREACH",
+    "vat_exemption": "", "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "none", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "nkup_mpp_applies": true,
+    "nkup_mpp_amount": amount_net,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": sprintf("NKUP-MPP: wydatek netto %.2f PLN nie stanowi kosztu uzyskania przychodu — brak MPP przy obowiązku.", [amount_net]),
+    "_legal_basis": "Art. 108a ust. 7 VAT w zw. z Art. 22p PIT",
+    "_warnings": [sprintf("NKUP-MPP: kwota netto %.2f PLN z faktury bez MPP NIE stanowi kosztu uzyskania przychodu! Konsekwencje: (1) 30%% dodatkowego VAT, (2) NKUP netto w PIT/CIT = %.2f PLN, (3) solidarna odpowiedzialność. Wykonaj przelew MPP + korektę faktury.", [amount_net, amount_net])]
+} {
+    input.invoice.direction == "PURCHASE"
+    amount_gross := object.get(input.invoice, "amount_gross", 0)
+    amount_gross > thresholds.misc.mpp_mandatory_threshold
+    helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
+    input.invoice.split_payment_used == false
+    amount_net := object.get(input.invoice, "amount_net", 0)
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P143: vat_mpp_prepayment_check — MPP a zaliczki ★★★ v7.0 R13
+# Zaliczka >15 000 PLN brutto na towar wrażliwy → MPP obowiązkowy również od zaliczki.
+# LUKA z raportu P02: substantive.rego P100 nie sprawdzał prepayment.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.mpp_prepayment_check",
+    "package": "jdg.vat.substantive", "priority": 143,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "MPP_PREPAYMENT_CHECK",
+    "vat_exemption": "", "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "jpk_v7_mpp": true,
+    "_routing": "",
+    "_routing_reason": "MPP obowiązkowy również od zaliczek >15 000 PLN na towary wrażliwe",
+    "_legal_basis": "Art. 108a VAT (zaliczka podlega MPP tak samo jak płatność końcowa)",
+    "_warnings": [sprintf("MPP OD ZALICZKI: zaliczka %.2f PLN brutto na towary wrażliwe (%s). Każda płatność >15 000 PLN (w tym zaliczki) podlega obowiązkowemu MPP!", [amount_gross, category])]
+} {
+    input.invoice.direction == "PURCHASE"
+    input.invoice.invoice_type == "ADVANCE"
+    input.invoice.prepayment_received == true
+    amount_gross := object.get(input.invoice, "amount_gross", 0)
+    amount_gross > thresholds.misc.mpp_mandatory_threshold
+    helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
+    category := input.invoice.category_code
 }
 
 # ── EU countries list ──────────────────────────────────────────────────────────

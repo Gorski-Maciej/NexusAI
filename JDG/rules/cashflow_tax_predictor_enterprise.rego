@@ -91,7 +91,7 @@ decide := {
 
     zus_health := 0
     zus_health := floor(monthly_income_est * 0.09 * 100) / 100 { pit_form == "PIT_SCALE" }
-    zus_health := floor(min([monthly_income_est * 0.049, 12900 / 12]) * 100) / 100 { pit_form == "LINEAR" }
+    zus_health := floor(min([monthly_income_est * 0.049, data.jdg.thresholds.limits.health_linear_deduction_limit / 12]) * 100) / 100 { pit_form == "LINEAR" }
     zus_health := floor(avg_wage * 0.09 * 100) / 100 { pit_form == "LUMP_SUM" }
 
     health_rate := sprintf("9%%", []) { pit_form == "PIT_SCALE" }
@@ -281,7 +281,7 @@ else := {
     health_rate := "zależna" { pit_form == "LUMP_SUM" }
 
     health_amt := monthly_profit * 0.09 { pit_form == "PIT_SCALE" }
-    health_amt := min([monthly_profit * 0.049, 12900 / 12]) { pit_form == "LINEAR" }
+    health_amt := min([monthly_profit * 0.049, data.jdg.thresholds.limits.health_linear_deduction_limit / 12]) { pit_form == "LINEAR" }
     health_amt := 700 { pit_form == "LUMP_SUM" }
 
     # Build calendar
@@ -489,7 +489,7 @@ else := {
 
     annual_health := 0
     annual_health := annual_income * 0.09 { pit_form == "PIT_SCALE" }
-    annual_health := min([annual_income * 0.049, 12900]) { pit_form == "LINEAR" }
+    annual_health := min([annual_income * 0.049, data.jdg.thresholds.limits.health_linear_deduction_limit]) { pit_form == "LINEAR" }
     annual_health := 9600 { pit_form == "LUMP_SUM" }
 
     annual_zus := monthly_zus * 12

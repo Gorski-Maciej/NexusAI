@@ -47,7 +47,7 @@ decide := {
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "SCALE", "pit_rate": pit_rate, "pit_bracket": pit_bracket,
     "pit_annual_return_type": "PIT-36",
-    "pit_tax_free_amount": 30000, "pit_tax_free_reduction": 3600,
+    "pit_tax_free_amount": thresholds.limits.pit_tax_free_amount, "pit_tax_free_reduction": floor(thresholds.limits.pit_tax_free_amount * thresholds.rates.pit_scale_low),
     "kus_qualification": "full", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "0.09",
     "business_status": "", "ceidg_registration_required": false,
@@ -55,6 +55,8 @@ decide := {
     "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
     "_legal_basis": "Art. 27 ust. 1 PIT",
+    "valid_from": "2022-07-01",
+    "valid_to": null,
     "_warnings": []
 } {
     input.jdg_entrepreneur.tax_form == "PIT_SCALE"
@@ -63,9 +65,10 @@ decide := {
     threshold := object.get(bracket_limit, "pit_scale_threshold", 120000)
 
     pit_bracket = "LOW" { accumulated <= threshold }
-    pit_rate = "0.12" { accumulated <= threshold }
+    pit_bracket = "LOW" { accumulated <= threshold }
+    pit_rate = sprintf("%.2f", [thresholds.rates.pit_scale_low]) { accumulated <= threshold }
     pit_bracket = "HIGH" { accumulated > threshold }
-    pit_rate = "0.32" { accumulated > threshold }
+    pit_rate = sprintf("%.2f", [thresholds.rates.pit_scale_high]) { accumulated > threshold }
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -75,9 +78,9 @@ else := {
     "matched": true, "rule_id": "jdg.pit.forms.scale_joint_filing",
     "package": "jdg.pit.forms", "priority": 502,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_form": "SCALE", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_scale_low]), "pit_bracket": "LOW",
     "pit_annual_return_type": "PIT-36",
-    "pit_tax_free_amount": 30000, "pit_tax_free_reduction": 3600,
+    "pit_tax_free_amount": thresholds.limits.pit_tax_free_amount, "pit_tax_free_reduction": floor(thresholds.limits.pit_tax_free_amount * thresholds.rates.pit_scale_low),
     "kus_qualification": "full", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "0.09",
     "business_status": "", "ceidg_registration_required": false,
@@ -133,7 +136,7 @@ else := {
     "matched": true, "rule_id": "jdg.pit.forms.linear",
     "package": "jdg.pit.forms", "priority": 510,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "LINEAR", "pit_rate": "0.19", "pit_bracket": "",
+    "pit_form": "LINEAR", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_linear]), "pit_bracket": "",
     "pit_annual_return_type": "PIT-36L",
     "pit_tax_free_amount": 0, "pit_tax_free_reduction": 0,
     "kus_qualification": "full", "kus_percent": 100,
@@ -143,6 +146,8 @@ else := {
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
     "_legal_basis": "Art. 30c PIT",
+    "valid_from": "2022-07-01",
+    "valid_to": null,
     "_warnings": ["Podatek liniowy 19% — BRAK kwoty wolnej, BRAK wspólnego rozliczenia"]
 } {
     input.jdg_entrepreneur.tax_form == "LINEAR"
@@ -155,7 +160,7 @@ else := {
     "matched": true, "rule_id": "jdg.pit.forms.linear_former_employer_block",
     "package": "jdg.pit.forms", "priority": 512,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_form": "SCALE", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_scale_low]), "pit_bracket": "LOW",
     "pit_annual_return_type": "PIT-36",
     "kus_qualification": "full", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "",
@@ -218,7 +223,7 @@ else := {
     "matched": true, "rule_id": "jdg.pit.forms.lump_sum_limit_exceeded",
     "package": "jdg.pit.forms", "priority": 523,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_form": "SCALE", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_scale_low]), "pit_bracket": "LOW",
     "pit_annual_return_type": "PIT-36",
     "kus_qualification": "full", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "",
@@ -241,7 +246,7 @@ else := {
     "matched": true, "rule_id": "jdg.pit.forms.lump_sum_exclusions",
     "package": "jdg.pit.forms", "priority": 524,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_form": "SCALE", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_scale_low]), "pit_bracket": "LOW",
     "pit_annual_return_type": "PIT-36",
     "kus_qualification": "full", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "",
@@ -277,7 +282,7 @@ else := {
     "matched": true, "rule_id": "jdg.pit.forms.lump_sum_loss_of_right",
     "package": "jdg.pit.forms", "priority": 525,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_form": "SCALE", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_scale_low]), "pit_bracket": "LOW",
     "pit_annual_return_type": "PIT-36",
     "kus_qualification": "full", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "",
@@ -315,7 +320,7 @@ else := {
     "matched": true, "rule_id": "jdg.pit.forms.lump_sum_election_deadline",
     "package": "jdg.pit.forms", "priority": 526,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "SCALE", "pit_rate": "0.12", "pit_bracket": "LOW",
+    "pit_form": "SCALE", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_scale_low]), "pit_bracket": "LOW",
     "pit_annual_return_type": "PIT-36",
     "kus_qualification": "full", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "",
@@ -359,7 +364,8 @@ else := {
 # ══════ P490-P496: FORMY OPODATKOWANIA SZCZEGÓŁY — Doc 36 §18 (7 reguł) ══════
 
 # P490: tax_form_linear_deadline_jan20 — Wybór liniowego do 20 stycznia
-else := {"matched":true,"rule_id":"jdg.pit.forms.linear_deadline_jan20","package":"jdg.pit.forms","priority":490,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"LINEAR","pit_rate":"0.19","pit_bracket":"","pit_annual_return_type":"PIT-36L","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","linear_deadline":"JANUARY_20","_routing":"BLOCK_AND_ALERT","_routing_reason":"Wybór liniowego — oświadczenie do 20 stycznia!","_legal_basis":"Art. 9a ust. 2 PIT","_warnings":["Wybór podatku liniowego — złóż oświadczenie CEIDG do 20 stycznia. Po terminie: automatycznie skala PIT!"]} {object.get(input.jdg_entrepreneur,"wants_linear_tax",false)==true;object.get(input.jdg_entrepreneur,"tax_form_chosen",true)==false}
+else := {"matched":true,"rule_id":"jdg.pit.forms.linear_deadline_jan20","package":"jdg.pit.forms","priority":490,"vat_rate":"","rounding_level":"","gtu_code":"",    "pit_form": "LINEAR", "pit_rate": sprintf("%.2f", [thresholds.rates.pit_linear]), "pit_bracket": "",
+    "pit_annual_return_type": "PIT-36L","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","linear_deadline":"JANUARY_20","_routing":"BLOCK_AND_ALERT","_routing_reason":"Wybór liniowego — oświadczenie do 20 stycznia!","_legal_basis":"Art. 9a ust. 2 PIT","_warnings":["Wybór podatku liniowego — złóż oświadczenie CEIDG do 20 stycznia. Po terminie: automatycznie skala PIT!"]} {object.get(input.jdg_entrepreneur,"wants_linear_tax",false)==true;object.get(input.jdg_entrepreneur,"tax_form_chosen",true)==false}
 
 # P491: tax_form_lump_sum_deadline_jan20 — Ryczałt do 20 stycznia
 else := {"matched":true,"rule_id":"jdg.pit.forms.lump_sum_deadline_jan20","package":"jdg.pit.forms","priority":491,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"LUMP_SUM","pit_rate":"","pit_bracket":"","pit_annual_return_type":"PIT-28","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","lump_sum_deadline":"JANUARY_20","_routing":"BLOCK_AND_ALERT","_routing_reason":"Wybór ryczałtu — oświadczenie do 20 stycznia!","_legal_basis":"Art. 9 ust. 1 ustawy o ryczałcie","_warnings":["Wybór ryczałtu — złóż oświadczenie CEIDG do 20 stycznia lub do 20. dnia po pierwszym przychodzie (nowa JDG)."]} {object.get(input.jdg_entrepreneur,"wants_lump_sum",false)==true;object.get(input.jdg_entrepreneur,"tax_form_chosen",true)==false}
@@ -380,4 +386,4 @@ else := {"matched":true,"rule_id":"jdg.pit.forms.lump_sum_no_tax_free","package"
 else := {"matched":true,"rule_id":"jdg.pit.forms.tax_card_eligibility","package":"jdg.pit.forms","priority":496,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"TAX_CARD","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","tax_card_conditions":"MAX_5_EMPLOYEES_NO_SPECIALIZED_SERVICES","_routing":"","_routing_reason":"","_legal_basis":"Rozdział 3 ustawy o zryczałtowanym PIT","_warnings":["Karta podatkowa — max 5 pracowników, brak usług specjalistycznych dla byłego pracodawcy. Sztywna kwota podatku."]} {input.jdg_entrepreneur.tax_form=="TAX_CARD"}
 
 # ══ P497: tax_card_loss_of_right — Utrata prawa do karty podatkowej ══
-else := {"matched":true,"rule_id":"jdg.pit.forms.tax_card_loss","package":"jdg.pit.forms","priority":497,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"SCALE","pit_rate":"0.12","pit_bracket":"LOW","pit_annual_return_type":"PIT-36","kus_qualification":"full","kus_percent":100,"zus_social_base_type":"","zus_health_rate":"","business_status":"","tax_card_retained":false,"tax_card_loss_reason":loss_reason,"_routing":"BLOCK_AND_ALERT","_routing_reason":sprintf("UTRATA KARTY PODATKOWEJ — %s. Automatycznie: skala PIT.",[loss_reason]),"_legal_basis":"Art. 25-30 ustawy o zryczałtowanym PIT","_warnings":[sprintf("UTRATA KARTY PODATKOWEJ! %s Od dnia utraty obowiązuje skala podatkowa (12%%/32%%). Złóż PIT-36 za ten rok.",[loss_reason])]} {input.jdg_entrepreneur.tax_form=="TAX_CARD";employees:=object.get(input.jdg_entrepreneur,"employee_count",0);uses_specialized:=object.get(input.jdg_entrepreneur,"provides_specialized_services",false);services_former_employer:=object.get(input.jdg_entrepreneur,"former_employer_services",false);(employees>5)|(services_former_employer==true)|(uses_specialized==true);loss_reason=sprintf("Przekroczono limit 5 pracowników (obecnie %d)",[employees]){employees>5};loss_reason=sprintf("Usługi dla byłego pracodawcy — karta WYKLUCZONA",[]){employees<=5;services_former_employer==true};loss_reason=sprintf("Usługi specjalistyczne — karta WYKLUCZONA",[]){employees<=5;not services_former_employer;uses_specialized==true}}
+else := {"matched":true,"rule_id":"jdg.pit.forms.tax_card_loss","package":"jdg.pit.forms","priority":497,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"SCALE","pit_rate":sprintf("%.2f", [thresholds.rates.pit_scale_low]),"pit_bracket":"LOW","pit_annual_return_type":"PIT-36","kus_qualification":"full","kus_percent":100,"zus_social_base_type":"","zus_health_rate":"","business_status":"","tax_card_retained":false,"tax_card_loss_reason":loss_reason,"_routing":"BLOCK_AND_ALERT","_routing_reason":sprintf("UTRATA KARTY PODATKOWEJ — %s. Automatycznie: skala PIT.",[loss_reason]),"_legal_basis":"Art. 25-30 ustawy o zryczałtowanym PIT","_warnings":[sprintf("UTRATA KARTY PODATKOWEJ! %s Od dnia utraty obowiązuje skala podatkowa (12%%/32%%). Złóż PIT-36 za ten rok.",[loss_reason])]} {input.jdg_entrepreneur.tax_form=="TAX_CARD";employees:=object.get(input.jdg_entrepreneur,"employee_count",0);uses_specialized:=object.get(input.jdg_entrepreneur,"provides_specialized_services",false);services_former_employer:=object.get(input.jdg_entrepreneur,"former_employer_services",false);(employees>5)|(services_former_employer==true)|(uses_specialized==true);loss_reason=sprintf("Przekroczono limit 5 pracowników (obecnie %d)",[employees]){employees>5};loss_reason=sprintf("Usługi dla byłego pracodawcy — karta WYKLUCZONA",[]){employees<=5;services_former_employer==true};loss_reason=sprintf("Usługi specjalistyczne — karta WYKLUCZONA",[]){employees<=5;not services_former_employer;uses_specialized==true}}

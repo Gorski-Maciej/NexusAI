@@ -57,6 +57,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "Reklama → 100% KUP",
+    "valid_from": "2004-05-01",
+    "valid_to": null,
     "_legal_basis": "Art. 22 ust. 1 PIT (reklama ≠ reprezentacja)",
     "_warnings": ["Wydatki na reklamę — STANOWIĄ KUP w 100%. Uwaga: reprezentacja (P566) jest NKUP. Granica: reklama promuje firmę/produkt, reprezentacja buduje wizerunek przez wystawność/okazałość."]
 } {
@@ -77,6 +79,8 @@ decide := {
     "business_status": "", "ceidg_registration_required": false,
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "Reprezentacja → NKUP",
+    "valid_from": "2004-05-01",
+    "valid_to": null,
     "_legal_basis": "Art. 23 ust. 1 pkt 23 PIT",
     "_warnings": ["Wydatki na reprezentację — CAŁKOWICIE wyłączone z KUP"]
 } {
@@ -97,6 +101,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "Niezapłacone ZUS → NKUP",
+    "valid_from": "2004-05-01",
+    "valid_to": null,
     "_legal_basis": "Art. 22 ust. 6ba PIT",
     "_warnings": ["Niezapłacone składki ZUS społeczne — NIE stanowią KUP do momentu zapłaty"]
 } {
@@ -118,6 +124,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
+    "valid_from": "2019-01-01",
+    "valid_to": null,
     "_legal_basis": "Art. 23 ust. 1 pkt 47a PIT",
     "_warnings": [sprintf("Auto > limit KUP — ograniczenie %.0f PLN z %.0f PLN (%.0f%%)", [150000, amount_net, floor(150000/amount_net*100)])]
 } {
@@ -141,6 +149,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
+    "valid_from": "2019-01-01",
+    "valid_to": null,
     "_legal_basis": "Art. 23 ust. 1 pkt 47a PIT (wyjątek EV)",
     "_warnings": []
 } {
@@ -166,6 +176,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
+    "valid_from": "2004-05-01",
+    "valid_to": null,
     "_legal_basis": "Art. 22 ust. 1 PIT",
     "_warnings": [sprintf("Wydatek mieszany — KUP %.0f%% (część firmowa)", [ku_percent])]
 } {
@@ -263,6 +275,8 @@ else := {
     "relief_deductible": min([health_paid, thresholds.zus.health_linear_deduction_limit]),
     "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
+    "valid_from": "2022-01-01",
+    "valid_to": null,
     "_legal_basis": "Art. 30c ust. 2 pkt 2 PIT",
     "_warnings": [sprintf("Składka zdrowotna liniowy — odliczenie od dochodu max %.0f PLN (zapłacono %.2f)", [thresholds.zus.health_linear_deduction_limit, health_paid])]
 } {
@@ -287,6 +301,8 @@ else := {
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Niezapłacona faktura > 90 dni — OBOWIĄZEK wyłączenia z KUP",
+    "valid_from": "2023-01-01",
+    "valid_to": null,
     "_legal_basis": "Art. 22 ust. 8-10 PIT",
     "_warnings": ["Niezapłacona faktura > 90 dni — OBOWIĄZKOWE wyłączenie z KUP!"]
 } {
@@ -311,6 +327,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
+    "valid_from": "2004-05-01",
+    "valid_to": null,
     "_legal_basis": "Art. 22 ust. 5-5c PIT",
     "_warnings": [sprintf("KUP %s — potrącenie w %s", [kup_timing, timing_note])]
 } {
@@ -344,6 +362,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
+    "valid_from": "2004-05-01",
+    "valid_to": null,
     "_legal_basis": "Art. 22 ust. 1 w zw. z art. 23 ust. 1 pkt 37 PIT",
     "_warnings": []
 } {
@@ -365,6 +385,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
     "_routing": "", "_routing_reason": "",
+    "valid_from": "2004-05-01",
+    "valid_to": null,
     "_legal_basis": "Art. 22 ust. 1 PIT",
     "_warnings": []
 } {

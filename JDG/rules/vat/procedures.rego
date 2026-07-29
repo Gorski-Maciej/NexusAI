@@ -29,6 +29,7 @@
 package jdg.vat.procedures
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 # ── Default ────────────────────────────────────────────────────────────────────
 default decide := {
@@ -242,7 +243,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.procedures.margin_used_goods",
     "package": "jdg.vat.procedures", "priority": 66,
-    "vat_rate": "0.23", "rounding_level": "total", "gtu_code": "", "procedure": "MARGIN_USED_GOODS",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "total", "gtu_code": "", "procedure": "MARGIN_USED_GOODS",
     "vat_exemption": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -262,7 +263,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.procedures.margin_art_objects",
     "package": "jdg.vat.procedures", "priority": 66,
-    "vat_rate": "0.08", "rounding_level": "total", "gtu_code": "", "procedure": "MARGIN_ART_OBJECTS",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.reduced_rate_8]), "rounding_level": "total", "gtu_code": "", "procedure": "MARGIN_ART_OBJECTS",
     "vat_exemption": "", "vat_margin_scheme": "ART_OBJECTS_8PCT",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -283,7 +284,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.procedures.margin_travel_agency",
     "package": "jdg.vat.procedures", "priority": 66,
-    "vat_rate": "0.23", "rounding_level": "total", "gtu_code": "", "procedure": "MARGIN_TRAVEL_AGENCY",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "total", "gtu_code": "", "procedure": "MARGIN_TRAVEL_AGENCY",
     "vat_exemption": "", "vat_margin_scheme": "TRAVEL_AGENCY_ART119",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -347,7 +348,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.vat.procedures.vat_23_new_vehicle",
     "package": "jdg.vat.procedures", "priority": 236,
-    "vat_rate": "0.23", "rounding_level": "position", "gtu_code": "GTU_09", "procedure": "VAT_23",
+    "vat_rate": sprintf("%.2f", [thresholds.vat.standard_rate]), "rounding_level": "position", "gtu_code": "GTU_09", "procedure": "VAT_23",
     "vat_exemption": "", "vat_23_required": true, "vat_23_deadline_days": 14,
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,

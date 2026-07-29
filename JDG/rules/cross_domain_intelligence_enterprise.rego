@@ -147,7 +147,7 @@ else := {
     health_rate := "progresywna" { pit_form == "LUMP_SUM" }
 
     health_monthly := monthly_profit * 0.09 { pit_form == "PIT_SCALE" }
-    health_monthly := min([monthly_profit * 0.049, 12900/12]) { pit_form == "LINEAR" }
+    health_monthly := min([monthly_profit * 0.049, thresholds.limits.health_linear_deduction_limit / 12]) { pit_form == "LINEAR" }
     health_monthly := 419 { pit_form == "LUMP_SUM" }
 
     health_info := sprintf("Zdrowotna ~%.2f PLN/mies NIEODLICZALNA od PIT (Polski Ład)", [health_monthly]) { pit_form == "PIT_SCALE" }

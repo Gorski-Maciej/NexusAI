@@ -83,6 +83,7 @@ pit := {
 
     # Art. 23 PIT — koszty auta
     "car_lease_insurance_limit": 150000,         # PLN — limit leasing/ubezp.
+    "gift_limit_pln": 200,                      # PLN — limit prezentów (Art. 23 ust. 1 pkt 34)
     "representation_limit_pct": 0.0025,          # 0.25% przychodu (P598)
 
     # Art. 26 PIT — darowizny

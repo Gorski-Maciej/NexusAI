@@ -71,7 +71,7 @@ decide := {
     
     pit_tax := annual_profit * pit_effective_pct
     health_insurance := annual_profit * 0.09 { pit_form == "PIT_SCALE" }
-    health_insurance := min([annual_profit * 0.049, 12900]) { pit_form == "LINEAR" }
+    health_insurance := min([annual_profit * 0.049, data.jdg.thresholds.limits.health_linear_deduction_limit]) { pit_form == "LINEAR" }
     health_insurance := 8000 { pit_form == "LUMP_SUM" }
     zus_annual := 12000  # Approx annual ZUS
     

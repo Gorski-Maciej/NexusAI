@@ -1047,6 +1047,8 @@ else := {
 }
 
 # P275: vat_split_payment_evasion — Obchodzenie MPP
+# v7.0 ENHANCED (R5): Dodano wewnętrzną detekcję sumowania faktur tego samego
+# kontrahenta w oknie 30 dni. Nie polega już wyłącznie na zewnętrznej fladze.
 else := {
     "matched": true, "rule_id": "jdg.kks.vat_split_payment_evasion_p275",
     "package": "jdg.kks", "priority": 275,
@@ -1056,11 +1058,54 @@ else := {
     "zus_social_base_type": "", "zus_health_rate": "",
     "business_status": "", "ceidg_registration_required": false,
     "kks_offense_type": "UNRELIABLE_VAT", "kks_penalty_severity": "CRITICAL",
+    "mpp_evasion_method": evasion_method,
+    "mpp_evasion_window_total": window_total,
+    "mpp_evasion_invoice_count": invoice_count,
     "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Obchodzenie MPP — dzielenie transakcji — art. 57 KKS",
     "_legal_basis": "Art. 57 § 1 KKS w zw. z Art. 108a VAT",
-    "_warnings": ["OBCHODZENIE MPP — dzielenie transakcji >15000 PLN na mniejsze faktury. Sankcja 30% + solidarna odpowiedzialność!"]
+    "_warnings": [sprintf("OBCHODZENIE MPP — %s. Łączna kwota w oknie 30 dni: %.2f PLN (%d faktur). Sankcja 30%% + solidarna odpowiedzialność!", [evasion_method, window_total, invoice_count])]
 } {
-    input.invoice.split_payment_evasion_detected == true
+    # Metoda 1: Zewnętrzna flaga (istniejąca ścieżka)
+    external_flag := object.get(input.invoice, "split_payment_evasion_detected", false)
+    external_flag == true
+    evasion_method = "FLAGA_ZEWNETRZNA"
+    window_total := object.get(input.invoice, "mpp_evasion_window_total", 0)
+    invoice_count := object.get(input.invoice, "mpp_evasion_invoice_count", 0)
+}
+
+# P275b: vat_split_payment_evasion_internal — Wewnętrzna detekcja obchodzenia MPP (v7.0 R5)
+# Sumuje faktury tego samego kontrahenta (NIP) w oknie 30 dni.
+# Jeśli suma > 15000 PLN i każda faktura < 15000 PLN → podejrzenie obchodzenia MPP.
+else := {
+    "matched": true, "rule_id": "jdg.kks.vat_split_payment_evasion_internal_p275b",
+    "package": "jdg.kks", "priority": 275,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "kks_offense_type": "UNRELIABLE_VAT", "kks_penalty_severity": "CRITICAL",
+    "mpp_evasion_method": "WEWNETRZNA_DETEKCJA",
+    "mpp_evasion_window_total": window_total,
+    "mpp_evasion_invoice_count": window_count,
+    "mpp_evasion_vendor_nip": vendor_nip,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": sprintf("WEWNĘTRZNA DETEKCJA MPP — %d faktur od %s na łączną kwotę %.2f PLN w 30 dni. Podejrzenie sztucznego dzielenia transakcji!", [window_count, vendor_nip, window_total]),
+    "_legal_basis": "Art. 57 § 1 KKS w zw. z Art. 108a VAT (wewnętrzna detekcja obchodzenia MPP)",
+    "_warnings": [sprintf("PODEJRZENIE OBCHODZENIA MPP: %d faktur od kontrahenta %s na łączną kwotę %.2f PLN w oknie 30 dni. Żadna pojedyncza faktura nie przekracza 15 000 PLN, ale suma przekracza! Art. 57 KKS — dzielenie transakcji dla uniknięcia MPP. Zastosuj MPP do wszystkich faktur lub zgłoś czynny żal.", [window_count, vendor_nip, window_total])]
+} {
+    # Wewnętrzna detekcja na podstawie danych z Python PreOPAPipeline
+    # Pipeline sumuje faktury per NIP w oknie 30 dni i wstrzykuje jako input.invoice
+    window_total := object.get(input.invoice, "mpp_window_total_same_vendor_30d", 0)
+    window_count := object.get(input.invoice, "mpp_window_invoice_count_same_vendor_30d", 0)
+    vendor_nip := object.get(input.vendor, "nip", "NIEZNANY")
+    # Próg MPP z thresholds (ADR-002: externalized)
+    threshold := object.get(object.get(data.jdg.thresholds, "misc", {}), "mpp_mandatory_threshold", 15000)
+    window_total > threshold
+    window_count >= 2
+    # Żadna pojedyncza faktura nie przekracza progu (w przeciwnym razie byłby normalny MPP)
+    this_amount := object.get(input.invoice, "amount_gross", 0)
+    this_amount < threshold
 }
 
 # P276-P279: Stuby — pozostałe warianty Art. 57

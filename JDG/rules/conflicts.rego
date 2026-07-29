@@ -22,7 +22,7 @@
 #   - IP Box + B+R na tym samym dochodzie → konflikt (wybierz jeden)
 #   - Reprezentacja vs marketing — borderline (restauracje, eventy)
 #   - Auto bez ewidencji → VAT 50%, KUP 75% → uzasadniona asymetria
-#   - Złe długi: VAT 90 dni vs PIT 90 dni → zharmonizowane (SLIM VAT 3/2025)
+#   - Złe długi: VAT 90 dni vs PIT 90 dni → zharmonizowane (SLIM VAT 3/2023)
 # package: jdg.conflicts
 # deprecated: false
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -485,15 +485,15 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# R0606-R0610: Bad Debt — VAT i PIT (zharmonizowane 90 dni, SLIM VAT 3/2025)
+# R0606-R0610: Bad Debt — VAT i PIT (zharmonizowane 90 dni, SLIM VAT 3/2023)
 # ═══════════════════════════════════════════════════════════════════════════════
-# Problem: Ulga na złe długi w VAT (Art. 89a VAT, 90 dni od SLIM VAT 3/2025)
+# Problem: Ulga na złe długi w VAT (Art. 89a VAT, 90 dni od SLIM VAT 3/2023)
 # i PIT (Art. 26i PIT, 90 dni) mają teraz zharmonizowane progi czasowe.
 # R0605 (timing_diff_150_vs_90) został usunięty jako nieaktualny.
 # Nadal istnieją różnice w warunkach formalnych między VAT i PIT.
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# R0605: [USUNIĘTA — SLIM VAT 3/2025 zharmonizował terminy VAT i PIT do 90 dni]
+# R0605: [USUNIĘTA — SLIM VAT 3/2023 zharmonizował terminy VAT i PIT do 90 dni]
 
 # R0606: bad_debt_creditor_vat_corrected_but_not_pit — VAT skorygowany, PIT nie
 else := {

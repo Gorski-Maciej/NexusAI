@@ -175,7 +175,7 @@ else := {
 
     zus_health := 0
     zus_health := floor(monthly_profit * 0.09 * 100) / 100 { pit_form == "PIT_SCALE" }
-    zus_health := floor(min([monthly_profit * 0.049, 12900 / 12]) * 100) / 100 { pit_form == "LINEAR" }
+    zus_health := floor(min([monthly_profit * 0.049, data.jdg.thresholds.limits.health_linear_deduction_limit / 12]) * 100) / 100 { pit_form == "LINEAR" }
     zus_health := floor(avg_wage * 0.09 * 100) / 100 { pit_form == "LUMP_SUM"; monthly_revenue <= 60000 }
     zus_health := floor(avg_wage * 0.09 * 100) / 100 * 1.0 { pit_form == "LUMP_SUM"; monthly_revenue > 60000; monthly_revenue <= 300000 }
     zus_health := floor(avg_wage * 0.09 * 100) / 100 * 1.8 { pit_form == "LUMP_SUM"; monthly_revenue > 300000 }
