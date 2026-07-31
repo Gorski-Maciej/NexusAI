@@ -154,6 +154,17 @@ import data.jdg.p33_pcc_complete
 import data.jdg.p33_excise_supplement
 import data.jdg.p33_ordpu_kks_supplement
 import data.jdg.p3233_innovations
+import data.jdg.p12_innovations
+import data.jdg.p13_innovations
+import data.jdg.p14_innovations
+import data.jdg.pkpir_to_uor_transformer
+import data.jdg.exit_tax_interest_calculator
+import data.jdg.mdr_auto_generator
+import data.jdg.wdt_document_tracker
+import data.jdg.cfc_auto_classifier
+import data.jdg.vida_drr_full
+import data.jdg.dac8_report_generator
+import data.jdg.cbam_full
 import data.jdg.p01_innovations
 import data.jdg.p02_innovations
 import data.jdg.p03_innovations
@@ -512,6 +523,10 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(p09_innovations.decide,
     safe_merge(p10_innovations.decide,
     safe_merge(p11_innovations.decide,
+    safe_merge(p12_innovations.decide,
+    safe_merge(p13_innovations.decide,
+    safe_merge(p14_innovations.decide,
+    safe_merge(pkpir_to_uor_transformer.decide,
     safe_merge(p35_coherence.decide,
     safe_merge(p35_gaps.decide,
     safe_merge(p35_innovations.decide,
@@ -520,7 +535,7 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))))))))
 
 
 # Shard dla DOMESTIC_PURCHASE z ACTIVE JDG (KRYTYCZNE-3 FIX)
@@ -560,6 +575,10 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(p09_innovations.decide,
     safe_merge(p10_innovations.decide,
     safe_merge(p11_innovations.decide,
+    safe_merge(p12_innovations.decide,
+    safe_merge(p13_innovations.decide,
+    safe_merge(p14_innovations.decide,
+    safe_merge(pkpir_to_uor_transformer.decide,
     safe_merge(p35_coherence.decide,
     safe_merge(p35_gaps.decide,
     safe_merge(p35_innovations.decide,
@@ -568,7 +587,7 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))))
 
 
 full_final_verdict = safe_merge(risk.decide,
@@ -642,11 +661,19 @@ full_final_verdict = safe_merge(risk.decide,
     safe_merge(p09_innovations.decide,
     safe_merge(p10_innovations.decide,
     safe_merge(p11_innovations.decide,
+    safe_merge(p12_innovations.decide,
+    safe_merge(p13_innovations.decide,
+    safe_merge(p14_innovations.decide,
+    safe_merge(mdr_auto_generator.decide,
+    safe_merge(wdt_document_tracker.decide,
+    safe_merge(exit_tax_interest_calculator.decide,
+    safe_merge(cfc_auto_classifier.decide,
+    safe_merge(pkpir_to_uor_transformer.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -674,11 +701,16 @@ gated_abort_verdict = safe_merge(risk.decide,
     safe_merge(p33_excise_supplement.decide,
     safe_merge(p33_ordpu_kks_supplement.decide,
     safe_merge(p3233_innovations.decide,
+    safe_merge(p12_innovations.decide,
+    safe_merge(p13_innovations.decide,
+    safe_merge(p14_innovations.decide,
+    safe_merge(mdr_auto_generator.decide,
+    safe_merge(pkpir_to_uor_transformer.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    )))))))))))) {
+    ))))))))))))))) {
     risk.decide._routing == "BLOCK_AND_ALERT"
 }
 
@@ -693,11 +725,16 @@ gated_abort_verdict = safe_merge(risk.decide,
     safe_merge(p33_excise_supplement.decide,
     safe_merge(p33_ordpu_kks_supplement.decide,
     safe_merge(p3233_innovations.decide,
+    safe_merge(p12_innovations.decide,
+    safe_merge(p13_innovations.decide,
+    safe_merge(p14_innovations.decide,
+    safe_merge(mdr_auto_generator.decide,
+    safe_merge(pkpir_to_uor_transformer.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    ))))))))))) {
+    )))))))))))))))) {
     routing.decide._routing == "BLOCK_AND_ALERT"
 }
 
@@ -764,6 +801,17 @@ final_verdict_enriched = safe_merge(final_verdict_with_conflicts,
     safe_merge(nkup_enterprise.decide,
     safe_merge(exit_tax_mdr.decide,
     safe_merge(mdr_dac6.decide,
+    # ── PAS 12b: P13 Cross-Border Advanced Modules (2026-07-31) ──
+    # Exit Tax Interest Calculator, MDR Auto-Generator, WDT Doc Tracker,
+    # CFC Auto-Classifier, ViDA DRR Full, DAC8 Report Gen, CBAM Full
+    safe_merge(exit_tax_interest_calculator.decide,
+    safe_merge(mdr_auto_generator.decide,
+    safe_merge(wdt_document_tracker.decide,
+    safe_merge(cfc_auto_classifier.decide,
+    safe_merge(vida_drr_full.decide,
+    safe_merge(dac8_report_generator.decide,
+    safe_merge(cbam_full.decide,
+    safe_merge(p14_innovations.decide,
     # ── PAS 13: Enterprise v6.1 Accounting Live Layer (2026-07-19) ──
     # S17: PKPiR Enterprise Live — active column 1-17 validation
     # S18: UoR Enterprise Live — full accounting law compliance
@@ -798,7 +846,7 @@ final_verdict_enriched = safe_merge(final_verdict_with_conflicts,
     safe_merge(tax_loss_harvesting.decide,
     safe_merge(family_estonian.decide,
         form_optimizer.decide
-    ))))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # KRYTYCZNE-2 FIX: Provenance + ADR-006 Immutable Audit Trail
@@ -895,6 +943,17 @@ _package_decisions := {
     "jdg.p09_innovations": p09_innovations.decide,
     "jdg.p10_innovations": p10_innovations.decide,
     "jdg.p11_innovations": p11_innovations.decide,
+    "jdg.p12_innovations": p12_innovations.decide,
+    "jdg.p13_innovations": p13_innovations.decide,
+    "jdg.p14_innovations": p14_innovations.decide,
+    "jdg.pkpir_to_uor_transformer": pkpir_to_uor_transformer.decide,
+    "jdg.exit_tax_interest_calculator": exit_tax_interest_calculator.decide,
+    "jdg.mdr_auto_generator": mdr_auto_generator.decide,
+    "jdg.wdt_document_tracker": wdt_document_tracker.decide,
+    "jdg.cfc_auto_classifier": cfc_auto_classifier.decide,
+    "jdg.vida_drr_full": vida_drr_full.decide,
+    "jdg.dac8_report_generator": dac8_report_generator.decide,
+    "jdg.cbam_full": cbam_full.decide,
     # ── Enterprise PAS 9-11: Strategic & Operational (S1-S13) ──
     "jdg.tax_optimization": tax_optimization.decide,
     "jdg.cross_domain_hub": cross_domain_hub.decide,
