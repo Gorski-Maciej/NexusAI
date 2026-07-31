@@ -40,6 +40,7 @@ default decide := {
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # UOR-001: Art. 2 — Kto musi stosować pełną księgowość UoR
+# v8.0: Dodano quarterly tracking + early warning przy 1.5M EUR (75% progu)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 decide := verdict {
@@ -53,22 +54,40 @@ decide := verdict {
     eur_rate := object.get(eur_rate_raw, "eur_pln", 4.5)
 
     annual_revenue_eur := annual_revenue_pln / eur_rate
-    uor_threshold_eur := 2000000  # 2M EUR
+    uor_threshold_eur := 2000000
     uor_required := annual_revenue_eur >= uor_threshold_eur
     uor_compliant := object.get(input.jdg_entrepreneur, "uor_compliant", false)
 
+    # Quarterly tracking (Q1-Q4 revenue cumulative)
+    q1_revenue := object.get(input.jdg_entrepreneur, "revenue_q1", 0)
+    q2_revenue := object.get(input.jdg_entrepreneur, "revenue_q2", 0)
+    q3_revenue := object.get(input.jdg_entrepreneur, "revenue_q3", 0)
+    q4_revenue := object.get(input.jdg_entrepreneur, "revenue_q4", 0)
+    cumulative_revenue := q1_revenue + q2_revenue + q3_revenue + q4_revenue
+    cumulative_revenue_eur := cumulative_revenue / eur_rate
+
+    early_warning_threshold_eur := 1500000  # 75% progu = 1.5M EUR
+    early_warning_active := cumulative_revenue_eur >= early_warning_threshold_eur and cumulative_revenue_eur < uor_threshold_eur
+
+    current_quarter := object.get(input.jdg_entrepreneur, "current_quarter", 1)
+    quarters_remaining := 4 - current_quarter
+
     uor_routing := "BLOCK_AND_ALERT" { uor_required == true; uor_compliant == false }
-    uor_routing := "" { uor_required == false }
+    uor_routing := "WARNING" { early_warning_active == true }
+    uor_routing := "" { uor_required == false; early_warning_active == false }
     uor_routing := "" { uor_required == true; uor_compliant == true }
 
     uor_routing_reason := sprintf("UoR Art.2: Przychód %.0f EUR ≥ 2M EUR → PEŁNA KSIĘGOWOŚĆ wymagana!", [annual_revenue_eur]) { uor_required == true }
-    uor_routing_reason := sprintf("PKPiR wystarczające — przychód %.0f EUR < 2M EUR", [annual_revenue_eur]) { uor_required == false }
+    uor_routing_reason := sprintf("⚠️ WCZESNE OSTRZEŻENIE: Przychód narastająco %.0f EUR (%.0f%% progu 2M EUR). Zostało %d kwartałów. Przygotuj przejście na pełną księgowość!", [cumulative_revenue_eur, floor(cumulative_revenue_eur / uor_threshold_eur * 100), quarters_remaining]) { early_warning_active == true }
+    uor_routing_reason := sprintf("PKPiR wystarczające — przychód %.0f EUR < 2M EUR", [annual_revenue_eur]) { uor_required == false; early_warning_active == false }
 
     status_label := "⚠️ PEŁNA KSIĘGOWOŚĆ WYMAGANA! Księgi rachunkowe + sprawozdanie finansowe." { uor_required == true }
-    status_label := "✅ PKPiR wystarczające." { uor_required == false }
+    status_label := sprintf("⚠️ UWAGA: %.0f%% progu — przygotuj się na UoR!", [floor(cumulative_revenue_eur / uor_threshold_eur * 100)]) { early_warning_active == true }
+    status_label := "✅ PKPiR wystarczające." { uor_required == false; early_warning_active == false }
 
     uor_warnings := [
         sprintf("📊 UoR Art.2: Przychód roczny = %.0f PLN (%.0f EUR). Próg UoR: %.0f EUR.", [annual_revenue_pln, annual_revenue_eur, uor_threshold_eur]),
+        sprintf("📈 Narastająco (Q%d): %.0f EUR / 2M EUR (%.0f%%).", [current_quarter, cumulative_revenue_eur, floor(cumulative_revenue_eur / uor_threshold_eur * 100)]),
         sprintf("Status: %s", [status_label])
     ]
 
@@ -85,6 +104,12 @@ decide := verdict {
         "uor_threshold_eur": uor_threshold_eur,
         "uor_annual_revenue_eur": annual_revenue_eur,
         "uor_annual_revenue_pln": annual_revenue_pln,
+        "uor_cumulative_revenue_eur": cumulative_revenue_eur,
+        "uor_threshold_pct": floor(cumulative_revenue_eur / uor_threshold_eur * 100),
+        "uor_early_warning_active": early_warning_active,
+        "uor_early_warning_threshold_eur": early_warning_threshold_eur,
+        "uor_current_quarter": current_quarter,
+        "uor_quarters_remaining": quarters_remaining,
         "uor_pkpir_sufficient": not uor_required,
         "business_status": "", "ceidg_registration_required": false,
         "_routing": uor_routing,
@@ -167,7 +192,8 @@ else := verdict {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# UOR-020: Art. 20-21 — Dowody księgowe (minimum 5 elementów)
+# UOR-004-SOF: Art. 4 ust. 1 pkt 6 — Przewaga treści nad formą (substance over form)
+# v8.0: Pełna walidacja — wykrywanie transakcji gdzie forma prawna ≠ treść ekonomiczna
 # ═══════════════════════════════════════════════════════════════════════════════
 
 else := verdict {
@@ -175,39 +201,156 @@ else := verdict {
 
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
 
-    # 5 obowiązkowych elementów dowodu księgowego
-    has_date := object.get(input.invoice, "issue_date", "") != ""
-    has_parties := object.get(input.vendor, "name", "") != "" and object.get(input.vendor, "nip", "") != ""
-    has_description := object.get(input.invoice, "description", "") != ""
-    has_amount := object.get(input.invoice, "amount_net", 0) > 0 or object.get(input.invoice, "amount_gross", 0) > 0
-    has_signatures := object.get(input.invoice, "has_signatures", false) or object.get(input.invoice, "is_electronic", false)
+    # Wykrywanie transakcji gdzie forma ≠ treść
+    # 1. Leasing operacyjny → faktycznie finansowy (4 kryteria)
+    is_lease := object.get(input.invoice, "expense_type", "") == "LEASE"
+    lease_term_pct := object.get(input.invoice, "lease_term_vs_useful_life_pct", 0)
+    lease_pv_pct := object.get(input.invoice, "lease_pv_vs_fair_value_pct", 0)
+    has_bargain_option := object.get(input.invoice, "lease_bargain_purchase_option", false)
+    is_specialized_asset := object.get(input.invoice, "lease_specialized_asset", false)
 
-    # Build missing elements list
+    lease_substance_over_form := is_lease and (
+        lease_term_pct >= 75 or lease_pv_pct >= 90 or has_bargain_option or is_specialized_asset
+    )
+
+    # 2. Sprzedaż z obowiązkiem odkupu → faktycznie pożyczka (repo)
+    has_repurchase_obligation := object.get(input.invoice, "has_repurchase_obligation", false)
+    repurchase_price := object.get(input.invoice, "repurchase_price", 0)
+    sale_price := object.get(input.invoice, "amount_net", 0)
+    is_repo_disguised := has_repurchase_obligation and repurchase_price > sale_price
+
+    # 3. Faktoring z regresem → faktycznie kredyt (nie sprzedaż należności)
+    is_factoring := object.get(input.invoice, "expense_type", "") == "FACTORING"
+    factoring_with_recourse := object.get(input.invoice, "factoring_with_recourse", false)
+    factoring_substance_over_form := is_factoring and factoring_with_recourse
+
+    # 4. Umowa o dzieło → faktycznie umowa o pracę
+    is_contract_mandate := object.get(input.invoice, "contract_type", "") == "UMOWA_O_DZIELO"
+    has_employer_control := object.get(input.invoice, "employer_control_over_work", false)
+    has_fixed_hours := object.get(input.invoice, "fixed_working_hours", false)
+    contract_substance_over_form := is_contract_mandate and (has_employer_control or has_fixed_hours)
+
+    sof_violations := []
+    sof_violations := array.concat(sof_violations, ["leasing_forma_operacyjny_tresc_finansowy"]) { lease_substance_over_form }
+    sof_violations := array.concat(sof_violations, ["sprzedaz_z_odkupem_faktycznie_pozyczka"]) { is_repo_disguised }
+    sof_violations := array.concat(sof_violations, ["faktoring_z_regresem_faktycznie_kredyt"]) { factoring_substance_over_form }
+    sof_violations := array.concat(sof_violations, ["umowa_dzielo_faktycznie_praca"]) { contract_substance_over_form }
+
+    sof_violations_count := count(sof_violations)
+    sof_ok := sof_violations_count == 0
+
+    sof_routing := "BLOCK_AND_ALERT" { sof_violations_count >= 2 }
+    sof_routing := "TRIAGE_QUEUE" { sof_violations_count == 1 }
+    sof_routing := "" { sof_ok == true }
+
+    sof_routing_reason := sprintf("UoR Art.4 pkt 6: %d naruszeń zasady 'substance over form': %s", [sof_violations_count, concat(", ", sof_violations)]) { sof_ok == false }
+    sof_routing_reason := "" { sof_ok == true }
+
+    sof_label := "✅ TREŚĆ = FORMA" { sof_ok == true }
+    sof_label := sprintf("❌ %d NARUSZEŃ — forma prawna ≠ treść ekonomiczna!", [sof_violations_count]) { sof_ok == false }
+
+    sof_warnings := [
+        sprintf("🔍 UoR Art.4 pkt 6 Przewaga treści nad formą: %s", [sof_label]),
+        sprintf("Leasing operacyjny→finansowy=%s, Repo=%s, Faktoring→kredyt=%s, Dzieło→praca=%s", [
+            lease_substance_over_form, is_repo_disguised, factoring_substance_over_form, contract_substance_over_form
+        ])
+    ]
+
+    verdict := {
+        "matched": true,
+        "rule_id": "jdg.uor_live.substance_over_form_check",
+        "package": "jdg.uor_live",
+        "priority": 9202,
+        "vat_rate": "", "rounding_level": "", "gtu_code": "",
+        "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+        "kus_qualification": "", "kus_percent": 0,
+        "zus_social_base_type": "", "zus_health_rate": "",
+        "uor_sof_ok": sof_ok,
+        "uor_sof_violations_count": sof_violations_count,
+        "uor_sof_violations": sof_violations,
+        "uor_sof_lease_disguised": lease_substance_over_form,
+        "uor_sof_repo_disguised": is_repo_disguised,
+        "uor_sof_factoring_disguised": factoring_substance_over_form,
+        "uor_sof_contract_disguised": contract_substance_over_form,
+        "business_status": "", "ceidg_registration_required": false,
+        "_routing": sof_routing,
+        "_routing_reason": sof_routing_reason,
+        "_legal_basis": "Art. 4 ust. 1 pkt 6 Ustawy o rachunkowości (przewaga treści nad formą)",
+        "_warnings": sof_warnings
+    }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# UOR-020: Art. 20-21 — Dowody księgowe (PEŁNE 15 elementów)
+# Rozszerzone z 5 → 15 obowiązkowych elementów dowodu księgowego
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := verdict {
+    object.get(input.jdg_entrepreneur, "uses_uor", false) == true
+
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+
+    # 15 obowiązkowych elementów dowodu księgowego (Art. 21 UoR)
+    has_company_name := object.get(input.vendor, "name", "") != "" or object.get(input.customer, "name", "") != ""
+    has_company_address := object.get(input.vendor, "address", "") != "" or object.get(input.customer, "address", "") != ""
+    has_issue_date := object.get(input.invoice, "issue_date", "") != ""
+    has_transaction_date := object.get(input.invoice, "transaction_date", "") != ""
+    has_description := object.get(input.invoice, "description", "") != ""
+    has_issuer_name := object.get(input.invoice, "issuer_name", "") != ""
+    has_receiver_name := object.get(input.invoice, "receiver_name", "") != ""
+    has_amount_net := object.get(input.invoice, "amount_net", 0) > 0
+    has_vat_rate := object.get(input.invoice, "vat_rate", "") != "" or object.get(input.invoice, "vat_exempt", false) == true
+    has_vat_amount := object.get(input.invoice, "amount_vat", -1) >= 0
+    has_nip := object.get(input.vendor, "nip", "") != ""
+    has_invoice_number := object.get(input.invoice, "invoice_number", "") != "" or object.get(input.invoice, "document_number", "") != ""
+    has_payment_method := object.get(input.invoice, "payment_method", "") != ""
+    has_payment_date := object.get(input.invoice, "payment_due_date", "") != ""
+    has_currency := object.get(input.invoice, "currency", "PLN") != ""
+
+    # Budowanie listy brakujących elementów
     missing := []
-    missing := array.concat(missing, ["data"]) { has_date == false }
-    missing := array.concat(missing, ["strony"]) { has_parties == false }
+    missing := array.concat(missing, ["nazwa_firmy"]) { has_company_name == false }
+    missing := array.concat(missing, ["adres"]) { has_company_address == false }
+    missing := array.concat(missing, ["data_wystawienia"]) { has_issue_date == false }
+    missing := array.concat(missing, ["data_transakcji"]) { has_transaction_date == false }
     missing := array.concat(missing, ["opis"]) { has_description == false }
-    missing := array.concat(missing, ["kwota"]) { has_amount == false }
-    missing := array.concat(missing, ["podpisy"]) { has_signatures == false }
+    missing := array.concat(missing, ["wystawca"]) { has_issuer_name == false }
+    missing := array.concat(missing, ["odbiorca"]) { has_receiver_name == false }
+    missing := array.concat(missing, ["kwota_netto"]) { has_amount_net == false }
+    missing := array.concat(missing, ["stawka_vat"]) { has_vat_rate == false }
+    missing := array.concat(missing, ["kwota_vat"]) { has_vat_amount == false }
+    missing := array.concat(missing, ["nip"]) { has_nip == false }
+    missing := array.concat(missing, ["nr_faktury"]) { has_invoice_number == false }
+    missing := array.concat(missing, ["metoda_platnosci"]) { has_payment_method == false }
+    missing := array.concat(missing, ["termin_platnosci"]) { has_payment_date == false }
+    missing := array.concat(missing, ["waluta"]) { has_currency == false }
     missing_elements := missing
 
+    total_checked := 15
+    present_count := total_checked - count(missing)
     is_complete := count(missing) == 0
+    completeness_pct := floor(present_count / total_checked * 10000) / 100
 
-    doc_routing := "BLOCK_AND_ALERT" { is_complete == false }
+    doc_routing := "BLOCK_AND_ALERT" { completeness_pct < 50 }
+    doc_routing := "TRIAGE_QUEUE" { completeness_pct >= 50; is_complete == false }
     doc_routing := "" { is_complete == true }
 
     missing_str := concat(", ", missing)
 
-    doc_routing_reason := sprintf("UoR Art.20-21: Brak %d elementów dowodu: %s", [count(missing), missing_str]) { is_complete == false }
+    doc_routing_reason := sprintf("UoR Art.20-21: Tylko %d/15 elementów (%.0f%%) — krytyczne braki: %s", [present_count, completeness_pct, missing_str]) { completeness_pct < 50 }
+    doc_routing_reason := sprintf("UoR Art.20-21: Brak %d z 15 elementów: %s", [count(missing), missing_str]) { completeness_pct >= 50; is_complete == false }
     doc_routing_reason := "" { is_complete == true }
 
-    comp_label := "✅ KOMPLETNY" { is_complete == true }
-    comp_label := "❌ NIEKOMPLETNY" { is_complete == false }
+    comp_label := "✅ KOMPLETNY (15/15)" { is_complete == true }
+    comp_label := sprintf("⚠️ NIEKOMPLETNY (%d/15 = %.0f%%)", [present_count, completeness_pct]) { is_complete == false }
 
     missing_display := missing_str { count(missing) > 0 }
     missing_display := "brak" { count(missing) == 0 }
 
-    doc_warnings := [sprintf("📄 UoR Art.20-21: Dowód księgowy — %s. Brakujące elementy: %s", [comp_label, missing_display])]
+    doc_warnings := [
+        sprintf("📄 UoR Art.20-21: Dowód księgowy — %s", [comp_label]),
+        sprintf("Obecne: %d/15 elementów. Brakujące: %s", [present_count, missing_display])
+    ]
 
     verdict := {
         "matched": true,
@@ -218,17 +361,30 @@ else := verdict {
         "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
         "kus_qualification": "", "kus_percent": 0,
         "zus_social_base_type": "", "zus_health_rate": "",
-        "uor_doc_has_date": has_date,
-        "uor_doc_has_parties": has_parties,
-        "uor_doc_has_description": has_description,
-        "uor_doc_has_amount": has_amount,
-        "uor_doc_has_signatures": has_signatures,
+        "uor_doc_completeness_pct": completeness_pct,
+        "uor_doc_elements_present": present_count,
+        "uor_doc_elements_total": total_checked,
         "uor_doc_missing_elements": missing_elements,
         "uor_doc_is_complete": is_complete,
+        "uor_doc_has_name": has_company_name,
+        "uor_doc_has_address": has_company_address,
+        "uor_doc_has_issue_date": has_issue_date,
+        "uor_doc_has_trans_date": has_transaction_date,
+        "uor_doc_has_description": has_description,
+        "uor_doc_has_issuer": has_issuer_name,
+        "uor_doc_has_receiver": has_receiver_name,
+        "uor_doc_has_amount_net": has_amount_net,
+        "uor_doc_has_vat_rate": has_vat_rate,
+        "uor_doc_has_vat_amount": has_vat_amount,
+        "uor_doc_has_nip": has_nip,
+        "uor_doc_has_invoice_no": has_invoice_number,
+        "uor_doc_has_payment_method": has_payment_method,
+        "uor_doc_has_payment_date": has_payment_date,
+        "uor_doc_has_currency": has_currency,
         "business_status": "", "ceidg_registration_required": false,
         "_routing": doc_routing,
         "_routing_reason": doc_routing_reason,
-        "_legal_basis": "Art. 20-21 Ustawy o rachunkowości (dowody księgowe)",
+        "_legal_basis": "Art. 20-21 Ustawy o rachunkowości (dowody księgowe — pełne 15 elementów)",
         "_warnings": doc_warnings
     }
 }
