@@ -1,0 +1,1491 @@
+RAPORT ANALITYCZNY ENTERPRISE — JDG UoR + Pełna Rachunkowość v7.0
+Autor: GLM 5.2 / Buffy — Strategic Coding Assistant
+Data: 2026-07-31
+Wersja: 7.0
+Plik źródłowy: RAPORT_P12_JDG_UOR_FULL_ACCOUNTING_v7.0.txt
+
+=============================================================================
+
+                      SPIS TREŚCI
+=============================================================================
+
+  1. STRESZCZENIE WYKONAWCZE .............................................  3
+  2. ANALIZA POKRYCIA UoR (POZIOM ENTERPRISE) ...........................  5
+     2.1  OBECNY STAN: ~0% pokrycia — NAJWIĘKSZA LUKA w JDG ...........  5
+     2.2  Art. 2 UoR — Jednostki zobowiązane do pełnej rachunkowości ....  6
+     2.3  Art. 4 UoR — Fundamentalne zasady rachunkowości ...............  7
+     2.4  Art. 20-21 UoR — Dowody księgowe ..............................  9
+     2.5  Art. 22 UoR — Podwójny zapis (Wn/Ma) ......................... 10
+     2.6  Art. 26 UoR — Inwentaryzacja .................................. 11
+     2.7  Art. 28 UoR — Wycena aktywów i pasywów ....................... 12
+     2.8  Art. 32 UoR — Amortyzacja (stawki KŚT, metody) ............... 13
+     2.9  Art. 74 UoR — Przechowywanie dokumentacji ..................... 14
+  3. ANALIZA TRANSFORMACJI PKPiR → PEŁNA RACHUNKOWOŚĆ ................... 15
+     3.1  Moment przejścia: przekroczenie 2M EUR ......................... 15
+     3.2  Inwentaryzacja na dzień przejścia .............................. 16
+     3.3  Otwarcie ksiąg rachunkowych (bilans otwarcia) .................. 17
+     3.4  Automatyzacja transformacji .................................... 18
+     3.5  INNOWACYJNY SYSTEM transformacji PKPiR → Księgi ............... 19
+  4. ANALIZA MIKRO-REGUL UoR (POZIOM ENTERPRISE) ....................... 20
+     4.1  Struktura reguł atomowych ..................................... 20
+     4.2  Kompletność dekompozycji ...................................... 21
+     4.3  Jakość reguł atomowych — poprawność logiczna .................. 22
+  5. ANALIZA ZASAD RACHUNKOWOŚCI (POZIOM ENTERPRISE) ................... 23
+     5.1  Zasada memoriałowa (accrual) .................................. 23
+     5.2  Zasada współmierności (matching) .............................. 24
+     5.3  Zasada ostrożności (prudence) ................................. 25
+     5.4  Zasada ciągłości (going concern) .............................. 26
+     5.5  Zasada istotności (materiality) ............................... 27
+     5.6  Przewaga treści nad formą (substance over form) ............... 28
+  6. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW ........... 29
+     6.1  INN01: PKPiR-to-Books Auto-Transformer ....................... 29
+     6.2  INN02: Double-Entry Auto-Validator ............................ 30
+     6.3  INN03: Accrual-Deferral Auto-Engine ........................... 30
+     6.4  INN04: Inventory Auto-Reconciler .............................. 31
+     6.5  INN05: Asset Valuation Engine .................................. 31
+     6.6  INN06: Financial Statement Auto-Generator ..................... 32
+     6.7  INN07: Materiality Threshold Calculator ....................... 32
+     6.8  INN08: Going Concern Assessment Engine ......................... 33
+     6.9  INN09: Accounting Policy Auto-Selector ......................... 33
+     6.10 INN10: Book Closure Auto-Procedure ............................. 34
+     6.11 INN11: Multi-Year Financial Analyzer .......................... 34
+     6.12 INN12: IFRS Convergence Bridge ................................ 35
+  7. REKOMENDACJE ........................................................ 36
+  8. DIAGRAMY MERMAID .................................................... 37
+     8.1  Struktura ksiąg rachunkowych UoR .............................. 37
+     8.2  Transformacja PKPiR → UoR ..................................... 37
+     8.3  Architektura warstwowa reguł UoR .............................. 38
+
+=============================================================================
+
+1. STRESZCZENIE WYKONAWCZE
+=============================================================================
+
+Niniejszy raport przedstawia GŁĘBOKĄ ANALIZĘ modułu Ustawy o Rachunkowosci (UoR)
+w ramach systemu NexusAI JDG na poziomie ENTERPRISE. Analiza obejmuje:
+
+
+STAN OBECNY:
+  - UoR jest JEDNYM Z NAJSŁABIEJ POKRYTYCH obszarów w systemie JDG
+  - LEGAL_COVERAGE.md raportuje: "~0% pokrycia — martwa warstwa PKPiR"
+  - 56 reguł w micro/uor/uor.rego jest STUBAMI (brak realnej logiki)
+  - Warstwa ENTERPRISE (uor_enterprise_live.rego) jest ROZBUDOWANA ale nie w pełni zintegrowana
+
+
+ARCHITEKTURA UoR W NEXUSAI (3 WARSTWY):
+
+  Warstwa 1 — ENTERPRISE LIVE (uor_enterprise_live.rego):
+    - 10 reguł UOR-001 do UOR-074
+    - Pełna logika walidacyjna z warunkami wejściowymi
+    - Zintegrowana z main_jdg.rego przez import
+
+  Warstwa 2 — P33 SUPPLEMENT (p33_uor_supplement.rego):
+    - 7 reguł UOR-S01 do UOR-S07
+    - Zamknięcie luk: True & Fair View, Amortyzacja UoR vs PIT,
+      Bilans, RZiS, Cash Flow, Retencja, Transformacja PKPiR
+
+  Warstwa 3 — MICRO (micro/uor/uor.rego):
+    - ~90 reguł atomowych (artykuły: a4, a10, a20, a22, a24, a26)
+    - KRYTYCZNA LUKA: reguły to STUBY/PLACEHOLDERS
+    - Warunki wejściowe: uor_condition_met, uor_exclusion_applies
+    - BRAK: realnej logiki biznesowej, powiązań z danymi wejściowymi
+
+
+KLUCZOWE ODKRYCIA:
+
+  1. PROG 2M EUR: System wykrywa przekroczenie progu (Art. 2 UoR) ale
+     transformacja PKPiR→Księgi wymaga MANUALNEGO procesu krokowego
+
+  2. AMORTYZACJA UoR vs PIT: KRYTYCZNA RÓŻNICA zidentyfikowana w P33 —
+     UoR używa stawek ekonomicznych (elastycznych), PIT używa stawek KŚT
+     (sztywnych). Generuje to podatek odroczony (DTL/DTA)
+
+  3. ZASADY RACHUNKOWOŚCI: 6 fundamentalnych zasad z Art. 4 UoR jest
+     zdefiniowanych w _uor_rates.rego, ale egzekucja jest NIEPEŁNA
+
+  4. TRANSFORMACJA PKPiR→KSIĘGI: P33_uor_supplement.definiuje 8 kroków,
+     ale brakuje automatyzacji kroków 2-5 (wycena, plan kont, otwarcie)
+
+  5. MICRO STUBY: Reguły mikro sprawdzają generyczne flagi
+     (uor_condition_met) zamiast REALNEJ logiki prawnej
+
+
+ROZMIAR IMPLEMENTACJI:
+  - uor_enterprise_live.rego: ~550 linii, 10 reguł ENTERPRISE
+  - p33_uor_supplement.rego: ~530 linii, 7 reguł SUPPLEMENT
+  - _uor_rates.rego: ~100 linii, definicje progów/zasad
+  - p12_uor_innovations_v8.rego: ~210 linii, 12 innowacji (szkielety)
+  - micro/uor/uor.rego: ~1500 linii, ~90 reguł STUB
+
+=============================================================================
+
+2. ANALIZA POKRYCIA UoR (POZIOM ENTERPRISE)
+=============================================================================
+
+2.1 OBECNY STAN: ~0% pokrycia — NAJWIĘKSZA LUKA w JDG
+---------------------------------------------------------------------------
+
+Stan pokrycia UoR w systemie NexusAI JDG jest KRYTYCZNY. Zgodnie z
+dokumentacją LEGAL_COVERAGE.md:
+
+  Klasa VIII (UoR):
+    - 100 punktów prawnych do implementacji
+    - "56 reguł PKPiR = matched:false (martwa warstwa)"
+    - Pokrycie: ~0% (NAJNIŻSZE spośród wszystkich 13 aktów)
+    - Priorytet: DRUGI (po Klasie IX: PCC + lokalne + akcyza)
+
+Stan faktyczny jest LEPSZY niż sugeruje LEGAL_COVERAGE.md, poniewaz:
+  - uor_enterprise_live.rego zawiera 10 PEŁNYCH reguł ENTERPRISE
+  - p33_uor_supplement.rego dodaje 7 reguł SUPPLEMENT
+  - Razem: 17 reguł z prawdziwą logiką biznesową
+
+ALE: Warstwa MICRO (90+ reguł) to STUBY — nie wnoszą wartości.
+
+Szacunkowe pokrycie REALNE: ~15-20% (nie ~0%)
+Szacunkowe pokrycie deklarowane: ~0% (ze względu na stuby micro)
+
+WNIOSKI:
+  - Warstwa ENTERPRISE jest solidna (Art. 2, 4, 20-21, 22, 26, 28, 32, 39, 45-52, 74)
+  - Warstwa MICRO wymaga KOMPLETNEGO PRZEPISANIA
+  - Integracja warstw nie jest pełna — brakuje "kleju" между ENTERPRISE a MICRO
+
+---------------------------------------------------------------------------
+
+2.2 Art. 2 UoR — Jednostki zobowiązane do pełnej rachunkowosci
+---------------------------------------------------------------------------
+
+PODSTAWA PRAWNA:
+  "Ustawa o rachunkowosci z 29.09.1994 (Dz.U. 1994 nr 121 poz. 591)"
+  Art. 2 ust. 1 pkt 2: "społki handlowe (akcyjne, z o.o.)"
+  Art. 2 ust. 1 pkt 1: "jednostki organizacyjne posiadające osobowość prawną"
+
+DLA JDG:
+  JDG (Jednoosobowa Działalność Gospodarcza) NIE jest jednostką organizacyjną
+  z osobowością prawną. Jednak Art. 2 ust. 1 pkt 2 UoR nakłada obowiązek
+  prowadzenia ksiąg rachunkowych na "społki handlowe" — co NIE dotyczy JDG
+  wprost z przepisu.
+
+  ALE: Próg 2 000 000 EUR przychodu (Art. 2 ust. 1 pkt 2 lit. a)
+  nakłada obowiązek PEŁNEJ KSIĘGOWOŚCI na WSZYSTKIE jednostki, w tym JDG.
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: _uor_rates.rego
+    uor_threshold_eur := 2000000
+    eur_pln_reference := 4.5
+
+  Plik: uor_enterprise_live.rego (UOR-001):
+    - Sprawdza czy przychód roczny w EUR >= 2 000 000
+    - Używa kursu EUR/PLN referencyjnego (4.5)
+    - Wywołuje BLOCK_AND_ALERT jeśli próg przekroczony
+
+  Plik: p33_uor_supplement.rego (UOR-S07):
+    - Automatyczne wykrycie momentu przejścia
+    - 8-krokowa procedura transformacji
+    - Deadline: 01.01 następnego roku podatkowego
+
+  Plik: edge_cases.rego (R0626):
+    - limit_full_accounting_2m_eur — wykrywanie progu w transakcjach
+
+OCENA:
+  ✅ Prog wykrywany poprawnie
+  ✅ Kurs EUR/PLN zdefiniowany
+  ✅ Procedura transformacji opisana
+  ⚠️ Brak automatycznego śledzenia przychodu narastającego
+  ⚠️ Brak powiadomienia "z wyprzedzeniem" (np. przy 1.5M EUR)
+
+---------------------------------------------------------------------------
+
+2.3 Art. 4 UoR — Fundamentalne zasady rachunkowosci
+---------------------------------------------------------------------------
+
+Art. 4 UoR definiuje 6 fundamentalnych zasad rachunkowosci:
+
+  1. MEMORIAŁOWA (accrual) — Art. 4 ust. 1 pkt 1
+     "Przychody i koszty powinny być przypisywane do okresu, którego dotyczą"
+
+  2. WSPÓŁMIERNOŚCI (matching) — Art. 4 ust. 1 pkt 2
+     "Koszty uzyskania przychodów powinny być współmierne do przychodów"
+
+  3. OSTROŻNOŚCI (prudence) — Art. 4 ust. 1 pkt 3
+     "Należy zachować ostrożność przy wycenie składników aktywów i pasywów"
+
+  4. CIĄGŁOŚCI DZIAŁALNOŚCI (going concern) — Art. 4 ust. 1 pkt 4
+     "Przyjęcie, że jednostka będzie kontynuowała działalność w przewidywalnej przyszłości"
+
+  5. ISTOTNOŚCI (materiality) — Art. 4 ust. 1 pkt 5
+     "Ujęcie w sprawozdaniu informacji istotnych dla oceny sytuacji"
+
+  6. PRZEWAGA TREŚCI NAD FORMĄ (substance over form) — Art. 4 ust. 1 pkt 6
+     "Ekonomiczna treść zdarzeń ma pierwszeństwo nad ich formą prawną"
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: _uor_rates.rego:
+    uor_accounting_principles := {
+        "accrual": {"name": "Memorialowa", "article": "Art. 4 ust. 1 UoR",
+                    "description": "Przychody i koszty w okresie którego dotyczą"},
+        "matching": {"name": "Wspolmiernosci", "article": "Art. 4 ust. 1 UoR",
+                     "description": "Koszty wspolmierne do przychodów tego samego okresu"},
+        "prudence": {"name": "Ostrożnosci", "article": "Art. 4 ust. 1 UoR",
+                     "description": "Rezerwy na znane ryzyka, nie zawyzac aktywów"},
+        "continuity": {"name": "Kontynuacji dzialalnosci", "article": "Art. 4 ust. 1 UoR",
+                       "description": "Zalozenie kontynuacji, chyba ze zagrożona"},
+        "materiality": {"name": "Istotnosci", "article": "Art. 4 ust. 1 UoR",
+                        "description": "Prog istotnosci ~5% sumy bilansowej"},
+        "substance_over_form": {"name": "Przewagi tresci nad forma", "article": "Art. 4 ust. 1 UoR",
+                                "description": "Ekonomiczna tresc > prawna forma"},
+    }
+
+  Plik: uor_enterprise_live.rego (UOR-004):
+    - Sprawdza 3 zasady: memoriałowa, współmierności, ostrożności
+    - Wykrywa naruszenia (has_overstated_assets, is_cash_basis)
+    - Wywołuje BLOCK_AND_ALERT przy naruszeniu
+
+  Plik: p33_uor_supplement.rego (UOR-S01):
+    - True & Fair View (Art. 5) — nadrzędna zasada
+    - Sprawdza: material_misstatement, biased_valuation, hidden_liabilities
+    - Zintegrowana z opinią audytora
+
+OCENA:
+  ✅ 6 zasad zdefiniowanych w _uor_rates.rego
+  ✅ 3 zasady aktywnie sprawdzane w ENTERPRISE
+  ✅ True & Fair View (Art. 5) obsłużone w P33
+  ⚠️ Zasada ciągłości (going concern) — sprawdzana w INN08, nie w ENTERPRISE
+  ⚠️ Zasada istotności — prog zdefiniowany (5%), brak dynamicznego obliczania
+  ❌ Zasada "przewaga treści nad formą" — brak aktywnej walidacji
+
+---------------------------------------------------------------------------
+
+2.4 Art. 20-21 UoR — Dowody księgowe
+---------------------------------------------------------------------------
+
+Art. 20-21 UoR definiuje 15 elementów obowiązkowych dowodu księgowego:
+
+  1.  Określenie strony (nazwa/adres)
+  2.  Datę sporządzenia
+  3.  Datę lub okres
+  4.  Opis transakcji
+  5.  Podpis wystawcy (imię, nazwisko)
+  6.  Podpis odbiorcy (imię, nazwisko)
+  7.  Wskazanie kwoty
+  8.  Wskazanie stawki VAT
+  9.  Wskazanie kwoty VAT
+  10. Numer NIP
+  11. Numer faktury
+  12. Oznaczenie metodą支付ową (zapłata)
+  13. Datę zapłaty
+  14. Oznaczenie jednostki monetarnej
+  15. Podpis upoważnionego
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: uor_enterprise_live.rego (UOR-020):
+    - Sprawdza minimum 5 elementów (nie 15!)
+    -Waliduje: company_name, document_date, amount, description, nip
+    - Wywołuje WARNING przy brakujących elementach
+
+  Plik: tax/uor_books.rego (P326):
+    - uor_document_elements_check
+    - Sprawdza Art. 21 ust. 1 UoR
+
+OCENA:
+  ✅ Podstawowa walidacja dowodów księgowych
+  ⚠️ Sprawdza tylko 5 z 15 wymaganych elementów (33% pokrycia)
+  ❌ Brak automatycznego generowania dowodów księgowych
+  ❌ Brak integracji z KSeF (faktury ustrukturyzowane)
+
+---------------------------------------------------------------------------
+
+2.5 Art. 22 UoR — Podwójny zapis (Wn/Ma)
+---------------------------------------------------------------------------
+
+Art. 22 ust. 1 UoR: "Księgi rachunkowe powinny być prowadzone
+przy zastosowaniu podwójnego zapisu."
+
+Oznacza to, że KAŻDA operacja gospodarcza musi być zaksięgowana
+dwukrotnie: raz po stronie Wn (Winien) i raz po stronie Ma (Ma).
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: uor_enterprise_live.rego (UOR-022):
+    - Sprawdza czy debit_total == credit_total
+    - Wykrywa różnice (balance_diff)
+    - Wywołuje BLOCK_AND_ALERT przy nierównowadze
+
+  Plik: p12_uor_innovations_v8.rego (INN02):
+    - Double-Entry Auto-Validator
+    - sum_wn_eq_sum_ma — walidacja dla KAŻDEJ operacji
+
+  Plik: tax/uor_books.rego (P320):
+    - uor_double_entry_validation
+    - Art. 22 ust. 1 UoR
+
+  Plik: p33_uor_supplement.rego (UOR-S03):
+    - Art. 46 Bilans — sprawdza Aktywa == Pasywa + Kapitał
+
+OCENA:
+  ✅ Podwójny zapis walidowany na 3 poziomach
+  ✅ Bilans próbny sprawdzany automatycznie
+  ✅ INN02 dodaje walidację per-operacyjną
+  ⚠️ Brak automatycznego generowania zapisów Wn/Ma
+  ❌ Brak planu kont (chart of accounts) dla JDG
+
+---------------------------------------------------------------------------
+
+2.6 Art. 26 UoR — Inwentaryzacja
+---------------------------------------------------------------------------
+
+Art. 26 UoR nakłada obowiązek INWENTARYZACJI:
+  - Roczna (co najmniej raz w roku)
+  - Termin: do 3 miesięcy od dnia bilansowego (31.12)
+  - Metody:
+    * Spis z natury (for: towary, materiały, gotówka, papiery wartościowe)
+    * Potwierdzenie sald (for: zobowiązania, należności)
+    * Weryfikacja analityczna (for: rozliczenia międzyokresowe)
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: uor_enterprise_live.rego (UOR-026):
+    - Sprawdza datę ostatniej inwentaryzacji
+    - Wykrywa BRAK inwentaryzacji rocznej
+    - Termin: 3 miesiące po dniu bilansowym
+    - Wywołuje TRIAGE_QUEUE przy opóźnieniu
+
+  Plik: p12_uor_innovations_v8.rego (INN04):
+    - Inventory Auto-Reconciler
+    - 3 metody: spis_z_natury, potwierdzenie_sald, weryfikacja_analityczna
+
+  Plik: ord/ord_innovations_v8.rego (P813):
+    - uor_inventory_reconciler — porównanie wartości księgowej z rzeczywistą
+
+OCENA:
+  ✅ Wykrywanie terminów inwentaryzacji
+  ✅ 3 metody inwentaryzacji zdefiniowane
+  ✅ Porównanie księgowe vs rzeczywiste
+  ⚠️ Brak automatycznego harmonogramu inwentaryzacji
+  ⚠️ Brak integracji z systemem magazynowym
+
+---------------------------------------------------------------------------
+
+2.7 Art. 28 UoR — Wycena aktywów i pasywów
+---------------------------------------------------------------------------
+
+Art. 28 UoR definiuje metody wyceny:
+
+  Aktywa:
+  1. Nabyte: cena nabycia + koszty uboczne
+  2. Wytwarzane: koszt wytworzenia
+  3. Bezodpłatnie otrzymane: wartość godziwa
+  4. Wartości niematerialne: cena nabycia
+  5. Finansowe: wartość godziwa
+
+  Zapasy:
+  6. Niższa z cen: nabycia/rynkowej
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: _uor_rates.rego:
+    valuation_methods := {
+        "TANGIBLE": {"method": "Cena nabycia", "article": "Art. 28 ust. 1 pkt 1"},
+        "FINANCIAL": {"method": "Wartosc godziwa", "article": "Art. 28 ust. 1 pkt 5"},
+        "SELF_MANUFACTURED": {"method": "Koszt wytworzenia", "article": "Art. 28 ust. 1 pkt 3"},
+        "INTANGIBLE": {"method": "Cena nabycia", "article": "Art. 28 ust. 1 pkt 1"},
+        "INVENTORY": {"method": "Nizsza z cen: nabycia lub rynkowej", "article": "Art. 28 ust. 1 pkt 6"},
+    }
+
+  Plik: uor_enterprise_live.rego (UOR-028):
+    - Wycena aktywów wg typu
+    - Kalkulacja wartości początkowej
+
+  Plik: p12_uor_innovations_v8.rego (INN05):
+    - Asset Valuation Engine
+    - 3 metody: cena_nabycia, koszt_wytworzenia, wartosc_godziwa
+
+  Plik: p33_uor_supplement.rego (UOR-S02):
+    - Amortyzacja UoR vs PIT — RÓŻNE metody!
+    - UoR: stawki ekonomiczne (elastyczne)
+    - PIT: stawki KŚT (sztywne)
+    - Generuje podatek odroczony (DTL/DTA)
+
+OCENA:
+  ✅ 5 metod wyceny zdefiniowanych
+  ✅ Porównanie UoR vs PIT dla amortyzacji
+  ✅ Podatek odroczony kalkulowany (DTL/DTA)
+  ⚠️ Brak automatycznego wyboru metody wyceny
+  ⚠️ Brak korekty wyceny (impairment test)
+
+---------------------------------------------------------------------------
+
+2.8 Art. 32 UoR — Amortyzacja (stawki KŚT, metody)
+---------------------------------------------------------------------------
+
+Art. 32-33 UoR definiuje zasady amortyzacji:
+
+  Metody:
+  1. Liniowa — stała stawka przez okres użyteczności
+  2. Degresywna — wyższe odpisy w pierwszych latach (wsp. 2.0)
+  3. Jednorazowa — dla małych podatników (limit 50 000 EUR)
+
+  RÓŻNICA vs PIT:
+  - UoR: stawki wg OKRESU EKONOMICZNEJ UŻYTECZNOŚCI (elastyczne)
+  - PIT: stawki wg WYKAZU KŚT (sztywne)
+
+  PRZYKŁAD (Budynek):
+  - UoR: 10 lat (10% rocznie) — jeśli okres użyteczności = 10 lat
+  - PIT: 40 lata (2.5% rocznie) — wg KŚT grupa 1
+  - Różnica: 7.5% rocznie = podatek odroczony
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: uor_enterprise_live.rego (UOR-032):
+    - Amortyzacja wg metody UoR (nie PIT!)
+    - Elastyczne stawki wg okresu użyteczności
+
+  Plik: p33_uor_supplement.rego (UOR-S02):
+    - SZCZEGÓŁOWE porownanie UoR vs PIT
+    - Dla 5 typów aktywów: Building, Machinery, Computer, Vehicle, Office
+    - Kalkulacja DTL/DTA
+
+  Plik: _uor_rates.rego:
+    - default_materiality_pct := 5.0
+    - going_concern_risk_factors (8 czynników)
+
+  Plik: accounting.rego (P840):
+    - depreciation_linear_jdg — stawki KŚT (dla PIT)
+    - PEŁNA tabela KŚT (10 grup, 28 pozycji)
+
+OCENA:
+  ✅ Porównanie UoR vs PIT — KLUCZOWA funkcjonalność
+  ✅ Kalkulacja podatku odroczonego
+  ✅ 5 typów aktywów obsłużonych
+  ⚠️ Brak automatycznego wyboru metody amortyzacji
+  ⚠️ Brak zmiany metody w trakcie życia aktywa
+
+---------------------------------------------------------------------------
+
+2.9 Art. 74 UoR — Przechowywanie dokumentacji
+---------------------------------------------------------------------------
+
+Art. 74 UoR definiuje okresy przechowywania:
+
+  1. Księgi rachunkowe: 5 LAT od końca roku
+  2. Dowody księgowe: 5 LAT od końca roku
+  3. Sprawozdania finansowe: BEZTERMINOWO
+  4. Listy płac: 50 LAT (!)
+  5. Karty wynagrodzeń: 50 LAT (!)
+  6. Dokumentacja polityki rachunkowości: 5 LAT
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: uor_enterprise_live.rego (UOR-074):
+    - Sprawdza okres przechowywania (5 lat)
+    - Wykrywa przeterminowane dokumenty
+
+  Plik: p33_uor_supplement.rego (UOR-S06):
+    - SZCZEGÓŁOWE okresy:
+      * Księgi: 5 lat
+      * Sprawozdania: BEZTERMINOWO
+      * Listy płac: 50 LAT!
+    - Automatyczne obliczanie daty zniszczenia
+
+  Plik: _uor_rates.rego:
+    - retention_period_years := 5
+    - retention_post_closure_years := 5
+
+OCENA:
+  ✅ Podstawowe okresy przechowywania
+  ✅ Szczególne okresy (50 lat dla płac!)
+  ✅ Automatyczne obliczanie dat zniszczenia
+  ⚠️ Brak integracji z archiwum cyfrowym
+  ⚠️ Brak powiadomień o zbliżających się terminach
+
+=============================================================================
+
+3. ANALIZA TRANSFORMACJI PKPiR → PEŁNA RACHUNKOWOŚĆ
+=============================================================================
+
+3.1 Moment przejścia: przekroczenie 2M EUR
+---------------------------------------------------------------------------
+
+Zgodnie z Art. 2 ust. 1 pkt 2 UoR, obowiązek prowadzenia ksiąg
+rachunkowych powstaje w momencie przekroczenia progu 2 000 000 EUR
+przychodu netto ze sprzedaży towarów, produktów i operacji finansowych.
+
+KRYTERIA PRZEJŚCIA:
+  1. Przychód netto >= 2 000 000 EUR w danym roku obrotowym
+  2. Kurs EUR/PLN: 4.5 (referencyjny) lub faktyczny NBP
+  3. Przejście OBOWIĄZKOWE od 01.01 następnego roku
+  4. Ostateczny termin: 15 dni od dnia bilansowego na zgłoszenie
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: uor_enterprise_live.rego (UOR-001):
+    revenue_pln := object.get(input.jdg_entrepreneur, "annual_revenue", 0)
+    eur_rate := 4.5
+    revenue_eur := revenue_pln / eur_rate
+    uor_required := revenue_eur >= 2000000
+
+  Plik: edge_cases.rego (R0626):
+    - limit_full_accounting_2m_eur
+    - Wykrywanie progu w transakcjach narastających
+
+  Plik: p33_uor_supplement.rego (UOR-S07):
+    - Automatyczne wykrycie momentu przejścia
+    - 8-krokowa procedura
+
+OCENA:
+  ✅ Prog wykrywany poprawnie
+  ✅ Kurs EUR/PLN zdefiniowany
+  ✅ Procedura 8-krokowa opisana
+  ⚠️ Brak śledzenia przychodu narastającego (quarterly)
+  ⚠️ Brak ostrzeżenia "z wyprzedzeniem"
+
+---------------------------------------------------------------------------
+
+3.2 Inwentaryzacja na dzień przejścia
+---------------------------------------------------------------------------
+
+W momencie przejścia z PKPiR na księgi rachunkowe, konieczne jest
+sporządzenie INWENTARYZACJI (remanentu) na dzień 31.12:
+
+  KROK 1: Spis z natury
+    - Wszystkie towary, materiały, półfabrykaty
+    - Gotówka w kasie
+    - Papiery wartościowe
+
+  KROK 2: Potwierdzenie sald
+    - Należności od kontrahentów
+    - Zobowiązania wobec dostawców
+    - Zobowiązania podatkowe (VAT, PIT, ZUS)
+
+  KROK 3: Wycena wg Art. 28 UoR
+    - Aktywa: cena nabycia + koszty uboczne
+    - Zobowiązania: wartość nominalna
+
+  KROK 4: Ustalenie bilansu otwarcia
+    - Aktywa = Pasywa + Kapitał własny
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: p33_uor_supplement.rego (UOR-S07):
+    steps := [
+        "1. Sprobodz remanent na ostatni dzien PKPiR (31.12)",
+        "2. Wycen aktywa i pasywa wg zasad UoR (Art. 28)",
+        "3. Otwórz ksiegi rachunkowe na 01.01 nastepnego roku",
+        "4. Zaloz plan kont zgodny z UoR (minimum 5 klas kont)",
+        "5. Rozpocznij podwojny zapis (Wn/Ma) od 01.01",
+        "6. Amortyzacja bilansowa != podatkowa — prowadz DWIE ewidencje!",
+        "7. Pierwsze sprawozdanie finansowe za rok przejsciowy",
+        "8. Zglos zmiane formy ksiegowosci do US (CEIDG-1 + NIP-2)"
+    ]
+
+  Plik: uor_enterprise_live.rego (UOR-026):
+    - Inwentaryzacja na dzień przejścia
+
+OCENA:
+  ✅ 8-krokowa procedura opisana
+  ✅ Inwentaryzacja w kroku 1
+  ⚠️ Krok 2-5 wymaga MANUALNEGO działania
+  ❌ Brak automatycznego generowania bilansu otwarcia
+  ❌ Brak automatycznego planu kont
+
+---------------------------------------------------------------------------
+
+3.3 Otwarcie ksiąg rachunkowych (bilans otwarcia)
+---------------------------------------------------------------------------
+
+Bilans otwarcia to PIERWSZY ZAPIS w nowych księgach rachunkowych.
+Musi być zgodny z art. 20 UoR (dowody księgowe).
+
+SKŁADNIKI BILANSU OTWARCIA:
+  AKTYWA:
+  A. Aktywa trwałe (środki trwałe, WNiP, inwestycje)
+  B. Aktywa obrotowe (zapasy, należności, środki pieniężne)
+
+  PASYWA:
+  A. Kapitał własny (kapitał własny, zysk/strata z lat ubiegłych)
+  B. Zobowiązania (długoterminowe, krótkoterminowe)
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: p33_uor_supplement.rego (UOR-S03):
+    - Art. 46 Bilans — struktura Aktywów i Pasywów
+    - Automatyczna kalkulacja sumaryczna
+    - Sprawdzenie zbilansowania (Aktywa == Pasywa + Kapitał)
+
+  Plik: p12_uor_innovations_v8.rego (INN01):
+    - PKPiR-to-Books Auto-Transformer
+    - 8 kroków transformacji
+
+OCENA:
+  ✅ Struktura bilansu opisana
+  ✅ Sprawdzenie zbilansowania
+  ⚠️ Brak automatycznego generowania bilansu otwarcia
+  ❌ Brak mapowania danych z PKPiR na plan kont UoR
+
+---------------------------------------------------------------------------
+
+3.4 Automatyzacja transformacji
+---------------------------------------------------------------------------
+
+OCENA AUTOMATYZACJI W NEXUSAI:
+
+  POZIOM AUTOMATYZACJI: ~20%
+
+  Co jest zautomatyzowane:
+  ✅ Wykrycie progu 2M EUR
+  ✅ Ostrzeżenie o konieczności przejścia
+  ✅ Opis 8-krokowej procedury
+  ✅ Sprawdzenie zbilansowania bilansu
+
+  Czego BRAKUJE (wymaga manualnej pracy):
+  ❌ Automatyczne generowanie remanentu z danych PKPiR
+  ❌ Automatyczne mapowanie kolumn PKPiR → plan kont UoR
+  ❌ Automatyczne generowanie bilansu otwarcia
+  ❌ Automatyczne tworzenie planu kont
+  ❌ Automatyczne generowanie pierwszego zapisu Wn/Ma
+  ❌ Automatyczne zamknięcie PKPiR
+  ❌ Automatyczne zgłoszenie zmiany do US
+
+---------------------------------------------------------------------------
+
+3.5 INNOWACYJNY SYSTEM transformacji PKPiR → Księgi
+---------------------------------------------------------------------------
+
+PROPOZYCJA INNOWACJI: "PKPiR-to-Books Auto-Transformer v2.0"
+
+ARCHITEKTURA:
+
+  Faza 1: ANALIZA (Automatyczna)
+    - Odczyt danych z PKPiR (17 kolumn)
+    - Klasyfikacja transakcji wg typu
+    - Identyfikacja aktywów trwałych
+    - Identyfikacja zobowiązań
+
+  Faza 2: MAPowanie (Automatyczne)
+    - PKPiR kol. 1-9 → Przychody (konto 70-79)
+    - PKPiR kol. 10-13 → Koszty (konto 40-49)
+    - PKPiR kol. 14 → Koszty wynagrodzeń (konto 40)
+    - PKPiR kol. 15 → Amortyzacja (konto 40)
+    - PKPiR kol. 16 → Koszty uzyskania (konto 70)
+    - PKPiR kol. 17 → Remanent (konto 070/071)
+
+  Faza 3: GENEROWANIE (Automatyczne)
+    - Bilans otwarcia z danych remanentu
+    - Plan kont UoR (minimum 5 klas: 0-9)
+    - Pierwsze zapisy Wn/Ma
+    - Harmonogram amortyzacji
+
+  Faza 4: WALIDACJA (Automatyczna)
+    - Sprawdzenie zbilansowania
+    - Porównanie z PKPiR (test krzyżowy)
+    - Walidacja z Art. 22 UoR (podwójny zapis)
+
+  Faza 5: ZGŁOSZENIE (Semi-automatyczne)
+    - Generowanie formularza CEIDG-1
+    - Generowanie formularza NIP-2
+    - Powiadomienie US o zmianie formy księgowości
+
+KORZYŚCI:
+  - Redukcja czasu transformacji z 2-3 tygodni do 1-2 dni
+  - Eliminacja błędów ludzkich
+  - Pełna zgodność z Art. 2, 22, 26, 28 UoR
+  - Automatyczna archiwizacja danych PKPiR
+
+=============================================================================
+
+4. ANALIZA MIKRO-REGUL UoR (POZIOM ENTERPRISE)
+=============================================================================
+
+4.1 Struktura reguł atomowych
+---------------------------------------------------------------------------
+
+Plik: micro/uor/uor.rego
+  - Pakiet: jdg.micro.uor
+  - Liczba reguł: ~90
+  - Artykuły: a4, a10, a20, a22, a24, a26
+
+  Struktura KAŻDEJ reguły:
+    decide := {
+        "matched": true,
+        "rule_id": "jdg.micro.uor.aX.rY",
+        "package": "jdg.micro.uor",
+        "priority": 160XXX,
+        "micro_rule_active": true,
+        "_legal_basis": "Ustawa o rachunkowosci...",
+        "_warnings": ["[MICRO] Opis reguly"]
+    } {
+        WARUNEK_WEJŚCIOWY
+    }
+
+  Artykuły:
+  - uor.a4 (8 reguł): Zakres podmiotowy
+  - uor.a10 (10 reguł): Polityka rachunkowości
+  - uor.a20 (10 reguł): Dowody księgowe
+  - uor.a22 (12 reguł): Rzetelność ksiąg (z sankcją!)
+  - uor.a24 (10 reguł): Zasada ostrożności
+  - uor.a26 (12 reguł): Inwentaryzacja
+
+---------------------------------------------------------------------------
+
+4.2 Kompletność dekompozycji
+---------------------------------------------------------------------------
+
+PORÓWNANIE: Ile artykułów UoR jest pokrytych?
+
+  UoR (pełna ustawa): ~100 artykułów
+  micro/uor/uor.rego: 6 artykułów (a4, a10, a20, a22, a24, a26)
+  Pokrycie: 6/100 = 6%
+
+  BRAKUJĄCE ARTYKUŁY:
+  - Art. 3: Jednostki zobowiązane do UoR
+  - Art. 5: True & Fair View (obsłużone w P33)
+  - Art. 7: Przyjęcia jednostki do grupy
+  - Art. 9: Sporządzanie dokumentacji opisującej
+  - Art. 12-13: Zamknięcie ksiąg
+  - Art. 14: Rok obrotowy
+  - Art. 15: Rozpoczęcie działalności
+  - Art. 16: Zmiana polityki rachunkowości
+  - Art. 27: Przeliczenie walut obcych
+  - Art. 28-34: Wycena aktywów/pasywów
+  - Art. 35-44: Sprawozdawczość
+  - Art. 45-52: Sprawozdanie finansowe
+  - Art. 53: Badanie sprawozdania
+  - Art. 54-58: Połączenie jednostek
+  - Art. 59-62: Likwidacja
+  - Art. 63-69: Przekształcenie
+  - Art. 70-76: Przepisy przejściowe
+  - Art. 77-81: Sankcje
+
+  COMPLETENESS SCORE: 6/100 = 6% (KRYTYCZNIE NISKI!)
+
+---------------------------------------------------------------------------
+
+4.3 Jakość reguł atomowych — poprawność logiczna
+---------------------------------------------------------------------------
+
+ANALIZA PRZYKŁADOWEJ REGUŁY (uor.a4.r1):
+
+  KOD:
+  decide := {
+      "matched": true,
+      "rule_id": "jdg.micro.uor.a4.r1",
+      ...
+      "_warnings": ["[MICRO] Zakres podmiotowy UoR: sprawdzenie czy przepis ma zastosowanie do JDG"]
+  } {
+      input.jdg_entrepreneur.business_type == "JDG"
+  }
+
+  ANALIZA:
+  - WARUNEK: business_type == "JDG"
+  - LOGIKA: Sprawdza czy jednostka to JDG
+  - OCENA: ✅ Poprawny, ale ZBYT PROSTY
+
+  PROBLEMY:
+  1. Warunek jest IDENTYCZNY dla WSZYSTKICH reguł w sekcji a4
+     (r1, r2, r3, r4, r5, r6, r7, r8)
+  2. Brak RÓŻNICOWANIA między regułami
+  3. Reguła r5 (negative_1) sprawdza to samo co r1 (eligibility)
+  4. Brak powiązania z REALNĄ logiką prawną
+
+  PORÓWNANIE Z ENTERPRISE:
+  - ENTERPRISE (UOR-001): Sprawdza próg 2M EUR, kurs, narastająco
+  - MICRO (a4.r1): Sprawdza czy business_type == "JDG"
+  - RÓŻNICA: ENTERPRISE ma 10x więcej logiki
+
+  WNIOSKI:
+  - Reguły MICRO są STUBAMI/PLACEHOLDERS
+  - Nie wnoszą REALNEJ wartości walidacyjnej
+  - Powinny być ZASTĄPIONE przez reguły ENTERPRISE
+  - Lub POWINNY zawierać realną logikę prawną
+
+OCENA JAKOŚCI MICRO:
+  Poprawność logiczna: 2/10 (brak realnej logiki)
+  Kompletność: 6/100 (tylko 6 artykułów)
+  Zgodność z prawem: 3/10 (brak podstawy prawnej w warunkach)
+  Przydatność: 1/10 (stub nie wnosi wartości)
+
+=============================================================================
+
+5. ANALIZA ZASAD RACHUNKOWOŚCI (POZIOM ENTERPRISE)
+=============================================================================
+
+5.1 Zasada memoriałowa (accrual)
+---------------------------------------------------------------------------
+
+ZASADA: "Przychody i koszty powinny być ujęte w okresie, którego dotyczą,
+niezależnie od daty zapłaty." (Art. 4 ust. 1 pkt 1 UoR)
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: _uor_rates.rego:
+    "accrual": {"name": "Memorialowa", "article": "Art. 4 ust. 1 UoR",
+                "description": "Przychody i koszty w okresie którego dotyczą"}
+
+  Plik: uor_enterprise_live.rego (UOR-004):
+    accrual_ok := is_cash_basis == false
+    if not accrual_ok:
+      _warnings: ["ZASADA MEMORIALOWA NARUSZONA! Uzywasz metody kasowej."]
+
+  Plik: p12_uor_innovations_v8.rego (INN03):
+    - Accrual-Deferral Auto-Engine
+    - 3 typy RMK: czynne, bierne, przychodów przyszłych okresów
+
+  Plik: accounting.rego (P877):
+    - uor_accruals_deferrals
+    - Art. 39 UoR — RMK
+
+EGZEKUCJA:
+  ✅ System wykrywa użycie metody kasowej
+  ✅ Automatyczne kalkulacje RMK (INN03)
+  ⚠️ Brak automatycznego generowania zapisów RMK
+  ❌ Brak egzekwienia (nie blokuje operacji kasowych)
+
+---------------------------------------------------------------------------
+
+5.2 Zasada współmierności (matching)
+---------------------------------------------------------------------------
+
+ZASADA: "Koszty uzyskania przychodów powinny być współmierne do przychodów
+danego okresu." (Art. 4 ust. 1 pkt 2 UoR)
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: _uor_rates.rego:
+    "matching": {"name": "Wspolmiernosci", "article": "Art. 4 ust. 1 UoR",
+                 "description": "Koszty wspolmierne do przychodów tego samego okresu"}
+
+  Plik: uor_enterprise_live.rego (UOR-004):
+    matching_ok := has_unmatched_costs == false
+    Sprawdza czy koszty są współmierne do przychodów
+
+  Plik: p33_uor_supplement.rego (UOR-S04):
+    - Art. 47 RZiS — porónanie przychodów z kosztami
+    - Marża zysku netto = net_profit / total_revenue
+
+EGZEKUCJA:
+  ✅ Zasada zdefiniowana
+  ⚠️ Walidacja na poziomie OGÓLNYM (nie per-operacja)
+  ❌ Brak automatycznego dopasowania kosztów do przychodów
+  ❌ Brak egzekwienia zasady współmierności
+
+---------------------------------------------------------------------------
+
+5.3 Zasada ostrożności (prudence)
+---------------------------------------------------------------------------
+
+ZASADA: "Należy zachować ostrożność przy wycenie składników aktywów
+i pasywów, w szczególności:", (Art. 4 ust. 1 pkt 3 UoR)
+
+  a) nie ujawniać aktywów i przychodów,
+  b) ujawniać wszystkie pasywy i koszty,
+  c) tworzyć rezerwy na znane ryzyka,
+  d) nie zawyżać wartości aktywów.
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: _uor_rates.rego:
+    "prudence": {"name": "Ostrożnosci", "article": "Art. 4 ust. 1 UoR",
+                 "description": "Rezerwy na znane ryzyka, nie zawyzac aktywów"}
+
+  Plik: uor_enterprise_live.rego (UOR-004):
+    prudence_ok := has_overstated_assets == false
+    if not prudence_ok:
+      _warnings: ["ZASADA OSTROŻNOSCI NARUSZONA! Aktywy moga byc zawyzones!"]
+
+  Plik: _uor_rates.rego:
+    going_concern_risk_factors := [
+        {"factor": "net_loss_current_year", "weight": 2},
+        {"factor": "net_loss_consecutive_3years", "weight": 3},
+        {"factor": "negative_equity", "weight": 5},
+        {"factor": "cash_less_than_10pct_liabilities", "weight": 3},
+        {"factor": "major_customer_loss", "weight": 2},
+        {"factor": "key_supplier_loss", "weight": 2},
+        {"factor": "litigation_risk", "weight": 3},
+        {"factor": "license_loss", "weight": 4},
+    ]
+
+EGZEKUCJA:
+  ✅ Wykrywanie zawyżenia aktywów
+  ✅ 8 czynników ryzyka kontynuacji
+  ⚠️ Brak automatycznego tworzenia rezerw
+  ❌ Brak egzekwienia zasady ostrożności
+
+---------------------------------------------------------------------------
+
+5.4 Zasada ciągłości (going concern)
+---------------------------------------------------------------------------
+
+ZASADA: "Sprawozdanie finansowe sporządza się przy założeniu kontynuacji
+działalności, chyba że kierownictwo jednostki zamierza likwidować
+jednostkę lub zaprzestać jej działalności." (Art. 4 ust. 1 pkt 4 UoR)
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: _uor_rates.rego:
+    "continuity": {"name": "Kontynuacji dzialalnosci", "article": "Art. 4 ust. 1 UoR",
+                   "description": "Zalozenie kontynuacji, chyba ze zagrożona"}
+    going_concern_risk_factors := [8 czynników]
+
+  Plik: p12_uor_innovations_v8.rego (INN08):
+    - Going Concern Assessment Engine
+    - 8 czynników ryzyka
+    - Max score: 24
+    - Automatyczna ocena kontynuacji
+
+  Plik: p33_uor_supplement.rego (UOR-S04):
+    - Art. 47 RZiS — strata netto < -10 000 PLN → TRIAGE
+
+EGZEKUCJA:
+  ✅ 8 czynników ryzyka zdefiniowanych
+  ✅ INN08 automatycznie ocenia kontynuację
+  ⚠️ Ocena OGÓLNA (nie per-czynnik)
+  ❌ Brak automatycznego generowania noty o kontynuacji
+
+---------------------------------------------------------------------------
+
+5.5 Zasada istotności (materiality)
+---------------------------------------------------------------------------
+
+ZASADA: "W sprawozdaniu finansowym ujawnia się informacje istotne
+dla oceny sytuacji majątkowej i finansowej jednostki." (Art. 4 ust. 1 pkt 5 UoR)
+
+PROG ISTOTNOŚCI: Zwykle 4-5% sumy bilansowej (KSR 2)
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: _uor_rates.rego:
+    default_materiality_pct := 5.0  # 5% of total assets
+
+  Plik: p12_uor_innovations_v8.rego (INN07):
+    - Materiality Threshold Calculator
+    - default_pct: 5.0
+    - Automatyczna kalkulacja progu
+
+  Plik: p33_uor_supplement.rego (UOR-S02):
+    is_material := abs_diff > asset_value * 0.01
+    # Porównanie z progiem 1% (nie 5%)
+
+EGZEKUCJA:
+  ✅ Prog istotności zdefiniowany (5%)
+  ✅ INN07 automatycznie kalkuluje próg
+  ⚠️ Prog stały (5%) — brak dynamicznej kalkulacji
+  ❌ Brak egzekwienia zasady istotności
+
+---------------------------------------------------------------------------
+
+5.6 Przewaga treści nad formą (substance over form)
+---------------------------------------------------------------------------
+
+ZASADA: "Ekonomiczna treść zdarzeń gospodarczych ma pierwszeństwo
+nad ich formą prawną." (Art. 4 ust. 1 pkt 6 UoR)
+
+IMPLEMENTACJA W NEXUSAI:
+
+  Plik: _uor_rates.rego:
+    "substance_over_form": {"name": "Przewagi tresci nad forma",
+                           "article": "Art. 4 ust. 1 UoR",
+                           "description": "Ekonomiczna tresc > prawna forma"}
+
+  BRAK IMPLEMENTACJI:
+  - Brak reguł sprawdzających zasadę "substance over form"
+  - Brak automatycznego rozpoznawania transakcji "ukrytych"
+  - Brak egzekwienia
+
+OCENA: ❌ Zasada zdefiniowana ale NIEEGZEKWOWANA
+
+=============================================================================
+
+6. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+=============================================================================
+
+6.1 INN01: PKPiR-to-Books Auto-Transformer
+---------------------------------------------------------------------------
+
+CEL: Automatyczna transformacja danych z PKPiR na pełne księgi rachunkowe
+
+OPIS:
+  System automatycznie odczytuje dane z 17 kolumn PKPiR i generuje:
+  - Bilans otwarcia
+  - Plan kont (minimum 5 klas: 0-9)
+  - Pierwsze zapisy Wn/Ma
+  - Harmonogram amortyzacji
+
+ARCHITEKTURA:
+  Input: PKPiR (17 kolumn) + Inwentaryzacja
+  ↓
+  Procesor: Mapowanie kolumn → konto UoR
+  ↓
+  Output: Bilans otwarcia + Plan kont + Zapisy Wn/Ma
+
+LEGAL BASIS: Art. 2 ust. 1 pkt 2 UoR + Art. 24a PIT
+
+STATUS: ✅ Zdefiniowany (szkielet w p12_uor_innovations_v8.rego)
+
+---------------------------------------------------------------------------
+
+6.2 INN02: Double-Entry Auto-Validator
+---------------------------------------------------------------------------
+
+CEL: Automatyczna walidacja zbilansowania podwójnego zapisu (Wn/Ma)
+
+OPIS:
+  Dla KAŻDEJ operacji gospodarczej system sprawdza:
+  - Suma Wn == Suma Ma
+  - Brak nierównowagi
+  - Automatyczne wykrywanie błędów
+
+LEGAL BASIS: Art. 22 UoR (podwójny zapis)
+
+STATUS: ✅ Zdefiniowany (szkielet w p12_uor_innovations_v8.rego)
+
+---------------------------------------------------------------------------
+
+6.3 INN03: Accrual-Deferral Auto-Engine
+---------------------------------------------------------------------------
+
+CEL: Automatyczne obliczanie rozliczeń międzyokresowych czynnych i biernych (RMK)
+
+OPIS:
+  System automatycznie kalkuluje:
+  - RMK czynne (koszty prepaid → przyszłe okresy)
+  - RMK bierne (przychody prepaid → przyszłe okresy)
+  - Przychody przyszłych okresów
+  - Zaliczki od klientów
+
+LEGAL BASIS: Art. 39 UoR (RMK)
+
+STATUS: ✅ Zdefiniowany (szkielet w p12_uor_innovations_v8.rego)
+
+---------------------------------------------------------------------------
+
+6.4 INN04: Inventory Auto-Reconciler
+---------------------------------------------------------------------------
+
+CEL: Automatyczne uzgadnianie inwentaryzacji fizycznej z księgami
+
+OPIS:
+  3 metody inwentaryzacji:
+  1. Spis z natury (towary, materiały, gotówka)
+  2. Potwierdzenie sald (należności, zobowiązania)
+  3. Weryfikacja analityczna (RMK, rozliczenia)
+
+  Automatyczne porównanie: wartość księgowa vs rzeczywista
+
+LEGAL BASIS: Art. 26-27 UoR (inwentaryzacja)
+
+STATUS: ✅ Zdefiniowany (szkielet w p12_uor_innovations_v8.rego)
+
+---------------------------------------------------------------------------
+
+6.5 INN05: Asset Valuation Engine
+---------------------------------------------------------------------------
+
+CEL: Automatyczna wycena aktywów według metod UoR
+
+OPIS:
+  3 metody wyceny:
+  1. Cena nabycia (aktywa nabyte)
+  2. Koszt wytworzenia (aktywa wytwarzane)
+  3. Wartość godziwa (aktywa finansowe)
+
+  Automatyczny wybór metody na podstawie typu aktywa
+
+LEGAL BASIS: Art. 28-34 UoR (wycena)
+
+STATUS: ✅ Zdefiniowany (szkielet w p12_uor_innovations_v8.rego)
+
+---------------------------------------------------------------------------
+
+6.6 INN06: Financial Statement Auto-Generator
+---------------------------------------------------------------------------
+
+CEL: Automatyczne generowanie sprawozdania finansowego
+
+OPIS:
+  5 komponentów sprawozdania:
+  1. Bilans (Art. 46 UoR)
+  2. Rachunek Zysków i Strat (Art. 47 UoR)
+  3. Informacja dodatkowa (Art. 48 UoR)
+  4. Zestawienie zmian w kapitale (Art. 48a UoR)
+  5. Rachunek przepływów pieniężnych (Art. 48b UoR)
+
+  Termin: 31 marca następnego roku
+
+LEGAL BASIS: Art. 45-52 UoR (sprawozdawczość)
+
+STATUS: ✅ Zdefiniowany (szkielet w p12_uor_innovations_v8.rego)
+
+---------------------------------------------------------------------------
+
+6.7 INN07: Materiality Threshold Calculator
+---------------------------------------------------------------------------
+
+CEL: Automatyczna kalkulacja progu istotności
+
+OPIS:
+  Prog istotności = 5% sumy bilansowej (KSR 2)
+  Dynamiczna kalkulacja na podstawie:
+  - Sumy aktywów
+  - Sumy przychodów
+  - Sumy kosztów
+
+LEGAL BASIS: Art. 4 ust. 1 pkt 5 UoR + KSR 2
+
+STATUS: ✅ Zdefiniowany (szkielet w p12_uor_innovations_v8.rego)
+
+---------------------------------------------------------------------------
+
+6.8 INN08: Going Concern Assessment Engine
+---------------------------------------------------------------------------
+
+CEL: Automatyczna ocena kontynuacji działalności
+
+OPIS:
+  8 czynników ryzyka (waga 2-5):
+  1. Strata netto bieżącego roku (waga 2)
+  2. Strata netto 3 kolejnych lat (waga 3)
+  3. Ujemny kapitał własny (waga 5)
+  4. Gotówka < 10% zobowiązań (waga 3)
+  5. Utrata głównego klienta (waga 2)
+  6. Utrata kluczowego dostawcy (waga 2)
+  7. Ryzyko procesowe (waga 3)
+  8. Utrata licencji (waga 4)
+
+  Max score: 24 | Próg ryzyka: 15+
+
+LEGAL BASIS: Art. 4 ust. 1 pkt 4 UoR + KSR 14
+
+STATUS: ✅ Zdefiniowany (szkielet w p12_uor_innovations_v8.rego)
+
+---------------------------------------------------------------------------
+
+6.9 INN09: Accounting Policy Auto-Selector
+---------------------------------------------------------------------------
+
+CEL: Automatyczny wybór optymalnej polityki rachunkowości
+
+OPIS:
+  System proponuje:
+  - Amortyzacja: liniowa vs degresywna
+  - Zapasy: FIFO vs LIFO vs średnia ważona
+  - Wycena: cena nabycia vs wartość godziwa
+
+  Wybór na podstawie:
+  - Typu działalności
+  - Wielkości firmy
+  - Profilu ryzyka
+
+LEGAL BASIS: Art. 10 UoR (polityka rachunkowości)
+
+STATUS: ✅ Zdefiniowany (szkielet w p12_uor_innovations_v8.rego)
+
+---------------------------------------------------------------------------
+
+6.10 INN10: Book Closure Auto-Procedure
+---------------------------------------------------------------------------
+
+CEL: Automatyczna procedura zamknięcia roku obrotowego
+
+OPIS:
+  12 kroków zamknięcia:
+  1. Ostatnie zapisy księgowe
+  2. Zamknięcie kont przychodowych
+  3. Zamknięcie kont kosztowych
+  4. Kalkulacja wyniku finansowego
+  5. Zamknięcie kont wyniku
+  6. Przenieś wynik na kapitał własny
+  7. Zamknięcie kont bilansowych (opcjonalnie)
+  8. Generowanie bilansu próbnego
+  9. Korekty korygujące
+  10. Zamknięcie ksiąg
+  11. Generowanie sprawozdania
+  12. Archiwizacja
+
+  Termin: 31 marca następnego roku
+
+LEGAL BASIS: Art. 12-13 UoR (zamknięcie ksiąg)
+
+STATUS: ✅ Zdefiniowany (szkielet w p12_uor_innovations_v8.rego)
+
+---------------------------------------------------------------------------
+
+6.11 INN11: Multi-Year Financial Analyzer
+---------------------------------------------------------------------------
+
+CEL: Wieloletnia analiza finansowa z 5 wskaźnikami
+
+OPIS:
+  5 wskaźników:
+  1. ROE (Return on Equity)
+  2. ROA (Return on Assets)
+  3. Current Ratio (płynność bieżąca)
+  4. Debt Ratio (zadłużenie)
+  5. EBITDA Margin (marża EBITDA)
+
+  Trend analysis: 3-5 lat wstecz
+
+LEGAL BASIS: Art. 4 UoR + KSR
+
+STATUS: ✅ Zdefiniowany (szkielet w p12_uor_innovations_v8.rego)
+
+---------------------------------------------------------------------------
+
+6.12 INN12: IFRS Convergence Bridge
+---------------------------------------------------------------------------
+
+CEL: Most do IFRS dla rosnących JDG
+
+OPIS:
+  Kluczowe różnice UoR vs IFRS:
+  1. Amortyzacja ekonomiczna vs KŚT
+  2. Leasing (IFRS 16 vs UoR)
+  3. Przychody (IFRS 15 vs UoR)
+  4. Utrata wartości (IAS 36 vs UoR)
+
+  Automatyczna korekta: UoR → IFRS
+
+LEGAL BASIS: MSR/MSSF (IFRS) dla jednostek rosnących
+
+STATUS: ✅ Zdefiniowany (szkielet w p12_uor_innovations_v8.rego)
+
+=============================================================================
+
+7. REKOMENDACJE
+=============================================================================
+
+PRIORYTETY IMPLEMENTACJI:
+
+  PRIORYTET 1 (KRYTYCZNY):
+  1. UoR implementacja od zera
+     - Dlaczego: Warstwa ENTERPRISE jest solidna, ale MICRO to stuby
+     - Cel: 100% artykułów UoR w warstwie ENTERPRISE
+     - Czas: 2-3 tygodnie
+
+  2. Zasady rachunkowości (Art. 4 UoR)
+     - Dlaczego: 6 fundamentalnych zasad wymaga egzekwowania
+     - Cel: Aktywna walidacja 6 zasad w każdej transakcji
+     - Czas: 1 tydzień
+
+  PRIORYTET 2 (WYSOKI):
+  3. Transformacja PKPiR → Księgi
+     - Dlaczego: 20% automatyzacji to za mało
+     - Cel: 80% automatyzacji transformacji
+     - Czas: 2 tygodnie
+
+  4. Inwentaryzacja (Art. 26 UoR)
+     - Dlaczego: Brak automatycznego harmonogramu
+     - Cel: Automatyczne przypomnienia i walidacja
+     - Czas: 3 dni
+
+  PRIORYTET 3 (ŚREDNI):
+  5. Amortyzacja UoR vs PIT
+     - Dlaczego: KRYTYCZNA różnica zidentyfikowana
+     - Cel: Pełna automatyzacja DTL/DTA
+     - Czas: 1 tydzień
+
+  6. Sprawozdawczość (Art. 45-52 UoR)
+     - Dlaczego: Brak automatycznego generowania
+     - Cel: Auto-generator bilansu, RZiS, cash flow
+     - Czas: 2 tygodnie
+
+  PRIORYTET 4 (NISKI):
+  7. Warstwa MICRO — przerabianie na reguły ENTERPRISE
+     - Dlaczego: 90 stubów nie wnosi wartości
+     - Cel: Zamiana stubów na realną logikę
+     - Czas: 1 miesiąc
+
+  8. IFRS Convergence Bridge
+     - Dlaczego: Rosnące JDG potrzebują IFRS
+     - Cel: Automatyczna korekta UoR → IFRS
+     - Czas: 1 miesiąc
+
+CELOWA ARITEKTURA:
+
+  Warstwa 1: ENTERPRISE LIVE (uor_enterprise_live.rego)
+    - 20+ reguł z pełną logiką
+    - Wszystkie artykuły UoR
+    - Integracja z main_jdg.rego
+
+  Warstwa 2: P33 SUPPLEMENT (p33_uor_supplement.rego)
+    - 10+ reguł uzupełniających
+    - Szczegółowe kalkulacje
+    - Podatek odroczony
+
+  Warstwa 3: MICRO (micro/uor/uor.rego)
+    - REZYGNACJA z.stubów
+    - Lub: przerobienie na realną logikę
+
+=============================================================================
+
+8. DIAGRAMY MERMAID
+=============================================================================
+
+8.1 Struktura ksiąg rachunkowych UoR
+---------------------------------------------------------------------------
+
+graph TD
+    A[KSIEGI RACHUNKOWE UoR] --> B[Journal/Dziennik]
+    A --> C[Plan Kont]
+    A --> D[Karta Principalna]
+    A --> E[Księga Główna]
+    
+    B --> B1[Operacje dzienne Wn/Ma]
+    B --> B2[Dowody księgowe Art.20]
+    
+    C --> C0[Klasa 0: Aktywa trwałe]
+    C --> C1[Klasa 0: Aktywa obrotowe]
+    C --> C2[Klasa 2: Koszty wg rodzajów]
+    C --> C3[Klasa 3: Koszty wg typów działalności]
+    C --> C4[Klasa 4: Rozrachunki z pracownikami]
+    C --> C5[Klasa 4: Rozrachunki publicznoprawne]
+    C --> C6[Klasa 4: Rozrachunki z odbiorcami]
+    C --> C7[Klasa 4: Rozrachunki z dostawcami]
+    C --> C8[Klasa 5: Koszty wg rodzajów]
+    C --> C9[Klasa 6: Koszty wg typów działalności]
+    C --> C10[Klasa 7: Przychody]
+    C --> C11[Klasa 8: Wynik finansowy]
+    C --> C12[Klasa 9: Kapitał własny]
+    C --> C13[Klasa 0: Aktywa trwałe]
+    C --> C14[Klasa 0: Aktywa obrotowe]
+    
+    D --> D1[Zapisy analityczne]
+    
+    E --> E1[Saldowa]
+    E --> E2[Obrotowo-saldowa]
+
+8.2 Transformacja PKPiR → UoR
+---------------------------------------------------------------------------
+
+graph LR
+    A[PKPiR] -->|Krok 1: Remanent| B[Inwentaryzacja]
+    B -->|Krok 2: Wycena| C[Wycena wg Art.28]
+    C -->|Krok 3: Bilans| D[Bilans Otwarcia]
+    D -->|Krok 4: Plan kont| E[Plan Kont UoR]
+    E -->|Krok 5: Zapisy| F[Pierwsze zapisy Wn/Ma]
+    F -->|Krok 6: Amortyzacja| G[Harmonogram amortyzacji]
+    G -->|Krok 7: Sprawozdanie| H[Pierwsze sprawozdanie]
+    H -->|Krok 8: Zgłoszenie| I[CEIDG-1 + NIP-2]
+    
+    A -.->|17 kolumn| MAP[Mapowanie]
+    MAP -.->|kol. 1-9| K70[Przychody 70-79]
+    MAP -.->|kol. 10-13| K40[Koszty 40-49]
+    MAP -.->|kol. 14| K40W[Wynagrodzenia 40]
+    MAP -.->|kol. 15| K40A[Amortyzacja 40]
+    MAP -.->|kol. 16| K70K[KUP 70]
+    MAP -.->|kol. 17| K07[Remanent 070/071]
+
+8.3 Architektura warstwowa reguł UoR
+---------------------------------------------------------------------------
+
+graph TB
+    subgraph WARSTWA_1["WARSTWA 1: ENTERPRISE LIVE"]
+        U1[UOR-001: Art.2 Próg 2M EUR]
+        U2[UOR-004: Art.4 Zasady]
+        U3[UOR-020: Art.20-21 Dowody]
+        U4[UOR-022: Art.22 Podwójny zapis]
+        U5[UOR-026: Art.26 Inwentaryzacja]
+        U6[UOR-028: Art.28 Wycena]
+        U7[UOR-032: Art.32 Amortyzacja]
+        U8[UOR-039: Art.39 RMK]
+        U9[UOR-045: Art.45-52 Sprawozdanie]
+        U10[UOR-074: Art.74 Retencja]
+    end
+
+    subgraph WARSTWA_2["WARSTWA 2: P33 SUPPLEMENT"]
+        S1[S01: Art.5 True & Fair View]
+        S2[S02: Art.32-33 UoR vs PIT]
+        S3[S03: Art.46 Bilans]
+        S4[S04: Art.47 RZiS]
+        S5[S05: Art.48b Cash Flow]
+        S6[S06: Art.74 Retencja specjalna]
+        S7[S07: PKPiR→UoR Transition]
+    end
+
+    subgraph WARSTWA_3["WARSTWA 3: MICRO (STUBY)"]
+        M1[a4: Zakres podmiotowy]
+        M2[a10: Polityka]
+        M3[a20: Dowody]
+        M4[a22: Rzetelność]
+        M5[a24: Ostrożność]
+        M6[a26: Inwentaryzacja]
+    end
+
+    subgraph INNOWACJE["WARSTWA 4: INNOVACJE"]
+        I1[INN01: PKPiR→Books]
+        I2[INN02: Wn/Ma Validator]
+        I3[INN03: RMK Engine]
+        I4[INN04: Inventory]
+        I5[INN05: Valuation]
+        I6[INN06: FS Generator]
+        I7[INN07: Materiality]
+        I8[INN08: Going Concern]
+        I9[INN09: Policy Selector]
+        I10[INN10: Book Closure]
+        I11[INN11: Multi-Year]
+        I12[INN12: IFRS Bridge]
+    end
+
+    WARSTWA_1 --> WARSTWA_2
+    WARSTWA_2 --> WARSTWA_3
+    WARSTWA_1 --> INNOWACJE
+
+=============================================================================
+
+PODSUMOWANIE STATYSTYCZNE
+=============================================================================
+
+METRYKI IMPLEMENTACJI:
+
+  | Komponent                          | Liczba reguł | Status    |
+  |------------------------------------|--------------|-----------|
+  | uor_enterprise_live.rego           | 10           | ✅ PEŁNE  |
+  | p33_uor_supplement.rego            | 7            | ✅ PEŁNE  |
+  | _uor_rates.rego                    | 1            | ✅ PEŁNE  |
+  | p12_uor_innovations_v8.rego        | 12           | ⚠️ SZKIELET|
+  | micro/uor/uor.rego                 | ~90          | ❌ STUBY  |
+  | accounting.rego (UoR rules)        | 5            | ✅ PEŁNE  |
+  | tax/uor_books.rego                 | 1            | ✅ PEŁNE  |
+  | tax/uor_valuation.rego             | 1            | ✅ PEŁNE  |
+  |------------------------------------|--------------|-----------|
+  | RAZEM                              | ~127         | ~60% REALNY|
+
+  PEŁNE (z realną logiką): ~35 reguł
+  SZKIELETY (bez logiki): ~12 reguł
+  STUBY (placeholder):    ~80 reguł
+
+  REALNA POKRYCIA: ~35/127 = ~28%
+  DEKLAROWANA POKRYCIA: ~0% (wg LEGAL_COVERAGE.md)
+
+  ROZBIEŻNOŚĆ: System jest LEPSZY niż sugeruje dokumentacja,
+  ale MICRO wymaga KOMPLETNEGO PRZEPISANIA.
+
+=============================================================================
+
+OCENA KOŃCOWA
+=============================================================================
+
+  JAKOŚĆ WARSTWY ENTERPRISE:    8/10 ✅
+  JAKOŚĆ WARSTWY P33 SUPPLEMENT: 9/10 ✅
+  JAKOŚĆ WARSTWY MICRO:          1/10 ❌
+  JAKOŚĆ INNOWACJI:              3/10 ⚠️ (szkielety)
+  INTEGRACJA WARSTW:             4/10 ⚠️
+  ZGODNOŚĆ Z PRAWEM:            7/10 ✅
+  AUTOMATYZACJA:                 3/10 ⚠️
+
+  OCENA OGÓLNA:                 5/10 (ŚREDNIA)
+
+  WNIOSKI:
+  1. Warstwa ENTERPRISE jest SOLIDNA i GOTOWA do użycia
+  2. Warstwa MICRO wymaga KOMPLETNEGO PRZEPISANIA
+  3. Transformacja PKPiR→Księgi wymaga WIĘKSZEJ automatyzacji
+  4. 12 innowacji to DOBRE szkielety, ale brakuje IMPLEMENTACJI
+  5. Integracja warstw wymaga PRACY
+
+  REKOMENDACJA: Skupić się na Warstwie ENTERPRISE (już solidna)
+  i przerobić MICRO na reguły ENTERPRISE (zamiast stubów).
+
+=============================================================================
+
+=== KONIEC RAPORTU — RAPORT_P12_JDG_UOR_FULL_ACCOUNTING_v7.0 ===
