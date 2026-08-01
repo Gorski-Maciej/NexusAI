@@ -1501,3 +1501,369 @@ else := {
     object.get(input.jdg_entrepreneur, "construction_completed", false) == true
     object.get(input.jdg_entrepreneur, "construction_docs_archived", false) == false
 }
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  budownictwo.a7 — VAT 8% na budownictwo mieszkaniowe (12 reguł) P24 L-BUD-1 ║
+# ║  Legal basis: Art. 41 ust. 12-12c VAT; limit 300 m2 pow. użytkowej          ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.budownictwo.a7.r1: budownictwo_a7_r1_vat8_residential_eligibility
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a7.r1",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250051,
+    "vat_rate": "0.08",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "VAT 8% — usługa budowlana dla budownictwa mieszkaniowego (Art. 41 ust. 12 VAT)",
+    "_legal_basis": "Art. 41 ust. 12 ustawy o VAT",
+    "_warnings": ["[MICRO] VAT 8%: stawka obniżona dla budownictwa mieszkaniowego — budynek mieszkalny, powierzchnia użytkowa <= 300 m2"]
+} {
+    object.get(input.invoice, "service_category", "") == "CONSTRUCTION"
+    object.get(input.invoice, "building_type", "") == "RESIDENTIAL"
+    object.get(input.invoice, "usable_area_m2", 999999) <= 300
+    object.get(input.invoice, "service_scope", "") in {"CONSTRUCTION", "RENOVATION", "MODERNIZATION", "THERMOMODERNIZATION"}
+}
+
+# jdg.micro.budownictwo.a7.r2: budownictwo_a7_r2_vat23_non_residential
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a7.r2",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250052,
+    "vat_rate": "0.23",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "VAT 23% — budynek niemieszkalny (nie spełnia warunków Art. 41 ust. 12 VAT)",
+    "_legal_basis": "Art. 41 ust. 1 w zw. z art. 41 ust. 12 VAT",
+    "_warnings": ["[MICRO] VAT 23%: budynek niemieszkalny — stawka podstawowa. Sprawdź, czy usługa nie kwalifikuje się do 8%"]
+} {
+    object.get(input.invoice, "service_category", "") == "CONSTRUCTION"
+    object.get(input.invoice, "building_type", "") != "RESIDENTIAL"
+}
+
+# jdg.micro.budownictwo.a7.r3: budownictwo_a7_r3_vat23_area_exceeded
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a7.r3",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250053,
+    "vat_rate": "0.23",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "VAT 23% — powierzchnia użytkowa > 300 m2 (limit Art. 41 ust. 12b VAT przekroczony)",
+    "_legal_basis": "Art. 41 ust. 12b VAT — limit 300 m2",
+    "_warnings": ["[MICRO] VAT 23%: powierzchnia użytkowa przekracza 300 m2 — stawka 8% NIE ma zastosowania. Całość usługi opodatkowana 23%"]
+} {
+    object.get(input.invoice, "service_category", "") == "CONSTRUCTION"
+    object.get(input.invoice, "building_type", "") == "RESIDENTIAL"
+    object.get(input.invoice, "usable_area_m2", 0) > 300
+}
+
+# jdg.micro.budownictwo.a7.r4: budownictwo_a7_r4_vat8_b2c_direct
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a7.r4",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250054,
+    "vat_rate": "0.08",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "VAT 8% B2C — usługa budowlana dla klienta indywidualnego (budynek mieszkalny <= 300 m2)",
+    "_legal_basis": "Art. 41 ust. 12 VAT (B2C)",
+    "_warnings": ["[MICRO] VAT 8% B2C: klient niepodatnik — faktura ze stawką 8%, brak reverse charge"]
+} {
+    object.get(input.invoice, "service_category", "") == "CONSTRUCTION"
+    object.get(input.invoice, "building_type", "") == "RESIDENTIAL"
+    object.get(input.invoice, "usable_area_m2", 999999) <= 300
+    object.get(input.counterparty, "is_vat_payer", false) == false
+}
+
+# jdg.micro.budownictwo.a7.r5: budownictwo_a7_r5_vat8_with_materials
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a7.r5",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250055,
+    "vat_rate": "0.08",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "VAT 8% — usługa kompleksowa (materiały + robocizna) dla budownictwa mieszkaniowego",
+    "_legal_basis": "Art. 41 ust. 12 VAT — usługa kompleksowa",
+    "_warnings": ["[MICRO] VAT 8% kompleksowa: materiały w cenie usługi budowlanej — całość opodatkowana 8% (nie rozdzielaj materiałów na osobną fakturę)"]
+} {
+    object.get(input.invoice, "service_category", "") == "CONSTRUCTION_WITH_MATERIALS"
+    object.get(input.invoice, "building_type", "") == "RESIDENTIAL"
+    object.get(input.invoice, "usable_area_m2", 999999) <= 300
+}
+
+# jdg.micro.budownictwo.a7.r6: budownictwo_a7_r6_vat8_social_housing
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a7.r6",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250056,
+    "vat_rate": "0.08",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "VAT 8% — budownictwo społeczne (Art. 41 ust. 12a VAT: lokale do 150 m2, domy do 300 m2)",
+    "_legal_basis": "Art. 41 ust. 12a VAT — budownictwo społeczne",
+    "_warnings": ["[MICRO] VAT 8% społeczne: program budownictwa społecznego — stawka obniżona dla lokali mieszkalnych w ramach polityki mieszkaniowej"]
+} {
+    object.get(input.invoice, "service_category", "") == "CONSTRUCTION"
+    object.get(input.invoice, "housing_program_type", "") == "SOCIAL_HOUSING"
+}
+
+# jdg.micro.budownictwo.a7.r7: budownictwo_a7_r7_vat8_renovation_only
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a7.r7",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250057,
+    "vat_rate": "0.08",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "VAT 8% — remont budynku mieszkalnego (tylko robocizna, bez materiałów)",
+    "_legal_basis": "Art. 41 ust. 12 VAT — remont",
+    "_warnings": ["[MICRO] VAT 8% remont: sama robocizna remontowa w budynku mieszkalnym — 8%. Jeśli dokładasz materiały, sprawdź regułę a7.r5"]
+} {
+    object.get(input.invoice, "service_category", "") == "CONSTRUCTION"
+    object.get(input.invoice, "service_scope", "") == "RENOVATION"
+    object.get(input.invoice, "building_type", "") == "RESIDENTIAL"
+    object.get(input.invoice, "usable_area_m2", 999999) <= 300
+}
+
+# jdg.micro.budownictwo.a7.r8: budownictwo_a7_r8_vat8_infrastructure_residential
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a7.r8",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250058,
+    "vat_rate": "0.08",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "VAT 8% — infrastruktura towarzysząca budownictwu mieszkaniowemu (Art. 41 ust. 12c VAT)",
+    "_legal_basis": "Art. 41 ust. 12c VAT — infrastruktura towarzysząca",
+    "_warnings": ["[MICRO] VAT 8% infrastruktura: przyłącza, garaże, chodniki, place zabaw jako część inwestycji mieszkaniowej — też 8%"]
+} {
+    object.get(input.invoice, "service_category", "") == "CONSTRUCTION"
+    object.get(input.invoice, "infrastructure_type", "") in {"PARKING", "GARAGE", "UTILITY_CONNECTION", "PLAYGROUND", "SIDEWALK"}
+    object.get(input.invoice, "related_residential_building", false) == true
+}
+
+# jdg.micro.budownictwo.a7.r9: budownictwo_a7_r9_vat8_jpk_gtu_marking
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a7.r9",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250059,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "GTU_01",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "VAT 8% — obowiązek oznaczenia GTU_01 w JPK_V7 dla usług budowlanych",
+    "_legal_basis": "Rozporządzenie MF ws. JPK_V7 — GTU_01",
+    "_warnings": ["[MICRO] VAT 8% JPK: oznacz fakturę kodem GTU_01 w JPK_V7 (dostawa towarów i świadczenie usług objętych odwrotnym obciążeniem lub stawką obniżoną)"]
+} {
+    object.get(input.invoice, "service_category", "") == "CONSTRUCTION"
+    object.get(input.invoice, "vat_rate_applied", 0) == 0.08
+    object.get(input.invoice, "jpk_gtu_marked", false) == false
+}
+
+# jdg.micro.budownictwo.a7.r10: budownictwo_a7_r10_vat8_invoice_annotation
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a7.r10",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250060,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "VAT 8% — faktura musi zawierać podstawę prawną stawki obniżonej (Art. 41 ust. 12 VAT)",
+    "_legal_basis": "Art. 106e ust. 1 pkt 14 VAT — podstawa prawna stawki obniżonej",
+    "_warnings": ["[MICRO] VAT 8% adnotacja: na fakturze ze stawką 8% należy wskazać podstawę prawną: 'Art. 41 ust. 12 ustawy o VAT' — brak adnotacji = wada formalna"]
+} {
+    object.get(input.invoice, "vat_rate_applied", 0) == 0.08
+    object.get(input.invoice, "vat_reduced_rate_annotation", false) == false
+}
+
+# jdg.micro.budownictwo.a7.r11: budownictwo_a7_r11_vat8_ksef_invoice
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a7.r11",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250061,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "VAT 8% KSeF — faktura ustrukturyzowana z kodem GTU_01 i stawką 8% wysyłana przez KSeF",
+    "_legal_basis": "Art. 106ga VAT — KSeF, Rozporządzenie MF",
+    "_warnings": ["[MICRO] VAT 8% KSeF: faktura budowlana ze stawką 8% podlega obowiązkowi KSeF — wyślij przez platformę w ciągu 24h"]
+} {
+    object.get(input.invoice, "vat_rate_applied", 0) == 0.08
+    object.get(input.invoice, "ksef_sent", false) == false
+    input.jdg_entrepreneur.is_vat_payer == true
+}
+
+# jdg.micro.budownictwo.a7.r12: budownictwo_a7_r12_vat8_material_separate_warning
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a7.r12",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250062,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "OSTRZEŻENIE: materiały na osobnej fakturze 23% przy usłudze 8% — ryzyko obejścia prawa (sztuczny podział)",
+    "_legal_basis": "Art. 5 ust. 2 VAT (świadczenie złożone), Art. 41 ust. 12 VAT",
+    "_warnings": ["[MICRO] UWAGA! Rozdzielasz materiały (23%) od usługi (8%) w tej samej inwestycji mieszkaniowej. Przy usłudze kompleksowej (materiały + robocizna) całość powinna być 8%. Sztuczny podział może być zakwestionowany przez US jako obejście prawa!"]
+} {
+    object.get(input.invoice, "service_category", "") == "CONSTRUCTION"
+    object.get(input.invoice, "materials_only_separate_invoice", false) == true
+    object.get(input.invoice, "building_type", "") == "RESIDENTIAL"
+    object.get(input.invoice, "usable_area_m2", 999999) <= 300
+}

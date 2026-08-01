@@ -4143,3 +4143,96 @@ else := {
 } {
     object.get(input.jdg_entrepreneur, "ryc_a34_u5_p2_check", false) == true
 }
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  ryczalt.a6kurs — Kurs EUR do limitu 2 mln EUR (3 reguły) P24 L-RYC-1      ║
+# ║  Legal basis: Art. 6 ust. 4 ustawy o ryczałcie                               ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.ryczalt.a6kurs.r1: ryczalt_a6kurs_r1_nbp_rate_oct1
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.ryczalt.a6kurs.r1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 100600,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "eur_limit_amount": 2000000,
+    "eur_nbp_rate_date": "",
+    "_routing": "",
+    "_routing_reason": "Kurs NBP z 1 października — przelicznik limitu 2 mln EUR na PLN dla ryczałtu",
+    "_legal_basis": "Art. 6 ust. 4 ustawy o ryczałcie",
+    "_warnings": ["[MICRO] L-RYC-1: Limit 2 mln EUR przelicza się po KURSIE NBP z 1 października roku poprzedzającego rok podatkowy. Aktualny kurs: sprawdź na nbp.pl."]
+} {
+    object.get(input.jdg_entrepreneur, "tax_form", "") == "RYCZALT"
+    object.get(input.jdg_entrepreneur, "ryczalt_limit_check_needed", false) == true
+}
+
+# jdg.micro.ryczalt.a6kurs.r2: ryczalt_a6kurs_r2_limit_exceeded_pln
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ryczalt.a6kurs.r2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 100601,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Przekroczenie limitu ryczałtu 2 mln EUR — utrata prawa od miesiąca następującego po przekroczeniu",
+    "_legal_basis": "Art. 6 ust. 4 w zw. z art. 8 ust. 2 ustawy o ryczałcie",
+    "_warnings": ["[MICRO] L-RYC-1: PRZEKROCZENIE limitu 2 mln EUR! Od miesiąca następującego po przekroczeniu przechodzisz na skalę podatkową. Obowiązek prowadzenia KPiR od dnia utraty ryczałtu."]
+} {
+    object.get(input.jdg_entrepreneur, "ryczalt_annual_revenue_pln", 0) > (2000000 * object.get(input, "eur_nbp_rate_oct1", 4.5))
+}
+
+# jdg.micro.ryczalt.a6kurs.r3: ryczalt_a6kurs_r3_rate_cache_warning
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ryczalt.a6kurs.r3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 100602,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "Kurs EUR nie został zaktualizowany — użyto wartości domyślnej 4.50 PLN",
+    "_legal_basis": "Art. 6 ust. 4 ustawy o ryczałcie — NBP Tabela A z 1.10",
+    "_warnings": ["[MICRO] L-RYC-1: Użyto domyślnego kursu EUR 4.50 PLN. Rzeczywisty kurs pobierz z NBP (Tabela A z 1 października). Błędny kurs = błędne ustalenie limitu = ryzyko sankcji."]
+} {
+    object.get(input, "eur_nbp_rate_oct1", null) == null
+    object.get(input.jdg_entrepreneur, "tax_form", "") == "RYCZALT"
+}

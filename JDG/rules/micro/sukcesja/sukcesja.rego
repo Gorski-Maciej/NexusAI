@@ -1105,6 +1105,405 @@ else := {
     object.get(input.invoice, "sukcesja_exclusion_2", false) == false
 }
 
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  sukcesja.a19 — Okres zarządu sukcesyjnego (5 reguł) P24 L-SUK-1            ║
+# ║  Legal basis: Art. 19 ustawy o zarządzie sukcesyjnym                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.sukcesja.a19.r1: sukcesja_a19_r1_period_2_years
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.a19.r1",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150041,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "Okres zarządu sukcesyjnego: 2 lata od dnia śmierci przedsiębiorcy",
+    "_legal_basis": "Art. 19 ust. 1 ustawy o zarządzie sukcesyjnym",
+    "_warnings": ["[MICRO] L-SUK-1: Zarząd sukcesyjny trwa 2 lata od dnia śmierci przedsiębiorcy. Po tym okresie zarząd wygasa z mocy prawa."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_active", false) == true
+    object.get(input.jdg_entrepreneur, "succession_days_elapsed", 0) > 730
+}
+
+# jdg.micro.sukcesja.a19.r2: sukcesja_a19_r2_extension_court
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.a19.r2",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150042,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "Przedłużenie zarządu sukcesyjnego przez sąd do 5 lat",
+    "_legal_basis": "Art. 19 ust. 2 ustawy o zarządzie sukcesyjnym",
+    "_warnings": ["[MICRO] L-SUK-1: Sąd może przedłużyć zarząd sukcesyjny maksymalnie do 5 lat od dnia śmierci. Wymagany wniosek zarządcy."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_court_extension_granted", false) == true
+    object.get(input.jdg_entrepreneur, "succession_days_elapsed", 0) > 1825
+}
+
+# jdg.micro.sukcesja.a19.r3: sukcesja_a19_r3_expiry_automatic
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.a19.r3",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150043,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Zarząd sukcesyjny wygasł — obowiązek zgłoszenia wykreślenia do CEIDG",
+    "_legal_basis": "Art. 19 ust. 3 ustawy o zarządzie sukcesyjnym",
+    "_warnings": ["[MICRO] L-SUK-1: Zarząd sukcesyjny WYGASŁ! Zgłoś wykreślenie do CEIDG w ciągu 7 dni. Sporządź sprawozdanie końcowe."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_expired", false) == true
+    object.get(input.jdg_entrepreneur, "succession_expiry_ceidg_reported", false) == false
+}
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  sukcesja.a22g — Kontynuacja amortyzacji przez sukcesora (5 reguł) P24 L-SUK-2 ║
+# ║  Legal basis: Art. 22g ust. 12 PIT                                              ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.sukcesja.a22g.r1: sukcesja_a22g_r1_depreciation_continuation
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.a22g.r1",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150044,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "Kontynuacja amortyzacji — sukcesor kontynuuje odpisy amortyzacyjne od środków trwałych",
+    "_legal_basis": "Art. 22g ust. 12 ustawy o PIT",
+    "_warnings": ["[MICRO] L-SUK-2: Sukcesor KONTYNUUJE odpisy amortyzacyjne od środków trwałych przedsiębiorstwa. Wartość początkowa i metoda amortyzacji bez zmian."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_active", false) == true
+    object.get(input.jdg_entrepreneur, "fixed_assets_exist", false) == true
+}
+
+# jdg.micro.sukcesja.a22g.r2: sukcesja_a22g_r2_same_method
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.a22g.r2",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150045,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "Metoda amortyzacji — sukcesor stosuje tę samą metodę i stawkę co przedsiębiorca",
+    "_legal_basis": "Art. 22g ust. 12 w zw. z art. 22h-22m PIT",
+    "_warnings": ["[MICRO] L-SUK-2: Sukcesor nie może ZMIENIĆ metody amortyzacji — obowiązuje metoda wybrana przez zmarłego przedsiębiorcę."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_depreciation_method_changed", false) == true
+}
+
+# jdg.micro.sukcesja.a22g.r3: sukcesja_a22g_r3_initial_value_unchanged
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.a22g.r3",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150046,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "Wartość początkowa bez zmian — sukcesor przyjmuje wartość początkową sprzed śmierci",
+    "_legal_basis": "Art. 22g ust. 12 PIT — kontynuacja wartości początkowej",
+    "_warnings": ["[MICRO] L-SUK-2: Wartość początkowa środków trwałych pozostaje BEZ ZMIAN. Nie przeszacowuj — US zakwestionuje."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_asset_revalued", false) == true
+}
+
+# jdg.micro.sukcesja.a22g.r4: sukcesja_a22g_r4_kpir_entry
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.a22g.r4",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150047,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "KPiR — sukcesor kontynuuje ewidencję środków trwałych i odpisów",
+    "_legal_basis": "Art. 22g ust. 12 w zw. z art. 22n PIT (ewidencja środków trwałych)",
+    "_warnings": ["[MICRO] L-SUK-2: Prowadź ewidencję środków trwałych i odpisów amortyzacyjnych jako sukcesor. Odpisy = KUP sukcesora (art. 22 ust. 1 PIT)."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_depreciation_kpir_maintained", false) == false
+    object.get(input.jdg_entrepreneur, "succession_active", false) == true
+}
+
+# jdg.micro.sukcesja.a22g.r5: sukcesja_a22g_r5_tax_deduction
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.a22g.r5",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150048,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "Odpisy amortyzacyjne sukcesora = KUP — odliczenie w PIT",
+    "_legal_basis": "Art. 22 ust. 1 PIT w zw. z art. 22g ust. 12 PIT",
+    "_warnings": ["[MICRO] L-SUK-2: Odpisy amortyzacyjne od przejętych środków trwałych są KOSZTEM UZYSKANIA PRZYCHODU sukcesora. Pominięcie = nadpłata PIT."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_active", false) == true
+    object.get(input.invoice, "depreciation_deduction_claimed_successor", false) == false
+    object.get(input.jdg_entrepreneur, "fixed_assets_exist", false) == true
+}
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  sukcesja.a12zus — Zgłoszenie zarządcy do ZUS (3 reguły) P24 L-SUK-3        ║
+# ║  Legal basis: Art. 12 ust. 1 ustawy o zarządzie sukcesyjnym                  ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.sukcesja.a12zus.r1: sukcesja_a12zus_r1_zus_notification_7_days
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.a12zus.r1",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150049,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Zgłoszenie zarządcy do ZUS — termin 7 dni od powołania",
+    "_legal_basis": "Art. 12 ust. 1 ustawy o zarządzie sukcesyjnym",
+    "_warnings": ["[MICRO] L-SUK-3: Zarządca sukcesyjny musi zgłosić się do ZUS (ZUS ZUA) w ciągu 7 DNI od powołania. Brak zgłoszenia = zaległe składki + odsetki."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_manager_appointed_date", "") != ""
+    object.get(input.jdg_entrepreneur, "succession_zus_notification_days", 999) > 7
+    object.get(input.jdg_entrepreneur, "succession_zus_notified", false) == false
+}
+
+# jdg.micro.sukcesja.a12zus.r2: sukcesja_a12zus_r2_employee_continuation
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.a12zus.r2",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150050,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "Kontynuacja zatrudnienia — zarządca przejmuje obowiązki płatnika składek ZUS",
+    "_legal_basis": "Art. 12 ust. 2 ustawy o zarządzie sukcesyjnym",
+    "_warnings": ["[MICRO] L-SUK-3: Zarządca sukcesyjny przejmuje obowiązki płatnika składek ZUS za pracowników. Zgłoszenie ZUS ZWUA/ZUA dla pracowników."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_active", false) == true
+    object.get(input.jdg_entrepreneur, "has_employees", false) == true
+    object.get(input.jdg_entrepreneur, "succession_employee_zus_reported", false) == false
+}
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  sukcesja.ksef — Interakcja sukcesora z KSeF/JPK (3 reguły) P24 L-SUK-4     ║
+# ║  Legal basis: Art. 14 ustawy o zarządzie sukcesyjnym, Art. 106ga VAT         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.sukcesja.ksef.r1: sukcesja_ksef_r1_vat_obligation_transfer
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.ksef.r1",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150051,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "Przejęcie obowiązków VAT — sukcesor kontynuuje JPK_V7 i KSeF",
+    "_legal_basis": "Art. 14 ustawy o zarządzie sukcesyjnym, Art. 106ga VAT",
+    "_warnings": ["[MICRO] L-SUK-4: Sukcesor PRZEJMUJE obowiązki VAT: JPK_V7, KSeF, faktury, deklaracje. NIP przedsiębiorstwa zostaje ten sam (z dopiskiem 'w zarządzie sukcesyjnym')."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_active", false) == true
+    input.jdg_entrepreneur.is_vat_payer == true
+}
+
+# jdg.micro.sukcesja.ksef.r2: sukcesja_ksef_r2_ksef_continuation
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.ksef.r2",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150052,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "KSeF — sukcesor wysyła faktury przez KSeF w imieniu przedsiębiorstwa",
+    "_legal_basis": "Art. 106ga-106gf VAT — KSeF",
+    "_warnings": ["[MICRO] L-SUK-4: Faktury KSeF nadal wysyłane z NIP-em przedsiębiorstwa (z dopiskiem). Sukcesor NIE zakłada nowego konta KSeF — korzysta z istniejącego."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_active", false) == true
+    object.get(input.invoice, "ksef_sent_under_succession", false) == false
+    object.get(input.invoice, "ksef_required", false) == true
+}
+
+# jdg.micro.sukcesja.ksef.r3: sukcesja_ksef_r3_jpk_v7_transition
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.ksef.r3",
+    "package": "jdg.micro.sukcesja",
+    "priority": 150053,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "JPK_V7 — sukcesor składa JPK_V7 za okresy od dnia śmierci przedsiębiorcy",
+    "_legal_basis": "Art. 109 ust. 3 VAT, Art. 14 ustawy o zarządzie sukcesyjnym",
+    "_warnings": ["[MICRO] L-SUK-4: JPK_V7 za okres po śmierci przedsiębiorcy składa zarządca sukcesyjny. Okres przed śmiercią — wg dotychczasowych zasad."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_active", false) == true
+    object.get(input.jdg_entrepreneur, "succession_jpk_v7_filing_deadline_approaching", false) == true
+}
+
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  PLAN OPA/50 — KLASA B — Wygenerowane masowo (84 reguł)       ║

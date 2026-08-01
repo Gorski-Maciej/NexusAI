@@ -992,3 +992,251 @@ else := {
 } {
     object.get(input.invoice, "ceidg_exclusion_2", false) == false
 }
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  ceidg.a13 — Termin 7 dni na zgłoszenie zmian (3 reguły) P24 L-CEIDG-2     ║
+# ║  Legal basis: Art. 14 ust. 1 ustawy o CEIDG                                   ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.ceidg.a13.r1: ceidg_a13_r1_change_deadline_7_days
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.ceidg.a13.r1",
+    "package": "jdg.micro.ceidg",
+    "priority": 140039,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Termin 7 dni na zgłoszenie zmiany danych w CEIDG PRZEKROCZONY",
+    "_legal_basis": "Art. 14 ust. 1 ustawy o CEIDG",
+    "_warnings": ["[MICRO] L-CEIDG-2: Zmianę danych w CEIDG należy zgłosić w ciągu 7 DNI od jej zaistnienia. Przekroczenie terminu = kara porządkowa 700 zł (przy powtórce do 1 400 zł)!"]
+} {
+    object.get(input.jdg_entrepreneur, "ceidg_data_changed", false) == true
+    object.get(input.jdg_entrepreneur, "ceidg_change_days_elapsed", 0) > 7
+    object.get(input.jdg_entrepreneur, "ceidg_change_reported", false) == false
+}
+
+# jdg.micro.ceidg.a13.r2: ceidg_a13_r2_sanction_first
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ceidg.a13.r2",
+    "package": "jdg.micro.ceidg",
+    "priority": 140040,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "sanction_type": "KKS",
+    "sanction_severity": "LOW",
+    "sanction_base_amount_pln": 700,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Sankcja: pierwsze naruszenie terminu 7 dni — kara porządkowa 700 zł",
+    "_legal_basis": "Art. 48-49 ustawy o CEIDG",
+    "_warnings": ["[MICRO] L-CEIDG-2: PIERWSZE naruszenie terminu 7 dni. Kara porządkowa: 700 zł. Zgłoś zmianę niezwłocznie!"]
+} {
+    object.get(input.jdg_entrepreneur, "ceidg_deadline_violation_count", 0) == 1
+}
+
+# jdg.micro.ceidg.a13.r3: ceidg_a13_r3_sanction_repeat
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ceidg.a13.r3",
+    "package": "jdg.micro.ceidg",
+    "priority": 140041,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "sanction_type": "KKS",
+    "sanction_severity": "MEDIUM",
+    "sanction_base_amount_pln": 1400,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Sankcja: powtórne naruszenie terminu 7 dni — kara porządkowa do 1 400 zł",
+    "_legal_basis": "Art. 48-49 ustawy o CEIDG",
+    "_warnings": ["[MICRO] L-CEIDG-2: POWTÓRNE naruszenie terminu 7 dni. Kara porządkowa: do 1 400 zł. Systematyczne naruszenia mogą skutkować wykreśleniem z CEIDG!"]
+} {
+    object.get(input.jdg_entrepreneur, "ceidg_deadline_violation_count", 0) >= 2
+}
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  ceidg.a5data — Dane obowiązkowe CEIDG-1 (5 reguł) P24 L-CEIDG-1           ║
+# ║  Legal basis: Art. 5-7 ustawy o CEIDG                                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.ceidg.a5data.r1: ceidg_a5data_r1_personal_data_required
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.ceidg.a5data.r1",
+    "package": "jdg.micro.ceidg",
+    "priority": 140042,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": true,
+    "micro_rule_active": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "CEIDG-1 — brak wymaganych danych osobowych (imię, nazwisko, PESEL)",
+    "_legal_basis": "Art. 5 ustawy o CEIDG",
+    "_warnings": ["[MICRO] L-CEIDG-1: Wniosek CEIDG-1 wymaga: imię, nazwisko, PESEL (lub data urodzenia), NIP, adres zamieszkania. Brak danych = wniosek niekompletny."]
+} {
+    object.get(input.jdg_entrepreneur, "ceidg_application_filed", false) == true
+    object.get(input.jdg_entrepreneur, "ceidg_personal_data_complete", false) == false
+}
+
+# jdg.micro.ceidg.a5data.r2: ceidg_a5data_r2_business_data_required
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ceidg.a5data.r2",
+    "package": "jdg.micro.ceidg",
+    "priority": 140043,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": true,
+    "micro_rule_active": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "CEIDG-1 — brak danych działalności (PKD, adres, forma)",
+    "_legal_basis": "Art. 6 ustawy o CEIDG",
+    "_warnings": ["[MICRO] L-CEIDG-1: Wniosek CEIDG-1 wymaga: kody PKD (główny + dodatkowe), adres prowadzenia działalności, forma prawna (JDG), data rozpoczęcia."]
+} {
+    object.get(input.jdg_entrepreneur, "ceidg_application_filed", false) == true
+    object.get(input.jdg_entrepreneur, "ceidg_business_data_complete", false) == false
+}
+
+# jdg.micro.ceidg.a5data.r3: ceidg_a5data_r3_tax_form_selection_required
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ceidg.a5data.r3",
+    "package": "jdg.micro.ceidg",
+    "priority": 140044,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "CEIDG-1 — wybór formy opodatkowania (skala/ryczałt/liniowy/karta)",
+    "_legal_basis": "Art. 7 ustawy o CEIDG",
+    "_warnings": ["[MICRO] L-CEIDG-1: We wniosku CEIDG-1 należy wskazać formę opodatkowania PIT (skala/ryczałt/liniowy/karta). Wybór można zmienić do 20. dnia następnego miesiąca."]
+} {
+    object.get(input.jdg_entrepreneur, "ceidg_application_filed", false) == true
+    object.get(input.jdg_entrepreneur, "tax_form_selected", "") == ""
+}
+
+# jdg.micro.ceidg.a5data.r4: ceidg_a5data_r4_zus_registration_required
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ceidg.a5data.r4",
+    "package": "jdg.micro.ceidg",
+    "priority": 140045,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "CEIDG-1 — zgłoszenie do ZUS automatycznie przez CEIDG",
+    "_legal_basis": "Art. 7a ustawy o CEIDG (CEIDG ↔ ZUS integracja)",
+    "_warnings": ["[MICRO] L-CEIDG-1: CEIDG automatycznie przekazuje dane do ZUS (ZUS ZUA). Nie musisz składać osobnego zgłoszenia — system zrobi to za Ciebie w ciągu 7 dni."]
+} {
+    object.get(input.jdg_entrepreneur, "ceidg_application_filed", false) == true
+    object.get(input.jdg_entrepreneur, "zus_zua_auto_from_ceidg", false) == false
+}
+
+# jdg.micro.ceidg.a5data.r5: ceidg_a5data_r5_nip_auto_assignment
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ceidg.a5data.r5",
+    "package": "jdg.micro.ceidg",
+    "priority": 140046,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "CEIDG-1 — NIP nadawany automatycznie przy rejestracji",
+    "_legal_basis": "Art. 8 ustawy o CEIDG",
+    "_warnings": ["[MICRO] L-CEIDG-1: NIP nadawany automatycznie przy rejestracji CEIDG-1. Nie musisz składać osobnego zgłoszenia NIP-7."]
+} {
+    object.get(input.jdg_entrepreneur, "ceidg_application_filed", false) == true
+    object.get(input.jdg_entrepreneur, "nip_assigned_auto", false) == false
+    object.get(input.jdg_entrepreneur, "nip_separate_form_filed", false) == true
+}
