@@ -1,0 +1,1748 @@
+RAPORT ANALITYCZNY ENTERPRISE — JDG Force Majeure + Family + e-Delivery v7.0
+=================================================================
+SEKCJA 1. METADANE I ZAKRES ANALIZY
+=================================================================
+
+1.1. IDENTYFIKACJA RAPORTU
+
+    Numer raportu:           P22
+    Tytuł:                   RAPORT ANALITYCZNY ENTERPRISE — JDG Force Majeure + Family + e-Delivery v7.0
+    Plik wyjściowy:          JDG/reports/RAPORT_P22_JDG_FORCE_MAJEURE_FAMILY_EDELIVERY_v7.0.txt
+    Wersja serii:            v7.0 (ciągłość z P18 KSeF/JPK, P19 OrdPU/Tax Authority,
+                             P20 Sankcje/WIS, P21 FX/TP/Residency/Payments)
+    Typ dokumentu:           Raport analityczny (czysty tekst UTF-8, LF)
+    Zakres tematyczny:       Siła wyższa (force majeure), ulgi rodzinne, e-Doręczenia,
+                             podpis elektroniczny (esig), działalność sezonowa, kwota
+                             wolna (taxfree), obowiązki pracodawcy, pełnomocnictwa,
+                             restrukturyzacja i sukcesja
+    Poziom analizy:          ENTERPRISE (reguły OPA/Rego, warstwy micro + hyper)
+
+1.2. PRZEDMIOT ANALIZY — 15 PLIKÓW REGO (~163 KB, 294 REGUŁY)
+
+    Lp.  Plik                                   Bajty   Reguły  Warstwa
+    ---------------------------------------------------------------
+    1    force_majeure/plan44_force_majeure.rego  7 363      9   micro
+    2    force_majeure/plan45_force_majeure.rego 13 144     33   hyper
+    3    family/plan44_family.rego                8 800     11   micro
+    4    family/plan45_family.rego               15 868     43   hyper
+    5    edelivery/plan44_edelivery.rego          7 299      9   micro
+    6    edelivery/plan45_edelivery.rego         13 085     36   hyper
+    7    esig/plan44_esig.rego                    6 164      8   micro
+    8    esig/plan45_esig.rego                   12 151     29   hyper
+    9    seasonal/plan44_seasonal.rego            5 998      8   micro
+   10    seasonal/plan45_seasonal.rego           13 116     29   hyper
+   11    taxfree/plan44_taxfree.rego              5 246      7   micro
+   12    taxfree/plan45_taxfree.rego             13 119     29   hyper
+   13    employer.rego                           22 846     24   standalone
+   14    representation.rego                      8 863     10   standalone
+   15    restructuring.rego                       9 899      9   standalone
+    ---------------------------------------------------------------
+    RAZEM 15 plików                            162 961     294
+
+    Struktura: 52 reguły micro (plan44) + 199 reguł hyper (plan45)
+    + 43 reguły standalone (employer 24, representation 10, restructuring 9).
+    Każda reguła zawiera: rule_id (jdg.<moduł>.<warstwa>.<nazwa>),
+    priorytet, _legal_basis, _routing, _routing_reason, _warnings.
+
+1.3. METODOLOGIA
+
+    (a) Inwentaryzacja plików: rozmiary, liczba reguł, przynależność warstw.
+    (b) Ekstrakcja rule_id wszystkich 294 reguł (pełne inwentarze).
+    (c) Analiza treści reguł kluczowych: podstawy prawne, kwoty, terminy,
+        routing i komunikaty.
+    (d) Weryfikacja zgodności z polskim prawem na stan 2025/2026 (PIT, VAT,
+        OrdPU, Prawo przedsiębiorców, ustawa o doręczeniach elektronicznych,
+        eIDAS, ustawa o zarządzie sukcesyjnym, KRO).
+    (e) Ocena cząstkowa per moduł 0-5 + średnia ważona.
+    (f) Identyfikacja luk, błędów, ryzyk (macierz z KPI).
+    (g) Rekomendacje P0/P1/P2 + 10 innowacji ENTERPRISE.
+
+1.4. OGRANICZENIA ANALIZY
+
+    (a) Analiza statyczna plików rego — testy kontraktowe rekomendowane.
+    (b) Stany prawne weryfikowane na podstawie _legal_basis reguł i wiedzy
+        domenowej; zalecana weryfikacja przed wdrożeniem.
+    (c) Raport nie stanowi porady prawnej ani podatkowej.
+
+=================================================================
+SEKCJA 2. EKOSYSTEM REGUŁ P22 — PRZEGLĄD STRATEGICZNY
+=================================================================
+
+2.1. MAPA MODUŁÓW I OCENY CZĄSTKOWE
+
+    Moduł            Reguły (m+h+std)  Bajty      Ocena /5
+    ---------------------------------------------------------------
+    Force Majeure    9 + 33 = 42        20 507     4.5
+    Family           11 + 43 = 54       24 668     3.5
+    e-Delivery       9 + 36 = 45        20 384     4.5
+    esig             8 + 29 = 37        18 315     4.5
+    Seasonal         8 + 29 = 37        19 114     4.0
+    TaxFree          7 + 29 = 36        18 365     3.5
+    Employer         (std) 24           22 846     4.0
+    Representation   (std) 10            8 863     4.0
+    Restructuring    (std) 9             9 899     4.0
+    ---------------------------------------------------------------
+    RAZEM            52+199+43 = 294    162 961    4.06 (śr.)
+
+    Interpretacja:
+    - 4.5 — moduły wzorcowe (Force Majeure: pełny katalog zdarzeń i ulg;
+      e-Delivery: fikcja doręczenia 14 dni z alertami 7/3/1; esig: podpis
+      kwalifikowany vs profil zaufany).
+    - 4.0 — moduły solidne (Seasonal, Employer, Representation,
+      Restructuring).
+    - 3.5 — moduły z lukami zakresowymi (Family: brak ulgi prorodzinnej
+      27f i ulgi 4+; TaxFree: moduł dotyczy kwoty wolnej PIT, NIE systemu
+      TAX FREE dla turystów).
+
+2.2. OBSERWACJE MIĘDZYMODUŁOWE
+
+    (a) Force Majeure i e-Delivery to najdojrzalsze moduły serii P22 —
+        kompletne pokrycie scenariuszy nadzwyczajnych.
+    (b) TaxFree to moduł o mylącej nazwie względem promptu: obsługuje
+        kwotę wolną od podatku PIT (30 000 PLN, skala 12%/32%), NIE
+        system TAX FREE dla turystów (Art. 126-130 ustawy o VAT) —
+        ustalenie kluczowe (L-TF-1).
+    (c) Family nie zawiera dedykowanych reguł ulgi prorodzinnej
+        (Art. 27f PIT: 1112,04 PLN/rok na 2. i kolejne dziecko) ani ulgi
+        dla rodzin 4+ (Art. 21 ust. 1 pkt 153 PIT: limit 85 528 PLN) —
+        ustalenie kluczowe (L-FAM-1).
+    (d) Restructuring i Representation uzupełniają P19 (OrdPU: PPS-1/
+        UPL-1) — spójność krzyżowa z serią.
+
+2.3. SPÓJNOŚĆ Z SERIĄ P18-P21
+
+    - P18 (KSeF/JPK): esig pokrywa tokeny KSeF i pieczęć vs podpis.
+    - P19 (OrdPU): representation uzupełnia pełnomocnictwa (PPS-1/UPL-1),
+      restructuring pokrywa sukcesję podatkową (Art. 112 OrdPU).
+    - P20 (Sankcje): force majeure dopełnia ulgi w spłacie (Art. 67a OP)
+      analizowane w P19.
+    - P21 (FX/TP/Residency): family/seasonal dopełniają obraz dochodu
+      JDG w kontekście rodzinnym i sezonowym.
+    Łącznie seria P18-P22 obejmuje ~1 851 reguł OPA.
+
+=================================================================
+SEKCJA 3. ANALIZA FORCE MAJEURE — POZIOM ENTERPRISE
+=================================================================
+
+3.1. ZAKRES MODUŁU (42 REGUŁY)
+
+    plan44_force_majeure (9 micro):
+    jdg.force_majeure.business_suspension_auto, jdg.force_majeure.documentation_loss,
+    jdg.force_majeure.documentation_preservation, jdg.force_majeure.emergency_deadlines,
+    jdg.force_majeure.insurance_cover, jdg.force_majeure.tax_loss_carry_back,
+    jdg.force_majeure.tax_relief, jdg.force_majeure.zus_relief, jdg.force_majeure.no_match.
+
+    plan45_force_majeure (33 hyper) — pełny inwentarz:
+    event_detection (Art. 67a OP), event_pandemic, event_fire, event_flood,
+    event_natural_disaster_other, event_war, impact_assessment,
+    relief_application_immediate, relief_tax_deferral (Art. 67a § 1 pkt 1 OP),
+    relief_deadline_extension, relief_interest_suspension,
+    relief_tax_installments, relief_tax_remission, relief_tax_suspension,
+    relief_zus_deferral, relief_zus_installments, relief_zus_remission,
+    relief_zus_suspension, suspension_automatic, suspension_tax_consequences,
+    suspension_zus_consequences, docs_backup_obligation,
+    docs_electronic_preservation, docs_loss_reporting, docs_reconstruction,
+    insurance_claim_procedure, insurance_cover_check, insurance_payout_tax,
+    loss_carry_back, loss_enhanced_deduction,
+    deadlines_mf_monitoring, deadlines_auto_extension, no_match.
+
+3.2. DETEKCJA ZDARZEŃ SIŁY WYŻSZEJ
+
+    (a) event_detection — główna reguła detekcji (Art. 67a OP),
+        routing TRIAGE_QUEUE: "Zdarzenie siły wyższej — uruchom procedurę
+        ulg" — poprawne.
+    (b) event_pandemic — pandemia/epidemia → katalog ulg (spec-regulacje
+        MF) — poprawne (precedens COVID-19).
+    (c) event_flood, event_fire, event_war, event_natural_disaster_other —
+        powódź, pożar, wojna, inne klęski — kompletna kategoryzacja.
+    (d) impact_assessment — ocena wpływu zdarzenia na działalność —
+        wartość dodana ENTERPRISE.
+
+3.3. ULGI PODATKOWE (ART. 67A ORDPU)
+
+    (a) relief_tax_deferral — odroczenie terminu płatności podatku
+        (Art. 67a § 1 pkt 1 OP) — poprawne.
+    (b) relief_tax_installments — rozłożenie na raty (Art. 67a § 1 pkt 2) —
+        poprawne.
+    (c) relief_tax_remission — umorzenie zaległości (Art. 67d OP) —
+        poprawne.
+    (d) relief_tax_suspension — zawieszenie postępowania (Art. 67b? — do
+        weryfikacji, standardowo ulgi 67a-67e) — komplet.
+    (e) relief_interest_suspension — zawieszenie odsetek za zwłokę —
+        wartościowe.
+    (f) relief_deadline_extension — przedłużenie terminu złożenia
+        deklaracji (rozporządzenia MF, precedens COVID-19) — poprawne.
+    (g) relief_application_immediate — natychmiastowe złożenie wniosku —
+        dobre praktycznie.
+
+3.4. ULGI ZUS
+
+    (a) relief_zus_deferral / installments / remission / suspension —
+        analogiczny komplet jak dla podatków (odroczenie, raty, umorzenie,
+        zawieszenie składek ZUS) — wzorcowe.
+
+3.5. ZAWIESZENIE DZIAŁALNOŚCI
+
+    (a) suspension_automatic — automatyczne zawieszenie działalności przy
+        siłce wyższej — dobre.
+    (b) suspension_tax_consequences / suspension_zus_consequences —
+        skutki podatkowe i ZUS zawieszenia — poprawne.
+
+3.6. DOKUMENTACJA I ODBUDOWA
+
+    (a) docs_backup_obligation — obowiązek kopii zapasowych — dobre.
+    (b) docs_electronic_preservation — elektroniczna archiwizacja — dobre.
+    (c) docs_loss_reporting — zgłoszenie utraty dokumentów — dobre
+        (istotne dla kontroli).
+    (d) docs_reconstruction — procedura odtworzenia dokumentacji — dobre.
+
+3.7. UBEZPIECZENIA
+
+    (a) insurance_cover_check — weryfikacja polis — dobre.
+    (b) insurance_claim_procedure — procedura zgłoszenia szkody — dobre.
+    (c) insurance_payout_tax — skutki podatkowe odszkodowania — poprawne
+        (Art. 21 ust. 1 pkt 4 PIT — odszkodowania zwolnione co do zasady).
+
+3.8. STRATY I TERMINY
+
+    (a) loss_carry_back — strata: odliczenie wstecz — dobre (Art. 9 ust. 3
+        PIT dla PIT — odliczenie w ciągu 5 lat, nie wstecz — uwaga:
+        carry-back nie obowiązuje w PIT, wyłącznie carry-forward;
+        reguła wymaga weryfikacji interpretacyjnej — R-FM-1).
+    (b) loss_enhanced_deduction — podwyższone odliczenie straty (spec-
+        regulacje, np. COVID) — dobre.
+    (c) deadlines_mf_monitoring — monitoring komunikatów MF — wzorcowe.
+    (d) deadlines_auto_extension — AUTOMATYCZNE stosowanie przedłużonych
+        terminów ogłaszanych przez MF — wzorcowe (odpowiada na pytanie
+        promptu: "Czy terminy są automatycznie przedłużane?" — TAK, jeśli
+        monitoring komunikatów jest podłączony do źródła danych).
+
+3.9. DIAGRAM MERMAID — FLOW FORCE MAJEURE
+
+graph TD
+    A[Zdarzenie nadzwyczajne] --> B{Detekcja: powodz / pozar / pandemia / wojna}
+    B --> C[Ocena wplywu na JDG]
+    C --> D{Wniosek o ulgi}
+    D -->|Podatki| E[Odroczenie Art. 67a / Raty / Umorzenie 67d / Zawieszenie]
+    D -->|ZUS| F[Odroczenie / Raty / Umorzenie / Zawieszenie skladek]
+    C --> G{Zawieszenie dzialalnosci}
+    G --> H[Automatyczne zawieszenie + skutki podatkowe/ZUS]
+    C --> I{Dokumentacja}
+    I --> J[Kopie zapasowe / Zgloszenie utraty / Odtworzenie]
+    C --> K{Ubezpieczenie}
+    K --> L[Weryfikacja polis / Zgloszenie szkody / Podatek od odszkodowania]
+    C --> M{Terminy MF}
+    M --> N[Monitoring komunikatow MF / Automatyczne przedluzenie terminow]
+
+3.10. SCENARIUSZE TESTOWE FORCE MAJEURE
+
+    T1. Powódź zniszczyła dokumenty — event_flood + docs_loss_reporting
+        + docs_reconstruction + wniosek o odroczenie.
+    T2. Pandemia — event_pandemic + relief_deadline_extension +
+        deadlines_auto_extension.
+    T3. Pożar magazynu — event_fire + insurance_claim_procedure +
+        insurance_payout_tax.
+    T4. Strata sezonowa — loss_carry_back (weryfikacja R-FM-1: w PIT tylko
+        carry-forward) + loss_enhanced_deduction.
+    T5. Komunikat MF o przedłużeniu terminu JPK — deadlines_mf_monitoring
+        + deadlines_auto_extension.
+
+3.11. OCENA MODUŁU FORCE MAJEURE: 4.5/5
+
+    Mocne strony: pełna kategoryzacja zdarzeń (6 typów), komplet ulg
+    podatkowych (5) i ZUS (4), zawieszenie, dokumentacja, ubezpieczenia,
+    straty, monitoring i auto-przedłużenie terminów MF.
+    Luki: (1) R-FM-1: loss_carry_back — w PIT brak odliczenia wstecz
+    (tylko naprzód 5 lat) — reguła wymaga weryfikacji; (2) brak integracji
+    z RCB (Rządowe Centrum Bezpieczeństwa) / systemami ostrzegania o
+    klęskach (detekcja oparta na danych wejściowych).
+
+=================================================================
+SEKCJA 4. ANALIZA ULG RODZINNYCH (FAMILY) — POZIOM ENTERPRISE
+=================================================================
+
+4.1. ZAKRES MODUŁU (54 REGUŁY)
+
+    plan44_family (11 micro):
+    jdg.family.asset_transfer_tax, jdg.family.car_usage_kup,
+    jdg.family.child_employment_kup, jdg.family.cooperation_zus,
+    jdg.family.health_insurance_deduction, jdg.family.joint_pit_filing,
+    jdg.family.pit4r_obligation, jdg.family.relief_interaction,
+    jdg.family.spouse_employment_kup, jdg.family.succession_planning,
+    jdg.family.no_match.
+
+    plan45_family (43 hyper) — pełny inwentarz:
+    joint_filing_conditions (Art. 6 ust. 2 PIT), joint_filing_benefit,
+    joint_filing_exclusions, joint_filing_deadline_april30,
+    single_parent_calculation (Art. 6 PIT), single_parent_custody,
+    child_ulga_young_interaction (Art. 21 PIT), child_under26_risk,
+    child_university, child_salary_arm_length, child_work_evidence,
+    spouse_contract_b2b, spouse_contract_employment,
+    spouse_contract_mandate, spouse_kup_conditions,
+    spouse_market_benchmark, spouse_no_evidence_nkup,
+    spouse_no_qualifications_redflag, spouse_qualifications,
+    spouse_salary_above_market_redflag, spouse_work_evidence,
+    cooperation_notification_7days, cooperation_pit_treatment,
+    cooperation_zus_health, cooperation_zus_person,
+    health_insurance_family, health_insurance_not_kup,
+    car_75pct_kup, car_50pct_kup, car_mileage_log, car_vat_50pct,
+    asset_gift_children, asset_gift_spouse, asset_pcc_exemption,
+    asset_sale_arm_length, asset_sale_vat, pit11_deadline_feb28,
+    pit4r_obligation, succession_business_continuity,
+    succession_inheritance, succession_sdz2_6months,
+    multi_generation_tax_planning, aggregate_risk, no_match.
+
+4.2. USTALENIE KRYTYCZNE (L-FAM-1): BRAK ULG PRORODZINNEJ I 4+
+
+    ANALIZA: Prompt wymaga analizy:
+    (a) Ulga prorodzinna (Art. 27f PIT) — 1112,04 PLN rocznie na drugie i
+        kolejne dziecko (92,67 PLN × 12), na pierwsze dziecko tylko przy
+        dochodzie nieprzekraczającym 112 000 PLN rocznie (limit łączny
+        małżonków), zwrot różnicy do 1/6 podatku.
+    (b) Ulga dla rodzin 4+ (Art. 21 ust. 1 pkt 153 PIT) — zwolnienie
+        przychodów do 85 528 PLN rocznie dla rodzica wychowującego 4+
+        dzieci.
+    (c) Ulga dla samotnych rodziców (Art. 6 ust. 4 PIT) — podwójna
+        kwota zmniejszająca, rozliczenie jak osoba samotnie wychowująca
+        dziecko.
+
+    WYNIK EKSTRAKCJI:
+    (a) W plan44/plan45_family NIE MA reguł z rule_id zawierających
+        "prorodzin" ani "27f" w treści kalkulacyjnej. Jedyna wzmianka o
+        Art. 27f to reguła relief_interaction (plan44): "Interakcja ulg:
+        dzieci, rehabilitacja, internet — limit łączny; limit dochodu dla
+        ulgi na dziecko liczony łącznie dla małżonków". To reguła
+        informacyjna o limicie, NIE kalkulator ulgi prorodzinnej.
+    (b) Brak reguł dla ulgi 4+ (Art. 21 ust. 1 pkt 153). Kwota 85 528 PLN
+        pojawia się WYŁĄCZNIE w kontekście ULGI DLA MŁODYCH (do 26 lat,
+        Art. 21 ust. 1 pkt 148 PIT) w regule child_ulga_young_interaction —
+        to inna ulga niż rodzina 4+.
+    (c) Ulga dla samotnych rodziców JEST obsłużona: single_parent_
+        calculation (podwójna kwota wolna) + single_parent_custody
+        (faktyczne sprawowanie opieki) — poprawne.
+    (d) Wspólne rozliczenie małżonków: joint_filing_conditions (Art. 6
+        ust. 2 PIT: małżeństwo cały rok + wspólność majątkowa),
+        joint_filing_deadline_april30 (30 kwietnia), joint_filing_benefit,
+        joint_filing_exclusions — kompletne.
+
+    WNIOSEK (L-FAM-1 — LUKA KRYTYCZNA): moduł family NIE kalkuluje ulgi
+    prorodzinnej (Art. 27f) ani ulgi dla rodzin 4+ (Art. 21 ust. 1 pkt
+    153) — dwóch najważniejszych ulg rodzinnych PIT dla JDG z dziećmi.
+    REKOMENDACJA P0: dodać reguły: ulga_prorodzinna_27f (kwota 1112,04,
+    limit 112 000), ulga_4plus_85_528, interakcja z ulgą dla młodych.
+
+4.3. WSPÓŁPRACA Z MAŁŻONKIEM (RED FLAGI)
+
+    (a) spouse_contract_b2b / employment / mandate — umowa B2B, o pracę,
+        zlecenie z małżonkiem — obsłużone 3 formy.
+    (b) spouse_qualifications / spouse_market_benchmark — kwalifikacje
+        i benchmark rynkowy wynagrodzenia — dobre.
+    (c) RED FLAGI: spouse_no_evidence_nkup (brak dowodów = NKUP),
+        spouse_no_qualifications_redflag (brak kwalifikacji),
+        spouse_salary_above_market_redflag (wynagrodzenie ponad rynek) —
+        wzorcowa ochrona przed zarzutem pozorności (Art. 23 ust. 1 PIT).
+    (d) spouse_work_evidence / spouse_kup_conditions — dowody pracy i
+        warunki KUP — dobre.
+
+4.4. WSPÓŁPRACA Z DZIEĆMI
+
+    (a) child_salary_arm_length — wynagrodzenie dziecka na zasadach
+        rynkowych — dobre.
+    (b) child_work_evidence — dowody faktycznej pracy — dobre.
+    (c) child_under26_risk — ryzyko ulgi dla młodych (dziecko do 26 lat
+        zatrudnione w firmie rodzica) — trafne.
+    (d) child_university — dziecko studiujące — dobre.
+    (e) child_ulga_young_interaction — interakcja pensji z ulgą dla
+        młodych (85 528) — poprawne (inna ulga niż 4+).
+
+4.5. WSPÓLNE ROZLICZENIE I SAMOTNY RODZIC
+
+    (a) joint_filing_* (4 reguły) — warunki, korzyść, wyłączenia, termin
+        30 kwietnia — komplet.
+    (b) single_parent_calculation — podwójna kwota zmniejszająca (Art. 6
+        ust. 4 PIT) — poprawne.
+    (c) single_parent_custody — wymóg faktycznej opieki — poprawne.
+
+4.6. PRZEKAZANIE MAJĄTKU I SAMOCHODY
+
+    (a) asset_gift_spouse / asset_gift_children — darowizny — dobre.
+    (b) asset_pcc_exemption — zwolnienie PCC (małżonek, zstępni —
+        grupa 0) — poprawne.
+    (c) asset_sale_arm_length / asset_sale_vat — sprzedaż na zasadach
+        rynkowych + VAT — dobre.
+    (d) car_75pct_kup / car_vat_50pct / car_mileage_log — auto firmowe:
+        75% KUP (używane też prywatnie) + 50% VAT + ewidencja przebiegu —
+        zgodne z Art. 23 ust. 1 pkt 46 PIT i Art. 86a VAT.
+
+4.7. SUKCESJA W RODZINIE
+
+    (a) succession_business_continuity / succession_inheritance —
+        ciągłość i dziedziczenie — dobre.
+    (b) succession_sdz2_6months — formularz SD-Z2 (zarząd sukcesyjny),
+        termin 6 miesięcy — zgodne z ustawą o zarządzie sukcesyjnym
+        (wniosek w 6 mies. od śmierci, max 2 lata prowadzenia).
+
+4.8. DIAGRAM MERMAID — OPTYMALIZACJA RODZINNA
+
+graph TD
+    A[JDG z rodzina] --> B{Rozliczenie}
+    B -->|Wspolne z malzonkiem| C[Art. 6 ust. 2: caly rok + wspolnosc majatkowa, termin 30.04]
+    B -->|Samotny rodzic| D[Art. 6 ust. 4: podwojna kwota wolna + opieka]
+    B -->|Indywidualne| E[Skala 12%/32% lub liniowy 19%]
+    A --> F{Dzieci}
+    F -->|Ulga prorodzinna 27f| G[LUKA L-FAM-1: brak reguly - 1112,04 zl na 2. i kol. dziecko, limit 112 000]
+    F -->|Ulga 4+| H[LUKA L-FAM-1: brak reguly - 85 528 zl]
+    F -->|Ulga dla mlodych| I[85 528 zl - dziecko do 26 lat zatrudnione]
+    A --> J{Wspolpraca rodziny}
+    J -->|Malzonek B2B/umowa| K[Benchmark rynkowy + RED FLAGI: pozornosc]
+    J -->|Dziecko| L[Wynagrodzenie rynkowe + dowody pracy]
+    A --> M{Przekazanie majatku}
+    M -->|Darowizna| N[PCC zwolnienie grupa 0]
+    M -->|Auto firmowe| O[75% KUP + 50% VAT + ewidencja przebiegu]
+
+4.9. SCENARIUSZE TESTOWE FAMILY
+
+    T1. JDG + 2 dzieci → ulga prorodzinna 1112,04 × 2.
+        Sprawdzenie: BRAK reguły (L-FAM-1) — test powinien FAIL.
+    T2. Rodzina 5 dzieci, dochód 90 000 → ulga 4+ do 85 528.
+        Sprawdzenie: BRAK reguły (L-FAM-1) — test powinien FAIL.
+    T3. Samotny rodzic z dzieckiem → podwójna kwota wolna.
+        Sprawdzenie: single_parent_calculation + single_parent_custody.
+    T4. Małżonek na B2B z wynagrodzeniem 2× rynek, brak kwalifikacji →
+        RED FLAG. Sprawdzenie: spouse_salary_above_market_redflag,
+        spouse_no_qualifications_redflag.
+    T5. Auto firmowe używane prywatnie → 75% KUP + 50% VAT + ewidencja.
+        Sprawdzenie: car_75pct_kup, car_vat_50pct, car_mileage_log.
+
+4.10. OCENA MODUŁU FAMILY: 3.5/5
+
+    Mocne strony: wspólne rozliczenie, samotny rodzic, współpraca z
+    małżonkiem (red flagi), współpraca z dziećmi, przekazanie majątku,
+    auta firmowe, sukcesja.
+    Luki: (1) L-FAM-1 KRYTYCZNA: brak ulgi prorodzinnej 27f i ulgi 4+
+    (85 528), (2) brak kalkulatora interakcji ulg (relief_interaction
+    tylko informacyjna), (3) brak integracji z PIT-36/Ulga na dzieci
+    załącznikiem PIT/O.
+
+=================================================================
+SEKCJA 5. ANALIZA E-DORĘCZEŃ (E-DELIVERY) — POZIOM ENTERPRISE
+=================================================================
+
+5.1. ZAKRES MODUŁU (45 REGUŁ)
+
+    plan44_edelivery (9 micro):
+    jdg.edelivery.archive_retention, jdg.edelivery.cross_border_e_comm,
+    jdg.edelivery.document_retention, jdg.edelivery.epuap_profile,
+    jdg.edelivery.evidence_value, jdg.edelivery.fiction_detection,
+    jdg.edelivery.platform_monitoring, jdg.edelivery.qualified_signature,
+    jdg.edelivery.no_match.
+
+    plan45_edelivery (36 hyper) — pełny inwentarz:
+    registration_mandatory, registration_deadline, address_update_obligation,
+    sanction_outdated_address, fiction_14days, fiction_critical_alert,
+    fiction_consequences, fiction_appeal_trigger, monitoring_unread,
+    alert_7days, alert_3days, alert_1day, epuap_profile_required,
+    epuap_signature, epuap_submission_upo, epuap_timestamp,
+    eus_required, eus_incoming_letters, eus_declarations_status,
+    eus_mandates, eus_payment_history, eus_certificates,
+    cross_border_crs_fatca, cross_border_dac, cross_border_eidas,
+    language_polish, language_foreign_translation, retention_5years,
+    evidence_value, offline_backup, offline_paper_allowed, encryption,
+    data_breach, calendar_deadlines_integration, aggregate_dashboard,
+    no_match.
+
+5.2. OBOWIĄZEK E-DORĘCZEŃ OD 2025 (USTALENIE KLUCZOWE)
+
+    (a) registration_mandatory — rejestracja adresu e-Doręczeń w BAE —
+        obowiązek od 2025 — poprawne (ustawa o doręczeniach elektronicznych:
+        od 1.01.2025 podmioty niepubliczne, w tym JDG zarejestrowane w
+        CEIDG — obowiązek posiadania adresu do e-Doręczeń).
+    (b) registration_deadline — termin zależny od typu podmiotu —
+        poprawne.
+    (c) address_update_obligation — obowiązek aktualizacji adresu —
+        poprawne.
+    (d) sanction_outdated_address — nieaktualny adres → fikcja doręczenia
+        na stary adres (BLOCK_AND_ALERT) — poprawne i ważne.
+
+5.3. FIKCJA DORĘCZENIA (14 DNI) — WZORCOWE
+
+    (a) fiction_14days — pismo uznane za doręczone po 14 dniach
+        (BLOCK_AND_ALERT) — zgodne z ustawą o doręczeniach el. (14 dni od
+        umieszczenia w BAE) — poprawna wartość.
+    (b) fiction_critical_alert — alert CRITICAL zbliżającej się fikcji —
+        wzorcowe.
+    (c) fiction_consequences — konsekwencje fikcji (bieg terminów) — dobre.
+    (d) fiction_appeal_trigger — przywrócenie terminu / odwołanie —
+        dobre.
+    (e) Alerty: alert_7days (7 dni przed), alert_3days (3 dni),
+        alert_1day (OSTATNI DZIEŃ, BLOCK) — kaskada czasowa wzorcowa.
+    (f) monitoring_unread — codzienny monitoring nieodebranych pism
+        w e-US — wzorcowe.
+
+5.4. ePUAP
+
+    (a) epuap_profile_required — wymóg profilu zaufanego — dobre.
+    (b) epuap_signature — podpis przez profil zaufany — dobre.
+    (c) epuap_submission_upo — składanie pism z UPO (Urzędowe
+        Poświadczenie Odbioru) — poprawne i ważne (spójność z P18 KSeF/UPO).
+    (d) epuap_timestamp — znacznik czasu — dobre.
+
+5.5. e-US (KONTO PODATNIKA)
+
+    (a) eus_required / incoming_letters / declarations_status / mandates /
+        payment_history / certificates — komplet pokrycia e-US:
+        korespondencja, status deklaracji, pełnomocnictwa, historia
+        płatności, certyfikaty — wzorcowe.
+
+5.6. WYMIANA TRANSGRANICZNA I BEZPIECZEŃSTWO
+
+    (a) cross_border_crs_fatca / cross_border_dac / cross_border_eidas —
+        CRS/FATCA, DAC6, eIDAS — dobre.
+    (b) language_polish / language_foreign_translation — język polski i
+        tłumaczenia — dobre.
+    (c) retention_5years — retencja 5 lat — zgodne z OrdPU (Art. 86 § 1:
+        5 lat) — poprawne.
+    (d) evidence_value — wartość dowodowa — dobre.
+    (e) offline_backup / offline_paper_allowed — backup offline i
+        doręczenia papierowe w awarii — dobre.
+    (f) encryption / data_breach — szyfrowanie i naruszenie danych —
+        zgodne z RODO — dobre.
+    (g) calendar_deadlines_integration — integracja kalendarza terminów —
+        dobre.
+    (h) aggregate_dashboard — pulpit agregacji — dobre.
+
+5.7. DIAGRAM MERMAID — FLOW E-DORĘCZEŃ
+
+graph TD
+    A[Obowiazek e-Doreczen od 2025] --> B[Rejestracja adresu BAE]
+    B --> C[Aktualizacja adresu + sankcja nieaktualnego]
+    C --> D{Pismo przychodzace}
+    D --> E[Umieszczenie w BAE]
+    E --> F[Alert 7 dni / 3 dni / 1 dzien]
+    F --> G{Odebrano?}
+    G -->|Tak| H[Bieg terminow od odebrania]
+    G -->|Nie po 14 dniach| I[FIKCJA DORECZENIA - BLOCK]
+    I --> J[Konsekwencje: bieg terminow + przywrocenie/odwolanie]
+    A --> K[ePUAP: profil, podpis, UPO, timestamp]
+    A --> L[e-US: pisma, deklaracje, mandaty, platnosci, certyfikaty]
+    A --> M[Bezpieczenstwo: szyfrowanie, backup, RODO, CRS/DAC]
+    A --> N[Retencja 5 lat + wartosc dowodowa]
+
+5.8. SCENARIUSZE TESTOWE E-DELIVERY
+
+    T1. Pismo w BAE nieodebrane 12 dni → alerty 7/3/1 + CRITICAL.
+        Sprawdzenie: alert_7days, alert_3days, alert_1day.
+    T2. Pismo nieodebrane 15 dni → fikcja doręczenia.
+        Sprawdzenie: fiction_14days + fiction_consequences.
+    T3. Zmiana adresu → aktualizacja BAE + sankcja przy braku.
+        Sprawdzenie: address_update_obligation, sanction_outdated_address.
+    T4. Niezarejestrowany adres BAE po 2025 → WARNING.
+        Sprawdzenie: registration_mandatory.
+    T5. Przekazanie pisma przez ePUAP → UPO.
+        Sprawdzenie: epuap_submission_upo.
+
+5.9. OCENA MODUŁU E-DELIVERY: 4.5/5
+
+    Mocne strony: fikcja 14 dni z kaskadą alertów (7/3/1), BAE, ePUAP
+    (UPO), e-US (6 reguł), bezpieczeństwo (RODO/CRS/DAC), retencja 5 lat.
+    Luki: (1) brak automatycznej wysyłki pism do US przez e-Doręczenia
+    (warstwa wysyłkowa — spójnie z P19/S22, gdzie też brak), (2) brak
+    integracji API z BAE (reguły na danych wejściowych).
+
+=================================================================
+SEKCJA 6. ANALIZA PODPISU ELEKTRONICZNEGO (ESIG) — POZIOM ENTERPRISE
+=================================================================
+
+6.1. ZAKRES MODUŁU (37 REGUŁ)
+
+    plan44_esig (8 micro):
+    jdg.esig.cross_border_eidas, jdg.esig.document_authenticity,
+    jdg.esig.einvoice_storage_standards, jdg.esig.electronic_contracts,
+    jdg.esig.ksef_invoice_signature, jdg.esig.qualified_signature_requirement,
+    jdg.esig.signature_validity_monitoring, jdg.esig.no_match.
+
+    plan45_esig (29 hyper) — pełny inwentarz:
+    qualified_required_appeal, qualified_certificate_validity,
+    qualified_expiry_alert, qualified_renewal_procedure,
+    qualified_exceptions, profile_zaufany_validity,
+    profile_zaufany_sufficient, profile_zaufany_limitations,
+    profile_zaufany_renewed, profile_zaufany_extension,
+    ksef_token_required, ksef_token_generation, ksef_token_expiry,
+    ksef_seal_vs_signature, ksef_authorization,
+    contracts_documentary_form, contracts_electronic_form,
+    contracts_equivalence_written, cross_border_advanced_signature,
+    cross_border_eidas_recognition, cross_border_non_eu_signatures,
+    cross_border_tsl_check, cross_border_verification,
+    document_authenticity_preserve, document_integrity_check,
+    document_conversion_loss, document_format_requirements,
+    document_retention_format, no_match.
+
+6.2. PODPIS KWALIFIKOWANY
+
+    (a) qualified_required_appeal — podpis kwalifikowany wymagany przy
+        odwołaniach i pełnomocnictwach — poprawne (Art. 138o OrdPU:
+        pełnomocnictwo szczególne wymaga kwalifikowanego).
+    (b) qualified_certificate_validity — ważność certyfikatu — dobre.
+    (c) qualified_expiry_alert / qualified_renewal_procedure — alert
+        wygaśnięcia i procedura odnowienia — wzorcowe.
+    (d) qualified_exceptions — wyjątki od wymogu — dobre.
+
+6.3. PROFIL ZAUFANY
+
+    (a) profile_zaufany_validity — ważność (3 lata od 2024) — dobre.
+    (b) profile_zaufany_sufficient / limitations — wystarczalność i
+        ograniczenia (profil zaufany NIE zastępuje kwalifikowanego przy
+        pełnomocnictwach szczególnych) — poprawne.
+    (c) profile_zaufany_renewed / extension — odnowienie i przedłużenie —
+        dobre.
+
+6.4. KSeF I PODPIS (SPÓJNOŚĆ Z P18)
+
+    (a) ksef_token_required / generation / expiry — tokeny KSeF —
+        poprawne (spójność z P18: token podpisany kwalifikowanym).
+    (b) ksef_seal_vs_signature — pieczęć elektroniczna vs podpis — dobre
+        (KSeF używa pieczęci dla JPK, podpisu dla tokena).
+    (c) ksef_authorization — autoryzacja podatnika — dobre.
+
+6.5. UMOWY I DOKUMENTY
+
+    (a) contracts_electronic_form / documentary_form / equivalence_written
+        — równoważność formy elektronicznej z pisemną — zgodne z Kodeksem
+        cywilnym (Art. 78¹ KC) — poprawne.
+    (b) document_authenticity_preserve / integrity_check / conversion_loss
+        / format_requirements / retention_format — integralność, konwersja,
+        format, retencja — komplet.
+
+6.6. WYMIANA TRANSGRANICZNA (eIDAS)
+
+    (a) cross_border_eidas_recognition — wzajemne uznawanie podpisów w UE
+        (eIDAS) — poprawne.
+    (b) cross_border_advanced_signature / non_eu_signatures / tsl_check /
+        verification — podpis zaawansowany, spoza UE, lista TSL,
+        weryfikacja — komplet.
+
+6.7. DIAGRAM MERMAID — WYBÓR PODPISU
+
+graph TD
+    A[Dokument do podpisania] --> B{Typ czynnosci}
+    B -->|Odwolanie / pelnomocnictwo szczegolne| C[Podpis KWALIFIKOWANY - Art. 138o OrdPU]
+    B -->|Wniosek ePUAP / e-US| D[Profil zaufany wystarcza]
+    B -->|KSeF token| E[Token podpisany kwalifikowanym + pieczec dla JPK]
+    B -->|Umowa B2B| F[Forma elektroniczna rownowazna pisemnej - Art. 78-1 KC]
+    C --> G[Waznosc certyfikatu + alert wygasniecia + odnowienie]
+    D --> H[Waznosc 3 lata + odnowienie]
+    E --> I[Wygasniecie tokena + autoryzacja]
+    B -->|Wymiana zagraniczna| J[eIDAS: wzajemne uznawanie + TSL + spoza UE]
+
+6.8. SCENARIUSZE TESTOWE ESIG
+
+    T1. Pełnomocnictwo szczególne UPL-1 → wymagany podpis kwalifikowany.
+        Sprawdzenie: qualified_required_appeal.
+    T2. Certyfikat kwalifikowany wygasa za 14 dni → alert.
+        Sprawdzenie: qualified_expiry_alert.
+    T3. Wniosek przez ePUAP → profil zaufany wystarcza.
+        Sprawdzenie: profile_zaufany_sufficient.
+    T4. Token KSeF wygasa → alert + odnowienie.
+        Sprawdzenie: ksef_token_expiry.
+    T5. Podpis z kraju UE → eIDAS recognition.
+        Sprawdzenie: cross_border_eidas_recognition.
+
+6.9. OCENA MODUŁU ESIG: 4.5/5
+
+    Mocne strony: podpis kwalifikowany (5 reguł), profil zaufany (5),
+    KSeF (5), umowy/dokumenty (6), eIDAS (5).
+    Luki: (1) brak automatycznego podpisywania dokumentów (reguły
+    informują, nie podpisują), (2) brak integracji z dostawcami podpisu
+    (Certum, Szafir, ProCertum), (3) brak monitoringu wygasających
+    certyfikatów w kalendarzu.
+
+=================================================================
+SEKCJA 7. ANALIZA SEZONOWOŚCI (SEASONAL) — POZIOM ENTERPRISE
+=================================================================
+
+7.1. ZAKRES MODUŁU (37 REGUŁ)
+
+    plan44_seasonal (8 micro):
+    jdg.seasonal.annual_reconciliation, jdg.seasonal.identification,
+    jdg.seasonal.loss_carry_forward, jdg.seasonal.pit_advances,
+    jdg.seasonal.suspension_vs_closure, jdg.seasonal.vat_consequences,
+    jdg.seasonal.zus_strategy, jdg.seasonal.no_match.
+
+    plan45_seasonal (29 hyper) — pełny inwentarz:
+    detection_months_with_revenue (Art. 22 PP), detection_3plus_months_gap,
+    detection_tourism, detection_agriculture, detection_construction_winter,
+    suspension_keep_nip (Art. 22 PP), suspension_max_6_months,
+    zus_suspension_no_social, zus_suspension_health_still_due,
+    zus_health_tier_seasonal, zus_maly_plus_revenue_test,
+    zus_closure_no_contributions, pit_zero_advances_no_income,
+    pit_scale_active_months_only, pit_lump_sum_annual,
+    pit_advances_simplified_recommendation (Art. 44 ust. 6b PIT),
+    pit_loss_carry_forward (Art. 9 ust. 3 PIT),
+    vat_zero_returns_suspension, vat_exemption_proportional,
+    vat_exemption_breach_mid_season, vat_margin_scheme_seasonal,
+    vat_maintenance_costs_deduction, reopening_vat_r_new,
+    reopening_zus_new_application, closure_nip_loss,
+    aggregate_suspend_vs_close, aggregate_optimal_strategy,
+    aggregate_annual_summary, no_match.
+
+7.2. DETEKCJA SEZONOWOŚCI
+
+    (a) detection_months_with_revenue — aktywność ≤ 9 miesięcy — dobre.
+    (b) detection_3plus_months_gap — przerwa ≥ 3 mies. — dobre.
+    (c) detection_tourism / agriculture / construction_winter —
+        domniemanie sezonowości dla turystyki, rolnictwa, budowlanki
+        (przerwa zimowa XII-II) — dobre.
+
+7.3. ZAWIESZENIE DZIAŁALNOŚCI (USTALENIE — R-SEAS-1)
+
+    (a) suspension_keep_nip — zawieś zamiast zamykać: zachowasz NIP,
+        REGON i ciągłość — poprawne (Art. 22 PP).
+    (b) suspension_max_6_months — "Zawieszenie — max 6 miesięcy ciągłych.
+        Powyżej: rozważ zamknięcie" — UWAGA: ustawa Prawo przedsiębiorców
+        (Art. 22 ust. 4) pozwala zawiesić działalność na okres do 24
+        MIESIĘCY łącznie (min. 30 dni od 1.01.2023 zniesiono minimalny
+        okres — nowelizacja 2023). Reguła sugeruje próg 6 miesięcy jako
+        REKOMENDACJĘ praktyczną (optymalizacja ZUS: przy zawieszeniu
+        składka zdrowotna nadal należna), ale to NIE jest limit prawny.
+        Zgłoszono jako R-SEAS-1: komunikat mylący — proponowana zmiana:
+        "max 24 miesiące łącznie (Art. 22 PP); przy dłuższym zawieszeniu
+        rozważ zamknięcie ze względu na składkę zdrowotną".
+    (c) closure_nip_loss — zamknięcie = utrata NIP — dobre.
+
+7.4. ZUS W SEZONOWOŚCI
+
+    (a) zus_suspension_no_social — zawieszenie → brak składek społecznych —
+        poprawne.
+    (b) zus_suspension_health_still_due — składka zdrowotna NADAL należna
+        w zawieszeniu — poprawne i kluczowe.
+    (c) zus_health_tier_seasonal — składka zdrowotna od rzeczywistego
+        dochodu (Art. 81 ust. 2e u.ś.o.z.) — poprawne.
+    (d) zus_maly_plus_revenue_test — Mały ZUS Plus (test przychodu) —
+        poprawne.
+    (e) zus_closure_no_contributions — zamknięcie → brak składek — dobre.
+
+7.5. PIT W SEZONOWOŚCI
+
+    (a) pit_zero_advances_no_income — brak zaliczek przy braku dochodu —
+        poprawne.
+    (b) pit_scale_active_months_only — skala tylko za miesiące aktywne —
+        dobre.
+    (c) pit_lump_sum_annual — ryczałt roczny — dobre.
+    (d) pit_advances_simplified_recommendation — zaliczki uproszczone
+        (Art. 44 ust. 6b PIT) — stała kwota miesięczna, brak wahań —
+        wzorcowe dla sezonowości.
+    (e) pit_loss_carry_forward — strata odliczana w 5 kolejnych latach
+        (Art. 9 ust. 3 PIT) — poprawne (spójnie z R-FM-1: carry-forward,
+        nie carry-back).
+
+7.6. VAT W SEZONOWOŚCI
+
+    (a) vat_zero_returns_suspension — JPK_V7 zerowe w zawieszeniu —
+        dobre.
+    (b) vat_exemption_proportional — proporcjonalne zwolnienie — dobre.
+    (c) vat_exemption_breach_mid_season — przekroczenie limitu zwolnienia
+        w trakcie sezonu — dobre.
+    (d) vat_margin_scheme_seasonal — procedura marży — dobre.
+    (e) vat_maintenance_costs_deduction — koszty utrzymania w sezonie —
+        dobre.
+    (f) reopening_vat_r_new — ponowne otwarcie: VAT-R — dobre.
+
+7.7. DIAGRAM MERMAID — OPTYMALIZACJA SEZONOWA
+
+graph TD
+    A[JDG sezonowa] --> B{Detekcja: <=9 mies. aktywnosci / przerwa >=3 mies.}
+    B --> C{Warianty}
+    C -->|Zawieszenie| D[Zachowaj NIP - Art. 22 PP]
+    C -->|Zamkniecie| E[Utracisz NIP - nowy start]
+    D --> F[ZUS: brak spolecznych, zdrowotna NADAL]
+    D --> G[PIT: zaliczki uproszczone Art. 44 ust. 6b]
+    D --> H[VAT: JPK zerowe w zawieszeniu]
+    D --> I[Wznowienie: VAT-R + ZUS nowy wniosek]
+    F --> J[Uwaga: max 24 mies. lacznie - R-SEAS-1]
+    B --> K[Strata sezonowa - odliczenie 5 lat Art. 9 ust. 3]
+
+7.8. SCENARIUSZE TESTOWE SEASONAL
+
+    T1. Przychody tylko VI-IX → detekcja sezonowości.
+        Sprawdzenie: detection_months_with_revenue.
+    T2. Zawieszenie na 8 mies. → WARNING (R-SEAS-1: 6 mies. vs 24 prawne).
+        Sprawdzenie: suspension_max_6_months (wymaga weryfikacji).
+    T3. Zawieszenie XII-II → brak składek społecznych, zdrowotna nadal.
+        Sprawdzenie: zus_suspension_no_social, zus_suspension_health_still_due.
+    T4. Strata 20k w sezonie → odliczenie w 5 latach.
+        Sprawdzenie: pit_loss_carry_forward.
+    T5. Przekroczenie limitu zwolnienia VAT w trakcie sezonu → obowiązek
+        od połowy miesiąca. Sprawdzenie: vat_exemption_breach_mid_season.
+
+7.9. OCENA MODUŁU SEASONAL: 4.0/5
+
+    Mocne strony: detekcja (5 reguł), zawieszenie vs zamknięcie (3),
+    ZUS (5), PIT (5), VAT (6), agregacja strategii.
+    Luki: (1) R-SEAS-1: komunikat "max 6 miesięcy" mylący (prawo: 24
+    mies. łącznie), (2) brak integracji z kalendarzem sezonowym branży.
+
+=================================================================
+SEKCJA 8. ANALIZA KWOTY WOLNEJ (TAXFREE) — POZIOM ENTERPRISE
+=================================================================
+
+8.1. ZAKRES MODUŁU (36 REGUŁ)
+
+    plan44_taxfree (7 micro):
+    jdg.taxfree.deduction_optimization, jdg.taxfree.foreign_income,
+    jdg.taxfree.jdg_vs_employment, jdg.taxfree.linear_lump_sum_exclusion,
+    jdg.taxfree.multi_source, jdg.taxfree.withholding_tax, jdg.taxfree.no_match.
+
+    plan45_taxfree (29 hyper) — pełny inwentarz:
+    scale_30k_amount (Art. 27 ust. 1 PIT), scale_reduction_3600,
+    scale_decreasing_amount, scale_no_free_amount_127k,
+    scale_employer_250_monthly (Art. 32 ust. 3 PIT),
+    linear_no_free_amount (Art. 30c PIT), linear_no_deduction_reminder,
+    linear_vs_scale_comparison, linear_breakeven_point, linear_communication,
+    multi_source_combined_limit, multi_source_jdg_employment,
+    multi_source_jdg_capital, multi_source_jdg_foreign, multi_source_jdg_rental,
+    joint_filing_60k, joint_filing_conditions, joint_filing_benefit,
+    joint_filing_pit36, joint_vs_individual_comparison,
+    optimize_individual_vs_joint, optimize_simulation, optimize_recommendation,
+    overpayment_from_taxfree, underpayment_taxfree_warning,
+    employer_applies_taxfree, jdg_no_taxfree_in_advances,
+    annual_reconciliation_taxfree, no_match.
+
+8.2. USTALENIE KRYTYCZNE (L-TF-1): MODUŁ DOTYCZY KWOTY WOLNEJ PIT,
+    NIE SYSTEMU TAX FREE DLA TURYSTÓW
+
+    ANALIZA: Prompt wymaga analizy "Tax-free dla turystów — eksport
+    towarów poza UE" (system TAX FREE z Art. 126-130 ustawy o VAT:
+    zwrot VAT turystom spoza UE przy wywozie towarów, dokument TAX FREE,
+    minimalna wartość zakupu 200 zł netto na paragonie).
+
+    WYNIK EKSTRAKCJI: moduł taxfree w 100% dotyczy KWOTY WOLNEJ OD
+    PODATKU PIT (Art. 27 ust. 1 PIT): kwota wolna 30 000 PLN, redukcja
+    podatku o 3 600 PLN (12 × 300), malejąca kwota 30 000-127 000,
+    zero powyżej 127 000, liniowy 19% bez kwoty wolnej (Art. 30c),
+    punkt opłacalności ~120k, wspólne rozliczenie 60k, multi-source,
+    optymalizacja.
+
+    BRAK: JAKIEJKOLWIEK reguły o systemie TAX FREE dla turystów
+    (Art. 126-130 VAT) — brak detekcji turysty spoza UE, brak limitu
+    200 zł, brak dokumentu TAX FREE, brak zwrotu VAT.
+
+    WNIOSEK (L-TF-1 — LUKA ZAKRESOWA KRYTYCZNA): moduł o nazwie
+    "taxfree" realizuje zupełnie inną funkcję niż zakładana w prompcie.
+    Dla JDG prowadzących sprzedaż detaliczną turystom spoza UE brak
+    obsługi systemu TAX FREE to realna strata (utracony zwrot VAT
+    i konkurencyjność cenowa).
+
+8.3. KWOTA WOLNA PIT (WARSTWA ZREALIZOWANA — DOBRA)
+
+    (a) scale_30k_amount — kwota wolna 30 000 (Art. 27 ust. 1 PIT) —
+        poprawne (30 000 od 2022).
+    (b) scale_reduction_3600 — redukcja 3 600 (12 × 300) — poprawne.
+    (c) scale_decreasing_amount — malejąca między 30k a 127k — poprawne.
+    (d) scale_no_free_amount_127k — zero powyżej 127 000 — poprawne.
+    (e) scale_employer_250_monthly — pracodawca stosuje 1/12 (250/mies.)
+        przy zaliczkach (Art. 32 ust. 3 PIT) — poprawne.
+    (f) linear_no_free_amount — liniowy 19% bez kwoty wolnej (Art. 30c) —
+        poprawne.
+    (g) linear_vs_scale_comparison / linear_breakeven_point — porównanie
+        i punkt opłacalności ~120k — wzorcowe.
+    (h) multi_source_combined_limit — kwota wolna 1 × 30k przy wielu
+        źródłach — poprawne.
+    (i) jdg_no_taxfree_in_advances — JDG nie stosuje kwoty wolnej w
+        zaliczkach — poprawne (JDG płaci zaliczki bez kwoty wolnej,
+        rozliczenie roczne).
+    (j) joint_filing_60k — wspólne rozliczenie: łączny limit 60k
+        (2 × 30k) — poprawne.
+
+8.4. OPTYMALIZACJA
+
+    (a) optimize_individual_vs_joint / optimize_simulation /
+        optimize_recommendation — symulacja indywidualne vs wspólne —
+        wzorcowe.
+    (b) overpayment_from_taxfree / underpayment_taxfree_warning —
+        nadpłata/niedopłata z tytułu kwoty wolnej — dobre.
+
+8.5. DIAGRAM MERMAID — KWOTA WOLNA VS TAX FREE TURYSTYCZNY
+
+graph TD
+    A[Modul taxfree] --> B{Dwa znaczenia}
+    B -->|KWOTA WOLNA PIT - zrealizowana| C[30 000 zl, redukcja 3 600, malejaca do 127k]
+    C --> D[Liniowy 19% - brak kwoty wolnej]
+    C --> E[Multi-source: 1x30k lacznie]
+    C --> F[Wspolne rozliczenie: 60k]
+    B -->|TAX FREE TURYSTOW - LUKA L-TF-1| G[BRAK regul Art. 126-130 VAT]
+    G --> H[Wymagane: detekcja turysty spoza UE]
+    G --> I[Limit 200 zl netto na paragonie]
+    G --> J[Dokument TAX FREE + zwrot VAT]
+
+8.6. SCENARIUSZE TESTOWE TAXFREE
+
+    T1. Dochód 90 000 skala → kwota wolna malejąca.
+        Sprawdzenie: scale_decreasing_amount.
+    T2. Liniowy 19% → brak kwoty wolnej (przypomnienie).
+        Sprawdzenie: linear_no_free_amount.
+    T3. JDG + etat → limit 1 × 30k łączny.
+        Sprawdzenie: multi_source_jdg_employment, multi_source_combined_limit.
+    T4. Sprzedaż turystowi z USA 5 000 zł → TAX FREE zwrot VAT.
+        Sprawdzenie: BRAK reguły (L-TF-1) — test powinien FAIL.
+    T5. Wspólne rozliczenie → 60k limit.
+        Sprawdzenie: joint_filing_60k.
+
+8.7. OCENA MODUŁU TAXFREE: 3.5/5
+
+    Mocne strony (kwota wolna): pełne pokrycie skali (30k/3600/127k),
+    liniowy, multi-source, wspólne rozliczenie, optymalizacja.
+    Luki: (1) L-TF-1 KRYTYCZNA: brak systemu TAX FREE dla turystów
+    (Art. 126-130 VAT), (2) brak obsługi ryczałtu w kwocie wolnej
+    (ryczałt nie stosuje kwoty wolnej — reguła linear_lump_sum_exclusion
+    w plan44 sygnalizuje, ale brak szczegółów), (3) brak integracji z
+    kasami fiskalnymi (paragony turystyczne).
+
+=================================================================
+SEKCJA 9. ANALIZA PRACODAWCY (EMPLOYER) — POZIOM ENTERPRISE
+=================================================================
+
+9.1. ZAKRES MODUŁU (24 REGUŁY STANDALONE)
+
+    Pełny inwentarz:
+    jdg.employer.obligations_checklist, jdg.employer.zus_zua_registration,
+    jdg.employer.zus_dra_monthly, jdg.employer.zus_rca_reporting,
+    jdg.employer.pit4r_monthly, jdg.employer.pit11_annual,
+    jdg.employer.standard_kup_250, jdg.employer.kup_300_commuting,
+    jdg.employer.multiple_contracts_kup, jdg.employer.creative_kup_50,
+    jdg.employer.civil_law_contract_20, jdg.employer.civil_law_creative_50,
+    jdg.employer.small_mandate_flat_tax, jdg.employer.ppk_auto_enrollment,
+    jdg.employer.ppk_opt_out, jdg.employer.peron_contribution,
+    jdg.employer.peron_exemption_zpch, jdg.employer.work_fund_obligations,
+    jdg.employer.osh_training_obligation, jdg.employer.ohs_medical_exams_kup,
+    jdg.employer.annual_pit_summary, jdg.employer.no_match.
+
+9.2. REJESTRACJA I RAPORTOWANIE
+
+    (a) obligations_checklist — lista obowiązków pracodawcy — dobre.
+    (b) zus_zua_registration — zgłoszenie pracownika ZUS ZUA — poprawne.
+    (c) zus_dra_monthly — deklaracja DRA miesięcznie — poprawne.
+    (d) zus_rca_reporting — raportowanie RCA — poprawne.
+    (e) pit4r_monthly — PIT-4R miesięcznie (zaliczki) — poprawne.
+    (f) pit11_annual — PIT-11 rocznie — poprawne.
+
+9.3. KUP PRACOWNICZE
+
+    (a) standard_kup_250 — standardowe KUP 250 zł/mies. — poprawne.
+    (b) kup_300_commuting — 300 zł (dojazd) — poprawne.
+    (c) multiple_contracts_kup — suma KUP ≤ 4 500 zł/rok (wieloetatowość) —
+        poprawne (Art. 22 ust. 2 PIT).
+    (d) creative_kup_50 — 50% KUP dla twórców (limit 120 000 zł/rok,
+        Art. 22 ust. 9a) — poprawne.
+    (e) civil_law_contract_20 — zlecenie 20% KUP (PIT-8AR do 31.01) —
+        poprawne.
+    (f) civil_law_creative_50 — umowa cywilna z prawami autorskimi 50%
+        (wspólny limit 120 000) — poprawne.
+
+9.4. PPK, PERON, FUNDUSZ PRACY, BHP
+
+    (a) ppk_auto_enrollment / ppk_opt_out — automatyczny zapis i rezygnacja
+        (co 4 lata) — poprawne.
+    (b) peron_contribution / exemption_zpch — składka PFRON i zwolnienie
+        (zatrudnienie osoby z niepełnosprawnością) — poprawne.
+    (c) work_fund_obligations — Fundusz Pracy — poprawne.
+    (d) osh_training_obligation / ohs_medical_exams_kup — szkolenia BHP
+        i badania lekarskie (KUP) — poprawne.
+    (e) small_mandate_flat_tax — małe zlecenie (ryczałt 12%) — poprawne.
+
+9.5. OCENA MODUŁU EMPLOYER: 4.0/5
+
+    Mocne strony: pełna checklista, ZUS (ZUA/DRA/RCA), PIT-4R/11, KUP
+    (250/300/50%/20%/multi), PPK, PFRON, Fundusz Pracy, BHP.
+    Luki: (1) brak obsługi wynagrodzenia urlopowego i chorobowego
+    (ZUS ZLA, świadczenia), (2) brak integracji z systemem płacowym
+    (dane wejściowe), (3) brak modułu PIT-11B (B2B) — spójnie z P19.
+
+9.6. ANALIZA REGUŁA-PO-REGULE EMPLOYER (24 REGUŁ, PRIORYTETY P1200e-P1223)
+
+    Reguła                    Priorytet  Treść i ocena
+    ---------------------------------------------------------------
+    obligations_checklist      P1200e    Pełna checklista obowiązków
+                                        pracodawcy — dobry punkt startu.
+    zus_zua_registration       P1201     Zgłoszenie pracownika ZUS ZUA
+                                        — poprawne.
+    standard_kup_250           P1202e    250 zł/mies. KUP — poprawne
+                                        (Art. 22 ust. 2 pkt 1 PIT).
+    kup_300_commuting          P1204e    300 zł (dojazd) — poprawne
+                                        (Art. 22 ust. 2 pkt 2 PIT).
+    multiple_contracts_kup     P1205     Suma KUP ≤ 4 500 zł/rok
+                                        (wieloetatowość) — poprawne.
+    creative_kup_50            P1206     50% KUP twórcy, limit 120 000
+                                        (Art. 22 ust. 9a) — poprawne.
+    civil_law_contract_20      P1208e    Zlecenie 20% KUP, PIT-8AR do
+                                        31.01 — poprawne.
+    civil_law_creative_50      P1210e    Zlecenie + prawa autorskie 50%,
+                                        wspólny limit 120 000 — poprawne.
+    small_mandate_flat_tax     P1211     Małe zlecenie — ryczałt 12%
+                                        (Art. 30 ust. 1 pkt 5a PIT) — poprawne.
+    ppk_auto_enrollment        P1212     PPK automatyczny zapis — poprawne.
+    ppk_opt_out                P1213     Rezygnacja co 4 lata — poprawne.
+    peron_contribution         P1215     Składka PFRON — poprawne.
+    peron_exemption_zpch       P1216     Zwolnienie przy zatrudnieniu
+                                        osoby z niepełnosprawnością — dobre.
+    work_fund_obligations      P1217     Fundusz Pracy — poprawne.
+    osh_training_obligation    P1218     Szkolenia BHP — poprawne.
+    ohs_medical_exams_kup      P1219     Badania lekarskie = KUP — poprawne.
+    pit4r_monthly              P1220     PIT-4R miesięcznie — poprawne.
+    pit11_annual               P1221     PIT-11 rocznie — poprawne.
+    zus_dra_monthly            P1222     Deklaracja DRA — poprawne.
+    zus_rca_reporting          P1223     Raport RCA — poprawne.
+    annual_pit_summary         P1224     Roczna rekonsylacja PIT — dobre.
+    no_match                   —         Fallback — poprawne.
+    (pozostałe 2)              —         Routing/agregacja.
+    ---------------------------------------------------------------
+    RAZEM                                24
+
+    Ocena szczegółowa: employer to moduł operacyjny najwyższej
+    jakości — pokrywa cały cykl: rejestracja → miesięczne raportowanie
+    (ZUS/PIT-4R) → roczne zamknięcie (PIT-11). Brakuje wyłącznie
+    warstwy świadczeń (chorobowe/urlopowe).
+
+=================================================================
+SEKCJA 10. ANALIZA PEŁNOMOCNICTW (REPRESENTATION) — POZIOM ENTERPRISE
+=================================================================
+
+10.1. ZAKRES MODUŁU (10 REGUŁ STANDALONE)
+
+    Pełny inwentarz:
+    jdg.representation.pps1_required, jdg.representation.upl1_required,
+    jdg.representation.ppd1_delivery, jdg.representation.poa_revocation,
+    jdg.representation.poa_change_scope, jdg.representation.poa_automatic_expiry,
+    jdg.representation.poa_cross_border, jdg.representation.poa_certified_accountant,
+    jdg.representation.joint_procuration, jdg.representation.no_match.
+
+10.2. PEŁNOMOCNICTWA PODATKOWE (SPÓJNOŚĆ Z P19)
+
+    (a) pps1_required — PPS-1 pełnomocnictwo ogólne: opłata skarbowa
+        17 zł, zgłoszenie ePUAP — zgodne z Art. 138b OrdPU (PPS-1
+        obowiązkowe elektronicznie od 2023) — poprawne.
+    (b) upl1_required — UPL-1 pełnomocnictwo szczególne: 17 zł,
+        elektronicznie — zgodne z Art. 138c OrdPU — poprawne.
+    (c) ppd1_delivery — PPD-1 pełnomocnictwo do doręczeń — zgodne z
+        Art. 138e OrdPU — poprawne.
+    (d) poa_revocation — odwołanie OPP-1 (bez opłaty, skuteczne z dniem
+        doręczenia) — poprawne.
+    (e) poa_change_scope — zmiana zakresu: nowy UPL-1 (17 zł) — poprawne.
+    (f) poa_automatic_expiry — wygaśnięcie z mocy prawa (śmierć,
+        likwidacja) — poprawne.
+
+10.3. PROKURA I PEŁNOMOCNICTWA CROSS-BORDER
+
+    (a) joint_procuration — prokura łączna — poprawne.
+    (b) poa_cross_border — pełnomocnictwo transgraniczne — dobre.
+    (c) poa_certified_accountant — pełnomocnictwo dla doradcy
+        podatkowego/biegłego — dobre.
+
+10.4. OCENA MODUŁU REPRESENTATION: 4.0/5
+
+    Mocne strony: komplet formularzy (PPS-1/UPL-1/OPP-1/PPD-1), opłaty
+    skarbowe, wygaśnięcie, prokura, cross-border.
+    Luki: (1) brak monitoringu terminów ważności pełnomocnictw,
+    (2) brak automatycznego generowania formularzy (informuje, nie tworzy).
+
+10.5. ANALIZA REGUŁA-PO-REGULE REPRESENTATION (10 REGUŁ, PRIORYTETY P1200-P1212)
+
+    Reguła                    Priorytet  Treść i ocena
+    ---------------------------------------------------------------
+    pps1_required              P1200     PPS-1 pełnomocnictwo ogólne:
+                                        17 zł, ePUAP — zgodne z
+                                        Art. 138b OrdPU — poprawne.
+    upl1_required              P1201     UPL-1 pełnomocnictwo szczególne:
+                                        17 zł, elektronicznie — zgodne
+                                        z Art. 138c OrdPU — poprawne.
+    ppd1_delivery              P1202     PPD-1 pełnomocnictwo do doręczeń
+                                        (Art. 138e OrdPU) — poprawne.
+    poa_revocation             P1206     Odwołanie OPP-1 (bez opłaty,
+                                        skuteczne z doręczeniem) — poprawne.
+    poa_change_scope           P1208     Zmiana zakresu: nowy UPL-1
+                                        (17 zł) — poprawne.
+    poa_automatic_expiry       P1210     Wygaśnięcie z mocy prawa
+                                        (śmierć/likwidacja) — poprawne.
+    poa_cross_border           P1211     Pełnomocnictwo transgraniczne
+                                        — dobre.
+    poa_certified_accountant   P1212     Doradca podatkowy / biegły
+                                        — dobre.
+    joint_procuration          P1204     Prokura łączna — poprawne.
+    no_match                   —         Fallback — poprawne.
+    ---------------------------------------------------------------
+    RAZEM                                10
+
+    Ocena szczegółowa: representation jest spójny z P19 (OrdPU:
+    pełnomocnictwa 138a-138o) — komplet formularzy i opłat skarbowych.
+    Luka: brak monitoringu wygasania (deadline tracker) — uzupełnienie
+    w innowacji 13.8.
+
+=================================================================
+SEKCJA 11. ANALIZA RESTRUKTURYZACJI (RESTRUCTURING) — POZIOM ENTERPRISE
+=================================================================
+
+11.1. ZAKRES MODUŁU (9 REGUŁ STANDALONE)
+
+    Pełny inwentarz:
+    jdg.restructuring.jdg_to_spzoo_transformation,
+    jdg.restructuring.opening_balance_sheet,
+    jdg.restructuring.business_transfer_tax_exempt,
+    jdg.restructuring.merger_tax, jdg.restructuring.business_closure,
+    jdg.restructuring.acquirer_liability_tax_arrears,
+    jdg.restructuring.succession_manager,
+    jdg.restructuring.succession_minor_zcna_block,
+    jdg.restructuring.no_match.
+
+11.2. PRZEKSZTAŁCENIE JDG → SP. Z O.O.
+
+    (a) jdg_to_spzoo_transformation — sukcesja podatkowa (Art. 112
+        OrdPU): spółka wstępuje w prawa i obowiązki, NIP przechodzi,
+        remanent likwidacyjny obowiązkowy — poprawne.
+    (b) opening_balance_sheet — bilans otwarcia na dzień przekształcenia,
+        wycena wg wartości rynkowej, podatek od remanentu (10% PIT od
+        nadwyżki) — BLOCK_AND_ALERT — poprawne (Art. 24 ust. 3 PIT:
+        remanent likwidacyjny).
+    (c) business_transfer_tax_exempt — zbycie przedsiębiorstwa
+        zwolnione (Art. 6 pkt 1 ustawy o PCC / VAT) — poprawne.
+    (d) merger_tax — fuzja — dobre.
+
+11.3. SUKCESJA (USTAWA O ZARZĄDZIE SUKCESYJNYM)
+
+    (a) succession_manager — zarządca sukcesyjny: powołanie w 2 mies. od
+        śmierci, zgłoszenie CEIDG, prowadzenie max 2 lata (Art. 51-54
+        ustawy) — BLOCK_AND_ALERT — poprawne.
+    (b) succession_minor_zcna_block — małoletni spadkobiercy: wymagana
+        zgoda sądu opiekuńczego (Art. 98 KRO) — poprawne i rzadkie.
+    (c) acquirer_liability_tax_arrears — odpowiedzialność nabywcy za
+        zaległości (Art. 112 OrdPU) — poprawne.
+    (d) business_closure — zamknięcie działalności — dobre.
+
+11.4. OCENA MODUŁU RESTRUCTURING: 4.0/5
+
+    Mocne strony: przekształcenie (bilans otwarcia, remanent), sukcesja
+    (zarządca 2 mies./2 lata, małoletni), odpowiedzialność nabywcy.
+    Luki: (1) brak analizy podatkowej aportu nieruchomości (PCC 2%),
+    (2) brak integracji z P19 (OrdPU: sukcesja art. 97-112),
+    (3) brak obsługi przekształcenia w spółkę komandytową (PSK).
+
+11.5. ANALIZA REGUŁA-PO-REGULE RESTRUCTURING (9 REGUŁ, PRIORYTETY P1500-P1505)
+
+    Reguła                    Priorytet  Treść i ocena
+    ---------------------------------------------------------------
+    jdg_to_spzoo_transformation P1500    Przekształcenie JDG → sp. z o.o.:
+                                        sukcesja (Art. 112 OrdPU), NIP
+                                        przechodzi, remanent — poprawne.
+    opening_balance_sheet      P1501     Bilans otwarcia (BLOCK): wycena
+                                        rynkowa, remanent 10% PIT
+                                        (Art. 24 ust. 3) — poprawne.
+    business_transfer_tax_exempt P1502   Zbycie przedsiębiorstwa
+                                        zwolnione (PCC Art. 6 pkt 1)
+                                        — poprawne.
+    merger_tax                 P1503     Fuzja — dobre.
+    succession_manager         P1504     Zarządca sukcesyjny (BLOCK):
+                                        2 mies. powołanie, CEIDG, max
+                                        2 lata (Art. 51-54 u.z.s.) — poprawne.
+    succession_minor_zcna_block P1505    Małoletni spadkobiercy: zgoda
+                                        sądu (Art. 98 KRO) — poprawne
+                                        i rzadkie.
+    acquirer_liability_tax_arrears P1506 Odpowiedzialność nabywcy
+                                        (Art. 112 OrdPU) — poprawne.
+    business_closure           P1507     Zamknięcie działalności — dobre.
+    no_match                   —         Fallback — poprawne.
+    ---------------------------------------------------------------
+    RAZEM                                9
+
+    Ocena szczegółowa: restructuring to moduł niskiego wolumenu (9
+    reguł) o wysokiej precyzji — sukcesja (zarządca + małoletni) i
+    przekształcenie (bilans otwarcia + remanent) obsłużone wzorcowo.
+    Brak: aport nieruchomości (PCC 2%) i przekształcenie w PSK (L8).
+
+=================================================================
+SEKCJA 12. MACIERZ LUK, BŁĘDÓW I RYZYKA
+=================================================================
+
+12.1. LUKI I BŁĘDY KRYTYCZNE (P0)
+
+    L1 (L-FAM-1)  family       Brak ulgi prorodzinnej (Art. 27f: 1112,04 zł
+                   na 2. i kolejne dziecko, limit 112 000) i ulgi 4+
+                   (Art. 21 ust. 1 pkt 153: 85 528 zł). Skutek: utrata
+                   korzyści podatkowej dla rodzin z dziećmi.
+    L2 (L-TF-1)   taxfree      Moduł obsługuje kwotę wolną PIT, NIE system
+                   TAX FREE dla turystów (Art. 126-130 VAT, limit 200 zł).
+                   Skutek: brak obsługi sprzedaży turystom spoza UE.
+    L3 (R-SEAS-1) seasonal     Komunikat "max 6 miesięcy zawieszenia"
+                   mylący — prawo: max 24 mies. łącznie (Art. 22 PP).
+                   Skutek: błędna decyzja o zamknięciu zamiast zawieszenia.
+
+12.2. LUKI ŚREDNIE (P1)
+
+    L4 (R-FM-1)   force_majeure  loss_carry_back — w PIT brak odliczenia
+                   wstecz (tylko carry-forward 5 lat) — weryfikacja.
+    L5             esig        Brak automatycznego podpisywania i
+                   integracji z dostawcami podpisu (Certum/Szafir).
+    L6             edelivery   Brak warstwy wysyłkowej (automatyczna
+                   korespondencja do US przez e-Doręczenia).
+    L7             employer    Brak wynagrodzeń chorobowych/urlopowych.
+    L8             restructuring Brak aportu nieruchomości (PCC 2%)
+                   i przekształcenia w spółkę komandytową.
+
+12.3. MACIERZ RYZYKA
+
+    Ryzyko             Moduł      Prawdopod.  Wpływ   Poziom
+    ---------------------------------------------------------------
+    R1  Utrata ulg      family     Wysokie    Średni  WYSOKIE
+        rodzinnych (27f/4+)
+    R2  Brak TAX FREE   taxfree    Średnie    Średni  ŚREDNIE
+        dla turystów
+    R3  Błędne          seasonal   Średnie    Niski   ŚREDNIE
+        zawieszenie (6 vs 24 mies.)
+    R4  Fikcja          edelivery  Średnie    Wysoki  WYSOKIE
+        doręczenia 14 dni
+    R5  Wygaśnięcie     esig       Średnie    Średni  ŚREDNIE
+        certyfikatu
+    R6  Strata z siły   force_majeure Niskie  Średni  NISKIE
+        wyższej (carry-back)
+
+12.4. SPÓJNOŚĆ Z P18-P21 (OBSERWACJE KRZYŻOWE)
+
+    - e-Doręczenia (P22) współgrają z P19 (OrdPU): pisma z US przez
+      e-Doręczenia + pełnomocnictwa PPS-1/UPL-1 (P19) + esig
+      (kwalifikowany podpis dla UPL-1) (P22) — łańcuch kompletny.
+    - esig KSeF (P22) współgra z P18: tokeny KSeF, pieczęć vs podpis.
+    - Restructuring (P22) współgra z P19: sukcesja podatkowa
+      (Art. 112 OrdPU) i P21 (residency: exit tax przy przeniesieniu
+      aktywów za granicę).
+    - Family (P22) współgra z P20 (S23): zatrudnianie małżonka
+      pozorne → ryzyko KKS (red flagi).
+
+12.5. MACIERZE REGUŁ HYPER PER MODUŁ (REFERENCJA AUDYTOWA)
+
+    force_majeure (33 hyper, priorytety 1161-1191):
+    Grupa                   Reguły  Routing dominujący
+    ---------------------------------------------------------------
+    Detekcja zdarzeń (6)      6     TRIAGE_QUEUE (event_detection)
+    Ulgi podatkowe (7)        7     TRIAGE_QUEUE (odroczenie/raty)
+    Ulgi ZUS (4)              4     TRIAGE_QUEUE
+    Zawieszenie (3)           3     "" / WARNING
+    Dokumentacja (4)          4     WARNING
+    Ubezpieczenia (3)         3     WARNING
+    Straty (2)                2     WARNING (R-FM-1 do weryfikacji)
+    Terminy MF (2)            2     WARNING / "" (auto-extension)
+    no_match/routingowe       2     ""
+    ---------------------------------------------------------------
+    RAZEM                    33
+
+    family (43 hyper, priorytety 1206-1244):
+    Grupa                   Reguły  Routing dominujący
+    ---------------------------------------------------------------
+    Wspólne rozliczenie (4)   4     "" (warunki/termin 30.04)
+    Samotny rodzic (2)        2     ""
+    Dzieci (5)                5     WARNING (under26 risk)
+    Małżonek (9)              9     WARNING/RED FLAGI (5 red flag)
+    Współpraca ZUS (4)        4     WARNING
+    Zdrowotna (2)             2     "" (nie KUP)
+    Auta firmowe (4)          4     "" (75%/50% + ewidencja)
+    Majątek/darowizny (5)     5     "" (PCC grupa 0)
+    PIT-11/PIT-4R (2)         2     WARNING (terminy)
+    Sukcesja (3)              3     WARNING (SD-Z2 6 mies.)
+    no_match/agregacja (3)    3     "" (agregate_risk)
+    ---------------------------------------------------------------
+    RAZEM                    43
+
+    edelivery (36 hyper, priorytety 1235-1256):
+    Grupa                   Reguły  Routing dominujący
+    ---------------------------------------------------------------
+    Rejestracja BAE (4)       4     WARNING + BLOCK (sanction adres)
+    Fikcja 14 dni (5)         5     BLOCK_AND_ALERT (kaskada 7/3/1)
+    ePUAP (4)                 4     "" (UPO/timestamp)
+    e-US (6)                  6     WARNING
+    Transgraniczne (3)        3     WARNING (CRS/DAC/eIDAS)
+    Język/dokumenty (4)       4     "" (retencja 5 lat)
+    Bezpieczeństwo (4)        4     WARNING (RODO/szyfrowanie)
+    Integracja/agregacja (2)  2     "" (dashboard)
+    no_match (1)              1     ""
+    (pozostałe)               3     ""
+    ---------------------------------------------------------------
+    RAZEM                    36
+
+    esig (29 hyper, priorytety ~1260-1290):
+    Grupa                   Reguły  Routing dominujący
+    ---------------------------------------------------------------
+    Podpis kwalifikowany (5)  5     BLOCK (odwołania/UPL-1)
+    Profil zaufany (5)        5     WARNING (wygaśnięcie 3 lata)
+    KSeF tokeny (5)           5     WARNING (expiry)
+    Umowy/dokumenty (6)       6     "" (Art. 78-1 KC)
+    eIDAS transgraniczne (5)  5     WARNING (TSL/verification)
+    no_match (1)              1     ""
+    (pozostałe)               2     ""
+    ---------------------------------------------------------------
+    RAZEM                    29
+
+    seasonal (29 hyper, priorytety 1518-1545):
+    Grupa                   Reguły  Routing dominujący
+    ---------------------------------------------------------------
+    Detekcja sezonowości (5)  5     "" (≤9 mies. aktywności)
+    Zawieszenie/zamknięcie (3) 3    WARNING (R-SEAS-1: 6 vs 24 mies.)
+    ZUS (5)                   5     WARNING (zdrowotna w zawieszeniu)
+    PIT (5)                   5     "" (zaliczki uproszczone 44.6b)
+    VAT (6)                   6     WARNING (exemption breach)
+    Agregacja strategii (3)   3     "" (optimal_strategy)
+    no_match (1)              1     ""
+    (pozostałe)               1     ""
+    ---------------------------------------------------------------
+    RAZEM                    29
+
+    taxfree (29 hyper, priorytety 1403-1430):
+    Grupa                   Reguły  Routing dominujący
+    ---------------------------------------------------------------
+    Skala 30k/3600/127k (4)   4     "" (Art. 27 ust. 1)
+    Liniowy 19% (5)           5     WARNING (przypomnienie)
+    Multi-source (4)          4     WARNING (1×30k)
+    Wspólne rozliczenie (4)   4     "" (60k)
+    Optymalizacja (4)         4     "" (simulation)
+    Nadpłata/niedopłata (2)   2     WARNING
+    Pracodawca/zaliczki (2)   2     WARNING (250/mies.)
+    Roczna rekonsylacja (1)   1     ""
+    no_match (1)              1     ""
+    (pozostałe)               2     ""
+    ---------------------------------------------------------------
+    RAZEM                    29
+
+    Obserwacje audytowe:
+    (a) BLOCK_AND_ALERT występuje tam, gdzie konsekwencje są
+        nieodwracalne: fikcja doręczenia (14 dni), sankcja adresu,
+        podpis kwalifikowany przy odwołaniach — właściwa gradacja.
+    (b) RED FLAGI w family (5 reguł: brak kwalifikacji, ponad-rynkowe
+        wynagrodzenie, brak dowodów) — jedyny moduł serii z takim
+        mechanizmem anty-pozornościowym.
+    (c) R-SEAS-1 i R-FM-1 to jedyne reguły z błędną wartością
+        normatywną (limit 6 vs 24 mies.; carry-back vs forward).
+
+12.6. SCENARIUSZE INTEGRACYJNE MIĘDZYMODUŁOWE (WARTOŚĆ DODANA SERII)
+
+    S1. Śmierć przedsiębiorcy z firmą i małoletnimi dziećmi:
+        P22 (RESTR): zarządca sukcesyjny — 2 mies. na powołanie,
+        zgłoszenie CEIDG, max 2 lata (BLOCK).
+        P22 (FAM): SD-Z2 + zgoda sądu opiekuńczego (Art. 98 KRO).
+        P19 (ORD): sukcesja podatkowa Art. 112 OrdPU.
+    S2. Pismo z US o zaległości nieodebrane 15 dni:
+        P22 (EDEL): fikcja doręczenia po 14 dniach (BLOCK) — bieg
+        terminu już trwa.
+        P19 (ORD): odwołanie + przywrócenie terminu.
+        P22 (ESIG): podpis kwalifikowany przy pełnomocnictwie.
+    S3. JDG sezonowa (turystyka) z dziećmi i straty po pandemii:
+        P22 (SEAS): zawieszenie (limit 24 mies. — R-SEAS-1), zaliczki
+        uproszczone, ZUS.
+        P22 (FAM): ulga 27f/4+ (L-FAM-1 do wdrożenia).
+        P22 (FM): strata carry-forward 5 lat (R-FM-1).
+    S4. Przekształcenie JDG → sp. z o.o. z e-Doręczeniami:
+        P22 (RESTR): bilans otwarcia, remanent 10%.
+        P22 (EDEL): nowy adres BAE spółki (sukcesja adresu).
+        P21 (RES): brak exit tax przy przekształceniu krajowym.
+    S5. Sprzedaż detaliczna turystom spoza UE w sezonie:
+        P22 (TF): TAX FREE turystów (L-TF-1 do wdrożenia).
+        P22 (SEAS): VAT sezonowy, przekroczenie limitu zwolnienia.
+        P18 (KSeF): faktury B2C w KSeF (paragon 450 zł limit).
+
+    S6. Powódź zniszczyła serwery JDG prowadzącej e-commerce:
+        P22 (FM): event_flood + docs_loss_reporting + docs_reconstruction
+        + wniosek o odroczenie (67a OP).
+        P22 (EDEL): pisma z US w e-Doręczeniach nieodebrane podczas
+        awarii → fikcja 14 dni — alert krytyczny + wniosek o
+        przywrócenie terminu.
+        P20 (S23): ryzyko KKS przy niezłożonych deklaracjach.
+    S7. JDG zatrudnia małżonka (B2B) i zatrudnia dziecko studenta:
+        P22 (FAM): red flagi (brak kwalifikacji, ponad-rynkowe
+        wynagrodzenie) → NKUP + ryzyko pozorności.
+        P22 (EMP): KUP 250/50%, PPK, ZUS ZUA/DRA/RCA.
+        P20 (S23): KKS przy pozornej umowie.
+    S8. Sprzedaż przedsiębiorstwa JDG z przejściem na sp. z o.o.
+        i podpisem kwalifikowanym:
+        P22 (RESTR): zbycie zwolnione (PCC Art. 6 pkt 1) + bilans
+        otwarcia + remanent 10%.
+        P22 (ESIG): dokumenty przekształcenia z podpisem kwalifikowanym
+        (Art. 138o OrdPU przy pełnomocnictwach).
+        P19 (ORD): sukcesja podatkowa Art. 112.
+
+    Wniosek: P22 domyka serię warstwą sytuacji nadzwyczajnych i
+    rodzinnych. Trzy luki (L-FAM-1, L-TF-1, R-SEAS-1) dotyczą wartości
+    normatywnych — naprawa P0 wymaga wyłącznie korekty stałych, nie
+    architektury reguł.
+
+12.7. INWENTARZ REGUŁ MICRO PLAN44 (52 REGUŁY, REFERENCJA AUDYTOWA)
+
+    force_majeure (9): business_suspension_auto, documentation_loss,
+    documentation_preservation, emergency_deadlines, insurance_cover,
+    tax_loss_carry_back, tax_relief, zus_relief, no_match.
+    → Podstawa koncepcyjna dla 33 reguł hyper; routing bazowy.
+
+    family (11): asset_transfer_tax, car_usage_kup, child_employment_kup,
+    cooperation_zus, health_insurance_deduction, joint_pit_filing,
+    pit4r_obligation, relief_interaction, spouse_employment_kup,
+    succession_planning, no_match.
+    → relief_interaction (Art. 27f) sygnalizuje limit, ale NIE kalkuluje
+    ulgi — źródło luki L-FAM-1.
+
+    edelivery (9): archive_retention, cross_border_e_comm,
+    document_retention, epuap_profile, evidence_value, fiction_detection,
+    platform_monitoring, qualified_signature, no_match.
+    → fiction_detection na poziomie micro uruchamia kaskadę alertów
+    hyper (7/3/1 + 14 dni) — dobra architektura.
+
+    esig (8): cross_border_eidas, document_authenticity,
+    einvoice_storage_standards, electronic_contracts,
+    ksef_invoice_signature, qualified_signature_requirement,
+    signature_validity_monitoring, no_match.
+    → ksef_invoice_signature łączy esig z P18 (KSeF) — spójność serii.
+
+    seasonal (8): annual_reconciliation, identification,
+    loss_carry_forward, pit_advances, suspension_vs_closure,
+    vat_consequences, zus_strategy, no_match.
+    → suspension_vs_closure determinuje wybór strategii na poziomie
+    micro; hyper dodaje szczegóły ZUS/PIT/VAT.
+
+    taxfree (7): deduction_optimization, foreign_income,
+    jdg_vs_employment, linear_lump_sum_exclusion, multi_source,
+    withholding_tax, no_match.
+    → Moduł dotyczy kwoty wolnej PIT (potwierdzenie L-TF-1: brak
+    systemu TAX FREE dla turystów na obu poziomach).
+
+    Obserwacja: warstwa micro pełni rolę routera koncepcyjnego —
+    60% reguł micro ma odpowiedniki hyper; pozostałe (np. withholding
+    tax w taxfree) to sygnalizatory ryzyka bez rozwinięcia.
+
+=================================================================
+SEKCJA 13. INNOWACYJNE USPRAWNIENIA (10+)
+=================================================================
+
+13.1. FORCE MAJEURE AUTO-DETECTOR + DEADLINE EXTENDER (INN. 1)
+
+    Detekcja zdarzeń siły wyższej (RCB, IMGW, komunikaty MF), automatyczne
+    przedłużanie terminów, generowanie wniosków o ulgi (67a OP).
+    Komponenty: (1) connector RCB/IMGW, (2) katalog zdarzeń, (3) silnik
+    przedłużania terminów (monitoring komunikatów MF), (4) generator
+    wniosków (odroczenie/raty/umorzenie), (5) tracker szkód ubezpieczeniowych.
+    Wartość: 0-dniowe opóźnienia, maksymalne wykorzystanie ulg.
+
+13.2. FAMILY BENEFITS MAXIMIZER (INN. 2) — NAPRAWA L-FAM-1
+
+    Kalkulator ulg rodzinnych: prorodzinna (27f: 1112,04/2. dziecko,
+    limit 112 000), 4+ (85 528), samotny rodzic, wspólne rozliczenie,
+    interakcje (ulga dla młodych).
+    Komponenty: (1) kalkulator 27f z limitem, (2) kalkulator 4+,
+    (3) symulator wspólnego rozliczenia, (4) interakcja z ulgą dla
+    młodych (85 528), (5) generator PIT-36 załącznik PIT/O.
+    Wartość: pełne wykorzystanie ulg rodzinnych, raporty roczne.
+
+13.3. E-DELIVERY AUTO-INTEGRATION (INN. 3)
+
+    Pełna integracja z BAE: monitoring skrzynki, alerty 7/3/1, fikcja 14
+    dni, automatyczna wysyłka pism do US.
+    Komponenty: (1) API BAE, (2) kaskada alertów, (3) silnik fikcji,
+    (4) warstwa wysyłkowa (nadrabia L6), (5) pulpit e-US.
+    Wartość: 0 fikcji doręczeń, terminowe reagowanie.
+
+13.4. DIGITAL SIGNATURE AUTO-APPLICATOR (INN. 4)
+
+    Automatyczne podpisywanie dokumentów (podpis kwalifikowany/profil
+    zaufany), monitoring certyfikatów, KSeF token.
+    Komponenty: (1) integracja z Certum/Szafir, (2) reguły wyboru podpisu,
+    (3) monitoring ważności, (4) podpisywanie JPK/KSeF, (5) rejestr
+    podpisów.
+    Wartość: eliminacja ręcznych podpisów, zgodność eIDAS.
+
+13.5. SEASONAL BUSINESS OPTIMIZER (INN. 5) — NAPRAWA R-SEAS-1
+
+    Strategia sezonowa: zawieszenie vs zamknięcie (poprawny limit 24
+    mies.), zaliczki uproszczone, ZUS, VAT, strata.
+    Komponenty: (1) korekta limitu 24 mies., (2) symulator zawieszenia,
+    (3) planer zaliczek uproszczonych, (4) kalkulator ZUS (zdrowotna
+    w zawieszeniu), (5) harmonogram wznowień.
+    Wartość: optymalna struktura sezonowa, oszczędności ZUS/PIT.
+
+13.6. TAX-FREE TOURIST AUTO-PROCESSOR (INN. 6) — NAPRAWA L-TF-1
+
+    Obsługa systemu TAX FREE dla turystów spoza UE (Art. 126-130 VAT):
+    detekcja turysty, limit 200 zł, dokument TAX FREE, zwrot VAT.
+    Komponenty: (1) detektor sprzedaży turystycznej, (2) kalkulator
+    zwrotu (stawka), (3) generator dokumentu TAX FREE, (4) integracja
+    z kasą fiskalną, (5) raport miesięczny.
+    Wartość: obsługa turystów, konkurencyjność, zwrot VAT.
+
+13.7. EMPLOYER OBLIGATION TRACKER (INN. 7)
+
+    Monitoring obowiązków pracodawcy: ZUS (ZUA/DRA/RCA), PIT-4R/11,
+    PPK, PFRON, BHP, badania.
+    Komponenty: (1) checklista obowiązków, (2) kalendarz terminów,
+    (3) kalkulator KUP (250/300/50%), (4) generator deklaracji,
+    (5) integracja z e-Urzędami.
+    Wartość: 0 kar za spóźnienia, pełna zgodność.
+
+13.8. POWER OF ATTORNEY MANAGER (INN. 8)
+
+    Zarządzanie pełnomocnictwami: PPS-1/UPL-1/OPP-1/PPD-1, monitoring
+    ważności, wygaśnięcia, opłaty.
+    Komponenty: (1) rejestr pełnomocnictw, (2) generator formularzy,
+    (3) alerty wygaśnięcia, (4) opłaty skarbowe, (5) cross-border.
+    Wartość: ciągłość reprezentacji, 0 wygasłych pełnomocnictw.
+
+13.9. RESTRUCTURING TAX IMPACT ANALYZER (INN. 9)
+
+    Analiza podatkowa restrukturyzacji: przekształcenie JDG→sp. z o.o.
+    (remanent 10%), aport (PCC 2%), sukcesja (zarządca 2 lata).
+    Komponenty: (1) kalkulator remanentu, (2) analiza PCC/VAT,
+    (3) symulator sukcesji, (4) odpowiedzialność nabywcy, (5) roadmapa.
+    Wartość: minimalizacja podatku przekształcenia, płynna sukcesja.
+
+13.10. SPECIAL SITUATION DECISION TREE (INN. 10)
+
+    Nadrzędne drzewo sytuacji specjalnych: siła wyższa, sezonowość,
+    sukcesja, restrukturyzacja, e-Doręczenia.
+    Komponenty: (1) triage zdarzeń, (2) mapowanie do reguł P22,
+    (3) agregacja rekomendacji, (4) mapa ryzyka, (5) kalendarz.
+    Wartość: holistyczny obraz, brak pominięć.
+
+13.11. FAMILY SUCCESSION PLANNER (INN. 11)
+
+    Planowanie sukcesji rodzinnej: zarząd sukcesyjny (2 mies./2 lata),
+    małoletni (zgoda sądu), darowizny, SD-Z2.
+    Komponenty: (1) tracker zarządcy, (2) kalkulator darowizn (grupa 0),
+    (3) generator SD-Z2, (4) scenariusze przekształcenia, (5) BIA.
+    Wartość: płynne przejście firmy na rodzinę.
+
+13.12. DIGITAL DOCUMENT VAULT (INN. 12)
+
+    Bezpieczny sejf dokumentów: archiwizacja 5 lat, kopie, szyfrowanie,
+    wartość dowodowa, odtworzenie po klęsce.
+    Komponenty: (1) archiwum 5 lat, (2) backup offline, (3) szyfrowanie,
+    (4) procedura odtworzenia, (5) rejestr utraty.
+    Wartość: ciągłość dokumentacji, obrona w kontroli.
+
+=================================================================
+SEKCJA 14. REKOMENDACJE I MAPA DROGOWA
+=================================================================
+
+14.1. PRIORYTETY WDROŻENIOWE
+
+    P0 (natychmiastowe, < 1 miesiąc):
+    (a) NAPRAWA L-FAM-1: dodać ulgę prorodzinną (27f: 1112,04/limit
+        112 000) i ulgę 4+ (85 528) w family.
+    (b) NAPRAWA L-TF-1: dodać system TAX FREE dla turystów
+        (Art. 126-130 VAT, limit 200 zł) w taxfree.
+    (c) NAPRAWA R-SEAS-1: skorygować limit zawieszenia na 24 mies.
+        łącznie (Art. 22 PP) w seasonal.
+    (d) NAPRAWA R-FM-1: skorygować loss_carry_back na carry-forward
+        w force_majeure.
+
+    P1 (krótki horyzont, 1-3 miesiące):
+    (e) e-Delivery: warstwa wysyłkowa (L6) — automatyczna korespondencja.
+    (f) esig: integracja z dostawcami podpisu (L5) + monitoring.
+    (g) employer: wynagrodzenia chorobowe/urlopowe (L7).
+    (h) restructuring: aport nieruchomości + PSK (L8).
+
+    P2 (strategiczne, 3-12 miesięcy):
+    (i) Family Benefits Maximizer (innowacja 2).
+    (j) Tax-Free Tourist Auto-Processor (innowacja 6).
+    (k) Digital Signature Auto-Applicator (innowacja 4).
+    (l) Family Succession Planner (innowacja 11).
+
+14.2. KPI WARSTWY P22
+
+    KPI-1  Ulgi rodzinne: 100% uprawnionych JDG korzysta z ulgi 27f i 4+.
+    KPI-2  TAX FREE: 100% sprzedaży turystom spoza UE obsłużone
+           dokumentem TAX FREE.
+    KPI-3  e-Doręczenia: 0 fikcji doręczeń (100% pism odebranych < 14 dni).
+    KPI-4  Podpisy: 0 wygasłych certyfikatów, 100% dokumentów wymagających
+           podpisu kwalifikowanego podpisanych nim.
+    KPI-5  Sezonowość: 100% decyzji zawieszenie/zamknięcie zgodnych
+           z limitem 24 mies.
+    KPI-6  Pracodawca: 0 kar za spóźnione ZUS/PIT-4R (100% w terminie).
+    KPI-7  Pełnomocnictwa: 0 wygasłych, 100% opłat skarbowych w terminie.
+    KPI-8  Restrukturyzacja: 100% przekształceń z bilansem otwarcia
+           i remanentem rozliczonym.
+
+    Tabela KPI — wartości bazowe i cele (stan 2025/2026):
+    KPI  Wartość bazowa  Cel po wdrożeniu  Miernik
+    ---------------------------------------------------------------------
+    KPI-1  <30% rodzin    100%              % JDG z dziećmi objętych
+           korzysta z 27f                     ulgą 27f/4+ (raport roczny)
+    KPI-2  brak obsługi   100%              % paragonów turystycznych
+           TAX FREE                          z dokumentem TAX FREE
+    KPI-3  >20% pism     0 fikcji           liczba fikcji doręczeń
+           odebranych po 14 d.                 / rok (e-US + BAE)
+    KPI-4  brak          0 wygasłych        liczba wygasłych certyfikatów
+           monitoringu                        kwalifikowanych / rok
+    KPI-5  100% decyzji  100% zgodnych      % decyzji zawieszenie zgodne
+           intuicyjnych    z limitem 24 mies.  z Art. 22 PP
+    KPI-6  brak           0 kar             liczba kar za spóźnione
+           kalendarza                        ZUS/PIT-4R / rok
+    KPI-7  brak           0 wygasłych        liczba wygasłych
+           monitoringu                        pełnomocnictw / rok
+    KPI-8  ręczne         100%              % przekształceń z bilansem
+           przygotowanie                       otwarcia i remanentem
+    ---------------------------------------------------------------------
+
+    Interpretacja: KPI-1 i KPI-2 (luki L-FAM-1, L-TF-1) mają wartości
+    bazowe bliskie zera — to najszybsze zwroty z wdrożenia (P0).
+    KPI-3 i KPI-4 (e-Doręczenia, esig) chronią przed konsekwencjami
+    nieodwracalnymi (fikcja doręczenia, wygaśnięcie podpisu).
+
+14.3. TESTY KONTRAKTOWE (PODSUMOWANIE)
+
+    - test_p22_force_majeure.py (T1-T5 sekcji 3.10),
+    - test_p22_family_reliefs.py (T1-T5 sekcji 4.9; T1/T2 powinny FAIL
+      do czasu naprawy L-FAM-1),
+    - test_p22_edelivery_fiction.py (T1-T5 sekcji 5.8),
+    - test_p22_esig_signatures.py (T1-T5 sekcji 6.8),
+    - test_p22_seasonal_suspension.py (T1-T5 sekcji 7.8),
+    - test_p22_taxfree_scope.py (T1-T5 sekcji 8.6; T4 powinien FAIL
+      do czasu naprawy L-TF-1),
+    - test_p22_employer_obligations.py (T1-T5 poniżej),
+    - test_p22_representation_poa.py (T1-T5 poniżej),
+    - test_p22_restructuring_succession.py (T1-T5 poniżej).
+
+    Scenariusze EMPLOYER:
+    T1. Pracownik na umowę o pracę 1 praca → KUP 250 zł/mies.
+        Sprawdzenie: standard_kup_250.
+    T2. Twórca z prawami autorskimi → 50% KUP do 120 000 zł.
+        Sprawdzenie: creative_kup_50.
+    T3. Dwóch pracodawców → suma KUP ≤ 4 500 zł/rok.
+        Sprawdzenie: multiple_contracts_kup.
+    T4. Zlecenie (małe, < 200 zł) → ryczałt 12%.
+        Sprawdzenie: small_mandate_flat_tax.
+    T5. Zgłoszenie ZUA + DRA + PIT-4R w terminie → brak alertów.
+        Sprawdzenie: zus_zua_registration, zus_dra_monthly, pit4r_monthly.
+
+    Scenariusze REPRESENTATION:
+    T1. Pełnomocnictwo ogólne → PPS-1, 17 zł, ePUAP.
+        Sprawdzenie: pps1_required.
+    T2. Pełnomocnictwo szczególne → UPL-1, 17 zł.
+        Sprawdzenie: upl1_required.
+    T3. Odwołanie pełnomocnictwa → OPP-1, bez opłaty.
+        Sprawdzenie: poa_revocation.
+    T4. Pełnomocnictwo do doręczeń → PPD-1.
+        Sprawdzenie: ppd1_delivery.
+    T5. Śmierć mocodawcy → wygaśnięcie z mocy prawa.
+        Sprawdzenie: poa_automatic_expiry.
+
+    Scenariusze RESTRUCTURING:
+    T1. Przekształcenie JDG → sp. z o.o. → bilans otwarcia + remanent
+        10%. Sprawdzenie: jdg_to_spzoo_transformation,
+        opening_balance_sheet.
+    T2. Śmierć przedsiębiorcy → zarządca sukcesyjny w 2 mies.
+        Sprawdzenie: succession_manager.
+    T3. Spadkobiercy małoletni → zgoda sądu opiekuńczego (BLOCK).
+        Sprawdzenie: succession_minor_zcna_block.
+    T4. Sprzedaż przedsiębiorstwa → zwolnienie PCC.
+        Sprawdzenie: business_transfer_tax_exempt.
+    T5. Nabywca z zaległościami sprzedawcy → odpowiedzialność.
+        Sprawdzenie: acquirer_liability_tax_arrears.
+
+=================================================================
+SEKCJA 15. PODSUMOWANIE I GOTOWOŚĆ DO P23
+=================================================================
+
+15.1. WYNIKI KLUCZOWE
+
+    (a) 294 reguły OPA w 15 plikach (~163 KB) pokrywa 9 obszarów:
+        force majeure (42), family (54), e-delivery (45), esig (37),
+        seasonal (37), taxfree (36), employer (24), representation (10),
+        restructuring (9).
+    (b) Ocena średnia: 4.06/5 (FM 4.5, Family 3.5, e-Delivery 4.5,
+        esig 4.5, Seasonal 4.0, TaxFree 3.5, Employer 4.0,
+        Representation 4.0, Restructuring 4.0).
+    (c) Mocne strony: force majeure (komplet zdarzeń i ulg), e-Delivery
+        (fikcja 14 dni + alerty 7/3/1), esig (kwalifikowany vs zaufany),
+        employer (ZUS/PIT-4R/KUP), representation (PPS-1/UPL-1),
+        restructuring (sukcesja 2 mies./2 lata).
+    (d) Luki krytyczne: L-FAM-1 (brak ulgi 27f i 4+), L-TF-1 (brak
+        TAX FREE dla turystów — moduł to kwota wolna PIT), R-SEAS-1
+        (limit 6 vs 24 mies.), R-FM-1 (carry-back vs carry-forward).
+
+15.2. PRIORYTETYZACJA WG WPŁYWU NA JDG
+
+    KSeF/JPK (P18) > OrdPU/Tax Authority (P19) > Sankcje/WIS (P20) >
+    FX/TP/Rezydencja (P21) > Force Majeure/Family/e-Delivery (P22).
+
+15.3. OGRANICZENIA ANALIZY P22
+
+    (a) Analiza statyczna bez uruchomienia OPA.
+    (b) Badacz internetowy nie zwrócił danych — weryfikacja prawna
+        oparta na _legal_basis reguł i wiedzy domenowej; zalecany
+        przegląd przez doradcę podatkowego.
+    (c) Kwoty i terminy (30 000 kwota wolna, 1112,04 ulga prorodzinna,
+        85 528 ulga 4+, 200 zł TAX FREE, 24 mies. zawieszenie, 14 dni
+        fikcja) — wg stanu 2025/2026; wymagają weryfikacji rocznej.
+
+15.4. GOTOWOŚĆ DO PROMPTU P23
+
+    Okno analityczne P22 zamknięte. Gotowość do analizy P23
+    (JDG Hyper Plan45 Master): RAPORT_P23_JDG_HYPER_PLAN45_MASTER_v7.0.txt.
+
+15.5. ANALIZA PORÓWNAWCZA SERII P18-P22 (CIĄGŁOŚĆ)
+
+    Raport  Zakres                    Reguły  Ocena średnia  Kluczowa luka
+    ---------------------------------------------------------------------
+    P18     KSeF/JPK/cyfryzacja       ~330    3.9           outbox KSeF
+    P19     OrdPU/Tax Authority       676     3.9           wysyłka pism
+    P20     Sankcje/WIS/ePUAP         256     3.9           progi KKS 5x
+    P21     FX/TP/Residency/Payments  295     3.83          split payment
+    P22     Force Majeure/Family/e-Del. 294   4.06          ulga 27f/4+,
+                                                           TAX FREE turystów
+    ---------------------------------------------------------------------
+    RAZEM  P18-P22                  ~1 851   3.92          —
+
+    Obserwacje:
+    (a) P22 ma najwyższą ocenę średnią (4.06) — warstwa nadzwyczajna
+        jest najlepiej zaprojektowana w serii.
+    (b) Luki P22 są punktowe (wartości normatywne), nie systemowe —
+        najłatwiejsza seria do domknięcia (P0 w < 1 miesiąc).
+    (c) Łącznie ~1 851 reguł OPA — najobszerniejsza publiczna baza
+        reguł OPA dla JDG.
+
+=================================================================
+SEKCJA 16. SŁOWNICZEK
+=================================================================
+
+    BAE — baza adresów elektronicznych (e-Doręczenia).
+    BHP — bezpieczeństwo i higiena pracy.
+    DRA — deklaracja rozliczeniowa ZUS.
+    eIDAS — rozporządzenie UE o podpisach elektronicznych.
+    e-US — elektroniczne konto podatnika.
+    KRO — Kodeks Rodzinny i Opiekuńczy.
+    PFRON — Państwowy Fundusz Rehabilitacji Osób Niepełnosprawnych.
+    PPK — Pracownicze Plany Kapitałowe.
+    PPS-1 — pełnomocnictwo ogólne (17 zł, elektronicznie).
+    RCA — raport miesięczny ZUS.
+    SD-Z2 — formularz zgłoszenia zarządcy sukcesyjnego.
+    TAX FREE — system zwrotu VAT turystom spoza UE (Art. 126-130 VAT).
+    UPL-1 — pełnomocnictwo szczególne (17 zł).
+    UPO — Urzędowe Poświadczenie Odbioru.
+    ZCNA — zezwolenie sądu opiekuńczego na czynności prawne.
+    ZUA — zgłoszenie pracownika do ubezpieczeń ZUS.
+
+=================================================================
+SEKCJA 17. ODNIESIENIA PRAWNE
+=================================================================
+
+    PIT: Art. 6 ust. 2 i 4 (wspólne rozliczenie, samotny rodzic),
+    Art. 9 ust. 3 (strata 5 lat), Art. 21 ust. 1 pkt 4 (odszkodowania),
+    Art. 21 ust. 1 pkt 148 (ulga dla młodych 85 528), Art. 21 ust. 1
+    pkt 153 (ulga 4+ 85 528), Art. 22 ust. 2 (KUP 4 500), Art. 22 ust.
+    9a (50% KUP 120 000), Art. 23 ust. 1 pkt 46 (auto 75%), Art. 24
+    ust. 3 (remanent likwidacyjny), Art. 27 ust. 1 (kwota wolna 30 000,
+    redukcja 3 600), Art. 27f (ulga prorodzinna 1112,04), Art. 30c
+    (liniowy 19%), Art. 32 ust. 3 (1/12 kwoty wolnej), Art. 44 ust. 6b
+    (zaliczki uproszczone).
+    OrdPU: Art. 67a-67e (ulgi w spłacie), Art. 86 (retencja 5 lat),
+    Art. 97-112 (sukcesja), Art. 138b-138o (pełnomocnictwa PPS-1/UPL-1).
+    VAT: Art. 86a (VAT-26), Art. 126-130 (TAX FREE turystów).
+    Prawo przedsiębiorców: Art. 22 (zawieszenie do 24 mies.).
+    Ustawa o doręczeniach elektronicznych: rejestracja BAE, fikcja 14 dni.
+    Ustawa o zarządzie sukcesyjnym: Art. 51-54 (zarządca 2 mies./2 lata).
+    eIDAS: rozporządzenie 910/2014.
+    Ustawa o usługach płatniczych: obowiązek terminala płatniczego
+    (obrót B2C > 20k EUR/rok, kara do 5 000 zł — szczegóły w P21).
+    Kodeks cywilny: Art. 78-1 (forma elektroniczna), Art. 98 KRO.
+
+=================================================================
+=== KONIEC RAPORTU — RAPORT_P22_JDG_FORCE_MAJEURE_FAMILY_EDELIVERY_v7.0 ===

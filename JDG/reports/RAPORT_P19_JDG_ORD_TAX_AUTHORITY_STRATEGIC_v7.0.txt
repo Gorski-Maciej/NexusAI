@@ -1,0 +1,1903 @@
+RAPORT ANALITYCZNY ENTERPRISE — JDG OrdPU + Tax Authority + Strategic v7.0
+=================================================================
+DATA: 2026-08-01
+WERSJA: v7.0
+OBSZAR: JDG — Ordynacja Podatkowa (OrdPU), interakcje z organami podatkowymi (US/KAS/ZUS), doradztwo strategiczne, monitoring legislacyjny i orzeczniczy
+ZAKRES: 10 modułów regułowych OPA/Rego (~620 KB) + dokumentacja LEGAL_COVERAGE.md + Bbb
+POZIOM: ENTERPRISE
+=================================================================
+SPIS TREŚCI (numery stron orientacyjne — plik bez paginacji)
+1. Metodologia i zakres analizy
+2. Synteza wykonawcza (executive summary)
+3. Architektura warstwy ORD w systemie NexusAI
+4. Analiza Ordynacji Podatkowej — poziom ENTERPRISE
+4.1. Art. 16-16b — czynny żal (instytucja bezkarności)
+4.2. Art. 20-21 — zaległość i nadpłata
+4.3. Art. 48 / 67a-67e — odroczenie, raty, umorzenie (ulgi w spłacie)
+4.4. Art. 51 — umorzenie zaległości (aktualny stan: art. 67d-67e)
+4.5. Art. 53-56 — odsetki za zwłokę (stawki 200%/150%/50%)
+4.6. Art. 70-71 — przedawnienie zobowiązań (5 lat, przerwy, art. 70c)
+4.7. Art. 72-80 — nadpłata (zwrot 30 dni, oprocentowanie)
+4.8. Art. 81-81b — korekta deklaracji
+4.9. Art. 119a — klauzula GAAR
+4.10. Art. 120-129 — postępowanie podatkowe
+4.11. Art. 138a-138o — pełnomocnictwa (PPS-1, UPL-1)
+4.12. Art. 193a — JPK na żądanie organu
+4.13. Pokrycie 14 rozdziałów OrdPU — mapa kompletności
+5. Analiza TAX AUTHORITY INTERACTION (innowacja S22)
+5.1. Auto-generacja pism do US/KAS/ZUS
+5.2. Czynny żal, odwołania, interpretacje, nadpłaty, raty
+5.3. Monitoring statusu spraw w US — ocena automatyzacji
+6. Analiza STRATEGIC ADVISOR i CROSS-DOMAIN INTELLIGENCE
+6.1. strategic_advisor_enterprise.rego (9 reguł)
+6.2. cross_domain_intelligence_enterprise.rego (16 reguł)
+6.3. tax_optimization_enterprise.rego (11 reguł)
+6.4. audit_defense_enterprise.rego (5 reguł)
+7. Analiza LEGISLATIVE MONITOR i JUDICIAL INTERPRETATIONS
+7.1. legislative_monitor_enterprise.rego (8 reguł)
+7.2. judicial_interpretations_enterprise.rego (6 reguł)
+7.3. Czy system auto-aktualizuje reguły po zmianie prawa?
+8. Diagramy procesowe (Mermaid — zapis tekstowy)
+8.1. Flow korespondencji z urzędem skarbowym
+8.2. Proces interpretacji indywidualnej (art. 14b OrdPU)
+9. Innowacyjne usprawnienia wyprzedzające (12+)
+10. Luki, ryzyka i rekomendacje
+11. Podsumowanie i gotowość do Promptu P20
+=================================================================
+SEKCJA 1. METODOLOGIA I ZAKRES ANALIZY
+=================================================================
+1.1. PRZEDMIOT ANALIZY
+Przedmiotem raportu jest warstwa regułowa systemu NexusAI obsługująca
+Ordynację Podatkową (OrdPU), interakcje z organami podatkowymi oraz
+doradztwo strategiczne dla jednoosobowych działalności gospodarczych
+(JDG). Analiza obejmuje 10 plików wskazanych w zleceniu oraz moduły
+wspierające wykryte podczas przeglądu.
+
+1.2. LISTA PLIKÓW ANALIZOWANYCH
+[PLIK 1]  JDG/rules/micro/ord/ord.rego
+          Rozmiar: 408 198 bajtów (408 KB) — największy plik regułowy
+          w całym systemie NexusAI. Liczba reguł: 424 wpisy rule_id.
+          Rola: mikro-pokrycie artykuł po artykule Ordynacji Podatkowej.
+[PLIK 2]  JDG/rules/micro/plan33_ord.rego
+          STATUS: PLIK NIE ISTNIEJE LOKALNIE (patrz ustalenie L1).
+          W katalogu JDG/rules/micro/ występują pliki plan33_ dla
+          pozostałych domen (plan33_jpk, plan33_ksef, plan33_kks,
+          plan33_pit, plan33_ryc, plan33_vat, plan33_zus itd.), ale
+          NIE istnieje plan33_ord.rego. Jego funkcję pełni plan34_ord.
+[PLIK 3]  JDG/rules/micro/plan34_ord.rego
+          Rozmiar: 122 195 bajtów (122 KB). Liczba reguł: 190 wpisów
+          rule_id. Rola: szablonowa macierz reguł atomowych w formacie
+          "jdg.ord.<artykul>.r<n>" (np. jdg.ord.a29.r1, jdg.ord.a32.r1).
+[PLIK 4]  JDG/rules/tax_authority_interaction_enterprise.rego
+          Rozmiar: 28 155 bajtów. Liczba reguł: 7. Rola: innowacja S22 —
+          auto-korespondencja z US/KAS/ZUS (szablony pism).
+[PLIK 5]  JDG/rules/tax_optimization_enterprise.rego
+          Rozmiar: 42 728 bajtów. Liczba reguł: 11. Rola: optymalizacja
+          podatkowa (wybór formy opodatkowania, kalkulatory).
+[PLIK 6]  JDG/rules/audit_defense_enterprise.rego
+          Rozmiar: 18 820 bajtów. Liczba reguł: 5. Rola: obrona przed
+          kontrolą podatkową / celno-skarbową.
+[PLIK 7]  JDG/rules/strategic_advisor_enterprise.rego
+          Rozmiar: 32 971 bajtów. Liczba reguł: 9. Rola: doradztwo
+          strategiczne wieloletnie (mapa drogowa podatkowa).
+[PLIK 8]  JDG/rules/cross_domain_intelligence_enterprise.rego
+          Rozmiar: 53 156 bajtów. Liczba reguł: 16. Rola: analiza
+          między-domenowa (synergie PIT/VAT/ZUS/KSeF itd.).
+[PLIK 9]  JDG/rules/judicial_interpretations_enterprise.rego
+          Rozmiar: 21 881 bajtów. Liczba reguł: 6. Rola: analiza
+          orzecznictwa (WSA/NSA/TSUE).
+[PLIK 10] JDG/rules/legislative_monitor_enterprise.rego
+          Rozmiar: 16 985 bajtów. Liczba reguł: 8. Rola: monitor zmian
+          prawnych i ocena wpływu.
+[DOK 1]   JDG/docs/LEGAL_COVERAGE.md
+          Sekcja III "ORDYNACJA PODATKOWA — 180 punktów prawnych"
+          z wykazem kluczowych artykułów (m.in. Art. 70 — przedawnienie
+          5 lat, Art. 81 — korekty deklaracji, Art. 16 — czynny żal).
+[DOK 2]   JDG/docs/Bbb — dokumentacja powiązana (format reguł, P-codes).
+
+1.3. METODYKA OCENY
+Każdy obszar oceniono w skali 1-5 (5 = wzorcowy) na podstawie:
+(a) kompletności pokrycia artykułów ustawy, (b) poprawności merytorycznej
+reguł względem aktualnego stanu prawnego (stan na 2026-08-01),
+(c) głębokości logiki (warunki, wyjątki, interakcje, terminy, sankcje),
+(d) stopnia automatyzacji procesów, (e) zgodności z wymaganiami
+enterprise (traceability, priority, routing, legal_basis).
+
+1.4. ZASTRZEŻENIE PRAWNE
+Raport ma charakter analityczno-techniczny. Wskazania co do stanu
+prawnego oparto na przepisach Ordynacji podatkowej (t.j. Dz.U. 2025
+poz. 1110 ze zm.), Kodeksu karnego skarbowego (t.j. Dz.U. 2024 poz. 628
+ze zm.) oraz komunikatach MF/KAS. Numery artykułów i stawki należy
+weryfikować z aktualnym tekstem jednolitym przed podjęciem decyzji.
+Raport NIE stanowi porady prawnej ani podatkowej.
+=================================================================
+SEKCJA 2. SYNTEZA WYKONAWCZA (EXECUTIVE SUMMARY)
+=================================================================
+2.1. OCENA OGÓLNA WARSTWY ORD: 4,0 / 5
+Warstwa OrdPU w systemie NexusAI jest najobszerniejszą i najbardziej
+rozbudowaną warstwą regułową całego systemu: łącznie 676 wpisów rule_id
+w warstwie ORD (424 mikro ord.rego + 190 plan34_ord + 62 enterprise).
+Pod względem ILOŚCI pokrycia (artykuł po artykule) system wyprzedza
+większość komercyjnych rozwiązań dla JDG. Pod względem AKTUALNOŚCI
+PRAWNEJ występują jednak istotne zastrzeżenia — część reguł koduje
+numerację i instytucje sprzed nowelizacji (przede wszystkim stare
+art. 48/51 dotyczące ulg przeniesione do art. 67a-67e).
+
+2.2. WYNIKI CZĄSTKOWE
+[1] ORD kompletność mikro .......... 4,0/5  (424 reguły, 40+ artykułów)
+[2] Plan34_ord (macierz atomowa) ... 3,5/5  (190 reguł, format spójny)
+[3] Tax Authority Interaction ...... 3,5/5  (7 reguł, bogate szablony)
+[4] Tax Optimization ............... 4,0/5  (11 reguł, 5-letni horyzont)
+[5] Audit Defense .................. 3,5/5  (5 reguł, scenariusze obrony)
+[6] Strategic Advisor .............. 4,0/5  (9 reguł, mapy drogowe)
+[7] Cross-Domain Intelligence ...... 4,0/5  (16 reguł, synergie między-aktowe)
+[8] Judicial Interpretations ....... 3,0/5  (6 reguł, ograniczona głębia)
+[9] Legislative Monitor ............ 3,5/5  (8 reguł, brak auto-aktualizacji)
+
+2.3. NAJWAŻNIEJSZE USTALENIA (SKRÓT)
+[U1] ord.rego = 424 reguły pokrywające artykuły od a16 do a193a,
+     w tym pełne kompleksy: a138 (pełnomocnictwa, 44 reguły),
+     a67 (ulgi, 42 reguły), a119+a119a (GAAR, 44 reguły),
+     a70 (przedawnienie, 22 reguły), a81 (korekta, 21 reguł).
+[U2] LUKA NUMERACJI: reguły a48 (7) i a51 (7) kodują instytucje
+     "odroczenia" i "umorzenia" pod STARĄ numeracją. Po nowelizacji
+     z 1 stycznia 2017 r. ulgi w spłacie regulują art. 67a-67e.
+     System równolegle posiada kompleks a67 (42 reguły) — ryzyko
+     duplikacji i potencjalnej sprzeczności decyzji.
+[U3] CZYNNY ŻAL pod ord_a16 (12 reguł): czynny żal jest instytucją
+     Kodeksu karnego skarbowego (art. 16 KKS), NIE Ordynacji
+     podatkowej. Umieszczenie go w pakiecie jdg.micro.ord jest
+     praktyczne (kontekst unikania odpowiedzialności karnej
+     skarbowej przy zaległościach), ale wymaga poprawnego
+     oznaczenia podstawy prawnej (KKS, nie OrdPU).
+[U4] plan33_ord.rego NIE ISTNIEJE lokalnie — prompt wymienia ten plik,
+     lecz w repozytorium jego rolę pełni plan34_ord.rego (190 reguł).
+     Niespójność między dokumentacją zlecenia a stanem repozytorium.
+[U5] Odsetki za zwłokę: reguły a56 (14) istnieją, ale zweryfikowana
+     stawka systemowa nie jest jednoznacznie wyekstrahowana do
+     zmiennej (brak twardego zapisu "200% stopy lombardowej" w polach
+     decyzyjnych — stawki żyją w treści komunikatów NBP). Rekomendacja:
+     dodać pole reference_rate z aktualną stopą lombardową.
+[U6] Tax Authority Interaction (S22): 7 reguł z bogatymi szablonami
+     pism (czynny żal, odwołania, wnioski o interpretację, zwrot
+     nadpłaty, rozłożenie na raty), ale bez warstwy WYSYŁKI i
+     MONITORINGU STATUSÓW — automatyzacja zatrzymuje się na
+     wygenerowaniu treści pisma.
+[U7] Legislative Monitor: 8 reguł monitoruje zmiany, ale system NIE
+     posiada mechanizmu automatycznej aktualizacji reguł po zmianie
+     prawa (brak pętli feedbacku reguła->kontroler zmian->rekompilacja).
+[U8] Judicial Interpretations: zaledwie 6 reguł — najmniejszy moduł
+     warstwy; nie zawiera bazy orzeczeń ani wagi precedensów.
+[U9] LEGAL_COVERAGE.md deklaruje "180 punktów prawnych" dla OrdPU,
+     spójnie z faktyczną głębią ord.rego (424 reguły).
+[U10] Format reguł spójny z resztą systemu: rule_id, priority,
+      package, matched, business_status + pola routingu (_routing,
+      _routing_reason, _legal_basis) — pełna traceability.
+
+2.4. PRIORYTET REKOMENDACJI
+OrdPU kompletność mikro (4,0) > Tax Authority Interaction (3,5) >
+Strategic/Legislative (3,5-4,0). Kolejność prac: najpierw usunąć
+duplikację a48/a51 vs a67a-e, następnie rozbudować S22 o warstwę
+wysyłki i monitoringu, na końcu wzbogacić Judicial Interpretations.
+=================================================================
+SEKCJA 3. ARCHITEKTURA WARSTWY ORD W SYSTEMIE NEXUSAI
+=================================================================
+3.1. TRZY WARSTWY REGUŁOWE
+Warstwa ORD zbudowana jest w architekturze trójpoziomowej, spójnej
+z resztą systemu NexusAI (mikro / macierz atomowa / enterprise):
+
+WARSTWA 1 — MIKRO (artykuł po artykule)
+  Plik: micro/ord/ord.rego (408 KB, 424 reguły)
+  Logika: jeden pakiet jdg.micro.ord z regułami o nazwach
+  ord_a<artykul>_r<n>_<cecha>, np. ord_a70_r11_deadline,
+  ord_a119a_r1_eligibility, ord_a138a_r12_sanction.
+  Struktura każdej reguły: decide := { "matched", "rule_id",
+  "package", "priority", ... pola domenowe ..., "_warnings",
+  "_routing", "_routing_reason", "_legal_basis" }.
+  Priorytety: zakres 70xxx (np. a67a.r1 = 70115, a119a.r1 = 70244),
+  co umożliwia deterministyczne rozstrzyganie konfliktów.
+
+WARSTWA 2 — MACIERZ ATOMOWA (plan34_ord)
+  Plik: micro/plan34_ord.rego (190 reguł)
+  Logika: reguły szablonowe w formacie rule_id "jdg.ord.a29.r1",
+  "jdg.ord.a32.r1", "jdg.ord.a33.r1" — atomowe decyzje o wspólnej
+  strukturze wyjściowej (zus_social_base_type, zus_health_rate,
+  vat_rate, pit_rate, pit_form, kus_qualification, gtu_code itd.).
+  Rola: szybkie, jednorodne odpowiedzi dla typowych scenariuszy
+  (matching przez dopasowanie pól wejściowych).
+
+WARSTWA 3 — ENTERPRISE (moduły strategiczne)
+  7 plików, łącznie 62 reguły:
+  - tax_authority_interaction_enterprise.rego  (7 reguł, S22)
+  - tax_optimization_enterprise.rego           (11 reguł)
+  - audit_defense_enterprise.rego              (5 reguł)
+  - strategic_advisor_enterprise.rego          (9 reguł)
+  - cross_domain_intelligence_enterprise.rego  (16 reguł)
+  - judicial_interpretations_enterprise.rego   (6 reguł)
+  - legislative_monitor_enterprise.rego        (8 reguł)
+
+3.2. SUMA ZASOBÓW WARSTWY ORD
+  Łączna liczba reguł: 424 + 190 + 62 = 676 wpisów rule_id.
+  Łączny rozmiar: ~620 KB (zgodnie z deklaracją zlecenia).
+  To czyni warstwę ORD największą pojedynczą domeną systemu NexusAI
+  (dla porównania: warstwa KSeF/JPK z raportu P18 liczyła ~330 reguł).
+
+3.3. SPÓJNOŚĆ FORMATU
+Wszystkie warstwy stosują jednolity kontrakt wyjściowy (rule_id,
+priority, package, matched, business_status, _warnings, _routing,
+_routing_reason, _legal_basis), co umożliwia:
+  - deterministyczną agregację wyników (silnik OPA),
+  - traceability decyzji do podstawy prawnej (_legal_basis),
+  - routing zewnętrzny (np. do szablonów pism S22),
+  - testowanie kontraktowe (test_run_simulation_contract.py itd.).
+
+3.4. OBSERWACJA ARCHITEKTONICZNA
+Brak pliku plan33_ord.rego (występującego dla innych domen) przy
+istnieniu plan34_ord.rego sugeruje, że domena ORD przeszła migrację
+"plan33 -> plan34" lub została wygenerowana innym szablonem. Dla
+spójności dokumentacji zaleca się ujednolicenie (albo dodać plan33_ord
+jako kompatybilną warstwę, albo zaktualizować dokumentację zlecenia).
+=================================================================
+SEKCJA 4. ANALIZA ORDYNACJI PODATKOWEJ — POZIOM ENTERPRISE
+=================================================================
+4.1. ART. 16-16B — CZYNNY ŻAL (INSTYTUCJA BEZKARNOŚCI)
+4.1.1. STAN PRAWNY (zweryfikowany)
+Czynny żal jest instytucją Kodeksu karnego skarbowego (art. 16 KKS),
+a nie Ordynacji podatkowej. Warunki skorzystania z bezkarności:
+  (1) zawiadomienie organu powołanego do ścigania o popełnieniu czynu
+      zabronionego (np. naczelnika US) PRZED rozpoczęciem przez organ
+      czynności sprawdzających / kontrolnych,
+  (2) ujawnienie istotnych okoliczności czynu (w tym współsprawców),
+  (3) uiszczenie w całości wymagalnej należności publicznoprawnej
+      uszczuplonej czynem zabronionym (wraz z odsetkami) — w terminie
+      wyznaczonym przez organ lub równocześnie ze zawiadomieniem,
+  (4) dopełnienie obowiązku, którego niedopełnienie było przedmiotem
+      czynu (np. złożenie deklaracji).
+Uwaga: NIE istnieje ustawowy "automatyczny termin 7 dni na wpłatę"
+od dnia zawiadomienia — termin wyznacza organ; wpłata pełnej kwoty
+jest warunkiem bezkarności, nie samo zawiadomienie.
+Pouczenie o prawie do czynnego żalu: art. 17 KKS (organ ma obowiązek
+pouczyć przy pierwszej czynności procesowej).
+
+4.1.2. OCENA REGUŁ SYSTEMU (ord_a16: 12 reguł)
+Zidentyfikowane reguły:
+  ord_a16_r1_eligibility / ord_a16_r1_check — badanie przesłanek
+  ord_a16_r2_positive_1 — wynik pozytywny (bezkarność)
+  ord_a16_r3_pass / ord_a16_r3_positive_2 — kontynuacja
+  ord_a16_r4_checks / ord_a16_r4_positive_3
+  ord_a16_r5_negative_1 / ord_a16_r6_negative_2 — odmowa
+Struktura r1-r6 z fazami eligibility/positive/negative odzwierciedla
+poprawną metodologię testowania warunków kumulatywnych.
+
+4.1.3. ZNALEZISKA
+[K16-1] POZYTYWNE: logika 6-stopniowa (eligibility, positive x3,
+        negative x2) poprawnie modeluje warunki kumulatywne czynnego
+        żalu (art. 16 par. 1 KKS).
+[K16-2] UWAGA: podstawa prawna powinna wskazywać KKS art. 16 (nie
+        OrdPU). Brak _legal_basis z oznaczeniem aktu -> ryzyko
+        błędnej cytacji w generowanym piśmie.
+[K16-3] BRAK: reguły nie uwzględniają wyłączenia czynnego żalu dla
+        sprawców, którzy "kierowali wykonaniem czynu" (art. 16 par. 3
+        KKS — czynny żal nie chroni organizatorów) oraz sytuacji
+        "zawiadomienie po rozpoczęciu kontroli" (art. 16 par. 2).
+[K16-4] BRAK INTEGRACJI: moduł ord_a16 nie jest połączony z szablonem
+        pisma "Czynny Żal-1" w tax_authority_interaction (S22) —
+        system nie wygeneruje automatycznie zawiadomienia.
+
+4.2. ART. 20-21 — ZALEGŁOŚĆ I NADPŁATA
+4.2.1. STAN PRAWNY
+Art. 20 par. 1 OrdPU: zobowiązanie podatkowe powstaje z dniem
+zaistnienia zdarzenia, z którym ustawa wiąże powstanie zobowiązania.
+Art. 21 par. 1: zobowiązanie powstaje z dniem doręczenia decyzji
+ustalającej wysokość zobowiązania (lub z dniem złożenia deklaracji
+dla samoobliczenia). Zaległość (art. 51 par. 1 OrdPU w aktualnym
+brzmieniu): podatek niezapłacony w terminie płatności.
+Uwaga: po nowelizacji z 2017 r. definicja zaległości została
+przeniesiona do art. 51 par. 1 OrdPU (poprzednio art. 53 par. 1) —
+numeracja w zleceniu ("Art. 20-21 zaległość i nadpłata") jest
+uproszczeniem; aktualne podstawy: art. 20, 21, 51, 72.
+
+4.2.2. OCENA REGUŁ SYSTEMU (ord_a20: 9, ord_a21: 9)
+Reguły ord_a20 (9) i ord_a21 (9) modelują momenty powstania
+zobowiązania: odpowiednio decyzyjne (art. 21) i zdarzeniowe
+(art. 20). Liczba reguł adekwatna do złożoności (kumulacja,
+terminy, przypadki szczególne).
+4.2.3. ZNALEZISKA
+[K20-1] POZYTYWNE: obecne są obie ścieżki powstania zobowiązania
+        (deklaracyjna i decyzyjna) — rzadkość w systemach JDG.
+[K20-2] UWAGA: zlecenie łączy "zaległość i nadpłatę" z art. 20-21,
+        lecz zaległość reguluje art. 51, a nadpłatę art. 72-80.
+        System poprawnie rozdziela te obszary (a51: 7, a72: 12,
+        a74-a80: po 7) — należy jedynie poprawić dokumentację.
+
+4.3. ART. 48 / 67A-67E — ODRROCZENIE, RATY, UMORZENIE (ULGI)
+4.3.1. STAN PRAWNY
+Od 1 stycznia 2017 r. (nowelizacja z 2015 r.) ulgi w spłacie
+zobowiązań podatkowych regulują:
+  - art. 67a par. 1 OrdPU: odroczenie terminu płatności lub
+    rozłożenie zapłaty na raty,
+  - art. 67a par. 1 pkt 3: umorzenie zaległości, odsetek lub opłaty
+    prolongacyjnej (wnioskowe),
+  - art. 67b: opłata prolongacyjna (odsetki 50% stawki podstawowej),
+  - art. 67c: wymogi wniosku i oświadczenia o stanie majątkowym,
+  - art. 67d: umorzenie z urzędu w przypadkach ważnego interesu
+    podatnika lub interesu publicznego,
+  - art. 67e: umorzenie przy bezskuteczności egzekucji oraz po
+    śmierci podatnika (bez spadkobierców).
+Ważny interes podatnika / interes publiczny = przesłanki uznaniowe
+(orzecznictwo: NSA potwierdza dyskrecjonalność organu).
+
+4.3.2. OCENA REGUŁ SYSTEMU
+Kompleks a67 (łącznie 42 reguły):
+  ord_a67a: 9 reguł (odroczenie/raty/umorzenie wnioskowe)
+  ord_a67b: 12 reguł (opłata prolongacyjna — najgłębszy podkompleks)
+  ord_a67c: 7 reguł (wniosek + oświadczenie majątkowe)
+  ord_a67d: 7 reguł (umorzenie z urzędu)
+  ord_a67e: 7 reguł (umorzenie egzekucyjne / pośmiertne)
+Dodatkowo istotne STAREGO TYPU reguły:
+  ord_a48: 7 reguł (odroczenie terminu płatności — stara numeracja)
+  ord_a51: 7 reguł (umorzenie — stara numeracja)
+4.3.3. ZNALEZISKA
+[K67-1] POZYTYWNE: pokrycie wszystkich 5 obecnych przepisów ulgowych
+        (67a-67e) — 42 reguły, największy kompleks ulg w systemie.
+[K67-2] KRYTYCZNE: duplikacja a48/a51 vs a67a-e. Reguły a48 (odroczenie)
+        i a51 (umorzenie) kodują stan sprzed 2017 r. Ryzyko: przy
+        jednakowych danych wejściowych dwie reguły mogą zwrócić różne
+        decyzje (a48: odroczenie; a67a: odroczenie) — priorytety
+        rozstrzygają, ale dokumentacja i _legal_basis mogą wprowadzać
+        w błąd. REKOMENDACJA: oznaczyć a48/a51 jako deprecated
+        (legacy) lub usunąć, pozostawiając a67a-e.
+[K67-3] BRAK: reguły nie modelują przesłanki "ważnego interesu
+        podatnika" (czynniki: dochód, sytuacja rodzinna, koszty
+        leczenia) — decyzja o uldze wymaga oceny uznaniowej, której
+        system nie wspiera scoringiem. Rekomendacja: dodać moduł
+        scoringu "financial_hardship_score" (0-100).
+
+4.4. ART. 51 — UMORZENIE ZALEGŁOŚCI (AKTUALNY STAN: 67D-67E)
+4.4.1. STAN PRAWNY
+Art. 51 par. 1 OrdPU (aktualny): "Zaległością podatkową jest podatek
+niezapłacony w terminie płatności". Umorzenie zaległości regulują
+art. 67a par. 1 pkt 3 (wnioskowe) oraz 67d-67e (z urzędu).
+4.4.2. OCENA REGUŁ SYSTEMU
+ord_a51 (7 reguł) — w systemie pełni rolę definicji zaległości +
+historycznego umorzenia. Kompleks a67d/e (14 reguł) realizuje
+aktualne podstawy umorzenia.
+4.4.3. ZNALEZISKA
+[K51-1] POZYTYWNE: definicja zaległości (art. 51) obecna.
+[K51-2] UWAGA: zlecenie wskazuje "art. 51 umorzenie" — w aktualnym
+        stanie prawnym umorzenie to art. 67a/67d/67e. Dokumentacja
+        systemu powinna to odzwierciedlić (mapowanie 51 -> 67x).
+
+4.5. ART. 53-56 — ODSETKI ZA ZWŁOKĘ (STAWKI)
+4.5.1. STAN PRAWNY (stan 2025/2026 — stawki zależą od stopy
+lombardowej NBP; obwieszczenia MF publikowane co kwartał)
+  - Art. 53 par. 1 OrdPU (przeniesiony z dawnego art. 55):
+    odsetki za zwłokę od zaległości podatkowych.
+  - Art. 56 par. 1: stawka odsetek = 200% podstawowej stopy
+    oprocentowania kredytu lombardowego NBP (stawka podstawowa).
+  - Art. 56 par. 1a: stawka OBNIŻONA = 50% stawki podstawowej dla
+    podatnika, który złożył korektę deklaracji (wraz z uzasadnieniem
+    przyczyn) i uiścił zaległość w ciągu 7 dni od dnia złożenia
+    korekty (ograniczenia ilościowe korekt).
+  - Art. 56b: stawka PODWYŻSZONA = 150% stawki podstawowej dla
+    zaległości w VAT (zaniżenie zobowiązania, brak JPK_V7/KSeF w
+    terminie) oraz w PIT/CIT przy zaniżeniu dochodu/zobowiązania.
+  - Art. 57: podstawowa stopa = stopa kredytu lombardowego NBP.
+  Uwaga: w zleceniu podano "stawka referencyjna NBP + 8%" — jest to
+  stan sprzed 2014 r. (nieaktualny). Obecnie: 200% stopy lombardowej.
+  Stawka minimalna 8% nie obowiązuje od 2014 r.
+
+4.5.2. OCENA REGUŁ SYSTEMU (ord_a53: 7, ord_a54: 7, ord_a56: 14;
+ord_a55: 0 — brak)
+  Reguły a53 (zaległość jako podstawa naliczania) i a54 (podstawa
+  odsetek) obecne. a56 (14 reguł) pokrywa stawki, obniżenie (korekta)
+  i podwyższenie (art. 56b).
+4.5.3. ZNALEZISKA
+[K56-1] POZYTYWNE: obecność logiki trzech stawek (podstawowa /
+        obniżona / podwyższona) — zgodnie z art. 56, 56 par. 1a, 56b.
+[K56-2] BRAK: stawka nie jest pobierana dynamicznie (brak integracji
+        z komunikatem MF o stopie lombardowej). W systemie brak pola
+        reference_rate — stawka musi być aktualizowana ręcznie przy
+        każdej zmianie stopy NBP. REKOMENDACJA: dodać źródło danych
+        (obwieszczenie MF) i parametr reference_rate.
+[K56-3] UWAGA: brak reguł a55 (0) — w aktualnym stanie art. 55 OrdPU
+        (wygasł/nieaktualny po nowelizacji) — nie stanowi luki
+        merytorycznej, ale należy wyjaśnić w dokumentacji.
+
+4.6. ART. 70-71 — PRZEDAWNIENIE ZOBOWIĄZAŃ
+4.6.1. STAN PRAWNY
+  - Art. 70 par. 1: zobowiązanie przedawnia się z upływem 5 lat,
+    licząc od końca roku kalendarzowego, w którym upłynął termin
+    płatności.
+  - Art. 70 par. 6: bieg przedawnienia zawiesza się m.in. w razie
+    wszczęcia postępowania w sprawie o przestępstwo/wykroczenie
+    skarbowe (z warunkiem zawiadomienia podatnika — art. 70c),
+    decyzji zabezpieczającej, skargi do sądu administracyjnego.
+  - Art. 70 par. 7-8: zawieszenie maks. 3 lata (5 lat dla przestępstw
+    skarbowych); po zawieszeniu bieg biegnie dalej.
+  - Art. 70a: przerwanie biegu (np. decyzja o zabezpieczeniu,
+    zawiadomienie o zamiarze wszczęcia postępowania karnego
+    skarbowego).
+  - Art. 70c: obowiązek zawiadomienia podatnika o zawieszeniu/
+    nierozpoczęciu biegu terminu (od 1 stycznia 2022).
+  - Art. 71: przedawnienie nie biegnie w okresie zawieszenia/
+    przerwy; skutki przedawnienia (wygaśnięcie zobowiązania,
+    niedopuszczalność egzekucji).
+4.6.2. OCENA REGUŁ SYSTEMU (ord_a70: 22, ord_a71: 14)
+  Kompleks a70 (22 reguły): r1_eligibility, r2_positive_1,
+  r3_pass, r4_checks, r5_negative_1, r6_negative_2,
+  r7_exception_1, r8_exception_2, r10_interaction_2,
+  r11_deadline, r12_sanction, r13_edge_1, r14_edge_2,
+  r15_validation, edge_case, edge_case_2, exception, exception_2.
+  Kompleks a71 (14 reguł): modelowanie skutków przedawnienia.
+4.6.3. ZNALEZISKA
+[K70-1] POZYTYWNE: 22 reguły — najgłębsze pokrycie przedawnienia
+        w systemie; obecne: deadline (r11), sanction (r12), edge
+        cases, exception — modeluje zawieszenie i przerwanie.
+[K70-2] BRAK/WERYFIKACJA: brak jawnej reguły dla art. 70c
+        (zawiadomienie o zawieszeniu — od 2022) w wykrytych nazwach.
+        Zalecana weryfikacja: czy reguła r10_interaction_2 lub
+        exception_2 obejmuje obowiązek zawiadomienia.
+[K70-3] POZYTYWNE: obecność logiki 5-letniego terminu (r11_deadline)
+        zgodna z art. 70 par. 1; interakcja z postępowaniem karnym
+        skarbowym (r10_interaction) — spójna z art. 70 par. 6 pkt 1.
+
+4.7. ART. 72-80 — NADPŁATA
+4.7.1. STAN PRAWNY
+  - Art. 72: nadpłata = nadwyżka podatku zapłaconego/zaliczona ponad
+    należny, w tym nadwyżka VAT nad należnym, podatek pobrany
+    nienależnie, zobowiązanie określone decyzją wyższą od
+    należnego.
+  - Art. 73-74: stwierdzanie nadpłaty (deklaracja / decyzja /
+    wniosek o stwierdzenie).
+  - Art. 75: wniosek o stwierdzenie nadpłaty (wraz z korektą
+    deklaracji); termin przedawnienia prawa do wniosku.
+  - Art. 76-77: zwrot nadpłaty — termin 30 dni (od złożenia wniosku
+    lub korekty; od dnia wydania decyzji).
+  - Art. 78: oprocentowanie nadpłaty — od 1 stycznia 2020 r. stawka
+    = podstawowa stopa oprocentowania kredytu lombardowego NBP + 2
+    punkty procentowe (nie mniej niż ...). Oprocentowanie przysługuje
+    od dnia powstania nadpłaty do dnia zwrotu (z limitami).
+  - Art. 79-80: zaliczenie nadpłaty na poczet zaległości/bieżących
+    zobowiązań; zwrot z urzędu.
+4.7.2. OCENA REGUŁ SYSTEMU (ord_a72: 12, ord_a74-a80: po 7 = 49)
+  Kompleks nadpłaty: a72 (12), a74 (7), a75 (7), a76 (7), a77 (7),
+  a78 (7), a79 (7), a80 (7) — łącznie 61 reguł.
+4.7.3. ZNALEZISKA
+[K72-1] POZYTYWNE: pełne pokrycie 72-80 (61 reguł) — zwrot w 30 dni
+        (a77), oprocentowanie (a78), zaliczenie (a79-80).
+[K72-2] BRAK: a73 (stwierdzanie nadpłaty decyzją) — nie wykryto w
+        prefiksach; weryfikacja zalecana (a73 może być scalona z a72).
+[K72-3] UWAGA: oprocentowanie nadpłaty (art. 78 — lombard + 2 pkt
+        proc.) różni się od stawki odsetek od zaległości (200%
+        lombardu). System musi rozróżniać oba wskaźniki — zalecana
+        weryfikacja w regułach a78.
+
+4.8. ART. 81-81B — KOREKTA DEKLARACJI
+4.8.1. STAN PRAWNY
+  - Art. 81 par. 1: skorygowanie deklaracji przez złożenie korekty.
+  - Art. 81 par. 2: prawo korekty (nie narusza przepisów karnych);
+  - Art. 81 par. 3: złożenie korekty po decyzji organu — dopuszczalne
+    w zakresie nieobjętym decyzją; wiążące skutki dla postępowania.
+  - Art. 81 par. 4: korekta deklaracji w trakcie postępowania —
+    wymóg uzasadnienia przyczyn korekty (art. 81 par. 6-7).
+  - Art. 81b: upoważnienie do korekty deklaracji przez pełnomocnika
+    / podpisującego.
+4.8.2. OCENA REGUŁ SYSTEMU (ord_a81: 21)
+  21 reguł — jeden z najgłębszych kompleksów artykułowych w ord.rego.
+4.8.3. ZNALEZISKA
+[K81-1] POZYTYWNE: głębokie pokrycie korekty (21 reguł) — warunki,
+        ograniczenia po decyzji, uzasadnienie przyczyn.
+[K81-2] SYNERGIA: korekta deklaracji (a81) jest spięta z logiką
+        obniżonych odsetek (a56 par. 1a — korekta + wpłata w 7 dni
+        = 50% stawki). Zalecane: jawne powiązanie _routing między
+        a81 a a56.
+
+4.9. ART. 119A — KLAUZULA GAAR (PRZECIWDZIAŁANIE UNIKANIU)
+4.9.1. STAN PRAWNY
+  - Art. 119a par. 1: czynność nie skutkuje osiągnięciem korzyści
+    podatkowej, jeżeli zachowanie podatnika (dokonanie czynności
+    w sposób sztuczny) zostało podjęte głównie w celu osiągnięcia
+    korzyści sprzecznej z przedmiotem i celem przepisu ustawy
+    podatkowej.
+  - Trzy przesłanki kumulatywne: (1) korzyść podatkowa, (2) sprzeczność
+    z przedmiotem/celem przepisu, (3) sztuczność (brak uzasadnienia
+    gospodarczego, działania "w sposób sztuczny" — art. 119d).
+  - Art. 119b-119c: wyłączenia (klauzula nie ma zastosowania, gdy
+    korzyść nie przekracza 100 000 zł w okresie rozliczeniowym —
+    z wyłączeniami; przepis ma charakter limitowany).
+  - Art. 119f-119g: opinie zabezpieczające (Szef KAS).
+  - Art. 119i-119l: postępowanie — decyzja Szefa KAS, termin
+    3 miesięcy (przedłużalny), zawieszenie biegu przedawnienia.
+4.9.2. OCENA REGUŁ SYSTEMU
+  Kompleks a119: 22 reguły + kompleks a119a: 22 reguły = 44 reguły.
+  Zidentyfikowane reguły a119a:
+  r1_eligibility, r2_positive_1, r3_pass, r3_positive_2, r4_checks,
+  r4_positive_3, r5_negative_1, r6_negative_2, r7_exception_1,
+  r8_exception_2, r9_interaction_1, r10_interaction_2,
+  exception, exception_2, u1_p4, u2_p1, u3_p2, u5_p3 (+ check x4).
+4.9.3. ZNALEZISKA
+[K119-1] POZYTYWNE: 44 reguły GAAR — modelowanie 3 przesłanek
+         kumulatywnych (korzyść, sprzeczność z celem, sztuczność),
+         wyjątki (r7_exception_1, r8_exception_2), interakcje
+         (r9_interaction_1, r10_interaction_2).
+[K119-2] BRAK: brak jawnego progu 100 000 zł (art. 119b par. 1
+         pkt 1) w wykrytych nazwach — weryfikacja zalecana; próg
+         jest istotny dla JDG (większość przypadków poniżej progu).
+[K119-3] BRAK: brak integracji z opiniami zabezpieczającymi
+         (art. 119f-119g — Szef KAS) oraz z modułem MDR
+         (raportowanie schematów podatkowych) — synergia wskazana.
+
+4.10. ART. 120-129 — POSTĘPOWANIE PODATKOWE
+4.10.1. STAN PRAWNY
+  - Art. 120-121: zasady ogólne (praworządność, zaufanie do organów,
+    informowanie o prawach i obowiązkach).
+  - Art. 122-129: wszczęcie postępowania (art. 122: z urzędu lub na
+    wniosek; art. 123: doręczenia, art. 125: strona postępowania,
+    art. 126-129: wezwania, terminy, protokoły).
+4.10.2. OCENA REGUŁ SYSTEMU
+  ord_a120: 15, ord_a121: 15, ord_a122: 15, ord_a123: 15,
+  ord_a124: 15, ord_a125: 11, ord_a126: 7, ord_a127: 7
+  = łącznie 100 reguł. BRAK: a128-a133 (0).
+4.10.3. ZNALEZISKA
+[K120-1] POZYTYWNE: 100 reguł postępowania — największy blok
+         proceduralny; a120-a125 (15/15/15/15/15/11) pokrywają
+         zasady, wszczęcie, strony, doręczenia, terminy.
+[K120-2] BRAK: a128-a133 (0 reguł) — dot. m.in. sprostowania,
+         wznowienia, stwierdzenia nieważności decyzji (art. 240-247
+         to w istocie wznowienie; a128-a133 OrdPU dot. kwestii
+         technicznych postępowania). Luka częściowa — zalecane
+         uzupełnienie dla kompletności.
+
+4.11. ART. 138A-138O — PEŁNOMOCNICTWA PODATKOWE
+4.11.1. STAN PRAWNY
+  - Art. 138a-138d: pełnomocnictwo ogólne (PPS-1 / pełnomocnictwo
+    ogólne do spraw podatkowych — e-Urząd Skarbowy, formularz
+    PPO-1/FOP; pełnomocnictwo szczególne).
+  - Art. 138e: rejestr pełnomocnictw (Centralny Rejestr Pełnomocnictw
+    Ogólnych — CRPO), od 1 lipca 2016.
+  - Art. 138f-138h: pełnomocnictwo szczególne (PPS-1), pełnomocnictwo
+    do doręczeń (art. 138m-138o — tzw. pełnomocnik do doręczeń;
+    obowiązkowe e-Doręczenia od 2025/2026).
+  - Formularze: PPS-1 (pełnomocnictwo szczególne), UPL-1
+    (upoważnienie do podpisywania deklaracji), PPO-1 (pełnomocnictwo
+    ogólne). Elektronicznie przez e-Urząd Skarbowy (od 2023 promocja
+    formy elektronicznej; papier nadal dopuszczalny).
+4.11.2. OCENA REGUŁ SYSTEMU (ord_a138: 44 reguły)
+  Największy kompleks artykułowy ord.rego (44 reguły). Zidentyfikowane
+  reguły a138a: r1-r18 (eligibility, positive, checks, exception,
+  edge_case, deadline, sanction, validation).
+4.11.3. ZNALEZISKA
+[K138-1] POZYTYWNE: 44 reguły pełnomocnictw — w tym r12_sanction
+         (konsekwencje braku pełnomocnictwa), r11_deadline (terminy),
+         r15_validation (walidacja formularza).
+[K138-2] BRAK: a138b (0), a138c (0), a138o (0) — pełnomocnictwo do
+         doręczeń (art. 138m-138o) nie ma wykrytego pokrycia. Biorąc
+         pod uwagę obowiązek e-Doręczeń (2025-2026), jest to istotna
+         luka w obszarze "full power of attorney" dla JDG.
+[K138-3] SYNERGIA: zalecane powiązanie a138 z modułem e-Doręczeń
+         (edelivery/plan44_45_edelivery.rego z raportu P18) — pełnomocnik
+         do doręczeń to kluczowy element obsługi e-Doręczeń w 2026.
+
+4.12. ART. 193A — JPK NA ŻĄDANIE ORGANU
+4.12.1. STAN PRAWNY
+  - Art. 193a OrdPU: organ podatkowy w toku kontroli podatkowej,
+    kontroli celno-skarbowej lub czynności sprawdzających może żądać
+    przekazania całości lub części ksiąg podatkowych oraz dowodów
+    księgowych w formie elektronicznej (struktura JPK).
+  - Termin przekazania: wyznaczony przez organ (zazwyczaj 7-14 dni;
+    brak ustawowego terminu — termin z wezwania).
+  - Zaniechanie: odpowiedzialność karna skarbowa (art. 80 KKS —
+    brak JPK na żądanie) + sankcje.
+4.12.2. OCENA REGUŁ SYSTEMU (ord_a193a: 14 reguł)
+  r1_eligibility ... r10_interaction_2, exception, exception_2 —
+  pełny cykl: przesłanki, pozytywy, negatywy, wyjątki, interakcje.
+4.12.3. ZNALEZISKA
+[K193-1] POZYTYWNE: 14 reguł JPK na żądanie — pokrycie cyklu
+         odpowiedzi na wezwanie organu, w tym r9_interaction
+         (z modułem JPK z raportu P18).
+[K193-2] SYNERGIA: JPK na żądanie (art. 193a) powinien być połączony
+         z modułem jpk (jpk_v7_autogen_enterprise, plan33_jpk) —
+         system powinien automatycznie generować żądany plik JPK
+         z ksiąg. Zalecana weryfikacja _routing.
+
+4.13. POKRYCIE 14 ROZDZIAŁÓW ORDPU — MAPA KOMPLETNOŚCI
+Ordynacja podatkowa składa się z 14 DZIAŁÓW (nie rozdziałów).
+Poniżej mapa pokrycia przez reguły systemu (na podstawie wykrytych
+prefiksów artykułów w ord.rego + plan34_ord):
+
+DZIAL I. Przepisy ogólne (art. 1-12)
+  Pokrycie: brak prefiksów a1-a12 w wykrytym inwentarzu.
+  Ocena: LUKA CZĘŚCIOWA (definicje, zakres podmiotowy).
+DZIAL II. Organy podatkowe (art. 13-19)
+  Pokrycie: brak a13-a19 (poza ewentualnymi regułami w plan34).
+  Ocena: LUKA CZĘŚCIOWA (właściwość organów).
+DZIAL III. Zobowiązania podatkowe (art. 20-119)
+  Rozdz. 1. Powstawanie (20-28): a20 (9), a21 (9), a26 (12),
+           a27 (8), a29 (12), a33 (12) — POKRYTE.
+  Rozdz. 2. Wykonanie (29-37): a29 (12), a33 (12) — POKRYTE.
+  Rozdz. 3. Zabezpieczenie (38-46): brak a38-a46 — LUKA.
+  Rozdz. 4. Wygaśnięcie (47-69): a47 (12), a48 (7), a51 (7),
+           a53 (7), a54 (7), a56 (14), a67a-e (42) — POKRYTE
+           (z zastrzeżeniem duplikacji 48/51 vs 67x).
+  Rozdz. 5. Nadpłata (72-80): a72 (12), a74-a80 (49) — POKRYTE.
+  Rozdz. 6. Korekta deklaracji (81-81b): a81 (21) — POKRYTE.
+  Rozdz. 7. Odpowiedzialność (102-118): a101-a118 (po 8) —
+           POKRYTE (łącznie ~144 reguły).
+  Rozdz. 8. Ulgi w spłacie (67a-67e): POKRYTE (42 reguły).
+  Klauzula GAAR (119a-119k): a119 + a119a (44) — POKRYTE.
+DZIAL IV. Postępowanie podatkowe (art. 120-180)
+  a120-a127 (100 reguł) — POKRYTE; a128-a133 — LUKA;
+  dalsze artykuły (a134-a180) — częściowo poza inwentarzem
+  (weryfikacja zalecana; postępowanie odwoławcze, zażalenia).
+DZIAL V. Kontrola podatkowa (art. 281-292)
+  Brak prefiksów w ord.rego (kontrola obsługiwana przez moduł
+  audit_defense_enterprise — 5 reguł). Ocena: CZĘŚCIOWA.
+DZIAL VI. Czynności sprawdzające (art. 274-280)
+  Częściowo w a193a (interakcja z czynnościami sprawdzającymi).
+DZIAL VII-VIII. Postępowanie w sprawach karnych skarbowych /
+  egzekucja administracyjna: obsługiwane przez moduł kks
+  (plan33_kks.rego istnieje) — poza zakresem ord.rego.
+DZIAL IX. Pełnomocnictwa (art. 138a-138o): a138 (44) — POKRYTE
+  (luka: pełnomocnictwo do doręczeń a138m-o).
+DZIAL X-XIV. Przepisy szczególne, przejściowe, końcowe:
+  poza zakresem reguł mikro (obsługa w modułach tematycznych).
+
+PODSUMOWANIE POKRYCIA: Dział III (zobowiązania) — kompletny (ocena
+4,5/5); Dział IV (postępowanie) — dobry (4/5); Dział II i I — luki
+(2/5); kontrola podatkowa — częściowa (3/5). Ogólna ocena kompletności
+mikro: 4,0/5.
+
+4.14. SZCZEGÓŁOWY INWENTARZ REGUŁ ORD.REGO (424 REGUŁY)
+Poniższa tabela zestawia wykryte prefiksy artykułowe ord.rego wraz
+z liczbą reguł (na podstawie analizy nazw ord_a<artykul>_<cecha>).
+
+  PREFIKS      LICZBA   OBSZAR MERYTORYCZNY
+  a16          12       czynny żal (KKS art. 16)
+  a20          9        powstanie zobowiązania (zdarzenie)
+  a21          9        powstanie zobowiązania (decyzja/deklaracja)
+  a26          12       terminy płatności
+  a27          8        potrącenia i zaliczenia
+  a29          12       wykonanie zobowiązań
+  a33          12       zabezpieczenie wykonania
+  a47          12       wygaśnięcie zobowiązań (zapłata)
+  a48          7        odroczenie terminu (stara numeracja)
+  a51          7        zaległość / umorzenie (stara numeracja)
+  a53          7        zaległość podatkowa
+  a54          7        odsetki od zaległości
+  a56          14       stawki odsetek (200%/150%/50%)
+  a67a         9        ulgi: odroczenie/raty/umorzenie (wnioskowe)
+  a67b         12       opłata prolongacyjna
+  a67c         7        wniosek + oświadczenie majątkowe
+  a67d         7        umorzenie z urzędu
+  a67e         7        umorzenie egzekucyjne/pośmiertne
+  a70          22       przedawnienie (5 lat, zawieszenie, przerwa)
+  a71          14       skutki przedawnienia
+  a72          12       nadpłata — definicja i stwierdzanie
+  a74          7        nadpłata — zwrot
+  a75          7        wniosek o stwierdzenie nadpłaty
+  a76          7        nadpłata — zaliczenie
+  a77          7        zwrot w terminie 30 dni
+  a78          7        oprocentowanie nadpłaty
+  a79          7        nadpłata — bieżące zobowiązania
+  a80          7        nadpłata — zwrot z urzędu
+  a81          21       korekta deklaracji
+  a86          12       odsetki — decyzje organu
+  a87          7        postępowanie w sprawie nadpłaty
+  a101-a118    8 x 18   odpowiedzialność (następcy, poręczyciele,
+                       członkowie zarządu, podmioty trzecie)
+  a119         22       GAAR — przesłanki ogólne
+  a119a        22       GAAR — szczegółowe reguły i wyjątki
+  a120-a125    15/15/15/15/15/11  postępowanie podatkowe
+  a126         7        postępowanie — technika
+  a127         7        postępowanie — protokoły/doręczenia
+  a138a        44       pełnomocnictwa (PPS-1, CRPO)
+  a193a        14       JPK na żądanie organu
+  RAZEM        424
+
+Obserwacje wynikające z inwentarza:
+  (a) Najgłębsze kompleksy: a138a (44), a67 (42), a119/a119a (44),
+      a70 (22), a81 (21).
+  (b) Luki artykułowe: a49 (opłata prolongacyjna — 0), a50 (0),
+      a55 (0), a73 (0), a128-a133 (0), a138b (0), a138c (0),
+      a138o (0) — szczegóły w sekcji 10.
+  (c) Brak prefiksów a1-a12 (Dział I przepisy ogólne) i a13-a19
+      (Dział II organy podatkowe) — luki strukturalne.
+  (d) Interesujący detal: reguły a101-a118 (18 artykułów x 8 reguł)
+      tworzą równomierną siatkę 144 reguł odpowiedzialności —
+      sugeruje generowanie szablonowe (wzorzec jednolity).
+
+4.15. SCENARIUSZE TESTOWE DLA KLUCZOWYCH INSTYTUCJI
+Poniżej przykładowe scenariusze weryfikacyjne dla silnika OPA,
+ktore pozwalają potwierdzić poprawność reguł warstwy ORD:
+
+SCENARIUSZ T1 (czynny żal): podatnik przed rozpoczęciem kontroli
+zawiadamia US o nieujawnionym dochodzie, wpłaca pełne uszczuplenie
+z odsetkami. Oczekiwane: ord_a16_r2_positive_1 = true, bezkarność.
+Wariant T1a: zawiadomienie PO rozpoczęciu kontroli -> r5_negative_1.
+Wariant T1b: wpłata częściowa -> r6_negative_2.
+
+SCENARIUSZ T2 (przedawnienie): zaległość z 2020 r. bez przerw/zawieszeń
+-> ord_a70_r11_deadline wylicza przedawnienie z końcem 2025 r.
+Wariant T2a: wszczęcie postępowania karnego skarbowego w 2024
+(z zawiadomieniem) -> zawieszenie biegu (art. 70 par. 6 pkt 1).
+Wariant T2b: decyzja zabezpieczająca -> przerwa biegu (art. 70a).
+
+SCENARIUSZ T3 (odsetki): zaległość 30 000 zł, 90 dni zwłoki, stopa
+lombardowa 5,75% -> stawka 200% = 11,5% w skali roku. Wariant T3a:
+korekta + wpłata w 7 dni -> 50% stawki. Wariant T3b: zaniżenie VAT
+(art. 56b) -> 150% stawki.
+
+SCENARIUSZ T4 (GAAR): transakcja okrężna (round-tripping) bez celu
+gospodarczego, korzyść 250 000 zł -> ord_a119a uznaje sztuczność,
+próg 100 000 zł przekroczony -> GAAR ma zastosowanie. Wariant T4a:
+korzyść 80 000 zł -> wyłączenie (art. 119b par. 1 pkt 1).
+
+SCENARIUSZ T5 (nadpłata): wniosek o stwierdzenie nadpłaty VAT złożony
+10.03 -> zwrot powinien nastąpić do 09.04 (30 dni); opóźnienie -> 
+oprocentowanie (art. 78: lombard + 2 pkt proc.).
+
+SCENARIUSZ T6 (ulga 67a): wniosek o rozłożenie na raty z powodu
+pogorszenia sytuacji finansowej (spadek przychodów 40%) -> ocena
+"ważnego interesu podatnika"; oświadczenie majątkowe (67c).
+
+SCENARIUSZ T7 (JPK na żądanie): wezwanie US o JPK_V7 za 3 miesiące
+w toku kontroli -> ord_a193a generuje obowiązek przekazania pliku
+w terminie z wezwania; brak -> ryzyko sankcji KKS.
+
+4.16. ANALIZA DODATKOWYCH KOMPLEKSÓW (A86, A87, A101-A118)
+4.16.1. ART. 86-87 — ODSETKI OD NADPŁATY I POSTĘPOWANIE
+ord_a86 (12 reguł) i ord_a87 (7 reguł) pokrywają: naliczanie odsetek
+od nadpłaty (art. 86 — zgodność z art. 78: stopa lombardowa NBP + 2
+pkt proc.), postępowanie w sprawie stwierdzenia i zwrotu nadpłaty
+(art. 87 — wniosek, decyzja, odwołanie). Kompleks a72-a87 tworzy
+spójną całość: łącznie 80 reguł (61 a72-a80 + a86: 12 + a87: 7)
+obsługujących pełny cykl nadpłaty.
+Ustalenie [K86]: integracja a86 z a78 powinna być jawna (ten sam
+wskaźnik oprocentowania) — zalecana weryfikacja _routing.
+
+4.16.2. ART. 101-118 — ODPOWIEDZIALNOŚĆ PODATKOWA (144 REGUŁY)
+Równomierna siatka 18 artykułów x 8 reguł = 144 reguły pokrywa
+odpowiedzialność: następców prawnych (art. 97-105), nabywców
+przedsiębiorstw (art. 112), członków zarządu spółek kapitałowych
+(art. 116 — odpowiedzialność za zaległości spółki), poręczycieli
+(art. 117), podmiotów trzecich (art. 110-111 — nabywcy składników
+majątku). Dla JDG kluczowe są art. 112 (nabycie przedsiębiorstwa)
+i art. 116 (członkowie zarządu — przy JDG przekształconej w spółkę).
+Ustalenie [K101]: równomierność 8 reguł/artykuł sugeruje generowanie
+szablonowe — zalecany audyt merytoryczny, czy każda reguła odzwier-
+ciedla specyfikę artykułu (ryzyko „wzorcowych odpowiedzi").
+
+4.17. ANALIZA PLAN34_ORD.REGO (190 REGUŁ ATOMOWYCH)
+4.17.1. CHARAKTERYSTYKA FORMATU
+Plan34_ord.rego to macierz reguł atomowych generowanych szablonowo.
+Struktura rule_id: "jdg.ord.<artykul>.r<n>", np.:
+  jdg.ord.a29.r1 ... jdg.ord.a29.r5 (5 reguł dla art. 29)
+  jdg.ord.a32.r1 ... jdg.ord.a32.r2
+  jdg.ord.a33.r1 ... jdg.ord.a33.r4
+Każda reguła zawiera: rule_id, priority, package, matched,
+business_status + pola decyzyjne wspólne dla całego systemu
+(zus_social_base_type, zus_health_rate, vat_rate, pit_rate,
+pit_form, pit_bracket, kus_qualification, gtu_code, rounding_level,
+_warnings, _routing, _routing_reason, _legal_basis) oraz regułę
+no_match (jdg.micro.ord.no_match) dla przypadków niedopasowanych.
+
+4.17.2. LICZBA REGUŁ ATOMOWYCH
+  plan34_ord.rego: 190 wpisów rule_id (w tym 189 reguł z pełnym
+  zestawem pól decyzyjnych + 1 reguła no_match).
+
+4.17.3. ROLA W ARCHITEKTURZE
+Warstwa 2 (macierz atomowa) służy jako szybka ścieżka decyzyjna dla
+prostych scenariuszy (matching pól wejściowych -> status biznesowy),
+podczas gdy ord.rego (warstwa 1) realizuje głęboką analizę artykułową
+z wyjątkami i interakcjami. Współpraca: ord.rego > plan34_ord pod
+względem priorytetu w przypadku konfliktu (priorytety 70xxx vs
+niższe), z fallbackiem do no_match.
+
+4.17.4. ZNALEZISKA
+[P34-1] POZYTYWNE: format jednorodny z resztą systemu (wspólne pola
+        decyzyjne) — niskie koszty utrzymania, łatwe testy kontraktowe.
+[P34-2] UWAGA: reguły atomowe pokrywają głównie artykuły a29-a33
+        (wykryte prefiksy) — pokrycie węższe niż ord.rego. Zalecane:
+        rozszerzenie macierzy o a56 (odsetki), a70 (przedawnienie),
+        a81 (korekta) dla szybkich odpowiedzi na typowe pytania.
+[P34-3] BRAK: brak reguł no_match per artykuł (tylko globalna
+        jdg.micro.ord.no_match) — ogranicza diagnostykę niedopasowań.
+
+4.18. ANALIZA POKRYCIA ART. 14B (INTERPRETACJE INDYWIDUALNE)
+Art. 14b OrdPU (interpretacje indywidualne) jest fundamentem
+wniosków ORD-IN generowanych przez S22-r3. Weryfikacja pokrycia:
+  - S22-r3 generuje wniosek o interpretację (integracja ord_a14),
+  - ord.rego: brak wykrytego prefiksu a14 w inwentarzu 4.14 —
+    interpretacje obsługiwane są głównie przez warstwę enterprise
+    (S22) i judicial_interpretations (6 reguł).
+Ustalenie [K14]: art. 14b-14q (interpretacje, ochrona prawna art. 14e,
+skarga na bezczynność art. 14o) nie mają dedykowanych reguł mikro.
+Zalecane: dodanie kompleksu ord_a14 (min. 10 reguł) pokrywającego
+składanie wniosku, opłatę, termin 3 miesięcy, ochronę prawną,
+zmianę interpretacji (art. 14e par. 1 pkt 3) i bezczynność.
+
+4.19. ANALIZA POKRYCIA ART. 220-239 (ODWOŁANIA)
+Postępowanie odwoławcze: art. 220-239 OrdPU (odwołanie od decyzji,
+termin 14 dni, organ odwoławczy — Izba Administracji Skarbowej).
+Inwentarz 4.14 wykazuje pokrycie a120-a127 (100 reguł), ale brak
+prefiksów a220-a239. Ustalenie [K220]: odwołania obsługiwane są
+przez S22-r2 (szablon odwołania) bez dedykowanych reguł mikro dla
+terminów 14 dni (art. 223), zażaleń (art. 239), ponaglenia (art. 141).
+Zalecane: kompleks ord_a220-a239 (min. 12 reguł) + integracja
+z Proceeding Timeline Tracker (9.9).
+
+4.21. ANALIZA DZIAŁÓW II ORAZ V-VII ORDPU (LUKI STRUKTURALNE)
+4.21.1. DZIAŁ II — ORGANY PODATKOWE (ART. 13-19)
+Inwentarz 4.14 nie wykazuje prefiksów a13-a19. Obszar obejmuje:
+  - art. 13: organy podatkowe (naczelnik US, dyrektor IAS, Szef KAS),
+  - art. 14: właściwość rzeczowa i miejscowa,
+  - art. 14b-14q: interpretacje indywidualne (luka a14 opisana w 4.18),
+  - art. 15-17: spory o właściwość, wyłączenia,
+  - art. 18: organy uprawnione (wójt/burmistrz dla podatków lokalnych),
+  - art. 19: właściwość w sprawach PCC/akcyzy.
+Ustalenie [K13]: brak reguł właściwości to praktyczna luka dla JDG
+prowadzących działalność w wielu lokalizacjach (spory o właściwość,
+wybór właściwego US dla wniosków). Zalecane: min. 6 reguł a13-a19
++ integracja z S22 (kierowanie pism do właściwego organu).
+
+4.21.2. DZIAŁ V — KONTROLA PODATKOWA (ART. 281-292)
+Kontrola podatkowa obsługiwana jest głównie przez audit_defense
+(5 reguł), a nie przez ord.rego. Zakres: upoważnienie do kontroli
+(art. 282), prawa i obowiązki kontrolowanego (art. 284-286),
+protokół kontroli (art. 289), termin kontroli (art. 283 — do 21 dni
+roboczych w okresie roku, z wyłączeniami). Ustalenie [K281]: zalecane
+6-8 reguł mikro a281-a292 + integracja z audit_defense i Timeline
+Tracker (9.9). Kontrola celno-skarbowa (art. 54-82 k.p.c.s.) poza
+zakresem OrdPU — obsługiwana przez KKS/audit_defense.
+
+4.21.3. DZIAŁ VI — CZYNNOŚCI SPRAWDZAJĄCE (ART. 274-280)
+Czynności sprawdzające (art. 274: weryfikacja deklaracji bez
+wszczynania postępowania) częściowo obsługiwane przez a193a
+(interakcja z JPK na żądanie). Zalecane: reguły dla art. 274-280
+(wezwanie do wyjaśnień — 7 dni, poprawa deklaracji — 14 dni,
+przedłużenie). Ustalenie [K274]: najczęstsza interakcja JDG z US
+(wezwania o wyjaśnienie rozbieżności JPK/VAT) — obecnie bez reguł
+mikro; S22-r8 (odpowiedź na wezwanie) częściowo wypełnia lukę.
+
+4.21.4. DZIAŁ VII — POSTĘPOWANIE W SPRAWACH KARNYCH SKARBOWYCH
+Dział obsługiwany przez plan33_kks.rego (istnieje) i sankcje
+(P20 — sanctions_optimization, 5 reguł). Ord.rego obejmuje jedynie
+interakcje (a70 par. 6 pkt 1: zawieszenie przedawnienia).
+Ustalenie [KKS]: spójna współpraca ord.rego (przedawnienie) -> kks
+(odpowiedzialność) -> P20 (optymalizacja sankcji) wymaga jawnego
+_routing między pakietami.
+
+4.21.5. OCENA ZBIORCZA LUK STRUKTURALNYCH
+  Dział II (organy, a13-19): LUKA (0 reguł) — zalecane 6+ reguł
+  Dział V (kontrola, a281-292): CZĘŚCIOWE (audit_defense 5 reguł)
+  Dział VI (czynności sprawdzające): CZĘŚCIOWE (a193a interakcje)
+  Dział VII (KKS): ZEWNĘTRZNE (plan33_kks + P20)
+Kompletność OrdPU ogółem (z uwzględnieniem luki a14, a220-239,
+a128-133, a138b-c-o): ~78% artykułów kluczowych dla JDG ma pokrycie
+mikro lub enterprise. Celem docelowym jest >90% (KPI-1).
+
+4.22. ANALIZA ART. 81A (SANKCJA VAT — DODATKOWE ZOBOWIĄZANIE)
+Art. 81a OrdPU (nie mylić z 81 — korekty): dotyczy dodatkowego
+zobowiązania podatkowego w VAT (zaniżenie — 20% zobowiązania lub
+nadwyżki do zwrotu, 30% przy braku zapłaty; 15% gdy korekta po
+zawiadomieniu o zamiarze wszczęcia kontroli). Wykryte prefiksy:
+brak a81a (a81: 21 reguł pokrywa korekty, nie sankcję VAT).
+Ustalenie [K81A]: sankcja VAT 15%/20%/30% obsługiwana jest przez
+moduł P20 (sanctions_optimization — kks_art54_graduation, sankcje
+VAT) oraz tax_optimization. Zalecane: jawne _routing a81 -> S23
+(most P19->P20 zrealizowany przez sekcję 10.9).
+
+4.23. PODSUMOWANIE ARTYKUŁOWE — TABELA KLUCZOWYCH INSTYTUCJI
+  INSTYTUCJA            PODSTAWA       REGUŁY   OCENA
+  Czynny żal            KKS art. 16    12       dobry (brak wyłączeń)
+  Zaległość             art. 51        7        dobry
+  Odsetki               art. 56        14       dobry (brak ref. stopy)
+  Ulgi                  art. 67a-e     42       wzorcowy (duplikacja 48/51)
+  Przedawnienie         art. 70-71     36       wzorcowy
+  Nadpłata              art. 72-87     83       wzorcowy
+  Korekta               art. 81        21       dobry
+  GAAR                  art. 119a      44       wzorcowy (brak progu)
+  Postępowanie          art. 120-127   100      dobry (brak 128-133)
+  Pełnomocnictwa        art. 138a      44       dobry (brak 138m-o)
+  JPK na żądanie        art. 193a      14       dobry
+  Odwołania             art. 220-239   0        LUKA (S22-r2 tylko)
+  Interpretacje         art. 14b       0        LUKA (S22-r3 tylko)
+  Kontrola podatkowa    art. 281-292   0        LUKA (audit 5 reguł)
+  RAZEM (tabela — kluczowe instytucje ord.rego)  ~417
+  RAZEM pełna warstwa ORD                         676 (424+190+62)
+
+=================================================================
+SEKCJA 5. ANALIZA TAX AUTHORITY INTERACTION (INNOWACJA S22)
+=================================================================
+5.1. CHARAKTERYSTYKA MODUŁU
+Plik: tax_authority_interaction_enterprise.rego (28 155 bajtów, 7 reguł)
+Rola: automatyzacja korespondencji z organami podatkowymi — US, KAS,
+ZUS. Moduł dostarcza SZABLONY PISM (warstwa treści) oparte na
+decyzjach warstwy mikro (ord.rego) i enterprise.
+
+5.2. ZAKRES SZABLONÓW PISM (na podstawie analizy treści)
+  (a) Czynny żal — zawiadomienie do naczelnika US (podstawa KKS art. 16;
+      generowane na podstawie decyzji ord_a16),
+  (b) Odwołanie od decyzji — do organu odwoławczego (Izby
+      Administracji Skarbowej) na podstawie ord_a120-a125
+      (termin 14 dni od doręczenia decyzji — art. 223 OrdPU),
+  (c) Wniosek o interpretację indywidualną (art. 14b OrdPU) —
+      wniosek ORD-IN do Szefa KAS; opłata 40 zł (od 1 stycznia 2026
+      zmiana opłat interpretacyjnych — weryfikacja zalecana),
+  (d) Wniosek o zwrot nadpłaty (art. 72-80) — na podstawie ord_a75-77,
+  (e) Wniosek o rozłożenie na raty / odroczenie (art. 67a) +
+      oświadczenie o stanie majątkowym (art. 67c) — na podstawie
+      ord_a67a/67c,
+  (f) Wniosek o umorzenie zaległości (art. 67d-67e),
+  (g) Pełnomocnictwo (PPS-1) — na podstawie ord_a138.
+5.3. OCENA AUTOMATYZACJI
+  PEŁNA AUTOMATYZACJA (generowanie pisma + wysyłka + monitoring):
+  NIE. System generuje TREŚĆ pisma (warstwa szablonów), ale:
+  - BRAK warstwy WYSYŁKI (integracja z e-Urzędem Skarbowym / e-PUAP /
+    e-Doręczeniami — endpointy API),
+  - BRAK MONITORINGU STATUSÓW (sledzenie odpowiedzi US, terminów
+    odpowiedzi, awizacji),
+  - BRAK AUTOMATYCZNEGO URUCHAMIANIA (reguły wymagają wyzwolenia
+    przez użytkownika lub zdarzenie zewnętrzne).
+  Ocena automatyzacji: 3,5/5 (generowanie pism: 5/5; wysyłka: 1/5;
+  monitoring: 1/5).
+5.4. ZNALEZISKA
+[S22-1] POZYTYWNE: bogaty katalog szablonów (7 pism) pokrywający
+        najczęstsze interakcje JDG z urzędami; szablony parametryzowane
+        decyzjami warstwy mikro (traceability pełna).
+[S22-2] KRYTYCZNE: brak warstwy wysyłki i monitoringu — to główna
+        luka automatyzacji w całej warstwie ORD. Bez integracji
+        z e-Urzędem Skarbowym (API) system nie realizuje "auto-
+        korespondencji" w pełnym znaczeniu.
+[S22-3] BRAK: obsługa wezwań (odpowiedzi na wezwania organu —
+        art. 155-160 OrdPU) poza szablonami; brak szablonu
+        "odpowiedź na wezwanie do złożenia wyjaśnień".
+[S22-4] SYNERGIA: szablony S22 powinny łączyć się z modułem
+        e-Doręczeń (edelivery) — wysyłka pism do US przez e-Doręczenia
+        (obowiązek od 2025/2026 dla korespondencji urzędowej).
+
+5.5. ANALIZA REGUŁA-PO-REGULE MODUŁU S22 (7 REGUŁ)
+Poniższa tabela mapuje 7 reguł modułu na procesy korespondencji:
+
+  REGUŁA           PROCES                          INTEGRACJA MIKRO
+  S22-r1           Generowanie pisma: czynny żal   ord_a16 (12 reguł)
+  S22-r2           Generowanie pisma: odwołanie    ord_a120-a125 (postępowanie)
+  S22-r3           Generowanie pisma: wniosek      ord_a119a (GAAR),
+                   o interpretację indywidualną    art. 14b (interpretacja —
+                                                   brak reguł mikro, patrz 4.18)
+  S22-r4           Generowanie pisma: wniosek      ord_a72-a80 (nadpłata)
+                   o zwrot nadpłaty
+  S22-r5           Generowanie pisma: rozłożenie   ord_a67a/67c (ulgi)
+                   na raty / odroczenie
+  S22-r6           Generowanie pisma: umorzenie    ord_a67d/67e (umorzenie)
+  S22-r7           Generowanie pisma: pełnomoc-    ord_a138a (PPS-1)
+                   nictwo PPS-1 / UPL-1
+
+Ocena: wszystkie 7 reguł realizuje funkcję "wybór szablonu + wypełnienie
+danych + walidacja formalna". Żadna reguła nie obejmuje wysyłki ani
+monitoringu odpowiedzi — stąd ocena automatyzacji 3,5/5.
+
+5.6. LUKA: BRAK SZABLONU "ODPOWIEDŹ NA WEZWANIE"
+Wezwania organu (art. 155-160 OrdPU — wezwanie do złożenia
+dokumentów, wyjaśnień, stawiennictwa) są najczęstszą interakcją JDG
+z US w toku czynności sprawdzających i kontroli. System NIE posiada
+szablonu odpowiedzi na wezwanie — zalecane dodanie reguły S22-r8
+(odpowiedź na wezwanie: przedłużenie terminu, częściowe złożenie,
+prośba o wyjaśnienie podstawy prawnej) z integracją ord_a120-127.
+
+5.7. SZCZEGÓŁOWY WORKFLOW: OD DECYZJI DO WYSYŁKI (DOCELOWY)
+Docelowy przepływ (po wdrożeniu innowacji 9.1) w 12 krokach:
+  1. Zdarzenie zewnętrzne (decyzja, wezwanie, zaległość, nadpłata)
+     lub zdarzenie wewnętrzne (alert cross_domain).
+  2. Klasyfikacja zdarzenia -> wybór kategorii pisma (S22).
+  3. Wywołanie warstwy mikro (ord.rego / plan34_ord) -> decyzja
+     merytoryczna (rule_id + business_status).
+  4. Wypełnienie szablonu pisma danymi decyzji + danymi JDG.
+  5. Walidacja formalna: kompletność, terminy, podstawa prawna
+     (_legal_basis), kwoty (zaokrąglenia).
+  6. Podpis elektroniczny (moduł esig — integracja z plan44_esig).
+  7. Wysłanie przez e-Urząd Skarbowy / e-Doręczenia (UPO).
+  8. Zapis do rejestru korespondencji (status SENT).
+  9. Monitoring odpowiedzi (terminy: 14/30 dni, 3 miesiące).
+  10. Odbiór odpowiedzi -> analiza (cross_domain) -> decyzja
+      (akceptacja / odwołanie / korekta).
+  11. Aktualizacja rejestru (status ANSWERED/CLOSED).
+  12. Raport zgodności i traceability (pełny audyt).
+Obecnie zaimplementowane kroki 1-6; kroki 7-12 wymagają wdrożenia.
+
+5.8. WYMAGANIA INTEGRACYJNE DLA WARSTWY WYSYŁKI
+  (a) e-Urząd Skarbowy (podatki.gov.pl): API składania dokumentów
+      (deklaracje, wnioski, pełnomocnictwa) — uwierzytelnianie
+      profilem zaufanym / podpisem kwalifikowanym / e-dowodem.
+  (b) e-Doręczenia (PUH — publiczna usługa hybrydowa): doręczanie
+      pism urzędowych i wysyłka korespondencji do organów;
+      pełnomocnik do doręczeń (art. 138m-138o OrdPU).
+  (c) e-PUAP: alternatywny kanał dla wniosków ogólnych.
+  (d) CRPO (Centralny Rejestr Pełnomocnictw Ogólnych): weryfikacja
+      pełnomocnictw złożonych w innym US.
+  (e) KSeF (raport P18): wspólna infrastruktura nadawcza (outbox),
+      token, XML FA(2), UPO — rekomendacja unifikacji warstwy.
+  Format pism: XML/JSON per kanał; retencja: 5 lat (archiwum).
+
+5.9. MODEL DANYCH REJESTRU KORESPONDENCJI (DOCELOWY)
+  Tabela correspondence:
+    id (UUID), jdg_id, typ_pisma (czynny_zal/odwolanie/interpretacja/
+    nadplata/ulga/pełnomocnictwo/odpowiedz_wezwanie), rule_id
+    (reguła źródłowa), status (DRAFT/SENT/UPO/ANSWERED/CLOSED),
+    kanal (eUS/ePUAP/eDoreczenia), data_utworzenia, data_wysylki,
+    data_upo, data_terminu, data_odpowiedzi, zalaczniki (JSON),
+    hash_tresci (SHA-256), audit_trail (JSON).
+  Wskaźniki: liczba pism w toku, średni czas odpowiedzi US,
+  liczba eskalacji, zgodność terminów (KPI-3/4).
+
+5.10. SCENARIUSZE NEGATYWNE (TESTY ODPORNOŚCI S22)
+  N1. Wezwanie z terminem krótszym niż ustawowy -> alert + pismo
+      o przedłużenie terminu (art. 156 par. 3 OrdPU).
+  N2. Odpowiedź US częściowa / wymijająca -> eskalacja do analizy
+      cross_domain (czy wymagane odwołanie/ponaglenie).
+  N3. Milczenie organu po interpretacji (3 miesiące) -> alert
+      skargi na bezczynność (art. 14o).
+  N4. Utrata pełnomocnictwa w trakcie postępowania -> alert
+      odnowienia (art. 138a-138o, CRPO).
+  N5. Zmiana stawki odsetek (NBP) w trakcie naliczania -> kalkulacja
+      per okres (art. 56-57) — wymaga reference_rate.
+  N6. Zmiana przepisów (np. opłata ORD-IN) w trakcie generowania
+      pisma -> blokada szablonu v_stary + alert aktualizacji.
+=================================================================
+SEKCJA 6. ANALIZA STRATEGIC ADVISOR I CROSS-DOMAIN INTELLIGENCE
+=================================================================
+6.1. STRATEGIC_ADVISOR_ENTERPRISE.REGO (9 REGUŁ, 33 KB)
+6.1.1. CHARAKTERYSTYKA
+Moduł doradztwa strategicznego — proponuje optymalne strategie
+podatkowe w horyzoncie wieloletnim (mapa drogowa podatkowa JDG).
+Reguły generują rekomendacje (nie tylko decyzje punktowe):
+  - wybór formy opodatkowania (skala / liniowy / ryczałt / karta —
+    na podstawie prognozy przychodów),
+  - strategie inwestycyjne (amortyzacja, leasing, IP Box),
+  - planowanie sukcesji / transformacji JDG (współpraca z modułem
+    plan33_succ),
+  - harmonogramy decyzyjne (okna czasowe: do 20. dnia miesiąca,
+    do 30 kwietnia itd.).
+6.1.2. ZNALEZISKA
+[SA-1] POZYTYWNE: horyzont strategiczny (5 lat) — rzadkość w
+       systemach JDG; reguły generują mapy drogowe z priorytetami.
+[SA-2] POZYTYWNE: integracja z cross_domain (synergie PIT/VAT/ZUS).
+[SA-3] UWAGA: 9 reguł to warstwa "rekomendacyjna" — brak modułu
+       scoringu ryzyka podatkowego dla każdej strategii (rekomendacja:
+       dodać tax_risk_score per strategia).
+
+6.2. CROSS_DOMAIN_INTELLIGENCE_ENTERPRISE.REGO (16 REGUŁ, 53 KB)
+6.2.1. CHARAKTERYSTYKA
+Największy moduł enterprise (16 reguł) — analiza między-domenowa:
+  - synergie KSeF/JPK (faktury elektroniczne -> automatyczne JPK_V7),
+  - zależności PIT/VAT/ZUS (podstawa składek ZUS a dochód PIT,
+    ryczałt a składka zdrowotna),
+  - interakcje MDR/GAAR/TP (schematy podatkowe a klauzula GAAR —
+    synergia kluczowa dla JDG z transakcjami transgranicznymi),
+  - sprzeczności między decyzjami modułów (detekcja konfliktów).
+6.2.2. ZNALEZISKA
+[CD-1] POZYTYWNE: 16 reguł — najgłębszy moduł integracyjny; wykrywa
+       konflikty między regułami (np. ryczałt vs karta podatkowa).
+[CD-2] POZYTYWNE: s22_depends_on / s23_depends_on — jawne zależności
+       między innowacjami (graf zależności S22 -> S23).
+[CD-3] REKOMENDACJA: rozszerzyć o analizę "próg 2 mln zł" (limit
+       ryczałtu) i limit małego podatnika (2 mln EUR) — czułe
+       punkty przejścia JDG między reżimami.
+
+6.3. TAX_OPTIMIZATION_ENTERPRISE.REGO (11 REGUŁ, 43 KB)
+6.3.1. CHARAKTERYSTYKA
+Kalkulatory i rekomendacje optymalizacyjne:
+  - porównanie obciążeń (skala vs liniowy vs ryczałt) z projekcją
+    na 3-5 lat,
+  - optymalizacja składki zdrowotnej (ryczałt od przychodów vs
+    dochód — po zmianach 2022),
+  - IP Box (ulga 5% — dochody z praw własności intelektualnej),
+  - amortyzacja jednorazowa (do 100 000 zł — limit dla małych
+    podatników od 2019).
+6.3.2. ZNALEZISKA
+[TO-1] POZYTYWNE: 11 reguł kalkulacyjnych z projekcją wieloletnią;
+       porównanie reżimów z uwzględnieniem ZUS i składki zdrowotnej.
+[TO-2] UWAGA: optymalizacja dotyka granic unikania opodatkowania —
+       zalecane twarde powiązanie z a119a (GAAR) i MDR (schematy)
+       dla każdej rekomendacji powyżej progu istotności.
+
+6.4. AUDIT_DEFENSE_ENTERPRISE.REGO (5 REGUŁ, 19 KB)
+6.4.1. CHARAKTERYSTYKA
+Moduł obrony przed kontrolą:
+  - przygotowanie do kontroli (checklisty dokumentów — JPK, KSeF,
+    umowy, środki trwałe),
+  - scenariusze odpowiedzi na żądania organu (art. 193a JPK),
+  - ocena ryzyka sankcji (art. 56b odsetki podwyższone, KKS),
+  - strategia czynnego żalu / korekty przed kontrolą.
+6.4.2. ZNALEZISKA
+[AD-1] POZYTYWNE: 5 reguł pokrywa cykl obrony (przygotowanie,
+       odpowiedź, sankcje, remediacja).
+[AD-2] UWAGA: tylko 5 reguł na tak szeroki obszar — moduł mały;
+       zalecane rozszerzenie o symulację kontroli (audyt próbny)
+       i harmonogramy odpowiedzi (7/14 dni).
+
+6.5. SCENARIUSZE STRATEGICZNE (PRZYKŁADY DZIAŁANIA SYSTEMU)
+Poniżej cztery reprezentatywne scenariusze pokazujące, jak warstwa
+enterprise łączy decyzje mikro w rekomendacje strategiczne:
+
+SCENARIUSZ S-A (wybór formy opodatkowania): JDG, przychody prognozowane
+600 000 zł, koszty 150 000 zł, 2 pracowników, inwestycja w sprzęt
+(80 000 zł). System porównuje: skala (12%/32%), liniowy 19%,
+ryczałt 8,5%/12%/15% (zależnie od kodu PKWiU) z uwzględnieniem
+składki zdrowotnej (9% podstawy) i składki ZUS. Wynik: rekomendacja
+ryczałtu z alertem o progu 2 000 000 zł i o braku prawa do odliczenia
+kosztów. Wariant S-A1: przychody 2 100 000 zł -> alert przejścia na
+skalę/liniowy (próg ryczałtu przekroczony).
+
+SCENARIUSZ S-B (sukcesja/transformacja): JDG osiąga 2,5 mln zł
+przychodów, rozważa przekształcenie w spółkę z o.o. System ocenia:
+koszty (PCC 0,5%, CIT), korzyści (odrębność majątkowa), ryzyka
+(GAAR art. 119a przy przekształceniu bez celu gospodarczego),
+terminy (rejestracja KRS, NIP, VAT) — integracja z plan33_succ.
+
+SCENARIUSZ S-C (transakcja transgraniczna): JDG sprzedaje usługi
+IT do Niemiec. System uruchamia: VAT OSS (rejestracja, kwartalne
+deklaracje), mechanizm odwrotnego obciążenia (B2B), dokumentację
+TP (jeśli powiązania), alert MDR (schemat transgraniczny), GAAR
+shield (sztuczność) — pełna synergia cross-domain.
+
+SCENARIUSZ S-D (obrona przed kontrolą): US zapowiada kontrolę.
+System generuje: checklistę (JPK_V7 za 3 lata, KSeF/XML FA(2),
+umowy, środki trwałe), ocenę ryzyka (GTU, limity gotówkowe 15 000
+zł, korekty), scenariusze odpowiedzi na wezwania (art. 193a),
+harmonogram działań (7/14 dni) — integracja z audit_defense.
+=================================================================
+SEKCJA 7. ANALIZA LEGISLATIVE MONITOR I JUDICIAL INTERPRETATIONS
+=================================================================
+7.1. LEGISLATIVE_MONITOR_ENTERPRISE.REGO (8 REGUŁ, 17 KB)
+7.1.1. CHARAKTERYSTYKA
+Monitoring zmian prawnych:
+  - śledzenie nowelizacji (OrdPU, PIT, VAT, ZUS, KKS),
+  - ocena wpływu na JDG (które reguły systemu wymagają aktualizacji),
+  - kalendarz wejścia w życie (vacatio legis),
+  - alerty zmian (np. zmiany KSeF 2026, e-Doręczenia 2026).
+7.1.2. ZNALEZISKA
+[LM-1] POZYTYWNE: 8 reguł — mapa wpływu zmian (reguła -> dotknięte
+       moduły) i kalendarz vacatio legis.
+[LM-2] KRYTYCZNE: BRAK AUTO-AKTUALIZACJI. System NIE posiada pętli
+       feedbacku: zmiana prawa -> rekompilacja reguł -> testy
+       kontraktowe -> wdrożenie. Legislative Monitor kończy się na
+       ALERCIE dla człowieka. REKOMENDACJA: dodać warstwę
+       "rule regeneration" (szablony generujące nowe reguły z
+       parametrów zmian) + automatyczne testy kontraktowe.
+[LM-3] BRAK: śledzenia orzeczeń TSUE wpływających na polskie przepisy
+       (np. sprawy VAT) — integracja z judicial_interpretations.
+
+7.2. JUDICIAL_INTERPRETATIONS_ENTERPRISE.REGO (6 REGUŁ, 22 KB)
+7.2.1. CHARAKTERYSTYKA
+Analiza orzecznictwa:
+  - rejestr orzeczeń WSA/NSA (kluczowe tezy),
+  - waga orzeczeń (uchwały NSA > wyroki 7 sędziów > wyroki składów
+    zwykłych),
+  - wpływ orzeczeń na interpretacje (zmiana linii orzeczniczej),
+  - mapowanie orzeczeń na artykuły OrdPU/PIT/VAT.
+7.2.2. ZNALEZISKA
+[JI-1] UWAGA: 6 reguł to najmniejszy moduł warstwy ORD. Pokrywa
+       strukturę (teza, sąd, data, artykuł), ale bez bazy orzeczeń.
+[JI-2] BRAK: brak modułu "trend detection" (analiza zmiany linii
+       orzeczniczej w czasie) i "precedence weight" (scoring
+       precedensu). REKOMENDACJA: rozbudowa do min. 12 reguł
+       + integracja z bazą CBOSA/NSA.
+[JI-3] BRAK: brak powiązania interpretacji indywidualnych (S22) z
+       orzeczeniami — wniosek o interpretację powinien uwzględniać
+       aktualną linię orzeczniczą (ochrona prawna — art. 14e OrdPU).
+
+7.3. CZY SYSTEM AUTO-AKTUALIZUJE REGUŁY PO ZMIANIE PRAWA?
+ODPOWIEDŹ: NIE (w stanie obecnym). System posiada:
+  - Legislative Monitor (detekcja zmian + alerty) — TAK,
+  - mapę wpływu na reguły — CZĘŚCIOWO,
+  - automatyczną regenerację reguł — NIE,
+  - automatyczne testy kontraktowe po zmianie — NIE (testy istnieją
+    jako osobny katalog, ale nie są wyzwalane automatycznie),
+  - rekompilację i wdrożenie — NIE.
+To największa luka procesowa warstwy ORD (ocena 2/5 w obszarze
+"żywego prawa"). Szczegóły w sekcji 10 (rekomendacje).
+
+7.4. ANALIZA ZGODNOŚCI Z LEGAL_COVERAGE.MD
+Dokumentacja LEGAL_COVERAGE.md deklaruje w sekcji III:
+  "ORDYNACJA PODATKOWA — 180 punktów prawnych"
+z kluczowymi pozycjami: Art. 70 (przedawnienie 5 lat), Art. 81
+(korekty deklaracji), Art. 16 (czynny żal).
+
+Weryfikacja spójności:
+  (a) Art. 70 — POTWIERDZONE: ord_a70 (22 reguły) pokrywa przedawnienie
+      z logiką deadline/sanction/edge cases. Zgodność: TAK.
+  (b) Art. 81 — POTWIERDZONE: ord_a81 (21 reguł) pokrywa korekty
+      deklaracji. Zgodność: TAK.
+  (c) Art. 16 (czynny żal) — POTWIERDZONE ALE Z USTALENIEM:
+      ord_a16 (12 reguł) istnieje, jednak czynny żal jest instytucją
+      KKS (art. 16 KKS), nie OrdPU. Dokumentacja powinna wskazywać
+      akt (KKS) — ustalenie [U3].
+  (d) Liczba 180 punktów prawnych: porównanie z faktyczną głębią
+      ord.rego (424 reguły) wskazuje, że deklaracja dokumentacji jest
+      konserwatywna — rzeczywiste pokrycie jest głębsze.
+  (e) LEGAL_COVERAGE.md nie wymienia art. 119a (GAAR), art. 193a
+      (JPK na żądanie) ani art. 138a (pełnomocnictwa) — zalecane
+      uzupełnienie dokumentacji o 3 obszary o łącznej liczbie
+      80 reguł (44+22+14).
+
+7.5. ANALIZA WARTOŚCI DODANEJ MODUŁU JUDICIAL (6 REGUŁ)
+Moduł judicial_interpretations (6 reguł) realizuje obecnie:
+  (a) rejestr orzeczeń: struktura (sygnatura, sąd, data, teza),
+  (b) mapowanie orzeczeń na artykuły (OrdPU/PIT/VAT/ZUS),
+  (c) hierarchia orzeczeń (uchwały NSA > wyroki 7-osobowe > zwykłe),
+  (d) wskaźnik „zmiana linii" (porównanie tez w czasie),
+  (e) alerty korzystnych/niekorzystnych trendów dla strategii,
+  (f) integracja z S22 (uzasadnienie wniosków o interpretację).
+Słabości: brak bazy danych orzeczeń (import CBOSA), brak scoringu
+precedensu, brak automatycznego mapowania nowych orzeczeń (feed),
+brak modułu „legal certainty" (ocena ryzyka zmiany interpretacji
+— art. 14e par. 1 pkt 3: odjęcie mocy ochronnej).
+Rekomendacja [JI-4]: rozbudowa do 12+ reguł z podmodułami:
+  jr_import (import CBOSA), jr_normalize (tezy), jr_weight
+  (waga precedensu 0-100), jr_trend (analiza trendu), jr_map
+  (mapowanie na artykuły), jr_risk (scoring ryzyka), jr_alert.
+
+7.6. INTERAKCJE LEGISLATIVE MONITOR Z INNYMI MODUŁAMI
+Legislative Monitor (8 reguł) powinien współpracować z:
+  (a) MDR (plan33_mdr) — zmiany w raportowaniu schematów,
+  (b) KSeF (raport P18) — harmonogram KSeF 2.0 (2026-02-01,
+      2026-04-01, 2027-01-01) jako źródło alertów,
+  (c) e-Doręczenia (plan44/45) — terminy obowiązku (2025/2026),
+  (d) ZUS (plan33_zus) — zmiany składek (podstawa, progi 30x/60x),
+  (e) ord_a56 — zmiany stawek odsetek (obwieszczenia MF),
+  (f) PIT/VAT (plan33_pit/vat) — nowe ulgi, progi, formularze.
+Kalendarz legislacyjny: monitor śledzi vacatio legis i generuje
+alerty T-30/T-14/T-7 przed wejściem w życie każdej zmiany.
+Ustalenie [LM-4]: brak połączenia z kalendarzem legislacyjnym MF
+(legislacja.rcl.gov.pl) — zalecany feed RSS/API nowelizacji.
+
+7.7. WERYFIKACJA FAKTÓW PRAWNYCH — ZAŁĄCZNIK
+Kluczowe fakty prawne zweryfikowane w ramach analizy (stan na
+2026-08-01; weryfikacja z aktualnym tekstem jednolitym zalecana):
+  (a) Czynny żal: art. 16 KKS (nie OrdPU); warunki: zawiadomienie
+      przed wykryciem + ujawnienie istotnych okoliczności + wpłata
+      pełnej należności w terminie wyznaczonym przez organ (lub
+      równocześnie) + dopełnienie obowiązku. Wyłączenie organizatorów
+      (art. 16 par. 3 KKS).
+  (b) Przedawnienie: art. 70 par. 1 OrdPU — 5 lat od końca roku
+      kalendarzowego; zawieszenie (art. 70 par. 6 pkt 1: postępowanie
+      karne skarbowe — z zawiadomieniem art. 70c), przerwa (art. 70a),
+      skutki (art. 71).
+  (c) Odsetki: art. 56 — 200% stopy lombardowej NBP; obniżona 50%
+      (korekta + wpłata w 7 dni — art. 56 par. 1a); podwyższona 150%
+      (art. 56b — zaniżenie VAT/PIT/CIT). Uwaga: „stawka referencyjna
+      + 8%" (zlecenie) obowiązywała do 2013 r. — nieaktualna.
+  (d) Nadpłata: zwrot 30 dni (art. 77), oprocentowanie (art. 78:
+      stopa lombardowa NBP + 2 pkt proc., od 2020 r.).
+  (e) GAAR: art. 119a — 3 przesłanki kumulatywne; próg 100 000 zł
+      (art. 119b par. 1 pkt 1); decyzja Szefa KAS (art. 119i);
+      zawieszenie przedawnienia.
+  (f) Pełnomocnictwa: PPS-1 (szczególne), PPO-1 (ogólne), UPL-1
+      (upoważnienie); forma elektroniczna przez e-Urząd Skarbowy
+      (papier/ustnie nadal dopuszczalne); CRPO od 2016 r.
+  (g) JPK na żądanie: art. 193a — kontrola podatkowa/celno-skarbowa/
+      czynności sprawdzające; termin z wezwania; sankcja KKS art. 80.
+=================================================================
+SEKCJA 8. DIAGRAMY PROCESOWE (MERMAID — ZAPIS TEKSTOWY)
+=================================================================
+8.1. FLOW KORESPONDENCJI Z URZĘDEM SKARBOWYM
+Poniższy diagram przedstawia docelowy (rekomendowany) przepływ
+auto-korespondencji z US z zaznaczeniem stanu obecnego systemu.
+Notacja: [X] = zaimplementowane w systemie; (X) = do zaimplementowania.
+
+graph TD
+    A[Zdarzenie: decyzja/wezwanie/zaleglosc/nadplata] --> B{X2}
+    B -->|Brak odpowiedzi| C[Modul S22 - wybor szablonu]
+    C --> D[Warstwa mikro ORD - decyzja merytoryczna]
+    D --> E[Generowanie tresci pisma]
+    E --> F[Walidacja pisma - reguly formalne]
+    F --> G[(Warstwa wysylki: e-Urzad Skarbowy API)]
+    G --> H[Potwierdzenie nadania UPO]
+    H --> I[Monitoring statusu sprawy w US]
+    I --> J{Termin odpowiedzi US}
+    J -->|Odpowiedz otrzymana| K[Analiza odpowiedzi - cross-domain]
+    J -->|Brak odpowiedzi| L[Alert eskalacji - termin 14/30 dni]
+    K --> M[Decyzja: akceptacja / odwołanie / korekta]
+    M --> N[Aktualizacja rejestru spraw]
+    N --> O[Raport zgodnosci i traceability]
+    X2 -->|Czynny zal| C1[Szablon: Czynny Zal-1]
+    X2 -->|Odwołanie| C2[Szablon: Odwołanie od decyzji]
+    X2 -->|Interpretacja| C3[Szablon: ORD-IN wniosek]
+    X2 -->|Nadplata| C4[Szablon: wniosek o zwrot]
+    X2 -->|Ulga| C5[Szablon: wniosek o raty/umorzenie]
+    X2 -->|Pełnomocnictwo| C6[Szablon: PPS-1]
+
+STAN OBECNY: implementacja obejmuje C -> E (wybór szablonu,
+decyzja mikro, generowanie treści). Bloki G (wysyłka), H (UPO),
+I-L (monitoring) i N (rejestr) NIE są zaimplementowane.
+
+8.2. PROCES INTERPRETACJI INDYWIDUALNEJ (ART. 14B ORDPU)
+graph TD
+    A[Wniosek ORD-IN o interpretacje indywidualna] --> B[Analiza art. 14b]
+    B --> C{Przedmiot wniosku}
+    C -->|Transakcje krajowe| D[Sciezka standardowa]
+    C -->|Transakcje zagraniczne| E[Sciezka transgraniczna - art. 14b par. 5]
+    D --> F[Weryfikacja przeslanek: zaistnialy/przyszly stan]
+    E --> F
+    F --> G[Opis stanu faktycznego - wymogi formalne]
+    G --> H[Weryfikacja: czy sprawa objeta postepowaniem/kontrola]
+    H -->|TAK| I[Odmowa interpretacji - art. 14b par. 5]
+    H -->|NIE| J[Generowanie wniosku ORD-IN]
+    J --> K[Opłata skarbowa 40 zl - status 2026]
+    K --> L[Zlozenie przez e-Urzad Skarbowy / e-Doreczenia]
+    L --> M[Termin odpowiedzi Szefa KAS: 3 miesiace]
+    M -->|Interpretacja korzystna| N[Ochrona prawna - art. 14e]
+    M -->|Interpretacja niekorzystna| O[Sprzeciw / skarga do WSA]
+    M -->|Brak odpowiedzi| P[Alert: milczenie organu - skarga]
+    N --> Q[Rejestr interpretacji + orzecznictwo]
+    O --> Q
+    P --> Q
+
+STAN OBECNY: implementacja obejmuje A -> J (analiza i generowanie
+wniosku). K (opłata), L (wysyłka), M-P (monitoring terminu
+odpowiedzi) i Q (rejestr) wymagają rozbudowy.
+
+8.3. DIAGRAM GAAR (ART. 119A-119L ORDPU)
+graph TD
+    A[Transakcja gospodarcza - wejscie] --> B{Test 1: korzysc podatkowa}
+    B -->|NIE| Z[Koniec - GAAR nie stosuje sie]
+    B -->|TAK| C{Test 2: sprzecznosc z celem przepisu}
+    C -->|NIE| Z
+    C -->|TAK| D{Test 3: sztucznosc dzialania}
+    D -->|NIE| Z
+    D -->|TAK| E{Test progu: korzysc > 100 000 zl}
+    E -->|NIE| Z
+    E -->|TAK| F[GAAR ma zastosowanie - art. 119a]
+    F --> G[Ustalenie skutkow: czynnosc odpowiednia - art. 119e]
+    G --> H[Decyzja Szefa KAS - art. 119i]
+    H --> I{Opinia zabezpieczajaca?}
+    I -->|TAK| J[Ochrona - art. 119f-119g]
+    I -->|NIE| K[Odwołanie / skarga do WSA]
+    H --> L[Zawieszenie biegu przedawnienia - art. 70 par. 6]
+    D --> M[Alert: struktura round-tripping / brak celu gospodarczego]
+    M --> F
+
+STAN OBECNY: implementacja obejmuje B, C, D (reguły a119/a119a:
+eligibility, positive, negative, exception) oraz M (alert cross-domain).
+Próg 100 000 zł (E) i opinia zabezpieczająca (I-J) wymagają weryfikacji
+reguł a119b/a119f.
+
+8.4. DIAGRAM PRZEDAWNIENIA (ART. 70-71 ORDPU)
+graph TD
+    A[Zobowiazanie podatkowe] --> B[Termin platnosci mina l]
+    B --> C[Start biegu: koniec roku kalendarzowego]
+    C --> D{Bieg 5 lat - art. 70 par. 1}
+    D -->|Zawieszenie| E[art. 70 par. 6: postepowanie karne skarbowe,
+        decyzja zabezpieczajaca, skarga do WSA]
+    E --> F[Zawiadomienie podatnika - art. 70c]
+    F --> G[Zawieszenie maks. 3 lata (5 lat PKS)]
+    G --> H[Wznowienie biegu]
+    D -->|Przerwa| I[art. 70a: decyzja o zabezpieczeniu,
+        zawiadomienie o zamiarze wszczecia PKS]
+    I --> J[Nowy bieg od poczatku]
+    D -->|Upływ 5 lat| K[PRZEDAWNIENIE]
+    K --> L[Wygasniecie zobowiazania - art. 59]
+    K --> M[Niedopuszczalnosc egzekucji - art. 71]
+    K --> N[Zakaz okreslania zobowiazania - art. 70 par. 5]
+
+STAN OBECNY: implementacja obejmuje C, D (a70: 22 reguły), E-G
+(zawieszenie: exception, interaction), I (przerwa: edge_case),
+K-N (skutki: a71: 14 reguł). Weryfikacja wymagana dla F (art. 70c).
+
+8.5. DIAGRAM ODSETEK I ULG (ART. 53-56, 67A-67E ORDPU)
+graph TD
+    A[Zaleglosc podatkowa - art. 51] --> B[Odsetki za zwloke - art. 56]
+    B --> C{Stawka podstawowa: 200% stopy lombardowej NBP}
+    C -->|Korekta deklaracji + zapłata w 7 dni| D[Stawka obnizona: 50%]
+    C -->|Zanizenie VAT/PIT/CIT| E[Stawka podwyzszona: 150% - art. 56b]
+    B --> F{Korekta przed kontrola?}
+    F -->|TAK| G[Czynny zal / korekta - ograniczenie sankcji]
+    F -->|NIE| H[Ryzyko sankcji KKS]
+    A --> I{Trudna sytuacja finansowa?}
+    I -->|TAK| J[Wniosek o ulge - art. 67a: raty/odroczenie]
+    J --> K[Oswiadczenie majatkowe - art. 67c]
+    J --> L[Opłata prolongacyjna - art. 67b: 50% stawki]
+    I -->|Bezskuteczna egzekucja| M[Umorzenie - art. 67e]
+    I -->|Wazny interes podatnika| N[Umorzenie z urzedu - art. 67d]
+
+STAN OBECNY: implementacja obejmuje B-E (a56: 14 reguł), G (a16),
+J-N (a67: 42 reguły). Dynamiczna stawka (reference_rate) i scoring
+"ważnego interesu" wymagają rozbudowy.
+=================================================================
+SEKCJA 9. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE (MIN. 12)
+=================================================================
+9.1. "TAX AUTHORITY AUTO-CORRESPONDENCE ENGINE" (S22+)
+Pełna automatyzacja pism do US: generowanie -> walidacja ->
+podpis elektroniczny (esig) -> wysyłka przez e-Urząd Skarbowy /
+e-Doręczenia -> UPO -> monitoring odpowiedzi. Architektura:
+szablony S22 (istnieją) + warstwa wysyłki API (nowa) + rejestr
+korespondencji + pętla eskalacji terminów (14 dni odwołanie,
+30 dni nadpłata, 3 miesiące interpretacja).
+9.2. "GAAR SHIELD DETECTOR"
+Wykrywanie zagrożeń klauzulą GAAR przed transakcją: scoring
+sztuczności (brak celu gospodarczego), test progu 100 000 zł
+(art. 119b), porównanie z celem przepisu, alert przed
+transakcjami o strukturze "round-tripping". Integracja z MDR
+(schematy) i TP (transakcje z podmiotami powiązanymi).
+9.3. "TAX RULING AUTO-DRAFTER"
+Automatyczne wnioski o interpretację indywidualną: analiza stanu
+faktycznego -> wybór podstawy (art. 14b) -> wygenerowanie ORD-IN
+z opisem i pytaniem -> walidacja formalna -> śledzenie terminu
+3 miesięcy -> alert przy milczeniu organu.
+9.4. "LEGISLATIVE CHANGE IMPACT ANALYZER"
+Analiza wpływu zmian prawnych: tekst nowelizacji -> mapowanie na
+reguły systemu -> ocena dotkniętych modułów -> propozycja nowych
+parametrów reguł -> automatyczne testy kontraktowe -> raport
+zgodności. Zamknięcie pętli LM (obecnie kończy się na alercie).
+9.5. "STRATEGIC TAX ROADMAP GENERATOR"
+5-letnia mapa drogowa podatkowa JDG: prognoza przychodów ->
+symulacja reżimów (skala/liniowy/ryczałt) -> punkty przejścia
+(próg 2 mln zł, limit małego podatnika 2 mln EUR) -> plan
+inwestycji i amortyzacji -> plan składki zdrowotnej -> plan
+sukcesji. Wizualizacja scenariuszy i scoring ryzyka.
+9.6. "JUDICIAL TREND ANALYZER"
+Analiza trendów orzeczniczych: baza orzeczeń WSA/NSA (CBOSA) ->
+wykrywanie zmiany linii orzeczniczej -> waga precedensu (uchwały
+> składy 7 > zwykłe) -> mapowanie na artykuły -> alerty
+"korzystny trend" dla strategii podatkowej.
+9.7. "OVERPAYMENT AUTO-CLAIMER"
+Automatyczne wnioski o zwrot nadpłaty: detekcja nadpłaty (VAT,
+PIT) -> weryfikacja art. 72-75 -> korekta deklaracji + wniosek ->
+monitoring terminu 30 dni -> naliczenie oprocentowania (art. 78:
+lombard + 2 pkt proc.) przy opóźnieniu -> skarga na bezczynność.
+9.8. "INTEREST CALCULATOR + OPTIMIZER"
+Kalkulator i optymalizator odsetek: naliczanie wg art. 56 (200%
+lombardu), obniżenie do 50% przez korektę + wpłatę w 7 dni
+(art. 56 par. 1a), podwyższenie do 150% (art. 56b) — kalkulacja
+"kosztu zwłoki" i rekomendacja terminu zapłaty minimalizującego
+odsetki (współpraca z harmonogramem cash-flow).
+9.9. "TAX PROCEEDING TIMELINE TRACKER"
+Śledzenie terminów postępowań: rejestr postępowań (kontrola,
+interpretacja, odwołanie, egzekucja) -> kalendarz terminów
+ustawowych (14 dni odwołanie, 30 dni nadpłata, 3 miesiące
+interpretacja) -> alerty eskalacji -> historia działań
+(traceability pełna, wymóg kontroli wewnętrznej).
+9.10. "POWER OF ATTORNEY AUTO-MANAGER"
+Zarządzanie pełnomocnictwami: rejestr PPS-1/PPO-1/UPL-1 ->
+terminy ważności -> automatyczne odnawianie -> pełnomocnik do
+doręczeń (art. 138m-138o) zintegrowany z e-Doręczeniami ->
+centralny rejestr pełnomocnictw (CRPO) — synchronizacja.
+9.11. "CROSS-JURISDICTION RULING COMPARATOR"
+Porównanie interpretacji między urzędami: baza interpretacji
+indywidualnych (publikowane interpretacje podatkowe) -> analiza
+rozbieżności linii interpretacyjnych między US -> alert ryzyka
+"urząd X interpretuje inaczej" -> strategia wystąpienia o
+interpretację do właściwego organu (wybór najkorzystniejszej).
+9.12. "PROACTIVE DEFENSE STRATEGY BUILDER"
+Proaktywna strategia obrony przed kontrolą: scoring ryzyka
+kontroli (profile: KSeF compliance, JPK, GTU, limity gotówkowe)
+-> checklista przygotowania -> symulacja kontroli (audyt próbny)
+-> scenariusze odpowiedzi (art. 193a JPK na żądanie) -> plan
+korekt przed kontrolą (w tym czynny żal) -> harmonogram
+dokumentacji.
+9.13. (DODATKOWE) "ZOBOWIĄZANIE DEADLINE MONITOR" — monitoring
+wszystkich terminów płatności (PIT, VAT, ZUS, zaliczki) z
+powiązaniem do odsetek (a56) i ulg (a67) — zapobieganie
+powstawaniu zaległości (a51).
+9.14. (DODATKOWE) "DECYZJA SCORING ENGINE" — scoring decyzji
+organu (przedawnienie a70, GAAR a119a, ulgi a67) z oceną
+szans odwołania na podstawie orzecznictwa (judicial).
+
+9.15. BLUEPRINTY TECHNICZNE INNOWACJI (ARCHITEKTURA WDROŻENIA)
+Dla każdej z 12 głównych innowacji poniżej podano architekturę
+wdrożenia w konwencji NexusAI (reguły OPA + dane + integracje):
+
+[BP-1] TAX AUTHORITY AUTO-CORRESPONDENCE ENGINE (9.1)
+  Warstwy: (1) S22 szablony pism (istniejące 7 reguł), (2) nowy moduł
+  s22_outbox.rego — kolejka pism z priorytetami i terminami wysyłki,
+  (3) adapter e-Urząd Skarbowy / e-Doręczenia (API), (4) rejestr
+  korespondencji (baza), (5) monitor odpowiedzi (terminy: 14 dni
+  odwołanie, 30 dni nadpłata, 3 miesiące interpretacja).
+  Dane: szablony pism w katalogu szablonów; statusy: DRAFT -> SENT
+  -> UPO -> ANSWERED -> CLOSED.
+  Testy: kontraktowe (pismo generowane dla scenariusza X jest zgodne
+  z wymogami formalnymi), symulacyjne (pełny cykl korespondencji).
+
+[BP-2] GAAR SHIELD DETECTOR (9.2)
+  Reguły: gs_detect (przesłanki 119a), gs_threshold (próg 100 000 zł,
+  art. 119b), gs_artificiality (scoring sztuczności 0-100: round-
+  tripping, brak celu gospodarczego, sztuczne rozdzielenie),
+  gs_opinion (opinia zabezpieczająca 119f).
+  Integracje: MDR (schematy), TP (powiązania), cross_domain.
+  Wyjście: alert z scoringiem i uzasadnieniem przed transakcją.
+
+[BP-3] TAX RULING AUTO-DRAFTER (9.3)
+  Pipeline: analiza stanu faktycznego -> wybór podstawy (art. 14b
+  par. 1/5) -> generowanie ORD-IN (opis, pytanie, stanowisko) ->
+  walidacja formalna (kompletność) -> wysyłka -> monitor 3 miesięcy
+  -> alert milczenia organu (skarga na bezczynność — art. 14o OrdPU).
+
+[BP-4] LEGISLATIVE CHANGE IMPACT ANALYZER (9.4)
+  Pipeline: wejście (tekst nowelizacji/parametry) -> mapowanie na
+  reguły (rule_id -> artykuł) -> ocena wpływu (dotknięte moduły) ->
+  propozycja parametrów -> regeneracja reguł z szablonów -> testy
+  kontraktowe -> raport zgodności. Zamknięcie pętli „żywego prawa".
+
+[BP-5] STRATEGIC TAX ROADMAP GENERATOR (9.5)
+  Silnik symulacji: prognoza przychodów (3 scenariusze: pesymistyczny/
+  bazowy/optymistyczny) -> kalkulacja obciążeń per reżim (skala/
+  liniowy/ryczałt) -> punkty przejścia (2 mln zł ryczałt; 2 mln EUR
+  mały podatnik) -> plan inwestycji (amortyzacja, IP Box) -> plan
+  sukcesji -> scoring ryzyka per scenariusz. Wyjście: mapa 5-letnia.
+
+[BP-6] JUDICIAL TREND ANALYZER (9.6)
+  Baza orzeczeń (CBOSA/NSA import) -> normalizacja tez -> wagowanie
+  (uchwały 7 > składy 7 > składy zwykłe) -> analiza trendu w czasie
+  -> mapowanie na artykuły -> alerty zmiany linii orzeczniczej.
+
+[BP-7] OVERPAYMENT AUTO-CLAIMER (9.7)
+  Detekcja nadpłaty (VAT/PIT) -> weryfikacja art. 72-75 -> korekta
+  deklaracji (a81) + wniosek (a75) -> monitor 30 dni (a77) ->
+  naliczenie oprocentowania (a78: lombard + 2 pkt proc.) przy
+  opóźnieniu -> skarga na bezczynność (art. 14o).
+
+[BP-8] INTEREST CALCULATOR + OPTIMIZER (9.8)
+  Kalkulator: zaległość x dni x stawka (200% lombardu; 150% art. 56b;
+  50% art. 56 par. 1a przy korekcie+wpłacie w 7 dni). Optymalizator:
+  rekomendacja terminu zapłaty minimalizującego odsetki z uwzględnie-
+  niem cash-flow i ryzyka sankcji KKS. Dane: stopa NBP (reference_rate).
+
+[BP-9] TAX PROCEEDING TIMELINE TRACKER (9.9)
+  Rejestr postępowań -> kalendarz terminów ustawowych -> alerty
+  eskalacji (T-14, T-7, T-3, T-1) -> historia działań (audit trail)
+  -> raporty zgodności. Integracja z S22 (pisma) i monitoringiem.
+
+[BP-10] POWER OF ATTORNEY AUTO-MANAGER (9.10)
+  Rejestr pełnomocnictw (PPS-1/PPO-1/UPL-1) -> terminy ważności ->
+  auto-odnawianie -> pełnomocnik do doręczeń (art. 138m-o) ->
+  synchronizacja z CRPO -> integracja z e-Doręczeniami (plan44/45).
+
+[BP-11] CROSS-JURISDICTION RULING COMPARATOR (9.11)
+  Baza interpretacji (publikowane interpretacje) -> analiza rozbież-
+  ności linii między organami -> scoring ryzyka rozbieżności ->
+  rekomendacja wyboru właściwego organu -> alert ryzyka.
+
+[BP-12] PROACTIVE DEFENSE STRATEGY BUILDER (9.12)
+  Scoring ryzyka kontroli (profil: KSeF, JPK, GTU, limity gotówkowe)
+  -> checklista przygotowania -> symulacja kontroli (audyt próbny)
+  -> scenariusze odpowiedzi (art. 193a) -> plan korekt przed kontrolą
+  (czynny żal a16, korekta a81) -> harmonogram dokumentacji.
+
+9.16. DRZEWA DECYZYJNE MINIMALIZACJI SANKCJI (MOST DO P20)
+Poniższe drzewa decyzyjne stanowią fundament analizy sankcyjnej
+rozbudowywanej w raporcie P20 (moduł S23 — sanctions_optimization):
+
+DRZEWO D1 (zaniżenie zobowiązania podatkowego):
+  1. Czy czyn został ujawniony przed rozpoczęciem kontroli?
+     TAK -> czynny żal (art. 16 KKS): bezkarność przy pełnej wpłacie.
+     NIE -> przejdź do 2.
+  2. Czy możliwa jest korekta deklaracji + wpłata w 7 dni?
+     TAK -> odsetki obniżone 50% (art. 56 par. 1a OrdPU) +
+           ograniczenie odpowiedzialności karnej skarbowej.
+     NIE -> przejdź do 3.
+  3. Czy kontrola jest w toku, ale wyrok jeszcze nie zapadł?
+     TAK -> dobrowolne ujawnienie przed organem (art. 17 KKS:
+           nadzwyczajne złagodzenie kary) — kara obniżona.
+     NIE -> przejdź do 4.
+  4. Czy decyzja jest ostateczna?
+     TAK -> odwołanie (art. 220-239 OrdPU) lub skarga do WSA;
+           ocena szans na podstawie orzecznictwa (judicial).
+
+DRZEWO D2 (niezłożona deklaracja):
+  1. Czy obowiązek dotyczy PIT/VAT/ZUS i czy powstała zaległość?
+  2. Czynny żal możliwy, dopóki organ nie rozpoczął czynności.
+  3. Po rozpoczęciu czynności: złożenie deklaracji + odsetki;
+     ocena, czy czyn ma znamiona wykroczenia (art. 54 par. 1 KKS:
+     kara grzywny do 720 stawek) czy przestępstwa skarbowego
+     (art. 54 par. 2: do 240 stawek, mała wartość — art. 53 par. 3).
+
+DRZEWO D3 (brak JPK na żądanie — art. 193a):
+  1. Czy termin z wezwania został przekroczony?
+  2. Uzupełnienie JPK + wyjaśnienie przyczyn -> możliwość odstąpienia
+     od ukarania (art. 16-17 KKS).
+  3. Wartość uszczuplenia < 5-krotność minimalnego wynagrodzenia
+     -> wykroczenie; powyżej -> przestępstwo (art. 80 KKS).
+
+Te drzewa będą podstawą scoringu risk_penalty w module S23 (P20).
+
+9.17. ANALIZA SZCZEGÓŁOWA OPŁATY PROLONGACYJNEJ (ART. 67B)
+ord_a67b (12 reguł — najgłębszy podkompleks ulg):
+  - stawka: 50% stawki odsetek za zwłokę (art. 67b par. 1),
+  - naliczanie: od dnia, w którym upłynął termin płatności, do dnia
+    zapłaty (zgodnie z decyzją o odroczeniu/rozbiciu na raty),
+  - interakcje: brak opłaty przy umorzeniu (67d/e),
+  - baza: kwota odroczona/rozłożona, nie pierwotna zaległość.
+Ustalenie [K67B]: 12 reguł to nadzwyczajna głębia dla jednej instytucji
+— prawdopodobnie pokrywa warianty (odroczenie vs raty, częściowe
+umorzenie, zmiany decyzji). Zalecany audyt testowy T6a (opłata
+prolongacyjna przy ratach 12-miesięcznych).
+
+9.18. ANALIZA SZCZEGÓŁOWA GAAR (ART. 119A — 22 REGUŁY)
+Struktura kompleksu a119a (wykryte reguły):
+  r1_eligibility — test wstępny (czy przepis może mieć zastosowanie),
+  r2_positive_1 / r3_positive_2 / r4_positive_3 — potwierdzenie
+    trzech przesłanek kumulatywnych (korzyść, sprzeczność z celem,
+    sztuczność),
+  r5_negative_1 / r6_negative_2 — negacje przesłanek,
+  r7_exception_1 / r8_exception_2 — wyłączenia (art. 119b: próg,
+    czynności wynikające z przepisów),
+  r9_interaction_1 / r10_interaction_2 — interakcje (MDR, TP,
+    postępowanie karne skarbowe),
+  u1-u5 + _check — reguły pomocnicze (ujednolicanie podstawy).
+Ustalenie [K119A]: model 3-przesłankowy poprawny; wymagana weryfikacja
+czy r7/r8 zawierają próg 100 000 zł (art. 119b par. 1 pkt 1) —
+kluczowe dla JDG, gdzie typowe korzyści są poniżej progu.
+
+9.19. SCORING RYZYKA PODATKOWEGO (PROPOZYCJA KONTRKATU)
+Proponowany kontrakt scoringu ryzyka dla warstwy ORD (spójny
+z silnikiem OPA):
+  risk_score := {
+    "rule_id": "jdg.enterprise.risk_score",
+    "total": 0-100,
+    "components": [
+      {"id": "gaar", "weight": 0.25, "score": 0-100},
+      {"id": "kks", "weight": 0.25, "score": 0-100},
+      {"id": "odsetki", "weight": 0.15, "score": 0-100},
+      {"id": "terminy", "weight": 0.15, "score": 0-100},
+      {"id": "kontrola", "weight": 0.10, "score": 0-100},
+      {"id": "struktura", "weight": 0.10, "score": 0-100}
+    ],
+    "recommendation": "proactive | monitor | review | escalate"
+  }
+  Progi: 0-30 zielony (brak działań), 31-60 żółty (monitoring),
+  61-80 pomarańczowy (przegląd + plan działań), 81-100 czerwony
+  (natychmiastowa eskalacja + doradca).
+  Integracja: strategic_advisor (mapy drogowe), audit_defense
+  (obrona kontrolna), sanctions_optimization (P20 — S23).
+
+9.20. SŁOWNICZEK SKRÓTÓW WARSTWY ORD
+  CRPO  Centralny Rejestr Pełnomocnictw Ogólnych (od 2016)
+  GAAR  General Anti-Avoidance Rule (art. 119a OrdPU)
+  IAS   Izba Administracji Skarbowej (organ odwoławczy)
+  KAS   Krajowa Administracja Skarbowa
+  KKS   Kodeks karny skarbowy
+  KRK   Krajowy Rejestr Karny
+  MDR   Mandatory Disclosure Rules (raportowanie schematów)
+  ORD-IN formularz wniosku o interpretację indywidualną
+  PPS-1 formularz pełnomocnictwa szczególnego
+  PPO-1 formularz pełnomocnictwa ogólnego
+  UPL-1 formularz upoważnienia do podpisywania deklaracji
+  WSA   Wojewódzki Sąd Administracyjny
+  NSA   Naczelny Sąd Administracyjny
+  eUS   e-Urząd Skarbowy (podatki.gov.pl)
+  JPK   Jednolity Plik Kontrolny
+  OPA   Open Policy Agent (silnik reguł Rego)
+  TP    Ceny transferowe (transfer pricing)
+  WIS   Wiążąca Informacja Stawkowa (moduł P20)
+
+9.21. MACIERZ PRIORYTETÓW WDROŻENIOWYCH INNOWACJI
+  PRIORYTET    INNOWACJA                            EFEKT
+  P0 (mies.)   GAAR Shield Detector (9.2)            redukcja ryzyka GAAR
+  P0 (mies.)   Overpayment Auto-Claimer (9.7)        odzysk środków
+  P1 (kw.1)    Interest Optimizer (9.8)              oszczędności odsetek
+  P1 (kw.1)    Proceeding Timeline Tracker (9.9)     kontrola terminów
+  P1 (kw.1)    PoA Auto-Manager (9.10)               pełnomocnictwa 2026
+  P2 (kw.2)    Ruling Auto-Drafter (9.3)             interpretacje
+  P2 (kw.2)    Legislative Impact Analyzer (9.4)     żywe prawo
+  P2 (kw.2)    Strategic Roadmap Generator (9.5)     plan 5-letni
+  P3 (rok)     Judicial Trend Analyzer (9.6)         orzecznictwo
+  P3 (rok)     Cross-Jurisdiction Comparator (9.11)  linie interpretacyjne
+  P3 (rok)     Proactive Defense Builder (9.12)      obrona kontrolna
+  P4 (finale)  Auto-Correspondence Engine (9.1)      pełna automatyzacja
+=================================================================
+SEKCJA 10. LUKI, RYZYKA I REKOMENDACJE
+=================================================================
+10.1. LUKI KRYTYCZNE (PRIORYTET WYSOKI)
+[L1] plan33_ord.rego NIE ISTNIEJE lokalnie (prompt wskazuje plik,
+     którego brakuje). Działanie: ujednolicić dokumentację lub
+     dodać plik zgodny z konwencją plan33.
+[L2] Duplikacja a48/a51 (stara numeracja) vs a67a-e (aktualna).
+     Działanie: oznaczyć a48/a51 jako legacy/deprecated i usunąć
+     z aktywnego routingu; zaktualizować _legal_basis.
+[L3] Brak warstwy wysyłki i monitoringu w S22 (auto-korespondencja
+     niepełna). Działanie: integracja z e-Urzędem Skarbowym API
+     i e-Doręczeniami; rejestr korespondencji.
+[L4] Legislative Monitor bez pętli auto-aktualizacji reguł.
+     Działanie: pipeline "zmiana prawa -> regeneracja reguł ->
+     testy kontraktowe -> wdrożenie".
+[L5] Brak dynamicznej stawki odsetek (a56) i oprocentowania
+     nadpłaty (a78) — stawki NBP zmieniają się kwartalnie.
+     Działanie: parametr reference_rate + źródło obwieszczeń MF.
+10.2. LUKI ŚREDNIE (PRIORYTET ŚREDNI)
+[M1] Brak progu 100 000 zł w GAAR (a119b) — weryfikacja reguł.
+[M2] Brak pokrycia a128-a133 (techniczne kwestie postępowania) oraz
+     pełnomocnictwa do doręczeń (a138m-o) — istotne dla e-Doręczeń.
+[M3] Judicial Interpretations (6 reguł) — za mała głębia; brak wagi
+     precedensów i bazy orzeczeń.
+[M4] a73 (stwierdzanie nadpłaty decyzją) — nie wykryty; weryfikacja.
+[M5] Czynny żal (a16) bez integracji z szablonem S22 i bez
+     uwzględnienia wyłączeń organizatorów (art. 16 par. 3 KKS).
+10.3. RYZYKA PRAWNE
+[R1] Niespójna numeracja (48/51 vs 67x) może prowadzić do błędnych
+     wskazań podstawy prawnej w pismach generowanych przez S22.
+[R2] Brak dynamicznych stawek odsetek może skutkować zaniżonymi/
+     zawyżonymi kalkulacjami wobec zmiennej stopy NBP.
+[R3] System nie wspiera "ważnego interesu podatnika" w ulgach —
+     decyzje uznaniowe wymagają wsparcia scoringiem i orzecznictwem.
+[R4] Brak monitoringu terminów (14 dni odwołanie, 30 dni nadpłata,
+     3 miesiące interpretacja) — ryzyko utraty uprawnień.
+10.4. REKOMENDACJE PRIORYTETOWE (MAPY DROGOWEJ)
+ETAP 0 (natychmiast): usunąć duplikację a48/a51; dodać parametr
+  reference_rate; poprawić _legal_basis w a16 (KKS).
+ETAP 1 (1 kwartał): rozbudowa S22 o wysyłkę (e-Urząd Skarbowy,
+  e-Doręczenia) i monitoring statusów; dodać próg 100 000 zł GAAR.
+ETAP 2 (2 kwartały): pętla auto-aktualizacji Legislative Monitor
+  (regeneracja reguł + testy kontraktowe); rozbudowa Judicial
+  Interpretations do 12+ reguł z wagą precedensów.
+ETAP 3 (rok): moduły 9.1-9.12 (innowacje) w kolejności: GAAR
+  Shield (9.2), Overpayment Auto-Claimer (9.7), Interest Optimizer
+  (9.8), Proceeding Timeline Tracker (9.9), PoA Auto-Manager
+  (9.10), Ruling Auto-Drafter (9.3), Legislative Impact (9.4),
+  Strategic Roadmap (9.5), Judicial Trend (9.6), Cross-Jurisdiction
+  Comparator (9.11), Proactive Defense (9.12), Auto-Correspondence
+  Engine (9.1 — jako zwieńczenie warstwy wysyłki).
+
+10.5. MACIERZ RYZYKA WARSTWY ORD
+  ID    RYZYKO                             PRAWD.  WPŁYW  MITIGACJA
+  R1    Niespójna numeracja a48/a51        Wysokie  Wysoki Usunąć legacy
+  R2    Brak dynamicznych stawek NBP       Wysokie  Średni reference_rate
+  R3    Uznaniowość ulg (67a) bez scoringu Średnie  Wysoki hardship_score
+  R4    Brak monitoringu terminów           Średnie  Wysoki Timeline Tracker
+  R5    Auto-korespondencja bez wysyłki     Średnie  Wysoki e-Doręczenia API
+  R6    GAAR bez progu 100 000 zł          Wysokie  Średni dodać a119b
+  R7    Czynny żal bez wyłączeń (KKS)      Średnie  Średni uzupełnić a16
+  R8    Puste bazy orzeczeń (JI 6 reguł)   Średnie  Średni CBOSA import
+  R9    Reguły nieaktualizowane (żywe prawo)Wysokie  Wysoki LM pętla 9.4
+  R10   plan33_ord brak — dokumentacja      Średnie  Niski  ujednolicić
+
+10.6. KPI WARSTWY ORD (WSKAŹNIKI DOCELOWE PO WDROŻENIU)
+  KPI-1  Pokrycie artykułów OrdPU: >90% (obecnie ~75% kluczowych)
+  KPI-2  Czas odpowiedzi systemu na scenariusz: <100 ms (OPA)
+  KPI-3  Automatyzacja korespondencji: 100% generowanie, >80% wysyłka
+  KPI-4  Monitoring terminów: 100% spraw objętych alertami
+  KPI-5  Dokładność stawek (odsetki/oprocentowanie): 100% zgodność
+         z obwieszczeniami MF (test kontraktowy kwartalny)
+  KPI-6  Testy kontraktowe warstwy ORD: >95% przejść (obecnie ~90%)
+  KPI-7  Reguły zaktualizowane po zmianie prawa: <30 dni (docelowo
+         automatycznie przez pętlę 9.4)
+  KPI-8  Traceability decyzji: 100% (rule_id + _legal_basis obecne)
+
+10.7. SANKCJE PORZĄDKOWE I SZACOWANIE PODSTAWY (MOST DO P20)
+Obok sankcji KKS (analizowanych w raporcie P20) OrdPU przewiduje:
+  (a) Kara porządkowa (art. 262 OrdPU): do 3 000 zł za nieuzasadnione
+      niestawiennictwo, nieudzielenie wyjaśnień, niezłożenie
+      dokumentów; wzywanie świadków — 6 000 zł (organy).
+  (b) Szacowanie podstawy opodatkowania (art. 23 OrdPU): przy braku
+      ksiąg lub ich nierzetelności organ szacuje podstawę metodami:
+      porównawczą wewnętrzną, porównawczą zewnętrzną, dochodową,
+      produkcyjną, kosztową — z możliwością oszacowania od strony
+      przychodów (art. 23 par. 3).
+  (c) Dodatkowe zobowiązanie podatkowe (art. 56 OrdPU — sankcja VAT
+      15%/20%/30%): zaniżenie zobowiązania w VAT — do 30% (zależnie
+      od okoliczności), od 2023 r. także dla PIT/CIT (20%/30%).
+  (d) Odsetki podwyższone (art. 56b — 150% stawki podstawowej).
+Ustalenie [K262]: system pokrywa kara porządkowa i szacowanie jedynie
+częściowo (a86/a87, a23 brak w inwentarzu). Moduł sanctions_optimization
+(P20) uzupełnia ten obszar o scoring ryzyka i ścieżki minimalizacji.
+
+10.8. TESTY KONTRAKTOWE REKOMENDOWANE DLA WARSTWY ORD
+Rekomendowane testy (katalog tests/ projektu):
+  (a) test_ord_contract.py — walidacja kontraktu decide dla 424 reguł
+      (obecność rule_id, priority, _legal_basis w każdym wyniku),
+  (b) test_ord_scenarios.py — scenariusze T1-T7 (sekcja 4.15),
+  (c) test_ord_duplication.py — wykrywanie duplikacji a48/a51 vs
+      a67a-e (regresja po usunięciu legacy),
+  (d) test_s22_letters.py — walidacja formalna generowanych pism
+      (kompletność, terminy, podstawa prawna),
+  (e) test_ord_rates.py — zgodność stawek z parametrami centralnymi
+      (reference_rate — test kwartalny po obwieszczeniu MF).
+
+10.9. REKOMENDACJE DOTYCZĄCE ZGODNOŚCI Z RAPORTEM P18
+Rekomendacje wspólne dla warstw KSeF/JPK (P18) i ORD (P19):
+  (a) UTWORZYĆ CENTRALNY MODUŁ PARAMETRÓW (reference rates):
+      stawki NBP (lombard), stawki VAT, limity (100 000 zł GAAR,
+      2 mln zł ryczałt, 2 mln EUR mały podatnik, 15 000 zł gotówka)
+      jako jeden plik parametrów konsumowany przez wszystkie reguły
+      — eliminuje sztywne wartości w regułach (JV7-1945 w P18,
+      a56 w P19).
+  (b) USTANDARYZOWAĆ WARSTWĘ WYSYŁKI: wspólny adapter e-Urząd
+      Skarbowy / e-Doręczenia dla KSeF (outbox), S22 (pisma),
+      e-Doręczeń (plan44/45) — jeden rejestr korespondencji.
+  (c) ROZBUDOWAĆ SILNIK TESTOWY: automatyzacja testów kontrakto-
+      wych przy każdej zmianie reguł (wykorzystać istniejące
+      test_run_simulation_contract.py i test_startup_contract.py
+      z katalogu tests/).
+  (d) AUDYT NUMERACJI: globalny przegląd _legal_basis pod kątem
+      aktualnych podstaw prawnych (a48/a51 -> 67a-e, a16 -> KKS,
+      art. 14b -> a14).
+
+10.10. DOKUMENTACJA I UTRZYMANIE
+  (a) Zaktualizować LEGAL_COVERAGE.md: dodać art. 119a (GAAR),
+      art. 193a (JPK na żądanie), art. 138a (pełnomocnictwa),
+      art. 14b (interpretacje) — 4 obszary o ~80 regułach.
+  (b) Dodać do dokumentacji mapę „stara numeracja -> nowa"
+      (a48 -> 67a, a51 -> 67d/e) dla uniknięcia pomyłek.
+  (c) Rozważyć plan33_ord.rego (zgodnie z konwencją plan33) lub
+      oficjalnie oznaczyć plan34_ord jako jedyną macierz atomową
+      ORD — spójność z dokumentacją zlecenia.
+  (d) Szablony pism S22: wersjonować (template v1, v2) z datą
+      obowiązywania — zmiany prawne (np. opłata ORD-IN) nie mogą
+      powodować nieaktualnych pism.
+=================================================================
+SEKCJA 11. PODSUMOWANIE I GOTOWOŚĆ DO PROMPTU P20
+=================================================================
+11.1. OCENA KOŃCOWA
+Warstwa ORD systemu NexusAI to najobszerniejsza domena regułowa
+systemu (676 reguł, ~620 KB). Pod względem ilościowym i głębi
+logiki (wzorce eligibility/positive/negative/exception/interaction/
+deadline/sanction) wyprzedza typowe rozwiązania JDG. Kluczowe
+mankamenty to: duplikacja starej numeracji (a48/a51), brak pętli
+"żywego prawa" (auto-aktualizacja reguł), niepełna automatyzacja
+korespondencji (S22 bez wysyłki/monitoringu) oraz cienkie warstwy
+judicial/legislative w części wykonawczej.
+11.2. WYNIKI CZĄSTKOWE (PODSUMOWANIE)
+  OrdPU kompletność mikro .......... 4,0/5
+  Plan34_ord (macierz atomowa) ..... 3,5/5
+  Tax Authority Interaction ........ 3,5/5
+  Tax Optimization ................. 4,0/5
+  Audit Defense .................... 3,5/5
+  Strategic Advisor ................ 4,0/5
+  Cross-Domain Intelligence ........ 4,0/5
+  Judicial Interpretations ......... 3,0/5
+  Legislative Monitor .............. 3,5/5
+  OGÓŁEM WARSTWA ORD ............... 3,8/5
+11.3. GOTOWOŚĆ DO PROMPTU P20
+Analiza warstwy Ordynacji Podatkowej, Tax Authority Interaction,
+Strategic Advisor, Cross-Domain Intelligence, Judicial
+Interpretations i Legislative Monitor jest ZAKOŃCZONA. Okno
+analityczne P19 zostaje zamknięte. System jest GOTOWY do przejścia
+do Promptu P20 (JDG SANCTIONS / SOLIDARITY / WIS / EPUAP).
+
+11.4. OGRANICZENIA ANALIZY P19
+Analiza ma następujące ograniczenia metodologiczne:
+  (a) Reguły badano pod kątem struktury i metadanych (rule_id,
+      priority, _legal_basis, wzorce nazw) oraz treści reprezentatywnych
+      próbek; pełna weryfikacja semantyczna wymaga uruchomienia OPA
+      z danymi testowymi (sandbox w tym środowisku nie pozwolił na
+      instalację opa — patrz notatka P18),
+  (b) Liczby reguł (424/190/62) pochodzą z grep rule_id i mogą
+      obejmować reguły pomocnicze (no_match, helper),
+  (c) Weryfikacja faktów prawnych oparta o źródła MF i teksty
+      jednolite (2025-2026); stawki NBP i opłaty (np. ORD-IN)
+      podlegają zmianom — wymagany przegląd przed wdrożeniem,
+  (d) Wykryte prefiksy artykułowe (4.14) mogą zawierać szum
+      (np. a119 obejmuje a119a przy dopasowaniu prefiksu) —
+      liczba 44 dla GAAR jest sumą łączną kompleksu.
+
+11.5. SPÓJNOŚĆ MIĘDZYRAPORTOWA (P18 vs P19)
+Raport P19 uzupełnia i krzyżowo weryfikuje ustalenia raportu P18
+(RAPORT_P18_JDG_KSEF_JPK_DIGITAL_v7.0.txt):
+
+  OBSZAR                    P18 (KSeF/JPK)          P19 (ORD/TA)
+  Największy moduł          jdg.micro.ksef (80)     jdg.micro.ord (424)
+  Łączna liczba reguł       ~330                    676
+  Automatyzacja wysyłki     KSeF: brak outbox       S22: brak wysyłki
+  Monitoring UPO/statusów   UPO tracker: brak       monitor US: brak
+  Stałe w regułach          JV7-1945 = 3            a48/a51 legacy
+  Terminy                   25. dnia miesiąca       14/30 dni, 3 mies.
+  Dynamiczne stawki         stawki VAT sztywne      odsetki: brak ref.
+
+Kluczowe wnioski międzyraportowe:
+  (a) Warstwa ORD (676 reguł) jest ponad 2x większa od warstwy
+      KSeF/JPK (~330 reguł) — potwierdza priorytet dokumentacji
+      LEGAL_COVERAGE (OrdPU jako rdzeń systemu).
+  (b) Wspólny wzorzec luk: brak warstwy wysyłki i monitoringu
+      (KSeF outbox, S22 e-Doręczenia) oraz brak dynamicznych
+      parametrów (stawki NBP, stawki VAT) — zalecane wspólne
+      rozwiązanie: moduł parametrów centralnych (reference rates).
+  (c) Wspólna siła: format reguł (rule_id, priority, _routing,
+      _legal_basis) jest jednolity w obu warstwach — fundament
+      do budowy silnika auto-aktualizacji (Legislative Impact
+      Analyzer 9.4).
+  (d) e-Doręczenia: P18 wykazał obsługę w edelivery/plan44-45;
+      P19 rekomenduje integrację S22 z e-Doręczeniami (pełnomocnik
+      do doręczeń art. 138m-o) — domknięcie obiegu korespondencji.
+=================================================================
+=== KONIEC RAPORTU — RAPORT_P19_JDG_ORD_TAX_AUTHORITY_STRATEGIC_v7.0 ===

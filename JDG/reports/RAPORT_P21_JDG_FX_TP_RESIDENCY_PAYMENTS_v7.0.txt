@@ -1,0 +1,1675 @@
+RAPORT ANALITYCZNY ENTERPRISE — JDG FX + TP + Residency + Payments v7.0
+=================================================================
+SEKCJA 1. METADANE I ZAKRES ANALIZY
+=================================================================
+
+1.1. IDENTYFIKACJA RAPORTU
+
+    Numer raportu:           P21
+    Tytuł:                   RAPORT ANALITYCZNY ENTERPRISE — JDG FX + TP + Residency + Payments v7.0
+    Plik wyjściowy:          JDG/reports/RAPORT_P21_JDG_FX_TP_RESIDENCY_PAYMENTS_v7.0.txt
+    Wersja serii:            v7.0 (ciągłość z P18 KSeF/JPK, P19 OrdPU/Tax Authority, P20 Sankcje/WIS)
+    Typ dokumentu:           Raport analityczny (czysty tekst UTF-8, LF)
+    Zakres tematyczny:       Różnice kursowe (FX), ceny transferowe (TP), rezydencja podatkowa,
+                             płatności, reklama vs reprezentacja, zamówienia publiczne (procurement)
+    Poziom analizy:          ENTERPRISE (reguły OPA/Rego, warstwy micro + hyper, routing, sankcje)
+
+1.2. PRZEDMIOT ANALIZY — 12 PLIKÓW REGO (~148 KB, 295 REGUŁ)
+
+    Lp.  Plik                                   Bajty   Reguły  Warstwa
+    ---------------------------------------------------------------
+    1    JDG/rules/fx/plan44_fx.rego             7 237      10   micro (fx)
+    2    JDG/rules/fx/plan45_fx.rego            16 237      41   hyper (fx)
+    3    JDG/rules/tp/plan44_tp.rego             7 681      10   micro (tp)
+    4    JDG/rules/tp/plan45_tp.rego            20 416      46   hyper (tp)
+    5    JDG/rules/residency/plan44_residency.rego  9 166   11   micro (residency)
+    6    JDG/rules/residency/plan45_residency.rego 19 748   43   hyper (residency)
+    7    JDG/rules/payments/plan44_payments.rego 7 563      10   micro (payments)
+    8    JDG/rules/payments/plan45_payments.rego 18 050     39   hyper (payments)
+    9    JDG/rules/advertising/plan44_advertising.rego 8 018 10 micro (advertising)
+   10    JDG/rules/advertising/plan45_advertising.rego 16 348 36 hyper (advertising)
+   11    JDG/rules/procurement/plan44_procurement.rego 6 352  8 micro (procurement)
+   12    JDG/rules/procurement/plan45_procurement.rego 11 323 31 hyper (procurement)
+    ---------------------------------------------------------------
+    RAZEM 12 plików                            148 139     295
+
+    Struktura: 59 reguł micro (plan44) + 236 reguł hyper (plan45).
+    Każda reguła zawiera: rule_id (jdg.<moduł>.<micro|hyper>.<nazwa>),
+    priorytet (routing), _legal_basis (podstawa prawna), _routing
+    (decyzja: "" / WARNING / TRIAGE_QUEUE / BLOCK_AND_ALERT),
+    _routing_reason i _warnings (komunikaty dla JDG).
+
+1.3. METODOLOGIA
+
+    (a) Inwentaryzacja plików: rozmiary, liczba reguł, przynależność warstw.
+    (b) Ekstrakcja rule_id wszystkich 295 reguł (pełne inwentarze per moduł).
+    (c) Analiza treści reguł kluczowych: podstawy prawne, progi, stawki, terminy,
+        routing i komunikaty ostrzegawcze.
+    (d) Weryfikacja zgodności z polskim prawem podatkowym (PIT, VAT, OrdPU, PZP,
+        ustawa o usługach płatniczych, OECD MTC) na stan prawny 2025/2026.
+    (e) Ocena cząstkowa per moduł w skali 0-5 + średnia ważona całości.
+    (f) Identyfikacja luk, błędów i ryzyk (macierz ryzyka z KPI).
+    (g) Rekomendacje priorytetyzowane (P0 natychmiastowe / P1 krótki horyzont /
+        P2 strategiczne) oraz 10 innowacji ENTERPRISE.
+
+1.4. OGRANICZENIA ANALIZY
+
+    (a) Analiza statyczna plików rego — brak uruchomienia silnika OPA
+        (testy kontraktowe rekomendowane w sekcji 12).
+    (b) Stany prawne zweryfikowane na podstawie treści _legal_basis w regułach
+        oraz wiedzy domenowej; zalecana weryfikacja indywidualna przed
+        wdrożeniem produkcyjnym.
+    (c) Raport nie stanowi porady prawnej ani podatkowej; decyzje wymagają
+        konsultacji z doradcą podatkowym.
+
+=================================================================
+SEKCJA 2. EKOSYSTEM REGUŁ P21 — PRZEGLĄD STRATEGICZNY
+=================================================================
+
+2.1. MAPA MODUŁÓW I OCENY CZĄSTKOWE
+
+    Moduł            Reguły (micro+hyper)   Bajty      Ocena /5
+    ---------------------------------------------------------------
+    FX               10 + 41 = 51           23 474     4.5
+    TP               10 + 46 = 56           28 097     4.0
+    Residency        11 + 43 = 54           28 914     4.0
+    Payments         10 + 39 = 49           25 613     3.5
+    Advertising      10 + 36 = 46           24 366     3.5
+    Procurement       8 + 31 = 39           17 675     3.5
+    ---------------------------------------------------------------
+    RAZEM            59 + 236 = 295         148 139    3.83 (śr.)
+
+    Interpretacja ocen:
+    - 4.5 — moduł dojrzały, wzorcowy (FX): pełne pokrycie metod, tabel NBP,
+      hedging, realizacji, dokumentacji; minimalne luki.
+    - 4.0 — moduł solidny z pojedynczymi rozbieżnościami (TP: termin TPR-C;
+      Residency: zależność od danych wejściowych).
+    - 3.5 — moduł funkcjonalny z istotnymi lukami (Payments: brak split
+      payment; Advertising: reguła limitu reprezentacji wątpliwa;
+      Procurement: brak progów PZP i ulg).
+
+2.2. PRIORYTETY ROUTINGU (OBSERWACJA MIĘDZYMODUŁOWA)
+
+    Z 236 reguł hyper: ~15% WARNING, ~10% TRIAGE_QUEUE, ~4% BLOCK_AND_ALERT.
+    Najwięcej BLOCK_AND_ALERT w: residency (exit tax), payments (kara za brak
+    terminala), tp (sankcje KKS), procurement (wykluczenia z PZP).
+    Wzorzec poprawny: poważne ryzyka blokują, średnie kierują do kolejki
+    triage, drobne tylko ostrzegają.
+
+2.3. SPÓJNOŚĆ Z SERIĄ RAPORTÓW P18-P20
+
+    - P18 (KSeF/JPK/cyfryzacja): ~330 reguł, ocena modułowa 3-4.5.
+    - P19 (OrdPU/Tax Authority): 676 reguł, ocena 3-4.5.
+    - P20 (Sankcje/WIS/ePUAP): 256 reguł, ocena 3.5-4.5.
+    - P21 (FX/TP/Residency/Payments): 295 reguł, ocena 3.5-4.5.
+    Łącznie seria P18-P21 obejmuje ~1 557 reguł OPA pokrywających kompletny
+    obraz obowiązków podatkowych JDG — od faktur KSeF przez deklaracje JPK,
+    interakcje z US, sankcje, aż po transakcje walutowe, TP i rezydencję.
+
+=================================================================
+SEKCJA 3. ANALIZA RÓŻNIC KURSOWYCH (FX) — POZIOM ENTERPRISE
+=================================================================
+
+3.1. ZAKRES MODUŁU FX (51 REGUŁ)
+
+    plan44_fx (10 reguł micro):
+    jdg.fx.vat_rate_determination, jdg.fx.pit_rate_determination,
+    jdg.fx.differences_method, jdg.fx.realized_vs_unrealized,
+    jdg.fx.differences_method_selection, jdg.fx.own_funds,
+    jdg.fx.crypto_fx_differences, jdg.fx.hedging_instruments,
+    jdg.fx.multi_currency_accounting, jdg.fx.no_match.
+
+    plan45_fx (41 reguł hyper) — pełny inwentarz:
+    vat_import_customs_rate (Art. 30a VAT), vat_wnt_ecb_rate,
+    vat_import_services_nbp, vat_fx_invoice_nbp (Art. 31a VAT),
+    vat_correction_original_rate, vat_ecb_vs_nbp_choice,
+    pit_revenue_nbp_day_before (Art. 14 ust. 1aa PIT),
+    pit_kup_nbp_day_before (Art. 22 ust. 1e PIT),
+    pit_differences_tax_method (Art. 14b PIT),
+    pit_fifo_method_detail, pit_weighted_avg_method,
+    pit_crypto_fx_exchange_rate, nbp_table_a_avg, nbp_table_b_last,
+    nbp_table_c_bid_ask, nbp_table_a_default_selection,
+    nbp_table_validation, nbp_table_alert_missing,
+    method_tax_fifo_default, method_accounting_weighted_avg,
+    method_selection_annual (Art. 14b ust. 3 PIT),
+    method_change_next_year, method_change_impact,
+    method_declaration_document, method_consequences_tax,
+    realized_gain_taxable, realized_loss_tax_deductible,
+    realized_moment_payment, realized_annual_aggregation,
+    realized_valuation_cost_vs_payment, realized_documentation,
+    hedging_forward_tax, hedging_options_tax, hedging_swap_tax,
+    hedging_documentation, hedging_kup_treatment,
+    multi_monthly_conversion, multi_pkpir_foreign_currency,
+    multi_balance_monitoring, multi_reporting_requirements,
+    multi_audit_preparedness, no_match.
+
+3.2. METODA PODATKOWA VS BILANSOWA (ART. 14B PIT)
+
+    Ustalenia:
+    (a) Reguła jdg.fx.hyper.pit_differences_tax_method prawidłowo wskazuje
+        metodę podatkową (FIFO) jako domyślną dla JDG (Art. 14b PIT).
+    (b) jdg.fx.hyper.pit_fifo_method_detail poprawnie opisuje zasadę
+        "pierwsza wpłata = pierwsza wypłata; różnica kursów = przychód/koszt".
+    (c) jdg.fx.hyper.method_accounting_weighted_avg obsługuje metodę
+        bilansową (średnia ważona) — wymaga oświadczenia, wybór na cały rok.
+    (d) jdg.fx.hyper.method_selection_annual (Art. 14b ust. 3 PIT) wymusza
+        wybór metody przed rozpoczęciem roku i zakaz zmiany w trakcie —
+        zgodne z prawem.
+    (e) jdg.fx.hyper.method_change_next_year — zmiana metody tylko od nowego
+        roku podatkowego — poprawne.
+    (f) jdg.fx.hyper.method_declaration_document — wymóg dokumentu
+        oświadczenia o wyborze metody — poprawne praktycznie.
+
+    Ocena: metoda podatkowa i bilansowa obsłużone kompleksowo (6 reguł).
+
+3.3. KURSY NBP — TABELE A/B/C I DNI ROBOCZE
+
+    (a) Tabela A (kursy średnie) — domyślna dla PIT i VAT (nbp_table_a_avg,
+        nbp_table_a_default_selection) — zgodne z praktyką MF.
+    (b) Tabela B (kursy ostatnie) — dla walut niewystępujących w tabeli A —
+        poprawne.
+    (c) Tabela C (kupna/sprzedaży) — dla transakcji bankowych — poprawne.
+    (d) nbp_table_validation i nbp_table_alert_missing — walidacja i alarm
+        przy braku tabeli (awaria NBP) — wartość dodana ENTERPRISE.
+    (e) Kurs NBP z "ostatniego dnia roboczego poprzedzającego" — reguły
+        pit_revenue_nbp_day_before i pit_kup_nbp_day_before wskazują
+        właściwe podstawy (Art. 14 ust. 1aa PIT i Art. 22 ust. 1e PIT).
+
+3.4. VAT W TRANSKACJACH WALUTOWYCH
+
+    (a) Import towarów spoza UE: kurs celny (vat_import_customs_rate, Art. 30a
+        VAT) — poprawne.
+    (b) WNT: kurs EBC z ostatniego dnia roboczego poprzedzającego WNT
+        (vat_wnt_ecb_rate) — zgodne z Art. 30a ust. 2 ustawy o VAT.
+    (c) Import usług: kurs NBP (vat_import_services_nbp) — poprawne.
+    (d) Faktura walutowa: kurs NBP z dnia poprzedzającego powstanie obowiązku
+        (vat_fx_invoice_nbp, Art. 31a VAT) — poprawne.
+    (e) Korekta faktury walutowej: kurs z dnia pierwotnej faktury
+        (vat_correction_original_rate) — zgodne z Art. 31a ust. 3 VAT.
+    (f) Wybór EBC vs NBP dla EUR (vat_ecb_vs_nbp_choice) — poprawne
+        (dla WNT obowiązkowy EBC).
+
+3.5. KRYPTWALUTY I FX SPREAD
+
+    (a) pit_crypto_fx_exchange_rate — kryptowaluty: kurs rynkowy z giełdy,
+        NIE tabele NBP — poprawne i zgodne z interpretacjami KIS.
+    (b) W module payments: foreign_fx_spread_kup — spread walutowy banku
+        przy przelewie zagranicznym = KUP (Art. 22 PIT) — poprawne.
+
+3.6. REALIZACJA RÓŻNIC KURSOWYCH
+
+    (a) realized_gain_taxable / realized_loss_tax_deductible — zysk/koszt
+        podatkowy w momencie realizacji — zgodne z Art. 14b ust. 2 PIT.
+    (b) realized_moment_payment — moment realizacji = data zapłaty — poprawne.
+    (c) realized_annual_aggregation — agregacja roczna — poprawne.
+    (d) realized_valuation_cost_vs_payment — rozróżnienie wyceny od zapłaty —
+        wartość dodana.
+    (e) realized_documentation — wymóg dokumentacji różnic kursowych —
+        praktycznie istotne dla kontroli.
+
+3.7. HEDGING (ZABEZPIECZENIE RYZYKA WALUTOWEGO)
+
+    (a) hedging_forward_tax / hedging_options_tax / hedging_swap_tax —
+        forward, opcje, swapy rozliczane na zasadach ogólnych (Art. 14 PIT),
+        moment realizacji = data rozliczenia — poprawne.
+    (b) hedging_documentation — wymóg udokumentowania celu hedgingowego —
+        istotne przy kontroli.
+    (c) hedging_kup_treatment — koszty instrumentów zabezpieczających = KUP
+        w dacie poniesienia — poprawne.
+
+3.8. WIELOWALUTOWOŚĆ (MULTI-CURRENCY ACCOUNTING)
+
+    (a) multi_monthly_conversion — miesięczne przeliczanie — zgodne z zasadą
+        prowadzenia PKPiR w walucie obcej.
+    (b) multi_pkpir_foreign_currency — obsługa PKPiR w walucie obcej — dobre.
+    (c) multi_balance_monitoring / multi_reporting_requirements /
+        multi_audit_preparedness — monitoring sald, wymogi raportowe,
+        gotowość audytowa — wartość dodana ENTERPRISE.
+
+3.9. DIAGRAM MERMAID — FLOW RÓŻNIC KURSOWYCH
+
+graph TD
+    A[Transakcja walutowa JDG] --> B{Typ transakcji}
+    B -->|Faktura walutowa| C[Kurs NBP dzien przed powstaniem obowiazku - Art. 31a VAT]
+    B -->|Przychod PIT| D[Kurs NBP ostatni dzien roboczy przed uzyskaniem - Art. 14 ust. 1aa PIT]
+    B -->|Koszt PIT| E[Kurs NBP dzien przed poniesieniem - Art. 22 ust. 1e PIT]
+    B -->|WNT| F[Kurs EBC - Art. 30a VAT]
+    B -->|Krypto| G[Kurs gieldowy - nie NBP]
+    C --> H{Wybrana metoda roznic kursowych}
+    D --> H
+    E --> H
+    H -->|Metoda podatkowa FIFO| I[Oswiadczenie przed rokiem - Art. 14b ust. 3 PIT]
+    H -->|Metoda bilansowa srednia wazona| J[Oswiadczenie, wybor na caly rok]
+    I --> K[Realizacja: zysk KUP/przychod - moment zapłaty]
+    J --> K
+    K --> L{Instrumenty zabezpieczajace}
+    L -->|Forward/Opcje/Swap| M[Zasady ogolne - Art. 14 PIT, dokumentacja celu]
+    L -->|Brak hedgingu| N[Monitoring kursow + alerty tabel NBP]
+
+3.10. SCENARIUSZE TESTOWE FX (REKOMENDOWANE)
+
+    T1. Faktura 10 000 EUR, kurs NBP dzien przed = 4.20. Przychod = 42 000
+        PLN. Sprawdzenie: pit_revenue_nbp_day_before + vat_fx_invoice_nbp.
+    T2. Zapłata faktury po 30 dniach po kursie 4.35. Różnica kursowa
+        dodatnia = (4.35-4.20)*10 000 = 1 500 PLN przychód.
+        Sprawdzenie: pit_fifo_method_detail, realized_gain_taxable.
+    T3. WNT towarów 5 000 EUR — wymagany kurs EBC (nie NBP).
+        Sprawdzenie: vat_wnt_ecb_rate.
+    T4. Przychód w kryptowalutach — kurs giełdowy.
+        Sprawdzenie: pit_crypto_fx_exchange_rate.
+    T5. Zmiana metody różnic kursowych w trakcie roku — BLOCK/WARNING.
+        Sprawdzenie: method_change_next_year.
+
+3.11. OCENA MODUŁU FX: 4.5/5
+
+    Mocne strony: komplet metod (podatkowa FIFO + bilansowa), tabele A/B/C,
+    wybór EBC/NBP, krypto, hedging, wielowalutowość, dokumentacja, alerty.
+    Luki: (1) brak automatycznego pobierania kursów NBP (reguły działają na
+    danych wejściowych; wymagany zewnętrzny feed API NBP), (2) brak
+    automatycznego kalkulatora różnic kursowych (reguły sygnalizują, nie
+    liczą), (3) brak integracji z JPK_V7 (różnice kursowe nie mapują się do
+    pozycji JPK).
+
+====3.12. MACIERZ REGUŁ HYPER FX (41 REGUŁ, PRIORYTETY 1300-1334)
+
+    Grupa                     Priorytety  Reguły  Routing dominujący
+    ---------------------------------------------------------------
+    VAT kursy (import/WNT/fakt.) 1300-1305   6    "" (kierunkowe)
+    PIT przychód/koszt walut.    1306-1307   2    "" (kierunkowe)
+    Różnice kursowe metody       1308-1311   4    "" (FIFO domyślne)
+    Tabele NBP A/B/C             1312-1317   6    alerty (nbp_table_alert)
+    Wybór/zmiana metody          1318-1321   4    WARNING (method_selection)
+    Realizacja różnic kurs.      1322-1326   5    "" + dokumentacja
+    Hedging (forward/opcje/swap) 1330-1334   5    WARNING + dokumentacja
+    (pozostałe reguły routingowe/walidacyjne)      ~9
+    ---------------------------------------------------------------
+    RAZEM                                   41
+
+    Obserwacje:
+    (a) Grupa 1300-1305 (VAT) poprawnie rozdziela kursy: celny (import
+        spoza UE), EBC (WNT), NBP (import usług, faktury).
+    (b) Alerty tabel NBP (nbp_table_alert_missing, nbp_table_validation)
+        to unikat w serii — żaden inny moduł nie ma walidacji źródła
+        danych zewnętrznych.
+    (c) Priorytet 1309 (FIFO) i 1310 (średnia ważona) — wzajemnie
+        wykluczające się metody z regułą wyboru 1320 — poprawna
+        konstrukcja logiczna (else-chain OPA).
+    (d) Brak: automatycznego kalkulatora kwoty różnicy kursowej (reguły
+        sygnalizują zasadę, nie liczą wartości) — luka L9 rozszerzona:
+        oprócz feedu NBP brakuje modułu arytmetycznego.
+
+=================================================================
+SEKCJA 4. ANALIZA CEN TRANSFEROWYCH (TP) — POZIOM ENTERPRISE
+=================================================================
+
+4.1. ZAKRES MODUŁU TP (56 REGUŁ)
+
+    plan44_tp (10 reguł micro):
+    jdg.tp.related_party_detection, jdg.tp.documentation_thresholds,
+    jdg.tp.local_file, jdg.tp.master_file, jdg.tp.tpr,
+    jdg.tp.methods, jdg.tp.benchmarking_analysis,
+    jdg.tp.adjustment_consequences, jdg.tp.no_match (oraz routing).
+
+    plan45_tp (46 reguł hyper) — pełny inwentarz:
+    related_25pct_ownership, related_cross_ownership,
+    related_family_ties, related_indirect_control, related_management_ties,
+    threshold_2m_goods_annual (Art. 23zf ust. 1 PIT),
+    threshold_1m_financial_annual (Art. 23zf ust. 2 PIT),
+    threshold_500k_services_annual (Art. 23zf ust. 3 PIT),
+    threshold_eur_conversion_nbp (Art. 23zf ust. 4 PIT),
+    threshold_aggregation_all_parties (Art. 23zf ust. 5 PIT),
+    local_file_functional_analysis (Art. 23zf ust. 6 PIT),
+    local_file_tp_analysis, local_file_comparability_analysis
+    (Art. 23zf ust. 7 PIT), local_file_financial_data,
+    local_file_deadline_10months (Art. 23zf ust. 8 PIT),
+    master_file_business_model, master_file_group_description,
+    master_file_group_revenue_200m, master_file_tp_policy,
+    master_file_deadline_12months,
+    tpr_obligation_check, tpr_deadline_nov30 (Art. 23zh PIT),
+    tpr_data_requirements, tpr_missing_sanction, tpr_correction_allowed,
+    benchmarking_required, benchmarking_databases,
+    benchmarking_margins_analysis, benchmarking_update_3years,
+    benchmarking_documentation_retention,
+    safe_harbor_30pct_cost_cap (Art. 23zf ust. 10 PIT),
+    safe_harbor_5pct_markup, safe_harbor_low_value_services,
+    safe_harbor_documentation_light, safe_harbor_excluded_services,
+    sanction_no_documentation_10pct, sanction_late_documentation,
+    sanction_documentation_errors, sanction_kks_for_intentional_evasion,
+    sanction_management_board_liability,
+    adjustment_income_reassessment, adjustment_10pct_additional_tax,
+    adjustment_interest_on_arrears, adjustment_appeal_procedure,
+    adjustment_kks_liability, no_match.
+
+4.2. PODMIOTY POWIĄZANE — DETEKCJA
+
+    (a) related_25pct_ownership — 25% udziałów = powiązanie kapitałowe —
+        zgodne z Art. 23za ust. 1 pkt 1 PIT.
+    (b) related_family_ties — powiązania rodzinne — zgodne z Art. 23za.
+    (c) related_indirect_control / related_cross_ownership —
+        kontrola pośrednia i powiązania krzyżowe — poprawne.
+    (d) related_management_ties — powiązania zarządcze — poprawne.
+
+    Ocena: pełna detekcja 5 typów powiązań — mocna strona.
+
+4.3. PROGI DOKUMENTACYJNE — PIT (ART. 23ZF PIT)
+
+    KRYTYCZNE USTALENIE: Prompt zakładał progi "Local File 10 000 000 PLN,
+    Master File 200 000 000 PLN". Są to progi ustawy o CIT (Art. 11n ust. 1
+    pkt 1-2 CIT dla podatników CIT). Dla JDG opodatkowanych PIT właściwe
+    progi dokumentacyjne wynikają z Art. 23zf PIT i są WIELOKROTNIE niższe:
+    - Transakcje towarowe: > 2 000 000 PLN rocznie (ust. 1) — kod: 2m.
+    - Transakcje finansowe: > 1 000 000 PLN rocznie (ust. 2) — kod: 1m.
+    - Transakcje usługowe/niematerialne: > 500 000 PLN rocznie (ust. 3) —
+      kod: 500k.
+    KOD JEST POPRAWNY DLA JDG (PIT); prompt opisywał progi CIT, które NIE
+    dotyczą jednoosobowej działalności gospodarczej. To ustalenie kluczowe:
+    system poprawnie implementuje progi PIT dla JDG.
+
+    Dodatkowo:
+    (a) threshold_eur_conversion_nbp — progi w EUR przeliczane po kursie NBP
+        z ostatniego dnia roboczego przed transakcją (Art. 23zf ust. 4) —
+        poprawne.
+    (b) threshold_aggregation_all_parties — sumowanie transakcji ze
+        WSZYSTKIMI podmiotami powiązanymi (Art. 23zf ust. 5) — poprawne
+        i istotne praktycznie.
+
+4.4. DOKUMENTACJA LOKALNA (LOCAL FILE)
+
+    (a) local_file_functional_analysis — analiza funkcjonalna: funkcje,
+        aktywa, ryzyka (Art. 23zf ust. 6) — poprawne.
+    (b) local_file_tp_analysis — analiza cen transferowych: metoda,
+        uzasadnienie wyboru — poprawne.
+    (c) local_file_comparability_analysis — analiza porównywalności:
+        benchmark, kryteria (Art. 23zf ust. 7) — poprawne.
+    (d) local_file_financial_data — dane finansowe podmiotów powiązanych
+        za ostatni rok — poprawne.
+    (e) local_file_deadline_10months — termin 10 miesięcy po zakończeniu
+        roku podatkowego (Art. 23zf ust. 8) — UWAGA: w praktyce dla PIT
+        dokumentacja lokalna musi być sporządzona przed terminem złożenia
+        zeznania (co do zasady do 30 kwietnia roku następnego dla roku
+        kalendarzowego), a termin 10 miesięcy bywa interpretowany jako
+        termin graniczny dla CIT (Art. 11n ust. 8 CIT). Rozbieżność
+        wymaga weryfikacji interpretacyjnej — zgłoszono jako ryzyko R-TP-1.
+
+4.5. DOKUMENTACJA GRUPOWA (MASTER FILE)
+
+    (a) master_file_group_revenue_200m — próg 200 000 000 PLN/EUR przychodów
+        grupy — dla JDG praktycznie nieosiągalny, ale obsłużony — poprawne
+        (Art. 23zg PIT).
+    (b) master_file_business_model / group_description / tp_policy —
+        elementy master file (model biznesowy, opis grupy, polityka TP) —
+        poprawne.
+    (c) master_file_deadline_12months — termin 12 miesięcy — poprawne.
+
+4.6. SPRAWOZDANIE TPR (TPR-C / TPR-P)
+
+    (a) tpr_obligation_check — sprawdzenie obowiązku złożenia TPR —
+        poprawne (Art. 23zh PIT).
+    (b) tpr_deadline_nov30 — termin 30 LISTOPADA za poprzedni rok —
+        UWAGA: zgodnie z Art. 23zh ust. 4 PIT sprawozdanie TPR dla
+        podatników PIT składa się w terminie do końca 10. miesiąca po
+        zakończeniu roku podatkowego (dla roku kalendarzowego: 31
+        października), z możliwymi przedłużeniami (np. 30 listopada w
+        wybranych latach na mocy rozporządzeń). Termin 30 listopada
+        zapisany w kodzie może być prawidłowy w latach, w których MF
+        przedłużył termin — wymaga weryfikacji rocznej. Zgłoszono jako
+        ryzyko R-TP-2.
+    (c) tpr_data_requirements — dane do TPR: identyfikacja podmiotów,
+        wartości transakcji, metody TP — poprawne.
+    (d) tpr_missing_sanction — sankcja za brak TPR — poprawne (Art. 80a-80c
+        KKS).
+    (e) tpr_correction_allowed — korekta TPR — poprawne.
+
+4.7. METODY WYCENY TP (PROMOT: BRAK REGUŁ METOD W PLAN45)
+
+    UWAGA: prompt wymienia metody: porównywalna niekontrolowana (CUP),
+    ceny odprzedaży (RESALE), koszt plus (COST+), TNMM. W plan45_tp nie ma
+    dedykowanych reguł wyboru metody (brak rule_id: method_cup,
+    method_resale, method_cost_plus, method_tnmm). Reguły tp plan44
+    odsyłają do "methods" ogólnie, a benchmarking_* pokrywa analizę
+    porównawczą. Luka L-TP-2: brak dedykowanych reguł doboru metody
+    wyceny per typ transakcji.
+
+4.8. SAFE HARBOR (USŁUGI NISKOWARTOŚCIOWE)
+
+    (a) safe_harbor_30pct_cost_cap — pułap 30% kosztów dla usług
+        niskowartościowych (Art. 23zf ust. 10 PIT) — poprawne.
+    (b) safe_harbor_5pct_markup — marża 5% na usługach niskowartościowych
+        — poprawne (rozporządzenie MF).
+    (c) safe_harbor_low_value_services / excluded_services — lista usług
+        objętych/wyłączonych — poprawne.
+    (d) safe_harbor_documentation_light — uproszczona dokumentacja:
+        opis usług, kalkulacja marży, umowa — poprawne.
+
+4.9. BENCHMARKING I DOKUMENTACJA
+
+    (a) benchmarking_required — analiza porównawcza wymagana (Art. 23zf
+        ust. 7) — poprawne.
+    (b) benchmarking_databases — bazy danych (np. Amadeus, Orbis) — dobre.
+    (c) benchmarking_margins_analysis — analiza marż — dobre.
+    (d) benchmarking_update_3years — aktualizacja co 3 lata — poprawne.
+    (e) benchmarking_documentation_retention — przechowywanie dokumentacji
+        — poprawne.
+
+4.10. SANKCJE I KOREKTY TP
+
+    (a) sanction_no_documentation_10pct — brak dokumentacji: 10% podstawy
+        opodatkowania transakcji (Art. 23zf ust. 11 PIT / Art. 11n ust. 11
+        CIT analogicznie) — poprawne.
+    (b) sanction_late_documentation / sanction_documentation_errors —
+        kara 2 000-5 000 zł za błędy/opóźnienia — poprawne.
+    (c) sanction_kks_for_intentional_evasion — KKS za zaniżenie —
+        poprawne (Art. 56 KKS).
+    (d) sanction_management_board_liability — odpowiedzialność zarządu —
+        dla JDG mniej istotne, ale obsłużone.
+    (e) adjustment_income_reassessment — szacowanie dochodu (Art. 23zd
+        PIT) — poprawne.
+    (f) adjustment_10pct_additional_tax — dodatkowe zobowiązanie 10%
+        (Art. 23ze PIT) — poprawne.
+    (g) adjustment_interest_on_arrears — odsetki za zwłokę — poprawne.
+    (h) adjustment_appeal_procedure — procedura odwoławcza — dobre.
+    (i) adjustment_kks_liability — odpowiedzialność karno-skarbowa —
+        dobre.
+
+4.11. DIAGRAM MERMAID — PROCES DOKUMENTACJI TP
+
+graph TD
+    A[Transakcja z podmiotem powiazanym] --> B{Detekcja powiazania}
+    B -->|25% udzialow / rodzina / kontrola| C{Pozion progowy Art. 23zf PIT}
+    C -->|Towary > 2M PLN| D[Obowiazek dokumentacji lokalnej]
+    C -->|Finansowe > 1M PLN| D
+    C -->|Uslugi > 500k PLN| D
+    C -->|Ponizej progow| E[Brak dokumentacji - monitoring]
+    D --> F[Analiza funkcjonalna + TP + porownywalna]
+    F --> G[Benchmarking co 3 lata]
+    D --> H{Safe harbor uslug niskowartosciowych}
+    H -->|Marza 5% / pulap 30% kosztow| I[Uproszczona dokumentacja]
+    H -->|Poza safe harbor| J[Pelna dokumentacja + benchmark]
+    D --> K[TPR do 30 listopada / 10 miesiecy]
+    K --> L{Sankcje}
+    L -->|Brak dokumentacji| M[10% podstawy]
+    L -->|Bledy/opoznienia| N[2 000-5 000 zl]
+    L -->|Celowe zanizenie| O[KKS - Art. 56]
+
+4.12. SCENARIUSZE TESTOWE TP (REKOMENDOWANE)
+
+    T1. Transakcje towarowe 2.5M PLN z podmiotem 40% udziałów → dokumentacja
+        lokalna + TPR. Sprawdzenie: threshold_2m_goods_annual,
+        related_25pct_ownership, tpr_obligation_check.
+    T2. Usługi marketingowe 600k PLN do spółki zagranicznej siostrzanej →
+        próg 500k przekroczony, safe harbor 30% kosztów sprawdzany.
+        Sprawdzenie: threshold_500k_services_annual, safe_harbor_30pct_cost_cap.
+    T3. Transakcje finansowe 1.2M PLN (pożyczka) → próg 1M przekroczony,
+        agregacja ze wszystkimi podmiotami.
+        Sprawdzenie: threshold_1m_financial_annual, threshold_aggregation_all_parties.
+    T4. Brak dokumentacji przy przekroczonym progu → sankcja 10% podstawy.
+        Sprawdzenie: sanction_no_documentation_10pct.
+    T5. TPR niezłożony do terminu → ostrzeżenie + sankcja.
+        Sprawdzenie: tpr_deadline_nov30, tpr_missing_sanction.
+
+4.13. OCENA MODUŁU TP: 4.0/5
+
+    Mocne strony: progi PIT poprawne (2M/1M/500k), agregacja, safe harbor,
+    benchmarking, sankcje, korekty, detekcja powiązań (5 typów).
+    Luki: (1) R-TP-1: termin dokumentacji lokalnej 10 miesięcy wymaga
+    weryfikacji interpretacyjnej (PIT: przed złożeniem zeznania), (2)
+    R-TP-2: termin TPR 30 listopada wymaga weryfikacji rocznej (10 miesięcy
+    = 31 października dla roku kalendarzowego), (3) L-TP-2: brak
+    dedykowanych reguł wyboru metody wyceny (CUP/RESALE/COST+/TNMM),
+    (4) brak automatycznego generatora dokumentacji (reguły tylko
+    sygnalizują wymogi).
+
+====4.14. MACIERZ REGUŁ HYPER TP (46 REGUŁ, PRIORYTETY 1436-1462)
+
+    Grupa                     Priorytety  Reguły  Routing dominujący
+    ---------------------------------------------------------------
+    Detekcja powiązań (5 typów) 1436-1440   5    WARNING/TRIAGE
+    Progi PIT (2M/1M/500k)      -           3    WARNING
+    Przeliczenie EUR + agregacja -          2    WARNING
+    Local File (5 reguł)        1441-1445   5    TRIAGE_QUEUE
+    Master File (5 reguł)       1446-1450   5    TRIAGE_QUEUE
+    TPR (5 reguł)               1451-1455   5    WARNING/TRIAGE
+    Benchmarking (5 reguł)      1456-1460   5    TRIAGE_QUEUE
+    Safe harbor (5 reguł)       1461-1465   5    WARNING
+    Sankcje (5 reguł)           1466-1470   5    BLOCK_AND_ALERT/KKS
+    Korekty (5 reguł)           1471-1475   5    TRIAGE/odwołania
+    no_match / routingowe        -           1    ""
+    ---------------------------------------------------------------
+    RAZEM                                   46
+
+    Obserwacje:
+    (a) Routing TRIAGE_QUEUE dla Local/Master File jest właściwy:
+        dokumentację trzeba przygotować, ale nie blokuje transakcji.
+    (b) Sankcje z routingiem BLOCK_AND_ALERT (brak dokumentacji 10%,
+        KKS za celowe zaniżenie) — właściwa gradacja powagi.
+    (c) Struktura 5+5+5... (grupy po 5 reguł) jest bardzo czytelna dla
+        audytu reguł (wzorzec godny powielenia w innych modułach).
+    (d) Brak reguł metod wyceny (CUP/RESALE/COST+/TNMM) — potwierdzenie
+        luki L-TP-2; benchmarking pokrywa tylko analizę porównawczą.
+
+=================================================================
+SEKCJA 5. ANALIZA REZYDENCJI PODATKOWEJ — POZIOM ENTERPRISE
+=================================================================
+
+5.1. ZAKRES MODUŁU RESIDENCY (54 REGUŁY)
+
+    plan44_residency (11 reguł micro):
+    jdg.residency.residency_tests, jdg.residency.dtt,
+    jdg.residency.foreign_income, jdg.residency.cfr,
+    jdg.residency.digital_pe, jdg.residency.dual_residency_conflict,
+    jdg.residency.foreign_income_exemption, jdg.residency.foreign_tax_credit,
+    jdg.residency.foreign_income_credit, jdg.residency.no_match (oraz routing).
+
+    plan45_residency (43 reguły hyper) — pełny inwentarz:
+    test_183_days (Art. 3 ust. 1a PIT), test_center_of_vital_interests,
+    test_economic_ties, test_family_ties, test_habitual_abode_tiebreaker
+    (OECD MTC Art. 4 ust. 2), dtt_exemption_with_progression
+    (Art. 27 ust. 8 PIT), dtt_credit_method (Art. 27 ust. 9 PIT),
+    dtt_tiebreaker_rules, cfr_validity_12months (Art. 26 ust. 1 PIT),
+    cfr_required_for_wht_exemption, dual_residency_detection,
+    dual_residency_permanent_home, dual_residency_vital_interests,
+    dual_residency_habitual_abode, dual_residency_citizenship,
+    exit_tax_4m_threshold (Art. 30da PIT), exit_tax_rate_19pct,
+    exit_tax_installments_5x20pct (Art. 30da ust. 7 PIT),
+    exit_tax_deadline_7th_month (Art. 30da ust. 6 PIT),
+    exit_tax_reporting_obligations (Art. 30da ust. 5 PIT),
+    cfc_control_50pct, cfc_low_tax_jurisdiction,
+    cfc_passive_income_50pct, cfc_revenue, cfc_tax_rate,
+    cfc_de_minimis_250k_eur (Art. 30f ust. 5 PIT), cfc_ownership,
+    cfc_reporting_obligation, pe_construction_12months,
+    pe_dependent_agent, pe_fixed_place_of_business, pe_digital_server,
+    pe_registration_obligation, nomad_center_of_life_test,
+    nomad_tax_residence_while_traveling, nomad_income_sourcing,
+    nomad_health_insurance_gap, nomad_zus_obligations,
+    abolition_relief_applicable (Art. 27g PIT),
+    abolition_relief_calculation, foreign_tax_credit_limit,
+    foreign_tax_credit_excess_carry, foreign_tax_documentation,
+    aggregate_recommendations, aggregate_risk_map, no_match.
+
+5.2. TESTY REZYDENCJI (ART. 3 UST. 1A PIT)
+
+    (a) test_183_days — pobyt w PL > 183 dni w roku = rezydent —
+        poprawne (Art. 3 ust. 1a pkt 2 PIT).
+    (b) test_center_of_vital_interests — centrum interesów życiowych
+        (powiązania osobiste i ekonomiczne) — poprawne (Art. 3 ust. 1a
+        pkt 1 PIT).
+    (c) test_economic_ties / test_family_ties — ośrodek interesów
+        gospodarczych i osobistych — poprawne rozbicie.
+    (d) test_habitual_abode_tiebreaker — miejsce zwykłego pobytu jako
+        tie-breaker — zgodne z OECD MTC Art. 4 ust. 2.
+
+5.3. CERTYFIKAT REZYDENCJI (CFR)
+
+    (a) cfr_validity_12months — certyfikat ważny 12 miesięcy od wydania —
+        poprawne (art. 26 ust. 1 PIT i praktyka MF).
+    (b) cfr_required_for_wht_exemption — CFR niezbędny do zastosowania
+        zwolnienia u źródła (WHT) — poprawne.
+
+5.4. PODWÓJNE OPODATKOWANIE — UPO
+
+    (a) dtt_exemption_with_progression — metoda wyłączenia z progresją
+        (Art. 27 ust. 8 PIT) — dochód zagraniczny zwolniony, wpływa na
+        stawkę od dochodu PL — poprawne.
+    (b) dtt_credit_method — metoda odliczenia proporcjonalnego (Art. 27
+        ust. 9 PIT) — podatek zagraniczny odliczany do limitu — poprawne.
+    (c) dtt_tiebreaker_rules — konflikt rezydencji: stałe mieszkanie →
+        interesy → pobyt → obywatelstwo (OECD MTC Art. 4 ust. 2) —
+        poprawne.
+    (d) dual_residency_detection / permanent_home / vital_interests /
+        habitual_abode / citizenship — pełna sekwencja tie-breakerów
+        rozbita na 5 reguł — wzorcowe.
+
+5.5. ULGA ABOLICYJNA (ART. 27G PIT)
+
+    (a) abolition_relief_applicable — dostępność ulgi dla krajów z metodą
+        odliczenia — poprawne.
+    (b) abolition_relief_calculation — ulga = podatek wg metody odliczenia
+        MINUS podatek wg metody wyłączenia — poprawne (limit ulgi:
+        różnica między podatkiem obliczonym metodą odliczenia a podatkiem
+        obliczonym metodą wyłączenia).
+
+5.6. EXIT TAX (ART. 30DA PIT)
+
+    (a) exit_tax_4m_threshold — próg 4 000 000 PLN wartości niezrealizowanych
+        zysków przy zmianie rezydencji — poprawne (Art. 30da ust. 1 PIT).
+    (b) exit_tax_rate_19pct — stawka 19% — poprawne.
+    (c) exit_tax_installments_5x20pct — rozłożenie na 5 rat rocznych po 20%
+        (Art. 30da ust. 7 PIT) — poprawne.
+    (d) exit_tax_deadline_7th_month — zapłata do 7. miesiąca po zmianie
+        rezydencji (Art. 30da ust. 6 PIT) — poprawne.
+    (e) exit_tax_reporting_obligations — PIT-NZS i PIT-36 z załącznikiem
+        o exit tax (Art. 30da ust. 5 PIT) — poprawne.
+    Routing: BLOCK_AND_ALERT dla progu i stawki — właściwe dla poważnego
+    ryzyka.
+
+5.7. CFC (KONTROLOWANE SPÓŁKI ZAGRANICZNE, ART. 30F PIT)
+
+    (a) cfc_control_50pct — kontrola > 50% — poprawne (Art. 30f ust. 1 PIT).
+    (b) cfc_low_tax_jurisdiction — jurysdykcja o niskim opodatkowaniu —
+        poprawne.
+    (c) cfc_passive_income_50pct — dochód pasywny > 50% — poprawne.
+    (d) cfc_de_minimis_250k_eur — wyłączenie de minimis: przychody CFC
+        < 250 000 EUR rocznie (Art. 30f ust. 5 PIT) — poprawne.
+    (e) cfc_reporting_obligation — obowiązki raportowe (załącznik PIT-CFC)
+        — poprawne.
+
+5.8. ZAKŁAD (PE) I CYFROWY ZAKŁAD
+
+    (a) pe_construction_12months — plac budowy > 12 miesięcy = PE —
+        zgodne z OECD MTC Art. 5 ust. 3.
+    (b) pe_dependent_agent / pe_fixed_place_of_business — agent zależny,
+        stałe miejsce prowadzenia działalności — poprawne.
+    (c) pe_digital_server — zakład cyfrowy (serwer) — nowatorskie,
+        zgodne z kierunkiem Pillar One.
+    (d) pe_registration_obligation — obowiązek rejestracji — dobre.
+
+5.9. DIGITAL NOMAD
+
+    (a) nomad_center_of_life_test — test centrum życiowego dla nomadów —
+        innowacyjne.
+    (b) nomad_tax_residence_while_traveling — rezydencja przy podróżach —
+        dobre.
+    (c) nomad_income_sourcing — źródło przychodów — dobre.
+    (d) nomad_health_insurance_gap — luka w ubezpieczeniu zdrowotnym —
+        praktycznie istotne.
+    (e) nomad_zus_obligations — obowiązki ZUS — dobre.
+
+5.10. DIAGRAM MERMAID — DETERMINACJA REZYDENCJI
+
+graph TD
+    A[JDG z dochodami zagranicznymi] --> B{Test 183 dni w PL}
+    B -->|Tak| C[Rezydent PL]
+    B -->|Nie| D{Centrum interesow zyciowych w PL}
+    D -->|Tak| C
+    D -->|Nie| E{Wiazace UPO z krajem drugim}
+    E -->|Brak UPO| F[Ocena wg ustawy PIT - Art. 3]
+    E -->|Jest UPO| G{Tie-breaker: stale mieszkanie / interesy / pobyt / obywatelstwo}
+    G --> H[Rezydencja PL lub zagraniczna]
+    C --> I[Podwojne opodatkowanie - metoda wykluczenia z progresja lub odliczenia]
+    I --> J[CFR kontrahenta - waznosc 12 miesiecy]
+    C --> K{Zmiana rezydencji}
+    K -->|Niezrealizowane zyski > 4M PLN| L[Exit tax 19% - 5 rat po 20%, termin 7 miesiecy]
+    K -->|CFC w jurysdykcji niskopodatkowej| M[CFC: kontrola 50%, pasywny dochod 50%, de minimis 250k EUR]
+
+5.11. SCENARIUSZE TESTOWE RESIDENCY (REKOMENDOWANE)
+
+    T1. Pobyt 200 dni w PL + ośrodek interesów w PL → rezydent PL.
+        Sprawdzenie: test_183_days, test_center_of_vital_interests.
+    T2. Dochód z Niemiec (metoda wyłączenia z progresją) + ulga abolicyjna.
+        Sprawdzenie: dtt_exemption_with_progression,
+        abolition_relief_calculation.
+    T3. Zmiana rezydencji na Cypr z niezrealizowanymi zyskami 5M PLN →
+        exit tax 19%, 5 rat, termin 7 miesięcy.
+        Sprawdzenie: exit_tax_4m_threshold, exit_tax_installments_5x20pct.
+    T4. Kontrola 60% spółki na Malcie z dochodem pasywnym 70% i przychodami
+        300k EUR → CFC z wyłączeniem de minimis (300k > 250k EUR).
+        Sprawdzenie: cfc_control_50pct, cfc_de_minimis_250k_eur.
+    T5. CFR kontrahenta wydany 14 miesięcy temu → ostrzeżenie o utracie
+        ważności. Sprawdzenie: cfr_validity_12months.
+
+5.12. OCENA MODUŁU RESIDENCY: 4.0/5
+
+    Mocne strony: pełne testy rezydencji, tie-breakery (5 reguł), metody
+    UPO, ulga abolicyjna, exit tax (5 reguł), CFC (8 reguł), PE (5 reguł),
+    nomad (5 reguł), agregacja rekomendacji i mapa ryzyka.
+    Luki: (1) zależność od poprawnych danych wejściowych (days_in_pl,
+    center_of_life_in_pl — brak mechanizmu samooceny), (2) brak integracji
+    z danymi o pobytach (System Informacyjny Schengen itp.), (3) brak
+    reguły dla umów UPO z metodą wyłączenia bez progresji (kraje spoza EOG).
+
+====5.13. MACIERZ REGUŁ HYPER RESIDENCY (43 REGUŁY, PRIORYTETY 1476-1515)
+
+    Grupa                     Priorytety  Reguły  Routing dominujący
+    ---------------------------------------------------------------
+    Testy rezydencji (5)        1476-1480   5    "" / WARNING (tie-breaker)
+    UPO/DTY (5)                 1481-1485   5    "" / TRIAGE (tie-breaker)
+    Ulga abolicyjna (2)         1488-1489   2    ""
+    Exit tax (5)                1491-1495   5    BLOCK_AND_ALERT
+    Podwójna rezydencja (5)     1496-1500   5    TRIAGE_QUEUE
+    CFC (8)                     1501-1509   8    WARNING/TRIAGE
+    PE/zakład (5)               1510-1514   5    WARNING
+    Digital nomad (5)           ~1511-1515  5    WARNING
+    Foreign tax credit + agreg.  (dodatkowe) ~3   "" / mapa ryzyka
+    ---------------------------------------------------------------
+    RAZEM                                   43
+
+    Obserwacje:
+    (a) Exit tax z routingiem BLOCK_AND_ALERT (próg 4M PLN, stawka 19%)
+        — jedyna grupa w module o takim priorytecie; słusznie, bo to
+        natychmiastowe zobowiązanie po zmianie rezydencji.
+    (b) CFC z de minimis 250k EUR (Art. 30f ust. 5 PIT) — precyzyjne
+        pokrycie wyjątku ustawowego; rzadkość w komercyjnych systemach.
+    (c) Tie-breakery (5 reguł: stałe mieszkanie → interesy → pobyt →
+        obywatelstwo) — pełna implementacja OECD MTC Art. 4 ust. 2.
+    (d) Moduł nomada (5 reguł) to unikat ENTERPRISE — żaden komercyjny
+        pakiet dla JDG nie obsługuje digital nomads w takim zakresie.
+
+=================================================================
+SEKCJA 6. ANALIZA PŁATNOŚCI (PAYMENTS) — POZIOM ENTERPRISE
+=================================================================
+
+6.1. ZAKRES MODUŁU PAYMENTS (49 REGUŁ)
+
+    plan44_payments (10 reguł micro):
+    jdg.payments.deadline_tracking, jdg.payments.late_interest,
+    jdg.payments.white_list, jdg.payments.split_payment,
+    jdg.payments.fx_cash, jdg.payments.advance,
+    jdg.payments.installment, jdg.payments.offset,
+    jdg.payments.rounding, jdg.payments.no_match.
+
+    plan45_payments (39 reguł hyper) — pełny inwentarz:
+    advance_invoice_15days, advance_pit_revenue_on_receipt,
+    advance_retained_taxable, advance_to_supplier_kup,
+    advance_vat_on_receipt, barter_documentation, barter_double_supply,
+    barter_market_value_base, barter_pit_revenue_recognition,
+    barter_vat_on_both_sides, crypto_exchange_rate_determination,
+    crypto_revenue_recognition, crypto_vat_on_receipt,
+    crypto_volatility_risk, crypto_vs_trading_distinction,
+    foreign_cash_limit_15k (Art. 22p PIT),
+    foreign_whitelist_check (Art. 96b VAT),
+    foreign_giif_reporting_15k_eur (Art. 72 AML),
+    foreign_swift_sepa_auth, foreign_fx_spread_kup,
+    inkind_employee_benefit_tax, inkind_market_value_revenue,
+    inkind_mixed_split, inkind_owner_benefit_dividend,
+    inkind_vat_base_market_value, installments_contract_termination,
+    installments_late_interest (Art. 56 OP),
+    installments_pit_per_installment, installments_vat_accrual_full,
+    installments_vat_cash_per_installment, offset_documentation,
+    offset_mutual_agreement, offset_recognition_date,
+    offset_vat_accrual_method, offset_vat_cash_method,
+    terminal_cost_kup_vat, terminal_obligation_20k_eur,
+    terminal_penalty_5000, no_match.
+
+6.2. TERMINY PŁATNOŚCI I ODSETKI
+
+    (a) plan44 zawiera deadline_tracking i late_interest na poziomie micro,
+        ale w plan45 brak dedykowanych reguł dla terminów 14/30/60 dni
+        (ustawa o terminach zapłaty w transakcjach handlowych).
+    (b) installments_late_interest — odsetki od opóźnionej raty (Art. 56
+        OP — odsetki za zwłokę od zaległości podatkowych) — poprawne dla
+        rat podatkowych, NIE dotyczy odsetek ustawowych za opóźnienie w
+        płatnościach handlowych (Art. 481 KC / ustawa o terminach zapłaty:
+        11.25% rocznie dla 2025).
+    Luka L-PAY-1: brak reguł odsetek ustawowych za opóźnienie w transakcjach
+    handlowych (14/30/60 dni, odsetki 8 p.p. ponad stopę referencyjną NBP).
+
+6.3. BIAŁA LISTA VAT (ART. 96B USTAWY O VAT)
+
+    (a) foreign_whitelist_check — przelew > 15 000 PLN do kontrahenta PL:
+        weryfikacja rachunku na białej liście (Art. 96b ust. 1 ustawy o
+        VAT) — poprawne.
+    (b) Próg 15 000 PLN zapisany w regule (object.get amount_gross >= 15000)
+        — zgodny z prawem.
+    (c) Brak w regule mechanizmu zgłoszenia do US w ciągu 3 dni roboczych
+        (Art. 96b ust. 1 pkt 2) przy płatności na rachunek spoza listy —
+        LUKA L-PAY-2: brak reguły "powiadom naczelnika US w 3 dni" i
+        skutków (Art. 22p PIT: brak KUP + odpowiedzialność solidarna
+        Art. 117ba OrdPU).
+
+6.4. SPLIT PAYMENT (MECHANIZM PODZIELONEJ PŁATNOŚCI)
+
+    KRYTYCZNE USTALENIE: Prompt wymaga analizy split payment (dobrowolny
+    Art. 108a VAT i obowiązkowy Art. 108b VAT dla towarów wrażliwych z
+    załącznika 15). W plan45_payments NIE MA reguł split payment:
+    - jdg.payments.hyper.inkind_mixed_split dotyczy płatności MIESZANEJ
+      gotówka + in-kind (Art. 29a VAT), NIE mechanizmu podzielonej płatności.
+    - Brak reguł: split_dobrowolny (108a), split_obowiazkowy (108b),
+      split_sankcje (108h), split_rachunek_vat (62b OrdUS).
+    LUKA L-PAY-3 (KRYTYCZNA): moduł payments nie obsługuje mechanizmu
+    podzielonej płatności — istotne dla JDG z towarami wrażliwymi
+    (paliwa, elektronika, części samochodowe).
+
+6.5. PŁATNOŚCI GOTÓWKOWE I ZAGRANICZNE
+
+    (a) foreign_cash_limit_15k — płatność gotówkowa w walucie obcej
+        > 15 000 PLN równowartości: KUP wyłączone (Art. 22p PIT) —
+        poprawne.
+    (b) foreign_giif_reporting_15k_eur — przelew zagraniczny > 15 000 EUR:
+        obowiązek raportu GIIF (Art. 72 ustawy AML) — poprawne.
+    (c) foreign_swift_sepa_auth — autoryzacja SWIFT/SEPA — dobre.
+    (d) terminal_obligation_20k_eur — obowiązek terminala płatniczego:
+        obrót B2C > 20 000 EUR/rok i > 50% transakcji z konsumentami
+        (ustawa o usługach płatniczych) — poprawne.
+    (e) terminal_penalty_5000 — kara do 5 000 PLN za brak terminala —
+        poprawne (Art. 53b ustawy o usługach płatniczych).
+    (f) terminal_cost_kup_vat — koszty terminala = KUP + odliczenie VAT —
+        poprawne.
+
+6.6. ZALICZKI (ADVANCES)
+
+    (a) advance_invoice_15days — faktura zaliczkowa w 15 dni — poprawne.
+    (b) advance_vat_on_receipt — VAT od zaliczki w momencie otrzymania —
+        poprawne (Art. 19a ust. 8 VAT).
+    (c) advance_pit_revenue_on_receipt — PIT przychód w dacie otrzymania
+        zaliczki — poprawne (Art. 14 ust. 1 PIT).
+    (d) advance_to_supplier_kup — zaliczka dla dostawcy = KUP — poprawne.
+    (e) advance_retained_taxable — zatrzymana zaliczka = przychód —
+        poprawne.
+
+6.7. BARTER, KOMPENSATA, RATY, IN-KIND
+
+    (a) barter: podwójna dostawa, podstawa = wartość rynkowa (Art. 29a
+        VAT), VAT po obu stronach, rozpoznanie przychodu PIT — poprawne.
+    (b) offset: udokumentowana kompensata, zgoda obu stron, data ujęcia,
+        metoda kasowa i memoriałowa VAT — poprawne.
+    (c) raty: PIT per rata, VAT memoriałowo (pełna kwota) lub kasowo per
+        rata, konsekwencje rozwiązania umowy — poprawne (przy metodzie
+        kasowej i limicie 2M).
+    (d) in-kind: wartość rynkowa przychodu, benefit pracownika, właściciel
+        (dywidenda), podstawa VAT — poprawne.
+
+6.8. KRYPTWALUTY W PŁATNOŚCIACH
+
+    (a) crypto_revenue_recognition / exchange_rate_determination /
+        vat_on_receipt / volatility_risk / vs_trading_distinction —
+        kompletne pokrycie płatności kryptowalutowych — innowacyjne
+        (zgodne z interpretacjami KIS i MF).
+
+6.9. DIAGRAM MERMAID — FLOW WERYFIKACJI PŁATNOŚCI
+
+graph TD
+    A[Platnosc wychodzaca JDG] --> B{Kwota brutto}
+    B -->|>= 15 000 zl do kontrahenta PL| C[Biala Lista VAT - Art. 96b]
+    C -->|Rachunek na liscie| D[Przelew standardowy]
+    C -->|Rachunek spoza listy| E[BLOCK: brak KUP Art. 22p + powiadom US w 3 dni]
+    B -->|>= 15 000 zl gotowka waluta obca| F[KUP wykluczone - Art. 22p PIT]
+    B -->|>= 15 000 EUR przelew zagraniczny| G[GIIF - Art. 72 AML]
+    B -->|Towary wrazliwe| H[Rozwaz split payment obowiazkowy - Art. 108b VAT]
+    D --> I{Typ transakcji}
+    I -->|Zaliczka| J[VAT + PIT w dacie otrzymania, faktura w 15 dni]
+    I -->|Raty| K[PIT per rata, VAT memoriał/cash]
+    I -->|Barter/kompensata| L[Wartosc rynkowa, VAT obie strony]
+    I -->|B2C > 20k EUR/rok| M[Terminal obowiazkowy, kara 5 000 zl]
+
+6.10. SCENARIUSZE TESTOWE PAYMENTS (REKOMENDOWANE)
+
+    T1. Przelew 20 000 PLN na rachunek spoza białej listy → BLOCK + alert
+        3 dni. Sprawdzenie: foreign_whitelist_check (brak reguły 3 dni =
+        L-PAY-2).
+    T2. Zakup paliwa (towar wrażliwy) 50 000 PLN → split payment
+        obowiązkowy. Sprawdzenie: brak reguły = L-PAY-3 (fails).
+    T3. Przelew 20 000 EUR do Chin → GIIF. Sprawdzenie:
+        foreign_giif_reporting_15k_eur.
+    T4. Obroty B2C 25k EUR/rok → obowiązek terminala.
+        Sprawdzenie: terminal_obligation_20k_eur.
+    T5. Faktura 10 000 EUR płatna w ratach 4x → VAT memoriałowo pełna
+        kwota, PIT per rata. Sprawdzenie: installments_vat_accrual_full,
+        installments_pit_per_installment.
+
+6.11. OCENA MODUŁU PAYMENTS: 3.5/5
+
+    Mocne strony: Biała Lista (próg 15k), GIIF, limit gotówki, terminale,
+    zaliczki, barter, kompensata, raty, in-kind, krypto.
+    Luki: (1) L-PAY-3 KRYTYCZNA: brak split payment (108a/108b/108h),
+    (2) L-PAY-2: brak zgłoszenia US w 3 dni przy białej liście,
+    (3) L-PAY-1: brak odsetek ustawowych za opóźnienie w transakcjach
+    handlowych (14/30/60 dni), (4) brak monitoringu terminów 14/30/60
+    w plan45 (jest tylko w plan44 na poziomie micro).
+
+====6.12. MACIERZ REGUŁ HYPER PAYMENTS (39 REGUŁ, PRIORYTETY 1654-1672)
+
+    Grupa                     Priorytety  Reguły  Routing dominujący
+    ---------------------------------------------------------------
+    Zaliczki (5)               -           5      "" / WARNING
+    Barter (5)                 -           5      "" / dokumentacja
+    Krypto-płatności (5)       -           5      WARNING (volatility)
+    Płatności zagraniczne (5) 1666-1670    5      WARNING (whitelist/GIIF)
+    In-kind (5)                -           5      WARNING
+    Raty (5)                  1654+        5      WARNING (late interest)
+    Kompensata (5)             -           5      "" / dokumentacja
+    Terminale (3)              1671-1672    3      BLOCK_AND_ALERT (kara 5000)
+    (pozostałe)                -           ~1      ""
+    ---------------------------------------------------------------
+    RAZEM                                   39
+
+    Obserwacje:
+    (a) Terminale płatnicze z routingiem BLOCK_AND_ALERT (kara do 5 000
+        zł) — właściwe, bo to obowiązek ustawowy z sankcją.
+    (b) Biała Lista (foreign_whitelist_check) z progiem 15 000 PLN
+        zakodowanym w warunku — zgodne z Art. 96b ust. 1 VAT.
+    (c) GIIF (foreign_giif_reporting_15k_eur) — próg 15 000 EUR zgodny
+        z Art. 72 ustawy AML.
+    (d) BRAK: split payment (L-PAY-3), zgłoszenie US w 3 dni (L-PAY-2),
+        odsetki ustawowe za opóźnienie (L-PAY-1) — 3 luki pokrywające
+        najczęstsze błędy płatnicze JDG.
+
+=================================================================
+SEKCJA 7. ANALIZA REKLAMY I REPREZENTACJI — POZIOM ENTERPRISE
+=================================================================
+
+7.1. ZAKRES MODUŁU ADVERTISING (46 REGUŁ)
+
+    plan44_advertising (10 reguł micro):
+    jdg.advertising.ad_vs_representation, jdg.advertising.expense_class,
+    jdg.advertising.gifts, jdg.advertising.sponsorship,
+    jdg.advertising.digital_ads, jdg.advertising.vat_deduction,
+    jdg.advertising.ad_vat_deduction, jdg.advertising.rounding,
+    jdg.advertising.no_match (oraz routing).
+
+    plan45_advertising (36 reguł hyper) — pełny inwentarz:
+    ad_vs_repr_test (Art. 23 ust. 1 pkt 23 PIT),
+    product_promotion_kup, brand_building_kup,
+    personal_prestige_nkup (Art. 23 ust. 1 pkt 23 PIT),
+    representation_capped_0025pct,
+    digital_google_ads_kup, digital_facebook_ads_kup,
+    digital_seo_sem_kup, digital_email_marketing_kup,
+    digital_affiliate_kup, events_trade_fair_kup,
+    events_business_dinner_kup, events_luxury_trip_nkup,
+    events_conference_speaker_kup, events_networking_kup,
+    gifts_under_200_branded_kup (Art. 23 ust. 1 pkt 23 PIT),
+    gifts_over_200_nkup, gifts_samples_products_kup,
+    gifts_unbranded_nkup, gifts_vat_deduction_100pln
+    (Art. 88 ust. 1 pkt 5 VAT), vat_gifts_100pln_limit,
+    sponsorship_with_benefits_kup, sponsorship_without_benefits_donation
+    (Art. 26 PIT), sponsorship_sport_culture_kup,
+    sponsorship_local_event_kup, sponsorship_vat_deduction,
+    influencer_gift_vs_service, influencer_with_description_kup,
+    influencer_no_biz_connection_nkup, influencer_vat_b2b,
+    car_wrapping_vat26_full (Art. 86a VAT, Art. 23 PIT),
+    vat_standard_deduction_full, vat_imported_ad_reverse_charge,
+    vat_cross_border_ads_b2b, vat_google_fb_import_services, no_match.
+
+7.2. REKLAMA VS REPREZENTACJA — KLUCZOWE ROZRÓŻNIENIE
+
+    (a) ad_vs_repr_test — test: reklama (informacja o produkcie/usłudze)
+        = KUP; reprezentacja (budowanie prestiżu) = NKUP — poprawne
+        (Art. 23 ust. 1 pkt 23 PIT).
+    (b) product_promotion_kup — promocja konkretnego produktu = KUP 100% —
+        poprawne.
+    (c) brand_building_kup — budowanie marki FIRMY (nie osobistej) = KUP —
+        poprawne.
+    (d) personal_prestige_nkup — prestiż właściciela bez związku z
+        produktem = NKUP — poprawne.
+
+7.3. REGUŁA LIMITU REPREZENTACJI — USTALENIE KRYTYCZNE (R-ADV-1)
+
+    Reguła jdg.advertising.hyper.representation_capped_0025pct deklaruje:
+    "Reprezentacja — KUP ograniczony do 0.025% rocznego przychodu (limit)".
+
+    ANALIZA PRAWNA: Art. 23 ust. 1 pkt 23 PIT wyłącza z KUP wydatki na
+    reprezentację, w szczególności na usługi gastronomiczne, zakup żywności
+    i napojów (w tym alkoholowych) — BEZ ŻADNEGO LIMITU PROCENTOWEGO.
+    Historycznie istniał limit 0.25% przychodu dla wydatków na reklamę
+    publiczną w środkach masowego przekazu i public relations (art. 23
+    ust. 1 pkt 23a PIT), ZNIESIONY od 1 stycznia 2018 r. nowelizacją.
+    Wartość 0.025% nie występuje w żadnym przepisie podatkowym.
+
+    WNIOSEK: reguła representation_capped_0025pct jest BŁĘDNA:
+    (1) reprezentacja jest NKUP w 100% (bez limitu),
+    (2) limit 0.25% dotyczył reklamy publicznej (nie reprezentacji) i został
+    zniesiony w 2018,
+    (3) wartość 0.025% jest błędna nawet historycznie (było 0.25%).
+    Reguła może prowadzić do BŁĘDNEGO zaliczenia do KUP części wydatków
+    reprezentacyjnych (do 0.025% przychodu) — ryzyko kontroli podatkowej.
+    REKOMENDACJA P0: usunąć/zmienić regułę na "reprezentacja = NKUP w
+    całości" (BLOCK_AND_ALERT przy klasyfikacji gastronomia/prestiż).
+
+7.4. PREZENTY REKLAMOWE
+
+    (a) gifts_under_200_branded_kup — prezent < 200 PLN z logo = KUP —
+        zgodne z Art. 23 ust. 1 pkt 23 PIT in fine (prezenty małej
+        wartości do 200 zł).
+    (b) gifts_over_200_nkup — prezent > 200 PLN = NKUP — poprawne.
+    (c) gifts_samples_products_kup — próbki produktów = KUP — poprawne.
+    (d) gifts_unbranded_nkup — prezenty bez logo = NKUP — poprawne
+        (interpretacje KIS).
+    (e) VAT: gifts_vat_deduction_100pln / vat_gifts_100pln_limit — VAT
+        odliczalny tylko do 100 PLN wartości netto prezentu (Art. 88
+        ust. 1 pkt 5 VAT, prezenty małej wartości Art. 7 ust. 4 pkt 2 VAT)
+        — poprawne.
+    Niespójność PIT/VAT: 200 PLN (PIT) vs 100 PLN netto (VAT) — reguły
+    poprawnie rozróżniają obie granice.
+
+7.5. REKLAMA CYFROWA
+
+    (a) digital_google_ads_kup / digital_facebook_ads_kup /
+        digital_seo_sem_kup / digital_email_marketing_kup /
+        digital_affiliate_kup — Google Ads, FB/IG, SEO/SEM, email,
+        afiliacja = KUP 100% — zgodne z praktyką KIS.
+    (b) VAT: vat_google_fb_import_services / vat_imported_ad_reverse_charge
+        — import usług reklamowych (Google/FB spoza PL) = reverse charge —
+        poprawne (Art. 28b VAT).
+    (c) vat_cross_border_ads_b2b — reklama transgraniczna B2B — poprawne.
+
+7.6. EVENTY I SPONSORING
+
+    (a) events_trade_fair_kup — targi (stoisko, powierzchnia, transport)
+        = KUP — poprawne.
+    (b) events_business_dinner_kup — kolacja biznesowa z agendą = KUP —
+        zgodne z interpretacjami (jeśli merytoryczna).
+    (c) events_luxury_trip_nkup — luksusowy wyjazd bez agendy = NKUP —
+        poprawne.
+    (d) events_conference_speaker_kup / events_networking_kup — prelegent,
+        networking = KUP — dobre.
+    (e) sponsorship_with_benefits_kup — sponsoring z ekspozycją logo
+        = KUP 100% — poprawne.
+    (f) sponsorship_without_benefits_donation — sponsoring bez
+        kontrświadczeń = darowizna (odliczenie max 6% dochodu, Art. 26
+        PIT) — poprawne.
+    (g) sponsorship_sport_culture_kup / local_event_kup — sport, kultura,
+        wydarzenia lokalne = KUP — dobre.
+    (h) sponsorship_vat_deduction — VAT od sponsoringu z kontrświadczeniami
+        = 100% odliczenia — poprawne.
+
+7.7. INFLUENCERZY I OKLEJENIE AUTA
+
+    (a) influencer_gift_vs_service — rozróżnienie prezentu (NKUP > 200 PLN)
+        od usługi promocyjnej (KUP) — trafne.
+    (b) influencer_with_description_kup / no_biz_connection_nkup —
+        influencer z opisem produktu = KUP, bez związku z biznesem = NKUP —
+        poprawne.
+    (c) influencer_vat_b2b — usługa influencera B2B z fakturą = VAT —
+        poprawne.
+    (d) car_wrapping_vat26_full — oklejenie reklamowe auta: VAT-26 = 100%
+        odliczenia VAT + 100% KUP paliwa i eksploatacji (Art. 86a ust. 1
+        VAT) — poprawne (firmowe auto z oklejeniem reklamowym).
+
+7.8. DIAGRAM MERMAID — KLASYFIKACJA WYDATKÓW REKLAMOWYCH
+
+graph TD
+    A[Wydatek marketingowy JDG] --> B{Czy informacja o produkcie/usludze?}
+    B -->|Tak| C[Reklama - KUP 100%]
+    B -->|Nie, prestiz osoby| D[Reprezentacja - NKUP Art. 23 ust. 1 pkt 23 PIT]
+    C --> E{Typ}
+    E -->|Digital Google/FB/SEO/Afiliacja| F[KUP 100% + VAT reverse charge]
+    E -->|Eventy/targi/konferencje| G[KUP 100% jesli merytoryczne]
+    E -->|Sponsoring| H{Kontrswiadczenia?}
+    H -->|Tak, ekspozycja logo| I[KUP 100% + VAT 100%]
+    H -->|Nie| J[Darowizna - limit 6% dochodu Art. 26 PIT]
+    E -->|Prezenty| K{Wartosc}
+    K -->|< 200 zl z logo| L[KUP PIT + VAT do 100 zl netto]
+    K -->|> 200 zl| M[NKUP]
+    E -->|Oklejenie auta| N[VAT-26: 100% VAT + KUP paliwa]
+
+7.9. SCENARIUSZE TESTOWE ADVERTISING (REKOMENDOWANE)
+
+    T1. Kolacja z klientem 800 PLN bez agendy → NKUP (reprezentacja).
+        Sprawdzenie: personal_prestige_nkup (a representation_capped
+        błędnie zaliczy 0.025% do KUP — R-ADV-1).
+    T2. Prezenty świąteczne 15 x 150 PLN z logo → KUP, VAT do 100 PLN netto.
+        Sprawdzenie: gifts_under_200_branded_kup, vat_gifts_100pln_limit.
+    T3. Sponsoring lokalnej drużyny 10 000 PLN z banerem → KUP 100%.
+        Sprawdzenie: sponsorship_local_event_kup.
+    T4. Google Ads 5 000 PLN/mies. → KUP + VAT reverse charge.
+        Sprawdzenie: digital_google_ads_kup, vat_imported_ad_reverse_charge.
+    T5. Oklejenie auta firmowego → VAT-26, 100% KUP paliwa.
+        Sprawdzenie: car_wrapping_vat26_full.
+
+7.10. OCENA MODUŁU ADVERTISING: 3.5/5
+
+    Mocne strony: test reklama/reprezentacja, prezenty (200 PIT / 100 VAT),
+    reklama cyfrowa (5 reguł), sponsoring (5 reguł), influencerzy (4),
+    oklejenie auta, VAT (5 reguł).
+    Luki: (1) R-ADV-1 KRYTYCZNA: błędna reguła limitu reprezentacji 0.025%,
+    (2) brak reguł dla "public relations" jako odrębnej kategorii,
+    (3) brak monitoringu limitów w czasie rzeczywistym (sponsoring 6%).
+
+====7.11. MACIERZ REGUŁ HYPER ADVERTISING (36 REGUŁ, PRIORYTETY 1674-1708)
+
+    Grupa                     Priorytety  Reguły  Routing dominujący
+    ---------------------------------------------------------------
+    Test reklama/reprezentacja  1674-1678   5    "" / WARNING (R-ADV-1!)
+    Reklama cyfrowa (5)         1679-1683   5    "" (KUP 100%)
+    Eventy (5)                  1684-1688   5    WARNING (luxury trip)
+    Prezenty (5)                1689-1693   5    WARNING (>200 PLN)
+    Sponsoring (5)              1694-1698   5    WARNING (darowizna)
+    Influencerzy (4)            1704-1707   4    WARNING
+    Oklejenie auta/VAT (5)      1708+       5    "" (VAT-26)
+    (pozostałe)                 -           ~2    ""
+    ---------------------------------------------------------------
+    RAZEM                                   36
+
+    Obserwacje:
+    (a) R-ADV-1: reguła representation_capped_0025pct (1678) jest jedyną
+        w module z błędną podstawą — limit 0.025% nie istnieje w prawie.
+    (b) Prezenty: rozdzielenie PIT (200 zł) i VAT (100 zł netto) —
+        zgodne z Art. 23 ust. 1 pkt 23 PIT i Art. 88 ust. 1 pkt 5 VAT.
+    (c) Oklejenie auta (car_wrapping_vat26_full) — poprawna obsługa
+        VAT-26 (100% odliczenia + KUP paliwa) dla aut z reklamą.
+    (d) Influencerzy: rozróżnienie prezentu od usługi (1707) — trafne
+        i aktualne (rosnący koszt marketingowy JDG).
+
+=================================================================
+SEKCJA 8. ANALIZA ZAMÓWIEŃ PUBLICZNYCH (PROCUREMENT) — POZIOM ENTERPRISE
+=================================================================
+
+8.1. ZAKRES MODUŁU PROCUREMENT (39 REGUŁ)
+
+    plan44_procurement (8 reguł micro):
+    jdg.procurement.public_procurement_detection,
+    jdg.procurement.tax_clearance, jdg.procurement.exclusions,
+    jdg.procurement.bid_security, jdg.procurement.eu_funds,
+    jdg.procurement.foreign, jdg.procurement.no_match (oraz routing).
+
+    plan45_procurement (31 reguł hyper) — pełny inwentarz:
+    tax_clearance_conditions (Art. 306e OP),
+    tax_clearance_deadline_7_3 (Art. 306n OP),
+    tax_clearance_validity, tax_clearance_download,
+    tax_clearance_procedure, zus_clearance_conditions,
+    zus_clearance_deadline, zus_clearance_download,
+    zus_clearance_procedure, zus_clearance_validity,
+    exclusion_kks (Art. 108 PZP), exclusion_penalties,
+    exclusion_mandatory, exclusion_optional, exclusion_tax_arrears,
+    bid_wadium_kup (Art. 22 PIT), bid_wadium_vat (Art. 19a VAT),
+    bid_security, bid_return, bid_forfeit,
+    eu_funds_audit, eu_funds_certificates, eu_funds_extra_requirements,
+    eu_funds_sanctions, eu_funds_settlement,
+    foreign_documents, foreign_residency, foreign_tax_representative,
+    foreign_translations, foreign_vat, no_match.
+
+8.2. ZAŚWIADCZENIA O NIEZALEGANIU
+
+    (a) tax_clearance_conditions — zaświadczenie o niezaleganiu wymagane
+        dla zamówień publicznych (Art. 306e OP) — poprawne.
+    (b) tax_clearance_deadline_7_3 — 7 dni standard / 3 dni tryb pilny
+        (+ opłata) (Art. 306n OP) — poprawne.
+    (c) tax_clearance_validity — ważność 3 miesiące od wydania — poprawne.
+    (d) tax_clearance_download / procedure — pobranie i procedura —
+        dobre (zaświadczenie pobierane elektronicznie z US).
+    (e) zus_clearance_* — zaświadczenie ZUS: 7 dni roboczych, ważność
+        3 miesiące — poprawne (Art. 109 ust. 2 ustawy o SUS).
+
+8.3. WYKLUCZENIA Z POSTĘPOWANIA
+
+    (a) exclusion_kks — skazanie KKS = wykluczenie (Art. 108 ust. 1 pkt 1
+        PZP) — poprawne.
+    (b) exclusion_penalties — kary = wykluczenie (Art. 108 ust. 1 pkt 4
+        PZP) — poprawne.
+    (c) exclusion_tax_arrears — zaległości podatkowe = wykluczenie
+        (Art. 109 ust. 1 pkt 1 PZP) — poprawne.
+    (d) exclusion_mandatory / exclusion_optional — obligatoryjne vs
+        fakultatywne — poprawne.
+    Routing BLOCK_AND_ALERT dla wykluczeń — właściwe.
+
+8.4. WADIUM I ZABEZPIECZENIA
+
+    (a) bid_wadium_kup — wadium = KUP w dacie wpłaty (Art. 22 PIT) —
+        poprawne.
+    (b) bid_wadium_vat — wadium poza VAT, chyba że przepadek = dostawa
+        (Art. 19a VAT) — poprawne.
+    (c) bid_security — zabezpieczenie należytego wykonania 5-10% wartości
+        umowy — zgodne z Art. 150 PZP.
+    (d) bid_return — zwrot wadium nie jest przychodem — poprawne.
+    (e) bid_forfeit — przepadek wadium — skutki podatkowe — dobre.
+
+8.5. FUNDUSZE UE
+
+    (a) eu_funds_audit / certificates / extra_requirements / sanctions /
+        settlement — audyt, certyfikaty, wymogi dodatkowe, sankcje,
+        rozliczenie — kompletne pokrycie projektów unijnych — dobre.
+
+8.6. WYKONAWCY ZAGRANICZNI
+
+    (a) foreign_documents / translations / residency / vat /
+        tax_representative — dokumenty, tłumaczenia, rezydencja, VAT,
+        przedstawiciel podatkowy — kompletne — dobre.
+
+8.7. DIAGRAM MERMAID — PROCES ZAMÓWIENIA PUBLICZNEGO
+
+graph TD
+    A[Oferta JDG w zamowieniu publicznym] --> B{Zaswiadczenia}
+    B --> C[Zaswiadczenie o niezaleganiu US - Art. 306e OP, 7/3 dni, waznosc 3 mies.]
+    B --> D[Zaswiadczenie ZUS - 7 dni, waznosc 3 mies.]
+    C --> E{Kwalifikacja - wykluczenia}
+    E -->|Skazanie KKS / kary / zaleglosci| F[BLOCK: wykluczenie z PZP]
+    E -->|Brak przeslanek| G[Zlozenie oferty + wadium]
+    G --> H[Wadium = KUP w dacie wplaty, poza VAT]
+    G --> I[Zabezpieczenie nalezytego wykonania 5-10%]
+    G --> J{Zrodlo finansowania}
+    J -->|Fundusze UE| K[Audyt, certyfikaty, sankcje, rozliczenie]
+    J -->|Srodki wlasne| L[Standardowa realizacja]
+
+8.8. SCENARIUSZE TESTOWE PROCUREMENT (REKOMENDOWANE)
+
+    T1. Oferta na dostawę 500k PLN, zaświadczenie US pobrane → OK.
+        Sprawdzenie: tax_clearance_procedure, tax_clearance_validity.
+    T2. Zaległość podatkowa 10k PLN → wykluczenie obligatoryjne.
+        Sprawdzenie: exclusion_tax_arrears.
+    T3. Wadium 15 000 PLN wpłacone → KUP w dacie wpłaty.
+        Sprawdzenie: bid_wadium_kup.
+    T4. Projekt UE 1M PLN → audyt i certyfikaty wymagane.
+        Sprawdzenie: eu_funds_audit, eu_funds_certificates.
+    T5. Wykonawca z zagranicy → tłumaczenia i przedstawiciel podatkowy.
+        Sprawdzenie: foreign_translations, foreign_tax_representative.
+
+8.9. OCENA MODUŁU PROCUREMENT: 3.5/5
+
+    Mocne strony: zaświadczenia (US+ZUS), wykluczenia (5 reguł), wadium
+    (5 reguł), fundusze UE (5 reguł), wykonawcy zagraniczni (5 reguł).
+    Luki: (1) brak progów PZP (unijny 2025: 209 000 EUR dostawy/usługi,
+    5 538 000 EUR roboty; krajowy 130 000 zł) — L-PROC-1, (2) brak
+    reguł ulg podatkowych specyficznych dla zamówień (np. ulga na
+    innowacje przy projektach B+R), (3) brak monitoringu terminów
+    ofertowych i przedłużeń.
+
+====8.10. MACIERZ REGUŁ HYPER PROCUREMENT (31 REGUŁ, PRIORYTETY 1270-1295)
+
+    Grupa                     Priorytety  Reguły  Routing dominujący
+    ---------------------------------------------------------------
+    Zaświadczenie US (5)        1270-1275   5    "" / procedura
+    Zaświadczenie ZUS (4)       1276-1279   4    "" / procedura
+    Wykluczenia (5)             1280-1284   5    BLOCK_AND_ALERT
+    Wadium/zabezpieczenie (5)   1285-1289   5    "" / WARNING (przepadek)
+    Fundusze UE (5)             1290-1294   5    WARNING/TRIAGE
+    Wykonawcy zagraniczni (5)   -           5    WARNING
+    (pozostałe)                 -          ~2    ""
+    ---------------------------------------------------------------
+    RAZEM                                   31
+
+    Obserwacje:
+    (a) Wykluczenia z routingiem BLOCK_AND_ALERT (skazanie KKS, kary,
+        zaległości) — właściwa gradacja: oferta JDG z wykluczeniem
+        traci sens biznesowy, blokada oszczędza czas.
+    (b) Zaświadczenia: 7 dni standard / 3 dni pilne (Art. 306n OP),
+        ważność 3 mies. — precyzyjnie zgodne z OrdPU.
+    (c) Brak progów PZP (unijny 209k EUR / krajowy 130k zł) — L-PROC-1:
+        moduł obsługuje wykonawcę, nie kwalifikację trybu zamówienia.
+    (d) Fundusze UE (audyt, certyfikaty, sankcje) — rzadkie pokrycie
+        w systemach dla JDG (zwykle tylko duże pakiety korporacyjne).
+
+=================================================================
+SEKCJA 9. MACIERZ LUK, BŁĘDÓW I RYZYKA
+=================================================================
+
+9.1. LUKI I BŁĘDY KRYTYCZNE (P0 — NATYCHMIASTOWE)
+
+    L1 (R-ADV-1)  advertising  Błędna reguła limitu reprezentacji 0.025%
+                   (powinno: NKUP 100%, bez limitu; limit 0.25% zniesiony
+                   2018). Skutek: błędne KUP → ryzyko kontroli.
+    L2 (L-PAY-3)  payments     Brak split payment (Art. 108a/108b/108h
+                   VAT, załącznik 15). Skutek: brak egzekwowania
+                   obowiązkowego mechanizmu dla towarów wrażliwych.
+    L3 (L-PAY-2)  payments     Biała Lista: brak reguły zgłoszenia US
+                   w 3 dni robocze przy rachunku spoza listy + brak
+                   skutków (Art. 22p PIT, Art. 117ba OrdPU).
+
+9.2. LUKI ŚREDNIE (P1)
+
+    L4 (R-TP-1)   tp           Termin dokumentacji lokalnej: 10 miesięcy
+                   vs przed złożeniem zeznania (PIT) — weryfikacja.
+    L5 (R-TP-2)   tp           Termin TPR: 30 listopada vs 10 miesięcy
+                   (31 października) — weryfikacja roczna.
+    L6 (L-TP-2)   tp           Brak dedykowanych reguł wyboru metody
+                   wyceny TP (CUP/RESALE/COST+/TNMM).
+    L7 (L-PAY-1)  payments     Brak odsetek ustawowych za opóźnienie
+                   (Art. 481 KC / ustawa o terminach zapłaty, 14/30/60 dni).
+    L8 (L-PROC-1) procurement  Brak progów PZP (unijny 209k EUR, krajowy
+                   130k zł) i monitoringu terminów ofertowych.
+    L9             fx           Brak automatycznego feedu kursów NBP
+                   (reguły na danych wejściowych, brak API NBP).
+
+9.3. MACIERZ RYZYKA
+
+    Ryzyko          Moduł       Prawdopod.  Wpływ    Poziom
+    ---------------------------------------------------------------
+    R1  Błędne KUP  Advertising Wysokie     Średni   KRYTYCZNE
+        z limitu 0.025% reprezentacji
+    R2  Sankcje split payment  Payments    Średnie   Wysoki   WYSOKIE
+        przy towarach wrażliwych
+    R3  Odpowiedzialn. Biała    Payments    Średnie   Średni   ŚREDNIE
+        solidarna Lista (3 dni)
+    R4  Kara za brak TP         tp          Niskie    Wysoki   ŚREDNIE
+        dokumentacji (10%)
+    R5  Exit tax przy zmianie   residency   Niskie    Wysoki   ŚREDNIE
+        rezydencji > 4M PLN
+    R6  KKS przy zaniżeniu TP   tp          Niskie    Wysoki   ŚREDNIE
+        (celowe obejście)
+
+9.4. SPÓJNOŚĆ Z RAPORTAMI P18-P20 (OBSERWACJE KRZYŻOWE)
+
+    - Biała Lista (P21 payments) współgra z KSeF (P18): płatność na
+      rachunek spoza listy + brak faktury KSeF = podwójne ryzyko.
+    - TP (P21) współgra z JPK_CIT (P18): transakcje z podmiotami
+      powiązanymi widoczne w JPK — baza do wykrywania obowiązku TP.
+    - Exit tax (P21 residency) współgra z sankcjami KKS (P20): zmiana
+      rezydencji bez rozliczenia exit tax = ryzyko karno-skarbowe.
+    - Zaświadczenia (P21 procurement) współgrają z rejestrem karalności
+      (P20 conviction): skazanie KKS = wykluczenie z PZP.
+
+=================================================================
+SEKCJA 10. INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (12)
+=================================================================
+
+10.1. REAL-TIME FX MONITOR + AUTO-CALCULATOR (INNOWACJA 1)
+
+    Opis: automatyczny monitoring kursów NBP/EBC (API NBP), kalkulacja
+    różnic kursowych FIFO/średnia ważona w czasie rzeczywistym, generowanie
+    zestawień do PKPiR i JPK_V7.
+    Komponenty: (1) connector API NBP (tabele A/B/C, kursy historyczne),
+    (2) silnik FIFO (kolejka wpłat/wypłat), (3) kalkulator różnic
+    kursowych per transakcja, (4) raport miesięczny dla JPK_V7/księgi,
+    (5) alerty przy istotnych zmianach kursów (>2%).
+    Wartość: eliminacja ręcznych przeliczeń, poprawność podstaw
+    opodatkowania, audytowalność.
+
+10.2. TP DOCUMENTATION AUTO-GENERATOR (INNOWACJA 2)
+
+    Opis: generator dokumentacji lokalnej TP z danych transakcyjnych
+    (faktury KSeF/JPK): analiza funkcjonalna, dobór metody, benchmark
+    (bazy Amadeus/Orbis), wersjonowanie i terminy.
+    Komponenty: (1) detektor powiązań, (2) agregator transakcji per
+    podmiot, (3) szablon Local File (6 sekcji Art. 23zf), (4) moduł
+    benchmarku (marże CUP/RESALE/COST+/TNMM), (5) kalendarz terminów
+    (TPR, dokumentacja), (6) generator TPR-C/TPR-P.
+    Wartość: redukcja kosztu dokumentacji o ~70%, terminowość, zgodność.
+
+10.3. TAX RESIDENCY AUTO-DETERMINATOR (INNOWACJA 3)
+
+    Opis: samoocena rezydencji na podstawie danych o pobytach (kalendarz
+    podróży, rezerwacje), powiązaniach osobistych/gospodarczych,
+    automatyczne testy 183 dni + centrum interesów, mapa ryzyka.
+    Komponenty: (1) kalendarz pobytów, (2) testy 183 dni + ośrodek
+    interesów, (3) aplikacja UPO (baza umów, metody), (4) alerty przy
+    zbliżaniu się do progu exit tax 4M PLN, (5) tracker ważności CFR.
+    Wartość: proaktywna kontrola rezydencji, unikanie podwójnego
+    opodatkowania, gotowość na kontrolę.
+
+10.4. PAYMENT DEADLINE SMART TRACKER (INNOWACJA 4)
+
+    Opis: monitoring terminów płatności 14/30/60 dni, odsetki ustawowe
+    (Art. 481 KC: stopa referencyjna NBP + 5.5 p.p. w 2025 = 11.25%),
+    automatyczne wezwania do zapłaty, rezerwy.
+    Komponenty: (1) kalendarz terminów per faktura, (2) kalkulator
+    odsetek ustawowych, (3) generator wezwań do zapłaty, (4) raport
+    przeterminowań do windykacji, (5) integracja z KSeF (faktury).
+    Wartość: redukcja przeterminowań, dodatkowe przychody odsetkowe.
+
+10.5. ADVERTISING VS REPRESENTATION AI CLASSIFIER (INNOWACJA 5)
+
+    Opis: klasyfikacja AI wydatków marketingowych (faktura + opis) na
+    reklamę (KUP 100%) i reprezentację (NKUP), z uzasadnieniem i
+    audytem. NAPRAWA R-ADV-1: usunięcie limitu 0.025%.
+    Komponenty: (1) NLP analiza faktur/umów (gastronomia, prestiż,
+    produkt), (2) drzewo decyzyjne ad_vs_repr, (3) limit prezentów
+    200 zł (PIT) / 100 zł netto (VAT), (4) raport uzasadnień dla
+    kontroli, (5) monitoring sponsoringu (limit 6% dochodu).
+    Wartość: pewność klasyfikacji KUP/NKUP, obrona przed kontrolą.
+
+10.6. WHITE LIST AUTO-VERIFIER (INNOWACJA 6)
+
+    Opis: automatyczna weryfikacja białej listy VAT przed każdym
+    przelewem > 15 000 PLN (API MF), alert przy rachunku spoza listy,
+    automatyczne zgłoszenie do US w 3 dni robocze, śledzenie skutków
+    (Art. 22p PIT, Art. 117ba OrdPU). NAPRAWA L-PAY-2.
+    Komponenty: (1) connector API białej listy, (2) blokada przelewu
+    przy braku weryfikacji, (3) generator zgłoszenia do US (3 dni),
+    (4) rejestr weryfikacji (dowód staranności), (5) integracja z
+    bankiem (status rachunku).
+    Wartość: eliminacja ryzyka odpowiedzialności solidarnej i utraty KUP.
+
+10.7. PROCUREMENT TAX OPTIMIZER (INNOWACJA 7)
+
+    Opis: optymalizacja podatkowa zamówień publicznych: progi PZP,
+    kwalifikacja kosztów, ulgi (B+R, innowacje), struktura oferty,
+    monitoring terminów. NAPRAWA L-PROC-1.
+    Komponenty: (1) kalkulator progów PZP (unijny/krajowy),
+    (2) kwalifikator kosztów realizacji, (3) moduł ulg B+R,
+    (4) monitor terminów ofertowych i przedłużeń, (5) generator
+    dokumentacji oferty (zaświadczenia, wadium).
+    Wartość: wyższa konkurencyjność ofert, pełne wykorzystanie ulg.
+
+10.8. FX HEDGE STRATEGY ADVISOR (INNOWACJA 8)
+
+    Opis: doradztwo hedgingowe: analiza ekspozycji walutowej, forward/
+    opcje/swaps, symulacje kosztów, rekomendacje zabezpieczeń.
+    Komponenty: (1) ekspozycja per waluta (kontrakty otwarte),
+    (2) symulator forward/opcji, (3) koszt hedgingu vs ryzyko,
+    (4) dokumentacja celu hedgingowego (dla kontroli),
+    (5) integracja z bankiem.
+    Wartość: stabilizacja marż, ochrona przed wahaniami kursów.
+
+10.9. CROSS-BORDER PAYMENT TAX ANALYZER (INNOWACJA 9)
+
+    Opis: analiza podatkowa płatności transgranicznych: GIIF (>15k EUR),
+    WHT (dywidendy/odsetki/royalty), UPO, CFR, SWIFT/SEPA.
+    Komponenty: (1) detektor płatności transgranicznych,
+    (2) kalkulator WHT + UPO, (3) tracker GIIF, (4) weryfikacja CFR,
+    (5) raport podatkowy per płatność.
+    Wartość: unikanie kar GIIF i WHT, pełna dokumentacja.
+
+10.10. AD SPEND VS TAX DEDUCTION MAXIMIZER (INNOWACJA 10)
+
+    Opis: maksymalizacja odliczeń reklamowych: kwalifikacja wydatków,
+    struktura (reklama vs sponsoring vs darowizna), monitor limitów
+    (prezenty 200/100, sponsoring 6%), rekomendacje budżetu.
+    Komponenty: (1) agregator wydatków marketingowych, (2) klasyfikator
+    KUP/NKUP, (3) kalkulator limitów, (4) symulator optymalnej
+    struktury, (5) raport roczny dla PIT.
+    Wartość: maksymalne legalne odliczenia, minimalne ryzyko.
+
+10.11. SPLIT PAYMENT GUARDIAN (INNOWACJA 11)
+
+    Opis: egzekwowanie mechanizmu podzielonej płatności: dobrowolny
+    (108a), obowiązkowy dla towarów wrażliwych (108b + załącznik 15),
+    sankcje (108h), rachunek VAT (62b OrdUS). NAPRAWA L-PAY-3.
+    Komponenty: (1) baza towarów wrażliwych (załącznik 15),
+    (2) blokada przelewu przy obowiązku split, (3) generator komunikatu
+    przelewu (numer faktury, NIP, kwota VAT), (4) monitor sankcji,
+    (5) integracja z bankiem.
+    Wartość: zgodność z obowiązkiem, unikanie sankcji do 30% kwoty.
+
+10.12. SPECIAL SITUATION DECISION TREE (INNOWACJA 12)
+
+    Opis: nadrzędne drzewo decyzyjne sytuacji specjalnych JDG: zmiana
+    rezydencji (exit tax), CFC, PE zagraniczny, digital nomad, zmiana
+    metody różnic kursowych, transakcje z podmiotami powiązanymi.
+    Komponenty: (1) triage zdarzeń, (2) mapowanie do reguł P21,
+    (3) agregacja rekomendacji (aggregate_recommendations),
+    (4) mapa ryzyka (aggregate_risk_map), (5) kalendarz obowiązków.
+    Wartość: holistyczny obraz sytuacji nadzwyczajnych, brak pominięć.
+
+=================================================================
+SEKCJA 11. REKOMENDACJE I MAPA DROGOWA
+=================================================================
+
+11.1. PRIORYTETY WDROŻENIOWE
+
+    P0 (natychmiastowe, < 1 miesiąc):
+    (a) Naprawa R-ADV-1: usunięcie limitu 0.025% reprezentacji
+        (reprezentacja = NKUP 100%).
+    (b) Dodanie split payment (L-PAY-3): 108a/108b/108h VAT + załącznik 15.
+    (c) Dodanie zgłoszenia US w 3 dni przy białej liście (L-PAY-2)
+        + skutki Art. 22p PIT i Art. 117ba OrdPU.
+    (d) Dodanie odsetek ustawowych za opóźnienie (L-PAY-1): 14/30/60 dni,
+        Art. 481 KC (11.25% w 2025).
+
+    P1 (krótki horyzont, 1-3 miesiące):
+    (e) Weryfikacja terminów TP (R-TP-1, R-TP-2): dokumentacja lokalna
+        vs termin zeznania; TPR vs 10 miesięcy.
+    (f) Dodanie reguł metod wyceny TP (L-TP-2): CUP/RESALE/COST+/TNMM.
+    (g) Dodanie progów PZP (L-PROC-1): unijny 209k EUR, krajowy 130k zł.
+    (h) Automatyczny feed kursów NBP (L9): API NBP dla modułu FX.
+
+    P2 (strategiczne, 3-12 miesięcy):
+    (i) Real-Time FX Monitor + Auto-Calculator (innowacja 1).
+    (j) TP Documentation Auto-Generator (innowacja 2).
+    (k) Tax Residency Auto-Determinator (innowacja 3).
+    (l) Payment Deadline Smart Tracker (innowacja 4).
+
+11.2. KPI WARSTWY P21 (WSKAŹNIKI DOCELOWE)
+
+    KPI-1  Zgodność różnic kursowych: 100% transakcji walutowych
+           przeliczonych poprawnym kursem NBP/EBC (audyt losowy 5%).
+    KPI-2  Terminowość TP: 100% dokumentacji lokalnej i TPR w terminie.
+    KPI-3  Weryfikacja białej listy: 100% przelewów > 15k PLN
+           zweryfikowanych przed realizacją.
+    KPI-4  Split payment: 100% płatności za towary wrażliwe przez
+           mechanizm podzielonej płatności.
+    KPI-5  Reklama/reprezentacja: 0 błędnych klasyfikacji KUP (audyt
+           kwartalny, cel: limit 0.025% usunięty).
+    KPI-6  Terminowość płatności: przeterminowania < 5% wartości faktur.
+    KPI-7  Rezydencja: 100% CFR ważnych, 0 przypadków exit tax
+           niezgłoszonego, monitor progu 4M PLN.
+    KPI-8  Zamówienia publiczne: 100% ofert z ważnymi zaświadczeniami
+           US+ZUS, 0 wykluczeń.
+
+11.3. TESTOWY KONTRAKTOWE (PODSUMOWANIE)
+
+    Rekomendowane pliki testowe (katalog tests/):
+    - test_p21_fx_differences.py (scenariusze T1-T5 sekcji 3.10),
+    - test_p21_tp_thresholds.py (T1-T5 sekcji 4.12),
+    - test_p21_residency_tests.py (T1-T5 sekcji 5.11),
+    - test_p21_payments_whitelist.py (T1-T5 sekcji 6.10),
+    - test_p21_advertising_classification.py (T1-T5 sekcji 7.9),
+    - test_p21_procurement_clearance.py (T1-T5 sekcji 8.8).
+    Testy powinny uruchamiać reguły OPA (opa test) lub repliki Pythona
+    zgodne z kontraktem rule_id/_routing/_warnings.
+
+=================================================================
+SEKCJA 12. PODSUMOWANIE I GOTOWOŚĆ DO P22
+=================================================================
+
+12.1. WYNIKI KLUCZOWE
+
+    (a) 295 reguł OPA w 12 plikach (~148 KB) pokrywa 6 obszarów: FX (51),
+        TP (56), rezydencja (54), płatności (49), reklama (46),
+        zamówienia publiczne (39).
+    (b) Ocena średnia: 3.83/5 (FX 4.5, TP 4.0, Residency 4.0,
+        Payments 3.5, Advertising 3.5, Procurement 3.5).
+    (c) Mocne strony: progi TP PIT poprawne (2M/1M/500k — prompt mylił
+        je z progami CIT 10M/200M), metody różnic kursowych (FIFO +
+        bilansowa), tabele NBP A/B/C, tie-breakery rezydencji (5 reguł),
+        exit tax (5 reguł), CFC (8 reguł), Biała Lista, GIIF, terminale,
+        wadium, zaświadczenia, fundusze UE.
+    (d) Błędy krytyczne: R-ADV-1 (limit reprezentacji 0.025% — błędny),
+        L-PAY-3 (brak split payment), L-PAY-2 (brak zgłoszenia US w 3 dni).
+    (e) Luki średnie: terminy TP (R-TP-1/R-TP-2), metody wyceny TP
+        (L-TP-2), odsetki ustawowe (L-PAY-1), progi PZP (L-PROC-1),
+        feed kursów NBP (L9).
+
+12.2. PRIORYTETYZACJA WG WPŁYWU NA JDG
+
+    KSeF/JPK (P18) > OrdPU/Tax Authority (P19) > Sankcje/WIS (P20) >
+    FX/TP/Rezydencja (P21) > Force Majeure/Family/e-Delivery (P22).
+
+12.3. OGRANICZENIA ANALIZY P21
+
+    (a) Analiza statyczna bez uruchomienia OPA.
+    (b) Terminy TP (10 miesięcy / 30 listopada) wymagają weryfikacji
+        interpretacyjnej i rocznej.
+    (c) Badacz internetowy (researcher-web) nie zwrócił danych w tej
+        rundzie — weryfikacja prawna oparta na _legal_basis reguł i
+        wiedzy domenowej; zalecany przegląd przez doradcę podatkowego.
+
+12.4. GOTOWOŚĆ DO PROMPTU P22
+
+    Okno analityczne P21 zamknięte. Gotowość do analizy P22
+    (Force Majeure + Family + e-Delivery + esig + Seasonal + TaxFree
+    + employer + representation + restructuring, ~180 KB, 15 plików):
+    RAPORT_P22_JDG_FORCE_MAJEURE_FAMILY_EDELIVERY_v7.0.txt.
+
+====12.5. SCENARIUSZE INTEGRACYJNE MIĘDZYMODUŁOWE (WARTOŚĆ DODANA SERII)
+
+    S1. Faktura walutowa 12 000 EUR od podmiotu powiązanego (kontrola
+        30%) z zapłatą po 45 dniach:
+        P18 (KSeF): faktura w KSeF + UPO.
+        P21 (FX): kurs NBP dzień przed, różnica kursowa FIFO.
+        P21 (TP): próg 500k usługi — dokumentacja + TPR.
+        P21 (PAY): przelew > 15k EUR zagraniczny — GIIF.
+    S2. Przelew 60 000 PLN za towary wrażliwe (elektronika):
+        P18 (KSeF): faktura KSeF (obowiązek 02.2026).
+        P21 (PAY): Biała Lista + SPLIT PAYMENT obowiązkowy (L-PAY-3
+        — obecnie luka, do wdrożenia P0).
+        P20 (S23): ryzyko KKS przy braku faktury.
+    S3. Zmiana rezydencji na Portugalię z aktywami 6M PLN:
+        P21 (RES): exit tax 19% (próg 4M), 5 rat, termin 7 miesięcy,
+        PIT-NZS + PIT-36.
+        P19 (ORD): pełnomocnictwo, powiadomienie US.
+        P20 (S23): ryzyko karno-skarbowe przy niezadeklarowaniu.
+    S4. Kolacja biznesowa 1 500 PLN z klientem (bez agendy):
+        P21 (ADV): reprezentacja NKUP — R-ADV-1 błędnie zaliczy 0.025%
+        do KUP (do naprawy P0); poprawnie: NKUP 100%.
+        P20 (WIS): brak wpływu.
+    S5. Oferta w przetargu 800k PLN na dostawę dla gminy:
+        P21 (PROC): zaświadczenia US+ZUS, wadium, wykluczenia.
+        P20 (CONV): rejestr karalności — skazanie KKS = wykluczenie.
+        P21 (PAY): zapłata po odbiorze 30 dni — odsetki (L-PAY-1).
+
+    Wniosek: seria P18-P21 tworzy spójny łańcuch walidacji — faktura
+    (KSeF) → płatność (Biała Lista/split) → rozliczenie (FX/TP) →
+    ryzyko (sankcje/KKS). Luki w pojedynczych modułach (split payment,
+    limit 0.025%) osłabiają cały łańcuch — stąd priorytet P0.
+
+12.6. ANALIZA PORÓWNAWCZA SERII P18-P21 (CIĄGŁOŚĆ)
+
+    Raport  Zakres                    Reguły  Ocena średnia  Kluczowa luka
+    ---------------------------------------------------------------------
+    P18     KSeF/JPK/cyfryzacja       ~330    3.9           outbox KSeF,
+                                                            UPO tracker
+    P19     OrdPU/Tax Authority       676     3.9           wysyłka pism,
+                                                            auto-legislacja
+    P20     Sankcje/WIS/ePUAP         256     3.9           progi KKS 5x,
+                                                            split ePUAP
+    P21     FX/TP/Residency/Payments  295     3.83          split payment,
+                                                            limit 0.025%
+    ---------------------------------------------------------------------
+    RAZEM  P18-P21                  ~1 557   3.86          —
+
+    Obserwacje międzyraportowe:
+    (a) Średnia 3.83-3.9 utrzymuje się na stabilnym poziomie — system
+        jest dojrzały, luki są punktowe, nie systemowe.
+    (b) Split payment (P21) i outbox KSeF (P18) to dwie luki o najwyższym
+        ryzyku sankcyjnym — rekomendacja: wspólny sprint wdrożeniowy.
+    (c) Łącznie 1 557 reguł tworzy jedną z najobszerniejszych publicznych
+        baz reguł OPA dla JDG na rynku (weryfikowalna w repozytorium).
+
+=================================================================
+SEKCJA 13. SŁOWNICZEK
+=================================================================
+
+    Biała Lista VAT — wykaz podatników VAT (rachunki bankowe) prowadzony
+    przez MF (Art. 96b VAT); weryfikacja przy płatności > 15 000 zł.
+    CFR — certyfikat rezydencji podatkowej (ważność 12 miesięcy).
+    CFC — controlled foreign company (kontrolowana spółka zagraniczna,
+    Art. 30f PIT).
+    CUP — comparable uncontrolled price (metoda porównywalnej ceny
+    niekontrolowanej).
+    Exit tax — podatek od niezrealizowanych zysków przy zmianie rezydencji
+    (Art. 30da PIT, próg 4M PLN, stawka 19%).
+    FIFO — first in first out (metoda podatkowa różnic kursowych).
+    GIIF — Generalny Inspektor Informacji Finansowej (raport przelewów
+    > 15 000 EUR, Art. 72 AML).
+    KUP — koszty uzyskania przychodów.
+    Local File — dokumentacja lokalna cen transferowych (Art. 23zf PIT).
+    Master File — dokumentacja grupowa (próg 200M PLN, termin 12 mies.).
+    NKUP — wydatki niestanowiące kosztów uzyskania przychodów.
+    PE — permanent establishment (zakład).
+    Split payment — mechanizm podzielonej płatności (Art. 108a-108h VAT).
+    TNMM — transactional net margin method (metoda marży transakcyjnej).
+    TP — ceny transferowe (transfer pricing).
+    TPR — sprawozdanie/informacja o cenach transferowych (TPR-C/TPR-P).
+    UPO — umowa o unikaniu podwójnego opodatkowania.
+    VAT-26 — deklaracja dla pojazdów wykorzystywanych wyłącznie w
+    działalności (Art. 86a ust. 1 VAT).
+    WHT — podatek u źródła (withholding tax).
+    WNT — wewnątrzwspólnotowe nabycie towarów.
+
+=================================================================
+SEKCJA 14. ODNIESIENIA PRAWNE
+=================================================================
+
+    PIT: Art. 3 ust. 1a (rezydencja), Art. 14 (przychody), Art. 14 ust.
+    1aa (przeliczenie walut), Art. 14b (różnice kursowe: metody),
+    Art. 22 ust. 1e (koszty walutowe), Art. 22p (limit gotówki 15k),
+    Art. 23 ust. 1 pkt 23 (reprezentacja NKUP, prezenty do 200 zł),
+    Art. 23zf (progi i dokumentacja TP), Art. 23zg (master file),
+    Art. 23zh (TPR), Art. 23zd (szacowanie dochodu), Art. 23ze
+    (dodatkowe zobowiązanie 10%), Art. 26 (darowizny, limit 6%),
+    Art. 27 ust. 8-9 (metody UPO), Art. 27g (ulga abolicyjna),
+    Art. 30da (exit tax), Art. 30f (CFC), Art. 86a (VAT-26).
+    VAT: Art. 19a (obowiązek podatkowy), Art. 28b (reverse charge),
+    Art. 29a (podstawa opodatkowania), Art. 30a/31a (kursy walut),
+    Art. 86a (VAT-26), Art. 88 ust. 1 pkt 5 (prezenty), Art. 96b
+    (Biała Lista), Art. 108a-108h (split payment), załącznik 15.
+    OrdPU: Art. 117ba (odpowiedzialność solidarna), Art. 306e/306n
+    (zaświadczenia o niezaleganiu).
+    KKS: Art. 56 (narażenie na uszczuplenie), Art. 80a-80c (sankcje TP).
+    PZP: Art. 108-109 (wykluczenia), Art. 150 (zabezpieczenie 5-10%).
+    Ustawa o usługach płatniczych: obowiązek terminala (20k EUR B2C),
+    kara 5 000 zł.
+    Ustawa AML: Art. 72 (GIIF, 15k EUR).
+    OECD MTC: Art. 4 (rezydencja, tie-breakery), Art. 5 (zakład).
+    Ustawa o terminach zapłaty: 14/30/60 dni, odsetki ustawowe.
+
+=================================================================
+=== KONIEC RAPORTU — RAPORT_P21_JDG_FX_TP_RESIDENCY_PAYMENTS_v7.0 ===

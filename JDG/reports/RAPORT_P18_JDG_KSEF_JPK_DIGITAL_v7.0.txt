@@ -1,0 +1,1576 @@
+RAPORT ANALITYCZNY ENTERPRISE — JDG KSeF + JPK + Cyfryzacja v7.0
+Autor: GLM 5.2 / Buffy — Strategic Coding Assistant
+Data: 2026-08-01
+Wersja: 7.0
+Plik źródłowy: RAPORT_P18_JDG_KSEF_JPK_DIGITAL_v7.0.txt
+Zakres analizy: KSeF | JPK_V7 (V7M/V7K) | JPK_CIT (KR/ST) | e-Doręczenia | e-PUAP | podpis elektroniczny | cyfryzacja JDG
+Zasada analizy: BEZ generowania kodu Rego, BEZ modyfikacji plików reguł — wyłącznie raport analityczny (25-35 stron)
+Klasyfikacja: do użytku wewnętrznego NexusAI (JDG Rules Engine, OPA/Rego)
+=================================================================
+SPIS TREŚCI (numery stron orientacyjne — plik bez paginacji)
+=================================================================
+SEKCJA 1  — STRESZCZENIE WYKONAWCZE (EXECUTIVE SUMMARY) ......... 4
+SEKCJA 2  — METODOLOGIA I ZAKRES ANALIZY ........................ 7
+SEKCJA 3  — ARCHITEKTURA MODUŁÓW KSeF/JPK/CYFRYZACJA ............ 9
+SEKCJA 4  — ANALIZA KSeF (POZIOM ENTERPRISE) ................... 13
+SEKCJA 5  — ANALIZA JPK_V7 (POZIOM ENTERPRISE) ................. 28
+SEKCJA 6  — ANALIZA JPK_CIT (POZIOM ENTERPRISE) ................ 38
+SEKCJA 7  — ANALIZA CYFRYZACJI (POZIOM ENTERPRISE) ............. 42
+SEKCJA 8  — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE (min. 10) ... 50
+SEKCJA 9  — REKOMENDACJE I MAPA DROGOWA ........................ 65
+SEKCJA 10 — ZAŁĄCZNIK A: PEŁNY INDEKS REGUŁ (rule_id) .......... 70
+SEKCJA 11 — ZAŁĄCZNIK B: GLOSARIUSZ I PODSTAWY PRAWNE .......... 77
+SEKCJA 12 — PODSUMOWANIE I GOTOWOŚĆ DO P19 ..................... 80
+=================================================================
+
+=================================================================
+SEKCJA 1 — STRESZCZENIE WYKONAWCZE (EXECUTIVE SUMMARY)
+=================================================================
+
+1.1. CEL RAPORTU
+Niniejszy raport stanowi głęboką analizę analityczną (poziom ENTERPRISE)
+modułów KSeF, JPK_V7, JPK_CIT i cyfryzacji w systemie regułowym NexusAI JDG
+(OPA/Rego). Przeanalizowano 10 plików źródłowych (~283 KB) oraz pakiety
+wspierające (e-Doręczenia, e-PUAP, podpis elektroniczny), dokumentację
+JDG/docs/Bbb i konfigurację progów (thresholds_jdg.rego). Raport odpowiada
+na pytania zadane w zamówieniu analitycznym, identyfikuje luki i formułuje
+rekomendacje oraz innowacje wyprzedzające. NIE generuje kodu Rego i NIE
+modyfikuje żadnych plików reguł.
+
+1.2. ZAKRES PRZEDMIOTOWY
+- KSeF (Krajowy System e-Faktur): obowiązek od 01.02.2026, fazy wdrożenia,
+  sankcje do 500 000 PLN, tryb awaryjny (grace period 7 dni), UPO,
+  wyłączenia B2C, KSeF 2.0.
+- JPK_V7 (V7M miesięczny / V7K kwartalny): rejestry sprzedaży i zakupów,
+  kody GTU, deklaracja VAT-7, cross-check, terminy (25. dzień).
+- JPK_CIT (JPK_KR księgi rachunkowe, JPK_ST środki trwałe) dla JDG.
+- Cyfryzacja: e-Doręczenia (obowiązki 2025/2026), e-PUAP, podpis
+  elektroniczny, kryptoaktywa, AI Act.
+
+1.3. WERDYKTY SKRÓCONE (KLUCZOWE USTALENIA)
+
+A) KSeF — OBSŁUGA NA WYSOKIM POZIOMIE DOJRZAŁOŚCI (ocena 4,5/5)
+   - Reguła P950 (jdg.ksef_jpk.ksef_mandatory) poprawnie egzekwuje obowiązek
+     KSeF z TRZYFAZOWYM harmonogramem zgodnym ze stanem prawnym:
+       Faza 1: sprzedaż >200 mln PLN (rok poprzedni) -> od 2026-02-01
+       Faza 2: pozostali podatnicy (śr. mies. >=10 000 PLN) -> od 2026-04-01
+       Faza 3: mikro (śr. mies. <10 000 PLN) -> od 2027-01-01
+     Harmonogram potwierdzony w publicznych źródłach MF (kalendarium KSeF 2.0).
+   - Sankcja za brak faktury w KSeF (100% VAT, max 500 000 PLN) jest
+     komunikowana w warningach P950; pełne spektrum sankcji (100%/70%/50%/
+     18-15%) pokrywają reguły mikrowarstwy (plan33_ksef.rego, ksef.rego).
+   - Moduł odporności KSeF (ksef_resilience_enterprise.rego, priorytety
+     1600-1649) jest WZORCOWY: health check API, tryb offline (7 dni),
+     retry z backoffem wykładniczym (2^n), zarządzanie tokenem, walidacja
+     XML FA(2), batch recovery, powiadomienie ZAW-NR po >7 dniach awarii.
+   - UPO: warstwa mikrowarstwowa obsługuje retencję (5 lat), automatyczny
+     charakter, warunek odliczenia VAT i weryfikację API (a106nc.r1-4).
+   - ISTOTNE LUKI: (1) system NIE wysyła automatycznie faktur do KSeF —
+     jest silnikiem decyzyjnym (policies), brak warstwy OUTBOX z semantyką
+     exactly-once; (2) brak dedykowanego "UPO Trackera" per faktura;
+     (3) reguła B2C (P952, obowiązek od 2026-07-01) jest założeniem
+     projektowym — ustawa nie wprowadziła jeszcze obowiązku B2C;
+     (4) reguła ksef_vat_exempt_exception (zwolnieni wyłączeni z KSeF)
+     może być NIEAKTUALNA od 2026-04-01 (zgodnie z harmonogramem obowiązek
+     rozszerzono na wszystkich podatników, w tym zwolnionych);
+     (5) wzorce przypisań Rego (duplicate_forms, xml_valid, maint_msg)
+     wymagają weryfikacji kompilatorem OPA (potencjalne błędy
+     "var assigned above" / konflikty wartości).
+
+B) JPK_V7 — BARDZO DOBRY AUTO-GENERATOR Z KRYTYCZNYMI BŁĘDAMI MAPOWANIA
+   (ocena 3,5/5)
+   - Auto-generator (jpk_v7_autogen_enterprise.rego, S12, 1925-1949):
+     rejestr sprzedaży (K_10, K_11), rejestr zakupów (P_38, P_39, MPP,
+     WNT, import, odwrotne obciążenie), auto-generacja VAT-7 (należny,
+     naliczony, mikrorachunek, termin 25.), ekstrakcja danych z KSeF
+     (JV7-1948), wsparcie JPK_V7K (JV7-1949).
+   - BŁĘDY MAPOWANIA GTU (JV7-1940) — 3 z 7 przypisań jest nieprawidłowych:
+       VEHICLES -> GTU_06 (poprawnie GTU_07 — pojazdy i części)
+       PHARMA_MEDICAL -> GTU_08 (poprawnie GTU_09 — leki i wyroby medyczne)
+       CONSULTING/LEGAL/IT -> GTU_11 (poprawnie GTU_12 — usługi niematerialne)
+     Mapa pokrywa tylko 7 z 13 kodów GTU (brak GTU_03, GTU_07, GTU_09,
+     GTU_10, GTU_12, GTU_13 w mapie autogen).
+   - BŁĄD KRYTYCZNY CROSS-CHECK (JV7-1945): liczba rozbieżności
+     (total_discrepancies) jest ZAWIJANA NA SZTYWNO = 3 -> walidacja ZAWSZE
+     raportuje "NIEZGODNOSCI: 3" i zawsze ustawia routing BLOCK_AND_ALERT,
+     niezależnie od danych wejściowych. Cross-check NIE liczy faktycznych
+     rozbieżności JPK vs PKPiR vs KSeF.
+   - Zwrot VAT (net_vat_to_refund) i przeniesienie (carry_to_next) w JV7-1935
+     są zawsze 0 — ścieżka "DO ZWROTU" nie jest zaimplementowana.
+   - Terminy (25. dzień miesiąca/kwartału) poprawnie obsłużone (plan26,
+     a99.r13, JV7-1925 warning).
+   - Mikrowarstwa JPK (plan33_jpk.rego, 70 reguł) pokrywa struktury V7M/V7K,
+     GTU (13 kodów), procedury (SW, EE, TP), znaczniki (FP, WEW, VAT_MARZA),
+     MPP, IMP_UE/IMP_NON_UE, korekty (kody przyczyn 1-5), podpis, UPO,
+     JPK_PKPIR (16 kolumn), JPK_FA/WB/MAG/CIT na żądanie. Niekonsekwencja:
+     terminy "na żądanie" 14 vs 30 dni w różnych regułach.
+
+C) JPK_CIT — POPRAWNA MATEMATYKA, ZAKRES CZĘŚCIOWO HIPOTETYCZNY (ocena 3/5)
+   - jpk_cit.rego: CIT liniowy 19% (z darowiznami 10%, IP Box 5%, stratami
+     50%), estoński CIT 20% od wypłaconego zysku (CIT-8E), mały podatnik 9%
+     (limit 2 mln EUR), terminy (CIT-8 do 31.03, JPK_KR do 10., zaliczki do 20.).
+   - UWARUNKOWANIE PRAWNE: JDG jako osoba fizyczna płaci PIT (skala, liniowy,
+     ryczałt) — formy CIT (CIT, CIT_LINEAR, ESTONIAN_CIT, CIT_SMALL) nie
+     występują dla JDG w praktyce; moduł modeluje scenariusze hipotetyczne.
+     REALNE znaczenie ma JPK_KR/JPK_ST na żądanie dla JDG prowadzącej pełną
+     księgowość (przychody >2 mln EUR rocznie) — art. 193a OrdPU.
+   - Luka: brak powiązania modułu z księgami rachunkowymi (generator JPK_KR/ST).
+
+D) CYFRYZACJA — DOBRE POKRYCIE, ALE digital.rego NIE JEST MODUŁEM
+   e-DORĘCZEŃ (ocena 3,5/5)
+   - digital.rego (P630-P1895) obejmuje: kryptoaktywa (PIT-38, mining,
+     MDR), AI Act (klasyfikacja ryzyka, deepfake), degradację API. To moduł
+     GOSPODARKI CYFROWEJ, nie e-Doręczeń.
+   - e-Doręczenia są obsłużone w dedykowanych pakietach: jdg.edelivery
+     (plan44: fikcja doręczenia 14 dni, e-US, profil zaufany, retencja;
+     plan45 hyper: 35 reguł atomowych — rejestracja BAE, alerty 7/3/1 dzień
+     przed fikcją, aktualizacja adresu, awarie, eIDAS/DAC/CRS/FATCA) oraz
+     jdg.epuap (EPU-100/200/300: status doręczeń, instrukcje wysyłki,
+     integracja z S22/S4) i jdg.esig (7 reguł: podpis kwalifikowany,
+     ważność certyfikatu 2 lata, token/pieczęć KSeF, eIDAS, e-umowy 77^2-78^1
+     KC, EN 16931).
+   - e-Doręczenia obowiązkowe od 2025 dla podmiotów publicznych, zawodów
+     zaufania publicznego i spółek KRS (rej. przed 01.01.2025 -> od
+     01.04.2025); dla JDG (osób fizycznych) obowiązek NIE został jeszcze
+     wprowadzony — obecnie dobrowolny. Reguły edelivery używają sformułowania
+     "obowiązek od 2025" — dla JDG należy doprecyzować (dobrowolność).
+
+1.4. NAJWAŻNIEJSZE REKOMENDACJE (SKRÓT)
+   P0 (przed 01.04.2026): naprawa mapowania GTU, naprawa cross-check JV7-1945,
+   weryfikacja wzorców Rego (opa check), doprecyzowanie zakresu podmiotowego
+   KSeF po 01.04.2026 (zwolnieni), UPO Tracker.
+   P1 (2026): warstwa outbox (Zero-Downtime KSeF Buffer), KSeF Resilience
+   Firewall, GTU Semantic Auto-Tagger, e-Delivery Integration Gateway.
+   P2 (2026-2027): JPK_V7 Auto-Generator AI, Cross-Declaration Validator,
+   Real-Time KSeF Sanction Monitor, Digital Signature Auto-Applicator.
+   Priorytetyzacja zgodna z zamówieniem: KSeF 2026 > JPK_V7 autogen >
+   JPK_CIT > Cyfryzacja.
+
+1.5. METRYKI ANALIZOWANEJ WARSTWY
+   - Plików reguł analizowanych: 10 (rdzeń) + 5 (wsparcie) + dokumentacja
+   - Reguł w warstwie KSeF: 163 (8 resilience + 80 templated + 75 atom) + 11 reguł jdg.ksef_jpk (w tym 3 dot. JPK)
+   - Reguł w warstwie JPK: 117 (10 enterprise/macro + 36 templated + 71 atom)
+   - Reguł JPK_CIT: 4 reguły + default (5 wpisów rule_id)
+   - Reguł cyfryzacji: 7 (digital) + 8+35 (edelivery) + 7 (esig) + 3 (epuap)
+   - Łącznie w zakresie analizy: ok. 330 reguł OPA
+
+=================================================================
+SEKCJA 2 — METODOLOGIA I ZAKRES ANALIZY
+=================================================================
+
+2.1. METODYKA
+Analizę przeprowadzono w następujących krokach:
+1. Identyfikacja i odczyt wszystkich plików wskazanych w zamówieniu
+   (10 plików Rego, ~283 KB) oraz plików wspierających.
+2. Weryfikacja stanu prawnego (harmonogram KSeF, sankcje, e-Doręczenia)
+   w niezależnych źródłach publicznych (serwis KSeF MF, kalendarium
+   wdrożenia, harmonogram ustawowy).
+3. Analiza semantyczna każdej reguły: guardy (warunki wyzwalające),
+   atrybuty decyzji (routing, warningi, podstawa prawna), miejsce w łańcuchu
+   else (first-match-wins), interakcje między pakietami (multi-pass, ADR-001).
+4. Ocena zgodności z prawem materialnym (VAT art. 106na-106nq, art. 99,
+   109, OrdPU art. 193a, ustawa o doręczeniach elektronicznych, eIDAS).
+5. Identyfikacja luk (gaps) i błędów technicznych.
+6. Sformułowanie innowacji wyprzedzających (min. 10) i rekomendacji.
+
+2.2. ZASADY ANALIZY
+- NIE generowano kodu Rego (zgodnie z zamówieniem).
+- NIE modyfikowano żadnego pliku reguł.
+- Wszystkie cytowane identyfikatory reguł (rule_id, priorytety) pochodzą
+  z analizowanych plików i mogą służyć do weryfikacji w środowisku OPA.
+- Oznaczenia luk: [LUKA-XX] — użyte konsekwentnie w całym raporcie.
+
+2.3. LISTA ANALIZOWANYCH PLIKÓW (RDZEŃ)
+  1. JDG/rules/ksef_jpk.rego                    (11 reguł, P950-P986, P1790)
+  2. JDG/rules/ksef_resilience_enterprise.rego  (8 reguł, KSR-1600-1648)
+  3. JDG/rules/jpk/plan26_deadlines.rego        (2 reguły, P972)
+  4. JDG/rules/jpk_cit.rego                     (5 reguł, JC-010-100)
+  5. JDG/rules/jpk_v7_autogen_enterprise.rego   (8 reguł, JV7-1925-1949)
+  6. JDG/rules/digital.rego                     (7 reguł, P630-P1895)
+  7. JDG/rules/micro/jpk/jpk.rego               (36 reguł templated)
+  8. JDG/rules/micro/ksef/ksef.rego             (80 reguł templated)
+  9. JDG/rules/micro/plan33_jpk.rego            (71 reguł atomowych)
+ 10. JDG/rules/micro/plan33_ksef.rego           (75 reguł atomowych)
+
+PLIKI WSPIERAJĄCE (analiza uzupełniająca)
+ 11. JDG/rules/edelivery/plan44_edelivery.rego  (8 reguł, P1870-1877)
+ 12. JDG/rules/edelivery/plan45_edelivery.rego  (35 reguł atom, R1235-1269)
+ 13. JDG/rules/esig/plan44_esig.rego            (7 reguł, P1900-1906)
+ 14. JDG/rules/epuap_enterprise.rego            (3 reguły, EPU-100-300)
+ 15. JDG/rules/thresholds_jdg.rego              (progi: ksef_mandatory_from,
+                                                ksef_offline_grace_days,
+                                                ksef_sanction_max_pln)
+ 16. JDG/docs/Bbb                               (źródła prawne)
+
+2.4. UWARUNKOWANIA PRAWNE PRZYJĘTE W ANALIZIE (STAN: 2026)
+- KSeF: ustawa z 16.06.2023 (Dz.U. 2023 poz. 1598) nowelizująca ustawę VAT;
+  obowiązek etapowy od 01.02.2026 (patrz 4.2). Podstawa reguł: art. 106na-
+  106nq VAT, rozporządzenia MF (struktura FA(2), wzór faktury ustrukturyzowanej).
+- Sankcje: dodatkowe zobowiązanie podatkowe (art. 106nq VAT), kara za brak
+  ZAW-NR (5 000 PLN), odpowiedzialność karno-skarbowa (KKS).
+- JPK_V7: art. 99 VAT, rozporządzenie MF w sprawie JPK_VAT z deklaracją
+  (w analizowanych regułach: rozp. MF z 15.07.2025), załącznik nr 15 (GTU).
+- JPK na żądanie: art. 193a OrdPU (terminy 14 dni wg. analizowanych reguł,
+  z zastrzeżeniem — patrz [LUKA-J10]).
+- e-Doręczenia: ustawa z 18.11.2020 o doręczeniach elektronicznych
+  (Dz.U. 2020 poz. 2320), BAE, fikcja doręczenia po 14 dniach.
+- Podpis: rozporządzenie eIDAS (910/2014), OrdPU art. 126 par. 5.
+- Wskazanie: szczegóły kwotowe (progi, sankcje) należy każdorazowo
+  weryfikować z aktualnym tekstem jednolitym ustaw.
+
+=================================================================
+SEKCJA 3 — ARCHITEKTURA MODUŁÓW KSeF/JPK/CYFRYZACJA
+=================================================================
+
+3.1. MODEL ARCHITEKTURY (Multi-Pass / ADR-001)
+System NexusAI JDG to silnik decyzyjny OPA/Rego o architekturze
+wieloprzebiegowej (Multi-Pass, ADR-001). Każdy pakiet (package) zawiera
+łańcuch reguł decide/else (first-match-wins). Wynik każdego przebiegu to
+obiekt decyzji z atrybutami: rule_id, package, priority, routing
+(BLOCK_AND_ALERT / TRIAGE_QUEUE / WARNING / FALLBACK_ACTIVE / pusty),
+oraz warningi i podstawa prawna. Routing agreguje się w warstwie
+orchestratora, który podejmuje akcje (blokada, kolejka, alert).
+
+3.2. MAPA PAKIETÓW I PRIORYTETÓW
+   Pakiet                    Plik                               Priorytety      Reguł
+   jdg.ksef_jpk              ksef_jpk.rego                      950-986, 1790   11
+   jdg.ksef_resilience       ksef_resilience_enterprise.rego   1600-1649       8
+   jdg.jpk                   jpk/plan26_deadlines.rego          972             2
+   jdg.jpk_cit               jpk_cit.rego                       10-100          5
+   jdg.jpk_v7_autogen        jpk_v7_autogen_enterprise.rego     1925-1949       8
+   jdg.digital               digital.rego                       630-1895        7
+   jdg.micro.ksef            micro/ksef/ksef.rego               180001-180047  80
+   jdg.micro.ksef            micro/plan33_ksef.rego             5600-5668      75
+   jdg.micro.jpk             micro/jpk/jpk.rego                 190099-190133  36
+   jdg.micro.jpk             micro/plan33_jpk.rego              5900-5969      71
+   jdg.edelivery             edelivery/plan44_edelivery.rego    1870-1877       8
+   jdg.edelivery.hyper       edelivery/plan45_edelivery.rego    1235-1269      35
+   jdg.esig                  esig/plan44_esig.rego              1900-1906       7
+   jdg.epuap                 epuap_enterprise.rego              100-300         3
+
+3.3. PRZEPŁYW DANYCH (STRUMIEŃ KSeF -> JPK_V7 -> Deklaracje)
+Dane wejściowe (faktury, ewidencje) przechodzą przez warstwy:
+  Warstwa 1 — Mikro (atomowa walidacja artykułów): jdg.micro.ksef,
+              jdg.micro.jpk — egzekwowanie pojedynczych przepisów.
+  Warstwa 2 — Makro/Enterprise: jdg.ksef_jpk (obowiązki), jdg.jpk,
+              jdg.jpk_v7_autogen (generatory), jdg.jpk_cit.
+  Warstwa 3 — Odporność operacyjna: jdg.ksef_resilience (awarie, retry,
+              tokeny, batch), jdg.digital (fallback API).
+  Warstwa 4 — Komunikacja elektroniczna: jdg.edelivery, jdg.epuap,
+              jdg.esig.
+Wyniki konsoliduje orchestrator (multi-pass), który uwzględnia priorytety
+i routuje do: BLOCK_AND_ALERT (blokada operacji), TRIAGE_QUEUE (kolejka
+weryfikacji), WARNING (ostrzeżenie), FALLBACK_ACTIVE (tryb awaryjny).
+
+3.4. DIAGRAM MERMAID 1 — FLOW KSeF (wysyłka, awaria, recovery)
+Poniżej diagram Mermaid w formie tekstowej (plain text):
+
+  graph TD
+    A[Faktura sprzedazy B2B] --> B{Walidacja XML FA(2) — KSR-1640}
+    B --|bledy| C[BLOCK_AND_ALERT: napraw brakujace pola]
+    B --|ok| D{Token KSeF wazny? — KSR-1630 / P1790}
+    D --|brak/wygasl| E[BLOCK_AND_ALERT: odswiez token]
+    D --|wazny| F{Proba wysylki do KSeF}
+    F --|sukces| G[UPO odebrane — retencja 5 lat — a106nc.r1]
+    F --|blad 4xx| H[KSR-1620: sprawdz dane, NIE ponawiaj]
+    F --|blad 5xx| I[KSR-1620: retry backoff 2^n, cap 3600 s, max 15]
+    F --|KSeF offline| J[KSR-1610: OFFLINE MODE — kolejka, deadline 7 dni]
+    J --> K[KSR-1645: Batch Recovery po przywroceniu]
+    K --> L{awaria > 7 dni?}
+    L --|tak| M[KSR-1648: ZAW-NR do US — kara 5000 PLN]
+    L --|nie| G
+
+3.5. DIAGRAM MERMAID 2 — AUTO-GENERACJA JPK_V7
+Poniżej diagram Mermaid w formie tekstowej (plain text):
+
+  graph TD
+    A[Faktury KSeF okresu — JV7-1948 ekstrakcja] --> B[Zbiorcze dane netto/VAT]
+    B --> C[Rejestr sprzedazy JV7-1925 — K_10 netto, K_11 VAT]
+    B --> D[Rejestr zakupow JV7-1930 — P_38, P_39, MPP, WNT, import]
+    C --> E[GTU auto-assign JV7-1940 — kody GTU]
+    D --> E
+    C --> F[VAT-7 autogen JV7-1935 — nalezny/naliczony/do zaplaty]
+    D --> F
+    C --> G[Cross-check JV7-1945 — JPK vs PKPiR vs KSeF]
+    D --> G
+    E --> H[Walidacja kompletna + podpis (esig P1900-1906)]
+    F --> H
+    G --> H
+    H --> I[Wysylka JPK_V7M do 25. dnia nastepnego miesiaca]
+    H --> J[V7K kwartalnie dla malych podatnikow — JV7-1949]
+
+3.6. SPOSTRZEŻENIA ARCHITEKTONICZNE
+- Zasada first-match-wins w łańcuchach else oznacza, że w obrębie pakietu
+  tylko pierwsza pasująca reguła zwraca decyzję. Kolejność reguł jest
+  zatem krytyczna: np. w ksef_jpk.rego P1790 (token stale) stoi PRZED P950
+  (obowiązek KSeF) — przy przeterminowanym tokenie decyzja o blokadzie
+  wysyłki wygrywa z decyzją o obowiązku, co jest pożądane operacyjnie.
+- Priorytety między pakietami rozstrzyga orchestrator (wyższy priorytet
+  wygrywa) — brak konfliktu priorytetów w analizowanym zakresie.
+- Warstwa micro pełni funkcję "atomic legal validation" — reguły templated
+  (ksef.rego, jpk.rego) są sterowane flagami wejściowymi (ksef_condition_met,
+  ksef_a106na_violation itp.), natomiast reguły plan33 są atomowe z guardem
+  {true} — opisują przepis, a aktywacja zależy od warstwy integracyjnej.
+- [LUKA-A1] Brak jawnej reguły "kompozycji decyzji" dla przypadku, gdy wiele
+  pakietów zwraca różne routingu (np. BLOCK z jdg.ksef_jpk i TRIAGE z
+  jdg.jpk_v7_autogen) — kolejność agregacji powinna być udokumentowana.
+
+=================================================================
+SEKCJA 4 — ANALIZA KSeF (POZIOM ENTERPRISE)
+=================================================================
+
+4.1. OBOWIĄZEK KSeF OD 01.02.2026 — WERYFIKACJA REGUŁY P950
+Reguła: jdg.ksef_jpk.ksef_mandatory (priorytet 950), plik ksef_jpk.rego.
+Cel analityczny: czy reguły egzekwują obowiązek KSeF?
+
+Warunki wyzwalające (guards):
+  1. input.jdg_entrepreneur.is_vat_payer == true
+  2. input.invoice.direction == "SALE"
+  3. input.invoice.transaction_date >= ksef_from (data zależna od fazy)
+
+Ustalenie fazy (wielkość przedsiębiorcy):
+  Faza 1:  annual_turnover_net > 200 000 000  -> ksef_from = 2026-02-01
+  Faza 2:  annual_turnover_net <= 200 000 000 ORAZ monthly_avg_turnover >= 10 000
+           -> ksef_from = 2026-04-01
+  Faza 3:  monthly_avg_turnover < 10 000 ORAZ > 0 -> ksef_from = 2027-01-01
+  Fallback: annual_turnover == 0 ORAZ monthly_avg == 0 -> Faza 2 (2026-04-01)
+
+WERDYKT: P950 POPRAWNIE egzekwuje obowiązek KSeF i jest zgodna z oficjalnym
+harmonogramem (kalendarium KSeF 2.0 MF): 2026-02-01 (sprzedaż >200 mln PLN
+w 2024 r.), 2026-04-01 (pozostali podatnicy), 2027-01-01 (mikro do
+10 000 PLN/mies.). Progi systemowe (200M, 10k/mies.) pokrywają się z progami
+ustawowymi.
+
+Decyzja zwracana przez P950: ksef_required=true, ksef_phase, ksef_mandatory_from,
+warning z komunikatem sankcji (100% VAT, max 500 000 PLN). Routing pusty
+(brak blokady — system informuje, blokada leży po stronie orchestratora).
+
+USTERKI TECHNICZNE P950:
+- [LUKA-K1] Wzajemna wyłączność faz: guardy faz 1 i 3 NIE są w pełni
+  rozłączne przy niespójnych danych wejściowych. Jeśli annual_turnover > 200M
+  ORAZ monthly_avg < 10 000 (np. dane o niskiej średniej miesięcznej przy
+  wysokim obrocie rocznym), konflikt przypisań (ksef_phase = "1" oraz
+  ksef_phase = "3") unieważnia cały body reguły -> reguła NIE odpala i
+  zapada default no_match. Rekomendacja: dodać jawny priorytet fazy
+  (np. sprawdzać fazę 1 przed fazą 3 z niezależnym domknięciem).
+- [LUKA-K2] Fallback (annual==0, monthly==0) przypisuje Fazę 2 — dla
+  nowych przedsiębiorców bez danych historycznych obowiązek od 2026-04-01
+  może być zbyt konserwatywny (powinna być Faza 3 lub prośba o dane).
+- [LUKA-K3] Warning P950 operuje na thresholds.vat.ksef_sanction_max_pln
+  (500 000) — poprawnie; ale nie uwzględnia kwoty podatku z faktury
+  (sankcja to min(100% VAT, 500 000)), co może przeszacowywać ryzyko dla
+  małych faktur.
+
+4.2. HARMONOGRAM FAZOWY (STAN PRAWNY vs SYSTEM)
+  Faza   Zakres podmiotowy                    Data             System (P950)
+  F1     Sprzedaż >200 mln PLN (2024)         2026-02-01      2026-02-01  ZGODNE
+  F2     Pozostali podatnicy VAT              2026-04-01      2026-04-01  ZGODNE
+  F3     Mikro (<=10 tys. PLN/mies.)          2027-01-01      2027-01-01  ZGODNE
+  Odbiór faktur (dostęp do odczytu)           2026-02-01      (nie testowane)
+  Uwaga: od 2026-04-01 zakres podmiotowy obejmuje według harmonogramu
+  wszystkich podatników VAT (czynnych i zwolnionych). System w regule
+  ksef_vat_exempt_exception (plan33_ksef.rego) wyłącza zwolnionych z
+  obowiązku — patrz [LUKA-K4].
+
+4.3. CZY REGUŁY EGZEKWUJĄ OBOWIĄZEK KSeF? (WERDYKT SZCZEGÓŁOWY)
+Tak, w warstwie decyzyjnej — z zastrzeżeniami:
+  1. P950 wymusza ksef_required=true dla faktur SALE czynnego podatnika VAT
+     po dacie obowiązku.
+  2. P1790 (token stale >90 dni) -> BLOCK_AND_ALERT — wymusza rotację tokenu.
+  3. P985 (duplikat XML+PDF) -> BLOCK_AND_ALERT — chroni przed podwójnym
+     księgowaniem faktur KSeF.
+  4. P974 (brak GTU dla towarów wrażliwych) -> TRIAGE_QUEUE.
+  5. Mikrowarstwa: a106na.r1-r15 (obowiązek), a106nb.r1-r12 (wystawianie),
+     a106nc (odbiór/UPO), a106nd (przechowywanie), a106ne (tryb awaryjny),
+     a106nf (korekty), a106ng (autoryzacja), a106nh (QR).
+OGRANICZENIE: reguły NIE wykonują fizycznej wysyłki do KSeF (to zadanie
+warstwy integracyjnej/outbox). Egzekucja "twarda" (zablokowanie wystawienia
+faktury poza KSeF) musi być zaimplementowana w aplikacji na podstawie
+routingu BLOCK_AND_ALERT.
+
+4.4. SANKCJE DO 500 000 PLN — POKRYCIE W REGUŁACH
+Spektrum sankcji KSeF (art. 106nq VAT / ustawa o KSeF — stawki i limity do
+potwierdzenia z aktualnym tekstem jednolitym) i pokrycie:
+  Typ naruszenia                        Stawka          Max           Reguła
+  Faktura nie w KSeF / nie przekazana   100% VAT        500 000 PLN   r16, a106nq.r2, P950 (warning)
+  Faktura przekazana po terminie (>24h) 70% VAT         300 000 PLN   r17 (plan33)
+  Błędy formalne w fakturze             18% VAT         500 000 PLN   r18 (system: 15%/100k) [LUKA-K5]
+  Aktywna korekta (czynny żal)          50% VAT         250 000 PLN   a106nq.r3
+  Brak zawiadomienia ZAW-NR             kara 5 000 PLN  —            KSR-1648
+  B2C (paragony)                        brak sankcji    —            r19
+Ocena: pokrycie kompletne koncepcyjnie. Odchylenia do weryfikacji:
+- [LUKA-K5] Reguła r18 stosuje 15% VAT max 100 000 PLN, podczas gdy
+  powszechnie przywoływana stawka ustawowa za błędy formalne to 18% VAT
+  (max 500 000 PLN). Rekomendacja: zweryfikować z tekstem jednolitym i
+  dostosować progi (lub udokumentować celowe zaostrzenie).
+- [LUKA-K6] Brak kalkulatora ekspozycji sankcyjnej (suma 100% VAT z faktur
+  bez KSeF, porównanie z limitem 500k) — patrz Innowacja 8.9.
+- [LUKA-K7] Mikrowarstwa templated (ksef.rego) używa sanction_base_amount_pln
+  = 1000 PLN i sanction_severity LOW dla WSZYSTKICH naruszeń KSeF — to
+  uproszczenie modelu (realna sankcja jest procentowa od kwoty VAT),
+  może prowadzić do niedoszacowania w raportach ryzyka.
+
+4.5. AWARIA KSeF — GRACE PERIOD 7 DNI (ksef_resilience_enterprise.rego)
+Moduł odporności (Strategic Initiative S6) obsługuje pełny cykl awarii:
+  KSR-1600 api_health_check:
+    - wejście: ksef_resilience_check, ksef.production_status/test_status,
+      maintenance_start/end, evaluation_datetime
+    - statusy: OPERATIONAL / DEGRADED / DOWN; routing TRIAGE_QUEUE gdy
+      produkcja niedostępna; komunikat o przerwie serwisowej MF.
+  KSR-1610 offline_mode_procedure:
+    - wejście: ksef_is_offline, invoice.ksef_status == PENDING_OFFLINE
+    - deadline: 168 godzin (7 dni) — zgodne z grace period;
+    - komunikat 5-krokowy: wystawiaj PDF+XML lokalnie, przechowuj XML w
+      strukturze FA(2), wyślij batch po przywróceniu, zachowaj timestampy,
+      powiadom US po >7 dniach; ostrzega przed fakturami "z datą wsteczną".
+    - [LUKA-K8] max_retry_date to placeholder (sprintf "...T23:59:59 (TODO:
+      +7 dni)") — brak realnej arytmetyki dat (ograniczenie OPA — TODO w
+      kodzie). Rekomendacja: policzyć deadline w warstwie integracyjnej.
+  KSR-1620 retry_engine:
+    - exponential backoff: 5 s * 2^n, mapa {0:1..14:16384}, cap 3600 s
+      przy >=10 ponowieniach; max 15 ponowień (BLOCK_AND_ALERT + ręczna
+      interwencja przy max_reached).
+    - klasyfikacja błędów: 4xx (nie ponawiaj — sprawdź dane), 5xx (ponów),
+      timeout, auth (odśwież token).
+    - [LUKA-K9] Klasyfikacja 4xx/5xx przez contains(error_code, "4"/"5") —
+      heurystyka zgrubna (np. "304" byłoby zaklasyfikowane jako 4xx).
+      Rekomendacja: regex/parsowanie pierwszej cyfry kodu HTTP.
+  KSR-1630 token_management:
+    - token KSeF: lifetime 600 min (10 h) — zgodne ze specyfikacją API KSeF;
+    - statusy: MISSING (BLOCK_AND_ALERT), EXPIRED (TRIAGE), EXPIRING_SOON
+      (<30 min), VALID;
+    - [LUKA-K10] calculate_remaining_minutes wylicza różnicę godzin/minut
+      bez obsługi zmiany dnia (wygasa 23:00, teraz 01:00 -> ujemna wartość).
+      Rekomendacja: obliczenia w warstwie integracyjnej (epoch time).
+    - Uwaga koncepcyjna: P1790 (rotacja tokenu co 90 dni) i KSR-1630
+      (ważność sesji 600 min) dotyczą różnych artefaktów (klucz/certyfikat
+      klienta vs token sesji) — warto ujednolicić nazewnictwo w regułach.
+  KSR-1640 xml_validation_preflight:
+    - walidacja strukturalna FA(2) v3.0 przed wysyłką: NIP sprzedawcy,
+      data wystawienia, numer faktury, kwota brutto > 0; lista brakujących
+      pól; BLOCK_AND_ALERT przy niepoprawnej strukturze.
+    - [LUKA-K11] NIP nabywcy (obowiązkowy dla B2B) pojawia się tylko w
+      treści warningu, a NIE w logice walidacji (missing_fields). Rekomendacja:
+      dodać has_buyer_nip do warunków xml_valid.
+  KSR-1645 batch_recovery:
+    - strategie wysyłki po przywróceniu: single (<=3), batch_3_per_cycle
+      (<=20), batch_10_per_cycle (>20); monitorowanie wieku najstarszej
+      faktury; ostrzeżenie przy >=120 h (5 dni).
+  KSR-1648 notify_tax_office:
+    - awaria >168 h (7 dni): wymóg złożenia ZAW-NR; procedura 4-krokowa
+      (formularz, e-PUAP/e-US, lista faktur, UPO); ostrzeżenie o karze
+      5 000 PLN za brak zawiadomienia; routing TRIAGE_QUEUE.
+    - [LUKA-K12] Podstawa prawna w KSR-1648 wskazuje "Art. 106nb VAT" dla
+      kary 5 000 PLN — właściwa podstawa to przepisy ustawy o KSeF /
+      art. 106ne ust. 4 VAT (zawiadomienie o awarii) — do doprecyzowania.
+    - [LUKA-K13] Wyliczenie notification_deadline ("%s + 8 dni") to
+      placeholder — brak realnej arytmetyki (7 dni od dnia po ustaniu awarii).
+WERDYKT: Moduł odporności jest najbardziej dojrzałą częścią warstwy KSeF
+(ocena 4,5/5). Uzupełnienia: realna arytmetyka dat, klasyfikacja HTTP,
+weryfikacja NIP nabywcy w preflight.
+
+4.6. CZY SYSTEM AUTOMATYCZNIE WYSYŁA FAKTURY DO KSeF?
+NIE — i to jest świadomy wybór architektury (silnik decyzyjny, nie
+integracja), ale równocześnie [LUKA-K14]: brak warstwy OUTBOX oznacza,
+że "automatyczność" zależy od zewnętrznego integratora. W analizowanym
+zakresie:
+  - P950/P960/P985/1790 generują decyzje (ksef_required, offline_mode,
+    duplicate, token_stale), a nie wywołania API.
+  - KSR-1645 opisuje plan wysyłki (batch), nie wykonuje wysyłki.
+  - Rekomendacja: warstwa integracyjna z outbox pattern + idempotency keys
+    (patrz Innowacja 8.10 — Zero-Downtime KSeF Buffer). Bez tego system
+    "mówi, co zrobić", a nie "robi".
+
+4.7. UPO (URZĘDOWE POŚWIADCZENIE ODBIORU) — WERYFIKACJA
+Pokrycie UPO w regułach:
+  - a106nc.r1: UPO przechowywać 5 lat (retencja) — ZGODNE.
+  - a106nc.r2: KSeF generuje UPO automatycznie po poprawnej wysyłce — ZGODNE.
+  - a106nc.r3: UPO warunkiem odliczenia VAT (bez UPO brak prawa do
+    odliczenia) — kluczowa reguła, ZGODNE z podejściem MF.
+  - a106nc.r4: weryfikacja UPO przez API KSeF — ZGODNE.
+  - r10-r12 (plan33): UPO po wysłaniu, podpis elektroniczny UPO, retencja 5 lat.
+  - epuap_enterprise EPU-100: śledzenie UPO dla korespondencji e-PUAP.
+LUKI:
+  - [LUKA-K15] Brak dedykowanego trackera UPO PER FAKTURA w warstwie
+    enterprise: status (PENDING/ACCEPTED/REJECTED), hash/XML UPO, alert
+    o brakującym UPO przed terminem odliczenia. To podstawa Innowacji 8.8.
+  - [LUKA-K16] Brak reguły "UPO a odliczenie VAT" powiązanej z ewidencją
+    zakupów JPK_V7 (zakup bez UPO -> ryzyko korekty odliczenia).
+
+4.8. FAKTURY B2C — ZWOLNIENIE Z KSeF (paragon z NIP do 450 PLN)
+Stan prawny: faktury wystawiane konsumentom (B2C) NIE podlegają
+obowiązkowemu KSeF (obowiązek obejmuje dostawy na rzecz przedsiębiorców
+i podmiotów niebędących konsumentami; faktury B2C pozostają dobrowolne).
+System obsługuje to na kilku poziomach:
+  - P953 ksef_b2c_exemption: B2C -> ksef_required=false, wyłączenie
+    "przed 2026-07-01 lub wyjątek" (podstawa art. 106ga ust. 2 pkt 4 VAT).
+  - P952 ksef_b2c_mandatory_2026: [ZAŁOŻENIE PROJEKTOWE] obowiązek B2C od
+    2026-07-01 z wyjątkami: paragon <450 PLN (faktura uproszczona na
+    żądanie konsumenta — art. 106h ust. 1 pkt 1 VAT), sprzedaż okazjonalna
+    <1000 PLN, rolnicy ryczałtowi, transport pasażerski; wymaga zgody
+    konsumenta (opt-in).
+    UWAGA [LUKA-K17]: data 2026-07-01 dla obowiązku B2C NIE ma umocowania
+    w obowiązującym stanie prawnym (obowiązek B2C nie został ustanowiony).
+    Reguła jest bezpieczna (konserwatywna), ale wymaga flagi konfiguracyjnej
+    "assumed_b2c_mandate" i aktualizacji po publikacji przepisów.
+  - plan33_ksef.rego: ksef_b2c_exception (paragon z NIP nie wymaga KSeF),
+    ksef_obligation_b2c_receipts_exception (paragony/rachunki B2C),
+    ksef_fiscal_receipt_aggregate (zbiorcza faktura z paragonów — wyjątek).
+  - r19: sankcje KSeF nie dotyczą paragonów B2C.
+WERDYKT: wyłączenia B2C obsłużone poprawnie i z nadmiarem; granica
+450 PLN zgodna z fakturą uproszczoną (art. 106h VAT).
+
+4.9. KSeF 2.0 — CZY NOWE FUNKCJE SĄ OBSŁUŻONE?
+Zestawienie funkcji KSeF 2.0 (API v2) a pokrycie reguł:
+  Funkcja KSeF 2.0                         Pokrycie                       Ocena
+  Wysyłka pojedyncza + zbiorcza (batch)    r23 (1/100), r25 (batch do 100), 4,5/5
+                                           KSR-1645 (strategie)
+  Sprawdzanie statusu faktury              r24 (status: odebrana/błędna)   4/5
+  Tryb offline + certyfikaty KSeF          a106ne.r1-10, r4-r9, KSR-1610   4,5/5
+  Token sesji (10 h) + odświeżanie         KSR-1630, a106ng.r3, r21        4,5/5
+  Kod QR na fakturze wizualnej             a106nh.r3-5, r13-15             4/5
+  Autoryzacja/delegacja uprawnień          a106ng.r4-5 (delegacja, cofnięcie) 4/5
+  Środowisko TEST i PRODUKCJA              r22, KSR-1600 (test_status)     4,5/5
+  Korekty i anulowania                     a106nf.r1-4                     4/5
+  Powiadomienia i komunikaty techniczne    KSR-1600 (maintenance window)   3,5/5
+  (brak subskrypcji webhook — zewnętrzne)
+  Odbiór faktur (dostęp do odczytu)        (brak jawnej reguły odczytu —   2,5/5
+                                           [LUKA-K18] rekomendacja reguły
+                                           "ksef_receipt_digest" dla
+                                           okresowego pobierania faktur
+                                           kosztowych do księgowania)
+WERDYKT: funkcje KSeF 2.0 obsłużone w większości; luka w warstwie ODBIORU
+faktur kosztowych (read/query) — kluczowa dla automatyzacji zakupów.
+
+4.10. MIKROWARSTWA KSeF (micro/ksef/ksef.rego + micro/plan33_ksef.rego)
+
+4.10.1. micro/ksef/ksef.rego (80 reguł templated)
+Struktura: pakiety tematyczne a106na (obowiązek, 15 reguł), a106nb
+(wystawianie, 12), a106nc (odbiór, 10), a106nd (przechowywanie, 10),
+a106ne (tryb awaryjny, 10) i dalsze (a106nf-ng, ...). Wzorzec reguły:
+guard na fladze wejściowej (ksef_condition_met, ksef_exclusion_applies,
+ksef_a106na_violation itd.) + atrybuty micro_rule_active,
+sanction_type=KKS, sanction_severity=LOW, sanction_base_amount_pln=1000.
+Ocena: reguły templated pełnią rolę "wykrywaczy przepisu" — ich wartość
+zależy od poprawności flag dostarczanych przez warstwę integracyjną.
+Uwaga [LUKA-K7]: model sankcji uproszczony (stałe 1000 PLN, patrz 4.4).
+
+4.10.2. micro/plan33_ksef.rego (75 reguł atomowych)
+Substancja merytoryczna (wybrane reguły, rule_id -> treść):
+  a106na.r10  ksef_vat_exempt_exception   zwolnieni z VAT wyłączeni z KSeF
+  a106na.r11  ksef_b2c_exception          B2C wyłączone (paragon z NIP)
+  a106na.r12  ksef_self_invoicing_obligation  self-billing przez KSeF
+  a106na.r13  ksef_fiscal_receipt_aggregate   zbiorcza z paragonów — wyjątek
+  a106na.r14  ksef_foreign_entity_invoice     faktury od podmiotów zagr.
+  a106na.r15  ksef_tax_exempt_entity_invoice  faktury od zwolnionych
+  a106na.r16-22  pola obowiązkowe: NIP sprzedawcy/nabywcy, numer, daty,
+                 kwoty, GTU
+  a106na.r8   ksef_mandatory_all_factures_2026  wszystkie B2B od 01.02.2026
+  a106na.r9   ksef_active_vat_only        tylko czynni podatnicy
+  a106nb.r1-r5 terminy: wysyłka w dacie sprzedaży; 24 h przesunięcie;
+                 30 dni zaliczka; 30 dni zbiorcze; 7 dni zlecenia
+  a106nc.r1-r4 UPO: retencja 5 lat, automatyczne, warunek odliczenia,
+                 weryfikacja API
+  a106nd.r1-r5 archiwum: 10 lat, prawo eksportu, brak własnego
+                 przechowywania, opcjonalnie, zmiana formatu nie wpływa
+  a106ne.r1-r10 tryb awaryjny: 7 dni, sufiks /OFFLINE, batch po
+                 przywróceniu, jeden plik, brak sankcji, sprawdzenie
+                 statusu, kanał awaryjny
+  a106nf.r1-r4 korekty przez KSeF, referencja do pierwotnej, kolejność
+                 chronologiczna, anulowanie ANULOWANA
+  a106ng.r3-r5 autoryzacja: token kwalifikowany, delegacja, cofnięcie
+  a106nh.r3-r5 QR: format wg specyfikacji, skanowanie, podpis cyfrowy
+  a106nq.r2-r4 sankcje: 100%/500k, 50%/250k (pierwsze naruszenie),
+                 wyjątek trybu awaryjnego
+  r1-r25       reguły ogólne (faza od 01.02.2026, UPO, QR, sankcje
+                 100%/70%/15%, self-billing, token, środowiska, limity
+                 batch 1/100, status faktury, wyłączenia B2C, struktura
+                 FA(1) itd.)
+WERDYKT: plan33_ksef to merytorycznie bogata warstwa atomowa; wskazania:
+- [LUKA-K4] reguła ksef_vat_exempt_exception (guard {true}) jest bezwarunkowa
+  i wyłącza zwolnionych z KSeF — w świetle harmonogramu 2026-04-01
+  (objęcie również zwolnionych) reguła powinna zawierać datę graniczną.
+- [LUKA-K19] reguła ksef_structured_invoice_schema (r4) odwołuje się do
+  schemy FA(1) — od 2026 obowiązuje FA(2) (patrz KSR-1640 "FA(2) v3.0").
+  Niespójność wersji schemy między warstwami do ujednolicenia.
+- [LUKA-K20] limity batch 1/100 (r23, r25) zgodne z API KSeF 2.0 — OK.
+
+4.11. INWENTARZ REGUŁ KSeF (ENTERPRISE)
+  rule_id                                   Prio   Routing               Opis
+  jdg.ksef_jpk.security_ksef_token_rotation 1790   BLOCK_AND_ALERT       token >90 dni
+  jdg.ksef_jpk.ksef_mandatory               950    (informacyjna)        obowiązek fazowy
+  jdg.ksef_jpk.ksef_b2c_mandatory_2026      952    (informacyjna)        B2C od 2026-07-01
+  jdg.ksef_jpk.ksef_b2c_exemption           953    (informacyjna)        wyłączenie B2C
+  jdg.ksef_jpk.ksef_offline_recovery        960    (informacyjna)        tryb offline 7 dni
+  jdg.ksef_jpk.ksef_duplicate_detected      985    BLOCK_AND_ALERT       duplikat XML+PDF
+  jdg.ksef_jpk.ksef_offline_pkpir           986    TRIAGE_QUEUE          PKPiR offline sync
+  jdg.ksef_resilience.api_health_check      1600   TRIAGE (degradacja)   status API
+  jdg.ksef_resilience.offline_mode_procedure 1610  TRIAGE_QUEUE          tryb offline 168h
+  jdg.ksef_resilience.retry_engine          1620   TRIAGE/BLOCK          backoff 2^n
+  jdg.ksef_resilience.token_management      1630   TRIAGE/BLOCK          token 600 min
+  jdg.ksef_resilience.xml_validation_preflight 1640 BLOCK_AND_ALERT      walidacja FA(2)
+  jdg.ksef_resilience.batch_recovery        1645   TRIAGE_QUEUE          strategie batch
+  jdg.ksef_resilience.notify_tax_office     1648   TRIAGE_QUEUE          ZAW-NR >7 dni
+  (+ 80 reguł templated micro + 75 atomowych plan33)
+  Uwaga: reguły JPK z pliku ksef_jpk.rego (P970 jpk_v7m, P974 jpk_gtu_completeness,
+  P980 jpk_pkpir) są indeksowane w sekcji 5.9 oraz w załączniku A.
+
+4.12. LUKI I REKOMENDACJE KSeF (PODSUMOWANIE)
+  K1  Konflikt faz P950 przy niespójnych danych wejściowych (200M vs <10k/mies.)
+      -> rozstrzygnij priorytet faz.
+  K2  Fallback dla nowych podmiotów (annual==0, monthly==0) -> Faza 2
+      (konserwatywnie); rozważ Faza 3 z progiem przychodu.
+  K3  Warning sankcji bez kwoty podatku faktury — dodaj min(100% VAT, 500k).
+  K4  Zakres podmiotowy po 01.04.2026: zwolnieni (aktualizacja
+      ksef_vat_exempt_exception).
+  K5  Weryfikacja stawki r18 (15%/100k vs ustawowe 18%/500k).
+  K6  Kalkulator ekspozycji sankcyjnej (Innowacja 8.9).
+  K7  Model sankcji w templated (1000 PLN stałe) — ujednolić z warstwą plan33.
+  K8  Arytmetyka dat w KSR-1610 (deadline +7 dni) — przenieść do integratora.
+  K9  Klasyfikacja HTTP 4xx/5xx przez contains() — poprawić.
+  K10 Arytmetyka czasu tokenu (zmiana dnia) — poprawić.
+  K11 NIP nabywcy poza logiką walidacji XML (tylko w warningu) — dodać.
+  K12 Podstawa prawna kary 5000 PLN (ZAW-NR) — doprecyzować.
+  K13 Arytmetyka terminu ZAW-NR ("+8 dni") — poprawić.
+  K14 Brak warstwy OUTBOX / automatycznej wysyłki (Innowacja 8.10).
+  K15 Brak UPO Trackera per faktura (Innowacja 8.8).
+  K16 UPO a odliczenie VAT w ewidencji zakupów — dodać regułę.
+  K17 Założenie B2C od 2026-07-01 — oznaczyć jako assumption + flaga.
+  K18 Brak reguły odbioru faktur kosztowych z KSeF (receipt digest).
+  K19 Niespójność schemy FA(1) vs FA(2) między warstwami.
+  K20 (pozytywne ustalenie) Limity batch 1/100 zgodne z API KSeF 2.0 — bez zmian.
+
+=================================================================
+SEKCJA 5 — ANALIZA JPK_V7 (POZIOM ENTERPRISE)
+=================================================================
+
+5.1. JPK_V7M (MIESIĘCZNY) vs JPK_V7K (KWARTALNY)
+  - P970 (jdg.ksef_jpk.jpk_v7m_structure): czynny podatnik VAT z
+    vat_period == "MONTHLY" -> jpk_v7_required=true, jpk_frequency=MONTHLY.
+  - plan33 a99.r11 (JPK_V7M miesięczny), a99.r12 (JPK_V7K kwartalny dla
+    małych podatników), r13 (termin 25.), r2 (V7K opcja <2 mln EUR),
+    r3 (V7K do 25. po kwartale), r4 (V7M do 25. następnego miesiąca).
+  - JV7-1949 (v7k_quarterly_support): generuje decyzję dla rozliczenia
+    kwartalnego z listą warunków (status małego podatnika <2 mln EUR,
+    VAT-R, brak zaległości, termin 25.). Uwaga techniczna: eligibility_ok
+    = annual_revenue < 2000000 * 4.5 (przelicznik EUR->PLN 4,5 sztywno) —
+    [LUKA-J1] rekomendacja: konfigurowalny kurs lub porównanie w EUR.
+  - WERDYKT: rozróżnienie V7M/V7K obsłużone poprawnie; domyślny V7K dla
+    przedsiębiorcy z vat_status != ACTIVE wskazuje korzyść (4 deklaracje
+    zamiast 12) i warunek rejestracji VAT-R (routing TRIAGE_QUEUE).
+
+5.2. REJESTR SPRZEDAŻY (SALES REGISTER) — JV7-1925
+  Reguła: jdg.jpk_v7.sales_register_autofill (priorytet 1925).
+  Wejście: jpk_v7_generate==true, invoice.direction=="SALE", total_net_sales,
+  total_vat_due, sales_invoice_count, sales_corrections_in_period.
+  Wynik: jpk_version="JPK_V7M(1)", jpk_sales_K_10_total (netto),
+  jpk_sales_K_11_vat_due (VAT należny), liczba dokumentów i korekt.
+  Routing: TRIAGE_QUEUE gdy doc_count==0 (brak dokumentów sprzedaży);
+  BLOCK_AND_ALERT gdy vat>0 i net==0 (VAT bez netto — niespójność).
+  Warning: "Wyślij JPK_V7M przez API KSeF do 25.<mm>.2026".
+  Ocena: poprawna koncepcja K_10/K_11 (odpowiedniki pozycji deklaracyjnych);
+  [LUKA-J2] rok 2026 zaszyty w warningu (twardy kod) — na przełomie roku
+  komunikat będzie mylący; rekomendacja: rok z inputu/konfiguracji.
+
+5.3. REJESTR ZAKUPÓW (PURCHASE REGISTER) — JV7-1930
+  Reguła: jdg.jpk_v7.purchase_register_autofill (priorytet 1930).
+  Wejście: jpk_v7_generate==true, direction=="PURCHASE", purchases_net_total,
+  purchases_vat_deductible, purchases_vat_non_deductible,
+  purchases_mp_split_payment_total, purchase_invoice_count,
+  purchases_wnt_amount, purchases_import_vat, purchases_reverse_charge.
+  Wynik: jpk_purchases_P_38_net, jpk_purchases_P_39_vat_deductible,
+  non_deductible, MPP, WNT, import, reverse_charge (P_39 to VAT naliczony
+  do odliczenia).
+  Heurystyki walidacyjne (purchase_routing_flag):
+    - WNT > 30% netto zakupów -> TRIAGE_QUEUE (podejrzana struktura);
+    - VAT do odliczenia > netto * 0.23 * 1.5 (34,5%) -> BLOCK_AND_ALERT
+      (nieproporcjonalne odliczenie).
+  Ocena: kompletna; heurystyki rozsądne, choć arbitralne — [LUKA-J3]
+  progi 30% i 34,5% warto przenieść do thresholds (konfiguracja).
+
+5.4. KODY GTU — AUTO-ASSIGNMENT (JV7-1940) — KRYTYCZNE USTALENIA
+  Reguła: jdg.jpk_v7.gtu_code_autoassignment (priorytet 1940).
+  Mechanizm: mapa kategorii produktowych -> kody GTU:
+    ALCOHOL            -> GTU_01   (ZGODNE: napoje alkoholowe >1,2%)
+    FUEL               -> GTU_02   (ZGODNE: paliwa)
+    TOBACCO            -> GTU_04   (ZGODNE: wyroby tytoniowe)
+    ELECTRONICS_WASTE  -> GTU_05   (dopuszczalne: odpady; uwaga: jeśli
+                                    chodzi o urządzenia -> GTU_06)
+    VEHICLES           -> GTU_06   [BŁĄD] poprawnie GTU_07 (pojazdy i części)
+    PHARMA_MEDICAL     -> GTU_08   [BŁĄD] poprawnie GTU_09 (leki/wyroby med.)
+    CONSULTING, LEGAL, IT_SERVICES -> GTU_11 [BŁĄD] poprawnie GTU_12
+                                    (usługi niematerialne: doradcze, prawne,
+                                    IT, telekomunikacja, przechowywanie)
+  Pełna lista kodów GTU (załącznik nr 15 do ustawy VAT) — pokrycie systemu:
+    GTU_01 napoje alkoholowe >1,2%          -> TAK (ALCOHOL)
+    GTU_02 paliwa                           -> TAK (FUEL)
+    GTU_03 oleje opałowe i smarowe          -> NIE [LUKA-J4]
+    GTU_04 wyroby tytoniowe                 -> TAK (TOBACCO)
+    GTU_05 odpady                           -> TAK (ELECTRONICS_WASTE)
+    GTU_06 urządzenia elektroniczne i części-> NIE (błędnie użyty dla VEHICLES)
+    GTU_07 pojazdy i części samochodowe     -> NIE (błędnie przypisany GTU_06)
+    GTU_08 metale szlachetne i nieszlachetne-> NIE (błędnie użyty dla PHARMA)
+    GTU_09 leki i wyroby medyczne           -> NIE (błędnie przypisany GTU_08)
+    GTU_10 budynki, budowle, grunty         -> NIE [LUKA-J4]
+    GTU_11 uprawnienia do emisji CO2        -> NIE (błędnie użyty dla usług)
+    GTU_12 usługi niematerialne (doradcze, prawne, IT...) -> NIE (błędnie GTU_11)
+    GTU_13 usługi transportowe              -> NIE [LUKA-J4]
+  WERDYKT: mapa GTU zawiera 3 BŁĘDY PRZYPISAŃ (VEHICLES, PHARMA_MEDICAL,
+  CONSULTING/LEGAL/IT) i pokrywa tylko 7 z 13 kodów. Konsekwencje:
+  błędne kody GTU w JPK_V7 -> ryzyko korekty pliku, analiz ryzykowności
+  (algorytm MF) i sankcji. Rekomendacja: natychmiastowa poprawa mapy
+  (Innowacja 8.3 — GTU Semantic Auto-Tagger) + walidacja kodu GTU z
+  definicją załącznika nr 15 (P974 ma tylko kategorie FUEL/ALCOHOL/TOBACCO/
+  ELECTRONICS/STEEL/CONSTRUCTION — patrz [LUKA-J5] poniżej).
+
+  [LUKA-J5] Niespójność taksonomii kategorii między P974 (GTU completeness:
+  FUEL, ALCOHOL, TOBACCO, ELECTRONICS, STEEL, CONSTRUCTION) a mapą JV7-1940
+  (ALCOHOL, FUEL, TOBACCO, ELECTRONICS_WASTE, VEHICLES, PHARMA_MEDICAL,
+  CONSULTING, LEGAL, IT_SERVICES): kategorie STEEL/CONSTRUCTION nie mają
+  odpowiednika w mapie GTU, a ELECTRONICS != ELECTRONICS_WASTE. Kategoria
+  ELECTRONICS (P974) powinna mapować na GTU_06 (urządzenia elektroniczne),
+  STEEL -> GTU_08 (metale), CONSTRUCTION -> GTU_10 (budynki/grunty).
+
+5.5. DEKLARACJA VAT-7 — AUTO-GENERACJA (JV7-1935)
+  Reguła: jdg.jpk_v7.vat7_declaration_autogen (priorytet 1935).
+  Wejście: jpk_v7_generate_vat7==true, sales_vat_due_total,
+  purchases_vat_deductible, import_vat_deductible, wnt_vat_due,
+  reverse_charge_vat, vat_carry_forward_from_prev.
+  Obliczenia: gross = należny + WNT - naliczony - import - (odwrotne
+  obciążenie jest elementem należnego po stronie nabywcy); adjusted =
+  gross - carry_from_prev; net_vat_to_pay = max(adjusted, 0);
+  net_vat_to_refund = 0 (ZAWSZE); carry_to_next = 0 (ZAWSZE).
+  Wynik: mikrorachunek VAT (47 1010 0071 2223 [mikrorachunek VAT]),
+  deadline "25.<mm>.2026".
+  USTALENIA:
+  - [LUKA-J6] Ścieżka ZWROTU nie jest zaimplementowana: net_vat_to_refund
+    i carry_to_next są sztywno 0. Dla podatników z nadwyżką naliczonego
+    (częste w eksporcie, WDT, inwestycjach) system zawsze pokaże
+    "DO ZAPŁATY: 0" zamiast "DO ZWROTU: X" — błąd informacyjny.
+    Rekomendacja: net_vat_to_refund = max(-adjusted, 0) i decyzja
+    zwrot/na następny okres (art. 87 ust. 1-2 VAT, termin 60/25 dni).
+  - [LUKA-J7] Mikrorachunek zaszyty na sztywno — numer zależy od NIP
+    podatnika (generowany przez MF); rekomendacja: pole konfiguracyjne
+    per przedsiębiorca lub wywołanie API mikrorachunku.
+  - [LUKA-J8] Obliczenie VAT-7 operuje na agregatach wejściowych
+    (total_*), a nie na pozycjach ewidencji — brak kontroli zgodności
+    sum z rejestrami JV7-1925/1930 w obrębie tego samego przebiegu
+    (cross-check jest osobną regułą JV7-1945 — patrz 5.6).
+
+5.6. CROSS-CHECK VALIDATION (JV7-1945) — BŁĄD KRYTYCZNY
+  Reguła: jdg.jpk_v7.cross_check_validation (priorytet 1945).
+  Założenie: weryfikacja krzyżowa JPK vs PKPiR vs KSeF.
+  Wejście: jpk_sales_net_total, pkpir_revenue_col10, jpk_vat_due_total,
+  pkpir_vat_expected, ksef_invoice_count_period, jpk_invoice_count_period.
+  PROBLEM [LUKA-J9]: total_discrepancies := 3 — wartość ZASZYTA NA SZTYWNO.
+  W konsekwencji:
+    - check_status = "NIEZGODNOSCI: 3" ZAWSZE (funkcja check_status_label);
+    - routing = BLOCK_AND_ALERT ZAWSZE (crosscheck_routing_flag: >=3 ->
+      BLOCK_AND_ALERT);
+    - warning crosscheck_warnings_fallback (disc_count > 0) ZAWSZE.
+  Cross-check NIE porównuje faktycznie jpk_net_sales vs pkpir_revenue vs
+  ksef_count. Każda próba generowania JPK_V7 z walidacją krzyżową zakończy
+  się stałym blokiem — reguła jest obecnie bezużyteczna i SZKODLIWA
+  operacyjnie (blokuje pipeline). Rekomendacja: policzyć
+  total_discrepancies = |jpk_net_sales - pkpir_revenue| + |jpk_vat_due -
+  pkpir_vat| + |ksef_count - jpk_count| (z tolerancją), routing wg
+  liczby rozbieżności (0 ZGODNE / 1-2 TRIAGE / >=3 BLOCK).
+  Uwaga: funkcje pomocnicze (check_status_label, crosscheck_routing_flag,
+  build_crosscheck_warnings) są napisane poprawnie — błąd leży wyłącznie
+  w twardym kodowaniu liczby rozbieżności.
+
+5.7. TERMIN: 25. DZIEŃ MIESIĄCA / KWARTAŁU
+  - plan26_deadlines.rego (P972 filing_deadlines_detailed): JPK_V7
+    miesięczny do 25., kwartalny do 25. po kwartale; trigger przy
+    days_to_deadline < 30 (WARNING); podstawa art. 99 ust. 1-3 VAT;
+    warning o ryzyku art. 77 KKS (wykroczenie karno-skarbowe za
+    niezłożenie JPK w terminie).
+  - plan33 a99.r13 (termin 25.), r3/r4 (V7K/V7M).
+  - JV7-1925/1935 warningi "do 25.<mm>.2026" — zgodne, z zastrzeżeniem
+    [LUKA-J2] (zaszyty rok).
+  WERDYKT: terminy zgodne z ustawą; dodać odliczanie dni do terminu
+  w atrybutach (obecnie zależne od zewnętrznego input days_to_deadline).
+
+5.8. MIKROWARSTWA JPK (micro/jpk/jpk.rego + micro/plan33_jpk.rego)
+
+5.8.1. micro/jpk/jpk.rego (36 reguł templated)
+  Struktura: a99 (JPK_V7M, 15 reguł), a99b (JPK_V7K, 10), a193a (JPK na
+  żądanie, 10). Wzorzec: guardy na flagach (jpk_condition_met,
+  jpk_exclusion_applies, jpk_a99_violation itd.), atrybuty
+  micro_rule_active, sanction KKS LOW 1000 PLN.
+  Ocena: warstwa wykrywania przepisów; wartość zależy od flag.
+
+5.8.2. micro/plan33_jpk.rego (71 reguł atomowych) — substancja:
+  a99.r11-13    V7M miesięczny, V7K kwartalny, termin 25.
+  a99.r14-15    format XML (schemat XSD MF), 3 części (deklaracja +
+                sprzedaż + zakupy)
+  a99.r16       GTU obowiązkowe (13 kodów GTU_01..GTU_13) — par. 10 rozp.
+  a99.r17       procedury: SW, EE, TP — par. 11
+  a99.r18       znaczniki: FP, WEW, VAT_MARZA — par. 12
+  a99.r19       MPP (mechanizm podzielonej płatności) — par. 13
+  a99.r20       import usług IMP_UE / IMP_NON_UE — par. 14
+  a99.r21       numeracja faktur zgodna z oryginałami — par. 15
+  a99.r22       deklaracja zerowa — par. 16
+  a99.r23-29    korekta przez zastąpienie + kody przyczyn 1-5 (par. 17-18e)
+  a99.r30       podpis: kwalifikowany lub profil zaufany — par. 19
+  a99.r31       platformy wysyłki: PUESC / API KSeF / system JPK — par. 20
+  a99.r32       UPO dla JPK — par. 21
+  a99.r33       po terminie: sankcje KKS + odsetki — par. 22
+  a99.r34       korekty wsteczne max 5 lat — par. 23
+  a99.r35       wyjaśnienia do JPK w 7 dni — par. 24
+  b.r1-r15      JPK_PKPIR (16 kolumn, kol. 1-5, 6-7, 8-10, 11-13, 14-16,
+                30 dni/14 dni), JPK_FA (XML, zakres, terminy), JPK_WB,
+                JPK_MAG, JPK_CIT (księgi), automatyczna analiza US,
+                korekta pliku
+  fa.r1-4       JPK_FA na żądanie (14 dni od wezwania)
+  mag.r1-3      JPK_MAG (14 dni)
+  pkpir.r1-5    JPK_PKPIR na żądanie (14 dni)
+  wb.r1-3       JPK_WB (14 dni)
+  r1-r15        V7M obowiązkowy, V7K mały podatnik, terminy, części
+                ewidencji, XML, schemat JPK_V7M-1, zerówka, korekta,
+                walidacja MF (błędy krytyczne -> odrzucenie), retencja 5 lat
+  WERDYKT: bardzo dobra warstwa merytoryczna JPK.
+  USTALENIA:
+  - [LUKA-J10] Niekonsekwencja terminów "na żądanie": 14 dni (fa.r3,
+    mag.r3, pkpir.r3, wb.r3, b.r2-r7 przy art. 30a u.o.r.) vs 30 dni
+    (b.r11 JPK_WB, b.r12 JPK_MAG, b.r13 JPK_CIT, b.r8 JPK_PKPIR 30 dni).
+    Rekomendacja: ujednolicenie do terminu ustawowego (art. 193a OrdPU —
+    wg. reguł 14 dni; zweryfikować z tekstem jednolitym) i usunięcie
+    sprzeczności.
+  - [LUKA-J11] Podstawy prawne JPK na żądanie wskazują art. 30a ustawy o
+    rachunkowości (b.r1, b.r8-b.r13) — właściwa podstawa to art. 193a
+    OrdPU (JPK) oraz art. 30a u.o.r. dla JPK_KR/ST/PKPIR na żądanie;
+    do ujednolicenia.
+  - [LUKA-J12] Brak reguł dla znaczników RO (rachunek powierniczy),
+    B_TP, B_SW oraz procedur WSTO_EE, IED w warstwie autogen (plan33
+    obejmuje SW/EE/TP, FP/WEW/VAT_MARZA, MPP, IMP_UE/IMP_NON_UE).
+
+5.9. INWENTARZ REGUŁ JPK_V7 (ENTERPRISE)
+  rule_id                                   Prio   Routing              Opis
+  jdg.jpk.filing_deadlines_detailed         972    WARNING              terminy 25.
+  jdg.jpk_v7.sales_register_autofill        1925   TRIAGE/BLOCK         rejestr sprzedaży
+  jdg.jpk_v7.purchase_register_autofill     1930   TRIAGE/BLOCK         rejestr zakupów
+  jdg.jpk_v7.vat7_declaration_autogen       1935   (informacyjna)       VAT-7
+  jdg.jpk_v7.gtu_code_autoassignment        1940   (informacyjna)       GTU (błędy!)
+  jdg.jpk_v7.cross_check_validation         1945   BLOCK (zawsze)       cross-check (BUG)
+  jdg.jpk_v7.ksef_data_extraction           1948   BLOCK przy błędach   ekstrakcja KSeF
+  jdg.jpk_v7.v7k_quarterly_support          1949   TRIAGE_QUEUE         V7K kwartalny
+  jdg.ksef_jpk.jpk_v7m                      970    (informacyjna)       V7M miesięczny
+  jdg.ksef_jpk.jpk_gtu_completeness         974    TRIAGE_QUEUE         brak GTU
+  jdg.ksef_jpk.jpk_pkpir                    980    (informacyjna)       JPK_PKPIR
+  (+ 36 templated + 71 atomowych plan33)
+
+5.10. LUKI I REKOMENDACJE JPK_V7 (PODSUMOWANIE)
+  J1  Kurs EUR->PLN sztywny 4,5 w V7K eligibility — konfiguracja.
+  J2  Rok 2026 zaszyty w warningach — parametr okresu.
+  J3  Progi heurystyk zakupów (30%, 34,5%) — przenieść do thresholds.
+  J4  Brak GTU_03, GTU_10, GTU_13 oraz poprawnych GTU_07/09/12 w mapie.
+  J5  Niespójna taksonomia kategorii (P974 vs JV7-1940) — ujednolicić.
+  J6  Ścieżka zwrotu VAT (net_vat_to_refund=0, carry=0) — zaimplementować.
+  J7  Mikrorachunek hardcoded — per NIP.
+  J8  VAT-7 na agregatach bez kontroli sum z rejestrami — dodać.
+  J9  Cross-check JV7-1945: total_discrepancies zaszyte = 3 — NAPRAWIĆ.
+  J10 Niekonsekwencja terminów 14 vs 30 dni na żądanie — ujednolicić.
+  J11 Podstawy prawne art. 30a u.o.r. vs art. 193a OrdPU — ujednolicić.
+  J12 Brak znaczników RO/B_TP/B_SW i procedur WSTO_EE/IED w autogen.
+
+=================================================================
+SEKCJA 6 — ANALIZA JPK_CIT (POZIOM ENTERPRISE)
+=================================================================
+
+6.1. JDG A CIT — UWARUNKOWANIA PRAWNE
+JDG to jednoosobowa działalność gospodarcza osoby fizycznej. Osoby
+fizyczne prowadzące działalność gospodarczą rozliczają PIT (skala
+podatkowa 12%/32%, podatek liniowy 19%, ryczałt ewidencjonowany) —
+NIE są podatnikami CIT. Formy wskazane w jpk_cit.rego (CIT, CIT_LINEAR,
+ESTONIAN_CIT, CIT_SMALL) dotyczą spółek (sp. z o.o., S.A., sp. komandytowa,
+spółka jawna od 2021 itd.). Estoński CIT (ryczałt od dochodów spółek,
+art. 28c-28t CIT) dotyczy spółek, nie JDG.
+WNIOSEK ANALITYCZNY: moduł jpk_cit.rego modeluje scenariusze
+hipotetyczne/brzegowe (np. symulacje "co by było, gdyby JDG podlegała
+CIT"). Realne znaczenie praktyczne dla JDG ma:
+  - JPK_KR (księgi rachunkowe) i JPK_ST (środki trwałe) NA ŻĄDANIE dla
+    JDG prowadzącej pełną księgowość (obowiązek ksiąg rachunkowych przy
+    przychodach >2 mln EUR rocznie — art. 2 ust. 1 pkt 5 u.o.r.) —
+    podstawa: art. 193a OrdPU, rozporządzenia MF (JPK_KR/JPK_ST).
+  - Od 2025 r. JPK_KR/ST obowiązkowe cyklicznie dla podatników CIT
+    (duzi od 2025, pozostali od 2026) — dla JDG tylko na żądanie.
+Zamówienie analityczne traktuje JPK_CIT jako "rzadkie, ale możliwe" —
+raport potwierdza rzadkość i wskazuje realną ścieżkę (JDG na pełnej
+księgowości -> JPK_KR/ST na żądanie).
+
+6.2. JPK_KR / JPK_ST — CO SYSTEM POKRYWA
+  - b.r13 (plan33): JPK_CIT (księgi rachunkowe) na żądanie US dla JDG
+    z pełną księgowością (termin 30 dni wg reguły — patrz [LUKA-J10]).
+  - jpk_cit.rego JC-100: terminy (CIT-8 31.03.2027, JPK_KR do 10. dnia
+    miesiąca, zaliczki do 20.).
+  - Brak dedykowanego generatora JPK_KR (zaksięgowane operacje ->
+    struktura JPK_KR) i JPK_ST (środki trwałe + amortyzacja) —
+    [LUKA-C1] rekomendacja: integracja z modułem księgowym
+    (accounting/depreciation_enterprise.rego, uor_enterprise_live.rego).
+  - [LUKA-C2] Brak reguły "obowiązek pełnej księgowości" dla JDG
+    (przychody >2 mln EUR) -> automatyczne włączenie JPK_KR/ST.
+
+6.3. ANALIZA REGUŁ jpk_cit.rego
+  JC-010 cit_calculation_standard (prio 10):
+    - formy: CIT, CIT_LINEAR; stawka 19% (art. 19 CIT);
+    - dochód = przychody - koszty + NKUP (uwaga: model NKUP jako składnik
+      DODATNI dochodu — zgodnie z logiką NKUP zwiększa dochód, poprawnie);
+    - odliczenia: darowizny max 10% dochodu, IP Box 5% dochodu z IP,
+      straty max 50% dochodu (art. 7 ust. 2 CIT / limity darowizn);
+    - routing: BLOCK_AND_ALERT gdy do zapłaty >10 000 PLN i brak zaliczek;
+      TRIAGE_QUEUE gdy >5 000 PLN.
+  JC-020 cit_calculation_estonian (prio 20):
+    - forma ESTONIAN_CIT; podatek 20% od wypłaconego zysku (art. 28m ust. 1
+      pkt 1 CIT); reinwestycja -> odroczenie; formularz CIT-8E.
+  JC-030 cit_calculation_small (prio 30):
+    - forma CIT_SMALL; 9% (art. 19 ust. 1 pkt 2 CIT); limit przychodów
+      2 mln EUR; threshold_ok weryfikowane.
+  JC-100 cit_deadline (prio 100):
+    - lista terminów: CIT-8 2027-03-31 (hardcoded — [LUKA-C3]),
+      JPK_KR M+10, zaliczka M+20; routing pusty.
+  WERDYKT: matematyka poprawna; moduł kompletny jako "kalkulator
+  hipotetyczny". Poprawki: daty z konfiguracji, dodanie powiązania z
+  JPK_KR/ST, dodanie amortyzacji środków trwałych w podstawie.
+
+6.4. LUKI I REKOMENDACJE JPK_CIT
+  C1  Generator JPK_KR / JPK_ST dla JDG na pełnej księgowości.
+  C2  Reguła przejścia na pełną księgowość (>2 mln EUR) -> obowiązki JPK.
+  C3  Daty hardcoded (CIT-8 31.03.2027) — konfiguracja.
+  C4  Uwaga dokumentacyjna: formy CIT w module mają charakter
+      symulacyjny dla JDG — oznaczyć w metadanych pakietu.
+  C5  Powiązanie odliczeń (darowizny/IP Box/straty) z ewidencją
+      księgową (obecnie agregaty wejściowe).
+
+=================================================================
+SEKCJA 7 — ANALIZA CYFRYZACJI (POZIOM ENTERPRISE)
+=================================================================
+
+7.1. digital.rego — FAKTYCZNY ZAKRES (krypto, AI Act, MDR, fallback)
+Plik digital.rego (7 reguł, P630-P1895) NIE obsługuje e-Doręczeń/e-PUAP
+mimo nazwy pakietu "digital". Obejmuje:
+  P630  crypto_taxable_event: krypto -> PIT-38, 19% od dochodu, straty
+        krypto odliczalne w roku (art. 22d-22e, 30b PIT).
+  P1890 crypto_mining_business: kopanie jako działalność gospodarcza,
+        VAT 23%, KUP (sprzęt, prąd, amortyzacja), przychód = wartość
+        rynkowa w dniu otrzymania.
+  P1892 crypto_mdr_reporting: MDR/DAC6 dla transgranicznych schematów
+        krypto -> MDR-1 w 30 dni, kara do 21 mln PLN.
+  P1893 ai_act_compliance_check: klasyfikacja ryzyka AI Act
+        (rozp. UE 2024/1689), sankcje do 35 mln EUR / 7% przychodu.
+  P1894 api_degradation_fallback: degradacja API -> tryb fallback
+        (reguły krytyczne jdg.fallback), routing FALLBACK_ACTIVE.
+  P1895 deepfake_ai_disclosure: AI Act art. 50 — ujawnienie treści
+        generowanych przez AI (od 02.02.2025 do 02.08.2026 etapami).
+Ocena: zakres "gospodarka cyfrowa" obsłużony dobrze; [LUKA-D1] nazwa
+pakietu i opis (title: "JDG Package — digital") sugerują szerszy zakres
+niż zawartość — rekomendacja: dodać metadane wskazujące na krypto/AI/MDR
+lub rozdzielić na pakiety (jdg.crypto, jdg.ai_act).
+
+7.2. e-DORĘCZENIA — OBOWIĄZKI 2025/2026 (edelivery/)
+Stan prawny (synteza): ustawa z 18.11.2020 o doręczeniach elektronicznych.
+Obowiązek posiadania adresu w BAE:
+  - od 01.01.2025: podmioty publiczne, zawody zaufania publicznego
+    (adwokaci, radcowie, doradcy podatkowi, notariusze, komornicy,
+    doradcy restrukturyzacyjni, rzecznicy patentowi), spółki
+    zarejestrowane w KRS od 01.01.2025;
+  - od 01.04.2025: spółki zarejestrowane w KRS przed 01.01.2025;
+  - JDG (osoby fizyczne prowadzące działalność gospodarczą, bez KRS):
+    obowiązek NIE został jeszcze wprowadzony — dobrowolne założenie
+    adresu e-Doręczeń; rozszerzenie obowiązku na osoby fizyczne było
+    zapowiadane (terminy 2026 — do weryfikacji z aktualnym stanem).
+  - Fikcja doręczenia: po 14 dniach od umieszczenia pisma w skrzynce
+    (art. 39 ustawy o doręczeniach elektronicznych).
+Pokrycie w systemie:
+  plan44_edelivery.rego (P1870-1877):
+    P1870 fiction_detection: fikcja doręczenia -> BLOCK_AND_ALERT
+          ("sprawdź natychmiast e-US");
+    P1871 platform_monitoring: monitorowanie e-US (bez ePUAP);
+    P1872 epuap_profile: brak profilu zaufanego -> WARNING;
+    P1873 qualified_signature: podpis kwalifikowany dla pism procesowych,
+          pełnomocnictw, odwołań (art. 126 par. 5 OrdPU);
+    P1874 document_retention: retencja dokumentów elektronicznych 5 lat;
+    P1875 evidence_value: moc dowodowa e-dokumentów;
+    P1876 cross_border_e_comm: DAC/CRS;
+    P1877 archive_retention: retencja korespondencji 5 lat od końca
+          postępowania.
+  plan45_edelivery.rego (R1235-1269, 35 reguł atomowych):
+    rejestracja BAE (R1235-1236), fikcja 14 dni (R1237-1240),
+    alerty: 7 dni (R1242), 3 dni (R1243), 1 dzień (R1244) przed fikcją,
+    e-US (R1245-1250: konto, pisma, status deklaracji/UPO, historia
+    wpłat, pełnomocnictwa PPS-1/UPL-1, zaświadczenia o niezaleganiu),
+    ePUAP (R1251-1254: profil, podpis, UPO, znacznik czasowy),
+    aktualizacja adresu e-Doręczeń (R1255-1256: nieaktualny adres ->
+    fikcja na stary adres!), retencja 5 lat (R1257), moc dowodowa
+    (R1258), szyfrowanie (R1259), naruszenia RODO (R1260), eIDAS
+    (R1261), CRS/FATCA (R1262), DAC (R1263), kalendarz (R1264),
+    awarie (R1265-1266: procedura + forma papierowa tylko przy awarii),
+    język polski / tłumaczenia przysięgłe (R1267-1268),
+    dashboard komunikacji (R1269).
+WERDYKT: pokrycie e-Doręczeń bardzo dobre; wyróżnia się mechanizm alertów
+przed fikcją doręczenia (7/3/1 dzień) — wartość praktyczna dla JDG
+(ochrona przed utratą terminów). Uwagi:
+  - [LUKA-D2] Reguły używają sformułowania "obowiązek od 2025" (BAE,
+    e-US) — dla JDG (osób fizycznych) obowiązek nie został wprowadzony;
+    zalecane rozróżnienie podmiotowe (KRS vs JDG) w opisach reguł.
+  - [LUKA-D3] Alerty fikcji wymagają wejścia fiction_days_remaining —
+    kalkulator dni musi działać w warstwie integracyjnej (timestampy
+    UPO/umieszczenia w skrzynce).
+  - [LUKA-D4] Brak automatycznej rejestracji adresu e-Doręczeń w BAE
+    (proces manualny) — patrz Innowacja 8.5.
+
+7.3. e-PUAP — CZY SYSTEM INTEGRUJE SIĘ Z e-PUAP? (epuap_enterprise.rego)
+TAK — pakiet jdg.epuap (3 reguły, Faza 3):
+  EPU-100 delivery_status: status doręczeń (liczba oczekujących, UPO
+    otrzymane, wiek najstarszego, oczekiwana odpowiedź w 14 dni);
+    routing TRIAGE_QUEUE gdy najstarsze >30 dni; [LUKA-D5] oldest_pending
+    zaszyte na 25 dni (nie liczone z dat) — poprawić.
+  EPU-200 sending_instructions: instrukcja wysyłki pisma (skrytka
+    /US<kod>/SkrytkaESP, załączniki max 5 MB, podpis: profil zaufany /
+    e-dowód / kwalifikowany, UPO jako dowód skutecznego doręczenia).
+  EPU-300 integration_s22_s4: automatyzacja pism — czynny żal (S22),
+    odwołanie (S4), wniosek o interpretację (S22); licznik pism;
+    routing BLOCK_AND_ALERT przy >=3 pismach do wysyłki.
+Ocena: integracja koncepcyjna z e-PUAP obsłużona; brak rzeczywistych
+wywołań API (warstwa integracyjna). Powiązanie z e-Doręczeniami (BAE)
+i podpisem (esig) spójne.
+
+7.4. PODPIS ELEKTRONICZNY (esig/plan44_esig.rego)
+  P1900 qualified_signature_requirement: podpis kwalifikowany dla
+        deklaracji, odwołań, pełnomocnictw (art. 126 par. 5 OrdPU, eIDAS).
+  P1901 signature_validity_monitoring: ważność certyfikatu 2 lata
+        (monitorowanie wygaśnięcia).
+  P1902 ksef_invoice_signature: KSeF — token, pieczęć elektroniczna lub
+        podpis kwalifikowany (ustawa o KSeF).
+  P1903 document_authenticity: autentyczność dokumentów — zakaz konwersji
+        degradujących (zeskanowana faktura z KSeF traci status faktury
+        ustrukturyzowanej) — kluczowa reguła dla archiwizacji.
+  P1904 cross_border_eidas: równoważność kwalifikowanych podpisów UE.
+  P1905 electronic_contracts: e-umowy — forma elektroniczna (78^1 KC),
+        forma dokumentowa (77^2-77^3 KC).
+  P1906 einvoice_storage_standards: przechowywanie e-faktur wg EN 16931
+        (autentyczność, integralność, czytelność — art. 112a VAT).
+Ocena: kompletne pokrycie; [LUKA-D6] brak automatycznego stosowania
+podpisu (wybór typu podpisu per dokument + walidacja przed wysyłką) —
+patrz Innowacja 8.6.
+
+7.5. LUKI I REKOMENDACJE CYFRYZACJI
+  D1  digital.rego obejmuje krypto/AI/MDR, nie e-Doręczenia — metadane.
+  D2  Obowiązkowość e-Doręczeń dla JDG — rozróżnienie KRS vs JDG.
+  D3  Kalkulator dni do fikcji — warstwa integracyjna.
+  D4  Automatyczna rejestracja BAE — Innowacja 8.5.
+  D5  EPU-100: oldest_pending zaszyte (25) — policzyć z dat.
+  D6  Automatyczne podpisywanie dokumentów — Innowacja 8.6.
+  D7  Brak powiązania UPO e-Doręczeń z kalendarzem terminów (R1264
+      istnieje, ale wymaga integracji z plan44_calendar).
+
+=================================================================
+SEKCJA 8 — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+=================================================================
+(min. 10 — każde opisane na poziomie ENTERPRISE: cel, architektura,
+koncepcja reguł OPA (bez kodu), integracja, metryki sukcesu)
+
+------------------------------------------------------------------
+8.1. "KSeF RESILIENCE FIREWALL" — wielowarstwowa odporność na awarie KSeF
+------------------------------------------------------------------
+CEL: przekształcić moduł ksef_resilience w aktywną "zaporę" między
+procesem fakturowania a awariami KSeF — z obwodem otwartym na bazie
+SLO (Service Level Objectives) i automatycznym eskalowaniem trybów.
+ARCHITEKTURA (4 warstwy):
+  L1 Detekcja: polling statusu API (KSR-1600 rozszerzony), sygnały z
+     komunikatu MF (przerwy serwisowe), telemetria błędów (5xx, timeout).
+  L2 Klasyfikacja: próg awarii (np. >=3 błędy 5xx w 5 min) -> przełączenie
+     trybu ONLINE/OFFLINE; osobne traktowanie planowanych przerw
+     serwisowych (maintenance window) i awarii.
+  L3 Ochrona biznesu: tryb offline (KSR-1610), kolejka (Innowacja 8.4),
+     automatyczny draft ZAW-NR po >24 h z danymi awarii (KSR-1648).
+  L4 Eskalacja: licznik czasu awarii, alerty (24 h / 72 h / 7 dni),
+     dashboard odporności, raport poawaryjny (post-mortem).
+KONCEPCJA REGUŁ OPA (bez kodu): rozszerzyć jdg.ksef_resilience o reguły
+"firewall_state" (pobierające status z warstwy integracyjnej), "outage
+classification" (5xx vs maintenance), "slo_budget" (np. max 15 min
+przestoju/mies.), "escalation_stage" (1-5). Zastosować wzorzec
+decide/else z priorytetami 1650-1699.
+INTEGRACJA: webhook komunikatów MF, metryki Prometheus, powiadomienia.
+METRYKI SUKCESU: MTTR awarii < 1 h; 100% faktur z awarii wysłanych w
+grace period 7 dni; 0 faktur utraconych; czas wykrycia awarii < 1 min.
+
+------------------------------------------------------------------
+8.2. "JPK_V7 AUTO-GENERATOR AI" — AI generujące JPK_V7 z faktur
+------------------------------------------------------------------
+CEL: uzupełnić JV7-1925/1930/1935/1948 o warstwę AI (ekstrakcja danych z
+faktur PDF/XML, klasyfikacja, korekta błędów) z walidacją człowieka w
+pętli (human-in-the-loop).
+ARCHITEKTURA:
+  - OCR/extraction: faktury PDF -> pola (kontrahent, NIP, daty, pozycje,
+    stawki, kwoty) z confidence score; XML KSeF (FA(2)) -> pełne dane.
+  - Normalizacja: mapowanie na słownik kont (K_10/K_11, P_38/P_39),
+    wykrywanie duplikatów (powiązanie z P985), korekta stawki VAT.
+  - Auto-uzupełnianie GTU: model semantyczny (Innowacja 8.3).
+  - Generator: agregacja -> struktura JPK_V7M(1) -> walidacja XSD ->
+    podpis (esig) -> przygotowanie do wysyłki.
+KONCEPCJA REGUŁ OPA: jdg.jpk_v7_ai (priorytety 1970-1999): reguły
+"ai_extraction_confidence" (poniżej progu -> TRIAGE_QUEUE z prośbą o
+weryfikację), "ai_classification_conflicts" (dwie klasyfikacje -> alert),
+"ai_human_approval_required" (kwoty > progu lub błędy -> BLOCK do
+akceptacji). Wynik: jpk_v7_generation_status = READY/PENDING_REVIEW.
+INTEGRACJA: model NLP/LLM w warstwie usług, kontrakt JSON z OPA.
+METRYKI: precyzja ekstrakcji >99%; odsetek plików bez ręcznej korekty
+>95%; czas generowania < 5 min; liczba korekt JPK po wysyłce -> 0.
+
+------------------------------------------------------------------
+8.3. "GTU SEMANTIC AUTO-TAGGER" — automatyczne tagowanie GTU przez AI
+------------------------------------------------------------------
+CEL: naprawić błędy mapowania JV7-1940 (GTU_06/07, GTU_08/09, GTU_11/12)
+i rozszerzyć pokrycie z 7 do 13 kodów GTU z klasyfikacją semantyczną.
+ARCHITEKTURA:
+  - Baza wiedzy: 13 kodów GTU z definicjami załącznika nr 15 + przykłady
+    (PKWiU, CN) + synonimy.
+  - Klasyfikator: opis pozycji faktury (tekst) -> wektor -> kody GTU z
+    prawdopodobieństwem; reguły słownikowe (paliwa, alkohol, tytoń,
+    odpady) jako override deterministyczny.
+  - Walidator: P974 rozszerzony o pełną listę 13 kodów; kontrola
+    spójności kategorii (ujednolicenie taksonomii P974 vs JV7-1940).
+  - Raport wyjaśnialności: dlaczego dany kod (feature importance).
+KONCEPCJA REGO: jdg.jpk_gtu_semantic (priorytety 1950-1969):
+"gtu_confidence" (conf < 0.8 -> TRIAGE_QUEUE), "gtu_override"
+(deterministyczne kategorie -> bezpośrednie przypisanie), "gtu_conflict"
+(dwie pozycje konfliktowe -> BLOCK), "gtu_coverage_13"
+(monitor pokrycia wszystkich 13 kodów — alert gdy >20% faktur bez GTU
+przy kategoriach objętych obowiązkiem).
+INTEGRACJA: embeddings (słowne modele) w warstwie usług, wyniki w input.
+METRYKI: 100% poprawnych przypisań dla 13 kodów (testy regresyjne na
+próbkach), liczba korekt JPK z powodu GTU -> 0.
+
+------------------------------------------------------------------
+8.4. "KSeF OFFLINE QUEUE MANAGER" — zarządzanie kolejką podczas awarii
+------------------------------------------------------------------
+CEL: materializacja kolejki offline (KSR-1610/1645) z pełnym cyklem
+życia faktury: utworzenie -> PENDING_OFFLINE -> wysłana -> UPO -> zamknięta.
+ARCHITEKTURA:
+  - Magazyn kolejek (DB): per faktura (numer, data, XML FA(2), status,
+    timestampy, próby).
+  - Polityka kolejności: chronologiczna (od najstarszej), z zachowaniem
+    porządku korekt; batch 3/10 wg KSR-1645.
+  - Odliczanie deadline: per faktura 7 dni od przywrócenia (K8/K13 —
+    realna arytmetyka w warstwie integracyjnej).
+  - Rekoncyliacja: po wysyłce porównanie UPO z kolejką; duplikaty
+    (P985) blokowane.
+  - Widok operacyjny: dashboard kolejek, progi ostrzeżeń (24 h, 5 dni).
+KONCEPCJA REGO: jdg.ksef_offline_queue (priorytety 1700-1749):
+"queue_priority" (korekty przed nowymi), "queue_deadline_risk"
+(<=48 h do końca grace -> BLOCK_AND_ALERT), "queue_batch_plan"
+(rozmiar paczki wg liczby faktur), "queue_reconciliation_status"
+(UPO vs kolejka — zgodne/rozbieżne).
+INTEGRACJA: outbox (Innowacja 8.10), ZAW-NR (KSR-1648).
+METRYKI: 100% faktur z kolejki wysłanych w 7 dni; 0 utraconych;
+czas rekoncyliacji < 10 min po przywróceniu.
+
+------------------------------------------------------------------
+8.5. "e-DELIVERY INTEGRATION GATEWAY" — bramka e-Doręczeń
+------------------------------------------------------------------
+CEL: automatyzacja korespondencji e-Doręczeń (JDG -> organy i organy ->
+JDG) przez API BAE/e-US z pełnym audytem.
+ARCHITEKTURA:
+  - Rejestracja BAE (D4): automatyczne utworzenie adresu e-Doręczeń dla
+    JDG (gdy obowiązek lub dobrowolnie), weryfikacja statusu.
+  - Wysyłka: szablony pism (czynny żal, odwołanie, interpretacja —
+    integracja z EPU-300/S22/S4), wybór podpisu (profil zaufany /
+    kwalifikowany), UPO/UPD, retencja (P1874/1877, R1257).
+  - Odbiór: monitor skrzynki (P1871, R1245-1250), alerty fikcji
+    (R1242-1244), OCR pism -> zadania (terminy, decyzje).
+  - Kalendarz: R1264 -> integracja z plan44_calendar (terminy
+    odwołań, płatności, odpowiedzi).
+KONCEPCJA REGO: jdg.edelivery_gateway (priorytety 1880-1899):
+"bae_registration_state", "letter_signature_selection" (rodzaj pisma ->
+typ podpisu), "fiction_countdown" (dni do fikcji -> routing),
+"response_deadline_alert" (14 dni na odwołanie), "upo_verification".
+INTEGRACJA: API BAE, e-US, konto PUESC.
+METRYKI: 0 terminów utraconych przez fikcję; 100% pism z UPO;
+czas obsługi pisma < 1 dzień roboczy.
+
+------------------------------------------------------------------
+8.6. "DIGITAL SIGNATURE AUTO-APPLICATOR" — automatyczne podpisywanie
+------------------------------------------------------------------
+CEL: automatyczny dobór i stosowanie podpisu elektronicznego do
+dokumentów (JPK, pisma, deklaracje) z monitoringiem certyfikatów.
+ARCHITEKTURA:
+  - Katalog dokumentów -> wymagany typ podpisu: deklaracje JPK/UPO
+    (profil zaufany OK), odwołania/pełnomocnictwa (kwalifikowany —
+    P1900), KSeF (token/pieczęć/podpis — P1902), e-umowy (78^1 KC).
+  - Pipeline: dokument -> format (PAdES/XAdES) -> podpis -> znacznik
+    czasowy -> weryfikacja -> archiwizacja (EN 16931, P1906).
+  - Monitoring ważności: certyfikaty 2 lata (P1901) -> alerty 60/30/7 dni
+    przed wygaśnięciem; automatyczne zamówienie odnowienia.
+  - Kwalifikowane pieczęci/tokeny KSeF jako alternatywa.
+KONCEPCJA REGO: jdg.esig_applicator (priorytety 1910-1924):
+"signature_required_type" (dokument -> typ podpisu), "certificate_validity"
+(ważność -> routing), "signature_verification" (po podpisaniu),
+"signature_audit_log" (kto/kiedy/co podpisał).
+INTEGRACJA: usługi dostawców kwalifikowanych (zaufane, PWPW itd.).
+METRYKI: 0 dokumentów wysłanych bez podpisu; 0 podpisów nieważnych;
+czas podpisania < 30 s/dokument.
+
+------------------------------------------------------------------
+8.7. "CROSS-DECLARATION VALIDATOR" — walidacja krzyżowa deklaracji
+------------------------------------------------------------------
+CEL: rozszerzyć JV7-1945 (naprawiony) o spójność między wszystkimi
+deklaracjami JDG: JPK_V7, PIT-36/PIT-36L, PKPiR, KSeF, CIT-8 (moduł
+hipotetyczny), JPK_CIT.
+ARCHITEKTURA:
+  - Zbiór kontroli: (1) przychód PKPiR kol. 7/9 vs JPK_V7 sprzedaż;
+    (2) VAT należny JPK vs podstawa w PIT-36L (liniowy);
+    (3) liczba faktur KSeF vs JPK vs ewidencja; (4) suma faktur
+    kosztowych vs KUP w PKPiR; (5) WNT/WDT spójność JPK i ewidencji;
+    (6) remanent/amortyzacja vs środki trwałe.
+  - Silnik rozbieżności: tolerancje (zaokrąglenia, waluty), scoring
+    ryzyka (0-100), priorytety wyjaśnień.
+  - Rekomendacje: automatyczne draft wyjaśnień do US (art. 193a).
+KONCEPCJA REGO: jdg.cross_declaration (priorytety 1980-1999):
+"cd_compare_pkpir_jpk" (kol. 7/9 vs K_10), "cd_compare_ksef_jpk_count",
+"cd_compare_vat_basis", "cd_tolerance" (progi), "cd_risk_score"
+(agregacja -> routing).
+INTEGRACJA: dane z modułów pit/, accounting/, ksef/.
+METRYKI: 100% rozbieżności wykrywanych przed wysyłką JPK; spadek korekt
+po deklaracjach o 50%; czas analizy < 1 min.
+
+------------------------------------------------------------------
+8.8. "KSeF UPO TRACKER" — śledzenie UPO dla każdej faktury
+------------------------------------------------------------------
+CEL: zamknąć lukę K15 — per-faktura status UPO z automatycznym
+monitoringiem ryzyka odliczenia VAT (a106nc.r3).
+ARCHITEKTURA:
+  - Rejestr UPO: faktura -> UPO (XML, hash, timestamp, status: SENT /
+    ACCEPTED / REJECTED / PENDING), retencja 5 lat (a106nc.r1).
+  - Monitor: cykliczne odpytywanie API KSeF (r24) o status; alert przy
+    braku UPO (np. >24 h od wysyłki) i przy REJECTED (powód błędu).
+  - Powiązanie z księgowaniem: faktura bez UPO -> blokada odliczenia
+    VAT w JPK (K16), warning o ryzyku korekty.
+  - Raporty: % UPO odebranych, średni czas do UPO, lista REJECTED.
+KONCEPCJA REGO: jdg.ksef_upo_tracker (priorytety 1750-1799):
+"upo_status" (status -> routing), "upo_missing_alert" (brak UPO >24 h),
+"upo_rejected_reason" (mapowanie kodów błędu KSeF -> akcje),
+"upo_deduction_link" (UPO vs pozycja zakupowa JPK).
+INTEGRACJA: API KSeF (query status), ewidencja zakupów (JV7-1930).
+METRYKI: 100% faktur z UPO w < 24 h; 0 odliczeń zablokowanych
+"niespodziewanie"; czas wykrycia REJECTED < 15 min.
+
+------------------------------------------------------------------
+8.9. "REAL-TIME KSeF SANCTION MONITOR" — monitor sankcji KSeF
+------------------------------------------------------------------
+CEL: ciągłe wyliczanie ekspozycji sankcyjnej JDG i alerty prewencyjne
+przed utratą limitów (K6).
+ARCHITEKTURA:
+  - Ekspozycja: suma kwot VAT z faktur bez UPO / bez KSeF; kalkulacja
+    wg progów: 100% (max 500k), 70% (max 300k, opóźnienie >24 h),
+    50% (max 250k, aktywna korekta), 18% (max 500k, błędy) — zgodnie z
+    ustawą (z uwagą K5).
+  - Pulpit ryzyka: aktualna ekspozycja vs limity, licznik dni do
+    terminu wysyłki, scenariusze (co jeśli awaria potrwa 3/7 dni).
+  - Prewencja: alerty przy przekroczeniu 50%/80% limitu 500k; symulacja
+    czynnego żalu (zawiadomienie -> 50%/250k) z wyliczeniem oszczędności.
+  - Raport do zarządu: miesięczny przegląd sankcji.
+KONCEPCJA REGO: jdg.ksef_sanction_monitor (priorytety 1800-1849):
+"sm_exposure_calc" (suma 100% VAT, cap 500k), "sm_tier_selector"
+(wg statusu faktur), "sm_self_correction_benefit" (50% vs 100%),
+"sm_threshold_alerts" (50%/80%), "sm_deadline_countdown".
+INTEGRACJA: dane z UPO Trackera (8.8) i kolejek (8.4).
+METRYKI: 0 przypadków sankcji >50% limitu bez alertu; ekspozycja
+szacowana w czasie rzeczywistym (< 1 min opóźnienia).
+
+------------------------------------------------------------------
+8.10. "ZERO-DOWNTIME KSeF BUFFER" — bufor eliminujący przestoje
+------------------------------------------------------------------
+CEL: implementacja warstwy OUTBOX (K14) z semantyką exactly-once —
+przestoje KSeF (nawet długie) nie zatrzymują fakturowania.
+ARCHITEKTURA:
+  - Outbox: każda faktura zapisywana lokalnie (XML FA(2)) przed
+    wysyłką; statusy: CREATED -> OUTBOX -> SENT -> UPO.
+  - Idempotencja: klucz idempotencji (numer faktury + hash treści) —
+    ponowne wysyłki po błędach sieci nie tworzą duplikatów (P985).
+  - Podwójny zapis: lokalna ewidencja (księgowość) i KSeF — zsynchronizowane
+    przez statusy; w przypadku awarii — batch (KSR-1645) z kolejki.
+  - Replay: po przywróceniu automatyczne wysyłanie w kolejności
+    chronologicznej z odliczaniem 7 dni (K8).
+  - Monitor: wiek bufora, wskaźniki throughput, alerty.
+KONCEPCJA REGO: jdg.ksef_buffer (priorytety 1650-1699):
+"buffer_state", "buffer_idempotency" (duplikat -> BLOCK), "buffer_age"
+(>72 h -> alert), "buffer_flush_plan" (batch wg KSR-1645),
+"buffer_consistency" (lokalne vs KSeF — rozbieżność -> TRIAGE).
+INTEGRACJA: kolejki (8.4), UPO Tracker (8.8), resilience (KSR).
+METRYKI: 100% faktur w KSeF (żadnych utraconych); 0 duplikatów;
+maks. opóźnienie wysyłki po awarii < grace period 7 dni.
+
+------------------------------------------------------------------
+8.11. (BONUS) "GTU/PROCEDURES COMPLETENESS CHECKER" — pełna kontrola
+oznaczeń JPK_V7 (13 GTU + SW/EE/TP/WSTO_EE/IED/MPP/RO/B_TP/B_SW/FP/WEW/
+VAT_MARZA/IMP_UE/IMP_NON_UE) przed wysyłką pliku — rozszerzenie P974
+o pełną taksonomię i testy regresyjne.
+
+8.12. (BONUS) "JPK_V7 CORRECTIONS WORKFLOW" — workflow korekt JPK
+(kody przyczyn 1-5, par. 17-18e) z automatycznym przygotowaniem pliku
+korygującego, wersjonowaniem i powiązaniem z korektami KSeF (a106nf).
+
+8.13. (BONUS) "VAT CASHFLOW & ZWROT PREDICTOR" — prognoza salda VAT i
+terminu zwrotu (art. 87 VAT; 60/25 dni) z integracją mikrorachunku
+(J7) — uzupełnienie JV7-1935 o ścieżkę zwrotu (J6).
+
+8.14. (BONUS) "e-US PROACTIVE NOTIFICATION SCANNER" — skaner pism
+e-US/e-Doręczeń (R1245-1250) wykrywający decyzje, wezwania i terminy,
+z automatycznym tworzeniem zadań (odwołania, czynny żal) i licznikiem
+dni (D3).
+
+8.15. (BONUS) "KSeF SANDBOX HARNESS" — środowisko testowe (r22, KSR-1600
+test_status) z symulacją awarii (przerwanie 5xx, timeout), replayem
+scenariuszy i testami chaos (zgodność z test_v7_chaos_engineering).
+
+8.16. (BONUS) "JPK_KR/JPK_ST GENERATOR" dla JDG na pełnej księgowości
+(C1): mapowanie kont -> struktura JPK_KR, ewidencja środków trwałych ->
+JPK_ST z amortyzacją (powiązanie z depreciation_enterprise).
+
+=================================================================
+SEKCJA 9 — REKOMENDACJE I MAPA DROGOWA
+=================================================================
+
+9.1. PRIORYTETYZACJA (zgodnie z zamówieniem)
+  1. KSeF 2026 (P0) — obowiązek już obowiązuje od 01.02.2026 (duzi) i
+     01.04.2026 (wszyscy); błędy GTU/cross-check mogą generować błędne
+     pliki i sankcje — najwyższy priorytet.
+  2. JPK_V7 autogen (P1) — generator działa, wymaga napraw (J9, J4, J6).
+  3. JPK_CIT (P2) — zakres hipotetyczny dla JDG; realne tylko JPK_KR/ST
+     na żądanie (C1, C2).
+  4. Cyfryzacja (P1/P2) — e-Doręczenia: monitoring fikcji już dobry;
+     rozszerzenia 8.5/8.6.
+
+9.2. MAPA DROGOWA (ROADMAP)
+  Faza 0 (natychmiast, przed 2026-04-01):
+    - Naprawa mapowania GTU (J4, 3 błędne przypisania) — 1 dzień.
+    - Naprawa cross-check JV7-1945 (J9 — usunięcie twardego =3).
+    - Weryfikacja wzorców Rego kompilatorem OPA (K1/K5, duplicate_forms,
+      xml_valid, maint_msg) — opa check + opa test w CI.
+    - Aktualizacja zakresu podmiotowego KSeF po 01.04.2026 (K4).
+    - UPO Tracker MVP (8.8) — monitoring statusu wysyłki.
+  Faza 1 (Q3-Q4 2026):
+    - Zero-Downtime KSeF Buffer (8.10) — outbox + idempotencja.
+    - KSeF Resilience Firewall (8.1) — SLO, eskalacja, ZAW-NR.
+    - GTU Semantic Auto-Tagger (8.3) — pełne 13 kodów + testy.
+    - e-Delivery Integration Gateway (8.5) — BAE + fikcja + kalendarz.
+    - Zwrot VAT w VAT-7 (J6), mikrorachunek per NIP (J7).
+  Faza 2 (2027):
+    - JPK_V7 Auto-Generator AI (8.2).
+    - Cross-Declaration Validator (8.7).
+    - Real-Time KSeF Sanction Monitor (8.9).
+    - Digital Signature Auto-Applicator (8.6).
+    - JPK_KR/ST Generator (8.16) — wg potrzeb JDG na pełnej księgowości.
+
+9.3. METRYKI SUKCESU (KPIs)
+  - 100% faktur B2B objętych obowiązkiem wysłanych do KSeF z UPO <24 h.
+  - 0 błędnych kodów GTU w wysyłanych JPK_V7 (testy regresyjne).
+  - 0 korekt JPK z powodu błędów generatora.
+  - 100% JPK_V7 złożonych do 25. dnia (monitoring P972).
+  - 0 terminów utraconych przez fikcję doręczeń e-Doręczeń.
+  - Ekspozycja sankcyjna <50% limitu 500k z alertem na bieżąco.
+  - Czas generowania JPK_V7 < 5 min; MTTR awarii KSeF < 1 h.
+
+=================================================================
+SEKCJA 10 — ZAŁĄCZNIK A: PEŁNY INDEKS REGUŁ (rule_id)
+=================================================================
+(Indeks obejmuje reguły warstwy ENTERPRISE oraz kluczowe reguły atomowe;
+pełną listę 80+75 reguł micro zawiera analiza w sekcjach 4-5.)
+
+jdg.ksef_jpk (ksef_jpk.rego)
+  jdg.ksef_jpk.security_ksef_token_rotation_enforcement  P1790  token >90 dni -> BLOCK
+  jdg.ksef_jpk.ksef_structured_mandatory                 P950   obowiązek fazowy KSeF
+  jdg.ksef_jpk.ksef_b2c_mandatory_2026                   P952   B2C od 2026-07-01 (założenie)
+  jdg.ksef_jpk.ksef_b2c_exemption                        P953   wyłączenie B2C
+  jdg.ksef_jpk.ksef_offline_recovery                     P960   tryb offline 7 dni
+  jdg.ksef_jpk.jpk_v7m_structure                         P970   JPK_V7M miesięczny
+  jdg.ksef_jpk.jpk_v7_gtu_completeness_check             P974   brak GTU -> TRIAGE
+  jdg.ksef_jpk.jpk_pkpir_structure                       P980   JPK_PKPIR na żądanie
+  jdg.ksef_jpk.ksef_duplicate_detection                  P985   duplikat XML+PDF -> BLOCK
+  jdg.ksef_jpk.ksef_offline_pkpir_sync                   P986   PKPiR offline -> TRIAGE
+
+jdg.ksef_resilience (ksef_resilience_enterprise.rego)
+  jdg.ksef_resilience.api_health_check                   KSR-1600  status API
+  jdg.ksef_resilience.offline_mode_procedure             KSR-1610  offline 168 h
+  jdg.ksef_resilience.retry_engine                       KSR-1620  backoff 2^n
+  jdg.ksef_resilience.token_management                   KSR-1630  token 600 min
+  jdg.ksef_resilience.xml_validation_preflight           KSR-1640  walidacja FA(2)
+  jdg.ksef_resilience.batch_recovery                     KSR-1645  strategie batch
+  jdg.ksef_resilience.notify_tax_office                  KSR-1648  ZAW-NR >7 dni
+
+jdg.jpk (jpk/plan26_deadlines.rego)
+  jdg.jpk.filing_deadlines_detailed                      P972   terminy 25.
+
+jdg.jpk_cit (jpk_cit.rego)
+  jdg.jpk_cit.cit_calculation_standard                   JC-010  CIT 19%
+  jdg.jpk_cit.cit_calculation_estonian                   JC-020  estoński 20%
+  jdg.jpk_cit.cit_calculation_small                      JC-030  mały 9%
+  jdg.jpk_cit.cit_deadline                               JC-100  terminy JPK_CIT
+
+jdg.jpk_v7_autogen (jpk_v7_autogen_enterprise.rego)
+  jdg.jpk_v7.sales_register_autofill                     JV7-1925  rejestr sprzedaży
+  jdg.jpk_v7.purchase_register_autofill                  JV7-1930  rejestr zakupów
+  jdg.jpk_v7.vat7_declaration_autogen                    JV7-1935  VAT-7
+  jdg.jpk_v7.gtu_code_autoassignment                     JV7-1940  GTU (błędy)
+  jdg.jpk_v7.cross_check_validation                      JV7-1945  cross-check (BUG)
+  jdg.jpk_v7.ksef_data_extraction                        JV7-1948  ekstrakcja KSeF
+  jdg.jpk_v7.v7k_quarterly_support                       JV7-1949  V7K kwartalny
+
+jdg.digital (digital.rego)
+  jdg.digital.crypto_taxable_event                       P630   krypto PIT-38
+  jdg.digital.crypto_mining_business                     P1890  mining VAT 23%
+  jdg.digital.crypto_mdr_reporting                       P1892  MDR 30 dni
+  jdg.digital.ai_act_compliance_check                    P1893  AI Act
+  jdg.digital.api_degradation_fallback                   P1894  fallback API
+  jdg.digital.deepfake_ai_disclosure                     P1895  AI Act art. 50
+
+jdg.edelivery (edelivery/plan44_edelivery.rego)
+  jdg.edelivery.fiction_detection                        P1870  fikcja 14 dni -> BLOCK
+  jdg.edelivery.platform_monitoring                      P1871  monitor e-US
+  jdg.edelivery.epuap_profile                            P1872  profil zaufany
+  jdg.edelivery.qualified_signature                      P1873  podpis kwalifikowany
+  jdg.edelivery.document_retention                       P1874  retencja 5 lat
+  jdg.edelivery.evidence_value                           P1875  moc dowodowa
+  jdg.edelivery.cross_border_e_comm                      P1876  DAC/CRS
+  jdg.edelivery.archive_retention                        P1877  archiwum 5 lat
+(+ jdg.edelivery.hyper: 35 reguł R1235-R1269 — rejestracja BAE, fikcja
+  14/7/3/1 dzień, e-US, ePUAP, adres, retencja, szyfrowanie, naruszenia,
+  eIDAS, CRS/FATCA, DAC, kalendarz, awarie, język, dashboard)
+
+jdg.esig (esig/plan44_esig.rego)
+  jdg.esig.qualified_signature_requirement               P1900  podpis kwalifikowany
+  jdg.esig.signature_validity_monitoring                 P1901  certyfikat 2 lata
+  jdg.esig.ksef_invoice_signature                        P1902  token/pieczęć KSeF
+  jdg.esig.document_authenticity                         P1903  autentyczność
+  jdg.esig.cross_border_eidas                            P1904  eIDAS
+  jdg.esig.electronic_contracts                          P1905  e-umowy 78^1 KC
+  jdg.esig.einvoice_storage_standards                    P1906  EN 16931
+
+jdg.epuap (epuap_enterprise.rego)
+  jdg.epuap.delivery_status                              EPU-100  status doręczeń
+  jdg.epuap.sending_instructions                         EPU-200  instrukcje wysyłki
+  jdg.epuap.integration_s22_s4                           EPU-300  automatyzacja pism
+
+jdg.micro.ksef (micro/ksef/ksef.rego — 80 reguł templated)
+  a106na.r1-r15 (obowiązek), a106nb.r1-r12 (wystawianie), a106nc.r1-r10
+  (odbiór), a106nd.r1-r10 (przechowywanie), a106ne.r1-r10 (tryb awaryjny),
+  a106nf, a106ng, a106nh i dalsze — wzorzec: flagi wejściowe, KKS,
+  sanction_base 1000 PLN.
+
+jdg.micro.ksef (micro/plan33_ksef.rego — 75 reguł atomowych)
+  a106na.r8-r22 (obowiązek, pola, wyjątki), a106nb.r1-r5 (terminy),
+  a106nc.r1-r4 (UPO), a106nd.r1-r5 (archiwum), a106ne.r1-r10 (offline),
+  a106nf.r1-r4 (korekty), a106ng.r3-r5 (autoryzacja), a106nh.r3-r5 (QR),
+  a106nq.r2-r4 (sankcje), r1-r25 (reguły ogólne).
+
+jdg.micro.jpk (micro/jpk/jpk.rego — 36 reguł templated)
+  a99.r1-r15 (JPK_V7M), a99b.r1-r10 (JPK_V7K), a193a.r1-r10 (na żądanie).
+
+jdg.micro.jpk (micro/plan33_jpk.rego — 71 reguł atomowych)
+  a99.r11-r35 (struktura, GTU, procedury, znaczniki, MPP, korekty,
+  podpis, UPO, sankcje, retencja), b.r1-r15 (JPK_PKPIR/FA/WB/MAG/CIT),
+  fa.r1-r4, mag.r1-r3, pkpir.r1-r5, wb.r1-r3, r1-r15 (V7M/V7K, XML,
+  walidacja MF, retencja).
+
+=================================================================
+SEKCJA 11 — ZAŁĄCZNIK B: GLOSARIUSZ I PODSTAWY PRAWNE
+=================================================================
+
+11.1. GLOSARIUSZ
+  KSeF     Krajowy System e-Faktur — platforma MF (faktury ustrukturyzowane XML)
+  FA(1)/FA(2)  struktura logiczna faktury ustrukturyzowanej (wersja schemy)
+  UPO      Urzędowe Poświadczenie Odbioru — dowód przyjęcia dokumentu
+  UPD      Urzędowe Poświadczenie Doręczenia
+  ZAW-NR   zawiadomienie o awarii KSeF (wzór MF)
+  JPK      Jednolity Plik Kontrolny
+  JPK_V7M/JPK_V7K  JPK_VAT z deklaracją (miesięczny/kwartalny)
+  JPK_KR   JPK księgi rachunkowe
+  JPK_ST   JPK środki trwałe
+  GTU      grupy towarów i usług (załącznik nr 15 do ustawy VAT, 13 kodów)
+  MPP      mechanizm podzielonej płatności (split payment)
+  WNT      wewnątrzwspólnotowe nabycie towarów
+  WDT      wewnątrzwspólnotowa dostawa towarów
+  BAE      Baza Adresów Elektronicznych (e-Doręczenia)
+  e-US     elektroniczny Urząd Skarbowy (e-Urząd Skarbowy)
+  ePUAP    Elektroniczna Platforma Usług Administracji Publicznej
+  eIDAS    rozporządzenie UE 910/2014 (podpisy elektroniczne)
+  EN 16931 standard e-fakturowania (autentyczność, integralność, czytelność)
+  KKS      Kodeks karny skarbowy
+  OrdPU/OP Ordynacja podatkowa
+  routing  pole decyzji OPA: BLOCK_AND_ALERT / TRIAGE_QUEUE / WARNING /
+           FALLBACK_ACTIVE
+
+11.2. PODSTAWY PRAWNE (wykorzystane w analizowanych regułach)
+  - Ustawa z 11.03.2004 o VAT: art. 99 (JPK_VAT), art. 106a-106n
+    (faktury), art. 106na-106nq (KSeF), art. 106h ust. 1 pkt 1 (faktura
+    uproszczona do 450 zł), art. 109 (ewidencje), art. 86-91 (odliczenia),
+    art. 87 (zwroty), art. 112a (przechowywanie e-faktur), załącznik 15
+    (GTU), art. 2 pkt 25 (mały podatnik).
+  - Ustawa z 16.06.2023 (Dz.U. 2023 poz. 1598) wprowadzająca KSeF;
+    rozporządzenia MF: struktura FA(2), wzór faktury ustrukturyzowanej,
+    JPK_VAT z deklaracją (w analizie: rozp. z 15.07.2025).
+  - Ustawa z 29.08.1997 — Ordynacja podatkowa: art. 193a (JPK na żądanie),
+    art. 126 par. 5 (podpis), art. 144-144c (e-doręczenia w OP).
+  - Ustawa z 18.11.2020 o doręczeniach elektronicznych (Dz.U. 2020
+    poz. 2320): BAE, fikcja 14 dni (art. 39), obowiązki 2025.
+  - Ustawa z 29.09.1994 o rachunkowości: art. 2 ust. 1 pkt 5 (księgi przy
+    >2 mln EUR), art. 30a (JPK_KR/ST na żądanie).
+  - Ustawa o CIT: art. 19 (19%/9%), art. 28c-28t (estoński CIT),
+    art. 27 (terminy).
+  - Rozporządzenie eIDAS 910/2014; EN 16931.
+  - Rozporządzenie UE 2024/1689 (AI Act).
+  - KKS: art. 77 (wykroczenia JPK), odpowiedzialność karno-skarbowa.
+
+11.3. ZASTRZEŻENIE PRAWNE
+Raport ma charakter analityczno-techniczny. Kwoty, progi i terminy
+przywoływane z ustaw należy weryfikować z aktualnymi tekstami jednolitymi
+(ISAP) przed podejmowaniem decyzji. Wskazane błędy mapowań (GTU) i
+twarde kody (cross-check) wymagają potwierdzenia w środowisku OPA
+(opa check / opa test) przed wdrożeniem poprawek.
+
+=================================================================
+SEKCJA 12 — PODSUMOWANIE I GOTOWOŚĆ DO P19
+=================================================================
+
+12.1. PODSUMOWANIE WERDYKTÓW
+  Obszar            Dojrzałość   Kluczowe ustalenia
+  KSeF (rdzeń)      4,5/5        faza 2026-02-01/04-01/2027-01-01 zgodna z
+                                 harmonogramem; sankcje 100%/500k; tryb
+                                 awaryjny 7 dni wzorcowy; luki: outbox,
+                                 UPO tracker, B2C założenie, zakres zwolnieni
+  KSeF (resilience) 4,5/5        backoff 2^n, token, XML, batch, ZAW-NR;
+                                 poprawki arytmetyki dat i klasyfikacji HTTP
+  JPK_V7 autogen    3,5/5        rejestry K_10/K_11 i P_38/P_39 OK; VAT-7 bez
+                                 zwrotu; GTU: 3 błędne przypisania; cross-check
+                                 z twardym =3 (BUG)
+  JPK_CIT           3/5          matematyka OK; zakres hipotetyczny dla JDG;
+                                 realne JPK_KR/ST na żądanie przy pełnej księg.
+  Cyfryzacja        3,5/5        digital.rego = krypto/AI; e-Doręczenia w
+                                 edelivery (fikcja 14 dni + alerty 7/3/1);
+                                 ePUAP (EPU-100/200/300); esig (7 reguł)
+
+12.2. TOP 10 DZIAŁAŃ (PRIORYTET)
+  1. Naprawa GTU (3 błędne przypisania + rozszerzenie do 13 kodów).
+  2. Naprawa cross-check JV7-1945 (usunięcie twardego =3).
+  3. Weryfikacja wzorców Rego kompilatorem OPA + testy w CI.
+  4. Aktualizacja zakresu podmiotowego KSeF (zwolnieni od 01.04.2026).
+  5. UPO Tracker (status per faktura).
+  6. Outbox / Zero-Downtime KSeF Buffer (automatyczna wysyłka).
+  7. Ścieżka zwrotu VAT w VAT-7 + mikrorachunek per NIP.
+  8. e-Delivery Gateway (BAE, fikcja, kalendarz).
+  9. KSeF Resilience Firewall (SLO, eskalacja, ZAW-NR).
+ 10. GTU Semantic Auto-Tagger + JPK_V7 Auto-Generator AI (2027).
+
+12.3. GOTOWOŚĆ DO PROMPTU P19
+Raport P18 (JDG KSeF + JPK + Cyfryzacja, v7.0) został ukończony i zapisany
+jako plik:
+  JDG/reports/RAPORT_P18_JDG_KSEF_JPK_DIGITAL_v7.0.txt
+Format: czysty tekst (plain text), UTF-8, LF, bez formatowania Markdown/HTML.
+Zgodnie z zamówieniem: NIE generowano kodu Rego i NIE modyfikowano plików
+reguł. Okno kontekstowe zostało uporządkowane (analiza zakończona, wnioski
+skonsolidowane w niniejszym raporcie).
+STATUS: GOTOWY do przejścia do Promptu P19 (JDG_ORD_TAX_AUTHORITY_STRATEGIC).
+
+=================================================================
+=== KONIEC RAPORTU — RAPORT_P18_JDG_KSEF_JPK_DIGITAL_v7.0 ===
