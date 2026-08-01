@@ -369,18 +369,45 @@ else := verdict {
 
     # Platform rates
     vat_rate := 0.08
-    lump_sum_rate := 0.085 { platform in {"UBER", "BOLT"} }
-    lump_sum_rate := 0.03 { platform in {"GLOVO", "WOLT"} }
+    lump_sum_rate := 0.085 { platform in {"UBER", "BOLT", "FREE_NOW"} }
+    lump_sum_rate := 0.03 { platform in {"GLOVO", "WOLT", "STUART", "JUSH"} }
     commission_pct := 25 { platform == "UBER" }
     commission_pct := 20 { platform == "BOLT" }
     commission_pct := 30 { platform in {"GLOVO", "WOLT"} }
+    commission_pct := 21 { platform == "FREE_NOW" }
+    commission_pct := 25 { platform == "STUART" }
+    commission_pct := 22 { platform == "JUSH" }
     commission_pct := 25 { true }
 
     # Annual calculations
     annual_revenue := monthly_revenue * 12
+
+    # Peak/off-peak commission rates (v8.0 - defined here, used below)
+    comm_peak := 35 { platform in {"UBER", "GLOVO", "WOLT"} }
+    comm_peak := 30 { platform == "BOLT" }
+    comm_peak := 28 { platform in {"FREE_NOW", "JUSH"} }
+    comm_peak := 30 { platform == "STUART" }
+    comm_peak := commission_pct { true }
+    comm_offpeak := 20 { platform == "UBER" }
+    comm_offpeak := 15 { platform == "BOLT" }
+    comm_offpeak := 25 { platform in {"GLOVO", "WOLT"} }
+    comm_offpeak := 18 { platform in {"FREE_NOW", "JUSH"} }
+    comm_offpeak := 20 { platform == "STUART" }
+    comm_offpeak := commission_pct { true }
+    peak_offpeak_spread := comm_peak - comm_offpeak
+    peak_revenue_pct := 0.60
+    peak_commission_cost := floor(annual_revenue * peak_revenue_pct * comm_peak / 100 * 100) / 100
+    offpeak_commission_cost := floor(annual_revenue * (1 - peak_revenue_pct) * comm_offpeak / 100 * 100) / 100
+    weighted_commission_cost := peak_commission_cost + offpeak_commission_cost
+
     commission_cost := floor(annual_revenue * commission_pct / 100 * 100) / 100
     vat_on_revenue := floor(annual_revenue * vat_rate * 100) / 100
     lump_tax := floor(annual_revenue * lump_sum_rate * 100) / 100
+
+    # Peak/off-peak weighted commission (v8.0)
+    peak_commission_cost := floor(annual_revenue * peak_revenue_pct * comm_peak / 100 * 100) / 100
+    offpeak_commission_cost := floor(annual_revenue * (1 - peak_revenue_pct) * comm_offpeak / 100 * 100) / 100
+    weighted_commission_cost := peak_commission_cost + offpeak_commission_cost
 
     # Mileage log impact
     kup_rate := 75 { not has_mileage_log }
@@ -425,7 +452,12 @@ else := verdict {
         "gig_mileage_log_active": has_mileage_log,
         "gig_mileage_kup_benefit_pln": mileage_benefit_kup,
         "gig_qualifies_unregistered_activity": qualifies_unregistered,
-        "gig_platforms_supported": ["UBER", "BOLT", "GLOVO", "WOLT"],
+        "gig_platforms_supported": ["UBER", "BOLT", "GLOVO", "WOLT", "FREE_NOW", "STUART", "JUSH"],
+        "gig_peak_commission_pct": comm_peak,
+        "gig_offpeak_commission_pct": comm_offpeak,
+        "gig_peak_offpeak_spread_pct": peak_offpeak_spread,
+        "gig_weighted_commission_cost_pln": weighted_commission_cost,
+        "gig_peak_hours_available": true,
         "legal_basis": "Art. 12-14 PIT (ryczałt), Art. 86a VAT (pojazdy)",
         "_routing": opt_routing,
         "_routing_reason": sprintf("INN05 Gig: %s — ryczałt %.1f%% = %.2f PLN, prowizja %.0f%%",

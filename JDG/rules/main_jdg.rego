@@ -157,6 +157,24 @@ import data.jdg.p3233_innovations
 import data.jdg.p12_innovations
 import data.jdg.p13_innovations
 import data.jdg.p14_innovations
+# ── P15 Enterprise v8.0: PCC + Local Taxes + Excise Innovations (2026-08-01) ──
+# 12 Innovations: PCC Auto-Detection, PCC-3 Auto-Filler, Real Estate Classifier,
+# Excise Warehouse Tracker, Transport Tax Calculator, PCC Exemption Analyzer,
+# Multi-Tax Calendar, Excise Suspension Manager, Property Appeal Drafter,
+# Rate Auto-Updater, Cross-Border Excise, PCC+VAT Firewall
+import data.jdg.p15_innovations
+# ── P16 Enterprise v8.0: Business Lifecycle Full Implementation (2026-08-01) ──
+# Auto-Form Generator (G1-G7): CEIDG-1, ZUS ZUA/ZWUA, VAT-Z, PIT-4R/11, Notarial Deed, Receipts
+# Estonian CIT (E1): Full Art. 28c-28t with eligibility, calculator, transition, compliance
+# Entrepreneur Test (ET): JDG vs ETAT scoring, risk levels, consequences
+# Enhanced SCA (SCA): RTS SCA methods, exemptions, eIDAS certificates, TRA
+import data.jdg.p16_innovations
+import data.jdg.autoform
+import data.jdg.estonian_cit
+import data.jdg.entrepreneur_test
+import data.jdg.banking_sca
+# ── PAS 19: P17 Enterprise v8.0 Edge Cases + Conflicts Innovations (2026-08-01) ──
+import data.jdg.p17_innovations
 import data.jdg.pkpir_to_uor_transformer
 import data.jdg.exit_tax_interest_calculator
 import data.jdg.mdr_auto_generator
@@ -526,6 +544,23 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(p12_innovations.decide,
     safe_merge(p13_innovations.decide,
     safe_merge(p14_innovations.decide,
+    # ── PAS 15b: P15 Enterprise v8.0 PCC + Local Taxes + Excise (2026-08-01) ──
+    # INN01-INN12: PCC Detection, PCC-3 Filler, Real Estate Classifier, Excise Warehouse,
+    # Transport Calc, Exemption Analyzer, Multi-Tax Calendar, Suspension Manager,
+    # Property Appeal, Rate Updater, Cross-Border Excise, PCC+VAT Firewall
+    safe_merge(p15_innovations.decide,
+    # ── PAS 16: P16 Enterprise v8.0 Business Lifecycle (2026-08-01) ──
+    # INN01-INN12: Lifecycle Navigator, Tax Form Selector, Suspension Sim,
+    # Succession Score, Gig Optimizer, Banking Aggregator, CEIDG Auto-File,
+    # Health 360, Exit Simulator, Revenue Predictor, Employee Hiring, Company Transform
+    # G1-G7: Auto-Form Generators (CEIDG-1, ZUS ZUA/ZWUA, VAT-Z, PIT-4R/11)
+    # E1: Estonian CIT Full (Art. 28c-28t) | ET: Entrepreneur Test | SCA: Enhanced SCA
+    safe_merge(p16_innovations.decide,
+    safe_merge(autoform.decide,
+    safe_merge(estonian_cit.decide,
+    safe_merge(entrepreneur_test.decide,
+    safe_merge(banking_sca.decide,
+    safe_merge(p17_innovations.decide,
     safe_merge(pkpir_to_uor_transformer.decide,
     safe_merge(p35_coherence.decide,
     safe_merge(p35_gaps.decide,
@@ -535,7 +570,7 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    )))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))
 
 
 # Shard dla DOMESTIC_PURCHASE z ACTIVE JDG (KRYTYCZNE-3 FIX)
@@ -578,6 +613,15 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(p12_innovations.decide,
     safe_merge(p13_innovations.decide,
     safe_merge(p14_innovations.decide,
+    # ── PAS 15b: P15 Enterprise v8.0 PCC + Local Taxes + Excise (2026-08-01) ──
+    safe_merge(p15_innovations.decide,
+    # ── PAS 16: P16 Enterprise v8.0 Business Lifecycle (2026-08-01) ──
+    safe_merge(p16_innovations.decide,
+    safe_merge(autoform.decide,
+    safe_merge(estonian_cit.decide,
+    safe_merge(entrepreneur_test.decide,
+    safe_merge(banking_sca.decide,
+    safe_merge(p17_innovations.decide,
     safe_merge(pkpir_to_uor_transformer.decide,
     safe_merge(p35_coherence.decide,
     safe_merge(p35_gaps.decide,
@@ -587,7 +631,7 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    )))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))
 
 
 full_final_verdict = safe_merge(risk.decide,
@@ -664,6 +708,16 @@ full_final_verdict = safe_merge(risk.decide,
     safe_merge(p12_innovations.decide,
     safe_merge(p13_innovations.decide,
     safe_merge(p14_innovations.decide,
+    # ── PAS 15b: P15 Enterprise v8.0 PCC + Local Taxes + Excise (2026-08-01) ──
+    safe_merge(p15_innovations.decide,
+    # ── PAS 16: P16 Enterprise v8.0 Business Lifecycle (2026-08-01) ──
+    safe_merge(p16_innovations.decide,
+    safe_merge(autoform.decide,
+    safe_merge(estonian_cit.decide,
+    safe_merge(entrepreneur_test.decide,
+    safe_merge(banking_sca.decide,
+    # ── PAS 19: P17 Enterprise v8.0 Edge Cases + Conflicts (2026-08-01) ──
+    safe_merge(p17_innovations.decide,
     safe_merge(mdr_auto_generator.decide,
     safe_merge(wdt_document_tracker.decide,
     safe_merge(exit_tax_interest_calculator.decide,
@@ -673,7 +727,7 @@ full_final_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -812,6 +866,16 @@ final_verdict_enriched = safe_merge(final_verdict_with_conflicts,
     safe_merge(dac8_report_generator.decide,
     safe_merge(cbam_full.decide,
     safe_merge(p14_innovations.decide,
+    # ── PAS 15b: P15 Enterprise v8.0 PCC + Local Taxes + Excise (2026-08-01) ──
+    safe_merge(p15_innovations.decide,
+    # ── PAS 16: P16 Enterprise v8.0 Business Lifecycle (2026-08-01) ──
+    safe_merge(p16_innovations.decide,
+    safe_merge(autoform.decide,
+    safe_merge(estonian_cit.decide,
+    safe_merge(entrepreneur_test.decide,
+    safe_merge(banking_sca.decide,
+    # ── PAS 19: P17 Enterprise v8.0 Edge Cases + Conflicts (2026-08-01) ──
+    safe_merge(p17_innovations.decide,
     # ── PAS 13: Enterprise v6.1 Accounting Live Layer (2026-07-19) ──
     # S17: PKPiR Enterprise Live — active column 1-17 validation
     # S18: UoR Enterprise Live — full accounting law compliance
@@ -846,7 +910,7 @@ final_verdict_enriched = safe_merge(final_verdict_with_conflicts,
     safe_merge(tax_loss_harvesting.decide,
     safe_merge(family_estonian.decide,
         form_optimizer.decide
-    ))))))))))))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # KRYTYCZNE-2 FIX: Provenance + ADR-006 Immutable Audit Trail
@@ -946,6 +1010,15 @@ _package_decisions := {
     "jdg.p12_innovations": p12_innovations.decide,
     "jdg.p13_innovations": p13_innovations.decide,
     "jdg.p14_innovations": p14_innovations.decide,
+    # ── PAS 15b: P15 Enterprise v8.0 PCC + Local Taxes + Excise (2026-08-01) ──
+    "jdg.p15_innovations": p15_innovations.decide,
+    # ── PAS 16: P16 Enterprise v8.0 Business Lifecycle (2026-08-01) ──
+    "jdg.p16_innovations": p16_innovations.decide,
+    "jdg.autoform": autoform.decide,
+    "jdg.estonian_cit": estonian_cit.decide,
+    "jdg.entrepreneur_test": entrepreneur_test.decide,
+    "jdg.banking_sca": banking_sca.decide,
+    "jdg.p17_innovations": p17_innovations.decide,
     "jdg.pkpir_to_uor_transformer": pkpir_to_uor_transformer.decide,
     "jdg.exit_tax_interest_calculator": exit_tax_interest_calculator.decide,
     "jdg.mdr_auto_generator": mdr_auto_generator.decide,

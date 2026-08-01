@@ -516,6 +516,107 @@ Podstawa prawna: Art. 5-7 CEIDG, Prawo Przedsiębiorców
     def generate_report(self):
         return {"tool": "P16 Business Lifecycle Toolkit v1.0", "innovations": 12, "coverage": "5 faz cyklu życia JDG", "zus_timelines": 4, "exit_scenarios": 4}
 
+    # ── v8.0 NEW: Auto-Form Generator Helpers ──
+    def ceidg1_autofill(self, first_name="Jan", last_name="Kowalski", pesel="80010112345", pkd_main="62.01.Z",
+                         tax_form="PIT_SCALE", start_date="2026-08-01", vat_registration=False):
+        """G1: CEIDG-1 Auto-Fill Engine."""
+        return {
+            "form_type": "WNIOSEK O WPIS",
+            "sections": {
+                "dane": {"imie": first_name, "nazwisko": last_name, "pesel": pesel},
+                "dzialalnosc": {"pkd_glowne": pkd_main, "data_start": start_date},
+                "opodatkowanie": {"forma": tax_form},
+                "vat": {"rejestracja": vat_registration, "zwolnienie": not vat_registration},
+                "zus": {"kod": "05 10", "termin": "7 dni od wpisu CEIDG"}
+            },
+            "deadlines": {"zus_zua_dni": 7, "pit_form_dni": 20, "vat_r": "przed 1. transakcją"}
+        }
+
+    def zus_zua_autofill(self, is_employee=False, salary_gross=4666):
+        """G2: ZUS ZUA Auto-Fill."""
+        zus_code = "01 10" if is_employee else "05 10"
+        return {
+            "form_type": "ZUS ZUA",
+            "kod_zus": zus_code,
+            "deadline_dni": 7,
+            "cost_employer_monthly": round(salary_gross * 0.205, 2) if is_employee else 0
+        }
+
+    def vat_z_autofill(self, inventory_value=0):
+        """G4: VAT-Z Auto-Fill."""
+        return {
+            "form_type": "VAT-Z",
+            "vat_remnant_23pct": round(inventory_value * 0.23, 2),
+            "remnant_tax_10pct": round(inventory_value * 0.10, 2),
+            "total_exit_tax": round(inventory_value * 0.33, 2)
+        }
+
+    # ── v8.0 NEW: Estonian CIT Helpers ──
+    def estonian_cit_eligibility(self, legal_form="JDG", annual_revenue=2000000, employee_count=1, passive_income_pct=5):
+        """E1: Estonian CIT eligibility check."""
+        legal_ok = legal_form in {"SP_ZOO", "SA", "SP_KOMANDYTOWA"}
+        revenue_ok = annual_revenue <= 50000000
+        employees_ok = employee_count >= 3
+        passive_ok = passive_income_pct < 50
+        eligible = legal_ok and revenue_ok and employees_ok and passive_ok
+        restrictions = []
+        if not legal_ok:
+            restrictions.append(f"Forma {legal_form} nie kwalifikuje się — wymagana Sp. z o.o.")
+        if not employees_ok:
+            restrictions.append(f"Minimum 3 pracowników (masz {employee_count})")
+        if not passive_ok:
+            restrictions.append(f"Przychody pasywne {passive_income_pct}% > limit 50%")
+        return {"eligible": eligible, "restrictions": restrictions}
+
+    def estonian_cit_tax(self, annual_profit=500000, profit_distributed=0):
+        """E2: Estonian CIT tax calculator."""
+        estonian_rate = 0.20
+        cit_classic_rate = 0.09
+        ecit_tax = profit_distributed * estonian_rate
+        classic_tax = annual_profit * cit_classic_rate
+        savings = classic_tax - ecit_tax
+        return {
+            "estonian_cit_tax": round(ecit_tax, 2),
+            "classic_cit_tax": round(classic_tax, 2),
+            "savings": round(savings, 2),
+            "tax_on_reinvestment": 0,
+            "note": "0% przy reinwestycji — podatek tylko od wypłaconych dywidend"
+        }
+
+    # ── v8.0 NEW: Entrepreneur Test Helper ──
+    def entrepreneur_test(self, client_count=1, has_fixed_hours=False, has_supervisor=False,
+                          owns_tools=False, bears_risk=False, has_flexible_schedule=False):
+        """ET: Full entrepreneur test score."""
+        etat_score = 0
+        etat_score += 10 if has_fixed_hours else 0
+        etat_score += 10 if has_supervisor else 0
+        etat_score += 15 if client_count == 1 else 0
+
+        jdg_score = 0
+        jdg_score += 10 if owns_tools else 0
+        jdg_score += 15 if bears_risk else 0
+        jdg_score += 10 if has_flexible_schedule else 0
+        jdg_score += 15 if client_count >= 3 else 0
+
+        final = jdg_score + (100 - etat_score)
+        risk = "NISKIE" if final >= 65 else ("SREDNIE" if final >= 40 else "WYSOKIE")
+        return {"score": max(0, min(100, final)), "risk": risk, "is_safe_jdg": final >= 65}
+
+    # ── v8.0 NEW: Enhanced SCA Helpers ──
+    def sca_required_check(self, amount=100, is_trusted_beneficiary=False, is_recurring=False):
+        """SCA: Check if SCA is required."""
+        exempt_low_value = amount <= 30
+        exempt_trusted = is_trusted_beneficiary and amount <= 500
+        exempt_recurring = is_recurring
+        exempt = exempt_low_value or exempt_trusted or exempt_recurring
+        methods = ["SMS_OTP", "MOBILE_APP_BIOMETRIC", "PUSH_NOTIFICATION", "HARDWARE_TOKEN"]
+        return {
+            "sca_required": not exempt,
+            "exempt_reason": "LOW_VALUE" if exempt_low_value else "TRUSTED" if exempt_trusted else "RECURRING" if exempt_recurring else "NONE",
+            "available_methods": methods,
+            "preferred": methods[1]
+        }
+
 
 def main():
     parser = argparse.ArgumentParser(description="P16 Business Lifecycle Toolkit v1.0")
