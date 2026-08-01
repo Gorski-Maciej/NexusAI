@@ -1867,3 +1867,66 @@ else := {
     object.get(input.invoice, "building_type", "") == "RESIDENTIAL"
     object.get(input.invoice, "usable_area_m2", 999999) <= 300
 }
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  L-BUD-3: Info o braku ulgi na materiały budowlane (2 reguły) P24         ║
+# ║  Legal basis: ulga zniesiona 01.01.2014 — informacja dla JDG              ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.budownictwo.a9.r1: budownictwo_a9_r1_materials_relief_abolished_info
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a9.r1",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250500,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "materials_relief_available": false,
+    "_routing": "",
+    "_routing_reason": "L-BUD-3: Ulga na materiały budowlane ZNIESIONA od 01.01.2014",
+    "_legal_basis": "Ustawa z dnia 29.08.2005 o zwrocie osobom fizycznym niektórych wydatków związanych z budownictwem mieszkaniowym (ZNIESIONA 01.01.2014)",
+    "_warnings": ["[MICRO] L-BUD-3: UWAGA! Ulga na materiały budowlane NIE ISTNIEJE od 01.01.2014. Historyczny limit 1 500 zł został zniesiony. Nie składasz wniosku VZM-1 — nie ma podstawy prawnej. Nie daj się oszukać na "odzyskanie VAT od materiałów" — to SCAM."]
+} {
+    object.get(input.invoice, "construction_materials_relief_requested", false) == true
+}
+
+# jdg.micro.budownictwo.a9.r2: budownictwo_a9_r2_alternative_reliefs_info
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.budownictwo.a9.r2",
+    "package": "jdg.micro.budownictwo",
+    "priority": 250501,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "available_reliefs": ["Ulga termomodernizacyjna (Art. 26h PIT) — do 53 000 PLN", "Ulga mieszkaniowa (Art. 21 ust. 1 pkt 131 PIT) — od sprzedaży nieruchomości", "VAT 8% na budownictwo mieszkaniowe (Art. 41 ust. 12 VAT) — dla usług, nie materiałów"],
+    "_routing": "",
+    "_routing_reason": "L-BUD-3: Alternatywne ulgi budowlane dostępne w 2026",
+    "_legal_basis": "Art. 26h PIT (termomodernizacja), Art. 21 ust. 1 pkt 131 PIT (mieszkaniowa), Art. 41 ust. 12 VAT (stawka 8%)",
+    "_warnings": ["[MICRO] L-BUD-3: Zamiast zniesionej ulgi materiałowej, rozważ: (1) Ulgę termomodernizacyjną — do 53 000 PLN, (2) Ulgę mieszkaniową przy sprzedaży nieruchomości, (3) Stawkę VAT 8% na usługi budowlane w budownictwie mieszkaniowym (limit 300 m2)."]
+} {
+    object.get(input.jdg_entrepreneur, "construction_relief_info_requested", false) == true
+}

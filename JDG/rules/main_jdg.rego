@@ -152,6 +152,7 @@ import data.jdg.p35_innovations
 import data.jdg.p21_innovations
 import data.jdg.p22_innovations
 import data.jdg.p23_innovations
+import data.jdg.p24_innovations
 import data.jdg.hyper.general
 import data.jdg.hyper.deadlines
 import data.jdg.hyper.limits
@@ -599,12 +600,13 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(p21_innovations.decide,
     safe_merge(p22_innovations.decide,
     safe_merge(p23_innovations.decide,
+    safe_merge(p24_innovations.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(fortress.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 
 # Shard dla DOMESTIC_PURCHASE z ACTIVE JDG (KRYTYCZNE-3 FIX)
@@ -675,12 +677,13 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(hyper_deadlines.decide,
     safe_merge(hyper_misc.decide,
     safe_merge(p21_innovations.decide,
+    safe_merge(p24_innovations.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(fortress.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))))
 
 
 full_final_verdict = safe_merge(risk.decide,
@@ -1020,6 +1023,7 @@ final_verdict_enriched = safe_merge(final_verdict_with_conflicts,
     safe_merge(p21_innovations.decide,
     safe_merge(p22_innovations.decide,
     safe_merge(p23_innovations.decide,
+    safe_merge(p24_innovations.decide,
         form_optimizer.decide
     )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
@@ -1180,6 +1184,7 @@ _package_decisions := {
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
     "jdg.p23_innovations": p23_innovations.decide,
+    "jdg.p24_innovations": p24_innovations.decide,
     "jdg.hyper.general": hyper_general.decide,
     "jdg.hyper.deadlines": hyper_deadlines.decide,
     "jdg.hyper.limits": hyper_limits.decide,

@@ -4001,3 +4001,159 @@ else := {
 } {
     object.get(input.jdg_entrepreneur, "pp_a52_u5_p2_check", false) == true
 }
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  L-PP-2: Auto-indeksacja limitu działalności nieewidencjonowanej (5 reguł) ║
+# ║  Legal basis: Art. 5 ustawy Prawo przedsiębiorców — 75% płacy minimalnej   ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.pp.a5index.r1: pp_a5index_r1_limit_auto_indexation_2026
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.pp.a5index.r1",
+    "package": "jdg.micro.pp",
+    "priority": 270500,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "UNREGISTERED",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "min_wage_2026_pln": 4666,
+    "limit_75pct_2026_pln": 3499.50,
+    "auto_indexation": true,
+    "_routing": "",
+    "_routing_reason": "L-PP-2: Limit działalności nieewidencjonowanej 2026 = 3 499,50 PLN (75% z 4 666 PLN)",
+    "_legal_basis": "Art. 5 ustawy Prawo przedsiębiorców — 75% minimalnego wynagrodzenia miesięcznego",
+    "_warnings": ["[MICRO] L-PP-2: Limit działalności nieewidencjonowanej: 3 499,50 PLN miesięcznie w 2026 roku (75% z 4 666 PLN płacy minimalnej). Limit ZMIENIA SIĘ automatycznie z każdą zmianą płacy minimalnej! W 2025: 3 499,50 PLN (z 4 666 PLN). W 2024: 3 225 PLN (z 4 300 PLN)."]
+} {
+    object.get(input.jdg_entrepreneur, "is_unregistered_activity", false) == true
+}
+
+# jdg.micro.pp.a5index.r2: pp_a5index_r2_historical_limits_comparison
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.pp.a5index.r2",
+    "package": "jdg.micro.pp",
+    "priority": 270501,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "historical_limits": [
+        {"year": 2023, "min_wage": 3490, "limit": 2617.50},
+        {"year": 2024, "min_wage": 4300, "limit": 3225.00},
+        {"year": 2025, "min_wage": 4666, "limit": 3499.50},
+        {"year": 2026, "min_wage": 4666, "limit": 3499.50}
+    ],
+    "_routing": "",
+    "_routing_reason": "L-PP-2: Historyczne limity dla działalności nieewidencjonowanej",
+    "_legal_basis": "Art. 5 PP + Obwieszczenia MRPiPS ws. minimalnego wynagrodzenia",
+    "_warnings": ["[MICRO] L-PP-2: Historia limitów: 2023=2 617,50 PLN, 2024=3 225 PLN, 2025-2026=3 499,50 PLN. Limit rośnie — sprawdzaj corocznie!"]
+} {
+    object.get(input.jdg_entrepreneur, "unregistered_activity_limit_history_requested", false) == true
+}
+
+# jdg.micro.pp.a5index.r3: pp_a5index_r3_limit_exceeded_consequences
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.pp.a5index.r3",
+    "package": "jdg.micro.pp",
+    "priority": 270502,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": true,
+    "micro_rule_active": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "L-PP-2: Limit przekroczony — obowiązek rejestracji CEIDG + sankcje KKS",
+    "_legal_basis": "Art. 5 ust. 3 PP — utrata prawa do działalności nieewidencjonowanej",
+    "_warnings": ["[MICRO] L-PP-2: PRZEKROCZENIE limitu = obowiązek NATYCHMIASTOWEJ rejestracji w CEIDG! Konsekwencje: (1) CEIDG-1 w 7 dni, (2) ZUS ZUA od dnia przekroczenia, (3) Korekta rozliczeń PIT, (4) Sankcja KKS 2 000-5 000 PLN za niezarejestrowaną działalność."]
+} {
+    object.get(input.jdg_entrepreneur, "unregistered_monthly_revenue_pln", 0) > 3499.50
+}
+
+# jdg.micro.pp.a5index.r4: pp_a5index_r4_annual_review_reminder
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.pp.a5index.r4",
+    "package": "jdg.micro.pp",
+    "priority": 270503,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "next_review_date": "2027-01-01",
+    "_routing": "",
+    "_routing_reason": "L-PP-2: Coroczny przegląd limitu — styczeń 2027",
+    "_legal_basis": "Art. 5 PP + Obwieszczenie MRPiPS o minimalnym wynagrodzeniu na 2027",
+    "_warnings": ["[MICRO] L-PP-2: Pamiętaj o corocznym przeglądzie limitu! Od 1 stycznia każdego roku minimalne wynagrodzenie może się zmienić — limit automatycznie się aktualizuje. Sprawdź obwieszczenie MRPiPS na 2027."]
+} {
+    object.get(input, "evaluation_datetime", "") >= "2027-01-01"
+    object.get(input.jdg_entrepreneur, "is_unregistered_activity", false) == true
+}
+
+# jdg.micro.pp.a5index.r5: pp_a5index_r5_spousal_income_cumulation
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.pp.a5index.r5",
+    "package": "jdg.micro.pp",
+    "priority": 270504,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "L-PP-2: Kumulacja przychodów małżonków — limit łączny",
+    "_legal_basis": "Art. 5 ust. 2 PP — limit dotyczy łącznych przychodów",
+    "_warnings": ["[MICRO] L-PP-2: UWAGA! Limit 75% płacy minimalnej dotyczy ŁĄCZNYCH przychodów z działalności nieewidencjonowanej — Twoich i małżonka (jeśli oboje prowadzicie). Kumulacja = ryzyko przekroczenia."]
+} {
+    object.get(input.jdg_entrepreneur, "spouse_also_unregistered_activity", false) == true
+}

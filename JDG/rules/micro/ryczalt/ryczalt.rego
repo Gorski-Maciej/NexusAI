@@ -4236,3 +4236,153 @@ else := {
     object.get(input, "eur_nbp_rate_oct1", null) == null
     object.get(input.jdg_entrepreneur, "tax_form", "") == "RYCZALT"
 }
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  ryczalt.a29 — Karta podatkowa: zgłoszenie 14 dni (5 reguł) P24 L-RYC-3  ║
+# ║  Legal basis: Art. 29 ust. 1 ustawy o ryczałcie                             ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.ryczalt.a29.r1: ryczalt_a29_r1_tax_card_14day_deadline
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.ryczalt.a29.r1",
+    "package": "jdg.micro.ryczalt",
+    "priority": 100500,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "KARTA_PODATKOWA",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "PIT-16A",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "L-RYC-3: Karta podatkowa — termin 14 dni na zgłoszenie PRZEKROCZONY",
+    "_legal_basis": "Art. 29 ust. 1 ustawy o ryczałcie",
+    "_warnings": ["[MICRO] L-RYC-3: Zgłoszenie karty podatkowej (PIT-16) należy złożyć na 14 DNI przed rozpoczęciem działalności. Przekroczenie = brak możliwości skorzystania z karty w danym roku!"]
+} {
+    object.get(input.jdg_entrepreneur, "tax_card_selected", false) == true
+    object.get(input.jdg_entrepreneur, "tax_card_filed", false) == false
+    object.get(input.jdg_entrepreneur, "days_before_business_start", 0) < 14
+    object.get(input.jdg_entrepreneur, "business_not_started", false) == true
+}
+
+# jdg.micro.ryczalt.a29.r2: ryczalt_a29_r2_tax_card_scope_limited
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ryczalt.a29.r2",
+    "package": "jdg.micro.ryczalt",
+    "priority": 100501,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "KARTA_PODATKOWA",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "L-RYC-3: Karta podatkowa — ograniczenia zakresu działalności",
+    "_legal_basis": "Art. 21-25 ustawy o ryczałcie",
+    "_warnings": ["[MICRO] L-RYC-3: Karta podatkowa dostępna TYLKO dla: handlu detalicznego, gastronomii, usług transportowych, niektórych wolnych zawodów. Limit zatrudnienia: max 2 pracowników."]
+} {
+    object.get(input.jdg_entrepreneur, "tax_card_selected", false) == true
+    object.get(input.jdg_entrepreneur, "tax_card_employees_count", 0) > 2
+}
+
+# jdg.micro.ryczalt.a29.r3: ryczalt_a29_r3_tax_card_monthly_rates
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ryczalt.a29.r3",
+    "package": "jdg.micro.ryczalt",
+    "priority": 100502,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "KARTA_PODATKOWA",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "PIT-16A",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "L-RYC-3: Karta podatkowa — stawki miesięczne wg Art. 23-26",
+    "_legal_basis": "Art. 23-26 ustawy o ryczałcie — tabele stawek miesięcznych",
+    "_warnings": ["[MICRO] L-RYC-3: Stawki karty podatkowej zależą od: rodzaju działalności, liczby mieszkańców gminy, liczby zatrudnionych. Formularz PIT-16 składa się do US właściwego dla miejsca zamieszkania."]
+} {
+    object.get(input.jdg_entrepreneur, "tax_card_selected", false) == true
+}
+
+# jdg.micro.ryczalt.a29.r4: ryczalt_a29_r4_tax_card_no_ledger
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ryczalt.a29.r4",
+    "package": "jdg.micro.ryczalt",
+    "priority": 100503,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "KARTA_PODATKOWA",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "L-RYC-3: Karta podatkowa — brak obowiązku ewidencji przychodów",
+    "_legal_basis": "Art. 24 ustawy o ryczałcie",
+    "_warnings": ["[MICRO] L-RYC-3: Karta podatkowa = BRAK obowiązku prowadzenia ewidencji przychodów. Wystarczy przechowywać faktury zakupowe przez 5 lat."]
+} {
+    object.get(input.jdg_entrepreneur, "tax_card_selected", false) == true
+    object.get(input.jdg_entrepreneur, "ledger_being_kept", false) == true
+}
+
+# jdg.micro.ryczalt.a29.r5: ryczalt_a29_r5_tax_card_loss_of_right
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ryczalt.a29.r5",
+    "package": "jdg.micro.ryczalt",
+    "priority": 100504,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "L-RYC-3: Karta podatkowa — UTRATA prawa",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie — utrata prawa do karty",
+    "_warnings": ["[MICRO] L-RYC-3: UTRATA prawa do karty podatkowej! Przyczyny: przekroczenie limitu zatrudnienia, zmiana zakresu działalności poza katalog, prowadzenie innej działalności. Powrót do karty możliwy dopiero po 2 latach."]
+} {
+    object.get(input.jdg_entrepreneur, "tax_card_lost_right", false) == true
+}

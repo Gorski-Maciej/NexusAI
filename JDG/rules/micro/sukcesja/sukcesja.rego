@@ -3778,3 +3778,153 @@ else := {
 } {
     object.get(input.jdg_entrepreneur, "suk_a9_u5_p1_check", false) == true
 }
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  L-SUK-3: Zgłoszenie zarządcy do ZUS (7 dni) + L-SUK-4: KSeF interakcja   ║
+# ║  P24 gap closures — 5 reguł                                                ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.sukcesja.zus.r1: sukcesja_zus_r1_manager_zus_registration_7days
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.zus.r1",
+    "package": "jdg.micro.sukcesja",
+    "priority": 210600,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "ZARZADCA_SUKCESYJNY",
+    "zus_health_rate": "",
+    "business_status": "IN_SUCCESSIO",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "L-SUK-3: Zarządca sukcesyjny — zgłoszenie ZUS ZUA w 7 dni od powołania",
+    "_legal_basis": "Art. 12 ust. 1 ustawy o zarządzie sukcesyjnym — zgłoszenie do ZUS",
+    "_warnings": ["[MICRO] L-SUK-3: Zarządca sukcesyjny MUSI zgłosić się do ZUS (ZUS ZUA) w ciągu 7 DNI od dnia powołania. Brak zgłoszenia = brak ubezpieczenia = ryzyko osobistej odpowiedzialności!"]
+} {
+    object.get(input.jdg_entrepreneur, "succession_active", false) == true
+    object.get(input.jdg_entrepreneur, "succession_manager_zus_registered", false) == false
+    object.get(input.jdg_entrepreneur, "days_since_manager_appointed", 0) > 7
+}
+
+# jdg.micro.sukcesja.zus.r2: sukcesja_zus_r2_employer_obligations_continue
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.zus.r2",
+    "package": "jdg.micro.sukcesja",
+    "priority": 210601,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "PRACOWNICY_SUKCESJA",
+    "zus_health_rate": "",
+    "business_status": "IN_SUCCESSIO",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "L-SUK-3: Obowiązki płatnika ZUS kontynuowane przez zarządcę",
+    "_legal_basis": "Art. 14 ustawy o zarządzie sukcesyjnym",
+    "_warnings": ["[MICRO] L-SUK-3: Zarządca sukcesyjny przejmuje obowiązki płatnika ZUS za pracowników. DRA, RCA, RSA składane bez zmian. Odpowiedzialność solidarna."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_active", false) == true
+    object.get(input.jdg_entrepreneur, "has_employees", false) == true
+}
+
+# jdg.micro.sukcesja.ksef.r1: sukcesja_ksef_r1_vat_ksef_continuity
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.ksef.r1",
+    "package": "jdg.micro.sukcesja",
+    "priority": 210602,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "IN_SUCCESSIO",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "L-SUK-4: Obowiązki KSeF/VAT kontynuowane — sukcesor przejmuje NIP",
+    "_legal_basis": "Art. 14 ustawy o zarządzie sukcesyjnym, Art. 96-106 VAT",
+    "_warnings": ["[MICRO] L-SUK-4: NIP przedsiębiorstwa pozostaje AKTYWNY w okresie zarządu sukcesyjnego. Faktury KSeF wystawiane w imieniu przedsiębiorstwa w spadku. JPK_V7 i JPK_VAT składane bez przerw. Wyrejestrowanie VAT dopiero po wygaśnięciu zarządu."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_active", false) == true
+    object.get(input.jdg_entrepreneur, "is_vat_payer", false) == true
+}
+
+# jdg.micro.sukcesja.ksef.r2: sukcesja_ksef_r2_jpk_continuity
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.ksef.r2",
+    "package": "jdg.micro.sukcesja",
+    "priority": 210603,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "IN_SUCCESSIO",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "L-SUK-4: JPK/księgi kontynuowane — zarządca prowadzi PKPiR/księgi",
+    "_legal_basis": "Art. 14-15 ustawy o zarządzie sukcesyjnym",
+    "_warnings": ["[MICRO] L-SUK-4: Zarządca sukcesyjny prowadzi PKPiR/księgi rachunkowe przedsiębiorstwa BEZ ZMIAN. Rok podatkowy NIE ulega przerwaniu. Zeznanie roczne składa zarządca."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_active", false) == true
+}
+
+# jdg.micro.sukcesja.ksef.r3: sukcesja_ksef_r3_termination_vat_deregistration
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.sukcesja.ksef.r3",
+    "package": "jdg.micro.sukcesja",
+    "priority": 210604,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "L-SUK-4: Wygaśnięcie zarządu — obowiązek wyrejestrowania VAT i CEIDG",
+    "_legal_basis": "Art. 21 ustawy o zarządzie sukcesyjnym, Art. 96 VAT",
+    "_warnings": ["[MICRO] L-SUK-4: Po wygaśnięciu zarządu sukcesyjnego: VAT-Z (wyrejestrowanie VAT), CEIDG-WY (wykreślenie z CEIDG), remanent likwidacyjny (10% PIT), zamknięcie ksiąg. Termin: 7 dni od wygaśnięcia."]
+} {
+    object.get(input.jdg_entrepreneur, "succession_terminated", false) == true
+    object.get(input.jdg_entrepreneur, "vat_deregistered", false) == false
+}
