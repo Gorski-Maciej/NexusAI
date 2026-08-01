@@ -46,6 +46,13 @@ pcc_family_loan_limit := 36120.00  # Pożyczka rodzinna zwolniona do tego limitu
 # PCC VAT exclusion (Art. 2 pkt 4)
 pcc_vat_exclusion := "Transakcje objęte VAT są wyłączone z PCC"
 
+# PCC Contract withdrawal / deposit (wadium) handling
+# Art. 1 ust. 1 — wadium nie podlega PCC (zwrotny depozyt)
+# Art. 3 ust. 1 pkt 4 — rezygnacja z umowy: PCC zwracany jeśli odstąpienie w ciągu 14 dni
+pcc_wadium_not_taxable := "Wadium/kaucja zwrotna NIE podlega PCC"
+pcc_contract_withdrawal_refund_days := 14
+pcc_contract_withdrawal_rate_pct := 0  # Pełny zwrot PCC przy odstąpieniu
+
 # PCC-3 declaration deadline
 pcc3_deadline_days := 14
 
@@ -136,6 +143,26 @@ excise_tobacco := {
     "SMOKING_TOBACCO_per_kg": 300
 }
 
+# Mapa drogowa akcyzy tytoniowej 2027 (wzrost z 32%+105 PLN → 40%+140 PLN)
+excise_tobacco_2027_roadmap := {
+    "CIGARETTES_ad_valorem_pct_2027": 40,
+    "CIGARETTES_specific_per_1000_2027": 140.00,
+    "CIGARETTES_minimum_pct_retail_2027": 70,
+    "effective_date": "2027-01-01",
+    "legal_basis": "Mapa drogowa akcyzy tytoniowej 2025-2027 (Dz.U. 2025 poz. 420)",
+    "increase_note": "Wzrost o +8 p.p. ad valorem i +35 PLN/1000szt"
+}
+
+# Agricultural diesel refund limits (zwrot akcyzy dla rolników)
+excise_diesel_agriculture_refund_per_liter := 1.20  # PLN/L
+# Art. 5 ustawy o zwrocie akcyzy rolnikom: limit 100 L/ha rocznie
+excise_diesel_agriculture_limit_per_ha := 100  # litrów na hektar
+
+# Alkohol etylowy laboratoryjny/medyczny — zwolnienie
+# Art. 30 ust. 7 pkt 2 — alkohol do celów medycznych ZWOLNIONY
+excise_alcohol_lab_exempt_categories := ["MEDICAL", "LABORATORY", "PHARMACEUTICAL", "SCIENTIFIC"]
+excise_alcohol_lab_rate := 0  # Stawka 0% dla celów medycznych/laboratoryjnych
+
 excise_energy := {
     "ELECTRICITY_business_per_mwh": 5.00,
     "ELECTRICITY_residential": 0
@@ -147,6 +174,23 @@ excise_declaration_deadline := "25th of following month"
 
 # Excise warehouse requirements
 excise_warehouse_required_categories := ["ALCOHOL", "TOBACCO", "MOTOR_FUEL"]
+
+# Excise suspension procedure (procedura zawieszenia akcyzy)
+excise_suspension_tiers := {
+    "tier1": "skład podatkowy — zezwolenie naczelnika UC",
+    "tier2": "zabezpieczenie akcyzowe — gwarancja bankowa/kaucja",
+    "tier3": "e-DD/SENT/EMCS — dokumentacja przemieszczania"
+}
+
+# Cross-border excise — EMCS countries (27 EU)
+excise_emcs_eu_countries := ["AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"]
+
+# Agricultural fuel exemption limit
+# Art. 32 ust. 1 pkt 3-4 — paliwo rolnicze zwolnione w limicie 100 L/ha
+excise_agriculture_fuel_limit_liters_per_ha := 100
+
+# Coal excise rate
+excise_coal_rate_per_tonne := 13.50  # PLN/tona (2026)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Multi-Tax Calendar (all deadlines)
@@ -220,8 +264,10 @@ total_rules := sum([v | v := existing_coverage[_]; v.total])
 # ═══════════════════════════════════════════════════════════════════════════════
 
 p15_comprehensive_assessment := {
-    "timestamp": "2026-07-29",
-    "version": "P15 v1.0",
+    "timestamp": "2026-08-01",
+    "version": "P15 v8.0 — FULL LOGIC",
+    "innovation_file": "p15_pcc_local_excise_innovations_v8.rego",
+    "innovation_status": "FULLY IMPLEMENTED (was SKELETONS)",
     "total_rego_rules": total_rules,
     "pcc_coverage": existing_coverage.pcc,
     "real_estate_coverage": existing_coverage.real_estate,

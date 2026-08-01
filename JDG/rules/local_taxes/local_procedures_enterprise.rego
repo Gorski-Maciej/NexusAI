@@ -419,3 +419,332 @@ else := verdict {
     pcc_note := "⚠️ PCC NIE doliczone do wartości początkowej — zaniżona amortyzacja!" { pcc_added_to_initial_value == false }
     pcc_note := "✅ PCC doliczone do wartości początkowej." { pcc_added_to_initial_value == true }
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PROC-PCC-04: PCC Contract Withdrawal / Wadium (Deposit)
+# Art. 1 ust. 1 — wadium/kaucja zwrotna NIE podlega PCC
+# Art. 3 ust. 1 pkt 4 — rezygnacja z umowy: zwrot PCC jeśli w ciągu 14 dni
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := verdict {
+    input.invoice.transaction_type in {"PCC_CONTRACT_WITHDRAWAL", "PCC_WADIUM_DEPOSIT"}
+    tx_type := object.get(input.invoice, "transaction_type", "PCC_CONTRACT_WITHDRAWAL")
+
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    wadium_amount := object.get(input.invoice, "amount_gross", 0)
+    withdrawal_days := object.get(input.invoice, "pcc_withdrawal_days_since_contract", 0)
+    is_refundable := object.get(input.invoice, "pcc_wadium_is_refundable", false)
+    refund_applied := object.get(input.invoice, "pcc_withdrawal_refund_applied", false)
+
+    # Wadium is NOT subject to PCC (refundable deposit)
+    is_wadium := tx_type == "PCC_WADIUM_DEPOSIT"
+    is_withdrawal := tx_type == "PCC_CONTRACT_WITHDRAWAL"
+
+    # Withdrawal within 14 days = full PCC refund
+    within_deadline := withdrawal_days <= 14
+    withdrawal_possible := is_withdrawal and within_deadline
+
+    # PCC to refund
+    pcc_already_paid := object.get(input.invoice, "pcc_already_paid_pln", 0)
+    refund_amount := pcc_already_paid { withdrawal_possible; not refund_applied }
+    refund_amount := 0 { not withdrawal_possible }
+    refund_amount := 0 { refund_applied }
+
+    proc_routing := "TRIAGE_QUEUE" { withdrawal_possible; not refund_applied; refund_amount > 0 }
+    proc_routing := "BLOCK_AND_ALERT" { is_withdrawal; withdrawal_days > 14; pcc_already_paid > 0 }
+    proc_routing := "" { is_wadium }
+    proc_routing := "" { refund_applied }
+    proc_routing := "" { refund_amount == 0 }
+
+    proc_routing_reason := sprintf("Rezygnacja z umowy w %d dniu — zwrot PCC %.2f PLN!", [withdrawal_days, refund_amount]) { withdrawal_possible; not refund_applied; refund_amount > 0 }
+    proc_routing_reason := sprintf("Przekroczony termin 14 dni (%d) — brak zwrotu PCC", [withdrawal_days]) { is_withdrawal; withdrawal_days > 14 }
+    proc_routing_reason := "Wadium/kaucja zwrotna — NIE podlega PCC" { is_wadium; is_refundable }
+    proc_routing_reason := "" { true }
+
+    verdict := {
+        "matched": true, "rule_id": "jdg.local_taxes.procedures.pcc_contract_withdrawal_wadium",
+        "package": "jdg.local_taxes.procedures_enterprise", "priority": 1504,
+        "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": pit_form,
+        "kus_qualification": "", "kus_percent": 0,
+        "local_tax_type": "PCC", "pcc_withdrawal_type": tx_type,
+        "pcc_is_wadium": is_wadium, "pcc_wadium_not_taxable": is_wadium and is_refundable,
+        "pcc_withdrawal_days": withdrawal_days, "pcc_withdrawal_within_deadline": within_deadline,
+        "pcc_withdrawal_refund_pln": refund_amount,
+        "pcc_refund_applied": refund_applied,
+        "_routing": proc_routing, "_routing_reason": proc_routing_reason,
+        "_legal_basis": "Art. 1 ust. 1, Art. 3 ust. 1 pkt 4 Ustawy o PCC; Art. 395 KC",
+        "_warnings": [sprintf("📋 PCC REZYGNACJA/WADIUM: %s. %s %s",
+            [type_note, status_note, action_note])]
+    }
+
+    type_note := "WADIUM — depozyt zwrotny" { is_wadium }
+    type_note := sprintf("REZYGNACJA z umowy — %d dni od zawarcia", [withdrawal_days]) { is_withdrawal }
+
+    status_note := sprintf("NIE podlega PCC — %.2f PLN depozytu zwrotnego", [wadium_amount]) { is_wadium; is_refundable }
+    status_note := sprintf("Zwrot PCC możliwy — %.2f PLN do odzyskania (≤14 dni)", [refund_amount]) { withdrawal_possible; not refund_applied }
+    status_note := sprintf("PRZEKROCZONY termin 14 dni (%d) — PCC przepada", [withdrawal_days]) { is_withdrawal; not within_deadline }
+    status_note := "OK — wniosek o zwrot złożony" { refund_applied }
+
+    action_note := "Złóż wniosek o zwrot PCC + korekta PCC-3!" { withdrawal_possible; not refund_applied }
+    action_note := "Brak możliwości zwrotu — termin minął" { is_withdrawal; not within_deadline }
+    action_note := "Dokumentuj jako depozyt (nie przychód)" { is_wadium }
+    action_note := "" { refund_applied }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PROC-EXC-01: Agricultural Diesel Refund — Limit 100 L/ha
+# Art. 5 ustawy o zwrocie akcyzy rolnikom: max 100 litrów ON na hektar
+# Zwrot: 1.20 PLN/L (część akcyzy)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := verdict {
+    input.invoice.excise_category == "MOTOR_FUEL"
+    input.invoice.fuel_type == "DIESEL"
+    object.get(input.invoice, "diesel_for_agriculture", false) == true
+
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    hectares := object.get(input.jdg_entrepreneur, "agricultural_hectares", 10)
+    diesel_claimed_liters := object.get(input.invoice, "diesel_agriculture_liters_claimed", 0)
+    refund_per_liter := 1.20
+    limit_per_ha := 100
+
+    max_liters := hectares * limit_per_ha
+    eligible_liters := diesel_claimed_liters { diesel_claimed_liters <= max_liters }
+    eligible_liters := max_liters { diesel_claimed_liters > max_liters }
+    over_limit := diesel_claimed_liters - max_liters { diesel_claimed_liters > max_liters }
+    over_limit := 0 { diesel_claimed_liters <= max_liters }
+
+    refund_amount := floor(eligible_liters * refund_per_liter * 100) / 100
+    over_limit_warning := over_limit > 0
+
+    has_documentation := object.get(input.invoice, "diesel_agriculture_documented", false)
+
+    proc_routing := "BLOCK_AND_ALERT" { over_limit_warning; not has_documentation }
+    proc_routing := "TRIAGE_QUEUE" { over_limit_warning; has_documentation }
+    proc_routing := "TRIAGE_QUEUE" { not over_limit_warning; not has_documentation; refund_amount > 0 }
+    proc_routing := "" { not over_limit_warning; has_documentation }
+    proc_routing := "" { refund_amount == 0 }
+
+    proc_routing_reason := sprintf("Zwrot ON rolniczy — limit %.0f L/ha × %.1f ha = %.0f L max", [limit_per_ha, hectares, max_liters]) { over_limit_warning }
+    proc_routing_reason := sprintf("Zwrot ON rolniczy: %.0f L × %.2f PLN/L = %.2f PLN", [eligible_liters, refund_per_liter, refund_amount]) { not over_limit_warning; refund_amount > 0 }
+    proc_routing_reason := "" { true }
+
+    verdict := {
+        "matched": true, "rule_id": "jdg.local_taxes.procedures.agricultural_diesel_limit",
+        "package": "jdg.local_taxes.procedures_enterprise", "priority": 1541,
+        "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": pit_form,
+        "kus_qualification": "", "kus_percent": 0,
+        "local_tax_type": "EXCISE", "excise_category": "AGRICULTURE_DIESEL",
+        "excise_diesel_agriculture_hectares": hectares,
+        "excise_diesel_limit_per_ha_liters": limit_per_ha,
+        "excise_diesel_max_liters": max_liters,
+        "excise_diesel_claimed_liters": diesel_claimed_liters,
+        "excise_diesel_eligible_liters": eligible_liters,
+        "excise_diesel_over_limit_liters": over_limit,
+        "excise_diesel_refund_per_liter_pln": refund_per_liter,
+        "excise_diesel_refund_total_pln": refund_amount,
+        "excise_diesel_over_limit": over_limit_warning,
+        "_routing": proc_routing, "_routing_reason": proc_routing_reason,
+        "_legal_basis": "Art. 5 ustawy o zwrocie podatku akcyzowego rolnikom (Dz.U. 2025 poz. 567)",
+        "_warnings": [sprintf("🚜 AKCYZA ON ROLNICZY: %.1f ha × %.0f L/ha = max %.0f L. Zgłoszono: %.0f L (limit %.0f L). %s Zwrot: %.2f PLN. %s. Wniosek do wójta/burmistrza 2× w roku (do 1.03 i 1.09).",
+            [hectares, limit_per_ha, max_liters, diesel_claimed_liters, max_liters, limit_note, refund_amount, doc_note])]
+    }
+
+    limit_note := "⚠️ PRZEKROCZENIE limitu!" { over_limit_warning }
+    limit_note := "✅ W limicie" { not over_limit_warning }
+
+    doc_note := "⚠️ BRAK dokumentacji — faktury VAT za ON" { not has_documentation }
+    doc_note := "✅ Dokumentacja OK" { has_documentation }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PROC-EXC-02: Lab/Medical Alcohol Exemption
+# Art. 30 ust. 7 pkt 2 — alkohol etylowy do celów medycznych/laboratoryjnych ZWOLNIONY
+# Stawka 0% zamiast 8700 PLN/hl 100%
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := verdict {
+    input.invoice.excise_category == "ALCOHOL"
+    alcohol_type := object.get(input.invoice, "alcohol_type", "")
+    alcohol_use := object.get(input.invoice, "alcohol_intended_use", "")
+    alcohol_use in {"MEDICAL", "LABORATORY", "PHARMACEUTICAL", "SCIENTIFIC"}
+
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    volume_hl_100pct := object.get(input.invoice, "quantity_hl_100pct_alcohol", 0)
+    volume_hl_100pct > 0
+
+    normal_rate := 8700  # PLN/hl 100% (standard spirits rate)
+    exempt_rate := 0     # PLN/hl 100% (lab/medical exemption)
+    normal_excise := floor(volume_hl_100pct * normal_rate * 100) / 100
+    savings := normal_excise
+
+    has_certificate := object.get(input.invoice, "alcohol_lab_certificate", false)
+    is_denatured := object.get(input.invoice, "alcohol_is_denatured", false)
+
+    exempt_valid := has_certificate or is_denatured
+
+    proc_routing := "BLOCK_AND_ALERT" { not exempt_valid }
+    proc_routing := "" { exempt_valid }
+    proc_routing_reason := sprintf("Alkohol %s — wymagane świadectwo/denaturat!", [alcohol_use]) { not exempt_valid }
+    proc_routing_reason := sprintf("Alkohol %s — ZWOLNIONY z akcyzy (oszczędność: %.2f PLN)", [alcohol_use, savings]) { exempt_valid }
+
+    verdict := {
+        "matched": true, "rule_id": "jdg.local_taxes.procedures.lab_alcohol_exemption",
+        "package": "jdg.local_taxes.procedures_enterprise", "priority": 1542,
+        "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": pit_form,
+        "kus_qualification": "", "kus_percent": 0,
+        "local_tax_type": "EXCISE", "excise_category": "ALCOHOL_EXEMPT",
+        "excise_alcohol_use": alcohol_use,
+        "excise_alcohol_volume_hl_100pct": volume_hl_100pct,
+        "excise_alcohol_normal_rate_per_hl": normal_rate,
+        "excise_alcohol_exempt_rate": exempt_rate,
+        "excise_alcohol_excise_normal_pln": normal_excise,
+        "excise_alcohol_excise_exempt_pln": 0,
+        "excise_alcohol_savings_pln": savings,
+        "excise_alcohol_exemption_valid": exempt_valid,
+        "excise_alcohol_has_certificate": has_certificate,
+        "excise_alcohol_is_denatured": is_denatured,
+        "_routing": proc_routing, "_routing_reason": proc_routing_reason,
+        "_legal_basis": "Art. 30 ust. 7 pkt 2 Ustawy o podatku akcyzowym; Rozp. MF ws. zwolnień",
+        "_warnings": [sprintf("🧪 AKCYZA ALKOHOL LAB./MED.: %s — %.4f hl 100%%. Stawka normalna: %.0f PLN/hl = %.2f PLN. Stawka ZWOLNIONA: 0 PLN. Oszczędność: %.2f PLN! %s. Wymagane: świadectwo odbioru lub denaturat.",
+            [alcohol_use, volume_hl_100pct, normal_rate, normal_excise, savings, cert_note])]
+    }
+
+    cert_note := "⚠️ BRAK świadectwa — akcyza NALICZONA!" { not exempt_valid }
+    cert_note := "✅ Świadectwo OK — ZWOLNIONE" { exempt_valid }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PROC-EXC-03: Tobacco 2027 Roadmap Alert
+# Mapa drogowa akcyzy tytoniowej 2025-2027:
+# 2026: 32% + 105 PLN/1000szt → 2027: 40% + 140 PLN/1000szt
+# Alert o nadchodzącej podwyżce
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := verdict {
+    input.invoice.excise_category == "TOBACCO"
+    tobacco_type := object.get(input.invoice, "tobacco_type", "CIGARETTES")
+    tobacco_type == "CIGARETTES"
+
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    quantity_1000s := object.get(input.invoice, "quantity_per_1000", 0)
+    retail_price_per_1000 := object.get(input.invoice, "retail_price_per_1000_pln", 0)
+
+    # 2026 rates
+    rate_2026_ad_valorem := 32
+    rate_2026_specific := 105.00
+    # 2027 rates
+    rate_2027_ad_valorem := 40
+    rate_2027_specific := 140.00
+
+    # 2026 tax
+    excise_2026_ad := retail_price_per_1000 * rate_2026_ad_valorem / 100
+    excise_2026_total := floor(quantity_1000s * (excise_2026_ad + rate_2026_specific) * 100) / 100
+
+    # 2027 projected tax
+    excise_2027_ad := retail_price_per_1000 * rate_2027_ad_valorem / 100
+    excise_2027_total := floor(quantity_1000s * (excise_2027_ad + rate_2027_specific) * 100) / 100
+
+    increase_pln := floor((excise_2027_total - excise_2026_total) * 100) / 100
+    increase_pct := floor((rate_2027_ad_valorem - rate_2026_ad_valorem) * 100) / 100
+
+    roadmap_routing := "TRIAGE_QUEUE" { increase_pln > 500 }
+    roadmap_routing := "" { increase_pln <= 500 }
+
+    verdict := {
+        "matched": true, "rule_id": "jdg.local_taxes.procedures.tobacco_2027_roadmap_alert",
+        "package": "jdg.local_taxes.procedures_enterprise", "priority": 1543,
+        "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": pit_form,
+        "kus_qualification": "", "kus_percent": 0,
+        "local_tax_type": "EXCISE", "excise_category": "TOBACCO_ROADMAP",
+        "excise_tobacco_2026_rate": sprintf("%d%% + %.2f PLN/1000szt", [rate_2026_ad_valorem, rate_2026_specific]),
+        "excise_tobacco_2027_rate": sprintf("%d%% + %.2f PLN/1000szt", [rate_2027_ad_valorem, rate_2027_specific]),
+        "excise_tobacco_2026_total_pln": excise_2026_total,
+        "excise_tobacco_2027_total_pln": excise_2027_total,
+        "excise_tobacco_increase_pln": increase_pln,
+        "excise_tobacco_increase_pct_points": increase_pct,
+        "excise_tobacco_roadmap_effective": "2027-01-01",
+        "_routing": roadmap_routing,
+        "_routing_reason": sprintf("Mapa drogowa tytoniu 2027: wzrost o %.0f p.p. +35 PLN/1000szt → +%.2f PLN", [increase_pct, increase_pln]),
+        "_legal_basis": "Mapa drogowa akcyzy tytoniowej 2025-2027 (Dz.U. 2025 poz. 420); Art. 99-99a u.p.a.",
+        "_warnings": [sprintf("🚬 MAPA DROGOWA TYTONIU 2027: Akcyza rośnie od 2027-01-01! Obecnie (2026): %d%% + %.2f PLN = %.2f PLN. 2027: %d%% + %.2f PLN = %.2f PLN. WZROST: +%.2f PLN (%.0f p.p. ad valorem + 35 PLN/1000szt). ZAplanuj wyższe ceny i marże!",
+            [rate_2026_ad_valorem, rate_2026_specific, excise_2026_total, rate_2027_ad_valorem, rate_2027_specific, excise_2027_total, increase_pln, increase_pct])]
+    }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PROC-DN1-AUTO: DN-1 Auto-Generator
+# Automatyczne generowanie deklaracji DN-1 na podstawie danych nieruchomości
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := verdict {
+    input.jdg_entrepreneur.has_business_property == true
+    object.get(input.jdg_entrepreneur, "dn1_auto_generate", false) == true
+
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    total_area := object.get(input.jdg_entrepreneur, "property_area_m2", 50)
+    is_business := object.get(input.jdg_entrepreneur, "property_is_business", true)
+    is_mixed := object.get(input.jdg_entrepreneur, "property_is_mixed_use", false)
+    business_area := object.get(input.jdg_entrepreneur, "property_business_area_m2", total_area)
+
+    # Rates
+    building_business_rate := 33.10
+    building_residential_rate := 1.15
+    land_business_rate := 1.43
+
+    # Auto-calculate
+    biz_area := business_area { is_mixed }
+    biz_area := total_area { not is_mixed; is_business }
+    priv_area := total_area - biz_area { is_mixed }
+    priv_area := 0 { not is_mixed; is_business }
+
+    biz_tax := floor(biz_area * building_business_rate * 100) / 100
+    priv_tax := floor(priv_area * building_residential_rate * 100) / 100
+    annual_tax := biz_tax + priv_tax
+    installment := floor(annual_tax / 4 * 100) / 100
+
+    dn1_filed := object.get(input.jdg_entrepreneur, "dn1_filed", false)
+
+    dn1_fields := {
+        "form": "DN-1",
+        "tax_year": 2026,
+        "taxpayer_nip": object.get(input.jdg_entrepreneur, "nip", ""),
+        "property_address": object.get(input.jdg_entrepreneur, "property_address", ""),
+        "total_area_m2": total_area,
+        "business_area_m2": biz_area,
+        "private_area_m2": priv_area,
+        "building_business_tax_pln": biz_tax,
+        "building_residential_tax_pln": priv_tax,
+        "total_annual_tax_pln": annual_tax,
+        "installment_pln": installment,
+        "payment_schedule": ["15 marca", "15 maja", "15 września", "15 listopada"],
+        "municipality_code": object.get(input.jdg_entrepreneur, "property_municipality_code", ""),
+        "auto_generated": true
+    }
+
+    dn1_routing := "BLOCK_AND_ALERT" { not dn1_filed }
+    dn1_routing := "" { dn1_filed }
+
+    verdict := {
+        "matched": true, "rule_id": "jdg.local_taxes.procedures.dn1_auto_generator",
+        "package": "jdg.local_taxes.procedures_enterprise", "priority": 1551,
+        "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": pit_form,
+        "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 100,
+        "local_tax_type": "REAL_ESTATE", "property_tax_dn1_auto_generated": true,
+        "property_dn1_form_data": dn1_fields,
+        "property_dn1_annual_tax_pln": annual_tax,
+        "property_dn1_installment_pln": installment,
+        "property_dn1_filed": dn1_filed,
+        "_routing": dn1_routing,
+        "_routing_reason": sprintf("DN-1 AutoGen: %.2f PLN/rok (4×%.2f PLN) | %s",
+            [annual_tax, installment, dn1_status]),
+        "_legal_basis": "Art. 6 ust. 6-9 Ustawy o podatkach i opłatach lokalnych",
+        "_warnings": [sprintf("📋 DN-1 AUTO-GENERATOR: Wygenerowano deklarację DN-1. Powierzchnia: %.0f m² (biz: %.0f, priv: %.0f). Podatek roczny: %.2f PLN. Raty: 4×%.2f PLN (15.03, 15.05, 15.09, 15.11). %s",
+            [total_area, biz_area, priv_area, annual_tax, installment, filing_note])]
+    }
+
+    dn1_status := "NIEZŁOŻONA — złóż w gminie!" { not dn1_filed }
+    dn1_status := "✅ ZŁOŻONA" { dn1_filed }
+    filing_note := "⚠️ ZŁÓŻ DN-1 w urzędzie gminy w ciągu 14 dni!" { not dn1_filed }
+    filing_note := "✅ Deklaracja złożona" { dn1_filed }
+}
