@@ -210,3 +210,61 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.payment.offset.mutual_a
 else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.payment.offset.documentation_required","package":"jdg.hyper.deadlines","priority":1650,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`payment_method == "OFFSET"`","_legal_basis":"Art. 22 UoR","_warnings":[]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }
+
+# ══ L-DL-1 Fix: Tax Deadlines (P23 P0) — R1651-R1665 ══
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.vat_jpk_v7m_25th","package":"jdg.hyper.deadlines","priority":1651,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"JPK_V7M: 25. dzień miesiąca","_legal_basis":"Art. 109 ust. 3c VAT","_warnings":["JPK_V7M — termin: 25. dzień miesiąca za poprzedni miesiąc. Przesunięcie na następny dzień roboczy wg Art. 12 § 5 OrdPU"]} {
+    object.get(input.jdg_entrepreneur, "is_vat_payer", false) == true
+    object.get(input.jdg_entrepreneur, "current_day", 0) >= 20
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.vat7_quarterly_25th","package":"jdg.hyper.deadlines","priority":1652,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"VAT-7K: 25. dzień po kwartale","_legal_basis":"Art. 99 ust. 2 VAT","_warnings":["Deklaracja VAT-7K (kwartalna) — termin: 25. dzień miesiąca po zakończeniu kwartału"]} {
+    object.get(input.jdg_entrepreneur, "vat_filing_period", "") == "QUARTERLY"
+    object.get(input.jdg_entrepreneur, "quarter_end", false) == true
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.pit_advance_20th","package":"jdg.hyper.deadlines","priority":1653,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Zaliczka PIT: 20. dzień miesiąca","_legal_basis":"Art. 44 ust. 6 PIT","_warnings":["Zaliczka PIT (PIT-5/PIT-28) — termin: 20. dzień miesiąca za poprzedni miesiąc. Przesunięcie na następny dzień roboczy wg Art. 12 § 5 OrdPU"]} {
+    object.get(input.jdg_entrepreneur, "current_day", 0) >= 15
+    object.get(input.jdg_entrepreneur, "current_day", 0) <= 20
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.pit_annual_april30","package":"jdg.hyper.deadlines","priority":1654,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"BLOCK_AND_ALERT","_routing_reason":"PIT roczny: 30.04","_legal_basis":"Art. 45 ust. 1 PIT","_warnings":["PIT-36/PIT-28 roczny — termin: 30 kwietnia roku następnego. Nie przegap — kara za spóźnienie!"]} {
+    object.get(input.jdg_entrepreneur, "current_month", 0) == 3
+    object.get(input.jdg_entrepreneur, "current_day", 0) >= 25
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.zus_dra_10th","package":"jdg.hyper.deadlines","priority":1655,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"ZUS DRA: 10. dzień","_legal_basis":"Art. 47 u.s.u.s.","_warnings":["Deklaracja ZUS DRA — termin: 10. dzień miesiąca za poprzedni miesiąc"]} {
+    object.get(input.jdg_entrepreneur, "current_day", 0) >= 8
+    object.get(input.jdg_entrepreneur, "current_day", 0) <= 10
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.zus_contributions_15th_20th","package":"jdg.hyper.deadlines","priority":1656,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Składki ZUS: 15. (korekta) / 20.","_legal_basis":"Art. 47 ust. 1-3 u.s.u.s.","_warnings":["Składki ZUS — korekty DRA: 15. dzień, pozostałe składki: 20. dzień miesiąca"]} {
+    object.get(input.jdg_entrepreneur, "current_day", 0) >= 14
+    object.get(input.jdg_entrepreneur, "current_day", 0) <= 20
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.cit8_march31","package":"jdg.hyper.deadlines","priority":1657,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"CIT-8: 31.03 (JDG na CIT)","_legal_basis":"Art. 27 ust. 1 CIT","_warnings":["CIT-8 roczny (JDG na CIT) — termin: 31 marca roku następnego"]} {
+    object.get(input.jdg_entrepreneur, "tax_regime", "") == "CIT"
+    object.get(input.jdg_entrepreneur, "current_month", 0) == 3
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.holiday_shift_art12p5_ordpu","package":"jdg.hyper.deadlines","priority":1658,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Przesunięcie terminu na dzień roboczy (Art. 12 § 5)","_legal_basis":"Art. 12 § 5 OrdPU","_warnings":["Gdy termin podatkowy przypada w sobotę, niedzielę lub święto — przesuwa się na następny dzień roboczy (Art. 12 § 5 OrdPU)"]} {
+    object.get(input.jdg_entrepreneur, "deadline_is_weekend_or_holiday", false) == true
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.ksef_invoice_immediately_2026","package":"jdg.hyper.deadlines","priority":1659,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"KSeF: faktura niezwłocznie (od 02.2026)","_legal_basis":"Art. 106na-106nb VAT","_warnings":["KSeF obowiązkowy od 01.02.2026 — faktura B2B musi być wystawiona w KSeF niezwłocznie po dostawie"]} {
+    object.get(input.jdg_entrepreneur, "ksef_obligatory", false) == true
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.appeal_14days","package":"jdg.hyper.deadlines","priority":1660,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"BLOCK_AND_ALERT","_routing_reason":"Odwołanie: 14 dni","_legal_basis":"Art. 223 § 1 OrdPU","_warnings":["Odwołanie od decyzji podatkowej — termin: 14 dni od doręczenia. Nie przegap!"]} {
+    object.get(input.document, "appeal_deadline_days", 99) <= 14
+    object.get(input.document, "appeal_deadline_days", 99) > 0
+}
+
+# ══ L-DL-1 Complete: Additional Tax Deadlines R1661-R1665 ══
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.jpk_on_demand_7days","package":"jdg.hyper.deadlines","priority":1661,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"BLOCK_AND_ALERT","_routing_reason":"JPK na żądanie: 7 dni","_legal_basis":"Art. 193a OrdPU","_warnings":["JPK na żądanie organu — termin: 7 dni od doręczenia żądania. Niezłożenie = kara porządkowa"]} {
+    object.get(input.document, "jpk_demand_received", false) == true
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.complaint_7days","package":"jdg.hyper.deadlines","priority":1662,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Zażalenie: 7 dni","_legal_basis":"Art. 220 § 1 OrdPU","_warnings":["Zażalenie na postanowienie — termin: 7 dni od doręczenia"]} {
+    object.get(input.document, "complaint_deadline_days", 99) <= 7
+    object.get(input.document, "complaint_deadline_days", 99) > 0
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.interpretation_3months","package":"jdg.hyper.deadlines","priority":1663,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Interpretacja indywidualna: 3 mies.","_legal_basis":"Art. 14c § 1 OrdPU","_warnings":["Wniosek o interpretację indywidualną — organ ma 3 miesiące na odpowiedź. Po terminie: milcząca zgoda na stanowisko wnioskodawcy"]} {
+    object.get(input.jdg_entrepreneur, "interpretation_requested", false) == true
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.ksef_appeal_30days","package":"jdg.hyper.deadlines","priority":1664,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"KSeF: odwołanie od decyzji 30 dni","_legal_basis":"Art. 106n ust. 6 VAT","_warnings":["Odwołanie od decyzji KSeF o karze — termin: 30 dni. Złożenie faktury w KSeF w terminie 14 dni od terminu = redukcja kary o 50%"]} {
+    object.get(input.jdg_entrepreneur, "ksef_penalty_appeal_due", false) == true
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.deadlines.tax.edelivery_pickup_14days","package":"jdg.hyper.deadlines","priority":1665,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"BLOCK_AND_ALERT","_routing_reason":"e-Doręczenia: odbiór 14 dni","_legal_basis":"Ustawa o doręczeniach el.","_warnings":["e-Doręczenia — odbiór pisma w ciągu 14 dni od umieszczenia w BAE. Po 14 dniach: FIKCJA DORĘCZENIA — bieg terminów prawnych!"]} {
+    object.get(input.document, "edelivery_unread_days", 0) >= 10
+}

@@ -64,9 +64,15 @@ else := {"matched":true,"rule_id":"jdg.tp.hyper.local_file_financial_data","pack
     object.get(input.tp, "local_file_required", false) == true
     object.get(input.tp, "financial_data_collected", false) == false
 }
-else := {"matched":true,"rule_id":"jdg.tp.hyper.local_file_deadline_10months","package":"jdg.tp.hyper","priority":1445,"_routing":"WARNING","_routing_reason":"TP: Local File — termin 10 miesięcy","_legal_basis":"Art. 23zf ust. 8 PIT","_warnings":["Local File — termin: 10 miesięcy po zakończeniu roku podatkowego"]} {
+else := {"matched":true,"rule_id":"jdg.tp.hyper.local_file_deadline_10months","package":"jdg.tp.hyper","priority":1445,"_routing":"WARNING","_routing_reason":"TP: Local File — termin 10 miesięcy (CIT) / do 30.04 (PIT)","_legal_basis":"Art. 23zf ust. 8 PIT, Art. 11n ust. 8 CIT","_warnings":["Local File — CIT: 10 miesięcy po zakończeniu roku. UWAGA: dla JDG na PIT NIE obowiązuje ten termin — patrz reguła R1481 (termin 30 kwietnia)."]} {
     object.get(input.tp, "local_file_required", false) == true
     object.get(input.tp, "local_file_deadline_approaching", false) == true
+    object.get(input.jdg_entrepreneur, "tax_regime", "") != "PIT"
+}
+else := {"matched":true,"rule_id":"jdg.tp.hyper.local_file_deadline_pit_april30","package":"jdg.tp.hyper","priority":1481,"_routing":"BLOCK_AND_ALERT","_routing_reason":"TP: Local File PIT — termin 30 kwietnia (JDG)","_legal_basis":"Art. 23zf ust. 8 PIT","_warnings":["Jesteś JDG na PIT — dokumentacja lokalna TP musi być gotowa PRZED złożeniem zeznania rocznego (30 kwietnia), a nie 10 miesięcy (to termin CIT)! Sprawdź czy Local File jest kompletny."]} {
+    object.get(input.tp, "local_file_required", false) == true
+    object.get(input.jdg_entrepreneur, "tax_regime", "") == "PIT"
+    object.get(input.tp, "local_file_deadline_april30_approaching", false) == true
 }
 
 # ══ R1446-R1450: Master File Requirements ══
@@ -94,9 +100,16 @@ else := {"matched":true,"rule_id":"jdg.tp.hyper.master_file_deadline_12months","
 else := {"matched":true,"rule_id":"jdg.tp.hyper.tpr_obligation_check","package":"jdg.tp.hyper","priority":1451,"_routing":"WARNING","_routing_reason":"TP: TPR-C — obowiązek złożenia","_legal_basis":"Art. 23zh PIT","_warnings":["TPR-C — obowiązek dla JDG z transakcjami TP w poprzednim roku"]} {
     object.get(input.tp, "tpr_obligation_exists", false) == true
 }
-else := {"matched":true,"rule_id":"jdg.tp.hyper.tpr_deadline_nov30","package":"jdg.tp.hyper","priority":1452,"_routing":"WARNING","_routing_reason":"TP: TPR-C — termin 30 listopada","_legal_basis":"Art. 23zh PIT","_warnings":["TPR-C — złóż do 30 listopada za poprzedni rok!"]} {
+else := {"matched":true,"rule_id":"jdg.tp.hyper.tpr_deadline_nov30","package":"jdg.tp.hyper","priority":1452,"_routing":"WARNING","_routing_reason":"TP: TPR-C — termin 30 listopada / 31 października (PIT)","_legal_basis":"Art. 23zh PIT","_warnings":["TPR-C — termin ustawowy: 10 miesięcy po zakończeniu roku. Dla JDG na PIT: 31 października, NIE 30 listopada! MF może przedłużyć do 30 listopada. Sprawdź aktualny komunikat MF! Dla PIT: patrz reguła R1482."]} {
     object.get(input.tp, "tpr_obligation_exists", false) == true
     object.get(input.tp, "tpr_filed", false) == false
+    object.get(input.jdg_entrepreneur, "tax_regime", "") != "PIT"
+}
+else := {"matched":true,"rule_id":"jdg.tp.hyper.tpr_deadline_pit_oct31","package":"jdg.tp.hyper","priority":1482,"_routing":"BLOCK_AND_ALERT","_routing_reason":"TP: TPR-C PIT — termin 31 października (JDG)","_legal_basis":"Art. 23zh ust. 4 PIT","_warnings":["Dla JDG na PIT: TPR składa się do końca 10. miesiąca = 31 PAŹDZIERNIKA (nie 30 listopada!). Termin 30 listopada obowiązuje tylko jeśli MF wyda rozporządzenie przedłużające."]} {
+    object.get(input.tp, "tpr_obligation_exists", false) == true
+    object.get(input.tp, "tpr_filed", false) == false
+    object.get(input.jdg_entrepreneur, "tax_regime", "") == "PIT"
+    object.get(input.tp, "tpr_deadline_oct31_approaching", false) == true
 }
 else := {"matched":true,"rule_id":"jdg.tp.hyper.tpr_data_requirements","package":"jdg.tp.hyper","priority":1453,"_routing":"TRIAGE_QUEUE","_routing_reason":"TP: TPR-C — dane do raportu","_legal_basis":"Art. 23zh PIT","_warnings":["TPR-C — przygotuj: dane identyfikacyjne podmiotów powiązanych, wartości transakcji, metody TP"]} {
     object.get(input.tp, "tpr_data_prepared", false) == false
@@ -184,4 +197,22 @@ else := {"matched":true,"rule_id":"jdg.tp.hyper.sanction_kks_for_intentional_eva
 }
 else := {"matched":true,"rule_id":"jdg.tp.hyper.sanction_management_board_liability","package":"jdg.tp.hyper","priority":1475,"_routing":"BLOCK_AND_ALERT","_routing_reason":"TP: odpowiedzialność zarządu","_legal_basis":"Art. 116 OP","_warnings":["Odpowiedzialność osobista właściciela JDG za zaległości TP"]} {
     object.get(input.tp, "personal_liability_triggered", false) == true
+}
+
+# ══ R1476-R1480: TP Valuation Methods (L-TP-2: CUP/RESALE/COST+/TNMM) ══
+else := {"matched":true,"rule_id":"jdg.tp.hyper.method_cup_comparable_uncontrolled","package":"jdg.tp.hyper","priority":1476,"_routing":"","_routing_reason":"TP metoda: CUP (L-TP-2 fix) — porównywalna niekontrolowana","_legal_basis":"OECD TPG §2.13-2.34, Rozp. MF","_warnings":["Metoda CUP (Comparable Uncontrolled Price) — porównaj cenę transakcji kontrolowanej z ceną transakcji niekontrolowanej. Najlepsza dla towarów standaryzowanych, surowców, walut."]} {
+    object.get(input.tp, "tp_method", "") == "CUP"
+}
+else := {"matched":true,"rule_id":"jdg.tp.hyper.method_resale_price","package":"jdg.tp.hyper","priority":1477,"_routing":"","_routing_reason":"TP metoda: RESALE (L-TP-2 fix) — ceny odprzedaży","_legal_basis":"OECD TPG §2.35-2.44, Rozp. MF","_warnings":["Metoda RESALE — marża odsprzedaży: porównaj marżę brutto dystrybutora z marżą rynkową. Odpowiednia dla dystrybutorów, resellerów."]} {
+    object.get(input.tp, "tp_method", "") == "RESALE"
+}
+else := {"matched":true,"rule_id":"jdg.tp.hyper.method_cost_plus","package":"jdg.tp.hyper","priority":1478,"_routing":"","_routing_reason":"TP metoda: COST+ (L-TP-2 fix) — koszt plus","_legal_basis":"OECD TPG §2.45-2.52, Rozp. MF","_warnings":["Metoda COST+ — narzut na koszty: porównaj narzut zysku producenta/usługodawcy z narzutem rynkowym. Odpowiednia dla producentów, usług."]} {
+    object.get(input.tp, "tp_method", "") == "COST_PLUS"
+}
+else := {"matched":true,"rule_id":"jdg.tp.hyper.method_tnmm","package":"jdg.tp.hyper","priority":1479,"_routing":"","_routing_reason":"TP metoda: TNMM (L-TP-2 fix) — marży transakcyjnej netto","_legal_basis":"OECD TPG §2.53-2.74, Rozp. MF","_warnings":["Metoda TNMM (Transactional Net Margin Method) — porównaj marżę netto na transakcji z marżą rynkową. Najczęściej stosowana, wymaga benchmarkingu."]} {
+    object.get(input.tp, "tp_method", "") == "TNMM"
+}
+else := {"matched":true,"rule_id":"jdg.tp.hyper.method_selection_documentation","package":"jdg.tp.hyper","priority":1480,"_routing":"WARNING","_routing_reason":"TP: dokumentacja wyboru metody (L-TP-2 fix) — wymagana","_legal_basis":"Art. 23zf ust. 6 PIT, OECD TPG","_warnings":["Wybierz metodę TP odpowiednią do rodzaju transakcji. Udokumentuj DLACZEGO wybrano tę metodę, a odrzucono inne. Brak uzasadnienia = ryzyko zakwestionowania przez US."]} {
+    object.get(input.tp, "tp_method_selection_documented", false) == false
+    object.get(input.tp, "local_file_required", false) == true
 }

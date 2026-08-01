@@ -30,8 +30,8 @@ else := {"matched":true,"rule_id":"jdg.seasonal.hyper.detection_construction_win
 else := {"matched":true,"rule_id":"jdg.seasonal.hyper.suspension_keep_nip","package":"jdg.seasonal.hyper","priority":1523,"_routing":"","_routing_reason":"Zawieszenie zamiast zamknięcia","_legal_basis":"Art. 22 PP","_warnings":["Zawieś JDG zamiast zamykać — zachowasz NIP, REGON i ciągłość działalności"]} {
     object.get(input.jdg_entrepreneur, "prefers_suspension_over_closure", false) == true
 }
-else := {"matched":true,"rule_id":"jdg.seasonal.hyper.suspension_max_6_months","package":"jdg.seasonal.hyper","priority":1524,"_routing":"WARNING","_routing_reason":"Zawieszenie: max 6 mies. ciągłych","_legal_basis":"Art. 22 PP","_warnings":["Zawieszenie — max 6 miesięcy ciągłych. Powyżej: rozważ zamknięcie"]} {
-    object.get(input.jdg_entrepreneur, "suspension_months_continuous", 0) >= 6
+else := {"matched":true,"rule_id":"jdg.seasonal.hyper.suspension_max_24_months_total","package":"jdg.seasonal.hyper","priority":1524,"_routing":"WARNING","_routing_reason":"Zawieszenie: max 24 mies. łącznie (Art. 22 PP)","_legal_basis":"Art. 22 PP","_warnings":["Zawieszenie — max 24 miesiące łącznie (Art. 22 PP). Przy dłuższym zawieszeniu rozważ zamknięcie ze względu na składkę zdrowotną. Uwaga: składka zdrowotna NADAL należna w zawieszeniu."]} {
+    object.get(input.jdg_entrepreneur, "suspension_months_total", 0) >= 24
 }
 else := {"matched":true,"rule_id":"jdg.seasonal.hyper.closure_nip_loss","package":"jdg.seasonal.hyper","priority":1525,"_routing":"WARNING","_routing_reason":"Zamknięcie: utrata NIP","_legal_basis":"Art. 30 CEIDG","_warnings":["Zamknięcie JDG = utrata NIP. Ponowne otwarcie wymaga nowej rejestracji CEIDG"]} {
     object.get(input.jdg_entrepreneur, "business_status", "") == "CLOSED"

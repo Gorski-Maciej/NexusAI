@@ -116,3 +116,46 @@ else := {"matched":true,"rule_id":"jdg.taxfree.hyper.optimize_simulation","packa
 else := {"matched":true,"rule_id":"jdg.taxfree.hyper.optimize_recommendation","package":"jdg.taxfree.hyper","priority":1430,"_routing":"","_routing_reason":"Rekomendacja optymalizacyjna","_legal_basis":"Art. 27 PIT","_warnings":["Rekomendacja: rozważ wspólne rozliczenie — oszczędność do X PLN"]} {
     object.get(input.jdg_entrepreneur, "optimization_recommendation_ready", false) == true
 }
+
+# ══ R1431-R1440: TAX FREE Tourist System (L-TF-1 Fix) — Art. 126-130 VAT ══
+# NOTE: R1431 (sub-200) must fire before R1432 (detection) so sub-200 sales see the minimum warning
+else := {"matched":true,"rule_id":"jdg.taxfree.hyper.tourist_taxfree_min_200_pln_net","package":"jdg.taxfree.hyper","priority":1431,"_routing":"WARNING","_routing_reason":"TAX FREE — min. 200 PLN netto na paragonie","_legal_basis":"Art. 128 ust. 1 VAT","_warnings":["TAX FREE — minimalna wartość zakupu: 200 PLN netto (brutto: 246 PLN przy 23% VAT) na jednym paragonie dla turysty. Sprzedaż poniżej 200 PLN netto NIE kwalifikuje się do TAX FREE"]} {
+    object.get(input.invoice, "total_net_value", 0) < 200
+    object.get(input.invoice, "buyer_non_eu_resident", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.taxfree.hyper.tourist_taxfree_detection_non_eu","package":"jdg.taxfree.hyper","priority":1432,"_routing":"TRIAGE_QUEUE","_routing_reason":"TAX FREE — detekcja turysty spoza UE","_legal_basis":"Art. 126-130 VAT","_warnings":["TAX FREE dla turystów — sprzedaż detaliczna turystom spoza UE (≥200 PLN netto). Sprawdź paszport / dokument pobytowy kupującego. Wystaw dokument TAX FREE (oryginał + 2 kopie)"]} {
+    object.get(input.invoice, "buyer_non_eu_resident", false) == true
+    object.get(input.invoice, "sale_type", "") == "RETAIL_B2C"
+    object.get(input.invoice, "total_net_value", 0) >= 200
+}
+else := {"matched":true,"rule_id":"jdg.taxfree.hyper.tourist_taxfree_document_generation","package":"jdg.taxfree.hyper","priority":1433,"_routing":"WARNING","_routing_reason":"TAX FREE — generuj dokument","_legal_basis":"Art. 128 VAT","_warnings":["TAX FREE — wystaw dokument TAX FREE (oryginał + 2 kopie). Potrzebne: dane paszportowe, kraj zamieszkania, data wywozu (max 3 mies. od zakupu)"]} {
+    object.get(input.invoice, "buyer_non_eu_resident", false) == true
+    object.get(input.invoice, "total_net_value", 0) >= 200
+    object.get(input.invoice, "taxfree_document_generated", false) == false
+}
+else := {"matched":true,"rule_id":"jdg.taxfree.hyper.tourist_taxfree_export_deadline_3months","package":"jdg.taxfree.hyper","priority":1434,"_routing":"BLOCK_AND_ALERT","_routing_reason":"TAX FREE — 3 mies. na wywóz","_legal_basis":"Art. 128 ust. 4 VAT","_warnings":["TAX FREE — turysta ma 3 miesiące od daty zakupu na wywóz towaru poza UE i potwierdzenie dokumentu przez celnika. Po terminie: ZWROTU NIE MA!"]} {
+    object.get(input.invoice, "taxfree_generated_date", "") != ""
+    object.get(input.invoice, "export_deadline_passed", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.taxfree.hyper.tourist_taxfree_vat_refund_calculation","package":"jdg.taxfree.hyper","priority":1435,"_routing":"","_routing_reason":"TAX FREE — kalkulacja zwrotu VAT","_legal_basis":"Art. 129 VAT","_warnings":["TAX FREE — zwrot VAT wg stawek: 23%→18.7%, 8%→6.5%, 5%→4.1% (zwrot pomniejszony o prowizję). Wypłata gotówkowa lub na konto w ciągu 7 dni"]} {
+    object.get(input.invoice, "taxfree_confirmed_by_customs", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.taxfree.hyper.tourist_taxfree_cash_register_integration","package":"jdg.taxfree.hyper","priority":1436,"_routing":"","_routing_reason":"TAX FREE — kasa fiskalna","_legal_basis":"Art. 111 VAT","_warnings":["TAX FREE — wymagana kasa fiskalna online. Paragon z adnotacją 'TAX FREE' + NIP sprzedawcy. Ewidencja w JPK_V7 z oznaczeniem 'TF'"]} {
+    object.get(input.jdg_entrepreneur, "has_online_cash_register", false) == false
+    object.get(input.invoice, "buyer_non_eu_resident", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.taxfree.hyper.tourist_taxfree_monthly_report","package":"jdg.taxfree.hyper","priority":1437,"_routing":"WARNING","_routing_reason":"TAX FREE — raport miesięczny","_legal_basis":"Art. 129 ust. 3 VAT","_warnings":["TAX FREE — prowadź ewidencję dokumentów TAX FREE: data, kwota netto, VAT, kraj turysty. Miesięczny raport do US"]} {
+    object.get(input.jdg_entrepreneur, "month_end", false) == true
+    object.get(input.invoice, "taxfree_transactions_this_month", 0) > 0
+}
+else := {"matched":true,"rule_id":"jdg.taxfree.hyper.tourist_taxfree_jpk_v7_marking","package":"jdg.taxfree.hyper","priority":1438,"_routing":"WARNING","_routing_reason":"TAX FREE — JPK_V7 oznaczenie TF","_legal_basis":"Art. 99 VAT + rozporządzenie JPK_V7","_warnings":["TAX FREE — w JPK_V7 oznacz sprzedaż TAX FREE kodem 'TF' (dostawa towarów poza terytorium kraju dla podróżnych)"]} {
+    object.get(input.invoice, "taxfree_transactions_this_month", 0) > 0
+    object.get(input.jdg_entrepreneur, "jpk_v7_due", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.taxfree.hyper.tourist_taxfree_vat_deduction_input","package":"jdg.taxfree.hyper","priority":1439,"_routing":"","_routing_reason":"TAX FREE — VAT naliczony od zakupów","_legal_basis":"Art. 86 VAT","_warnings":["TAX FREE — sprzedaż TAX FREE traktowana jak eksport (stawka 0%). VAT naliczony od towarów sprzedanych turystom — pełne prawo do odliczenia"]} {
+    object.get(input.invoice, "taxfree_export_treated", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.taxfree.hyper.tourist_taxfree_aggregate_dashboard","package":"jdg.taxfree.hyper","priority":1440,"_routing":"","_routing_reason":"TAX FREE — agregacja roczna","_legal_basis":"Art. 126-130 VAT","_warnings":["TAX FREE — podsumowanie roczne: liczba transakcji, łączny VAT zwrócony, kraje turystów, % sprzedaży detalicznej objętej TAX FREE"]} {
+    object.get(input.jdg_entrepreneur, "year_end", false) == true
+    object.get(input.invoice, "taxfree_transactions_annual", 0) > 0
+}

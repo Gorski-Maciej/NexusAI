@@ -149,6 +149,23 @@ import data.jdg.p34_innovations
 import data.jdg.p35_coherence
 import data.jdg.p35_gaps
 import data.jdg.p35_innovations
+import data.jdg.p21_innovations
+import data.jdg.p22_innovations
+import data.jdg.p23_innovations
+import data.jdg.hyper.general
+import data.jdg.hyper.deadlines
+import data.jdg.hyper.limits
+import data.jdg.hyper.mdr
+import data.jdg.hyper.misc
+import data.jdg.hyper.sanctions
+import data.jdg.hyper.audit
+import data.jdg.hyper.family
+import data.jdg.hyper.force_majeure
+import data.jdg.hyper.fx
+import data.jdg.hyper.edelivery
+import data.jdg.hyper.procurement
+import data.jdg.hyper.solidarity
+import data.jdg.hyper.wis
 import data.jdg.p33_uor_supplement
 import data.jdg.p33_pcc_complete
 import data.jdg.p33_excise_supplement
@@ -565,12 +582,29 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(p35_coherence.decide,
     safe_merge(p35_gaps.decide,
     safe_merge(p35_innovations.decide,
+    safe_merge(hyper_general.decide,
+    safe_merge(hyper_mdr.decide,
+    safe_merge(hyper_solidarity.decide,
+    safe_merge(hyper_wis.decide,
+    safe_merge(hyper_audit.decide,
+    safe_merge(hyper_force_majeure.decide,
+    safe_merge(hyper_family.decide,
+    safe_merge(hyper_edelivery.decide,
+    safe_merge(hyper_procurement.decide,
+    safe_merge(hyper_fx.decide,
+    safe_merge(hyper_limits.decide,
+    safe_merge(hyper_sanctions.decide,
+    safe_merge(hyper_deadlines.decide,
+    safe_merge(hyper_misc.decide,
+    safe_merge(p21_innovations.decide,
+    safe_merge(p22_innovations.decide,
+    safe_merge(p23_innovations.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(fortress.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 
 # Shard dla DOMESTIC_PURCHASE z ACTIVE JDG (KRYTYCZNE-3 FIX)
@@ -626,12 +660,27 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(p35_coherence.decide,
     safe_merge(p35_gaps.decide,
     safe_merge(p35_innovations.decide,
+    safe_merge(hyper_general.decide,
+    safe_merge(hyper_mdr.decide,
+    safe_merge(hyper_solidarity.decide,
+    safe_merge(hyper_wis.decide,
+    safe_merge(hyper_audit.decide,
+    safe_merge(hyper_force_majeure.decide,
+    safe_merge(hyper_family.decide,
+    safe_merge(hyper_edelivery.decide,
+    safe_merge(hyper_procurement.decide,
+    safe_merge(hyper_fx.decide,
+    safe_merge(hyper_limits.decide,
+    safe_merge(hyper_sanctions.decide,
+    safe_merge(hyper_deadlines.decide,
+    safe_merge(hyper_misc.decide,
+    safe_merge(p21_innovations.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(fortress.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))
 
 
 full_final_verdict = safe_merge(risk.decide,
@@ -723,6 +772,21 @@ full_final_verdict = safe_merge(risk.decide,
     safe_merge(exit_tax_interest_calculator.decide,
     safe_merge(cfc_auto_classifier.decide,
     safe_merge(pkpir_to_uor_transformer.decide,
+    safe_merge(hyper_general.decide,
+    safe_merge(hyper_mdr.decide,
+    safe_merge(hyper_solidarity.decide,
+    safe_merge(hyper_wis.decide,
+    safe_merge(hyper_audit.decide,
+    safe_merge(hyper_force_majeure.decide,
+    safe_merge(hyper_family.decide,
+    safe_merge(hyper_edelivery.decide,
+    safe_merge(hyper_procurement.decide,
+    safe_merge(hyper_fx.decide,
+    safe_merge(hyper_limits.decide,
+    safe_merge(hyper_sanctions.decide,
+    safe_merge(hyper_deadlines.decide,
+    safe_merge(hyper_misc.decide,
+    safe_merge(p21_innovations.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
@@ -760,11 +824,26 @@ gated_abort_verdict = safe_merge(risk.decide,
     safe_merge(p14_innovations.decide,
     safe_merge(mdr_auto_generator.decide,
     safe_merge(pkpir_to_uor_transformer.decide,
+    safe_merge(hyper_general.decide,
+    safe_merge(hyper_mdr.decide,
+    safe_merge(hyper_solidarity.decide,
+    safe_merge(hyper_wis.decide,
+    safe_merge(hyper_audit.decide,
+    safe_merge(hyper_force_majeure.decide,
+    safe_merge(hyper_family.decide,
+    safe_merge(hyper_edelivery.decide,
+    safe_merge(hyper_procurement.decide,
+    safe_merge(hyper_fx.decide,
+    safe_merge(hyper_limits.decide,
+    safe_merge(hyper_sanctions.decide,
+    safe_merge(hyper_deadlines.decide,
+    safe_merge(hyper_misc.decide,
+    safe_merge(p21_innovations.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    ))))))))))))))) {
+    )))))))))))))))))))))))))))) {
     risk.decide._routing == "BLOCK_AND_ALERT"
 }
 
@@ -784,11 +863,26 @@ gated_abort_verdict = safe_merge(risk.decide,
     safe_merge(p14_innovations.decide,
     safe_merge(mdr_auto_generator.decide,
     safe_merge(pkpir_to_uor_transformer.decide,
+    safe_merge(hyper_general.decide,
+    safe_merge(hyper_mdr.decide,
+    safe_merge(hyper_solidarity.decide,
+    safe_merge(hyper_wis.decide,
+    safe_merge(hyper_audit.decide,
+    safe_merge(hyper_force_majeure.decide,
+    safe_merge(hyper_family.decide,
+    safe_merge(hyper_edelivery.decide,
+    safe_merge(hyper_procurement.decide,
+    safe_merge(hyper_fx.decide,
+    safe_merge(hyper_limits.decide,
+    safe_merge(hyper_sanctions.decide,
+    safe_merge(hyper_deadlines.decide,
+    safe_merge(hyper_misc.decide,
+    safe_merge(p21_innovations.decide,
     safe_merge(p34_remaining.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    )))))))))))))))) {
+    ))))))))))))))))))))))))))))) {
     routing.decide._routing == "BLOCK_AND_ALERT"
 }
 
@@ -909,8 +1003,25 @@ final_verdict_enriched = safe_merge(final_verdict_with_conflicts,
     safe_merge(donation_relief.decide,
     safe_merge(tax_loss_harvesting.decide,
     safe_merge(family_estonian.decide,
+    safe_merge(hyper_general.decide,
+    safe_merge(hyper_mdr.decide,
+    safe_merge(hyper_solidarity.decide,
+    safe_merge(hyper_wis.decide,
+    safe_merge(hyper_audit.decide,
+    safe_merge(hyper_force_majeure.decide,
+    safe_merge(hyper_family.decide,
+    safe_merge(hyper_edelivery.decide,
+    safe_merge(hyper_procurement.decide,
+    safe_merge(hyper_fx.decide,
+    safe_merge(hyper_limits.decide,
+    safe_merge(hyper_sanctions.decide,
+    safe_merge(hyper_deadlines.decide,
+    safe_merge(hyper_misc.decide,
+    safe_merge(p21_innovations.decide,
+    safe_merge(p22_innovations.decide,
+    safe_merge(p23_innovations.decide,
         form_optimizer.decide
-    ))))))))))))))))))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # KRYTYCZNE-2 FIX: Provenance + ADR-006 Immutable Audit Trail
@@ -1065,7 +1176,24 @@ _package_decisions := {
     "jdg.pit.donation_relief": donation_relief.decide,
     "jdg.pit.tax_loss_harvesting": tax_loss_harvesting.decide,
     "jdg.pit.family_estonian": family_estonian.decide,
-    "jdg.form_optimizer": form_optimizer.decide
+    "jdg.form_optimizer": form_optimizer.decide,
+    "jdg.p21_innovations": p21_innovations.decide,
+    "jdg.p22_innovations": p22_innovations.decide,
+    "jdg.p23_innovations": p23_innovations.decide,
+    "jdg.hyper.general": hyper_general.decide,
+    "jdg.hyper.deadlines": hyper_deadlines.decide,
+    "jdg.hyper.limits": hyper_limits.decide,
+    "jdg.hyper.mdr": hyper_mdr.decide,
+    "jdg.hyper.misc": hyper_misc.decide,
+    "jdg.hyper.sanctions": hyper_sanctions.decide,
+    "jdg.hyper.audit": hyper_audit.decide,
+    "jdg.hyper.family": hyper_family.decide,
+    "jdg.hyper.force_majeure": hyper_force_majeure.decide,
+    "jdg.hyper.fx": hyper_fx.decide,
+    "jdg.hyper.edelivery": hyper_edelivery.decide,
+    "jdg.hyper.procurement": hyper_procurement.decide,
+    "jdg.hyper.solidarity": hyper_solidarity.decide,
+    "jdg.hyper.wis": hyper_wis.decide
 }
 _provenance_context := {
     "_package_decisions": _package_decisions,

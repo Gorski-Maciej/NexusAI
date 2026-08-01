@@ -110,3 +110,15 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.fx.electronic.communication.encry
 else :=   {"matched":true,"rule_id":"jdg.hyper.fx.electronic.communication.data_breach_notification","package":"jdg.hyper.fx","priority":1260,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Obowiązek zgłoszenia naruszenia danych","_legal_basis":"","_warnings":[]} {
     input.invoice.currency != "PLN"
 }
+
+# ══ L-FX-1 Fix: Currency Exchange Differences (P23 P1) — R1261-R1263 ══
+else :=   {"matched":true,"rule_id":"jdg.hyper.fx.currency.exchange.fifo_method","package":"jdg.hyper.fx","priority":1261,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Różnice kursowe: metoda FIFO (Art. 14b PIT)","_legal_basis":"Art. 14b ust. 3 PIT","_warnings":["Różnice kursowe — metoda podatkowa FIFO (pierwsze przyszło-pierwsze wyszło). Kurs NBP z ostatniego dnia roboczego poprzedzającego transakcję"]} {
+    input.invoice.currency != "PLN"
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.fx.currency.exchange.nbp_table_abc","package":"jdg.hyper.fx","priority":1262,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Kurs NBP: tabela A (średni), B (kupna/sprzedaży)","_legal_basis":"Art. 14b ust. 4 PIT","_warnings":["Kursy NBP: Tabela A (kurs średni — przychody), Tabela B (kurs kupna/sprzedaży — koszty). Aktualizacja dzienna o 08:00. API: api.nbp.pl"]} {
+    object.get(input.jdg_entrepreneur, "fx_transactions_active", false) == true
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.fx.currency.exchange.jpk_v7_fx_mapping","package":"jdg.hyper.fx","priority":1263,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"FX: mapowanie do JPK_V7","_legal_basis":"Art. 109 ust. 3c VAT","_warnings":["Mapowanie różnic kursowych w JPK_V7: przychody wg kursu średniego NBP, koszty wg kursu kupna. Oznaczenie GTU_12 dla transakcji walutowych"]} {
+    input.invoice.currency != "PLN"
+    object.get(input.jdg_entrepreneur, "jpk_v7_due", false) == true
+}

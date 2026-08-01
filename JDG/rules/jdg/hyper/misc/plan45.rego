@@ -96,9 +96,9 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.representation_p
     object.get(input.invoice, "expense_type", "") == "ADVERTISING"
 }
 
-# jdg.hyper.misc.advertising.representation_limit_0_025pct — Reprezentacja (częściowy KUP) — limit 0.025% przychodu rocznego
-else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.representation_limit_0_025pct","package":"jdg.hyper.misc","priority":1678,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"`classification == "REPRESENTATION"` AND `representation_allowed_by_exception == true`","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":[]} {
-    object.get(input.invoice, "expense_type", "") == "ADVERTISING"
+# jdg.hyper.misc.advertising.representation_nkup_100pct — Reprezentacja NKUP 100% (R-ADV-1 fix: limit 0.25% zniesiony 01.01.2018)
+else :=   {"matched":true,"rule_id":"jdg.hyper.misc.advertising.representation_nkup_100pct","package":"jdg.hyper.misc","priority":1678,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"BLOCK_AND_ALERT","_routing_reason":"Reprezentacja = NKUP 100% (R-ADV-1 fix: limit zniesiony 2018)","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT (stan prawny 01.01.2018+)","_warnings":["Reprezentacja = NKUP w 100%! Historyczny limit 0.25% przychodu został zniesiony 01.01.2018. Nie stosuj limitu — reprezentacja NIE jest KUP"]} {
+    object.get(input.invoice, "expense_type", "") == "REPRESENTATION"
 }
 
 # jdg.hyper.misc.advertising.digital.google_ads_kup — Google Ads — KUP 100%

@@ -420,3 +420,53 @@ else := {
 } {
     input.employment.has_employees==true
 }
+
+# ══ P478-P481: Sick Leave & Vacation Pay (L7 Fix) — obsługa chorobowego i urlopowego ══
+else := {
+    "matched":true,"rule_id":"jdg.employer.sick_leave_33_days_employer_pay",
+    "package":"jdg.employer","priority":478,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"CHOROBOWE_PRACODAWCA","zus_health_rate":"",
+    "business_status":"","sick_leave_days_employer_paid":33,
+    "_routing":"WARNING","_routing_reason":"Chorobowe: 33 dni płatne przez pracodawcę",
+    "_legal_basis":"Art. 92 KP",
+    "_warnings":["Wynagrodzenie chorobowe — pierwsze 33 dni (14 dni po 50 r.ż.) płaci pracodawca. Stawka: 80% podstawy. Od 34. dnia: zasiłek chorobowy ZUS. Dokumentuj w ZUS ZLA (e-ZLA)"]
+} {
+    input.employment.employee_sick==true
+    input.employment.sick_leave_days<=33
+}
+else := {
+    "matched":true,"rule_id":"jdg.employer.sick_leave_after_33_zus_allowance",
+    "package":"jdg.employer","priority":479,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"ZASILEK_CHOROBOWY_ZUS","zus_health_rate":"",
+    "business_status":"","sick_leave_days_employer_paid":0,
+    "_routing":"","_routing_reason":"Zasiłek ZUS po 33 dniach",
+    "_legal_basis":"Art. 4 ustawy zasiłkowej",
+    "_warnings":["Od 34. dnia choroby (15. dnia po 50 r.ż.) — zasiłek chorobowy z ZUS. Pracodawca składa ZUS Z-3. Stawka: 80% (lub 100% przy wypadku przy pracy). ZUS wypłaca bezpośrednio"]
+} {
+    input.employment.employee_sick==true
+    input.employment.sick_leave_days>33
+}
+else := {
+    "matched":true,"rule_id":"jdg.employer.vacation_leave_obligation_tracker",
+    "package":"jdg.employer","priority":480,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"URLOP_WYNAGRODZENIE","zus_health_rate":"",
+    "business_status":"","vacation_days_entitled":26,
+    "_routing":"WARNING","_routing_reason":"Urlop: śledzenie wykorzystania",
+    "_legal_basis":"Art. 152-173 KP",
+    "_warnings":["Urlop wypoczynkowy: 20 dni (<10 lat stażu) lub 26 dni (≥10 lat). Niewykorzystany urlop przechodzi na kolejny rok (do 30 września). Ekwiwalent tylko przy rozwiązaniu umowy"]
+} {
+    input.employment.has_employees==true
+    input.employment.vacation_tracking_needed==true
+}
+else := {"matched":true,"rule_id":"jdg.employer.sick_vacation_pit4r_annual_report","package":"jdg.employer","priority":481,"_routing":"","_routing_reason":"Chorobowe/urlopowe w PIT-11 rocznym","_legal_basis":"Art. 39 PIT","_warnings":["Wynagrodzenie chorobowe i urlopowe — ujmij w PIT-11 w osobnych pozycjach (poz. 29 — wynagrodzenie, poz. 35 — chorobowe). PIT-4R uwzględnia zaliczki od obu"]} {
+    input.employment.has_employees == true
+}

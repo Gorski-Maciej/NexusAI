@@ -89,8 +89,8 @@ else := {"matched":true,"rule_id":"jdg.force_majeure.hyper.suspension_zus_conseq
 else := {"matched":true,"rule_id":"jdg.force_majeure.hyper.suspension_tax_consequences","package":"jdg.force_majeure.hyper","priority":1187,"_routing":"","_routing_reason":"Skutki podatkowe zawieszenia","_legal_basis":"Art. 44 PIT","_warnings":["Zawieszenie — deklaracje zerowe, zaliczki 0"]} {
     object.get(input.jdg_entrepreneur, "business_status", "") == "SUSPENDED"
 }
-else := {"matched":true,"rule_id":"jdg.force_majeure.hyper.loss_carry_back","package":"jdg.force_majeure.hyper","priority":1188,"_routing":"","_routing_reason":"Retrospektywne rozliczenie straty","_legal_basis":"Spec-regulacje MF","_warnings":["Możliwość retrospektywnego rozliczenia straty z siły wyższej"]} {
-    object.get(input.jdg_entrepreneur, "tax_loss_carry_back_checked", false) == false
+else := {"matched":true,"rule_id":"jdg.force_majeure.hyper.loss_carry_forward_5years","package":"jdg.force_majeure.hyper","priority":1188,"_routing":"WARNING","_routing_reason":"Strata: carry-forward 5 lat (R-FM-1 fix)","_legal_basis":"Art. 9 ust. 3 PIT / Art. 7 ust. 5 CIT","_warnings":["Strata z JDG — odliczenie WYŁĄCZNIE w 5 kolejnych latach (carry-forward). NIE ma carry-back w PIT ani CIT! Odliczaj max 50% straty rocznie (spec-regulacje MF mogą zwiększyć do 100%). PIT: Art. 9 ust. 3, CIT: Art. 7 ust. 5"]} {
+    object.get(input.jdg_entrepreneur, "tax_loss_present", false) == true
 }
 else := {"matched":true,"rule_id":"jdg.force_majeure.hyper.loss_enhanced_deduction","package":"jdg.force_majeure.hyper","priority":1189,"_routing":"","_routing_reason":"Zwiększony limit odliczenia straty","_legal_basis":"Spec-regulacje MF","_warnings":["Zwiększony limit odliczenia straty (np. 100% zamiast 50%)"]} {
     object.get(input.jdg_entrepreneur, "loss_deduction_enhanced", false) == true

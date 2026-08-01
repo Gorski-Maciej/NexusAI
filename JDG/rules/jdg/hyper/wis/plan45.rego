@@ -85,3 +85,11 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.wis.wis.validity.early_expiry.reg
 else :=   {"matched":true,"rule_id":"jdg.hyper.wis.wis.validity.early_expiry.cjeu_judgment","package":"jdg.hyper.wis","priority":1085,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Wyrok TSUE zmieniający klasyfikację → WIS traci moc","_legal_basis":"Art. 42h ust. 2 pkt 2 VAT","_warnings":["Wyrok TSUE zmieniający klasyfikację → WIS traci moc"]} {
     object.get(input.invoice, "wis_required", false) == true
 }
+
+# ══ L-WIS-1 Fix: WIA + WIT Rules (P23 P1) — R1086-R1087 ══
+else :=   {"matched":true,"rule_id":"jdg.hyper.wis.wia.binding_info_akcyzowa_170_210pln","package":"jdg.hyper.wis","priority":1086,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"WIA: opłata 170/210 PLN","_legal_basis":"Art. 7d ustawy o akcyzie","_warnings":["WIA (Wiążąca Informacja Akcyzowa) — opłata: 170 PLN (podstawowa) / 210 PLN (pełna). Skutek wiążący 5 lat. Wniosek do Dyrektora KIS"]} {
+    object.get(input.jdg_entrepreneur, "wia_requested", false) == true
+}
+else :=   {"matched":true,"rule_id":"jdg.hyper.wis.wit.binding_info_taryfowa_167pln","package":"jdg.hyper.wis","priority":1087,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"WIT: opłata 167 PLN","_legal_basis":"Art. 33 rozporządzenia 952/2013 (UKC)","_warnings":["WIT (Wiążąca Informacja Taryfowa) — opłata: 167 PLN. Skutek wiążący 3 lata. Wniosek do Izby Administracji Skarbowej"]} {
+    object.get(input.jdg_entrepreneur, "wit_requested", false) == true
+}

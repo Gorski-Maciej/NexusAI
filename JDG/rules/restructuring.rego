@@ -155,3 +155,52 @@ else := {
     input.restructuring.tax_neutral_claimed == true
     input.restructuring.documentation_complete == true
 }
+
+# ══ P1507-P1510: Aport nieruchomości + PSK (L8 Fix) ══
+else := {
+    "matched":true,"rule_id":"jdg.restructuring.aport_real_estate_pcc_2pct",
+    "package":"jdg.restructuring","priority":1507,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"APORT_REAL_ESTATE_PCC","aport_tax_pcc_pct":2.0,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Aport nieruchomości: PCC 2%",
+    "_legal_basis":"Art. 6 pkt 1 PCC + Art. 2 pkt 6 VAT",
+    "_warnings":["Aport nieruchomości do spółki: PCC 2% od wartości rynkowej JEŚLI nie podlega VAT. Sprawdź: VAT 23% dla budynków komercyjnych (zwolnienie po 2 latach od zasiedlenia). Budynki mieszkalne: VAT 8%. Grunty: zwolnione z VAT (Art. 43 ust. 1 pkt 9)"]
+} {
+    input.restructuring.aport_real_estate_planned == true
+    input.restructuring.aport_type == "REAL_ESTATE"
+}
+else := {
+    "matched":true,"rule_id":"jdg.restructuring.aport_real_estate_vat_analysis",
+    "package":"jdg.restructuring","priority":1508,
+    "vat_rate":23.0,"rounding_level":"","gtu_code":"","vat_exemption":"2_YEAR_RULE","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"APORT_VAT_ANALYSIS","aport_vat_analysis_done":true,
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Aport: analiza VAT vs PCC",
+    "_legal_basis":"Art. 2 pkt 6 VAT + Art. 6 pkt 1 PCC",
+    "_warnings":["Analiza VAT/PCC aportu: 1) VAT 23% (budynki komercyjne <2 lata) → PCC 0%, 2) VAT zwolniony → PCC 2%, 3) Grunt niezabudowany → zwolniony VAT → PCC 2%."
+} {
+    input.restructuring.aport_real_estate_planned == true
+    input.restructuring.vat_pcc_analysis_needed == true
+}
+else := {
+    "matched":true,"rule_id":"jdg.restructuring.transformation_to_limited_partnership_psk",
+    "package":"jdg.restructuring","priority":1509,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"PSK_TRANSFORMATION","psk_transformation_planned":true,
+    "_routing":"BLOCK_AND_ALERT","_routing_reason":"Przekształcenie JDG → PSK",
+    "_legal_basis":"Art. 112 OrdPU + KSH Art. 102-142",
+    "_warnings":["Przekształcenie JDG → Spółka Komandytowa (PSK): sukcesja podatkowa (Art. 112 OrdPU). Komplementariusz = JDG (odpowiedzialność bez ograniczeń). Komandytariusz = inwestor (suma komandytowa). PSK płaci CIT 19% od 2021. Optymalizuj strukturę"]
+} {
+    input.restructuring.transformation_type == "JDG_TO_PSK"
+}
+else := {"matched":true,"rule_id":"jdg.restructuring.reorganization_aggregate_roadmap","package":"jdg.restructuring","priority":1510,"_routing":"TRIAGE_QUEUE","_routing_reason":"Roadmapa reorganizacji","_legal_basis":"PIT + VAT + PCC + OrdPU","_warnings":["Roadmapa reorganizacji: 1) Wybierz formę (Sp. z o.o. vs PSK), 2) Bilans otwarcia + remanent 10% PIT, 3) Analiza VAT/PCC aportu, 4) Sukcesja NIP/REGON, 5) Zgłoszenie CEIDG zamknięcia + KRS nowy podmiot"]} {
+    input.restructuring.transformation_planned == true
+}

@@ -148,3 +148,27 @@ else := {"matched":true,"rule_id":"jdg.fx.hyper.multi_reporting_requirements","p
 else := {"matched":true,"rule_id":"jdg.fx.hyper.multi_audit_preparedness","package":"jdg.fx.hyper","priority":1339,"_routing":"","_routing_reason":"Audyt wielowalutowy","_legal_basis":"Art. 86 OP","_warnings":["Zachowaj dokumentację przeliczeń walutowych dla celów kontroli"]} {
     object.get(input.jdg_entrepreneur, "fx_audit_documentation_ready", false) == false
 }
+
+# ══ R1340-R1345: NBP Feed Integration & FX Calculator (L9 + Innowacja 1) ══
+else := {"matched":true,"rule_id":"jdg.fx.hyper.nbp_api_feed_validation","package":"jdg.fx.hyper","priority":1340,"_routing":"WARNING","_routing_reason":"NBP API: walidacja kursu z feedu","_legal_basis":"Art. 14b PIT","_warnings":["Sprawdź czy kurs NBP został pobrany z API NBP (api.nbp.pl). Jeśli nie — użyj tabeli kursów z ostatniego dnia roboczego. UWAGA: kursy NBP publikowane są ok. 11:30-12:00 — nie używaj kursów przed publikacją."]} {
+    object.get(input.invoice, "currency", "PLN") != "PLN"
+    object.get(input.invoice, "nbp_api_feed_used", false) == false
+}
+else := {"matched":true,"rule_id":"jdg.fx.hyper.nbp_api_auto_refresh","package":"jdg.fx.hyper","priority":1341,"_routing":"","_routing_reason":"NBP API: automatyczne odświeżanie kursów","_legal_basis":"—","_warnings":["Kursy NBP API — automatyczne pobieranie codziennie po 12:00. Tabele A, B, C. Dostępne przez HTTP GET api.nbp.pl/api/exchangerates/tables/{A,B,C}."]} {
+    object.get(input.jdg_entrepreneur, "nbp_api_integrated", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.fx.hyper.fx_calculator_fifo","package":"jdg.fx.hyper","priority":1342,"_routing":"","_routing_reason":"Kalkulator FX: FIFO — oblicz różnicę kursową","_legal_basis":"Art. 14b PIT","_warnings":["Kalkulator FIFO: (kurs zapłaty - kurs zarachowania) × kwota waluty. FIFO: pierwsza wpłata waluty = pierwsza wypłata. Różnica dodatnia = przychód; ujemna = koszt."]} {
+    object.get(input.jdg_entrepreneur, "fx_method", "") == "TAX"
+    object.get(input.invoice, "fx_calculation_needed", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.fx.hyper.fx_calculator_weighted_avg","package":"jdg.fx.hyper","priority":1343,"_routing":"","_routing_reason":"Kalkulator FX: średnia ważona","_legal_basis":"Art. 14b PIT","_warnings":["Kalkulator średniej ważonej: (suma wartości wpłat w PLN) / (suma wpłat w walucie) = kurs średni. Różnica między kursem średnim a kursem wypłaty × kwota wypłaty = różnica kursowa."]} {
+    object.get(input.jdg_entrepreneur, "fx_method", "") == "WEIGHTED_AVG"
+    object.get(input.invoice, "fx_calculation_needed", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.fx.hyper.fx_jpk_v7_mapping","package":"jdg.fx.hyper","priority":1344,"_routing":"","_routing_reason":"JPK_V7: mapowanie różnic kursowych","_legal_basis":"Art. 109 VAT","_warnings":["Różnice kursowe w JPK_V7: dodatnie → pole K_19 (pozostałe przychody); ujemne → pole K_20 (pozostałe koszty). Nie wykazuj w dostawach (K_10-K_18) — różnice kursowe to osobna kategoria."]} {
+    object.get(input.jdg_entrepreneur, "jpk_v7_reconciliation", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.fx.hyper.fx_alert_threshold_2pct","package":"jdg.fx.hyper","priority":1345,"_routing":"WARNING","_routing_reason":"FX alert: zmiana kursu >2% w 1 dzień","_legal_basis":"—","_warnings":["ALERT: kurs waluty zmienił się o >2% w ciągu jednego dnia! Rozważ odroczenie transakcji lub zabezpieczenie (hedge). Duże wahania = duże różnice kursowe."]} {
+    object.get(input.invoice, "currency", "PLN") != "PLN"
+    object.get(input.invoice, "fx_rate_change_pct", 0) > 2.0
+}

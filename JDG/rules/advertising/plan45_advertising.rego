@@ -22,9 +22,16 @@ else := {"matched":true,"rule_id":"jdg.advertising.hyper.brand_building_kup","pa
 else := {"matched":true,"rule_id":"jdg.advertising.hyper.personal_prestige_nkup","package":"jdg.advertising.hyper","priority":1677,"_routing":"WARNING","_routing_reason":"Osobisty prestiż właściciela → NKUP","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":["Budowanie osobistego prestiżu właściciela bez związku z produktem → NKUP (reprezentacja)"]} {
     object.get(input.invoice, "expense_subtype", "") == "PERSONAL_PRESTIGE"
 }
-else := {"matched":true,"rule_id":"jdg.advertising.hyper.representation_capped_0025pct","package":"jdg.advertising.hyper","priority":1678,"_routing":"WARNING","_routing_reason":"Reprezentacja: limit 0.025% przychodu","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":["Reprezentacja — KUP ograniczony do 0.025% rocznego przychodu (limit)"]} {
+else := {"matched":true,"rule_id":"jdg.advertising.hyper.representation_nkup_full","package":"jdg.advertising.hyper","priority":1678,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Reprezentacja: NKUP w 100% (Art. 23 ust. 1 pkt 23 PIT — brak limitu procentowego)","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":["UWAGA: Reprezentacja = NKUP w 100%! Limit 0.25% dotyczył reklamy publicznej i został zniesiony w 2018 r. Nie istnieje żaden limit procentowy dla reprezentacji. Gastronomia, prestiż, usługi gastronomiczne, żywność i napoje (w tym alkoholowe) = NKUP w całości."]} {
     object.get(input.invoice, "expense_type", "") == "REPRESENTATION"
-    object.get(input.invoice, "over_representation_limit", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.advertising.hyper.representation_audit_gastronomy","package":"jdg.advertising.hyper","priority":1709,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Reprezentacja gastronomiczna: NKUP 100% — audyt","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":["Gastronomia, restauracja, catering = REPREZENTACJA (NKUP 100%). Wyjątek: tylko jeśli udokumentowana agenda merytoryczna i związek z konkretnym kontrahentem/przychodem. Ciężar dowodu po stronie podatnika."]} {
+    object.get(input.invoice, "expense_type", "") == "REPRESENTATION"
+    object.get(input.invoice, "expense_category", "") == "GASTRONOMY"
+}
+else := {"matched":true,"rule_id":"jdg.advertising.hyper.representation_prestige_alert","package":"jdg.advertising.hyper","priority":1710,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Reprezentacja prestiżowa: NKUP 100%","_legal_basis":"Art. 23 ust. 1 pkt 23 PIT","_warnings":["Wydatki na budowanie osobistego prestiżu, luksusowe prezenty, hotele 5*, alkohol premium = NKUP w 100%. Nie ma żadnego limitu procentowego!"]} {
+    object.get(input.invoice, "expense_type", "") == "REPRESENTATION"
+    object.get(input.invoice, "luxury", false) == true
 }
 
 # ══ R1679-R1683: Digital Advertising ══

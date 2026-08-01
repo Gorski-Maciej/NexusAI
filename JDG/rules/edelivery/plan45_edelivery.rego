@@ -113,3 +113,26 @@ else := {"matched":true,"rule_id":"jdg.edelivery.hyper.language_foreign_translat
 else := {"matched":true,"rule_id":"jdg.edelivery.hyper.aggregate_dashboard","package":"jdg.edelivery.hyper","priority":1269,"_routing":"","_routing_reason":"Dashboard komunikacji","_legal_basis":"OP","_warnings":["Dashboard statusu komunikacji z organami"]} {
     object.get(input.document, "edelivery_notification", false) == true
 }
+
+# ══ R1270-R1275: Outgoing Mail Dispatcher (L6 Fix) — warstwa wysyłkowa e-Doręczeń ══
+# NOTE: R1270 (deadline check) fires before R1271 (dispatcher) — specific condition first
+else := {"matched":true,"rule_id":"jdg.edelivery.hyper.outbox_filing_deadline_check","package":"jdg.edelivery.hyper","priority":1270,"_routing":"BLOCK_AND_ALERT","_routing_reason":"e-Delivery: sprawdź termin złożenia","_legal_basis":"Art. 12 OrdPU","_warnings":["Przed wysyłką sprawdź termin ustawowy złożenia pisma! Data nadania przez e-Doręczenia = data złożenia. Nie przegap deadlinów"]} {
+    object.get(input.document, "filing_deadline_approaching", false) == true
+    object.get(input.document, "outbox_dispatch_ready", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.edelivery.hyper.outbox_auto_dispatcher","package":"jdg.edelivery.hyper","priority":1271,"_routing":"TRIAGE_QUEUE","_routing_reason":"e-Delivery: auto-wysyłka pism do US","_legal_basis":"Ustawa o doręczeniach el. + Art. 168 OrdPU","_warnings":["Automatyczna wysyłka pism przez e-Doręczenia: odwołania, wnioski, deklaracje, wyjaśnienia. Podpisz kwalifikowanym lub profilem zaufanym"]} {
+    object.get(input.document, "outbox_dispatch_ready", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.edelivery.hyper.outbox_upo_tracker","package":"jdg.edelivery.hyper","priority":1272,"_routing":"WARNING","_routing_reason":"e-Delivery: tracker UPO wysyłki","_legal_basis":"Art. 168 OrdPU","_warnings":["Śledzenie UPO (Urzędowe Poświadczenie Odbioru) dla każdego wysłanego pisma. Zachowaj UPO jako dowód złożenia — wartość dowodowa"]} {
+    object.get(input.document, "outbox_document_sent", false) == true
+    object.get(input.document, "upo_received", false) == false
+}
+else := {"matched":true,"rule_id":"jdg.edelivery.hyper.outbox_attachment_validator","package":"jdg.edelivery.hyper","priority":1273,"_routing":"","_routing_reason":"e-Delivery: walidacja załączników","_legal_basis":"OP","_warnings":["Sprawdź kompletność załączników przed wysyłką: PIT-36, PIT/O, PIT/B, JPK_V7, pełnomocnictwa. Maks. rozmiar: 10 MB (ePUAP)"]} {
+    object.get(input.document, "outbox_attachments_ready", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.edelivery.hyper.outbox_encryption_enforced","package":"jdg.edelivery.hyper","priority":1274,"_routing":"WARNING","_routing_reason":"e-Delivery: szyfrowanie wysyłki","_legal_basis":"RODO + KPA","_warnings":["Szyfruj dane wrażliwe przy wysyłce: PESEL, NIP, dane osobowe. e-Doręczenia domyślnie szyfrowane, ale weryfikuj certyfikat BAE"]} {
+    object.get(input.document, "outbox_contains_personal_data", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.edelivery.hyper.outbox_history_5years_retention","package":"jdg.edelivery.hyper","priority":1275,"_routing":"","_routing_reason":"e-Delivery: retencja korespondencji 5 lat","_legal_basis":"Art. 86 OrdPU","_warnings":["Archiwizuj kopie wysłanych pism + UPO przez 5 lat. Obowiązek dowodowy w razie sporu z US"]} {
+    object.get(input.document, "outbox_archive_check_due", false) == true
+}

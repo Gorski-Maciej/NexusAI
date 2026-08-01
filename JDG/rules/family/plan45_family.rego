@@ -134,3 +134,38 @@ else := {"matched":true,"rule_id":"jdg.family.hyper.multi_generation_tax_plannin
 else := {"matched":true,"rule_id":"jdg.family.hyper.aggregate_risk","package":"jdg.family.hyper","priority":1234,"_routing":"WARNING","_routing_reason":"Łączne ryzyko transakcji rodzinnych","_legal_basis":"PIT","_warnings":["Łączna ocena ryzyka podatkowego transakcji rodzinnych"]} {
     object.get(input.vendor, "relation_to_entrepreneur", "") != ""
 }
+
+# ══ R1235-R1244: Child Tax Relief (L-FAM-1 Fix) — Ulga prorodzinna Art. 27f + Ulga 4+ Art. 21 ust. 1 pkt 153 ══
+# NOTE: R1237 (2+ children) comes before income-limited rules so users with 2+ kids always see the 1112 PLN info
+else := {"matched":true,"rule_id":"jdg.family.hyper.child_relief_27f_second_plus_1112pln","package":"jdg.family.hyper","priority":1235,"_routing":"","_routing_reason":"Ulga 27f — 2+ dziecko: 1112,04 PLN/rok","_legal_basis":"Art. 27f ust. 1 PIT","_warnings":["Ulga prorodzinna — 2. i kolejne dziecko: 1112,04 PLN rocznie na każde (92,67 PLN × 12). Bez limitu dochodu na drugie i kolejne dzieci. Maksymalny zwrot: 1/6 należnego podatku. Pierwsze dziecko: tylko przy dochodzie ≤112 000 PLN (łącznie małżonków)"]} {
+    object.get(input.jdg_entrepreneur, "children_count", 0) >= 2
+}
+else := {"matched":true,"rule_id":"jdg.family.hyper.child_relief_27f_first_child_limit_112k","package":"jdg.family.hyper","priority":1236,"_routing":"WARNING","_routing_reason":"Ulga 27f — 1. dziecko: limit 112k","_legal_basis":"Art. 27f ust. 2 PIT","_warnings":["Tylko 1 dziecko — ulga prorodzinna TYLKO przy dochodzie ≤112 000 PLN (łącznie małżonków). Kwota ulgi: 92,67 PLN/mies. × liczba miesięcy"]} {
+    object.get(input.jdg_entrepreneur, "children_count", 0) == 1
+    object.get(input.jdg_entrepreneur, "annual_income", 0) <= 112000
+}
+else := {"matched":true,"rule_id":"jdg.family.hyper.child_relief_27f_first_child_over_112k","package":"jdg.family.hyper","priority":1237,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Ulga 27f — 1. dziecko: przekroczony limit","_legal_basis":"Art. 27f ust. 2 PIT","_warnings":["Tylko 1 dziecko — dochód >112 000 PLN → NIE przysługuje ulga prorodzinna! Limit liczony łącznie dla małżonków"]} {
+    object.get(input.jdg_entrepreneur, "children_count", 0) == 1
+    object.get(input.jdg_entrepreneur, "annual_income", 0) > 112000
+}
+else := {"matched":true,"rule_id":"jdg.family.hyper.child_relief_27f_pit_o_attachment","package":"jdg.family.hyper","priority":1238,"_routing":"WARNING","_routing_reason":"Ulga 27f — załącznik PIT/O","_legal_basis":"Art. 27f ust. 6 PIT","_warnings":["Ulga prorodzinna — dołącz załącznik PIT/O do zeznania rocznego: PESEL dzieci, liczba miesięcy opieki"]} {
+    object.get(input.jdg_entrepreneur, "children_count", 0) >= 1
+    object.get(input.jdg_entrepreneur, "pit_o_attached", false) == false
+}
+else := {"matched":true,"rule_id":"jdg.family.hyper.child_relief_27f_interaction_young_relief","package":"jdg.family.hyper","priority":1239,"_routing":"WARNING","_routing_reason":"Interakcja 27f + ulga dla młodych","_legal_basis":"Art. 27f PIT + Art. 21 PIT","_warnings":["Uwaga — dziecko do 26 lat z ulgą dla młodych (85 528 PLN) NIE uprawnia do ulgi prorodzinnej 27f. Ulgi NIE łączą się na to samo dziecko"]} {
+    object.get(input.jdg_entrepreneur, "has_child_under26_young_relief", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.family.hyper.family_4plus_relief_85528_pln","package":"jdg.family.hyper","priority":1240,"_routing":"TRIAGE_QUEUE","_routing_reason":"Ulga 4+: 85 528 PLN zwolnienia","_legal_basis":"Art. 21 ust. 1 pkt 153 PIT","_warnings":["Ulga dla rodzin 4+ — zwolnienie przychodów do 85 528 PLN rocznie! Rodzic wychowujący min. 4 dzieci. Limit per rodzic (małżonkowie = 2 × 85 528 PLN łącznie)"]} {
+    object.get(input.jdg_entrepreneur, "children_count", 0) >= 4
+}
+else := {"matched":true,"rule_id":"jdg.family.hyper.family_4plus_conditions","package":"jdg.family.hyper","priority":1241,"_routing":"","_routing_reason":"Ulga 4+ — warunki formalne","_legal_basis":"Art. 21 ust. 1 pkt 153 PIT","_warnings":["Ulga 4+ — wymagane: 4+ dzieci, władza rodzicielska, faktyczne wychowywanie. Przychody: umowa o pracę, zlecenie, JDG. NIE DLA: przychodów z najmu prywatnego, zysków kapitałowych"]} {
+    object.get(input.jdg_entrepreneur, "children_count", 0) >= 4
+    object.get(input.jdg_entrepreneur, "family_4plus_eligible", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.family.hyper.family_4plus_vs_young_relief_interaction","package":"jdg.family.hyper","priority":1242,"_routing":"","_routing_reason":"Ulga 4+ vs ulga dla młodych","_legal_basis":"Art. 21 ust. 1 pkt 148 vs 153 PIT","_warnings":["Ulga 4+ (85 528 PLN) i ulga dla młodych (85 528 PLN) — alternatywnie. Wybierz korzystniejszą jeśli obie przysługują"]} {
+    object.get(input.jdg_entrepreneur, "has_child_under26_young_relief", false) == true
+    object.get(input.jdg_entrepreneur, "children_count", 0) >= 4
+}
+else := {"matched":true,"rule_id":"jdg.family.hyper.child_relief_aggregate_recommendations","package":"jdg.family.hyper","priority":1243,"_routing":"","_routing_reason":"Agregacja ulg rodzinnych","_legal_basis":"Art. 27f + Art. 21 PIT","_warnings":["Rekomendacje łączne: 1) sprawdź ulgę 27f (pierwsze/drugie), 2) sprawdź ulgę 4+ (85 528 PLN), 3) porównaj z ulgą dla młodych, 4) załącz PIT/O i/lub PIT-36 z adnotacją 4+"]} {
+    object.get(input.jdg_entrepreneur, "children_count", 0) >= 1
+}

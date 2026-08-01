@@ -36,8 +36,8 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.suspension.keep_n
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 
-# jdg.hyper.limits.seasonal.suspension.max_6_months — Limit zawieszenia — 6 mies. ciągłych
-else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.suspension.max_6_months","package":"jdg.hyper.limits","priority":1524,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"`suspension_months_continuous` ≥ 6","_legal_basis":"Art. 22 PP","_warnings":[]} {
+# jdg.hyper.limits.seasonal.suspension.max_24_months_total — Zawieszenie max 24 mies. łącznie (R-SEAS-1 fix)
+else :=   {"matched":true,"rule_id":"jdg.hyper.limits.seasonal.suspension.max_24_months_total","package":"jdg.hyper.limits","priority":1524,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Zawieszenie: max 24 mies. łącznie (Art. 22 PP, R-SEAS-1 fix)","_legal_basis":"Art. 22 PP (max 24 mies. łącznie)","_warnings":["Zawieszenie — max 24 miesiące łącznie (Art. 22 PP). Przy dłuższym zawieszeniu rozważ zamknięcie ze względu na składkę zdrowotną"]} {
     object.get(input.invoice, "amount_gross", 0) > 0
 }
 

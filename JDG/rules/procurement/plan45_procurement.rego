@@ -98,3 +98,38 @@ else := {"matched":true,"rule_id":"jdg.procurement.hyper.foreign_translations","
 else := {"matched":true,"rule_id":"jdg.procurement.hyper.foreign_vat","package":"jdg.procurement.hyper","priority":1299,"_routing":"","_routing_reason":"VAT od zam. zagranicznych","_legal_basis":"VAT","_warnings":["VAT od zamówień zagranicznych — reverse charge lub NP"]} {
     object.get(input.jdg_entrepreneur, "tax_residence", "PL") != "PL"
 }
+
+# ══ R1300-R1304: PZP Thresholds & Monitoring (L-PROC-1) ══
+else := {"matched":true,"rule_id":"jdg.procurement.hyper.pzp_eu_threshold_supplies_209k_eur","package":"jdg.procurement.hyper","priority":1300,"_routing":"","_routing_reason":"PZP próg unijny: dostawy/usługi 209 000 EUR (2025)","_legal_basis":"Art. 3 PZP, rozporządzenie KE","_warnings":["Próg unijny PZP 2025: dostawy/usługi ≥ 209 000 EUR netto. Powyżej tego progu — pełna procedura unijna (Dz.U. UE)."]} {
+    object.get(input.document, "pzp_contract_value_eur", 0) >= 209000
+    object.get(input.document, "pzp_contract_type", "") == "SUPPLIES"
+}
+else := {"matched":true,"rule_id":"jdg.procurement.hyper.pzp_eu_threshold_works_5538k_eur","package":"jdg.procurement.hyper","priority":1301,"_routing":"","_routing_reason":"PZP próg unijny: roboty budowlane 5 538 000 EUR (2025)","_legal_basis":"Art. 3 PZP, rozporządzenie KE","_warnings":["Próg unijny PZP 2025: roboty budowlane ≥ 5 538 000 EUR netto. Powyżej — procedura unijna."]} {
+    object.get(input.document, "pzp_contract_value_eur", 0) >= 5538000
+    object.get(input.document, "pzp_contract_type", "") == "WORKS"
+}
+else := {"matched":true,"rule_id":"jdg.procurement.hyper.pzp_national_threshold_130k_pln","package":"jdg.procurement.hyper","priority":1302,"_routing":"","_routing_reason":"PZP próg krajowy: 130 000 PLN netto","_legal_basis":"Art. 2 PZP","_warnings":["Próg krajowy PZP: zamówienia od 130 000 PLN netto podlegają Prawu zamówień publicznych. Poniżej — reguły wewnętrzne zamawiającego."]} {
+    object.get(input.document, "pzp_contract_value_pln", 0) >= 130000
+}
+else := {"matched":true,"rule_id":"jdg.procurement.hyper.pzp_offer_deadline_monitor","package":"jdg.procurement.hyper","priority":1303,"_routing":"WARNING","_routing_reason":"PZP: monitoring terminów ofertowych","_legal_basis":"PZP","_warnings":["Monitoruj terminy składania ofert: standard 15-35 dni (w zależności od trybu). Spóźnienie = odrzucenie oferty. Ustaw alert na 3 dni przed terminem."]} {
+    object.get(input.document, "public_procurement_active", false) == true
+    object.get(input.document, "offer_deadline_days_left", 100) < 3
+}
+else := {"matched":true,"rule_id":"jdg.procurement.hyper.pzp_offer_extension_request","package":"jdg.procurement.hyper","priority":1304,"_routing":"","_routing_reason":"PZP: wniosek o przedłużenie terminu","_legal_basis":"PZP","_warnings":["Możesz złożyć wniosek o przedłużenie terminu składania ofert — zamawiający może przedłużyć. Wniosek złóż przed upływem terminu."]} {
+    object.get(input.document, "public_procurement_active", false) == true
+    object.get(input.document, "offer_deadline_extension_needed", false) == true
+}
+
+# ══ R1305-R1307: Procurement Tax Reliefs ══
+else := {"matched":true,"rule_id":"jdg.procurement.hyper.pzp_rd_relief_innovation","package":"jdg.procurement.hyper","priority":1305,"_routing":"","_routing_reason":"PZP: ulga B+R dla innowacji w zamówieniach","_legal_basis":"Art. 26e PIT, Art. 18d CIT","_warnings":["Zamówienie publiczne z elementem B+R? Sprawdź ulgę na działalność badawczo-rozwojową: 100% kosztów kwalifikowanych + dodatkowe odliczenie (do 200% dla centrów B+R)."]} {
+    object.get(input.document, "public_procurement_active", false) == true
+    object.get(input.document, "contains_rd_activities", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.procurement.hyper.pzp_ip_box_relief","package":"jdg.procurement.hyper","priority":1306,"_routing":"","_routing_reason":"PZP: IP Box — 5% stawka dla kwalifikowanych IP","_legal_basis":"Art. 30ca PIT","_warnings":["Zamówienie obejmuje wytworzenie kwalifikowanego IP (software, patent)? Sprawdź IP Box: stawka 5% PIT od dochodu z kwalifikowanych praw własności intelektualnej."]} {
+    object.get(input.document, "public_procurement_active", false) == true
+    object.get(input.document, "creates_qualified_ip", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.procurement.hyper.pzp_prototype_relief","package":"jdg.procurement.hyper","priority":1307,"_routing":"","_routing_reason":"PZP: ulga na prototyp — 30% KUP","_legal_basis":"Art. 26eb PIT","_warnings":["Zamówienie na prototyp? Ulga na prototyp: dodatkowe odliczenie 30% kosztów produkcji próbnej i wprowadzenia nowego produktu na rynek (do 10% dochodu)."]} {
+    object.get(input.document, "public_procurement_active", false) == true
+    object.get(input.document, "involves_prototype", false) == true
+}

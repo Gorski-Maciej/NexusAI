@@ -163,3 +163,61 @@ else := {"matched":true,"rule_id":"jdg.payments.hyper.terminal_penalty_5000","pa
 else := {"matched":true,"rule_id":"jdg.payments.hyper.terminal_cost_kup_vat","package":"jdg.payments.hyper","priority":1673,"_routing":"","_routing_reason":"Terminal: koszty KUP + VAT","_legal_basis":"Art. 22 PIT, Art. 86 VAT","_warnings":["Koszt terminala + prowizje — KUP 100% + VAT odliczalny"]} {
     object.get(input.jdg_entrepreneur, "terminal_installed", false) == true
 }
+
+# ══ R1674-R1678: Split Payment (Mechanizm Podzielonej Płatności) — P0 L-PAY-3 ══
+else := {"matched":true,"rule_id":"jdg.payments.hyper.split_voluntary_108a","package":"jdg.payments.hyper","priority":1674,"_routing":"","_routing_reason":"Split payment: dobrowolny (Art. 108a VAT)","_legal_basis":"Art. 108a VAT","_warnings":["Split payment dobrowolny — możesz użyć mechanizmu podzielonej płatności dla każdej faktury VAT"]} {
+    object.get(input.invoice, "split_payment_requested", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.payments.hyper.split_mandatory_108b","package":"jdg.payments.hyper","priority":1675,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Split payment: obowiązkowy dla towarów wrażliwych (Art. 108b VAT, załącznik 15)","_legal_basis":"Art. 108b VAT","_warnings":["TOWARY WRAŻLIWE — OBOWIĄZKOWY SPLIT PAYMENT! Faktura >15 000 PLN brutto za towary z załącznika 15 (paliwa, stal, elektronika, części samochodowe, złom, metale szlachetne) WYMAGA mechanizmu podzielonej płatności. Przelew standardowy = ryzyko sankcji."]} {
+    object.get(input.invoice, "amount_gross", 0) >= 15000
+    object.get(input.invoice, "sensitive_goods_annex15", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.payments.hyper.split_sanctions_108h","package":"jdg.payments.hyper","priority":1676,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Split payment: sankcje za brak MPP (Art. 108h VAT)","_legal_basis":"Art. 108h VAT","_warnings":["Brak mechanizmu podzielonej płatności przy obowiązku = sankcja: dodatkowe zobowiązanie 30% kwoty VAT! + Naczelnik US może wyłączyć z KUP kwotę netto (Art. 22p PIT)."]} {
+    object.get(input.invoice, "sensitive_goods_annex15", false) == true
+    object.get(input.invoice, "split_payment_used", false) == false
+    object.get(input.invoice, "amount_gross", 0) >= 15000
+}
+else := {"matched":true,"rule_id":"jdg.payments.hyper.split_vat_account_62b","package":"jdg.payments.hyper","priority":1677,"_routing":"","_routing_reason":"Split payment: rachunek VAT (Art. 62b OrdUS)","_legal_basis":"Art. 62b OrdUS, Art. 108a ust. 3 VAT","_warnings":["Środki na rachunku VAT — ograniczone dysponowanie: tylko przelew do US, ZUS lub na rachunek VAT kontrahenta. Zwrot na ROR: wniosek do naczelnika US, termin 60 dni."]} {
+    object.get(input.invoice, "split_payment_used", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.payments.hyper.split_communication_message","package":"jdg.payments.hyper","priority":1678,"_routing":"WARNING","_routing_reason":"Split payment: komunikat przelewu (numer faktury, NIP, kwota VAT)","_legal_basis":"Art. 108a ust. 3 VAT","_warnings":["W komunikacie przelewu SPLIT PAYMENT podaj: numer faktury, NIP dostawcy, kwotę brutto, kwotę VAT. Bez tych danych przelew może być odrzucony."]} {
+    object.get(input.invoice, "split_payment_used", false) == true
+    object.get(input.invoice, "split_communication_complete", false) == false
+}
+
+# ══ R1679-R1681: White List US Notification (L-PAY-2) ══
+else := {"matched":true,"rule_id":"jdg.payments.hyper.whitelist_us_notify_3days","package":"jdg.payments.hyper","priority":1679,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Biała Lista: zgłoś US w 3 dni robocze — rachunek spoza listy","_legal_basis":"Art. 96b ust. 1 pkt 2 VAT, Art. 117ba OrdPU","_warnings":["PRZELEW NA RACHUNEK SPOZA BIAŁEJ LISTY! Masz 3 dni robocze na zgłoszenie do naczelnika US. Niezgłoszenie = odpowiedzialność solidarna za VAT kontrahenta (Art. 117ba OrdPU) + wyłączenie z KUP (Art. 22p PIT)!"]} {
+    object.get(input.invoice, "amount_gross", 0) >= 15000
+    object.get(input.vendor, "country", "PL") == "PL"
+    object.get(input.invoice, "whitelist_checked", false) == true
+    object.get(input.invoice, "whitelist_account_ok", false) == false
+    object.get(input.invoice, "whitelist_us_notified_3days", false) == false
+}
+else := {"matched":true,"rule_id":"jdg.payments.hyper.whitelist_penalty_nkup","package":"jdg.payments.hyper","priority":1680,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Biała Lista: skutki braku zgłoszenia — NKUP + odp. solidarna","_legal_basis":"Art. 22p PIT, Art. 117ba OrdPU","_warnings":["Nie zgłosiłeś rachunku spoza białej listy w 3 dni → KUP WYŁĄCZONE (Art. 22p PIT) + odpowiedzialność solidarna za VAT kontrahenta (Art. 117ba OrdPU)!"]} {
+    object.get(input.invoice, "whitelist_account_ok", false) == false
+    object.get(input.invoice, "whitelist_us_notified_3days", false) == false
+    object.get(input.invoice, "whitelist_deadline_passed", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.payments.hyper.whitelist_auto_verify_pre_transfer","package":"jdg.payments.hyper","priority":1681,"_routing":"WARNING","_routing_reason":"Biała Lista: weryfikuj przed każdym przelewem >15k PLN","_legal_basis":"Art. 96b ust. 1 VAT","_warnings":["Przed przelewem >15 000 PLN do kontrahenta PL — ZAWSZE weryfikuj rachunek na białej liście VAT (API MF). Rachunek spoza listy = obowiązek zgłoszenia w 3 dni."]} {
+    object.get(input.invoice, "amount_gross", 0) >= 15000
+    object.get(input.vendor, "country", "PL") == "PL"
+}
+
+# ══ R1682-R1685: Commercial Delay Interest (L-PAY-1) ══
+else := {"matched":true,"rule_id":"jdg.payments.hyper.commercial_delay_14days","package":"jdg.payments.hyper","priority":1682,"_routing":"WARNING","_routing_reason":"Opóźnienie handlowe: 14 dni — mikroprzedsiębiorcy","_legal_basis":"Ustawa o przeciwdziałaniu nadmiernym opóźnieniom w transakcjach handlowych, Art. 481 KC","_warnings":["Termin zapłaty 14 dni (transakcje między mikroprzedsiębiorcami). Po terminie — odsetki ustawowe: stopa referencyjna NBP + 8 p.p. (11.25% w 2025). Naliczaj odsetki od dnia następnego po terminie."]} {
+    object.get(input.invoice, "payment_overdue", false) == true
+    object.get(input.invoice, "payment_term_days", 0) <= 14
+    object.get(input.invoice, "contractor_type", "") == "MICRO"
+}
+else := {"matched":true,"rule_id":"jdg.payments.hyper.commercial_delay_30days","package":"jdg.payments.hyper","priority":1683,"_routing":"WARNING","_routing_reason":"Opóźnienie handlowe: 30 dni — standard","_legal_basis":"Ustawa o przeciwdziałaniu nadmiernym opóźnieniom w transakcjach handlowych","_warnings":["Termin zapłaty 30 dni. Opóźnienie >30 dni — naliczaj odsetki ustawowe (11.25% w 2025). Dodatkowo: możesz żądać rekompensaty 40 EUR + 100 EUR (powyżej 60 dni) za koszty odzyskiwania."]} {
+    object.get(input.invoice, "payment_overdue", false) == true
+    object.get(input.invoice, "days_overdue", 0) > 30
+}
+else := {"matched":true,"rule_id":"jdg.payments.hyper.commercial_delay_60days","package":"jdg.payments.hyper","priority":1684,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Opóźnienie handlowe: 60 dni — rekompensata + windykacja","_legal_basis":"Ustawa o przeciwdziałaniu nadmiernym opóźnieniom, Art. 481 KC","_warnings":["Opóźnienie >60 dni — natychmiastowa windykacja! Należne: odsetki (11.25%/rok), rekompensata 40 EUR + dodatkowe 100 EUR. Rozważ pozew do e-sądu."]} {
+    object.get(input.invoice, "payment_overdue", false) == true
+    object.get(input.invoice, "days_overdue", 0) > 60
+}
+else := {"matched":true,"rule_id":"jdg.payments.hyper.commercial_interest_calculator","package":"jdg.payments.hyper","priority":1685,"_routing":"","_routing_reason":"Odsetki handlowe: kalkulacja (stopa ref. NBP + 8 p.p.)","_legal_basis":"Art. 481 KC, ustawa o przeciwdziałaniu nadmiernym opóźnieniom","_warnings":["Wzór: odsetki = kwota brutto × (stopa_ref_NBP + 8%) × (dni_opóźnienia/365). W 2025: stopa ref. NBP 5.75% → odsetki = 13.75% dla transakcji >60 dni. Dla 30-60 dni: odsetki podstawowe = 11.25%."]} {
+    object.get(input.invoice, "payment_overdue", false) == true
+    object.get(input.invoice, "interest_calculation_needed", false) == true
+}

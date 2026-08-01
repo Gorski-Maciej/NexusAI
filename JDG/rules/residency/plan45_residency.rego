@@ -166,3 +166,27 @@ else := {"matched":true,"rule_id":"jdg.residency.hyper.aggregate_risk_map","pack
 else := {"matched":true,"rule_id":"jdg.residency.hyper.aggregate_recommendations","package":"jdg.residency.hyper","priority":1517,"_routing":"","_routing_reason":"Rekomendacje rezydencji","_legal_basis":"Art. 3 PIT","_warnings":["Rekomendacje: 1) sprawdź CFR kontrahentów 2) udokumentuj dni pobytu 3) sprawdź UPO"]} {
     object.get(input.jdg_entrepreneur, "residency_risk_assessment_needed", false) == true
 }
+
+# ══ R1518-R1523: Residency Self-Assessment (P1) + UPO Without Progression (P1) ══
+else := {"matched":true,"rule_id":"jdg.residency.hyper.residency_self_assessment","package":"jdg.residency.hyper","priority":1518,"_routing":"TRIAGE_QUEUE","_routing_reason":"Samoocena rezydencji — lista kontrolna","_legal_basis":"Art. 3 ust. 1a PIT","_warnings":["SAMOOCENA REZYDENCJI: (1) Ile dni w PL w roku? (2) Gdzie centrum interesów życiowych? (3) Gdzie rodzina? (4) Gdzie główne źródła dochodu? (5) Czy jest UPO z drugim krajem? Odpowiedzi decydują o rezydencji!"]} {
+    object.get(input.jdg_entrepreneur, "residency_self_assessment_done", false) == false
+    object.get(input.jdg_entrepreneur, "has_foreign_income", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.residency.hyper.residency_travel_calendar","package":"jdg.residency.hyper","priority":1519,"_routing":"","_routing_reason":"Kalendarz pobytów — dowód rezydencji","_legal_basis":"Art. 3 ust. 1a PIT","_warnings":["Prowadź kalendarz pobytów (bilety, rezerwacje, paszport) jako dowód dla US. Każdy dzień w PL się liczy — nawet częściowy! Przekroczenie 183 dni = rezydent PL."]} {
+    object.get(input.jdg_entrepreneur, "travel_calendar_maintained", false) == false
+    object.get(input.jdg_entrepreneur, "days_in_pl", 0) > 90
+}
+else := {"matched":true,"rule_id":"jdg.residency.hyper.dtt_exemption_without_progression","package":"jdg.residency.hyper","priority":1520,"_routing":"TRIAGE_QUEUE","_routing_reason":"UPO: metoda wyłączenia BEZ progresji (kraje spoza EOG)","_legal_basis":"Umowy bilateralne (np. ZEA, Katar, Arabia Saudyjska)","_warnings":["Metoda wyłączenia BEZ progresji — dochód zagraniczny całkowicie zwolniony i NIE wpływa na stawkę PIT od dochodów PL. Dotyczy krajów spoza EOG (np. ZEA, Katar). Sprawdź treść konkretnej UPO!"]} {
+    object.get(input.jdg_entrepreneur, "dtt_method", "") == "EXEMPTION_WITHOUT_PROGRESSION"
+}
+else := {"matched":true,"rule_id":"jdg.residency.hyper.residency_sis_integration_placeholder","package":"jdg.residency.hyper","priority":1521,"_routing":"","_routing_reason":"Integracja z SIS — placeholder (API niepubliczne)","_legal_basis":"—","_warnings":["Integracja z Systemem Informacyjnym Schengen (SIS) nie jest dostępna dla podmiotów prywatnych. Prowadź własny rejestr pobytów. W razie kontroli US może wystąpić do Straży Granicznej o dane."]} {
+    object.get(input.jdg_entrepreneur, "sis_integration_requested", false) == true
+}
+else := {"matched":true,"rule_id":"jdg.residency.hyper.cfr_tracker_auto_renewal","package":"jdg.residency.hyper","priority":1522,"_routing":"WARNING","_routing_reason":"CFR tracker: monitoruj ważność certyfikatów","_legal_basis":"Art. 26 ust. 1 PIT","_warnings":["CFR kontrahenta traci ważność za <30 dni! Wyślij prośbę o nowy certyfikat. Bez ważnego CFR: brak preferencji WHT, ryzyko 20% podatku u źródła."]} {
+    object.get(input.vendor, "cfr_age_months", 0) >= 11
+    object.get(input.vendor, "cfr_expiry_days", 100) <= 30
+}
+else := {"matched":true,"rule_id":"jdg.residency.hyper.exit_tax_proactive_monitor","package":"jdg.residency.hyper","priority":1523,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Exit tax: monitor progu 4M PLN — alert przy 80%","_legal_basis":"Art. 30da PIT","_warnings":["UWAGA: wartość niezrealizowanych zysków zbliża się do progu 4M PLN (osiągnięto 80%). Przy zmianie rezydencji powyżej progu = exit tax 19%! Rozważ strategię wyjścia."]} {
+    object.get(input.jdg_entrepreneur, "unrealized_gains_pln", 0) >= 3200000
+    object.get(input.jdg_entrepreneur, "unrealized_gains_pln", 0) < 4000000
+}

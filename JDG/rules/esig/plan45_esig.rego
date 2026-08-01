@@ -107,3 +107,33 @@ else := {"matched":true,"rule_id":"jdg.esig.hyper.contracts_documentary_form","p
 else := {"matched":true,"rule_id":"jdg.esig.hyper.contracts_equivalence_written","package":"jdg.esig.hyper","priority":1367,"_routing":"","_routing_reason":"Równoważność formy pisemnej","_legal_basis":"Art. 78¹ KC","_warnings":["E-umowa z kwalifikowanym podpisem = dokument prywatny z pełną mocą dowodową"]} {
     object.get(input.document, "contract_form_validated", false) == true
 }
+
+# ══ R1368-R1375: Signature Provider Integration + Certificate Monitoring (L5 Fix) ══
+else := {"matched":true,"rule_id":"jdg.esig.hyper.provider_certum_simplysign","package":"jdg.esig.hyper","priority":1368,"_routing":"","_routing_reason":"Dostawca: Certum SimplySign","_legal_basis":"eIDAS 910/2014","_warnings":["Dostawca podpisu: Certum SimplySign (Asseco). Kwalifikowany podpis w chmurze. Certyfikat 1-2 lata. Odnowienie online"]} {
+    object.get(input.document, "signature_provider", "") == "CERTUM"
+}
+else := {"matched":true,"rule_id":"jdg.esig.hyper.provider_szafir_kir","package":"jdg.esig.hyper","priority":1369,"_routing":"","_routing_reason":"Dostawca: Szafir (KIR)","_legal_basis":"eIDAS 910/2014","_warnings":["Dostawca podpisu: Szafir (KIR). Podpis kwalifikowany, integracja z bankowością elektroniczną. Ważność 2 lata"]} {
+    object.get(input.document, "signature_provider", "") == "SZAFIR"
+}
+else := {"matched":true,"rule_id":"jdg.esig.hyper.provider_procertum","package":"jdg.esig.hyper","priority":1370,"_routing":"","_routing_reason":"Dostawca: ProCertum","_legal_basis":"eIDAS 910/2014","_warnings":["Dostawca podpisu: ProCertum SmartSign. Podpis kwalifikowany, aplikacja mobilna. Certyfikat 1-3 lata"]} {
+    object.get(input.document, "signature_provider", "") == "PROCERTUM"
+}
+else := {"matched":true,"rule_id":"jdg.esig.hyper.certificate_expiry_90days_alert","package":"jdg.esig.hyper","priority":1371,"_routing":"WARNING","_routing_reason":"Certyfikat: 90 dni do wygaśnięcia","_legal_basis":"eIDAS","_warnings":["Certyfikat kwalifikowany wygasa za 90 dni — zaplanuj odnowienie. Nowy proces: weryfikacja tożsamości, opłata, instalacja"]} {
+    object.get(input.document, "certificate_expiry_days", 0) <= 90
+    object.get(input.document, "certificate_expiry_days", 0) > 30
+}
+else := {"matched":true,"rule_id":"jdg.esig.hyper.certificate_expiry_30days_critical","package":"jdg.esig.hyper","priority":1372,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Certyfikat: 30 dni — KRYTYCZNE!","_legal_basis":"eIDAS","_warnings":["Certyfikat wygasa za ≤30 dni! Odnów NATYCHMIAST. Po wygaśnięciu dokumenty podpisane starym certyfikatem tracą ważność dla nowych czynności"]} {
+    object.get(input.document, "certificate_expiry_days", 0) <= 30
+    object.get(input.document, "certificate_expiry_days", 0) > 7
+}
+else := {"matched":true,"rule_id":"jdg.esig.hyper.certificate_expiry_7days_block","package":"jdg.esig.hyper","priority":1373,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Certyfikat: 7 dni — BLOKUJ!","_legal_basis":"eIDAS","_warnings":["Certyfikat wygasa za ≤7 dni! NIE podpisuj nowych dokumentów — mogą zostać zakwestionowane. Odnów certyfikat przed podpisaniem czegokolwiek"]} {
+    object.get(input.document, "certificate_expiry_days", 0) <= 7
+    object.get(input.document, "certificate_expiry_days", 0) > 0
+}
+else := {"matched":true,"rule_id":"jdg.esig.hyper.profile_zaufany_extension_reminder","package":"jdg.esig.hyper","priority":1374,"_routing":"WARNING","_routing_reason":"Profil zaufany: przedłużenie","_legal_basis":"eIDAS","_warnings":["Profil zaufany ważny 3 lata. Przedłuż online przez ePUAP lub bankowość elektroniczną przed wygaśnięciem. Bez ważnego profilu = brak dostępu do e-US"]} {
+    object.get(input.document, "profile_zaufany_expiry_days", 0) <= 90
+    object.get(input.document, "profile_zaufany_expiry_days", 0) > 0
+}
+else := {"matched":true,"rule_id":"jdg.esig.hyper.tsl_trusted_list_auto_check","package":"jdg.esig.hyper","priority":1375,"_routing":"","_routing_reason":"TSL: automatyczna weryfikacja","_legal_basis":"eIDAS","_warnings":["Automatyczna weryfikacja TSL (Trusted List) — sprawdź czy certyfikat kontrahenta jest na liście zaufanych. Lista PL: https://www.nccert.pl/tsl"]} {
+    object.get(input.document, "tsl_check_needed", false) == true
+}
