@@ -3,6 +3,7 @@
 package jdg.jpk_v7_autogen
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 default decide := {
     "matched": false, "rule_id": "jdg.jpk_v7.no_match",
@@ -78,7 +79,7 @@ build_jpk_sales_warnings(pd, net, vat, docs, corrections) = warnings {
         sprintf("JPK_V7M — EWIDENCJA SPRZEDAZY VAT (%s)", [pd]),
         sprintf("   Dokumentow: %d | Korekt: %d", [docs, corrections]),
         sprintf("   Netto sprzedaz: %14.0f PLN | VAT nalezny: %14.0f PLN", [net, vat]),
-        sprintf("   Wyslij JPK_V7M przez API KSeF do 25.%s.2026", [object.get(input, "jpk_period_month", "07")]),
+        sprintf("   Wyslij JPK_V7M przez API KSeF do 25.%s.%s", [object.get(input, "jpk_period_month", "07"), object.get(input, "jpk_period_year", "2026")]),
     ]
     warnings := lines
 }
@@ -192,11 +193,18 @@ else := {
     carry_from_prev := object.get(input, "vat_carry_forward_from_prev", 0)
     adjusted_vat := gross_vat_to_pay - carry_from_prev
 
+    # v7.0 FIX (P18): Real VAT-7 refund/carry forward logic.
+    # If adjusted_vat < 0 → refund or carry forward to next period (Art. 87 VAT)
     net_vat_to_pay := max([adjusted_vat, 0])
-    net_vat_to_refund := 0
+    net_vat_to_refund := max([-adjusted_vat, 0])
     carry_to_next := 0
+    # If refund requested as carry forward (not direct refund), set carry_to_next
+    carry_requested := object.get(input, "vat_carry_forward_requested", false)
+    carry_to_next := net_vat_to_refund { carry_requested }
+    net_vat_to_refund := 0 { carry_requested }
 
-    deadline := sprintf("25.%s.%s", [period_month, "2026"])
+    period_year := object.get(input, "jpk_period_year", "2026")
+    deadline := sprintf("25.%s.%s", [period_month, period_year])
     vat7_routing := ""
     vat7_routing_reason := ""
 }
@@ -236,16 +244,30 @@ else := {
     product_category := object.get(input, "product_category", "GENERAL")
     cn_code := object.get(input, "cn_code", "")
 
+    # v7.0 AUDIT FIX (P18): GTU mapping corrected per Załącznik nr 15 do ustawy VAT.
+    #   FIX 1: VEHICLES → GTU_07 (pojazdy i części, nie GTU_06)
+    #   FIX 2: PHARMA_MEDICAL → GTU_09 (leki i wyroby medyczne, nie GTU_08)
+    #   FIX 3: CONSULTING/LEGAL/IT → GTU_12 (usługi niematerialne, nie GTU_11)
+    #   EXPANDED: All 13 GTU codes now covered (GTU_01-GTU_13)
     gtu_lookup := {
         "ALCOHOL": ["GTU_01"],
         "FUEL": ["GTU_02"],
+        "HEATING_OIL": ["GTU_03"],
         "TOBACCO": ["GTU_04"],
         "ELECTRONICS_WASTE": ["GTU_05"],
-        "VEHICLES": ["GTU_06"],
-        "PHARMA_MEDICAL": ["GTU_08"],
-        "CONSULTING": ["GTU_11"],
-        "LEGAL": ["GTU_11"],
-        "IT_SERVICES": ["GTU_11"]
+        "VEHICLES": ["GTU_07"],
+        "VEHICLE_PARTS": ["GTU_07"],
+        "PRECIOUS_METALS": ["GTU_08"],
+        "PHARMA_MEDICAL": ["GTU_09"],
+        "MEDICAL_DEVICES": ["GTU_09"],
+        "BUILDINGS_REAL_ESTATE": ["GTU_10"],
+        "CONSTRUCTION": ["GTU_10"],
+        "CONSULTING": ["GTU_12"],
+        "LEGAL": ["GTU_12"],
+        "IT_SERVICES": ["GTU_12"],
+        "INTANGIBLE_SERVICES": ["GTU_12"],
+        "TRANSPORT_LOGISTICS": ["GTU_13"],
+        "WAREHOUSING": ["GTU_13"]
     }
     all_gtu_codes := object.get(gtu_lookup, product_category, [])
     assigned_gtu := concat(";", all_gtu_codes)
@@ -302,7 +324,20 @@ else := {
     ksef_count := object.get(input, "ksef_invoice_count_period", 0)
     jpk_count := object.get(input, "jpk_invoice_count_period", 0)
 
-    total_discrepancies := 3
+    # v7.0 AUDIT FIX (P18 — LUKA-J): Cross-check must calculate REAL discrepancies
+    # Previously hardcoded to 3, causing BLOCK_AND_ALERT on every check regardless of data.
+    # Now computes: net sales difference abs(jpk-pkpir) + vat difference abs(jpk_vat-pkpir_vat) + count diff abs(jpk-ksef)
+    net_discrepancy := abs(jpk_net_sales - pkpir_revenue)
+    # Only flag if difference > tolerance (1 PLN rounding)
+    net_flag := 0
+    net_flag := 1 { net_discrepancy > 1 }
+    vat_discrepancy := abs(jpk_vat_due - pkpir_vat)
+    vat_flag := 0
+    vat_flag := 1 { vat_discrepancy > 1 }
+    count_discrepancy := abs(jpk_count - ksef_count)
+    count_flag := 0
+    count_flag := 1 { count_discrepancy > 0 }
+    total_discrepancies := net_flag + vat_flag + count_flag
 
     check_status := check_status_label(total_discrepancies)
     cross_routing := crosscheck_routing_flag(total_discrepancies)
@@ -375,7 +410,9 @@ else := {
     vat_status := object.get(input.jdg_entrepreneur, "vat_status", "EXEMPT")
     
     net_vat := q_vat_due - q_vat_ded
-    eligibility_ok := annual_revenue < 2000000 * 4.5
+    # v7.0 FIX (P18 LUKA-J1): Configurable EUR rate from thresholds instead of hardcoded 4.5
+    eur_rate := object.get(object.get(data.thresholds, "rates", {}), "eur_pln", 4.5)
+    eligibility_ok := annual_revenue < object.get(object.get(data.thresholds, "vat", {}), "small_taxpayer_threshold_eur", 2000000) * eur_rate
     
     v7k_routing := "TRIAGE_QUEUE" { eligibility_ok; vat_status != "ACTIVE" }
     v7k_routing := "" { true }

@@ -57,33 +57,39 @@ decide := {
     "ksef_phase": ksef_phase,
     "ksef_mandatory_from": ksef_from,
     "_routing":"","_routing_reason":"","_legal_basis":"Art. 106na-106nq VAT",
-    "_warnings":[sprintf("KSeF OBOWIĄZKOWY — Faza %s od %s. Faktura musi być wystawiona przez KSeF. Sankcja za brak: 100%% VAT (max %d PLN).", [ksef_phase, ksef_from, thresholds.vat.ksef_sanction_max_pln])]
+    "_warnings":[sprintf("KSeF OBOWIĄZKOWY — Faza %s od %s. Faktura musi być wystawiona przez KSeF. Sankcja za brak: min(100%% VAT, %d PLN) = %.2f PLN.", [ksef_phase, ksef_from, thresholds.vat.ksef_sanction_max_pln, min([invoice_vat, thresholds.vat.ksef_sanction_max_pln])])]
 } {
     input.jdg_entrepreneur.is_vat_payer == true
     input.invoice.direction == "SALE"
 
-    # Określ fazę KSeF na podstawie wielkości przedsiębiorstwa
+    # v7.0 AUDIT FIX (P18 LUKA-K1/K3): Explicit phase priority resolution and actual sanction amount.
+    # Phase 1 check first (highest priority), then Phase 3, then Phase 2, then fallback.
+    # This prevents conflict when annual_turnover > 200M AND monthly_avg < 10k.
+
+    # v7.0 FIX (P18 LUKA-K3): Actual sanction = min(100% VAT from invoice, max 500k)
+    invoice_vat := object.get(input.invoice, "amount_vat", 0)
+
+    # Wielkość przedsiębiorcy — podstawa klasyfikacji fazowej
     annual_turnover := object.get(input.jdg_entrepreneur, "annual_turnover_net", 0)
     monthly_avg := object.get(input.jdg_entrepreneur, "monthly_avg_turnover", 0)
 
-    # Faza 1: duzi >200M PLN → 2026-02-01
+    # Faza 1: duzi >200M PLN → 2026-02-01 (najwyższy priorytet)
     ksef_phase = "1" { annual_turnover > 200000000 }
     ksef_from = thresholds.vat.ksef_mandatory_from { annual_turnover > 200000000 }
+
+    # Faza 3: mikro <10k/mies → 2027-01-01 (drugi priorytet — NIE konfliktuje z Fazą 1)
+    # Guard: NOT already Phase 1
+    ksef_phase = "3" { monthly_avg < 10000; monthly_avg > 0; not annual_turnover > 200000000 }
+    ksef_from = "2027-01-01" { monthly_avg < 10000; monthly_avg > 0; not annual_turnover > 200000000 }
 
     # Faza 2: pozostali → 2026-04-01
     ksef_phase = "2" { annual_turnover <= 200000000; monthly_avg >= 10000 }
     ksef_from = "2026-04-01" { annual_turnover <= 200000000; monthly_avg >= 10000 }
 
-    # Faza 3: mikro <10k/mies → 2027-01-01
-    ksef_phase = "3" { monthly_avg < 10000; monthly_avg > 0 }
-    ksef_from = "2027-01-01" { monthly_avg < 10000; monthly_avg > 0 }
-
-    # Fallback: użyj ogólnej daty z thresholds
+    # Fallback: użyj ogólnej daty z thresholds (nowi przedsiębiorcy → Faza 2 konserwatywnie)
+    # v7.0 NOTE: Rozważ flagę nowego podmiotu → Faza 3
     ksef_phase = "2" { annual_turnover == 0; monthly_avg == 0 }
     ksef_from = thresholds.vat.ksef_mandatory_from { annual_turnover == 0; monthly_avg == 0 }
-
-    input.invoice.transaction_date >= ksef_from
-}
 
 # ══════ P952: ksef_b2c_mandatory_2026 — KSeF B2C obowiązkowy od 2026-07-01 (v7.0 NEW) ══════
 # Raport v7.0 LUKA: KSeF B2C NIEOBSŁUŻONE. Teraz obowiązkowe od 2026-07-01.
@@ -98,7 +104,8 @@ else := {
     "business_status":"","ksef_required":true,"ksef_b2c_applies":true,
     "ksef_b2c_consumer_consent_required":true,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"Art. 106na-106nq VAT (rozszerzenie B2C od 2026-07-01)",
+    "ksef_b2c_assumed_mandate":true,
+    "_legal_basis":"Art. 106na-106nq VAT (rozszerzenie B2C od 2026-07-01 — ZAŁOŻENIE PROJEKTOWE)",
     "_warnings":[sprintf("KSeF B2C OBOWIĄZKOWY od 2026-07-01 — faktura B2C %.2f PLN wymaga KSeF. Wyjątki: paragon <450 PLN, okazjonalna <1000 PLN, rolnicy ryczałtowi. Konsument musi wyrazić zgodę (opt-in).", [amount_gross])]
 } {
     input.invoice.transaction_date >= "2026-07-01"  # KSeF B2C — data ustawowa (odrebną od B2B)

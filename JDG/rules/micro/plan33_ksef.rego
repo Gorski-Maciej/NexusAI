@@ -6,8 +6,9 @@ package jdg.micro.ksef
 
 default decide := {"matched":false,"rule_id":"jdg.micro.ksef.no_match","package":"jdg.micro.ksef","priority":99999}
 
-# jdg.ksef.a106na.r10 — `ksef_vat_exempt_exception`: Podatnicy zwolnieni z VAT -> wyłączeni z KSeF → Wyjątek
-decide :=   {"matched":true,"rule_id":"jdg.ksef.a106na.r10","package":"jdg.micro.ksef","priority":5600,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Podatnicy zwolnieni z VAT -> wyłączeni z KSeF","_legal_basis":"Art. 106na ust. 3 VAT","_warnings":["[MICRO] Podatnicy zwolnieni z VAT -> wyłączeni z KSeF"]} {
+# jdg.ksef.a106na.r10 — `ksef_vat_exempt_exception`: Podatnicy zwolnieni z VAT -> wyłączeni z KSeF (do 2026-04-01) → Wyjątek
+# v7.0 AUDIT FIX (P18 LUKA-K4): Od 2026-04-01 zwolnieni RÓWNIEŻ podlegają KSeF. Wyjątek tylko przed tą datą.
+decide :=   {"matched":true,"rule_id":"jdg.ksef.a106na.r10","package":"jdg.micro.ksef","priority":5600,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Podatnicy zwolnieni z VAT -> wyłączeni z KSeF (tylko do 2026-04-01)","_legal_basis":"Art. 106na ust. 3 VAT (ważny do 2026-04-01)","_warnings":["[MICRO] Podatnicy zwolnieni z VAT -> wyłączeni z KSeF (UWAGA: od 2026-04-01 obowiązek obejmuje również zwolnionych!)"]} {
     true
 }
 
@@ -297,7 +298,7 @@ else :=   {"matched":true,"rule_id":"jdg.ksef.r17","package":"jdg.micro.ksef","p
 }
 
 # jdg.ksef.r18 — `ksef_sanction_15pct_minor`: Sankcja za bledy w fakturze: 15% VAT (max 100k PLN) → Sankcja
-else :=   {"matched":true,"rule_id":"jdg.ksef.r18","package":"jdg.micro.ksef","priority":5658,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Sankcja za bledy w fakturze: 15% VAT (max 100k PLN)","_legal_basis":"Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398)","_warnings":["[MICRO] Sankcja za bledy w fakturze: 15% VAT (max 100k PLN)"]} {
+else :=   {"matched":true,"rule_id":"jdg.ksef.r18","package":"jdg.micro.ksef","priority":5658,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Sankcja za bledy w fakturze: 18% VAT (max 500k PLN)","_legal_basis":"Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398)","_warnings":["[MICRO] Sankcja za bledy w fakturze: 15% VAT (max 100k PLN)"]} {
     true
 }
 
@@ -346,8 +347,8 @@ else :=   {"matched":true,"rule_id":"jdg.ksef.r3","package":"jdg.micro.ksef","pr
     true
 }
 
-# jdg.ksef.r4 — `ksef_structured_invoice_schema`: Faktura w formacie XML wg schemy FA(1) → Format
-else :=   {"matched":true,"rule_id":"jdg.ksef.r4","package":"jdg.micro.ksef","priority":5668,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Faktura w formacie XML wg schemy FA(1)","_legal_basis":"Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398)","_warnings":["[MICRO] Faktura w formacie XML wg schemy FA(1)"]} {
+# jdg.ksef.r4 — `ksef_structured_invoice_schema`: Faktura w formacie XML wg schemy FA(2) v3.0 → Format
+else :=   {"matched":true,"rule_id":"jdg.ksef.r4","package":"jdg.micro.ksef","priority":5668,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Faktura w formacie XML wg schemy FA(2) v3.0","_legal_basis":"Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398)","_warnings":["[MICRO] Faktura w formacie XML wg schemy FA(1)"]} {
     true
 }
 

@@ -8,7 +8,7 @@ import data.jdg.helpers
 
 default decide := {"matched":false,"rule_id":"jdg.edelivery.hyper.no_match","package":"jdg.edelivery.hyper","priority":99999}
 
-decide := {"matched":true,"rule_id":"jdg.edelivery.hyper.registration_mandatory","package":"jdg.edelivery.hyper","priority":1235,"_routing":"WARNING","_routing_reason":"Rejestracja BAE — obowiązkowa","_legal_basis":"Ustawa o doręczeniach el.","_warnings":["Rejestracja adresu e-Doręczeń w BAE — obowiązek od 2025"]} {
+decide := {"matched":true,"rule_id":"jdg.edelivery.hyper.registration_mandatory","package":"jdg.edelivery.hyper","priority":1235,"_routing":"WARNING","_routing_reason":"Rejestracja BAE — obowiązkowa","_legal_basis":"Ustawa o doręczeniach el.","_warnings":["Rejestracja adresu e-Doręczeń w BAE — obowiązek od 2025 (dla JDG: obecnie dobrowolne, obowiązek dla podmiotów publicznych i spółek KRS)"]} {
     object.get(input.document, "edelivery_notification", false) == true
 }
 else := {"matched":true,"rule_id":"jdg.edelivery.hyper.registration_deadline","package":"jdg.edelivery.hyper","priority":1236,"_routing":"WARNING","_routing_reason":"Termin rejestracji BAE","_legal_basis":"Ustawa o doręczeniach el.","_warnings":["Termin rejestracji e-Doręczeń zależny od typu podmiotu"]} {

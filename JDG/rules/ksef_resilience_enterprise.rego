@@ -193,9 +193,12 @@ else := {
     max_retries := 15
     max_reached := retry_count >= max_retries
 
-    # Error classification
-    is_4xx := contains(error_code, "4")
-    is_5xx := contains(error_code, "5")
+    # v7.0 FIX (P18 LUKA-K9): Improved HTTP classification — parse first digit properly.
+    # Previously: contains(error_code, "4") / contains(error_code, "5") — matched "304", "4004" etc.
+    # Now: extracts first character — only matches exact 4xx/5xx patterns.
+    error_prefix := substring(error_code, 0, 1)
+    is_4xx := error_prefix == "4"
+    is_5xx := error_prefix == "5"
     is_timeout := contains(lower(last_error_msg), "timeout")
     is_auth_error := contains(lower(last_error_msg), "unauthorized") or contains(lower(last_error_msg), "token")
 
@@ -263,9 +266,13 @@ else := {
     token_max_lifetime := 600
     expires_in := 0
 
-    # Calculate remaining time
+    # v7.0 FIX (P18 LUKA-K10): Fallback epoch/minutes — OPA has limited date arithmetic.
+    # The full datetime diff should be computed by the integration layer (epoch seconds).
+    # Here we use precomputed `ksef_token_remaining_minutes` from input if available.
+    precomputed_minutes := object.get(object.get(input, "ksef", {}), "token_remaining_minutes", -1)
+    expires_in := precomputed_minutes { precomputed_minutes >= 0 }
+    expires_in := calculate_remaining_minutes(token_expiry, current_time) { precomputed_minutes < 0; token_exists }
     expires_in := token_max_lifetime { not token_exists }
-    expires_in := calculate_remaining_minutes(token_expiry, current_time) { token_exists }
 
     token_status := "MISSING" { not token_exists }
     token_status := "EXPIRED" { token_exists; expires_in <= 0 }
@@ -333,6 +340,7 @@ else := {
 
     # Critical business rules for FA(2) that MUST pass
     has_nip_seller := object.get(input, "seller_nip", "") != ""
+    has_nip_buyer := object.get(input, "buyer_nip", "") != ""
     has_invoice_date := object.get(input.invoice, "issue_date", "") != ""
     has_invoice_number := object.get(input.invoice, "invoice_number", "") != ""
     has_amount := object.get(input.invoice, "amount_gross", 0) > 0
@@ -340,11 +348,12 @@ else := {
     # Build missing fields list
     missing_check := []
     missing_check := array.concat(missing_check, ["Sprzedawca NIP"]) { not has_nip_seller }
+    missing_check := array.concat(missing_check, ["Nabywca NIP"]) { not has_nip_buyer }
     missing_check := array.concat(missing_check, ["Data wystawienia"]) { not has_invoice_date }
     missing_check := array.concat(missing_check, ["Numer faktury"]) { not has_invoice_number }
     missing_check := array.concat(missing_check, ["Kwota brutto"]) { not has_amount }
 
-    xml_valid := xml_valid and has_nip_seller and has_invoice_date and has_invoice_number and has_amount
+    xml_valid := xml_valid and has_nip_seller and has_nip_buyer and has_invoice_date and has_invoice_number and has_amount
     business_rules_ok := business_rules_ok and xml_valid
     missing_fields := array.concat(missing_fields, missing_check)
 
@@ -445,7 +454,7 @@ else := {
     "ksef_notification_deadline": notification_deadline,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": sprintf("POWIADOM US — awaria KSeF przekroczyła 7 dni. Złóż zawiadomienie ZAW-NR do %s", [notification_deadline]),
-    "_legal_basis": "Art. 106na ust. 4 VAT; Obwieszczenie MF ws. wzoru ZAW-NR",
+    "_legal_basis": "Art. 106ne ust. 4 VAT; Obwieszczenie MF ws. wzoru ZAW-NR",
     "_warnings": [
         "🚨 AWARIA KSeF PRZEKROCZYŁA 7 DNI!",
         "📋 PROCEDURA:",
@@ -454,7 +463,7 @@ else := {
         "   3. Dołącz listę faktur wystawionych poza KSeF (daty, numery, NIP nabywców)",
         "   4. Zachowaj UPO (Urzędowe Poświadczenie Odbioru) z e-PUAP",
         "⚠️ Termin: 7 dni od dnia następującego po ostatnim dniu awarii KSeF",
-        "📌 Bez ZAW-NR grozi kara do 5000 PLN za każdy przypadek (Art. 106nb VAT)!"
+        "📌 Bez ZAW-NR grozi kara do 5000 PLN (Art. 106ne ust. 4 VAT)!"
     ]
 } {
     input.ksef_is_offline == true
