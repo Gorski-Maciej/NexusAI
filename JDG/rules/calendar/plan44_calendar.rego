@@ -9,7 +9,7 @@ import data.jdg.helpers
 default decide := {"matched":false,"rule_id":"jdg.calendar.no_match","package":"jdg.calendar","priority":99999}
 
 # jdg.calendar.master_payment — P1910: Główny kalendarz płatności — VAT, PIT, ZUS, PCC, danina
-decide :=   {"matched":true,"rule_id":"jdg.calendar.master_payment","package":"jdg.calendar","priority":1910,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Główny kalendarz — VAT 25., PIT zaliczka 20., ZUS 10/15/20., PCC 14.","_legal_basis":"Art. 103 VAT, Art. 44 PIT, SUS, PCC","_warnings":["Kalendarz płatności: VAT do 25., PIT do 20., ZUS do 10/15/20. — sprawdź terminy!"]} {
+decide :=   {"matched":true,"rule_id":"jdg.calendar.master_payment","package":"jdg.calendar","priority":1910,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Główny kalendarz — VAT 25., PIT zaliczka 20., ZUS 10/15., PCC 14. (v7.0 FIX K47-1: popr. ZUS z 20→15)","_legal_basis":"Art. 103 VAT, Art. 44 PIT, SUS, PCC","_warnings":["Kalendarz płatności: VAT do 25., PIT do 20., ZUS do 10/15. — sprawdź terminy! (v7.0 FIX K47-1)"]} {
     object.get(input.jdg_entrepreneur, "has_payment_obligations", false) == true
 }
 
@@ -34,6 +34,6 @@ else :=   {"matched":true,"rule_id":"jdg.calendar.annual_forecast","package":"jd
 }
 
 # jdg.calendar.zus_deadlines — P1915: Kalendarz terminów ZUS — 10./15./20. wg liczby pracowników
-else :=   {"matched":true,"rule_id":"jdg.calendar.zus_deadlines","package":"jdg.calendar","priority":1915,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"ZUS: 10. (JDG bez pracowników), 15. (do 5 prac.), 20. (5+ prac.)","_legal_basis":"Art. 47 SUS","_warnings":["Termin ZUS zależy od liczby pracowników: 10./15./20. dnia miesiąca"]} {
+else :=   {"matched":true,"rule_id":"jdg.calendar.zus_deadlines","package":"jdg.calendar","priority":1915,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"ZUS: 10. (JDG bez pracowników), 15. (wszyscy pozostali) (v7.0 FIX K47-1)","_legal_basis":"Art. 47 ust. 1 SUS","_warnings":["Termin ZUS: 10. (JDG solo), 15. (JDG z pracownikami) — v7.0 FIX K47-1"]} {
     object.get(input.jdg_entrepreneur, "has_payment_obligations", false) == true
 }

@@ -297,8 +297,8 @@ else :=   {"matched":true,"rule_id":"jdg.ksef.r17","package":"jdg.micro.ksef","p
     true
 }
 
-# jdg.ksef.r18 — `ksef_sanction_15pct_minor`: Sankcja za bledy w fakturze: 15% VAT (max 100k PLN) → Sankcja
-else :=   {"matched":true,"rule_id":"jdg.ksef.r18","package":"jdg.micro.ksef","priority":5658,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Sankcja za bledy w fakturze: 18% VAT (max 500k PLN)","_legal_basis":"Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398)","_warnings":["[MICRO] Sankcja za bledy w fakturze: 15% VAT (max 100k PLN)"]} {
+# jdg.ksef.r18 — `ksef_sanction_18pct_formal_errors`: Sankcja za bledy formalne: 18% VAT (max 500k PLN) → Sankcja (v7.0 FIX P18 LUKA-K5: ujednolicono 15%/100k → 18%/500k zgodnie z art. 106nq VAT)
+else :=   {"matched":true,"rule_id":"jdg.ksef.r18","package":"jdg.micro.ksef","priority":5658,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Sankcja za bledy formalne w fakturze: 18% VAT (max 500k PLN) — art. 106nq VAT","_legal_basis":"Art. 106nq ust. 1 VAT (Dz.U. 2023 poz. 1598)","_warnings":["[MICRO] Sankcja za bledy formalne w fakturze: 18% VAT (max 500k PLN) — art. 106nq VAT"]} {
     true
 }
 

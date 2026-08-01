@@ -84,7 +84,7 @@ else := {"matched":true,"rule_id":"jdg.regulated.hyper.privilege_crime_fraud_exc
 else := {"matched":true,"rule_id":"jdg.regulated.hyper.chamber_membership_mandatory","package":"jdg.regulated.hyper","priority":1596,"_routing":"WARNING","_routing_reason":"Przynależność do izby obowiązkowa","_legal_basis":"Ustawy korporacyjne","_warnings":["Zawód regulowany — obowiązkowa przynależność do samorządu zawodowego"]} {
     object.get(input.jdg_entrepreneur, "chamber_membership_required", false) == true
 }
-else := {"matched":true,"rule_id":"jdg.regulated.hyper.chamber_fees_deductible","package":"jdg.regulated.hyper","priority":1597,"_routing":"","_routing_reason":"Składki izbowe potrącalne","_legal_basis":"Art. 26 ust. 1 pkt 13 PIT","_warnings":["Składki izbowe — odliczenie od dochodu w zeznaniu rocznym"]} {
+else := {"matched":true,"rule_id":"jdg.regulated.hyper.chamber_fees_deductible","package":"jdg.regulated.hyper","priority":1597,"_routing":"","_routing_reason":"Składki izbowe — KUP (Art. 22 PIT) lub odliczenie od dochodu (Art. 26 PIT)","_legal_basis":"Art. 22 ust. 1 PIT / Art. 26 ust. 1 pkt 13 PIT","_warnings":["Składki izbowe — KUP (Art. 22 PIT) dla JDG; odliczenie od dochodu (Art. 26 PIT) dla etatu (v7.0 FIX KREG-3)"]} {
     object.get(input.invoice, "expense_type", "") == "CHAMBER_FEES"
 }
 else := {"matched":true,"rule_id":"jdg.regulated.hyper.chamber_disciplinary","package":"jdg.regulated.hyper","priority":1598,"_routing":"WARNING","_routing_reason":"Postępowanie dyscyplinarne","_legal_basis":"Ustawy korporacyjne","_warnings":["Postępowanie dyscyplinarne w toku — ryzyko dla działalności JDG"]} {

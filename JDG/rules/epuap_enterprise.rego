@@ -31,6 +31,19 @@ default decide := {
     "package": "jdg.epuap", "priority": 9999
 }
 
+# v7.0 (P18 LUKA-D5): Helper to calculate pending days from sent date to eval date
+calculate_pending_days(sent_date, eval_date) = days {
+    sent_year := to_number(substring(sent_date, 0, 4))
+    eval_year := to_number(substring(eval_date, 0, 4))
+    sent_month := to_number(substring(sent_date, 5, 7))
+    eval_month := to_number(substring(eval_date, 5, 7))
+    sent_day := to_number(substring(sent_date, 8, 10))
+    eval_day := to_number(substring(eval_date, 8, 10))
+    # Simplified day calculation (assumes months ~30 days each)
+    days := (eval_year - sent_year) * 365 + (eval_month - sent_month) * 30 + (eval_day - sent_day)
+    days := max([days, 1])
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # EPU-100: ePUAP DELIVERY STATUS CHECK — Status doręczeń elektronicznych
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -67,7 +80,11 @@ decide := {
 
     oldest_doc := object.get(pending_deliveries, 0, {})
     oldest_date := object.get(oldest_doc, "sent_date", "2026-07-01")
-    oldest_pending := 25 { pending_count > 0 }
+    # v7.0 FIX (P18 LUKA-D5): Dynamic oldest_pending from input or calculated from sent_date
+    precomputed_oldest := object.get(input, "epuap_oldest_pending_days", -1)
+    current_eval_date := object.get(input, "evaluation_date", "2026-07-01")
+    oldest_pending := precomputed_oldest { precomputed_oldest >= 0; pending_count > 0 }
+    oldest_pending := calculate_pending_days(oldest_date, current_eval_date) { precomputed_oldest < 0; pending_count > 0; oldest_date != "" }
     oldest_pending := 0 { pending_count == 0 }
     
     next_response := "W ciagu 14 dni" { pending_count > 0 }

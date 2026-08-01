@@ -54,7 +54,7 @@ else := {"matched":true,"rule_id":"jdg.calendar.hyper.zus_employees_15th","packa
     object.get(input.jdg_entrepreneur, "employee_count", 0) <= 5
     object.get(input.jdg_entrepreneur, "zus_contributions_due", false) == true
 }
-else := {"matched":true,"rule_id":"jdg.calendar.hyper.zus_units_20th","package":"jdg.calendar.hyper","priority":1380,"_routing":"WARNING","_routing_reason":"ZUS: jednostki budż. do 20.","_legal_basis":"Art. 47 ust. 1 pkt 3 SUS","_warnings":["ZUS — płatnicy z >5 pracownikami: do 20. dnia miesiąca"]} {
+else := {"matched":true,"rule_id":"jdg.calendar.hyper.zus_units_15th","package":"jdg.calendar.hyper","priority":1380,"_routing":"WARNING","_routing_reason":"ZUS: wszyscy płatnicy do 15. (v7.0 FIX K47-1)","_legal_basis":"Art. 47 ust. 1 pkt 2 SUS","_warnings":["ZUS — termin płatności: 15. dnia miesiąca (v7.0 FIX K47-1: popr. z 20. na 15.)"]} {
     object.get(input.jdg_entrepreneur, "employee_count", 0) > 5
     object.get(input.jdg_entrepreneur, "zus_contributions_due", false) == true
 }

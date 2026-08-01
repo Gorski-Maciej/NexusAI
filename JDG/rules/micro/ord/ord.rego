@@ -18,7 +18,8 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a16 — Czynny żal (6 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930) — NIE Ordynacja Podatkowa                                                   ║
+# ║  v7.0 FIX (LUKA-U3/M5): Poprawiona podstawa prawna z OrdPU → KKS Art. 16    ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a16.r1: ord_a16_r1_eligibility
@@ -43,8 +44,8 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
-    "_warnings": ["[MICRO] Czynny żal: sprawdzenie czy przepis ma zastosowanie do JDG"]
+    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
+    "_warnings": ["[MICRO] Czynny żal: sprawdzenie czy przepis ma zastosowanie do JDG — UWAGA: podstawa KKS a16, nie OrdPU"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
 }
@@ -71,7 +72,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
     "_warnings": ["[MICRO] Czynny żal: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -99,7 +100,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
     "_warnings": ["[MICRO] Czynny żal: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a16_r3_pass", false) == true
@@ -127,7 +128,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
     "_warnings": ["[MICRO] Czynny żal: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a16_r4_checks", false) == true
@@ -155,7 +156,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
     "_warnings": ["[MICRO] Czynny żal: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -183,7 +184,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
     "_warnings": ["[MICRO] Czynny żal: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -1859,8 +1860,9 @@ else := {
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  ord.a48 — Odsetki — opłata prolongacyjna (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  ord.a48 — Odsetki — opłata prolongacyjna (5 reguł) — @DEPRECATED v7.0     ║
+# ║  v7.0 FIX (LUKA-L2): Sunset. Nowelizacja 2017 → art. 67a-67e.              ║
+# ║  NIE aktywować; użyj a67 (ulg/odroczeń/rat/umorzeń) zamiast a48.            ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a48.r1: ord_a48_r1_eligibility
@@ -2004,8 +2006,9 @@ else := {
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  ord.a51 — Umorzenie odsetek (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  ord.a51 — Umorzenie odsetek (5 reguł) — @DEPRECATED v7.0                   ║
+# ║  v7.0 FIX (LUKA-L2): Sunset. Nowelizacja 2017 → art. 67a-67e.              ║
+# ║  NIE aktywować; użyj a67 (ulg/odroczeń/rat/umorzeń) zamiast a51.            ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a51.r1: ord_a51_r1_eligibility
@@ -2586,6 +2589,8 @@ else := {
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a56 — Odsetki — stawka podstawowa (5 reguł)                                    ║
 # ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  v7.0 FIX (LUKA-U5/K56-2): reference_rate = 200% stopy lombardowej NBP       ║
+# ║  → Moduł enterprise: interest_calculator_enterprise.rego (get_reference_rate) ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a56.r1: ord_a56_r1_eligibility

@@ -73,10 +73,11 @@ decide := {
     min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
 
     # KKS uses multiples of minimum wage
+    # v7.0 FIX (LUKA-K53-1): threshold_minor = 5x min_wage (~23,330 PLN per Art. 53 § 2 KKS)
+    # v7.0 FIX (LUKA-K53-2): threshold_large = 1000x min_wage (Art. 53 § 4-5 KKS)
     threshold_small := min_wage * 200   # ~933 200 PLN — "mała wartość"
-    threshold_minor := min_wage         # ~4 666 PLN — wykroczenie vs przestępstwo
-    threshold_medium := min_wage * 500  # ~2 333 000 PLN — "znaczna wartość"
-    threshold_large := min_wage * 2000  # ~9 332 000 PLN — "wielka wartość"
+    threshold_minor := min_wage * 5     # ~23 330 PLN — wykroczenie vs przestępstwo (Art. 53 § 2 KKS)
+    threshold_large := min_wage * 1000  # ~4 666 000 PLN — "wielka wartość" (Art. 53 § 5 KKS)
 
     # KKS gradation
     gradation_level := "WYKROCZENIE_SKARBOWE" {
@@ -87,7 +88,8 @@ decide := {
     }
     fine_range := sprintf("%.0f - %.0f PLN", [min_wage * 0.1, min_wage * 20])
     imprisonment := "Brak kary pozbawienia wolności"
-    statute_years := 3
+    # v7.0 FIX (LUKA-K44-1): fiscal misdemeanor statute = 2 years (Art. 44 KKS)
+    statute_years := 2
 
     gradation_level := "PRZESTEPSTWO_SKARBOWE_MALE" {
         tax_shortfall > threshold_minor; tax_shortfall <= threshold_small
@@ -96,7 +98,8 @@ decide := {
         tax_shortfall > threshold_minor; tax_shortfall <= threshold_small
     }
     fine_range := "10 - 720 stawek dziennych (stawka: 1/30 do 400-krotności min. wynagrodzenia)"
-    imprisonment := "do 1 roku (Art. 54 § 1 KKS)"
+    # v7.0 FIX (LUKA-K54-1): Art. 54 § 2 KKS = small fiscal crime
+    imprisonment := "do 1 roku (Art. 54 § 2 KKS — mała wartość)"
     statute_years := 5
 
     gradation_level := "PRZESTEPSTWO_SKARBOWE_ZNACZNE" {
@@ -104,7 +107,8 @@ decide := {
     }
     penalty_type := "Grzywna: 10-720 stawek dziennych + kara pozbawienia wolności"
     fine_range := "10 - 720 stawek dziennych"
-    imprisonment := "do 3 lat (Art. 54 § 2 KKS — znaczna wartość)"
+    # v7.0 FIX (LUKA-K54-1): Art. 54 § 3 KKS = significant value
+    imprisonment := "do 3 lat (Art. 54 § 3 KKS — znaczna wartość)"
     statute_years := 10
 
     gradation_level := "PRZESTEPSTWO_SKARBOWE_WIELKIE" {
@@ -112,7 +116,8 @@ decide := {
     }
     penalty_type := "Grzywna + KARA POZBAWIENIA WOLNOŚCI"
     fine_range := "10 - 720 stawek dziennych"
-    imprisonment := "do 5 lat (Art. 54 § 3 KKS — wielka wartość)"
+    # v7.0 FIX (LUKA-K54-1): Art. 54 § 4 KKS = great value
+    imprisonment := "do 5 lat (Art. 54 § 4 KKS — wielka wartość)"
     statute_years := 10
 
     # Aggravating factors

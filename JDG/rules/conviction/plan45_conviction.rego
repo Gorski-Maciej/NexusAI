@@ -87,10 +87,10 @@ else := {"matched":true,"rule_id":"jdg.conviction.hyper.network_isolation","pack
 }
 
 # ══ R1566-R1570: Rehabilitation ══
-else := {"matched":true,"rule_id":"jdg.conviction.hyper.rehabilitation_misdemeanor_3y","package":"jdg.conviction.hyper","priority":1566,"_routing":"","_routing_reason":"Zatarcie: wykroczenie skarbowe 3 lata","_legal_basis":"Art. 21 KKS","_warnings":["Wykroczenie skarbowe — zatarcie skazania po 3 latach od wykonania kary"]} {
+else := {"matched":true,"rule_id":"jdg.conviction.hyper.rehabilitation_misdemeanor_3y","package":"jdg.conviction.hyper","priority":1566,"_routing":"","_routing_reason":"Zatarcie: wykroczenie skarbowe 3 lata","_legal_basis":"Art. 19 KKS","_warnings":["Wykroczenie skarbowe — zatarcie skazania po 3 latach od wykonania kary (v7.0 FIX K19-1: Art. 19 KKS, nie Art. 21)"]} {
     object.get(input.jdg_entrepreneur, "kks_offense_type", "") == "MISDEMEANOR"
 }
-else := {"matched":true,"rule_id":"jdg.conviction.hyper.rehabilitation_crime_5y","package":"jdg.conviction.hyper","priority":1567,"_routing":"","_routing_reason":"Zatarcie: przestępstwo skarbowe 5 lat","_legal_basis":"Art. 21 KKS","_warnings":["Przestępstwo skarbowe — zatarcie skazania po 5 latach od wykonania kary"]} {
+else := {"matched":true,"rule_id":"jdg.conviction.hyper.rehabilitation_crime_5y","package":"jdg.conviction.hyper","priority":1567,"_routing":"","_routing_reason":"Zatarcie: przestępstwo skarbowe 5 lat","_legal_basis":"Art. 19 KKS","_warnings":["Przestępstwo skarbowe — zatarcie skazania po 5 latach od wykonania kary (v7.0 FIX K19-1: Art. 19 KKS, nie Art. 21)"]} {
     object.get(input.jdg_entrepreneur, "kks_offense_type", "") == "CRIME"
 }
 else := {"matched":true,"rule_id":"jdg.conviction.hyper.rehabilitation_clean_record","package":"jdg.conviction.hyper","priority":1568,"_routing":"","_routing_reason":"Skutek zatarcia — czysta karta","_legal_basis":"Art. 106 KK","_warnings":["Zatarcie skazania = powrót do stanu sprzed skazania, wszystkie ograniczenia uchylone"]} {

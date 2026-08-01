@@ -4,10 +4,15 @@
 package jdg.digital
 #
 # METADATA
-# title: JDG Package — digital
-# description: Supporting package for JDG Multi-Pass evaluation (ADR-001).
+# title: JDG Package — digital (Gospodarka Cyfrowa: Kryptoaktywa, AI Act, MDR, API Fallback)
+# description: |
+#   v7.0 CLARIFICATION (P18 LUKA-D1): This package covers DIGITAL ECONOMY rules —
+#   cryptocurrency (PIT-38, mining, MDR), AI Act compliance (risk classification,
+#   deepfake disclosure), and API degradation/fallback. It does NOT handle e-Delivery
+#   or ePUAP — those are in separate packages jdg.edelivery and jdg.epuap.
 # architecture: Multi-Pass (ADR-001)
 # package: jdg.digital
+# scope: crypto_tax, ai_act, mdr_dac6, api_resilience
 # deprecated: false
 #
 import data.jdg.helpers
