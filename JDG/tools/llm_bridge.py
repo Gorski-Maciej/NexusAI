@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
 ═══════════════════════════════════════════════════════════════════════════════
-NexusAI JDG — LLM Co-Pilot Reasoning Bridge (C2 Strategic Initiative)
+NexusAI JDG — LLM Co-Pilot Reasoning Bridge (C2 Strategic Initiative) [EKSPERYMENTALNY]
 ═══════════════════════════════════════════════════════════════════════════════
+
+STATUS v8.1 (P27 R12): EKSPERYMENTALNY — Wymaga kluczy API (ANTHROPIC_API_KEY,
+OPENAI_API_KEY, GEMINI_API_KEY). Używaj z flagą --experimental.
 
 Rego ↔ LLM bridge — tłumaczy techniczne werdykty OPA na język naturalny.
 

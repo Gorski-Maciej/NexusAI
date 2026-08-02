@@ -280,7 +280,7 @@ exclude = [
 
 # ── Pytest ───────────────────────────────────────────────────────────────────
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "JDG/tests"]
 python_files = ["test_*.py"]
 addopts = "--tb=short -ra"
 filterwarnings = [

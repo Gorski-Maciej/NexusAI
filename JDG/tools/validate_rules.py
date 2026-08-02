@@ -201,6 +201,35 @@ def detect_cross_package_conflicts(all_files_data: dict) -> list[Violation]:
     return violations
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# NOWA WALIDACJA v8.0: Globalna deduplikacja rule_id (Section 6.2)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def detect_global_duplicates(all_files_data: dict) -> list[Violation]:
+    """
+    [v8.0] Wykrywa globalne duplikaty rule_id — ten sam rule_id w różnych plikach.
+    Poprzednia walidacja sprawdzała tylko per plik; ta sprawdza globalnie.
+    """
+    violations = []
+    id_to_files = defaultdict(list)
+    
+    for filepath, rules in all_files_data.items():
+        for rule in rules:
+            id_to_files[rule["rule_id"]].append(filepath)
+    
+    for rid, files in id_to_files.items():
+        unique_files = set(files)
+        if len(unique_files) > 1:
+            violations.append(Violation(
+                list(unique_files)[0], 0, rid,
+                f"GLOBALNY DUPLIKAT rule_id: występuje w {len(unique_files)} plikach: "
+                f"{', '.join(sorted(unique_files)[:3])}",
+                "ERROR"
+            ))
+    
+    return violations
+
+
 def extract_all_rules() -> dict:
     """Ekstrahuje wszystkie reguły ze wszystkimi metadanymi."""
     all_data = {}
@@ -252,6 +281,9 @@ def main():
     all_violations.extend(detect_dead_rules(all_rules_data))
     all_violations.extend(detect_priority_gaps(all_rules_data))
     all_violations.extend(detect_cross_package_conflicts(all_rules_data))
+
+    # NOWA walidacja v8.0: globalna deduplikacja (Section 6.2)
+    all_violations.extend(detect_global_duplicates(all_rules_data))
 
     errors = [v for v in all_violations if v.severity == "ERROR"]
     warnings = [v for v in all_violations if v.severity == "WARNING"]

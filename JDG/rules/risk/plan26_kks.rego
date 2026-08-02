@@ -20,10 +20,10 @@ else :=   {"matched":true,"rule_id":"jdg.risk.kks_unreliable_books","package":"j
 
 # jdg.risk.kks_vat_evidence_gap — Niekompletna ewidencja VAT — Art. 57 KKS
 else :=   {"matched":true,"rule_id":"jdg.risk.kks_vat_evidence_gap","package":"jdg.risk","priority":7,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"TRIAGE_QUEUE","_routing_reason":"Niekompletna ewidencja VAT — Art. 57 KKS","_legal_basis":"Art. 57 KKS","_warnings":["Niekompletna ewidencja VAT — ryzyko Art. 57 KKS"]} {
-    object.get(input.vendor, "risk_flag", false) == true
+    object.get(input.jdg_entrepreneur, "vat_evidence_incomplete", false) == true
 }
 
 # jdg.risk.kks_declaration_overdue — Niezłożona deklaracja — Art. 77 KKS
 else :=   {"matched":true,"rule_id":"jdg.risk.kks_declaration_overdue","package":"jdg.risk","priority":8,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"TRIAGE_QUEUE","_routing_reason":"Niezłożona deklaracja — Art. 77 KKS","_legal_basis":"Art. 77 KKS","_warnings":["Deklaracja niezłożona w terminie — ryzyko Art. 77 KKS"]} {
-    object.get(input.vendor, "risk_flag", false) == true
+    object.get(input.jdg_entrepreneur, "tax_declaration_overdue", false) == true
 }

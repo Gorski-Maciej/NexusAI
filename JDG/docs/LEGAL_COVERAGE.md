@@ -247,7 +247,7 @@
 # PODSUMOWANIE
 # ═══════════════════════════════════════════════════════════════════════════════
 
-Status na 2026-07-17:
+Status na 2026-08-02 (zaktualizowany po audycie P25, v8.0):
 
 | Klasa | Opis | % punktów |
 |-------|------|-----------|
@@ -265,3 +265,6 @@ Status na 2026-07-17:
 ---
 *Dokument wygenerowany z NexusAI_JDG_7000_MASTER_IMPLEMENTATION_PLAN.txt, Part 2.*
 *Auto-aktualizowany przez ISAP Crawler (C3) i A3 Legal Cartography.*
+*Data ostatniej aktualizacji: 2026-08-02 (Audyt P25 — rekomendacja R9).*
+*Uwaga: Klasyfikacja A/B/C wymaga pełnego przeliczenia po 20+ commitach od 2026-07-17.*
+*Nowe narzędzia: doc_consistency_validator.py, dead_rule_detector.py, cross_ref_validator.py*

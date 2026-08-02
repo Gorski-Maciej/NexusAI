@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — ENTERPRISE PPK + PFRON MODULE (Strategic Initiative S7)
+# NexusAI JDG — ENTERPRISE PPK + PFRON MODULE (Strategic Initiative S18)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
 # METADATA

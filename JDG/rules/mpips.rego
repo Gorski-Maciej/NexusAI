@@ -116,12 +116,12 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "mpips_zfss_obligation": true, "mpips_zfss_annual_amount": floor(zfss_amount),
     "mpips_reporting_obligation": "ZFSS_ANNUAL",
-    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Obowiązek ZFŚS — zatrudnienie ≥20 etatów (lub ≥50 wg stanu na 1 stycznia)",
+    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Obowiązek ZFŚS — zatrudnienie ≥50 etatów (wg stanu na 1 stycznia)",
     "_legal_basis": "Art. 3-5 Ustawy o ZFŚS",
     "_warnings": [sprintf("ZFŚS — %d pracowników. Odpis podstawowy: %.2f PLN/rok (37.5%% przeciętnego wynagrodzenia na pracownika)", [emp_count, zfss_amount])]
 } {
     emp_count := object.get(input.employment, "employee_count", 0)
-    emp_count >= 20
+    emp_count >= 50
     avg_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "avg_monthly_wage", 7000)
     zfss_amount = emp_count * 0.375 * avg_wage
 }

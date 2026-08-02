@@ -1450,7 +1450,7 @@ def main():
          {k:v for k,v in PLAN23_26_RULES.items() if k.startswith("jdg.pit.exemption")}),
         
         # From Plan OPA 26: KKS/GAAR, VAT Critical, PIT Detailed, ZUS Critical, FX, Business, JPK, Statute, Local Taxes, Representation
-        ("jdg.risk", f"{BASE}/risk/plan26_kks_gaar.rego",
+        ("jdg.risk", f"{BASE}/risk/plan26_kks.rego",
          {k:v for k,v in PLAN23_26_RULES.items() if k.startswith("jdg.risk.")}),
         ("jdg.vat", f"{BASE}/vat/plan26_critical.rego",
          {k:v for k,v in PLAN23_26_RULES.items() if k.startswith("jdg.vat.") and "plan23" not in k}),

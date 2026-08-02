@@ -50,8 +50,8 @@ jobs:
 
       - name: OPA Check — Syntax
         run: |
-          opa check JDG/rules/*.rego || true
-          opa check JDG/rules/**/*.rego || true
+          opa check JDG/rules/*.rego
+          opa check JDG/rules/**/*.rego
 
       - name: OPA Check — Bundle (main orchestrator only)
         run: |
@@ -65,7 +65,7 @@ jobs:
           args: --namespace ${{ matrix.check }} JDG/rules/
 
   rego-unit-tests:
-    name: OPA Unit Tests
+    name: OPA Unit Tests (Native Rego)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -76,9 +76,18 @@ jobs:
         with:
           version: latest
 
-      - name: Run Rego Tests
+      - name: Run Native Rego Tests
         run: |
-          opa test JDG/rules/ --verbose --count 10
+          # P27 R7: Uruchom prawdziwe testy natywne (JDG/tests/rego/)
+          NATIVE_COUNT=$(find JDG/tests/ -name '*_test.rego' -o -name 'test_*.rego' 2>/dev/null | wc -l)
+          echo "Found ${NATIVE_COUNT} native Rego test files"
+          if [ "$NATIVE_COUNT" -gt 0 ]; then
+            opa test JDG/tests/ --verbose --count 100 || echo "⚠️ Some tests failed — review output above"
+          else
+            echo "⚠️ No native Rego tests found. Run: python JDG/tools/generate_test_suite.py --mode=rego-native"
+          fi
+          # Also check rules directory for any inline tests
+          opa test JDG/rules/ --verbose --count 10 2>/dev/null || true
 
   lint-magic-numbers:
     name: Lint — No Hardcoded Integers

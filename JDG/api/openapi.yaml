@@ -419,6 +419,204 @@ paths:
                   total:
                     type: integer
 
+  # ═════════════════════════════════════════════════════════════════════════════
+  # GET /jdg/manifest — Rule Manifest (R14 — NOWY, v8.0)
+  # ═════════════════════════════════════════════════════════════════════════════
+  /jdg/manifest:
+    get:
+      tags: [Health]
+      summary: Get rule manifest — list of all rules with metadata
+      description: |
+        R14: Zwraca MANIFEST.md w formacie JSON. Zawiera listę wszystkich
+        plików Rego, liczbę reguł, unikalne rule_id, BLOCK/TRIAGE count,
+        oraz status inicjatyw Enterprise S1-S24.
+      operationId: getManifest
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json, summary]
+            default: json
+          description: Output format — full JSON or summary only
+      responses:
+        '200':
+          description: Rule manifest
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  generated:
+                    type: string
+                    format: date-time
+                  total_files:
+                    type: integer
+                  files_with_matched:
+                    type: integer
+                  matched_blocks:
+                    type: integer
+                  unique_rule_ids:
+                    type: integer
+                  duplicates:
+                    type: integer
+                  enterprise_summary:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        description:
+                          type: string
+                        file:
+                          type: string
+                        rules:
+                          type: integer
+                        status:
+                          type: string
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # GET /jdg/coverage — Legal Coverage Report (R14 — NOWY, v8.0)
+  # ═════════════════════════════════════════════════════════════════════════════
+  /jdg/coverage:
+    get:
+      tags: [Health]
+      summary: Get legal coverage report — Doc 50 mapping to Rego rules
+      description: |
+        R14: Zwraca raport pokrycia prawnego. Mapuje punkty prawne
+        z Planu OPA/50 na istniejące reguły Rego.
+      operationId: getCoverageReport
+      parameters:
+        - name: prefix
+          in: query
+          schema:
+            type: string
+            enum: [V, P, OP, K, Z, R, PP, U, Pcc, Akc, CB, Suk, Zdr, AML, RODO, all]
+            default: all
+          description: Filter by act prefix
+      responses:
+        '200':
+          description: Coverage report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  generated:
+                    type: string
+                  total_points:
+                    type: integer
+                  covered:
+                    type: integer
+                  coverage_pct:
+                    type: integer
+                  by_prefix:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        total:
+                          type: integer
+                        covered:
+                          type: integer
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # GET /jdg/rules/{rule_id} — Rule Detail (R14 — NOWY, v8.0)
+  # ═════════════════════════════════════════════════════════════════════════════
+  /jdg/rules/{rule_id}:
+    get:
+      tags: [Health]
+      summary: Get rule detail by rule_id
+      description: |
+        R14: Zwraca szczegóły pojedynczej reguły: plik źródłowy,
+        podstawę prawną, routing, priorytet, ostrzeżenia.
+      operationId: getRuleDetail
+      parameters:
+        - name: rule_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Rule ID (np. jdg.vat.substantive.fuel_pl)
+      responses:
+        '200':
+          description: Rule detail
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rule_id:
+                    type: string
+                  file:
+                    type: string
+                  priority:
+                    type: integer
+                  legal_basis:
+                    type: string
+                  routing:
+                    type: string
+                  matched:
+                    type: boolean
+        '404':
+          description: Rule not found
+
+  # ═════════════════════════════════════════════════════════════════════════════
+  # GET /jdg/legal-coverage — Legal Coverage Status (R14 — NOWY, v8.0)
+  # ═════════════════════════════════════════════════════════════════════════════
+  /jdg/legal-coverage:
+    get:
+      tags: [Health]
+      summary: Get legal coverage status per act (Class A/B/C)
+      description: |
+        R14: Zwraca status pokrycia prawnego dla wszystkich 13 aktów
+        prawnych z klasyfikacją A (gotowe) / B (szkielety) / C (planowane).
+      operationId: getLegalCoverage
+      parameters:
+        - name: act
+          in: query
+          schema:
+            type: string
+            enum: [vat, pit, zus, kks, ord, uor, pp, pcc, local, ryczalt, sukcesja, rodo, aml, all]
+            default: all
+          description: Filter by legal act
+      responses:
+        '200':
+          description: Legal coverage status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_points:
+                    type: integer
+                  class_a_pct:
+                    type: integer
+                  class_b_pct:
+                    type: integer
+                  class_c_pct:
+                    type: integer
+                  last_updated:
+                    type: string
+                    format: date
+                  acts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        act:
+                          type: string
+                        name:
+                          type: string
+                        points:
+                          type: integer
+                        class:
+                          type: string
+                          enum: [A, B, C]
+                        coverage_pct:
+                          type: integer
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # COMPONENTS — Schemas
 # ═══════════════════════════════════════════════════════════════════════════════

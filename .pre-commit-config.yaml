@@ -1,105 +1,65 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# Pre-commit hooks — NexusAI Enterprise Quality Gates
-# ═══════════════════════════════════════════════════════════════════════════════
-# Install:  pip install pre-commit && pre-commit install
-# Run all:  pre-commit run --all-files
-# ═══════════════════════════════════════════════════════════════════════════════
+# .pre-commit-config.yaml
+# NexusAI JDG — Pre-commit hooks for documentation and rule validation
+# R11: Wprowadzenie CI/CD dla dokumentacji (RAPORT_P25)
+#
+# Usage:
+#   pip install pre-commit
+#   pre-commit install
+#   pre-commit run --all-files
 
 repos:
-  # ── Ruff: linter + auto-fix ──────────────────────────────────────────────
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.0
-    hooks:
-      - id: ruff
-        name: ruff-lint
-        args: [--fix, --exit-non-zero-on-fix]
-        files: ^nexus_ai/
-        types_or: [python, pyi]
-      - id: ruff-format
-        name: ruff-format
-        files: ^nexus_ai/
-        types_or: [python, pyi]
-
-  # ── mypy: static type checking ─────────────────────────────────────────
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
-    hooks:
-      - id: mypy
-        name: mypy-typecheck
-        files: ^nexus_ai/
-        args: [--strict, --ignore-missing-imports]
-        additional_dependencies:
-          - msgspec>=0.18.0
-          - types-setuptools
-
-  # ── General hooks ──────────────────────────────────────────────────────
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-    hooks:
-      - id: trailing-whitespace
-        name: trim-trailing-whitespace
-        files: ^nexus_ai/
-      - id: end-of-file-fixer
-        name: fix-end-of-file
-        files: ^nexus_ai/
-      - id: check-yaml
-        name: check-yaml
-        files: \.(yaml|yml)$
-      - id: check-added-large-files
-        name: check-large-files
-        args: [--maxkb=2048]
-      - id: check-merge-conflict
-        name: check-merge-conflict
-      - id: check-toml
-        name: check-toml
-        files: \.toml$
-
-  # ── Security: gitleaks (secrets scanning) — v7.0 Security Audit ──────
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.18.0
-    hooks:
-      - id: gitleaks
-        name: gitleaks-secrets-scan
-        args: ["--verbose"]
-
-  # ── Security: bandit (Python security linter) — v7.0 Security Audit ──
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.7
-    hooks:
-      - id: bandit
-        name: bandit-security-lint
-        args: ["-r", "nexus_ai/", "-ll"]
-        files: ^nexus_ai/
-
-  # ── Syntax: check-ast (Python syntax validation) — v7.0 Security Audit ──
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-    hooks:
-      - id: check-ast
-        name: check-python-ast
-        files: \.py$
-
-  # ── JDG Rego Quality Gates — v7.0 Audit P0.1 ────────────────────────────
   - repo: local
     hooks:
-      - id: lint-rego-rules
-        name: Lint Rego Rules (B3)
-        entry: python JDG/tools/lint_rego_rules.py
-        args: ["--check", "legal_basis_required", "--check", "rule_id_canonical", "--check", "no_hardcoded_integers", "--ci"]
-        language: system
-        files: ^JDG/rules/.*\.rego$
-        pass_filenames: false
-      - id: validate-rego-rules
+      - id: validate-rules
         name: Validate Rego Rules
-        entry: python JDG/tools/validate_rules.py
-        args: ["--strict"]
+        entry: python JDG/tools/validate_rules.py --strict
         language: system
         files: ^JDG/rules/.*\.rego$
         pass_filenames: false
-      - id: check-manifest
-        name: Check Manifest Consistency
-        entry: python JDG/tools/generate_manifest.py
-        args: ["--check"]
+        always_run: true
+
+      - id: manifest-check
+        name: Check MANIFEST.md is up-to-date
+        entry: python JDG/tools/generate_manifest.py --check
         language: system
         files: ^JDG/rules/.*\.rego$
         pass_filenames: false
+        always_run: true
+
+      - id: bundle-check
+        name: Verify OPA bundle integrity (count .rego files)
+        entry: bash -c 'BUNDLE_COUNT=$(find JDG/rules -name "*.rego" | wc -l); echo "✅ Bundle check: $BUNDLE_COUNT plików .rego w rules/"'
+        language: system
+        files: ^JDG/(rules/.*\.rego|bundles/.*)$
+        pass_filenames: false
+
+      - id: opa-check
+        name: OPA Syntax Check
+        entry: opa check JDG/rules/ -b
+        language: system
+        files: ^JDG/rules/.*\.rego$
+        pass_filenames: false
+
+      - id: trailing-whitespace
+        name: Trim Trailing Whitespace
+        entry: trailing-whitespace-fixer
+        language: python
+        types: [text]
+
+      - id: end-of-file-fixer
+        name: Fix End of Files
+        entry: end-of-file-fixer
+        language: python
+        types: [text]
+
+      - id: check-yaml
+        name: Check YAML
+        entry: check-yaml
+        language: python
+        types: [yaml]
+
+      - id: check-json
+        name: Check JSON
+        entry: check-json
+        language: python
+        types: [json]

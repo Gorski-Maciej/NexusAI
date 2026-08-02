@@ -1,26 +1,33 @@
 NexusAI JDG — Micro Rule Generation Summary
-Date: 2026-07-13
-Total rules: 2875
-Files: 21
+Date: 2026-08-02 (Aktualizacja P26)
+Total rules: 10232
+Files: 106
 
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/akcyza/akcyza.rego: 32 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/aml/aml.rego: 44 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/ceidg/ceidg.rego: 34 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/crossborder/crossborder.rego: 72 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/jpk/jpk.rego: 35 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/kks/kks.rego: 375 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/ksef/ksef.rego: 79 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/ord/ord.rego: 318 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/pcc/pcc.rego: 89 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/pit/pit.rego: 521 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/pp/pp.rego: 92 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/rodo/rodo.rego: 40 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/ryczalt/ryczalt.rego: 97 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/srodowisko/srodowisko.rego: 48 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sukcesja/sukcesja.rego: 38 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus.rego: 122 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/transport/transport.rego: 44 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/uor/uor.rego: 124 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/vat/vat.rego: 571 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa.rego: 38 rules
-  /data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna.rego: 62 rules
+  JDG/rules/micro/akcyza/akcyza.rego: 179 rules
+  JDG/rules/micro/aml/aml.rego: 154 rules
+  JDG/rules/micro/amortyzacja/amortyzacja.rego: 33 rules
+  JDG/rules/micro/bdo/bdo.rego: 46 rules
+  JDG/rules/micro/budownictwo/budownictwo.rego: 202 rules
+  JDG/rules/micro/ceidg/ceidg.rego: 212 rules
+  JDG/rules/micro/crossborder/crossborder.rego: 254 rules
+  JDG/rules/micro/jpk/jpk.rego: 267 rules
+  JDG/rules/micro/kks/kks.rego: 375 rules
+  JDG/rules/micro/ksef/ksef.rego: 335 rules
+  JDG/rules/micro/ord/ord.rego: 318 rules
+  JDG/rules/micro/pcc/pcc.rego: 178 rules
+  JDG/rules/micro/pit/pit.rego: 521 rules
+  JDG/rules/micro/pkpir/pkpir.rego: 74 rules
+  JDG/rules/micro/pp/pp.rego: 92 rules
+  JDG/rules/micro/rodo/rodo.rego: 67 rules
+  JDG/rules/micro/ryczalt/ryczalt.rego: 97 rules
+  JDG/rules/micro/srodowisko/srodowisko.rego: 145 rules
+  JDG/rules/micro/sukcesja/sukcesja.rego: 163 rules
+  JDG/rules/micro/sus/sus.rego: 244 rules
+  JDG/rules/micro/transport/transport.rego: 178 rules
+  JDG/rules/micro/uor/uor.rego: 124 rules
+  JDG/rules/micro/vat/vat.rego: 1148 rules
+  JDG/rules/micro/zasilkowa/zasilkowa.rego: 76 rules
+  JDG/rules/micro/zdrowotna/zdrowotna.rego: 272 rules
+
+UWAGA P26 (2026-08-02): Plik zregenerowany — 106 plików .rego w micro/, 10232 unikalnych rule_id.
+Poprzednia wersja opisywała tylko 21 oryginalnych plików (2875 rule_id).

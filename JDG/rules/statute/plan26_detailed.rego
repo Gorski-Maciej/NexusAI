@@ -30,22 +30,22 @@ else :=   {"matched":true,"rule_id":"jdg.statute.voluntary_disclosure_protection
 
 # jdg.statute.overpayment_detection_and_refund — Nadpłata podatku — zwrot 45 dni (VAT) / 3 mies. (PIT)
 else :=   {"matched":true,"rule_id":"jdg.statute.overpayment_detection_and_refund","package":"jdg.statute","priority":1169,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Nadpłata podatku — zwrot 45 dni (VAT) / 3 mies. (PIT)","_legal_basis":"Art. 72-80 OP","_warnings":["Nadpłata — złóż wniosek o zwrot"]} {
-    object.get(input.document, "years_since_due_year", 0) > 0
+    object.get(input.document, "overpayment_detected", false) == true
 }
 
 # jdg.statute.deferral_active_interest_suspended — Odroczenie/raty — odsetki zawieszone, opłata prolongacyjna
 else :=   {"matched":true,"rule_id":"jdg.statute.deferral_active_interest_suspended","package":"jdg.statute","priority":1170,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Odroczenie/raty — odsetki zawieszone, opłata prolongacyjna","_legal_basis":"Art. 48, Art. 67a-67e OP","_warnings":["Odroczenie aktywne — przestrzegaj terminów rat"]} {
-    object.get(input.document, "years_since_due_year", 0) > 0
+    object.get(input.document, "deferral_active", false) == true
 }
 
 # jdg.statute.tax_remission_liability_extinguished — Umorzenie zaległości — zobowiązanie wygasa
 else :=   {"matched":true,"rule_id":"jdg.statute.tax_remission_liability_extinguished","package":"jdg.statute","priority":1171,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Umorzenie zaległości — zobowiązanie wygasa","_legal_basis":"Art. 51 OP","_warnings":["Zaległość umorzona — zobowiązanie wygasło"]} {
-    object.get(input.document, "years_since_due_year", 0) > 0
+    object.get(input.document, "remission_granted", false) == true
 }
 
 # jdg.statute.overpayment_offset_auto — Zaliczenie nadpłaty na przyszłe zobowiązania
 else :=   {"matched":true,"rule_id":"jdg.statute.overpayment_offset_auto","package":"jdg.statute","priority":1172,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Zaliczenie nadpłaty na przyszłe zobowiązania","_legal_basis":"Art. 72-80, Art. 87 OP","_warnings":[]} {
-    object.get(input.document, "years_since_due_year", 0) > 0
+    object.get(input.document, "offset_requested", false) == true
 }
 
 # jdg.statute.tax_proceedings_deadlines_alert — Terminy proceduralne — 7/14/30/60 dni

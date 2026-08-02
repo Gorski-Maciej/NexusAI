@@ -114,3 +114,121 @@ else := {
     input.retention.storage_medium == "ELECTRONIC"
     input.retention.authenticity_proven == false
 }
+
+# ══════ P993-P995: ROZSZERZENIE RETENCJI — ZUS 10 lat + UoR 5 lat (Raport P26 R7) ══════
+
+# ══ P993b: zus_archival_50yr_pre1999 — Archiwum ZUS — 50 lat dla dokumentów sprzed 1999 (MUSI być przed P993!) ══
+else := {
+    "matched":true,"rule_id":"jdg.retention.zus_archival_50yr_pre1999",
+    "package":"jdg.retention","priority":993,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","retention_period_years":50,"retention_reason":"ZUS_ARCHIVAL_PRE1999",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 125a ust. 4 Ustawy SUS (zasób archiwalny ZUS)",
+    "_warnings":["Archiwum ZUS sprzed 1999 — 50 lat! Dokumenty płacowe i ubezpieczeniowe sprzed 1 stycznia 1999 podlegają 50-letniemu okresowi archiwizacji jako zasób archiwalny ZUS. Dotyczy: list płac, kart wynagrodzeń, akt osobowych."]
+} {
+    input.retention.document_category == "ZUS"
+    input.retention.pre_1999_records == true
+}
+
+# ══ P993: zus_documents_retention_10yr — Dokumenty ZUS — 10 lat przechowywania ══
+else := {
+    "matched":true,"rule_id":"jdg.retention.zus_documents_10yr",
+    "package":"jdg.retention","priority":994,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","retention_period_years":10,"retention_reason":"ZUS",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 125a ust. 1 Ustawy o systemie ubezpieczeń społecznych",
+    "_warnings":["Dokumenty ZUS — 10 lat przechowywania! Dotyczy: DRA, RCA, RSA, ZUS ZUA, ZUS ZWUA, oraz dokumentacji płacowej będącej podstawą wymiaru składek. Okres liczony od dnia przekazania dokumentów do ZUS."]
+} {
+    input.retention.document_category == "ZUS"
+}
+
+# ══ P995: uor_accounting_retention_5yr — Dokumenty księgowe UoR — 5 lat ══
+else := {
+    "matched":true,"rule_id":"jdg.retention.uor_accounting_5yr",
+    "package":"jdg.retention","priority":995,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","retention_period_years":5,"retention_reason":"UOR_ACCOUNTING",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 74 Ustawy o rachunkowości",
+    "_warnings":["Dokumenty księgowe UoR — 5 lat od początku roku następującego po roku obrotowym, którego dotyczą. Dotyczy: ksiąg rachunkowych, dowodów księgowych, sprawozdań finansowych, dokumentacji inwentaryzacyjnej. W przypadku postępowań podatkowych — do upływu przedawnienia."]
+} {
+    input.retention.document_category == "UOR_ACCOUNTING"
+}
+
+# ══ P995b: uor_annual_reports_permanent — Roczne sprawozdania finansowe — trwałe przechowywanie ══
+else := {
+    "matched":true,"rule_id":"jdg.retention.uor_annual_reports_permanent",
+    "package":"jdg.retention","priority":996,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","retention_period_years":999,"retention_permanent":true,"retention_reason":"UOR_ANNUAL_REPORTS",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 74 ust. 2 UoR",
+    "_warnings":["ROCZNE SPRAWOZDANIA FINANSOWE — TRWAŁE PRZECHOWYWANIE! Zatwierdzone roczne sprawozdania finansowe podlegają trwałemu przechowywaniu. Nie mogą być zniszczone po 5 latach jak pozostałe dokumenty księgowe."]
+} {
+    input.retention.document_category == "UOR_ACCOUNTING"
+    input.retention.is_annual_report == true
+}
+
+# ══════ P996-998: RETENCJA KONTRAKTOWA — Umowy i dokumentacja prawna ══════
+
+# ══ P996: contract_retention_6yr — Umowy handlowe — 6 lat od wykonania ══
+else := {
+    "matched":true,"rule_id":"jdg.retention.contracts_6yr",
+    "package":"jdg.retention","priority":997,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","retention_period_years":6,"retention_reason":"CONTRACTS",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 118 KC (przedawnienie roszczeń z działalności gospodarczej)",
+    "_warnings":["Umowy — 6 lat od dnia wymagalności roszczenia (dla JDG). Przechowuj umowy do upływu okresu przedawnienia roszczeń + 1 rok buforu. Dotyczy: umowy z kontrahentami, umowy najmu, umowy o dzieło/zlecenie."]
+} {
+    input.retention.document_category == "CONTRACTS"
+}
+
+# ══ P997: insurance_docs_retention — Polisy ubezpieczeniowe — 3 lata od wygaśnięcia ══
+else := {
+    "matched":true,"rule_id":"jdg.retention.insurance_3yr",
+    "package":"jdg.retention","priority":998,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","retention_period_years":3,"retention_reason":"INSURANCE",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 819 KC (przedawnienie roszczeń z umowy ubezpieczenia)",
+    "_warnings":["Polisy ubezpieczeniowe — 3 lata od dnia zdarzenia ubezpieczeniowego. Dotyczy: OC, majątkowe, komunikacyjne, zdrowotne. Po upływie 3 lat roszczenia z umowy ubezpieczenia przedawniają się."]
+} {
+    input.retention.document_category == "INSURANCE"
+}
+
+# ══ P998: gdpr_consent_retention — Zgody RODO — do wycofania + 5 lat ══
+else := {
+    "matched":true,"rule_id":"jdg.retention.gdpr_consents",
+    "package":"jdg.retention","priority":999,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","retention_period_years":5,"retention_reason":"GDPR_CONSENT",
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"RODO + Art. 74 UoR (dowód księgowy)",
+    "_warnings":["Zgody RODO — przechowuj przez okres przetwarzania + 5 lat po wycofaniu zgody (dla celów dowodowych). Dokumentacja zgód i ich wycofania jest kluczowa w przypadku kontroli PUODO."]
+} {
+    input.retention.document_category == "GDPR_CONSENT"
+}

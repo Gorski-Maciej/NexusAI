@@ -1,18 +1,20 @@
 {
   "_auto_generated": true,
-  "_generator": "JDG/tools/generate_manifest.py",
+  "_generator": "JDG/tools/generate_manifest.py v8.0",
   "_warning": "DO NOT EDIT MANUALLY — regenerate with: python JDG/tools/generate_manifest.py",
-  "revision": "auto-generated",
+  "revision": "v8.0-2026-08-02",
   "roots": ["jdg"],
   "metadata": {
     "name": "NexusAI JDG Rules Bundle",
-    "version": "3.0.0",
+    "version": "8.0.0",
     "description": "Kompletny zestaw reguł OPA dla Jednoosobowej Działalności Gospodarczej",
-    "rules_count": 633,
-    "files_count": 38,
+    "rules_count": 10878,
+    "unique_rule_ids": 10509,
+    "files_count": 383,
+    "files_with_matched_true": 349,
     "opa_version": "v0.60+",
     "canonical_map": "38c_JDG_CANONICAL_MAP.md",
-    "coverage_pct": 81,
+    "coverage_pct": "Audit P25 — zobacz COVERAGE_REPORT.md",
     "domains": [
       "kks", "vat", "pit", "zus", "accounting", "edge_cases",
       "crossborder", "conflicts", "compliance", "allowances",
@@ -20,7 +22,7 @@
       "local_taxes", "business", "employer", "liability",
       "representation", "corrections", "restructuring",
       "ksef_jpk", "retention", "temporal", "digital",
-      "environmental", "international", "fallback"
+      "environmental", "international", "fallback", "micro"
     ]
   },
   "services": {

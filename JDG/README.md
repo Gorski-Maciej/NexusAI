@@ -1,13 +1,13 @@
 # 🏛️ NexusAI JDG — Moduł Reguł dla Jednoosobowej Działalności Gospodarczej
 
-> **Status:** ENTERPRISE v7.0 | **Reguł:** ~10,185 | **Plików Rego:** 180 | **Pokrycie kanoniczne:** ~98%
-> **Data:** 2026-07-19 | **13 aktów prawnych** | **24 inicjatyw strategicznych (A1-C3 + S1-S24)**
+> **Status:** ENTERPRISE v8.0 | **Reguł:** ~10,827 unikalnych rule_id | **Plików Rego:** 383 | **Pokrycie kanoniczne:** Audit P25
+> **Data:** 2026-08-02 | **13 aktów prawnych** | **24 inicjatyw strategicznych (A1-C3 + S1-S24)**
 
 ---
 
 ## 📊 EXECUTIVE SUMMARY
 
-Moduł JDG to **najbardziej zaawansowany silnik reguł OPA/Rego dla polskiej JDG** — 180 plików, ~10,185 reguł, ~98% pokrycia kanonicznego. Architektura **Multi-Layer Enterprise v7.0** z **4 nowymi inicjatywami S21-S24**: VAT Complete, Tax Authority Interaction, Sanctions Optimization, Lifecycle Manager.
+Moduł JDG to **najbardziej zaawansowany silnik reguł OPA/Rego dla polskiej JDG** — 383 plików, ~10,827 unikalnych rule_id, 352 plików z matched:true. Architektura **Multi-Layer Enterprise v8.0** z **24 inicjatywami S1-S24**.
 
 ### 13 Aktów Prawnych Pokrytych:
 ✅ VAT | ✅ PIT | ✅ ZUS/SUS | ✅ Ordynacja Podatkowa | ✅ KKS | ✅ UoR | ✅ Prawo Przedsiębiorców | ✅ PCC | ✅ Podatki lokalne + Akcyza | ✅ Ryczałt | ✅ Sukcesja | ✅ RODO | ✅ AML/BDO
@@ -26,8 +26,8 @@ Moduł JDG to **najbardziej zaawansowany silnik reguł OPA/Rego dla polskiej JDG
 ```
 JDG/
 ├── README.md                          # Ten dokument
-├── MANIFEST.md                        # Tracker pokrycia ~9,995 reguł
-├── rules/                             # Reguły Rego (169 plików, ~9,995 reguł)
+├── MANIFEST.md                        # Tracker pokrycia ~10,827 reguł (auto-generowany)
+├── rules/                             # Reguły Rego (383 plików, ~10,827 unikalnych rule_id)
 │   ├── main_jdg.rego                  # 🧠 Główny orkiestrator (~55 pakietów, Multi-Pass + Sharded Router)
 │   ├── *_enterprise.rego              # 18 plików Enterprise (S1-S5, Klasa II/VIII/IX/XII, KKS)
 │   ├── micro/                         # ~2,900 atomowych reguł (per artykuł ustawy)
@@ -47,19 +47,20 @@ JDG/
 
 | Metryka | Wartość |
 |---------|---------|
-| **Reguły Rego (matched:true)** | **~10,185** |
-| Pliki Rego | **180** |
+| **Reguły Rego (unikalne rule_id)** | **~10,827** |
+| Pliki Rego | **383** |
+| Pliki z matched:true | **352** |
 | Akty prawne pokryte | **13** |
 | Inicjatywy strategiczne | **24** (A1-A3, B1-B3, C1-C3, S1-S24) |
 | Pakiety w orkiestratorze | **~60** |
-| Pokrycie kanoniczne | **~98%** |
+| Pokrycie kanoniczne | **Audyt P25 — zobacz COVERAGE_REPORT.md** |
 
 ### Warstwy architektury
 
 | Warstwa | Plików | Reguł | Opis |
 |--------|:------:|:-----:|------|
-| **Macro (Core)** | 38 | ~6,300 | Reguły decyzyjne — VAT, PIT, ZUS, KKS, PKPiR, Cross-border |
-| **Micro (Atomowe)** | 35 | ~2,900 | Atomowe per artykuł ustawy |
+| **Macro (Core)** | ~153 | ~6,300 | Reguły decyzyjne — VAT, PIT, ZUS, KKS, PKPiR, Cross-border |
+| **Micro (Atomowe)** | ~106 | ~3,500 | Atomowe per artykuł ustawy |
 | **Enterprise v7.0 S21-S24** | 4 | 24 | VAT Complete, Tax Interaction, Sanctions, Lifecycle |
 | **Enterprise S1-S5** | 5 | 24 | Optymalizacja, Cross-Domain, Wyroki, Audyt, Strategia |
 | **Klasa VIII (PKPiR+UoR)** | 2 | 51 | Kolumny 1-17 PKPiR, rejestry VAT, amortyzacja |
@@ -194,4 +195,5 @@ cd JDG/bundles && bash bundle.sh
 
 ---
 
-*Wygenerowano przez NexusAI JDG Module Engine v3.0 — 2026-07-13*
+*Wygenerowano przez NexusAI JDG Module Engine v8.0 — 2026-08-02*
+*Liczby auto-generowane przez `python JDG/tools/generate_manifest.py`*

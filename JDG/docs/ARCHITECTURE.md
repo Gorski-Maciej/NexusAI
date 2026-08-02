@@ -1,6 +1,6 @@
-# 🏗️ JDG Architecture Decision Records (ADR)
+# 🏗️ JDG Architecture Decision Records (ADR) — v8.0
 
-> **Status:** ENTERPRISE v3.0 | **Data:** 2026-07-13
+> **Status:** ENTERPRISE v8.0 | **Data:** 2026-08-02 | **14 ADR-ów**
 
 ---
 
@@ -18,6 +18,9 @@
 - Nie można przeplatać helper rules (`:=`) z `else :=` w łańcuchu (helper rules muszą być przed lub po)
 - Testy muszą weryfikować poprawność kolejności
 
+**Status wdrożenia:** ✅ IMPLEMENTED (fundament od v1.0)
+**Ostatnia weryfikacja:** 2026-08-02 — testy kolejności: 0 plików .rego w tests/ (⚠️ patrz ADR-013)
+
 ---
 
 ## ADR-002: Zero Hardcoded Values
@@ -29,7 +32,12 @@
 - Hot-reload przez OPA Data API bez redeployu
 - Ułatwia testowanie — testy mogą podstawiać różne wartości thresholdów
 
-**Aktualny status:** ⚠️ Częściowo wdrożone. Wykryto ~265 zakodowanych wartości w 32 plikach. Migracja w toku (Faza C2).
+**Aktualny status:** ⚠️ PARTIALLY IMPLEMENTED
+- Wykryto ~265 zakodowanych wartości w 32 plikach (audyt z 2026-07-13)
+- Migracja 001 tworzy tabelę `jdg_tax_thresholds` z wersjonowaniem temporalnym
+- Bundles/manifest.json deklaruje serwis `thresholds` (http://thresholds-service:8080)
+- **Skala pozostałości:** nieznana — wymaga audytu wyczerpującego (R8)
+- **Szacowane ukończenie:** Faza C7 (60% wykonane)
 
 ---
 
@@ -53,6 +61,8 @@ temporal_validity := {
 }
 ```
 
+**Status wdrożenia:** ✅ IMPLEMENTED (temporal.rego, _metadata_jdg.rego, migracja 001 rule_versions)
+
 ---
 
 ## ADR-004: Standardowy Werdykt 25-Polowy
@@ -64,23 +74,22 @@ temporal_validity := {
 - `safe_merge` w `main_jdg.rego` łączy werdykty bez utraty danych
 - Klient może polegać na stałej strukturze JSON
 
-**Pola obowiązkowe:**
-`matched`, `rule_id`, `package`, `priority`, `vat_rate`, `rounding_level`, `gtu_code`, `procedure`, `vat_exemption`, `pit_form`, `pit_rate`, `pit_bracket`, `pit_annual_return_type`, `kus_qualification`, `kus_percent`, `zus_social_base_type`, `zus_health_rate`, `business_status`, `ceidg_registration_required`, `_routing`, `_routing_reason`, `_legal_basis`, `_warnings`
+**Status wdrożenia:** ✅ IMPLEMENTED (validate_rules.py sprawdza _legal_basis/_routing/_warnings)
 
 ---
 
 ## ADR-005: Dual-Layer Architecture (Horyzont 2027+)
 
 **Decyzja:** Długoterminowa architektura dwuwarstwowa:
-- **Warstwa 1 (Macro):** ~500 reguł biznesowych/decyzyjnych (P-ID) — agregują Micro
-- **Warstwa 2 (Micro):** ~7000 reguł atomowych/prawnych (`jdg.*`) — pojedyncze warunki logiczne
+- **Warstwa 1 (Macro):** ~500 reguł biznesowych/decyzyjnych — agregują Micro
+- **Warstwa 2 (Micro):** ~7000 reguł atomowych/prawnych — pojedyncze warunki logiczne
 
-**Uzasadnienie:**
-- Obecna architektura (633 reguł Macro) jest wystarczająca dla pokrycia biznesowego
-- Dekompozycja na Micro umożliwia pełne pokrycie prawne (każdy artykuł → 8-15 reguł)
-- Separacja pozwala na niezależną ewolucję obu warstw
+**⚠️ AKTUALIZACJA v8.0:** Horyzont PRZYSPIESZONY.
+- `rules/micro/` zawiera już **106 plików** reguł mikro (nie czekamy do 2027!)
+- Zasady konsolidacji mikro z makro — patrz **ADR-010**
+- Implementacja mikro rozpoczęta "w tle" — zobacz `generate_micro_rules.py`, `generate_massive_rules.py`
 
-**Status:** Plan strategiczny w `Plan OPA/41_JDG_MEGA_MATRIX_7000_RULES.md`. Nie rozpoczynaj implementacji Micro przed 2027.
+**Status wdrożenia:** ⚠️ PARTIALLY IMPLEMENTED (rozpoczęte wcześniej niż planowano)
 
 ---
 
@@ -95,24 +104,15 @@ temporal_validity := {
 
 **Implementacja:** `nexus_ai/tax/immutable_audit.py` + pole `immutable_verdict` w Rego
 
+**Status wdrożenia:** ✅ IMPLEMENTED (migracja 001: jdg_verdict_audit)
+
 ---
 
-## ADR-007: Multi-Pass Evaluation (PAS)
+## ADR-007: Multi-Pass Evaluation
 
-**Decyzja:** Ewaluacja OPA odbywa się w wielu przebiegach (Multi-Pass), gdzie każdy przebieg (PAS) ocenia inną domenę.
+**Decyzja:** Ewaluacja OPA odbywa się w wielu przebiegach (Multi-Pass PASS 0-8 + POST-MERGE).
 
-**Kolejność PAS:**
-1. **PAS 1:** Risk & Fraud (P0-P9) — blokada przy fraudzie
-2. **PAS 2:** Routing & Confidence (P10-P19) — kierowanie do triage
-3. **PAS 3:** Cross-border (P40-P49) — procedury transgraniczne
-4. **PAS 4:** VAT (P50-P140) — stawki, zwolnienia, GTU
-5. **PAS 5:** PIT (P500-P599) — formy, KUP, zaliczki
-6. **PAS 6:** Allowances (P600-P635) — ulgi podatkowe
-7. **PAS 7:** ZUS (P700-P1206) — składki, zasiłki
-8. **PAS 8:** Accounting (P800-P870) — metody księgowe
-9. **PAS 9:** Fallback (P1000+) — domyślne stawki
-
-**Uzasadnienie:** Różne domeny są niezależne, ale niektóre zależą od wyników wcześniejszych (np. KUP zależy od stawki VAT). Multi-Pass umożliwia równoległą ewaluację niezależnych domen.
+**Status wdrożenia:** ✅ IMPLEMENTED (spójne z openapi.yaml, ADR-007 i README)
 
 ---
 
@@ -120,12 +120,125 @@ temporal_validity := {
 
 **Format:** `jdg.<domena>.<kategoria>_<szczegół>`
 
-**Przykłady:**
-- `jdg.vat.substantive.fuel_pl` — VAT, stawka dla paliwa w PL
-- `jdg.kks.empty_invoice_issued` — KKS, wystawienie pustej faktury
-- `jdg.zus.health_linear` — ZUS, składka zdrowotna liniowy
-- `jdg.edge_cases.vat_breach_mid_year` — Edge case, przekroczenie limitu VAT
+**⚠️ AKTUALIZACJA v8.0:** Wykryto **336 zduplikowanych rule_id** (te same reguły w makro i micro, lub duplikaty z generacji masowej). Konwencja wymaga dopisania zasad deduplikacji — patrz **ADR-010**.
+
+**Status wdrożenia:** ✅ IMPLEMENTED (wymaga uzupełnienia o deduplikację)
 
 ---
 
-*Wygenerowano przez NexusAI ADR Engine v1.0 — 2026-07-13*
+## ADR-009: Sharded Router (B1) — [NOWY, v8.0]
+
+**Decyzja:** Orkiestrator `main_jdg.rego` dzieli pakiety na shardy według kontekstu (tax_form × transaction_type × entity_flags × evaluation_date) z O(1) hashowaniem.
+
+**Uzasadnienie:**
+- ~55 pakietów w orkiestratorze — ewaluacja wszystkich na raz to ~50-100ms
+- Sharded Router redukuje do 5-25 reguł na shard → p95 < 5ms
+- Każdy shard ma dedykowany zestaw reguł
+
+**Implementacja:** `main_jdg.rego` + `routing.rego`
+
+**Status wdrożenia:** ✅ IMPLEMENTED (działa w orkiestratorze)
+
+---
+
+## ADR-010: Mikro-Atomy + Deduplikacja — [NOWY, v8.0]
+
+**Decyzja:** 
+1. `rules/micro/` zawiera 106 plików atomowych — status: PRODUKCYJNY (nie "horyzont 2027").
+2. Deduplikacja 336 rule_id: każdy duplikat przechodzi proces merge/rename/remove.
+3. Zasady generowania: `generate_micro_rules.py` (759 linii) + `generate_massive_rules.py` (1507 linii).
+
+**Zasady deduplikacji:**
+- Jeśli ta sama reguła w makro i micro → zachowaj wersję makro, usuń z micro
+- Jeśli ten sam rule_id w różnych plikach → rename z sufiksem kontekstu
+- Reguły z `generate_missing_rules.py` (checkpoint rules) → prefix `chk_`
+
+**Status wdrożenia:** ⚠️ PARTIALLY — mikro istnieje (106 plików), deduplikacja do wykonania (Faza 3)
+
+---
+
+## ADR-011: Policy Bundles + Wersjonowanie — [NOWY, v8.0]
+
+**Decyzja:** Bundle OPA budowany przez `bundle.sh` (v8.0) z zachowaniem struktury katalogów.
+
+**Zasady:**
+- `bundle.sh` kopiuje pliki .rego z zachowaniem ścieżek względnych (fix R1 — 8 kolizji nazw)
+- Weryfikacja: liczba plików w bundle == liczba plików na dysku
+- Wersjonowanie: data + opcjonalny tag
+- Deployment: `curl -X PUT --data-binary @bundle.tar.gz http://opa-server:8181/v1/bundles/jdg`
+
+**Status wdrożenia:** ✅ IMPLEMENTED (bundle.sh v8.0)
+
+---
+
+## ADR-012: Metryki Pokrycia (Definicja "Reguły") — [NOWY, v8.0]
+
+**Decyzja:** Wprowadzenie 3 rozłącznych metryk pokrycia:
+
+| Metryka | Definicja | Wartość (2026-08-02) |
+|---------|-----------|----------------------|
+| **M1: Bloki matched:true** | Liczba wystąpień `"matched": true` we wszystkich plikach Rego | ~10,827+ |
+| **M2: Unikalne rule_id** | Liczba unikalnych identyfikatorów reguł (dedup) | 10,827 |
+| **M3: Punkty Doc 50** | Liczba punktów prawnych z Doc 50 zmapowanych na rule_id | 44/509 (8% — VAT only) |
+
+**Źródło jednej prawdy:** MANIFEST.md (auto-generowany przez generate_manifest.py v8.0)
+
+**Status wdrożenia:** ✅ IMPLEMENTED (generate_manifest.py v8.0 liczy M1 i M2; M3 w COVERAGE_REPORT.md)
+
+---
+
+## ADR-013: Testy Rego — [NOWY, v8.0]
+
+**Decyzja:** Wprowadzenie polityki testowania Rego.
+
+**Zasady:**
+- Testy Rego (`_test.rego`) dla wszystkich kluczowych pakietów (VAT, PIT, ZUS, KKS)
+- Minimum 1 test per pakiet weryfikujący else-chain (kolejność reguł)
+- `opa test JDG/tests/ -v` w CI
+- Pokrycie testami: cel >=20 plików testowych do Q4 2026
+
+**Aktualny stan:** ❌ 0 plików .rego w JDG/tests/ — tylko pytest Python.
+
+**Status wdrożenia:** ⬜ NOT IMPLEMENTED (Faza 4)
+
+---
+
+## ADR-014: Rozliczalność Narzędzi — [NOWY, v8.0]
+
+**Decyzja:** Segregacja plików .py w JDG/tools/ na kategorie.
+
+**Kategorie:**
+| Kategoria | Opis | Przykłady |
+|-----------|------|-----------|
+| **core/** | Główne narzędzia produkcyjne | `generate_manifest.py`, `validate_rules.py` |
+| **legacy/** | Narzędzia jednej kampanii | `p11_accounting_toolkit.py` |
+| **one-shot/** | Jednorazowe fixy/konwersje | `fix_*.py`, `dedup_*.py` |
+| **tests/** | Generatory testów | `generate_test_suite.py` |
+
+**Status wdrożenia:** ✅ IMPLEMENTED (tools/README.md, R15)
+
+---
+
+## ADR-015: Konwencja Checkpoint-Stubów (P26 R12) — [NOWY, v8.1]
+
+**Status:** ✅ Zaakceptowane (2026-08-02)
+
+**Problem:** Wiele reguł Rego używa warunku `{ true }` jako placeholder podczas developmentu. Bez konwencji nie da się odróżnić intencjonalnego zawsze-prawdziwego triggera od niedokończonego stubu.
+
+**Decyzja:** Każda reguła z warunkiem `{ true }` MUSI być oznaczona:
+1. `# CHECKPOINT-STUB` w komentarzu nad regułą
+2. `_routing_reason` zawiera `[CHECKPOINT-STUB]`
+3. `_warnings` zawiera `[CHECKPOINT-STUB: <opis planowanego triggera>]`
+
+**Narzędzia:**
+- `dead_rule_detector.py` flaguje reguły `{ true }` bez CHECKPOINT-STUB
+- `validate_rules.py` raportuje CHECKPOINT-STUB jako WARNING
+- `initiative_numbering_auditor.py` weryfikuje spójność numeracji S1-S24
+
+**Konsekwencje:** Wszystkie nowe reguły przechodzące code review z `{ true }` muszą być oznaczone jako CHECKPOINT-STUB.
+
+---
+
+*Wygenerowano przez NexusAI ADR Engine v8.1 — 2026-08-02*
+*ADR-009..014 dodane na podstawie RAPORT_P25_JDG_DOCS_FINAL_AUDIT_v7.0 (R7)*
+*ADR-015 dodany na podstawie RAPORT_P26_JDG_MISSING_REGO_FILES_v7.0 (R12)*

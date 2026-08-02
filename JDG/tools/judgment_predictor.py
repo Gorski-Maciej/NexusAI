@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """
 ═══════════════════════════════════════════════════════════════════════════════
-NexusAI JDG — Judgment Predictor (C1 Strategic Initiative)
+NexusAI JDG — Judgment Predictor (C1 Strategic Initiative) [EKSPERYMENTALNY]
 ═══════════════════════════════════════════════════════════════════════════════
+
+STATUS v8.1 (P27 R12): EKSPERYMENTALNY — Deterministic scoring heuristic, NIE model ML.
+Używaj z flagą --experimental. Nazwa "predictor" jest myląca — to kalkulator
+ryzyka KKS + scoring regułowy, nie predykcja ML (brak sklearn/tensorflow/torch).
 
 Symulator kontroli US + Ostrzegator KKS — shadow mode evaluation.
 
