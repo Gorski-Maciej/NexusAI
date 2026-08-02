@@ -723,7 +723,7 @@ else := {
 } {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > 15000
+    amount_gross >= 15000
     helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
     category := input.invoice.category_code
 }
@@ -769,7 +769,7 @@ else := {
 } {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > 15000
+    amount_gross >= 15000
     helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
     input.invoice.split_payment_used == false
     amount_net := object.get(input.invoice, "amount_net", 0)
@@ -957,7 +957,7 @@ else := {
 } {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > 15000
+    amount_gross >= 15000
     category := input.invoice.category_code
     helpers.jdg_is_mpp_sensitive(category)
     input.invoice.split_payment_used == false

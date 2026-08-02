@@ -924,7 +924,7 @@ else := {
 } {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > thresholds.misc.mpp_mandatory_threshold
+    amount_gross >= thresholds.misc.mpp_mandatory_threshold
     # v7.0 CN bridge: MPP sensitivity by category OR CN code
     mpp_matched { helpers.jdg_is_mpp_sensitive(input.invoice.category_code) }
     mpp_matched { helpers.jdg_is_mpp_sensitive_by_cn(input.invoice.cn_code) }
@@ -973,7 +973,7 @@ else := {
 } {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > thresholds.misc.mpp_mandatory_threshold
+    amount_gross >= thresholds.misc.mpp_mandatory_threshold
     helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
     input.invoice.split_payment_used == false
     amount_net := object.get(input.invoice, "amount_net", 0)
@@ -1005,7 +1005,7 @@ else := {
 } {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > thresholds.misc.mpp_mandatory_threshold
+    amount_gross >= thresholds.misc.mpp_mandatory_threshold
     category := input.invoice.category_code
     mpp_matched { helpers.jdg_is_mpp_sensitive(category) }
     mpp_matched { helpers.jdg_is_mpp_sensitive_by_cn(input.invoice.cn_code) }
@@ -1058,7 +1058,7 @@ else := {
     amount_gross := object.get(input.invoice, "amount_gross", 0)
     fp_flag = "Faktura zaliczkowa / końcowa" { input.invoice.invoice_type in {"ADVANCE", "FINAL"} }
     fp_flag = "" { input.invoice.invoice_type not in {"ADVANCE", "FINAL"} }
-    mpp_flag = "OBOWIĄZKOWY" { input.invoice.split_payment_used == true; amount_gross > thresholds.misc.mpp_mandatory_threshold }
+    mpp_flag = "OBOWIĄZKOWY" { input.invoice.split_payment_used == true; amount_gross >= thresholds.misc.mpp_mandatory_threshold }
     mpp_flag = "DOBROWOLNY" { input.invoice.split_payment_used == true; amount_gross <= thresholds.misc.mpp_mandatory_threshold }
     mpp_flag = "" { input.invoice.split_payment_used == false }
     gtu_flag := object.get(input.invoice, "gtu_code", "")
@@ -1301,7 +1301,7 @@ else := {
 } {
     input.invoice.direction == "PURCHASE"
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > thresholds.misc.mpp_mandatory_threshold
+    amount_gross >= thresholds.misc.mpp_mandatory_threshold
     helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
     input.invoice.split_payment_used == false
     amount_net := object.get(input.invoice, "amount_net", 0)
@@ -1332,7 +1332,7 @@ else := {
     input.invoice.invoice_type == "ADVANCE"
     input.invoice.prepayment_received == true
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > thresholds.misc.mpp_mandatory_threshold
+    amount_gross >= thresholds.misc.mpp_mandatory_threshold
     helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
     category := input.invoice.category_code
 }

@@ -374,7 +374,7 @@ else := {
     is_empty_invoice := object.get(input.invoice, "is_empty_invoice", false)
     is_fake_invoice := object.get(input.invoice, "is_fake_invoice", false)
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > 15000
+    amount_gross >= 15000
     no_split_payment := input.invoice.split_payment_used == false
 
     # Priorytet przyczyna sankcji: pusta faktura > brak MPP

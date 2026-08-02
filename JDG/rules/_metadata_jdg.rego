@@ -278,6 +278,14 @@ temporal_validity := {
         "supersedes": null
     },
 
+    # Art. 113 VAT — paragon z NIP limit 450 zł (2022-01-01)
+    "jdg.vat.receipt_nip_limit_450": {
+        "valid_from": "2022-01-01",
+        "valid_to": null,
+        "reason": "Limit paragonu z NIP jako faktury uproszczonej: 450 PLN (od 2022-01-01, poprzednio 250 PLN)",
+        "supersedes": null
+    },
+
     # SLIM VAT 2 (2022) — uproszczenia w VAT
     "jdg.vat.slim_vat_2": {
         "valid_from": "2022-01-01",
@@ -323,6 +331,26 @@ temporal_validity := {
         "valid_from": "2022-01-01",
         "valid_to": null,
         "reason": "Limit ryczałtu 2 000 000 EUR — Polski Ład 2022 (wcześniej 250 000 EUR)",
+        "supersedes": null
+    },
+
+    # PIT — Stawki skali: 17%/32% (2019-10-01), 18%/32% (2020), 12%/32% (2022)
+    "jdg.pit.scale_rates_2019": {
+        "valid_from": "2019-10-01",
+        "valid_to": "2021-12-31",
+        "reason": "PIT skala 17%/32% od 1.10.2019, kwota wolna 8 000 PLN (przed Polskim Ładem)",
+        "supersedes": null
+    },
+    "jdg.pit.tax_free_30k_scale_12_32": {
+        "valid_from": "2022-01-01",
+        "valid_to": null,
+        "reason": "Polski Ład: skala 12%/32%, kwota wolna 30 000 PLN, kwota zmniejszająca 3 600 PLN",
+        "supersedes": "jdg.pit.scale_rates_2019"
+    },
+    "jdg.pit.relief_shared_limit_85528": {
+        "valid_from": "2022-01-01",
+        "valid_to": null,
+        "reason": "Limit łączny ulg PIT-0: 85 528 PLN (mlodzi, powrot, 4+, senior)",
         "supersedes": null
     },
 

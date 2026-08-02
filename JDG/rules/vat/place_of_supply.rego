@@ -10,7 +10,7 @@
 #   - Art. 28b: B2B usługi → siedziba nabywcy
 #   - Art. 28c: B2C usługi → siedziba usługodawcy (z wyjątkami)
 #   - Art. 28e: Nieruchomości → miejsce położenia
-#   - Art. 28k: E-usługi B2C → siedziba konsumenta
+#   - Art. 28l: E-usługi B2C → siedziba konsumenta
 #   - Art. 28f-28g: Transport → miejsce odcinka
 #   - Art. 28h-28i: Kultura/sport/edukacja → miejsce konsumpcji
 #   - Art. 28l-28o: Pozostałe usługi szczególne
@@ -110,14 +110,14 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# POS-4: Art. 28k — E-usługi B2C → miejsce = siedziba konsumenta
+# POS-4: Art. 28l — E-usługi B2C → miejsce = siedziba konsumenta
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
-    "matched": true, "rule_id": "jdg.vat.place_of_supply.e_services_b2c_art28k",
+    "matched": true, "rule_id": "jdg.vat.place_of_supply.e_services_b2c_art28l",
     "package": "jdg.vat.place_of_supply", "priority": 4,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "PLACE_OF_SUPPLY_E_SERVICES_B2C",
     "vat_exemption": "", "place_of_supply": consumer_country,
-    "place_of_supply_rule": "Art. 28k VAT",
+    "place_of_supply_rule": "Art. 28l VAT",
     "place_of_supply_determined": true,
     "oss_ioss_applicable": oss_applicable,
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
@@ -126,7 +126,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "cross_border_vat_implication": "OSS_OR_FOREIGN_VAT_REGISTRATION",
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 28k VAT (e-usługi B2C — miejsce konsumenta)",
+    "_legal_basis": "Art. 28l VAT (e-usługi B2C — miejsce konsumenta)",
     "_warnings": [sprintf("E-USŁUGI B2C — miejsce świadczenia = siedziba konsumenta (%s). Rozlicz przez OSS (unia) lub zarejestruj VAT w kraju konsumenta!", [consumer_country])]
 } {
     input.invoice.category_code in {"E_SERVICES", "DIGITAL_CONTENT", "SOFTWARE_DOWNLOAD", "ONLINE_COURSE", "STREAMING"}
@@ -191,14 +191,14 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# POS-6: Art. 28h-28i — Kultura/sport/edukacja → miejsce = gdzie się odbywa
+# POS-6: Art. 28i — Kultura/sport/edukacja → miejsce = gdzie się odbywa
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
-    "matched": true, "rule_id": "jdg.vat.place_of_supply.culture_event_art28h_28i",
+    "matched": true, "rule_id": "jdg.vat.place_of_supply.culture_event_art28i",
     "package": "jdg.vat.place_of_supply", "priority": 6,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "PLACE_OF_SUPPLY_EVENT",
     "vat_exemption": "", "place_of_supply": event_country,
-    "place_of_supply_rule": "Art. 28h-28i VAT",
+    "place_of_supply_rule": "Art. 28i VAT",
     "place_of_supply_determined": true,
     "event_location": event_location,
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
@@ -207,8 +207,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "cross_border_vat_implication": "VAT_IN_EVENT_COUNTRY",
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 28h-28i VAT",
-    "_warnings": [sprintf("EVENT — miejsce świadczenia = miejsce odbywania się (%s). VAT wg przepisów kraju wydarzenia. Dla usług B2B związanych z wstępem — Art. 28h.", [event_country])]
+    "_legal_basis": "Art. 28i VAT",
+    "_warnings": [sprintf("EVENT — miejsce świadczenia = miejsce odbywania się (%s). VAT wg przepisów kraju wydarzenia.", [event_country])]
 } {
     input.invoice.category_code in {"CULTURE", "SPORT", "CONFERENCE", "EXHIBITION", "CONCERT", "TRAINING_EVENT"}
     event_country := object.get(input.invoice, "event_country", "PL")
@@ -217,22 +217,22 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# POS-7: Art. 28l — Usługi restauracyjne i cateringowe
+# POS-7: Art. 28j — Usługi restauracyjne i cateringowe
 # Miejsce = fizyczne miejsce świadczenia (nie siedziba)
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
-    "matched": true, "rule_id": "jdg.vat.place_of_supply.restaurant_catering_art28l",
+    "matched": true, "rule_id": "jdg.vat.place_of_supply.restaurant_catering_art28j",
     "package": "jdg.vat.place_of_supply", "priority": 7,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "PLACE_OF_SUPPLY_RESTAURANT",
     "vat_exemption": "", "place_of_supply": service_country,
-    "place_of_supply_rule": "Art. 28l VAT",
+    "place_of_supply_rule": "Art. 28j VAT",
     "place_of_supply_determined": true,
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "",
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 28l VAT",
+    "_legal_basis": "Art. 28j VAT",
     "_warnings": [sprintf("RESTAURACJA/CATERING — miejsce świadczenia = miejsce fizycznego wykonania (%s). Wyjątek: na pokładach statków/pociągów = miejsce rozpoczęcia.\n", [service_country])]
 } {
     input.invoice.category_code in {"RESTAURANT", "CATERING", "RESTAURANT_MEALS", "GASTRONOMY"}
@@ -241,22 +241,22 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# POS-8: Art. 28m — Wynajem krótkoterminowy środków transportu
+# POS-8: Art. 28k — Wynajem krótkoterminowy środków transportu
 # Miejsce = miejsce wydania środka transportu
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
-    "matched": true, "rule_id": "jdg.vat.place_of_supply.vehicle_rental_art28m",
+    "matched": true, "rule_id": "jdg.vat.place_of_supply.vehicle_rental_art28k",
     "package": "jdg.vat.place_of_supply", "priority": 8,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "PLACE_OF_SUPPLY_VEHICLE_RENTAL",
     "vat_exemption": "", "place_of_supply": pickup_country,
-    "place_of_supply_rule": "Art. 28m VAT",
+    "place_of_supply_rule": "Art. 28k VAT",
     "place_of_supply_determined": true,
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "",
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 28m VAT",
+    "_legal_basis": "Art. 28k VAT",
     "_warnings": [sprintf("WYNAJEM POJAZDU — miejsce świadczenia = miejsce wydania (%s). Krótkoterminowy ≤ 30 dni (pojazdy) / ≤ 90 dni (łodzie).", [pickup_country])]
 } {
     input.invoice.category_code in {"CAR_RENTAL", "VEHICLE_RENTAL", "BOAT_RENTAL"}
@@ -326,22 +326,22 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# POS-11: Art. 28n — Usługi pośrednictwa B2C
+# POS-11: Art. 28d — Usługi pośrednictwa B2C
 # Miejsce świadczenia = miejsce dostawy towaru głównego
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
-    "matched": true, "rule_id": "jdg.vat.place_of_supply.intermediation_b2c_art28n",
+    "matched": true, "rule_id": "jdg.vat.place_of_supply.intermediation_b2c_art28d",
     "package": "jdg.vat.place_of_supply", "priority": 11,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "PLACE_OF_SUPPLY_INTERMEDIATION",
     "vat_exemption": "", "place_of_supply": goods_delivery_country,
-    "place_of_supply_rule": "Art. 28n VAT",
+    "place_of_supply_rule": "Art. 28d VAT",
     "place_of_supply_determined": true,
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "",
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 28n VAT",
+    "_legal_basis": "Art. 28d VAT",
     "_warnings": [sprintf("POŚREDNICTWO B2C — miejsce = miejsce dostawy towaru głównego (%s).", [goods_delivery_country])]
 } {
     input.invoice.category_code == "INTERMEDIATION"

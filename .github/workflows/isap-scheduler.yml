@@ -1,0 +1,79 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI JDG — GitHub Actions: ISAP Crawler Scheduler (R10, P28 Grand Finale)
+# Cron: codziennie 06:00 UTC — sprawdza nowe akty prawne w ISAP
+# Trigger: również na push do main i PR dla testów
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: ISAP Legal Change Monitor
+
+on:
+  schedule:
+    - cron: "0 6 * * *"       # codziennie 06:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - "JDG/tools/isap_crawler.py"
+      - "JDG/tools/temporal_drift_detector.py"
+      - "JDG/tools/legal_change_impact_analyzer.py"
+      - ".github/workflows/isap-scheduler.yml"
+  workflow_dispatch:
+
+jobs:
+  monitor-legal-changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      
+      - name: Run ISAP Crawler
+        id: crawler
+        run: python JDG/tools/isap_crawler.py --check-recent
+        continue-on-error: true
+      
+      - name: Run Temporal Drift Detector
+        id: drift
+        run: python JDG/tools/temporal_drift_detector.py
+        continue-on-error: true
+      
+      - name: Run Legal Change Impact Analyzer
+        id: impact
+        run: python JDG/tools/legal_change_impact_analyzer.py
+      
+      - name: Check for new legislation
+        id: check
+        run: |
+          if grep -q '"new_legislation_detected": true' JDG/reports/legal_change_impact_report.json; then
+            echo "ALERT=New legal changes detected!" >> $GITHUB_OUTPUT
+            echo "NEW_LEGISLATION=true" >> $GITHUB_OUTPUT
+          else
+            echo "NEW_LEGISLATION=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create Alert Issue
+        if: steps.check.outputs.NEW_LEGISLATION == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('JDG/reports/legal_change_impact_report.json'));
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `⚖️ [ISAP] Nowe akty prawne wykryte — ${report.new_legislation_count} zmian`,
+              body: `## Legal Change Alert\n\n**Data**: ${report.generated_at}\n**Nowe akty**: ${report.new_legislation_count}\n**Dotknięte reguły**: ${report.affected_rules_count}\n**Poziom wpływu**: ${report.impact_level}\n\n### Rekomendowane akcje:\n${report.recommended_actions.map(a => `- [${a.priority}] ${a.action} (termin: ${a.deadline_days} dni)`).join('\n')}\n\n[Pełny raport](JDG/reports/legal_change_impact_report.json)`,
+              labels: ['legal-change', 'auto-detected', 'isap']
+            });
+      
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: legal-change-report
+          path: JDG/reports/legal_change_impact_report.json

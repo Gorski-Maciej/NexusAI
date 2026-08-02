@@ -42,6 +42,8 @@ vat := {
     # Art. 86a VAT — odliczenie VAT od auta
     "car_vat_deduction_no_log": 0.50,            # 50% bez ewidencji przebiegu (P599)
     "car_vat_deduction_with_log": 1.00,          # 100% z ewidencją (P600)
+    "car_vat_deduction_limit_standard": 150000,   # PLN — limit wartości auta standard (Art. 86a VAT)
+    "car_vat_deduction_limit_ev": 225000,         # PLN — limit wartości auta EV (Art. 86a VAT)
 
     # Art. 87 VAT — terminy zwrotu
     "vat_refund_standard_days": 60,              # 60 dni standardowo (P587)
@@ -90,8 +92,22 @@ pit := {
     "car_value_limit_standard": 150000,          # PLN — limit wartości auta (P607)
     "car_value_limit_ev": 225000,               # PLN — limit EV
 
-    # Art. 23 PIT — koszty auta
-    "car_lease_insurance_limit": 150000,         # PLN — limit leasing/ubezp.
+    # Art. 27 PIT — kwota zmniejszająca podatek
+    "tax_reducing_amount": 3600,                 # PLN — kwota zmniejszająca (12% × 30k, P30 L9)
+    "tax_free_amount_degression_start": 30000,   # PLN — degresja od 30 000
+    "tax_free_amount_degression_end": 120000,    # PLN — degresja do 120 000
+
+    # Art. 27f PIT — ulga prorodzinna
+    "family_relief_amount_per_child": 1112.04,    # PLN/rok na dziecko (P30 L10)
+
+    # P30: Ulgi innowacyjne PIT
+    "prototype_relief_rate": 0.30,              # 30% — ulga na prototyp (Art. 26eb, P30 L8)
+    "robotization_relief_rate": 0.50,           # 50% — ulga na robotyzację (Art. 26gb, P30 L8)
+    "expansion_relief_max_costs": 1000000,       # PLN — max koszty kwalifikowane ekspansji (Art. 26ec)
+
+    # P30: Mały podatnik PIT
+    "small_taxpayer_pit_limit_eur": 2000000,     # EUR — limit przychodu (Art. 5a pkt 20, P30 L11)
+
     "gift_limit_pln": 200,                      # PLN — limit prezentów (Art. 23 ust. 1 pkt 34)
     "representation_limit_pct": 0.0025,          # 0.25% przychodu (P598)
 
@@ -110,6 +126,7 @@ pit := {
 
     # Art. 30da PIT — Exit Tax
     "exit_tax_rate": 0.19,                      # 19%
+    "exit_tax_threshold": 4000000,               # PLN — próg 4 000 000 (Art. 30da ust. 1, P30 L4)
 
     # Art. 21 ust. 1 pkt 148-154 PIT — wspólny limit ulg PIT-0 (mlodzi, powrót, 4+, senior)
     "pit_relief_shared_limit": 85528,            # PLN — limit łączny ulg PIT-0 (2026)
@@ -286,6 +303,7 @@ local_taxes := {
     "spa_fee_max_daily": 8.00,                   # PLN/dzień — max stawka (P1337)
 
     # Art. 9-14 UoPiOL — podatek od środków transportowych
+    "reverse_charge_construction_threshold": 500000, # PLN — próg RO dla usług budowlanych (Art. 17 ust. 1 pkt 8 VAT, zał. nr 14)
     "transport_truck_3_5_5_5": 800,              # PLN/rok — DMC 3.5-5.5t (P1331)
     "transport_truck_5_5_9": 1000,               # PLN/rok — DMC 5.5-9t
     "transport_truck_9_12": 1400,                # PLN/rok — DMC 9-12t

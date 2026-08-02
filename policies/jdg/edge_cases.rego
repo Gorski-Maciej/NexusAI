@@ -512,7 +512,7 @@ else := {
 } {
     input.invoice.payment_method == "CASH"
     input.invoice.direction == "PURCHASE"
-    input.invoice.amount_gross > 15000
+    input.invoice.amount_gross >= 15000
     input.vendor.is_company == true
 }
 
@@ -533,7 +533,7 @@ else := {
     input.invoice.mpp_required == true
     input.invoice.mpp_used == false
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > 15000
+    amount_gross >= 15000
 }
 
 # R0629: limit_tax_free_amount_30k — Kwota wolna od podatku 30 000 PLN
