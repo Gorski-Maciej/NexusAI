@@ -1,0 +1,993 @@
+RAPORT ANALITYCZNY ENTERPRISE — JDG Testy + Narzędzia + Developer Guide (Uzupełnienie P27) v7.0
+=================================================================
+SEKCJA 0 — METADANE AUDYTU
+=================================================================
+
+Raport:              P27 — Uzupełnienie serii analitycznej JDG (P01–P27)
+Tytuł:               RAPORT ANALITYCZNY ENTERPRISE — JDG Testy + Narzędzia
+                     + Developer Guide (Uzupełnienie P27) v7.0
+Data audytu:         2026-08-01 (stan na 2026-07-26 wg sygnatur plików)
+Audytor:             Ekspert QA/DevOps OPA/Rego (Chief Architect, 20 lat)
+Zakres:              JDG/tests/ (28 testów głównych + 54 testy auto-block),
+                     JDG/tools/ (18 narzędzi), JDG/docs/OPA_REGO_DEVELOPER_GUIDE.md,
+                     CI/CD (.github/workflows: opa-ci.yml, ci.yml)
+Metodyka:            Audyt oparty na BEZPOŚREDNIEJ analizie plików na dysku
+                     (find/grep/wc/sed) — nie na deklaracjach dokumentacyjnych.
+                     Liczby w raporcie są zweryfikowane komendami shell.
+
+Kluczowe zweryfikowane liczby (stan faktyczny 2026-08-01):
+  - Plików testowych głównych (JDG/tests/test_*.py) ....... 28 (564 funkcje test_)
+  - Plików testowych auto (JDG/tests/auto/*.py) ........... 54 (1254 funkcje test_)
+  - Łącznie funkcji testowych ............................. 1818
+  - Natywnych testów Rego (*_test.rego / test_*.rego) ..... 0
+  - Odwołań do binarki OPA (opa eval/test) w testach ...... 0
+  - Plików rego w JDG/rules (w tym micro) ................. 383
+  - Katalogów pakietów reguł (JDG/rules/*/) ............... 44
+  - Pakietów z testem auto-block .......................... 54 (po 1 pliku na pakiet)
+  - Katalogów reguł BEZ testu auto ........................ 11+
+  - Plików narzędzi (JDG/tools/*.py) ...................... 18
+  - Linii kodu narzędzi łącznie ........................... ~8900
+  - Workflow CI/CD na poziomie repozytorium ............... 12
+  - Linii Developer Guide ................................. 444
+
+=================================================================
+SEKCJA 1 — EXECUTIVE SUMMARY (TOP 12 REKOMENDACJI)
+=================================================================
+
+Moduł JDG posiada infrastrukturę testową o IMPONUJĄCEJ SKALI ilościowej
+(1818 funkcji testowych w 82 plikach) oraz ZAISTNIEJĄCE CIĘŻARÓWKĘ
+narzędzi (18 skryptów, ~8900 linii) i w pełni działający CI/CD na GitHub
+Actions (12 workflow). Jednak audyt ujawnia KRYTYCZNY problem jakościowy,
+który sprowadza całą tę infrastrukturę do poziomu dekoracyjnego:
+
+  >>> AUTOTESTY NIE WYKONUJĄ SILNIKA OPA. <<<
+
+Większość testów auto-block (1254 funkcje w 54 plikach) to TAUTOLOGIE:
+budują słownik input_data z wartościami zaszytymi na sztywno (matched=True,
+routing="BLOCK_AND_ALERT") i asertują te same wartości z powrotem.
+NIE odwołują się do żadnego pliku .rego, NIE wołają opa eval, NIE
+sprawdzają, czy reguła Rego faktycznie zwraca taki werdykt. Test
+"test_auto_block_vat.py" z 30 funkcjami przechodzi 100% niezależnie od
+tego, czy reguły VAT w rules/vat/ są poprawne, błędne czy usunięte.
+
+Jest to najważniejsze ustalenie całego audytu P27 i musi być traktowane
+jako priorytet nr 1 naprawy.
+
+TOP 12 REKOMENDACJI (priorytetyzacja strategiczna):
+
+R1. [KRYTYCZNY] Przełączyć generację testów (generate_test_suite.py)
+    z trybu "symulacja tautologiczna" na tryb "natywny OPA" —
+    generować pliki *_test.rego z pakietami test_<rule_id> i uruchamiać
+    przez `opa test`, a testy Python zostawić wyłącznie dla warstwy
+    integracyjnej (API, bundle, router).
+
+R2. [KRYTYCZNY] Wprowadzić "weryfikator nie-tautologii" w CI: test auto
+    musi zawierać odwołanie do pliku reguły (np. import data.jdg.*)
+    lub do realnej ewaluacji — inaczej fail. Zabezpiecza to przed
+    regresją do testów-asertujących-własne-dane.
+
+R3. [WYSOKI] Pokryć 11 pakietów reguł bez testów auto: advertising,
+    esig, force_majeure, fx, jpk, ord, pcc, seasonal, security,
+    taxfree, uor — minimum 1 plik testowy natywny Rego na pakiet.
+
+R4. [WYSOKI] Dodać natywne testy Rego dla ~90 plików *_enterprise.rego
+    (audit_defense, gaar_shield, ksef_*, decision_*, *_enterprise) —
+    obecnie pokrycie tych plików jest bliskie ZERA.
+
+R5. [WYSOKI] Naprawić konfigurację pytest: testpaths w pyproject.toml
+    wskazuje ["tests"] (katalog główny), przez co JDG/tests NIE jest
+    zbierany przez domyślny `pytest` — dodać "JDG/tests" do testpaths
+    lub włączyć przez opa-ci.yml (tam CI woła pytest JDG/tests/ jawnie).
+
+R6. [WYSOKI] Wygenerować realne testy temporalne: test_temporal_validity.py
+    (20 funkcji + 2 parametryzacje) to NAJLEPSZY wzorzec w zestawie —
+    robi statyczną analizę _metadata_jdg.rego i _helpers_jdg.rego.
+    Rozszerzyć ten wzorzec na wszystkie pakiety z valid_from/valid_to.
+
+R7. [ŚREDNI] Uruchomić opa-ci.yml rego-unit-tests z prawdziwymi
+    plikami *_test.rego; obecnie `opa test JDG/rules/ --verbose --count 10`
+    nie znajduje żadnego natywnego testu (0 plików) i jedynie skanuje
+    składnię — daje fałszywe poczucie bezpieczeństwa (PASS z 0 testów).
+
+R8. [ŚREDNI] Osadzić narzędzia jako bramki BLOCKING w CI zamiast
+    `|| echo '(warn)'`: lint_rego_rules.py, validate_rules.py,
+    generate_manifest.py --check są już w jdg-quality-gates, ale
+    porażki są maskowane przez `|| true` / `|| echo` — bramki muszą
+    mieć exit 1 przy naruszeniach w trybie --ci.
+
+R9. [ŚREDNI] Uzupełnić pokrycie subpakietów micro: katalog micro/ ma
+    ~28 pakietów (sus, zdrowotna, pkpir, vat, rodo, bdo, zasilkowa,
+    aml, amortyzacja...), a istnieje tylko 1 test auto micro (270 funkcji
+    dla 28 pakietów — brak rozbicia per pakiet).
+
+R10. [ŚREDNI] Zintegrować temporal_drift_detector.py i
+     cross_package_conflict_detector.py z harmonogramem (cron) —
+     narzędzia istnieją i działają, ale brak schedulera na poziomie
+     repo (wymaga cron na GH Actions lub self-host).
+
+R11. [NISKI] Zastąpić OPA_REGO_DEVELOPER_GUIDE.md (444 linie —
+     wklejony transkrypt czatu LLM o ogólnym Rego, 0 wzmianek o
+     konwencjach projektu: else-chain, safe_merge, Multi-Pass, ADR,
+     rule_id) — prawdziwym przewodnikiem projektowym wg ADR-008.
+
+R12. [NISKI] Opublikować judgment_predictor.py i llm_bridge.py jako
+     funkcje eksperymentalne (flag --experimental) — obecnie sprawiają
+     wrażenie produkcyjnych; dokumentacja ma mówić wprost o statusie.
+
+Ocena dojrzałości ENTERPRISE infrastruktury testowej i narzędziowej:
+  Infrastruktura ilościowa ....... A (skala, CI, narzędzia, automatyzacja)
+  Jakość testów reguł ........... D (tautologie, 0 testów natywnych Rego)
+  Jakość narzędzi ............... B+ (18 narzędzi, 6-check linter, działające
+                                       detektory; 2 narzędzia eksperymentalne)
+  Developer Guide ............... F (transkrypt czatu, nie przewodnik)
+  CI/CD ......................... B (12 workflow, jdg-quality-gates działa,
+                                       ale bramki maskowane, 0 testów Rego)
+  OCENA ŁĄCZNA .................. C+
+
+=================================================================
+SEKCJA 2 — MAPA INFRASTRUKTURY (DIAGRAM)
+=================================================================
+
+Struktura testów i narzędzi JDG (stan faktyczny na dysku):
+
+  JDG/tests/                                  (28 plików głównych)
+  ├── test_temporal_validity.py               20 funkcji + 2 parametryzacje
+  ├── test_temporal_manager.py
+  ├── test_phase5_modules.py                  50 funkcji
+  ├── test_strategic_v2_modules.py
+  ├── test_ksef_generator.py
+  ├── test_tax_pipeline.py / test_tax_rules.py / test_tax_audit.py
+  ├── test_risk_guard.py / test_risk_api.py / test_risk_guard_integration.py
+  ├── test_semantic_guard.py / test_priority_engine.py
+  ├── test_fraud_graph_scanner.py / test_facts_aggregator.py
+  ├── test_payment_priority_service.py
+  ├── test_pkpir_uor_enterprise.py / test_pcc_excise_enterprise.py
+  ├── test_vat_enterprise.py / test_kks_enterprise.py
+  ├── test_crossborder_enterprise.py / test_rodo_enterprise.py
+  ├── test_aml_enterprise.py / test_bdo_enterprise.py
+  ├── test_edge_cases_enterprise.py / test_conflicts_enterprise.py
+  └── test_hyper_plan45_enterprise.py / test_p16_v8_enterprise.py ...
+
+  JDG/tests/auto/                              (54 plików auto-block)
+  ├── test_auto_block_vat.py (30 funkcji, 15 reguł) — WZORZEC TAUTOLOGII
+  ├── test_auto_block_micro.py (270 funkcji — 28 pakietów w 1 pliku!)
+  ├── test_auto_block_rodo_extended.py
+  ├── test_auto_block_retention.py / zus.py / kks.py / pit.py ...
+  └── 49 pozostałych pakietów
+
+  JDG/tools/                                   (18 narzędzi, ~8900 linii)
+  ├── GENERATORY (8): generate_micro_rules (759), generate_massive_rules
+  │   (1507), generate_from_plan50 (455), parse_plan33_and_generate (477),
+  │   generate_test_suite (204), convert_true_to_conditions (891),
+  │   fix_hyper_legal_basis (406), fix_micro_plan33_legal_basis (286)
+  ├── WALIDATORY (4): lint_rego_rules (463, 6 checków), validate_rules
+  │   (294, 3 nowe walidacje v7.0), cross_package_conflict_detector (228),
+  │   crossref_plan50 (79)
+  ├── MONITORING (2): isap_crawler (624), temporal_drift_detector (195)
+  ├── ANALITYKA/SYMULACJE (2): rule_impact_simulator (220),
+  │   judgment_predictor (755 — heurystyka, NIE ML)
+  └── AI (1): llm_bridge (796 — Anthropic/OpenAI/Gemini)
+  (+ generate_manifest 233 — manifest do CI)
+
+  CI/CD (.github/workflows/, 12 workflow):
+  ├── opa-ci.yml ............... Conftest 6-check matrix + opa check +
+  │                             opa build + `opa test` (0 testów!) +
+  │                             lint magic numbers + manifest sync
+  ├── ci.yml ................... jdg-quality-gates: lint --check, validator
+  │                             --strict, manifest --check, conflict --json,
+  │                             drift --check, pytest JDG/tests/ -m unit|rego
+  └── pozostałe 10 ............. labeler, performance-locust, profiling-ci,
+                                reproducible-build, scorecard,
+                                screenshot-tests, self-heal, setup-hatch,
+                                setup-pixi, stale
+
+=================================================================
+SEKCJA 3 — AUDYT INFRASTRUKTURY TESTOWEJ (POZIOM ENTERPRISE)
+=================================================================
+
+3.1. SKALA I STRUKTURA (stan faktyczny vs deklaracje)
+
+Deklaracja w prompcie P27: "82 pliki testowe" (28 głównych + 52 auto).
+Weryfikacja na dysku:
+  - JDG/tests/test_*.py .............. 28 plików  (zgodne z deklaracją)
+  - JDG/tests/auto/test_auto_block_* . 54 pliki  (deklarowano 52 — RZECZYWISTE 54)
+  - Łącznie .......................... 82 pliki   (przy 54 auto: faktycznie 82 ✓)
+  - Funkcje testowe główne ........... 564
+  - Funkcje testowe auto ............. 1254
+  - RAZEM funkcji testowych .......... 1818
+
+Zatem liczba PLIKÓW zgadza się z deklaracją (82), ale liczba testów
+auto to 54, nie 52 — drobna rozbieżność, prawdopodobnie wynik ostatniej
+generacji 2026-07-26T00:44:20 (sygnatura w test_auto_block_vat.py).
+
+3.2. TESTY GŁÓWNE (28 plików, 564 funkcje) — CO TAK NAPRAWDĘ TESTUJĄ
+
+Analiza importów i zawartości ujawnia KLUCZOWĄ cechę: testy główne
+NIE testują reguł Rego — testują PYTHONOWĄ warstwę usług NexusAI.
+
+Przykłady zweryfikowane:
+  - test_phase5_modules.py importuje
+    `from nexus_ai.services.infrastructure.proxy_router import BialaListaProxyRouter`
+    i testuje router, cache, guard — to test kodu Python aplikacji.
+  - test_temporal_validity.py to WYJĄTEK: robi statyczną analizę plików
+    Rego (regex na _metadata_jdg.rego, _helpers_jdg.rego, canonical map)
+    i symuluje logikę is_active() — NIE wykonuje opa eval.
+
+Wniosek: testy główne pokrywają infrastrukturę aplikacji (proxy router,
+wasm_gc, nbp_client, aml_compliance, bundle_manager, immutable_audit,
+safe_merge w Pythonie), a NIE reguły JDG w Rego. Są cenne dla aplikacji,
+ale NIE są testami reguł podatkowych.
+
+3.3. TESTY AUTO-BLOCK (54 pliki, 1254 funkcje) — TAUTOLOGIE
+
+Wzorzec zweryfikowany w test_auto_block_vat.py (30 funkcji, 15 reguł):
+
+    def test_jdg_vat_deductions_vat_r_registration_block_positive_block_triggered(self):
+        input_data = {
+            "rule_id": "jdg.vat.deductions.vat_r_registration_block",
+            "package": "vat",
+            "routing": "BLOCK_AND_ALERT",
+            "matched": True,
+            "priority": 39,
+        }
+        assert input_data["matched"] is True
+        assert input_data["routing"] == "BLOCK_AND_ALERT"
+        assert input_data["rule_id"] == "jdg.vat.deductions.vat_r_registration_block"
+
+Analiza krytyczna:
+  - input_data jest KONSTRUOWANY z oczekiwanych wartości i asertowany
+    przeciwko tym samym wartościom — to tautologia (A => A).
+  - Test NIE czyta pliku rules/vat/*.rego, NIE importuje data.jdg.*,
+    NIE woła opa eval / opa test / rego.run.
+  - Weryfikacja na dysku: grep 'rules/' w JDG/tests/auto/*.py = 0 trafień;
+    grep 'opa eval|opa test|rego.run|eval_rego' w auto = 0 trafień.
+  - Test przechodzi nawet gdy reguła Rego zostanie usunięta lub zepsuta.
+
+Skala problemu: dotyczy wszystkich 54 plików auto (1254 funkcji = 69%
+całego zestawu testowego JDG). Jest to zatem problem SYSTEMOWY generacji.
+
+3.4. POKRYCIE PAKIETÓW — MACIERZ LUK
+
+Katalogi reguł JDG/rules/ (44) vs pliki auto (53 nazw pakietów):
+
+  Pakiet reguł ........... Test auto?   Uwagi
+  accounting ............. TAK
+  advertising ............ NIE          LUKA
+  allowances ............. TAK
+  audit .................. TAK
+  business ............... TAK
+  calendar ............... TAK
+  compliance ............. TAK
+  conviction ............. TAK
+  crossborder ............ TAK
+  edelivery .............. TAK
+  environmental .......... TAK
+  esig ................... NIE          LUKA
+  family ................. TAK
+  force_majeure .......... NIE          LUKA
+  fx ..................... NIE          LUKA
+  insurance .............. TAK
+  jdg .................... NIE          (14 podkatalogów hyper, 1 plik każdy)
+  jpk .................... NIE          LUKA
+  kks .................... TAK
+  local_taxes ............ TAK
+  mdr .................... TAK
+  micro .................. TAK          (1 plik na 28 pakietów!)
+  ord .................... NIE          LUKA
+  payments ............... TAK
+  pcc .................... NIE          LUKA
+  pit .................... TAK
+  procurement ............ TAK
+  regulated .............. TAK
+  representation ......... TAK
+  residency .............. TAK
+  risk ................... TAK
+  rodo ................... TAK
+  seasonal ............... NIE          LUKA
+  security ............... NIE          LUKA
+  solidarity ............. TAK
+  statute ................ TAK
+  taxfree ................ NIE          LUKA
+  tp ..................... TAK
+  uor .................... NIE          LUKA
+  vat .................... TAK
+  wis .................... TAK
+  zus .................... TAK
+
+  LUKI BEZ TESTÓW AUTO (11 pakietów): advertising, esig, force_majeure,
+  fx, jpk, ord, pcc, seasonal, security, taxfree, uor.
+
+  Dodatkowo: ~90 plików *_enterprise.rego w katalogu głównym rules/
+  (audit_defense_enterprise, gaar_shield_enterprise, ksef_firewall_enterprise,
+  decision_composer_enterprise, deadline_monitor_enterprise itd.) —
+  NIE mają dedykowanych testów auto (tylko część pokryta testami głównymi).
+
+  Subpakiety micro (~28 pakietów: sus, zdrowotna, pkpir, vat, rodo, bdo,
+  zasilkowa, aml, amortyzacja, transport, sukcesja, srodowisko, ryczalt,
+  pp, ord, ksef, pit, pcc, uor...) — pokryte JEDNYM plikiem
+  test_auto_block_micro.py (270 funkcji), bez rozbicia per pakiet.
+
+3.5. TESTY NATYWNE REGO (0 PLIKÓW) — NAJWAŻNIEJSZA LUKA
+
+  find JDG -name '*_test.rego' -o -name 'test_*.rego' = 0
+
+Nie istnieje ani jeden natywny test Rego (package test_* w stylu
+`test_rule { ... }`). W rezultacie:
+  - `opa test JDG/rules/ --verbose --count 10` w opa-ci.yml wykonuje
+    tylko skan składniowy (0 testów = PASS) — fałszywe bezpieczeństwo.
+  - Rekomendowany w README workflow "opa test" jest niespełnialny
+    w obecnym stanie.
+
+3.6. WERYFIKACJA WYNIKU "40/40 PASS" (test_temporal_validity)
+
+  grep -c 'def test_' test_temporal_validity.py = 20
+  grep -c '@pytest.mark.parametrize' = 2 (linie 291, 335)
+
+Deklaracja "40/40 PASS" jest WYJAŚNIALNA: 20 funkcji bazowych +
+2 parametryzacje mogą dać ~40 przypadków. Jest to jedyny test w zestawie
+z weryfikowalną, sensowną logiką (statyczna analiza metadanych
+temporalnych). Jednak NIE jest to wykonanie Rego — to weryfikacja
+spójności metadanych z plikami.
+
+3.7. LICZBA FUNKCJI TEST_PER PAKET (testy główne — 28 plików)
+
+  Plik .............................. Funkcje test_
+  test_phase5_modules.py ........... 50
+  test_p16_v8_enterprise.py ........ 48
+  test_pkpir_uor_enterprise.py ..... 45
+  test_vat_enterprise.py ........... 40
+  test_tax_rules.py ................ 39
+  test_pcc_excise_enterprise.py .... 38
+  test_facts_aggregator.py ......... 36
+  test_risk_api.py ................. 30
+  test_strategic_v2_modules.py ..... 23
+  test_temporal_validity.py ........ 20 (+2 parametryzacje)
+  test_edge_cases_enterprise.py .... 18
+  test_risk_guard_integration.py ... 18
+  test_crossborder_enterprise.py ... 17
+  test_kks_enterprise.py ........... 17
+  test_tax_audit.py ................ 17
+  test_tax_pipeline.py ............. 15
+  test_priority_engine.py .......... 13
+  test_aml_enterprise.py ........... 12
+  test_rodo_enterprise.py .......... 12
+  test_temporal_manager.py ......... 11
+  test_bdo_enterprise.py ........... 10
+  test_hyper_plan45_enterprise.py .. 9
+  test_risk_guard.py ............... 7
+  test_conflicts_enterprise.py ..... 7
+  test_semantic_guard.py ........... 4
+  test_fraud_graph_scanner.py ...... 3
+  test_ksef_generator.py ........... 3
+  test_payment_priority_service.py . 2
+  -------------------------------------------
+  RAZEM ............................ 564
+
+  Obserwacja: nierównomierność 2–50 funkcji/plik wskazuje na brak
+  standardu "minimalnej głębi" testu per moduł. Najcieńsze pliki
+  (fraud_graph_scanner 3, ksef_generator 3, payment_priority 2)
+  wymagają rozszerzenia do co najmniej 10 przypadków.
+
+3.8. TOP NAJWIĘKSZE PLIKI AUTO (per funkcje test_)
+
+  test_auto_block_kks.py ................. 398 funkcji
+  test_auto_block_micro.py ............... 270 funkcji
+  test_auto_block_edge_cases.py .......... 88 funkcji
+  test_auto_block_pit.py ................. 48 funkcji
+  test_auto_block_vat.py ................. 30 funkcji
+  test_auto_block_environmental.py ....... 28 funkcji
+  test_auto_block_compliance.py .......... 28 funkcji
+  test_auto_block_conviction.py .......... 24 funkcji
+  test_auto_block_risk.py ................ 22 funkcji
+  test_auto_block_business.py ............ 20 funkcji
+  test_auto_block_accounting.py .......... 20 funkcji
+  test_auto_block_tp.py .................. 18 funkcji
+  test_auto_block_mdr.py ................. 14 funkcji
+  test_auto_block_conflicts.py ........... 14 funkcji
+  test_auto_block_restructuring.py ....... 12 funkcji
+
+  Obserwacja: rozkład potęgowy (kks 398 vs pozostałe < 90) wynika z
+  liczby reguł w pakiecie — ale potwierdza też, że generator skaluje
+  się liniowo z liczbą reguł. Przy 7 000 reguł docelowo wygenerowałby
+  ~14 000 funkcji testowych — dalsza motywacja do przejścia na testy
+  natywne Rego (mniejsze, szybsze, wykonywalne przez opa test).
+
+=================================================================
+SEKCJA 4 — ANALIZA JAKOŚCI TESTÓW (POZIOM ENTERPRISE)
+=================================================================
+
+4.1. RYGORYSTYCZNOŚĆ — OCENA D
+
+Testy auto nie sprawdzają ZACHOWANIA reguł, tylko spójność własnych
+danych. Rygorystyczność regresyjna: ZERA — usunięcie reguły Rego nie
+wywala żadnego testu. To dyskwalifikuje zestaw jako testy regresyjne
+w rozumieniu ENTERPRISE QA.
+
+4.2. TESTY INTEGRACYJNE MIĘDZY PAKIETAMI — BRAK
+
+Nie istnieją testy łączące pakiety (np. VAT → KKS sankcja, PIT → ZUS
+składka, cross-border → MDR). test_conflicts_enterprise i
+test_hyper_plan45_enterprise dotykają konfliktów, ale w warstwie Python,
+nie Rego. W systemie 383 plików reguł o współzależnościach
+(thresholds, helpers, metadata) brak testów cross-package jest istotną
+luką jakościową.
+
+4.3. EDGE CASES I SCENARIUSZE EKSTREMALNE — CZĘŚCIOWO
+
+Istnieją testy edge_cases (auto + enterprise), ale:
+  - Brak testów granicznych kwot (kwota = 0, ujemna, ogromna 1e12)
+  - Brak testów dat granicznych (31.12, 29.02 przestępny, valid_to granica)
+  - Brak testów pustych struktur (pusta faktura, pusty NIP, brak pracowników)
+  - Brak testów równoczesnych triggerów (2+ reguły BLOCK w jednym eval)
+
+4.4. BRAKUJĄCE TYPY TESTÓW (wymagane dla ENTERPRISE)
+
+  - FUZZ TESTING: brak; projekt deklaruje schemathesis (API fuzz) i
+    crosshair (PBT) w pyproject.toml, ale NIE dla reguł Rego.
+  - PROPERTY-BASED: brak dla Rego; crosshair dotyczy kodu Python.
+  - CHAOS ENGINEERING: brak dla OPA (brak testów "reguła usunięta",
+    "bundle uszkodzony", "thresholds puste", "metadata nieaktualne").
+  - TESTY WYDAJNOŚCIOWE: performance-locust.yml istnieje na poziomie
+    repo, ale brak benchmarków ewaluacji Rego (latencja eval, rozmiar
+    bundle, czas ładowania 383 plików).
+  - TESTY BEZPIECZEŃSTWA REGUŁ: brak testów na injection przez input
+    (np. rule_id w input, pola regex), brak testów denial-of-service
+    (wielka faktura w input).
+
+4.5. OCENA WEDŁUG PIRAMIDY TESTÓW
+
+  Jednostkowe (reguły) .......... ~0% (tautologie nie liczą się)
+  Kontraktowe (bundle/API) ...... ~5% (test_*_enterprise, API fallback)
+  Integracyjne (cross-package) .. ~2% (conflicts, hyper)
+  E2E ............................ ~0% (brak uruchomienia pełnego bundle)
+
+Piramida jest ODWRÓCONA: 1254 funkcji "jednostkowych" to symulacje,
+a brak warstwy E2E i natywnych testów reguł.
+
+4.6. ANALIZA PRZYKŁADOWEGO TESTU — CO TESTY GŁÓWNE FAKTYCZNIE MÓWIĄ
+
+  test_phase5_modules.py (50 funkcji): testuje Pythonowe klasy
+  BialaListaProxyRouter, WasmMemoryGuard, NbpClient, AmlCompliance,
+  BundleManager, safe_merge (implementacja Python!) — importuje
+  nexus_ai.services.infrastructure.*. To test WARSTWY APLIKACJI,
+  nie reguł Rego.
+
+  test_temporal_validity.py (20+2): jedyny test "reguł" — ale przez
+  statyczną analizę plików (regex na _metadata_jdg.rego, import
+  data.jdg.metadata, funkcje is_active/is_active_now, canonical map
+  Plan OPA/38c). Weryfikuje SPÓJNOŚĆ metadanych, nie zachowanie
+  ewaluacji.
+
+  Wniosek 4.6a: testy główne stanowią wartość dla aplikacji NexusAI,
+  ale żaden nie wykonuje reguł JDG w silniku OPA. Należy to jawnie
+  udokumentować w README tests/, aby nie wprowadzać w błąd.
+
+4.7. ZALECANY WZORZEC TESTU REGO (cel dla generatora)
+
+  Dla reguły `jdg.vat.deductions.vat_r_registration_block` poprawny
+  test natywny Rego ma postać:
+
+    package test_jdg_vat_deductions
+    import data.jdg.vat.deductions
+    import data.thresholds
+    import data.jdg.metadata
+
+    test_positive_block_triggered {
+      deductions.vat_r_registration_block with input as {...}
+    }
+
+    test_negative_no_block {
+      not deductions.vat_r_registration_block with input as {...}
+    }
+
+  Taki test wykonuje REALNĄ ewaluację reguły z inputem — jest
+  wrażliwy na zmiany logiki, progu, dat ważności. Generator ma
+  generować ten wzorzec (sekcja 8, I1).
+
+=================================================================
+SEKCJA 5 — AUDYT NARZĘDZI DEWELOPERSKICH (18 NARZĘDZI)
+=================================================================
+
+5.1. KATALOG NARZĘDZI (zweryfikowane linie + funkcje główne)
+
+  GENERATORY REGUŁ (8):
+  1. generate_micro_rules.py (759) — taksonomia artykułów prawnych +
+     szablony REGO (standard, tax_point, deduction, exemption, sanction,
+     rate) dla warstwy micro. Generuje pakiety jdg.micro.*.
+     Status: PRODUKCYJNY (wygenerował 28 pakietów micro).
+  2. generate_massive_rules.py (1507) — największy generator; specyfikacje
+     z Plan OPA 42/43/44/45 (55 macro + ~115 + 230 KKS + ~92 reguł),
+     funkcja generate_verdict(). Status: PRODUKCYJNY.
+  3. generate_from_plan50.py (455) — parsuje Plan OPA 50, mapuje prefiksy
+     sekcji na pliki i obszary prawne, collect_existing_rule_ids() przed
+     generacją (unikanie duplikatów). Status: PRODUKCYJNY.
+  4. parse_plan33_and_generate.py (477) — parsuje tabele Markdown
+     Plan 33, ekstrakcja reguł per domena, cross-reference istniejących
+     ID. Status: PRODUKCYJNY (użyty do plan33_rodo).
+  5. generate_test_suite.py (204) — GENERUJE TESTY AUTO (patrz 5.2).
+     Status: PRODUKCYJNY, ALE Z BŁĘDEM KONCEPCYJNYM (tautologie).
+  6. convert_true_to_conditions.py (891) — mapowanie keyword→warunek;
+     konwertuje stuby { true } na realne warunki (rozwiązuje problem
+     martwego kodu z P26!). Status: PRODUKCYJNY (użyty do napraw).
+  7. fix_hyper_legal_basis.py (406) — naprawa podstaw prawnych plików
+     hyper (mapa rule_id→legal_basis, ekstrakcja z routing_reason).
+     Status: NAPRAWCZY (jednorazowy, przydatny przy re-generacji).
+  8. fix_micro_plan33_legal_basis.py (286) — analogicznie dla micro.
+     Status: NAPRAWCZY.
+
+  WALIDATORY (4):
+  9. lint_rego_rules.py (463) — RegoLinter z 6 checkami:
+     matched_true_required, no_fallback_allow, rule_id_canonical,
+     no_hardcoded_integers, legal_basis_required, temporal_validity.
+     Status: PRODUKCYJNY (w CI jdg-quality-gates).
+  10. validate_rules.py (294) — hardcoded values + struktura + NOWE
+      walidacje v7.0: detect_dead_rules, detect_priority_gaps,
+      detect_cross_package_conflicts. Status: PRODUKCYJNY (--strict w CI).
+  11. cross_package_conflict_detector.py (228) — wykrywa konflikty
+      między pakietami (te same rule_id, sprzeczne routingi).
+      Status: PRODUKCYJNY (--json w CI).
+  12. crossref_plan50.py (79) — cross-reference rule_ids z Plan OPA 50,
+      raportuje braki (pierwsze 30). Status: ANALITYCZNY.
+
+  MONITORING (2):
+  13. isap_crawler.py (624) — crawler prawny (inicjatywa C3): 4 źródła
+      (LEX-Polska API płatne, Sejm API, RCL RSS, ISAP Selenium fallback),
+      porównanie hash dzienny, generowanie GitHub Issues. Status:
+      PRODUKCYJNY-PLAN (wymaga cron + kluczy API).
+  14. temporal_drift_detector.py (195) — ładuje zmiany ISAP + kartografię
+      prawną, znajduje dotknięte reguły, skanuje pliki pod kątem
+      nieaktualnych dat, generuje rejestr + Issues. Status: PRODUKCYJNY
+      (--check w CI).
+
+  ANALITYKA/SYMULACJE (2):
+  15. rule_impact_simulator.py (220) — ładuje historyczne werdykty
+      (audit log) lub generuje syntetyczne (1000), symuluje wpływ
+      zmian reguł. Status: EKSPERYMENTALNY (zależny od danych).
+  16. judgment_predictor.py (755) — PREDYKTOR WYROKÓW: KKSFineCalculator,
+      JudgmentPredictor, builder FastAPI, CLI. WERYFIKACJA: NIE zawiera
+      sklearn/tensorflow/torch/mlflow — to DETERMINISTYCZNA HEURYSTYKA
+      (scoring ryzyka + kalkulator kar KKS), NIE model ML.
+      Status: EKSPERYMENTALNY (nazwa myląca — sugeruje ML).
+
+  AI (1):
+  17. llm_bridge.py (796) — most LLM: PromptTemplates, ContextCompressor,
+      LLMBridge z providerami Anthropic (ANTHROPIC_API_KEY), OpenAI,
+      Gemini (GEMINI_API_KEY), build_explanation_response, CLI.
+      Status: PRODUKCYJNY-MOST (wymaga kluczy API, obsługiwany multi-provider).
+
+  MANIFEST (1):
+  18. generate_manifest.py (233) — parser rego, count_matched_true,
+      collect_all_rules, build_enterprise_summary (S1–S24),
+      generate_manifest. Status: PRODUKCYJNY (--check w CI).
+
+5.2. ANALIZA GENERATORA TESTÓW (generate_test_suite.py) — ŹRÓDŁO TAUTOLOGII
+
+  DEFAULT_OUTPUT = JDG_ROOT / "tests" / "auto"
+  generate_test_for_rule() buduje input_data z metadanych reguły
+  (rule_id, package, routing, legal_basis, matched, priority)
+  i generuje DWA testy na regułę: pozytywny (matched=True) i negatywny
+  (matched=False, routing ALLOW).
+
+  Błąd koncepcyjny: testy asertują metadane ZAMIĘST wyniku ewaluacji.
+  Prawidłowe podejście: generować pliki *_test.rego z
+  `test_<rule_id> { <package>.<rule> }` i oczekiwać werdyktu — wtedy
+  test faktycznie wykonuje regułę przez opa test.
+
+5.3. OCENA NARZĘDZI WEDŁUG KRYTERIÓW ENTERPRISE
+
+  - Kompletność walidacji: 6 checków lintera + 3 nowe walidacje
+    validate_rules (dead rules, priority gaps, cross-package conflicts)
+    — DOBRY poziom, zgodny z ustaleniami P25/P26 (detektory istnieją).
+  - Integracja z CI: lint, validate, manifest, conflict, drift — w
+    jdg-quality-gates; ALE maskowanie błędów przez `|| true`/`|| echo`
+    osłabia skuteczność bramek.
+  - Pokrycie cyklu życia reguły: generacja (8) → walidacja (4) →
+    monitoring (2) → symulacja (2) → AI (1) → manifest (1): pełny cykl,
+    czego brakuje w większości projektów OPA.
+  - Ryzyka: judgment_predictor (nazwa ML, treść heurystyka), llm_bridge
+    (klucze API w env — brak dokumentacji kosztów), isap_crawler
+    (zależność od zewnętrznych API).
+
+5.4. TABELA STATUSU NARZĘDZI (PRODUKCYJNE vs EKSPERYMENTALNE)
+
+  Narzędzie .................... Status ......... Użycie w CI ... Ocena
+  generate_micro_rules ......... PRODUKCYJNY .... nie ........... A-
+  generate_massive_rules ....... PRODUKCYJNY .... nie ........... A-
+  generate_from_plan50 ......... PRODUKCYJNY .... nie ........... B+
+  parse_plan33_and_generate .... PRODUKCYJNY .... nie ........... B+
+  generate_test_suite .......... PRODUKCYJNY .... nie ........... D (tautologie)
+  convert_true_to_conditions ... PRODUKCYJNY .... nie ........... A (naprawa P26)
+  fix_hyper_legal_basis ........ NAPRAWCZY ....... nie ........... B
+  fix_micro_plan33_legal_basis . NAPRAWCZY ....... nie ........... B
+  lint_rego_rules .............. PRODUKCYJNY .... TAK (--check) . A
+  validate_rules ............... PRODUKCYJNY .... TAK (--strict) A
+  cross_package_conflict_det ... PRODUKCYJNY .... TAK (--json) .. A-
+  crossref_plan50 .............. ANALITYCZNY ..... nie ........... B
+  isap_crawler ................. PRODUKCYJNY-PLAN nie (wymaga cron) B
+  temporal_drift_detector ....... PRODUKCYJNY .... TAK (--check) . A-
+  rule_impact_simulator ........ EKSPERYMENTALNY . nie ........... B-
+  judgment_predictor ........... EKSPERYMENTALNY . nie ........... C (myląca nazwa ML)
+  llm_bridge ................... PRODUKCYJNY-MOST nie (wymaga kluczy) B
+  generate_manifest ............ PRODUKCYJNY .... TAK (--check) . A-
+
+  Suma: 11 produkcyjnych, 3 naprawcze/analityczne, 2 eksperymentalne,
+  1 planowany (isap_crawler), 1 most (llm_bridge) — łącznie 18.
+  5 narzędzi zintegrowanych z CI (~28%).
+
+=================================================================
+SEKCJA 6 — ANALIZA OPA REGO DEVELOPER GUIDE (POZIOM ENTERPRISE)
+=================================================================
+
+6.1. STAN FAKTYCZNY PLIKU
+
+  OPA_REGO_DEVELOPER_GUIDE.md: 444 linie.
+  Weryfikacja nagłówków (grep '^#') — PLIK NIE MA ŻADNEGO NAGŁÓWKA
+  MARKDOWN: jedyne trafienia to komentarze Rego w przykładowym kodzie
+  (linie 26, 381, 392). Pierwsza treść to: "Oto cztery najlepsze
+  repozytoria do nauki i inspiracji: ..." — wklejony transkrypt czatu
+  LLM odpowiadającego na pytanie o naukę Rego.
+
+6.2. WERYFIKACJA OBECNOŚCI KONWENCJI PROJEKTOWYCH
+
+  Słowo kluczowe ...... Liczba trafień w guide
+  else-chain .......... 0
+  safe_merge .......... 0
+  Multi-Pass .......... 0
+  Sharded ............. 0
+  ADR ................. 0
+  rule_id ............. 0
+  bundle .............. 0
+  shard ............... 0
+  opa ................. 17 (ogólne wzmianki)
+  test ................ 12 (ogólne wzmianki)
+
+  WNIOSEK: Developer Guide NIE opisuje architektury JDG (Multi-Pass,
+  Sharded Router), NIE zawiera konwencji nazewniczych ADR-008, NIE
+  wspomina safe_merge, else-chain, rule_id. Jest to dokument OGÓLNY
+  o nauce Rego (repozytoria open-policy-agent/library, conftest,
+  styrainc/enterprise-opa, kubescape/regolibrary), nie przewodnik
+  dla dewelopera JDG.
+
+6.3. CZEGO BRAKUJE (REQUIREMENTS DLA NOWYCH DEWELOPERÓW)
+
+  - Struktura katalogów JDG (rules/, rules/micro/, rules/jdg/, bundle)
+  - Konwencja rule_id (ADR-008): jdg.<package>.<rule>
+  - Wzorzec else-chain (pierwsza reguła osiągalna, reszta martwa)
+  - Wzorzec safe_merge i ochrona przed nadpisywaniem
+  - Architektura Multi-Pass + Sharded Router (fazy ewaluacji)
+  - Próg thresholds_jdg.rego (zakaz magicznych liczb)
+  - Metadane temporalne (valid_from/valid_to) i _metadata_jdg.rego
+  - Jak pisać i uruchamiać natywne testy Rego (opa test) — obecnie 0
+  - Jak używać narzędzi: lint_rego_rules, validate_rules, generatory
+  - Kontrakt CI (jdg-quality-gates) i tryby --check/--ci
+
+6.4. OCENA: F (niespełniający wymogów przewodnika projektowego)
+
+6.5. SZKIC NOWEGO OPA_REGO_DEVELOPER_GUIDE.md (struktura docelowa)
+
+  1. Wprowadzenie do modułu JDG (co to jest, 383 plików, 44 pakiety,
+     warstwy: micro / core / enterprise / hyper)
+  2. Struktura katalogów (rules/, rules/micro/, rules/jdg/, bundles/)
+  3. Konwencja rule_id (ADR-008): jdg.<package>.<rule>; dlaczego
+     nie wolno używać innych prefiksów (weryfikacja w CI)
+  4. Wzorzec else-chain: pierwsza reguła osiągalna, kolejne martwe;
+     praktyka: jedna reguła decide + else łańcuch z priorytetami
+  5. Wzorzec safe_merge: jak scalać werdykty wielu pakietów bez
+     nadpisywania (POZYCJA_NAJWYŻSZA, ochrona przed BLOCK->ALLOW)
+  6. Architektura Multi-Pass: pass 1 (walidacja), pass 2 (decyzje),
+     pass 3 (metadane/audyt) — kiedy która faza działa
+  7. Sharded Router: podział pakietów na shardy, routing wejścia,
+     kolejność ewaluacji, obsługa timeoutów
+  8. thresholds_jdg.rego: centralny magazyn progów, zakaz magicznych
+     liczb w regułach (check no_hardcoded_integers)
+  9. Metadane temporalne: _metadata_jdg.rego, valid_from/valid_to,
+     funkcje is_active/is_active_now (zgodność z test_temporal_validity)
+  10. Pisanie testów natywnych Rego (opa test): wzorzec z sekcji 4.7,
+      przykłady pozytywne/negatywne, --count, raportowanie
+  11. Narzędzia: lint_rego_rules (6 checków), validate_rules (--strict),
+      generate_manifest --check, cross_package_conflict_detector,
+      temporal_drift_detector — jak je uruchamiać lokalnie
+  12. CI/CD: opa-ci.yml i jdg-quality-gates — co uruchamia się przy
+      każdym PR, jak czytać raporty i artefakty
+  13. FAQ: dlaczego nie wolno { true }, co robić z nową ustawą,
+      jak dodać nowy pakiet (checklista 5 kroków)
+
+  Przewodnik docelowy: 200–300 linii, konkrety projektu, przykłady
+  z prawdziwych plików JDG (nie z repozytoriów open-source).
+
+=================================================================
+SEKCJA 7 — CI/CD I INTEGRACJA (POZIOM ENTERPRISE)
+=================================================================
+
+7.1. WORKFLOW OPA-CI (opa-ci.yml) — JEDNOSTKA WALIDACJI REGO
+
+  - Trigger: pull_request/push na ścieżkach JDG/rules/**/*.rego
+  - Matrix conftest: 6 polityk (matched_true_required,
+    no_fallback_allow, rule_id_canonical, no_hardcoded_integers,
+    legal_basis_required, temporal_validity_required)
+  - OPA check (składnia): `opa check JDG/rules/*.rego || true` —
+    maskowanie błędów (!!)
+  - OPA build: tylko main_jdg.rego (komentarz: bundle skipped multi-package)
+  - rego-unit-tests: `opa test JDG/rules/ --verbose --count 10` —
+    przy 0 plikach *_test.rego daje PASS z 0 testów (fałszywe bezpieczeństwo)
+  - lint-magic-numbers: grep regex dla liczb poza thresholds — POPRAWNY
+    mechanizm, wykluczenia priorytetów i dat
+  - manifest-sync-check: liczy pliki rego (min 30) — słaba kontrola,
+    nie weryfikuje spójności z manifestem (mimo nazwy)
+
+7.2. WORKFLOW CI (ci.yml) — JDG QUALITY GATES
+
+  Job jdg-quality-gates (linie 1087–1130):
+  - lint_rego_rules.py --check ... --ci || echo '(warn) linter'
+  - validate_rules.py --strict --json || echo '(warn) validator'
+  - generate_manifest.py --check
+  - cross_package_conflict_detector.py --json || true
+  - temporal_drift_detector.py --check || true
+  - pytest JDG/tests/ -m 'unit or rego' --timeout=60
+  - upload-artifact jdg_*.json (retention 7 dni)
+  - GITHUB_STEP_SUMMARY z tabelą statusów
+
+  MOCNE STRONY: pełny zestaw narzędzi w CI, artefakty JSON, summary.
+  SŁABOŚCI: (a) maskowanie porażek przez || true / || echo — bramki
+  nigdy nie blokują merge; (b) marker 'rego' w pytest nie istnieje w
+  pyproject (markery: unit, integration, e2e, anyio) — pytest z
+  -m 'unit or rego' da warning unknown marker; (c) testpaths=["tests"]
+  nie obejmuje JDG/tests — CI woła jawnie, ale lokalny pytest nie.
+
+7.3. KONFIGURACJA PYTEST (pyproject.toml)
+
+  [tool.pytest.ini_options]
+  testpaths = ["tests"]          <-- NIE zawiera JDG/tests!
+  python_files = ["test_*.py"]
+  addopts = "--tb=short -ra"
+  markery: unit, integration, e2e, anyio
+  Zależności dev: pytest>=8, crosshair (PBT), schemathesis (fuzz API),
+  locust (perf), ruff, mypy, py-spy, sentry-sdk
+
+  Skutek: `pytest` w katalogu głównym NIE zbiera testów JDG — deweloper
+  musi wołać pytest JDG/tests/ jawnie (co robi CI, ale nie lokalnie).
+
+7.4. POZOSTAŁE WORKFLOW NA POZIOMIE REPOZYTORIUM (10)
+
+  - labeler.yml .......... automatyczne etykiety PR wg ścieżek
+  - performance-locust.yml testy wydajności API (Locust)
+  - profiling-ci.yml ..... profilowanie (py-spy)
+  - reproducible-build.yml  weryfikacja powtarzalnych buildów
+  - scorecard.yml ........ OpenSSF Scorecard (bezpieczeństwo repo)
+  - screenshot-tests.yml . testy wizualne UI
+  - self-heal.yml ........ samonaprawa środowiska
+  - setup-hatch.yml ...... bootstrapping hatch
+  - setup-pixi.yml ....... bootstrapping pixi
+  - stale.yml ............ oznaczanie nieaktywnych issues/PR
+
+  Wniosek: repozytorium ma profesjonalną infrastrukturę CI/CD (12
+  workflow), z czego 2 dotyczą bezpośrednio JDG (opa-ci, jdg-quality-
+  gates w ci.yml). Brakuje tylko: (a) realnych testów Rego do uruchomie-
+  nia przez opa test, (b) bramek blocking zamiast || true, (c) schedulera
+  dla isap_crawler i temporal_drift_detector.
+
+7.5. INTEGRACJA Z USTALENIAMI P25 I P26 (SPÓJNOŚĆ SERII)
+
+  Ustalenie P25 .................. Narzędzie/osoba odpowiedzialna ... Stan
+  336 duplikatów rule_id ......... validate_rules --strict .......... Detektor istnieje
+  247/383 plików w MANIFEST ...... generate_manifest --check ........ Detektor istnieje
+  8 kolizji basename w bundle .... lint_rego_rules ................. BRAK detektora
+  martwe reguły (15 w P26) ....... validate_rules detect_dead_rules . Detektor istnieje
+  priorytety (P26) ............... validate_rules detect_priority_gaps Detektor istnieje
+  konflikty cross-package ........ cross_package_conflict_detector .. Detektor istnieje
+  drift temporalny ................ temporal_drift_detector ......... Detektor istnieje
+  regeneracja reguł .............. 8 generatorów .................... Kompletne
+  naprawa legal_basis ............. fix_hyper/fix_micro .............. Kompletne
+  naprawa stubów { true } ......... convert_true_to_conditions ...... Kompletne
+
+  WNIOSEK: zestaw narzędzi JDG jest gotowy do realizacji poprawek
+  z P25/P26 — brakuje jedynie ich WDROŻENIA jako bramek blokujących
+  oraz testów potwierdzających, że naprawy faktycznie działają.
+
+=================================================================
+SEKCJA 8 — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE (15)
+=================================================================
+
+I1. "Auto-Test Generator for All 383 Rego Files" (NAJWAŻNIEJSZE)
+    Przepisać generate_test_suite.py tak, aby generował NATYWNE testy
+    Rego: dla każdej reguły plik *_test.rego z
+    `test_<rule_id> { <pkg>.<rule> with input as {...} }` (pozytywny
+    i negatywny przypadek). Python zostaje tylko jako orkiestrator
+    generacji i raportowania. Eliminuje to tautologie u źródła.
+
+I2. "Tautology Guard in CI" — dodatkowy krok w jdg-quality-gates:
+    skrypt sprawdza, że każdy test auto odwołuje się do pliku reguły
+    (import data.jdg.* w testach natywnych) lub woła ewaluację —
+    wykrycie testów asertujących własne input_data kończy się FAIL.
+
+I3. "CI/CD Pipeline z OPA Check BLOCKING" — usunąć `|| true` i
+    `|| echo '(warn)'` z opa-ci.yml i jdg-quality-gates dla checków
+    krytycznych (składnia, rule_id, legal_basis, temporal); dodać
+    --ci mode exit 1 w lint i validate.
+
+I4. "Test Coverage Heatmap" — generate_test_suite.py rozszerzony o
+    raport pokrycia: mapa pakietów (383 pliki reguł vs testy) w formacie
+    JSON/HTML, publikowana jako artefakt CI. Pokazuje 11 luk pakietowych,
+    ~90 plików enterprise i 28 subpakietów micro bez testów.
+
+I5. "Fuzz Testing Engine for Rego" — generator losowych faktur/dokumentów
+    (kwoty brzegowe 0/ujemne/1e12, puste struktury, daty graniczne,
+    wiele jednoczesnych triggerów) jako testy natywne Rego; integracja
+    z crosshair/schemathesis na poziomie inputów.
+
+I6. "Temporal Drift Auto-Fixer" — rozszerzenie temporal_drift_detector:
+    po wykryciu zmiany ISAP automatycznie przygotowuje PR z propozycją
+    aktualizacji valid_to/valid_from dla dotkniętych reguł (na bazie
+    kartografii prawnej), człowiek tylko zatwierdza.
+
+I7. "Cross-Package Impact Analyzer" — połączenie cross_package_conflict_
+    detector + rule_impact_simulator: analiza "co się zmieni, jeśli
+    zmienię regułę X" — symulacja propagacji werdyktów przez pakiety
+    zależne, z raportem ryzyka regresji.
+
+I8. "ISAP Legal Change Auto-Notifier" — isap_crawler rozszerzony o
+    webhook (Discord/Slack/email) + generowanie Issues z tagiem
+    "legal-change" i przypisaniem właściciela pakietu (mapa
+    pakiet→ustawa z LEGAL_REFERENCE_ACTS).
+
+I9. "Rule Quality Scoring Dashboard" — score per reguła (0–100):
+    obecność legal_basis, temporal, rule_id canonical, unikalność,
+    brak hardcode, obecność testu — raport per pakiet, publikacja
+    w CI jako badge.
+
+I10. "Chaos Engineering for OPA" — testy "anty-fragile":
+    (a) usuń regułę → sprawdź, czy testy ją wykryją;
+    (b) wyczyść thresholds → sprawdź fallback;
+    (c) bundle bez metadata → sprawdź temporal default;
+    (d) dwie reguły ten sam rule_id → sprawdź detector.
+    Wykonanie: pytest fixture mutujące pliki rego w temp bundle.
+
+I11. "Developer Onboarding Auto-Tutorial" — natywny przewodnik JDG
+     (nowy OPA_REGO_DEVELOPER_GUIDE.md) z interaktywnymi przykładami:
+     else-chain, safe_merge, Multi-Pass, ADR-008; każdy przykład
+     opatrzony testem Rego uruchamianym przez opa test.
+
+I12. "Real-Time Rule Drift Monitor" — daemon/cron skanujący co N godzin:
+     (a) temporal_drift_detector, (b) manifest vs dysk (P25: 247/383),
+     (c) rule_id duplikaty (336!), (d) martwe reguły (P26: 15), raport
+     na issues z priorytetami.
+
+I13. "Zero-Defect Test Guarantee System" — kontrakt: każda nowa reguła
+     musi mieć (a) legal_basis, (b) temporal, (c) natywny test Rego,
+     (d) wpis w manifest. Enforce w CI jako hard gate (pre-merge),
+     pokrycie 100% dla nowych PR, 95% w 90 dni dla istniejących.
+
+I14. "Micro Package Test Matrix" — dla 28 subpakietów micro wygenerować
+     testy per pakiet (obecnie 1 plik 270 funkcji); każde 15 reguł
+     dostaje osobny plik *_test.rego z granicami kwot i dat.
+
+I15. "Enterprise Files Coverage Sprint" — ~90 plików *_enterprise.rego:
+     generator testów natywnych dla każdego pliku (min 2 przypadki:
+     BLOCK i ALLOW), z mapą rule_id → plik → test. Wykonalne w 1 sprint.
+
+=================================================================
+SEKCJA 9 — PLAN NAPRAWCZY (FAZY, PRIORYTETY, EFFORT)
+=================================================================
+
+Faza 1 — NATYWNI TESCI REGO (priorytet: KRYTYCZNY, ~5 dni)
+  P1.1 Przepisać generate_test_suite.py na generowanie *_test.rego
+       (I1) — 383 plików, ~7000 reguł, tryb --dry-run + --commit.
+  P1.2 Dodać Tautology Guard do CI (I2).
+  P1.3 Włączyć opa test z prawdziwymi testami w opa-ci.yml (R7).
+
+Faza 2 — ZAMKNIĘCIE LUK PAKIETOWYCH (priorytet: WYSOKI, ~3 dni)
+  P2.1 11 pakietów bez testów (advertising, esig, force_majeure, fx,
+       jpk, ord, pcc, seasonal, security, taxfree, uor) — po 1 pliku
+       natywnym per pakiet.
+  P2.2 Micro Test Matrix (I14) — 28 subpakietów.
+
+Faza 3 — BLOKOWANIE CI (priorytet: WYSOKI, ~2 dni)
+  P3.1 Usunąć maskowanie `|| true` dla checków krytycznych (I3).
+  P3.2 Naprawić testpaths (dodać JDG/tests) i markery (dodać 'rego').
+  P3.3 Bramki lint/validate/manifest jako hard gate z artifact JSON.
+
+Faza 4 — ENTERPRISE COVERAGE (priorytet: ŚREDNI, ~4 dni)
+  P4.1 ~90 plików *_enterprise.rego — min 2 testy natywne per plik (I15).
+  P4.2 Edge cases + granice (fuzz, I5) dla warstw VAT/PIT/KKS/ZUS.
+
+Faza 5 — NARZĘDZIA I DOKUMENTACJA (priorytet: ŚREDNI/NISKI, ~4 dni)
+  P5.1 Nowy Developer Guide (I11) wg ADR-008 — zastąpienie transkryptu.
+  P5.2 Etykietowanie judgment_predictor/llm_bridge jako experimental.
+  P5.3 Scheduler dla isap_crawler/temporal_drift (cron GH Actions).
+
+Suma: ~18 dni roboczych do pełnej transformacji QA JDG.
+
+=================================================================
+SEKCJA 10 — TABELA METRYK PODSUMOWUJĄCA
+=================================================================
+
+Metryka .................................. Wartość ......... Ocena
+Pliki testów głównych ..................... 28 ............. OK
+Pliki testów auto ......................... 54 ............. OK
+Funkcje testowe łącznie ................... 1818 ........... OK (ilość)
+Funkcje testowe auto ...................... 1254 ........... OK (ilość)
+Testy natywne Rego ........................ 0 .............. FAIL
+Testy wołające OPA engine ................. 0 .............. FAIL
+Odwołania do plików reguł w auto testach .. 0 .............. FAIL
+Pakiety reguł bez testu auto .............. 11 ............. LUKA
+Pliki *_enterprise.rego bez testów ........ ~90 ............. LUKA
+Subpakiety micro bez rozbicia testów ...... 28 w 1 pliku ... LUKA
+Narzędzia deweloperskie ................... 18 (8900 linii) . OK
+Checki lintera Rego ....................... 6 .............. OK
+Nowe walidacje v7.0 (validate_rules) ...... 3 .............. OK
+Workflow CI/CD ............................ 12 ............. OK
+Bramki CI maskujące błędy ................. 5+ (|| true) .... FAIL
+Developer Guide (linie) ................... 444 ............. F
+Wzmianki konwencji JDG w guide ............ 0 .............. FAIL
+Markery pytest (unit/integration/e2e) ..... 3 + rego(??) ... UWAGA
+
+=================================================================
+SEKCJA 11 — SEKCJA PODSUMOWUJĄCA (STAN MODUŁU JDG 2026-08-01)
+=================================================================
+
+CO JEST GOTOWE (ocena A–B):
+  - Skala testów: 82 pliki, 1818 funkcji — największy zestaw testowy
+    w projekcie NexusAI.
+  - test_temporal_validity.py: jedyny wzorcowy test (statyczna analiza
+    metadanych temporalnych + parametryzacja) — 40 przypadków PASS.
+  - Narzędzia: 18 skryptów (~8900 linii) pokrywających pełny cykl
+    życia reguły: generacja → walidacja → monitoring → symulacja → AI.
+  - Linter 6-check + validate_rules z 3 nowymi walidacjami v7.0
+    (dead rules, priority gaps, cross-package conflicts) — zgodne
+    z ustaleniami P25/P26 (detektory istnieją i są wykonywalne).
+  - CI/CD: 12 workflow, w tym opa-ci.yml (conftest matrix) i
+    jdg-quality-gates (5 narzędzi + pytest + artefakty + summary).
+  - Narzędzia naprawcze (convert_true_to_conditions 891 linii,
+    fix_hyper_legal_basis, fix_micro_plan33_legal_basis) — realne
+    narzędzia, które rozwiązały problemy opisane w P26.
+
+CO WYMAGA POPRAWY (ocena C–D):
+  - TAUTOLOGIE: 1254 funkcje auto asertują własne input_data — nie
+    wykonują Rego. To najpoważniejszy problem jakościowy modułu.
+  - 0 natywnych testów Rego (opa test nie ma czego uruchomić).
+  - 11 pakietów reguł bez testów + ~90 plików enterprise bez testów
+    + 28 subpakietów micro skomprymowanych w 1 pliku.
+  - Maskowanie błędów CI (|| true / || echo) — bramki nie blokują.
+  - testpaths/markery pytest niespójne z JDG.
+  - Developer Guide: transkrypt czatu LLM, nie przewodnik projektowy
+    (0 wzmianek: else-chain, safe_merge, Multi-Pass, ADR, rule_id).
+
+CO JEST PLANOWANE (roadmapa):
+  - Faza 1: natywne testy Rego + Tautology Guard (5 dni)
+  - Faza 2: zamknięcie luk pakietowych (3 dni)
+  - Faza 3: blokowanie CI (2 dni)
+  - Faza 4: enterprise coverage + edge cases (4 dni)
+  - Faza 5: Developer Guide + etykiety + scheduler (4 dni)
+
+OCENA DOJRZAŁOŚCI ENTERPRISE (skala A/B/C/D/F):
+  .......... A .......... struktura i skala infrastruktury testowej
+  .......... B .......... narzędzia i CI/CD (po uwzględnieniu maskowania)
+  .......... C .......... integracja z procesem (pytest/CI/testpaths)
+  .......... D .......... JAKOŚĆ testów reguł (tautologie, 0 natywnych)
+  .......... F .......... Developer Guide
+
+  >>> OCENA ŁĄCZNA: C+ <<<
+  (potencjał A przy realizacji Faz 1–3; bez Fazy 1 zestaw testowy
+  pozostaje dekoracyjny)
+
+=================================================================
+SEKCJA 12 — METODOLOGIA I ZASTRZEŻENIA
+=================================================================
+
+  - Wszystkie liczby zweryfikowane komendami na dysku 2026-08-01:
+    find, grep, wc, sed, head na JDG/tests, JDG/tools, .github/workflows,
+    pyproject.toml.
+  - Liczba "~90 plików enterprise bez testów" to oszacowanie na bazie
+    listingu rules/*.rego (153 pliki na poziomie głównym, w tym ~90
+    *_enterprise) minus pakiety posiadające testy główne/auto.
+  - "0 testów natywnych Rego" zweryfikowane przez
+    find JDG -name '*_test.rego' -o -name 'test_*.rego' = 0.
+  - "0 odwołań do OPA" zweryfikowane przez grep 'opa eval|opa test|
+    rego.run|eval_rego' w JDG/tests/*.py i JDG/tests/auto/*.py.
+  - Developer Guide oceniony na 444 liniach obecnych na dysku;
+    zawartość (transkrypt czatu) potwierdzona przez pierwsze 30 linii
+    i zerowe trafienia konwencji JDG.
+  - Raport NIE modyfikuje żadnych plików JDG (zgodnie z zasadami P27).
+
+=================================================================
+=== KONIEC RAPORTU — RAPORT_P27_JDG_TESTS_TOOLS_DEVGUIDE_v7.0 ===

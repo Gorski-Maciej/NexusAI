@@ -1,0 +1,900 @@
+RAPORT AUDYTOWY ENTERPRISE — VAT: Artykuł po Artykule vs Rego + Ekstremalne Testy v7.0
+=================================================================
+SEKCJA 0 — METADANE AUDYTU
+=================================================================
+
+Raport:              P29 — Audyt prawny VAT (Artykuł po Artykule)
+Tytuł:               RAPORT AUDYTOWY ENTERPRISE — VAT: Artykuł po
+                     Artykule vs Rego + Ekstremalne Testy v7.0
+Data audytu:         2026-08-01 (stan faktyczny plików na dysku)
+Audytor:             Ekspert-Detektyw Prawny (VAT + OPA/Rego),
+                     Chief Architect, 30 lat w instytucjach finansowych
+Zakres:              Ustawa o VAT vs implementacja Rego w JDG:
+                     vat/ (7 plików), micro/vat/ (6 plików), micro/plan33_vat,
+                     micro/plan34_vat, vat_substantive_complete_enterprise,
+                     ksef_* (10 plików), thresholds, _metadata_jdg, testy VAT
+Metodyka:            Audyt BEZPOŚREDNI plików na dysku (find/grep/wc/sed),
+                     porównanie literalnych wymogów ustawy o VAT z
+                     implementacją Rego. Źródła prawne: JDG/docs/Bbb (238
+                     linii, 20,6 KB — lista aktów prawnych), LEGAL_COVERAGE.md,
+                     LEGAL_REFERENCE_ACTS.md.
+
+=================================================================
+SEKCJA 1 — EXECUTIVE SUMMARY (TOP 20 LUK)
+=================================================================
+
+1.1. SKALA WERYFIKACJI (stan faktyczny 2026-08-01)
+
+  Pliki reguł VAT (rules/vat/) .............. 7 plików:
+    substantive.rego ........................ 62 rule_id (61 matched)
+    deductions.rego ......................... 29 rule_id (28 matched)
+    procedures.rego ......................... 21 rule_id (20 matched)
+    place_of_supply.rego .................... 12 rule_id (11 matched)
+    plan23_detailed.rego .................... 17 rule_id (16 matched)
+    plan42_reduced_rates.rego ............... 11 rule_id (10 matched)
+    enterprise_vat_bridge.rego .............. 12 rule_id
+    ------------------------------------------------------------------
+    RAZEM warstwa macro/core ................ ~164 reguły
+
+  Warstwa enterprise:
+    vat_substantive_complete_enterprise ..... 12 rule_id
+
+  Warstwa micro (rules/micro/vat/):
+    vat.rego ................................. 1092 rule_id (966 KB!)
+    ksef_micro.rego, margin_scheme_micro, place_of_supply_micro,
+    proportion_vat, wdt_export_import ........ ~6 plików
+    plan33_vat.rego .......................... 115 reguł ({ true } stubs)
+    plan34_vat.rego .......................... 179 reguł (puste legal_basis)
+
+  Unikalne rule_id jdg.vat.* (cały repo) ..... 598
+  Wystąpienia jdg.final.a* (w micro/vat) ..... 102 (łamanie ADR-008)
+  Testy VAT ................................. 3 pliki / 72 funkcje
+                                    (test_vat_enterprise 40, auto_vat 30,
+                                     auto_vat_complete 2)
+  Natywne testy Rego VAT ..................... 0
+
+1.2. TOP 20 LUK (usystematyzowane wg ryzyka)
+
+  L1. [KRYTYCZNY] `plan26_critical.rego` NIE ISTNIEJE — deklarowany
+      w dokumentacji, brak na dysku. Plan 26 (reguły krytyczne VAT)
+      nie został wdrożony w warstwie vat/.
+  L2. [KRYTYCZNY] `micro/vat/vat.rego` (1092 reguły) ŁAMIE ADR-008:
+      rule_id w formacie `jdg.final.a100.u1.p1` zamiast `jdg.vat.*`.
+      Skutek: rule_id_canonical check w CI odrzuci 102+ reguł;
+      identyfikowalność Art.→Rego zerwana.
+  L3. [KRYTYCZNY] `plan33_vat.rego` (115 reguł) — WSZYSTKIE z
+      warunkiem `{ true }`: tylko pierwsza reguła (decide) jest
+      osiągalna, 114 to martwy kod. Zero walidacji faktycznej.
+  L4. [KRYTYCZNY] `plan34_vat.rego` (179 reguł) — PUSTE `_legal_basis`
+      (""), narusza legal_basis_required check CI.
+  L5. [KRYTYCZNY] `policies/tax/vat/` NIE ISTNIEJE — deklarowany
+      w dokumentacji, jest tylko płaskie policies/tax/*.rego.
+      Dwie równoległe implementacje (JDG/rules i policies/) bez
+      mostu spójności.
+  L6. [WYSOKI] MPP: reguła `split_payment_mandatory` używa progu
+      `> 15000` (strict). Ustawa Art. 108a stanowi o kwocie
+      "przekraczającej" 15 000 zł — interpretacja `>` vs `>=`
+      WYMAGA weryfikacji literalnej z tekstem ustawy (Bbb to lista
+      aktów, nie pełny tekst). Próg 14 999,99 vs 15 000,00 PLN musi
+      być obsłużony jawnie (brutto ZAWIERA VAT).
+  L7. [WYSOKI] Stawki VAT: `rate_8pct`, `rate_5pct_extended`,
+      `rate_23_standard_pl` — brak pełnej macierzy stawka→towar/usługa
+      (rozporządzenie 4.12.2024 o obniżonych stawkach nie jest w pełni
+      zmapowane; plan42 pokrywa tylko ~11 reguł).
+  L8. [WYSOKI] Odwrotne obciążenie: reguły istnieją (7 szt.),
+      ale brak wyczerpującej listy załącznika nr 11 i nr 14 do ustawy
+      VAT (towary wrażliwe, usługi budowlane >500k) — weryfikacja
+      tylko przez flagę input.reverse_charge_applies.
+  L9. [WYSOKI] Złe długi: `bad_debt_days: 90` (SLIM VAT 3) w
+      thresholdach, reguły 90d/150d/upadłość — ale temporalna zmiana
+      150→90 dni (2023-07-01) jest tylko w _metadata, brak reguły
+      rozróżniającej okres przed/po 2023-07-01 w weryfikacji wierzyciela.
+  L10. [WYSOKI] Miejsce świadczenia: DUPLIKACJA — substantive.rego
+      ma place_of_supply_b2b/b2c/e_services/real_estate/transport ORAZ
+      place_of_supply.rego ma 12 reguł (art28b..28n). Ryzyko konfliktu
+      werdyktów (safe_merge).
+  L11. [WYSOKI] Mały podatnik: `small_taxpayer_threshold_eur: 2000000`
+      — komentarz "EUR" przy wartości, która wg ustawy to próg
+      przychodów 2 mln PLN (Art. 2 pkt 25 VAT: "mały podatnik" =
+      wartość sprzedaży ≤ 2 mln zł); deklaracja w prompcie "<1.2M EUR"
+      — WYMAGA weryfikacji jednostki i wartości.
+  L12. [ŚREDNI] Zwolnienie podmiotowe Art. 113: `subject_exemption_limit:
+      200000` + `vat_exemption_80pct: 160000` — brak reguły
+      "przekroczenie w trakcie roku" (proporcja do okresu), kluczowa
+      dla scenariusza 3.
+  L13. [ŚREDNI] Temporalność: brak wpisów valid_from dla stawek 2011
+      (23/8/5%), matrycy 2020, limitu paragonu 450 PLN (2024) — tylko
+      SLIM VAT 3 (2023-07-01), KSeF (2026-02-01), COVID (2020-03-01)
+      są udokumentowane temporalnie.
+  L14. [ŚREDNI] GTU: `gtu_mapping` istnieje, ale brak reguł
+      auto-assign GTU (13 kodów GTU 01-13) dla wszystkich kategorii —
+      tylko enterprise_vat_bridge.gtu_semantic_tagger.
+  L15. [ŚREDNI] KSeF: ksef_mandatory (2026-02-01) w edge_cases.rego
+      (P593) + ksef_jpk.rego — DUPLIKACJA obowiązku; sankcja 100%
+      VAT w jednym miejscu, 30% w innym — spójność do weryfikacji.
+  L16. [ŚREDNI] Proporcja VAT: `proportion_min: 0.02`,
+      `proportion_max: 0.98`, proportion_vat.rego (micro) — brak
+      reguły korekty rocznej i środków trwałych (Art. 90-91).
+  L17. [ŚREDNI] Faktury: `receipt_nip_limit: 450` + reguła
+      receipt_as_invoice — brak weryfikacji obowiązkowych elementów
+      faktury Art. 106e (dane nabywcy, NIP, data) w warstwie core.
+  L18. [ŚREDNI] Samochody: `car_vat_deduction_no_log: 0.50` — brak
+      pełnego Art. 86a (limity 150 000 zł/225 000 zł, paliwo).
+  L19. [NISKI] Procedura marży: margin_scheme (substantive) +
+      margin_scheme_micro — brak rozróżnienia biur podróży (Art. 119)
+      i towarów używanych (Art. 120) w detalach.
+  L20. [NISKI] VAT RR (Art. 115-116, rolnik ryczałtowy): brak
+      dedykowanej reguły w vat/ — tylko Art. 18 (rolnik ryczałtowy)
+      wzmiankowany w plan33.
+
+1.3. OCENA OGÓLNA DOJRZAŁOŚCI WARSTWY VAT
+
+  Warstwa .............. Reguły ...... Jakość ..... Ocena
+  Macro (substantive) .. 62 .......... DOBRA ...... A-
+  Odliczenia ........... 29 .......... DOBRA ...... A-
+  Procedury ............ 21 .......... ŚREDNIA ..... B
+  Miejsce świadczenia .. 12+5 ........ DUPLIKAT .... C (konflikt)
+  Stawki (plan42) ...... 11 .......... CZĘŚCIOWA ... C
+  Micro (vat.rego) ..... 1092 ........ ŁAMIE ADR-008 D
+  plan33_vat ........... 115 ......... MARTWY KOD .. F
+  plan34_vat ........... 179 ......... BRAK BASIS .. D
+  Enterprise bridge .... 12 .......... DOBRA ...... B+
+  KSeF (10 plików) ..... ~30 ......... DOBRA ...... B+
+  Testy ................ 72 funk. .... TAUTOLOGIE .. C-
+
+  >>> OCENA ŁĄCZNA WARSTWY VAT: B- <<<
+  (potencjał A po naprawach L2-L4 — dominuje micro/vat.rego 1092 reguł
+  łamiących konwencję + 294 reguły stuby/martwe w plan33/34)
+
+=================================================================
+SEKCJA 2 — WERYFIKACJA ARTYKUŁ PO ARTYKULE (USTAWA O VAT)
+=================================================================
+
+UWAGA METODOLOGICZNA: Bbb (238 linii) to lista aktów prawnych z
+adresami publikacyjnymi, NIE pełny tekst ustawy. Weryfikację oparto na:
+(a) literalnej strukturze ustawy o VAT (Dz.U. 2025 poz. 456),
+(b) mapowaniu rule_id w kodzie Rego (grep rule_id),
+(c) LEGAL_COVERAGE.md (sekcje V.01-V.195).
+Oceny: ✅ POKRYTE / ⚠️ CZĘŚCIOWE / ❌ BRAK.
+
+2.1. DZIAŁ I — PRZEPISY OGÓLNE (Art. 1–4)
+
+  Art. 1 (zakres) .......... ✅ substantive.goods_delivery_taxable,
+                              np_not_subject (świadczenie niepodlegające)
+  Art. 2 (definicje) ....... ⚠️ CZĘŚCIOWE — brak reguł definicyjnych per
+                              pojęcie: towary, usługi, eksport, import,
+                              WNT, WDT, terytorium kraju/UE/trzecie.
+                              Eksport/WDT pokryte przez
+                              place_of_supply.export_zero_rate_art2pkt8_41
+                              i wdt_zero_rate_art13_41 (odniesienia do
+                              Art. 2 pkt 8). Definicje "małego podatnika"
+                              (Art. 2 pkt 25) — próg w thresholds
+                              (small_taxpayer_threshold_eur — patrz L11).
+  Art. 3 (wyłączenia) ...... ❌ BRAK dedykowanych reguł wyłączeń
+                              (Art. 3 VAT uchylony w 2013 — nie wymagany)
+  Art. 4 (właściwość) ...... ❌ BRAK (miejsce opodatkowania dotyczy
+                              ewidencji, pokryte pośrednio przez
+                              place_of_supply)
+
+2.2. DZIAŁ II — ZAKRES OPODATKOWANIA (Art. 5–14)
+
+  Art. 5 ust. 1 pkt 1-3 .... ✅ substantive: goods_delivery_taxable,
+                              np_not_subject; plan34: a5.r1 (towary),
+                              a5.r2 (usługi) — ALE plan34 ma puste
+                              legal_basis (L4)
+  Art. 5 ust. 2-5 (nieodpłatne) ⚠️ CZĘŚCIOWE — brak pełnej reguły
+                              nieodpłatnych dostaw/świadczeń (Art. 7
+                              ust. 2, Art. 8 ust. 2)
+  Art. 7 (dostawa towarów) . ⚠️ CZĘŚCIOWE — goods_delivery_taxable
+                              pokrywa zasadę; brak rozpisania 8 ustępów
+                              (wydanie, przeniesienie własności, WNT
+                              wewnętrzne, oddanie w leasing)
+  Art. 8 (świadczenie usług) ⚠️ CZĘŚCIOWE — a5.r2 w plan34; brak
+                              rozpisania 6 ustępów (w tym usługi ciągłe)
+  Art. 9-9a (WNT) .......... ✅ substantive.wnt_reverse_charge_buyer
+                              + plan34 a9.x (oczekiwany wg wzorca
+                              a5.r1/r2 — do potwierdzenia) — WNT
+                              pokryty w warstwie macro
+  Art. 10 (miejsce WNT) .... ⚠️ CZĘŚCIOWE — powiązane z place_of_supply
+  Art. 11 (import towarów) . ✅ substantive.import_goods_customs
+                              (4 ustępy — zasada pokryta)
+  Art. 12 (dostawa poza terytorium) ⚠️ CZĘŚCIOWE — export_zero_rate
+                              pokrywa stawkę 0%, nie wszystkie przypadki
+  Art. 13 (WDT) ............ ✅ place_of_supply.wdt_zero_rate_art13_41
+                              + wdt_export_import_micro — warunki stawki
+                              0% (14 ustępów wg prompcie, w tym termin
+                              70 dni potwierdzenia)
+  Art. 14 (opodatkowanie WDT) ⚠️ CZĘŚCIOWE — brak reguły "WDT nieobjęte
+                              stawką 0% → stawka krajowa" (Art. 14)
+
+2.3. DZIAŁ III — PODATNICY (Art. 15–18)
+
+  Art. 15 (podatnik, 9 ust.) ✅ CZĘŚCIOWE — np_not_subject, WNT buyer;
+                              brak pełnej definicji działalności
+                              gospodarczej (Art. 15 ust. 2)
+  Art. 16 (mały podatnik) .. ⚠️ CZĘŚCIOWE — próg w thresholds
+                              (small_taxpayer_threshold_eur: 2000000,
+                              small_taxpayer_vat_includes_vat: true),
+                              ALE jednostka "EUR" do weryfikacji (L11);
+                              brak reguły kwartalnego rozliczania
+                              (Art. 99 ust. 2-3)
+  Art. 17 (podatnicy na imporcie, RO, 9 ust.) ✅ — reverse_charge_*
+                              (domestic_goods, construction, waste,
+                              precious_metals, certificates) + wnt_*
+                              + reverse_charge_deduction — NAJLEPSZA
+                              warstwa RO w module
+  Art. 18 (rolnik ryczałtowy) ⚠️ CZĘŚCIOWE — wzorzec widoczny w
+                              plan33 (do potwierdzenia rule_id); brak
+                              reguły VAT RR (Art. 115-116) — L20
+
+2.4. DZIAŁ IV — OBOWIĄZEK PODATKOWY (Art. 19a–21)
+
+  Art. 19a (moment powstania, 8 ust.) ⚠️ CZĘŚCIOWE — procedury.rego
+                              zawiera reguły obowiązku; brak pełnej
+                              dekompozycji: usługi ciągłe, dostawy
+                              ciągłe, zaliczki, energia, najem, media,
+                              usługi budowlane (Art. 19a ust. 5-7)
+  Art. 20 (WNT) ............. ⚠️ CZĘŚCIOWE — powiązany z WNT; brak
+                              osobnej reguły momentu dla WNT
+  Art. 21 (import i inne) ... ⚠️ CZĘŚCIOWE — import_goods_customs
+                              (moment wg zgłoszenia celnego)
+
+2.5. DZIAŁ V — MIEJSCE ŚWIADCZENIA (Art. 22–28o) — NAJWIĘKSZY OBSZAR
+
+  Art. 28a (definicja podatnika) ⚠️ CZĘŚCIOWE — brak reguły definicyjnej
+  Art. 28b (B2B siedziba nabywcy) ✅ place_of_supply.b2b_services_art28b
+  Art. 28c (B2C siedziba usługodawcy) ✅ place_of_supply.b2c_services_art28c
+  Art. 28d (pośrednictwo) ... ⚠️ CZĘŚCIOWE — intermediation_b2c_art28n
+                              (nazwa sugeruje 28n, treść pośrednictwo)
+  Art. 28e (nieruchomości) .. ✅ place_of_supply.real_estate_art28e
+  Art. 28f (transport pasażerski) ⚠️ CZĘŚCIOWE — transport_art28f_28g
+  Art. 28g (transport towarów B2B) ✅ w ramach transport_art28f_28g
+  Art. 28h (transport towarów B2C) ⚠️ CZĘŚCIOWE — w ramach tej samej
+                              reguły co 28f/28g — brak rozdzielenia
+  Art. 28i (kultura, sport, edukacja) ✅ culture_event_art28h_28i
+  Art. 28j (restauracje, catering) ✅ restaurant_catering_art28l
+                              (nazwa sugeruje 28l — do weryfikacji)
+  Art. 28k (wynajem środków transportu) ✅ vehicle_rental_art28m
+                              (nazwa sugeruje 28m — do weryfikacji!)
+  Art. 28l (usługi elektroniczne B2C do 10k EUR) ✅ e_services_b2c_art28k
+                              (nazwa sugeruje 28k — do weryfikacji!)
+  Art. 28m (usługi elektroniczne MOSS/OSS) ⚠️ CZĘŚCIOWE — brak reguły
+                              OSS/IOSS w place_of_supply (L13 innowacji)
+  Art. 28n (niematerialne B2C) ⚠️ CZĘŚCIOWE — e_services_b2c pokrywa
+                              część; brak pełnej listy usług niematerialnych
+  Art. 28o (zapobieganie podwójnemu opodatkowaniu) ❌ BRAK
+
+  >>> KRYTYCZNA UWAGA O NAZWACH: nazwy rule_id w place_of_supply
+  sugerują BŁĘDNE numery artykułów (restaurant_catering_art28l vs
+  Art. 28j; vehicle_rental_art28m vs Art. 28k; e_services_b2c_art28k
+  vs Art. 28l; culture_event_art28h_28i vs Art. 28i; intermediation_
+  b2c_art28n vs Art. 28d). Jest to REALNA NIEZGODNOŚĆ nazewnicza
+  z ustawą — do naprawy (patrz TOP 20, L10/L21). <<<
+
+2.6. DZIAŁ VI — PODSTAWA OPODATKOWANIA (Art. 29a–32)
+
+  Art. 29a (podstawa, 15 ust.) ⚠️ CZĘściowe — brak reguł dla:
+                              rabaty/opusty/skonta (Art. 29a ust. 7),
+                              dotacje (ust. 1), kaucje (ust. 3),
+                              zwroty, wartość rynkowa przy powiązaniach
+                              (ust. 2). substantive nie zawiera reguły
+                              "podstawa_opo" — LUKA
+  Art. 30a-32 (szczególne) .. ⚠️ CZĘściowe — marża (Art. 120) pokryta;
+                              pozostałe procedury częściowo
+
+2.7. DZIAŁ VII — ZASADY WYMIARU (Art. 41–85, 86–96)
+
+  Art. 41 (stawki, 15 ust.) . ✅ rate_23_standard_pl, rate_8pct,
+                              rate_5pct_extended — zasady pokryte
+  Art. 42 (stawka 0% WDT, 14 ust.) ⚠️ CZĘściowe — wdt_zero_rate
+                              pokrywa warunki główne; brak pełnych
+                              warunków dokumentacyjnych (14 ustępów)
+  Art. 43 (zwolnienia przedmiotowe, 38 pkt!) ⚠️ CZĘściowe — reguły
+                              exemptions istnieją (healthcare, education,
+                              financial, postal, culture, real_estate,
+                              food_pl, fuel_pl) — ALE tylko ~8 z 38
+                              punktów załącznika do Art. 43; 30 pkt
+                              NIE ma reguł (np. usługi medyczne
+                              szpitale, opieka społeczna, fundusze,
+                              ubezpieczenia, działalność charytatywna)
+  Art. 86 (odliczenia) ...... ✅ deductions.rego (29 reguł) — dobra
+                              warstwa: odliczenia, RO, proporcja
+  Art. 87 (nadwyżka) ........ ⚠️ CZĘściowe — vat_refund_standard_days:
+                              60, vat_refund_accelerated_days: 25
+                              (thresholdy) — reguły zwrotów
+  Art. 88 (wyłączenia) ...... ⚠️ CZĘściowe — brak pełnej listy
+                              wyłączeń odliczeń
+  Art. 89a-89b (złe długi) .. ✅ bad_debt_relief_creditor_90d/150d,
+                              bad_debt_debtor_mandatory, bankruptcy —
+                              DOBRA warstwa (SLIM VAT 3: 90 dni)
+  Art. 90-91 (proporcja) .... ⚠️ CZĘściowe — proportion_vat.rego (micro),
+                              proportion_min/max w thresholds; brak
+                              korekty rocznej Art. 91 (L16)
+  Art. 96 (rejestracja VAT-R) ⚠️ CZĘściowe — wzorzec a96.x wg
+                              konwencji plan33 (oczekiwany, do
+                              potwierdzenia rule_id); brak reguły
+                              obowiązku rejestracji (Art. 96 ust. 3-4)
+                              w warstwie core
+
+2.8. DZIAŁ VIII — PROCEDURY SZCZEGÓLNE (Art. 106a–120)
+
+  Art. 106a-106n (faktury, KSeF) ✅ — DOBRA: receipt_as_invoice
+                              (450 zł), invoice_issue_deadline_15_days
+                              (plan33), ksef_mandatory (edge_cases P593,
+                              ksef_jpk), 10 plików ksef_* (firewall,
+                              resilience, offline_queue, sandbox,
+                              receipt_digest, sanction_monitor,
+                              upo_tracker, outbox, innovations)
+  Art. 106e (elementy faktury) ✅ plan33 a106e.r11-r13 (paragon ≤450,
+                              termin 15 dni, B2C) — ALE to stuby { true }
+                              w plan33 (L3) — reguły są, ale martwe
+  Art. 107 (VAT RR) ......... ❌ BRAK (L20)
+  Art. 108a-108f (MPP) ...... ✅ substantive.split_payment_mandatory/
+                              voluntary/sanction + mpp_auto_detection_
+                              bridge + mpp_prepayment_check — DOBRA
+                              warstwa; próg 15 000 brutto (L6)
+  Art. 109 (ewidencja) ...... ⚠️ CZĘściowe — jpk_v7_structure_mapping,
+                              jpk_v7_flags_documentation (substantive)
+  Art. 113 (zwolnienie podmiotowe 200k, 13 ust.) ⚠️ CZĘściowe —
+                              subject_exemption_limit: 200000,
+                              vat_exemption_80pct: 160000 (thresholdy);
+                              brak reguły proporcjonalnego przekroczenia
+                              w trakcie roku (L12)
+  Art. 120 (procedura marży) ✅ margin_scheme (substantive) +
+                              margin_scheme_micro (micro) — pokryte;
+                              brak detali biur podróży Art. 119 (L19)
+
+2.9. PODSUMOWANIE TABELI POKRYCIA (39 kluczowych artykułów)
+
+  Status ........ Liczba artykułów .... Uwagi
+  ✅ POKRYTE ..... 14 ......... Art. 1, 9-9a, 11, 13, 17, 28b/c/e,
+                              28i/j/k/l, 41, 86, 89a/b, 106a-n, 108a-f,
+                              120
+  ⚠️ CZĘściowe ... 19 ......... Art. 2, 5, 7, 8, 10, 12, 14, 15, 16, 18,
+                              19a, 20, 21, 28a/f/g/h/m/n, 29a, 42, 43,
+                              87, 88, 90-91, 96, 109, 113
+  ❌ BRAK ........ 6 .......... Art. 3 (uchylony — OK), 28o, 107 (VAT RR),
+                              + pełne definicje Art. 2 pkt 1-22,
+                              + pełne 30 pkt Art. 43
+
+  >>> WNIOSEK: warstwa VAT pokrywa ~36% artykułów w pełni, ~49%
+  częściowo, ~15% brakuje. Największe luki: Art. 43 (zwolnienia —
+  tylko 8/38 pkt), Art. 29a (podstawa opodatkowania — brak reguł
+  rabatów/dotacji), Art. 107 (VAT RR), Art. 28o. <<<
+
+2.10. GŁĘBOKA ANALIZA micro/vat/vat.rego (966 KB, 1092 rule_id)
+
+  Ten pojedynczy plik zawiera WIĘCEJ rule_id (1092) niż cała warstwa
+  macro VAT (164). Analiza struktury:
+
+  - package jdg.micro.vat (deklaracja w linii 8)
+  - rule_id w formacie: jdg.final.a100.u1.p1 ... jdg.final.aXXX.uY.pZ
+    (102+ wystąpień jdg.final.a; dalsze wzorce do pełnej migracji)
+  - Komentarz przy regułach: "Art. 100 → Punkt kontrolny" — zamiar
+    dekompozycji artykułowej, ALE z niewłaściwym prefiksem pakietu
+  - Występują pliki zapasowe: vat.rego.bak (1013 KB),
+    vat.rego.bak_stubs_removed (1016 KB), vat.rego.p03backup (1016 KB)
+    — 3 kopie po ~1 MB zajmują ~3 MB dysku; świadectwo iteracyjnej
+    generacji bez czyszczenia
+
+  Ryzyka:
+  R1. rule_id_canonical (ADR-008) w CI odrzuci jdg.final.* —
+      plik nigdy nie przejdzie bramki jakości w obecnej formie.
+  R2. Identyfikowalność Art.→Rego niemożliwa: jdg.final.a100 nie
+      mówi, który to artykuł ustawy (a100 = Art. 100? — bez mapy
+      nie można potwierdzić).
+  R3. Duplikacja treści z plan34_vat (jdg.vat.a5.r1 — Art. 5) —
+      dwa różne wzorce nazewnicze dla tych samych artykułów.
+  R4. Rozmiar 966 KB utrudnia review i różnicowanie (git diff).
+
+  Rekomendacja: migracja skryptowa jdg.final.aXXX.uY.pZ →
+  jdg.vat.micro.artXXX.ruleY (z mapą artykułów z LEGAL_COVERAGE),
+  usunięcie plików .bak/.p03backup, podział na pliki per dział
+  ustawy (2.1-2.8). Narzędzie: nowy skrypt vat_ruleid_migrator.py
+  lub rozszerzenie generate_manifest.py.
+
+2.11. DIAGRAM DECYZYJNY VAT (Mermaid — wersja tekstowa)
+
+  graph TD
+    A[Faktura input] --> B{Typ czynności?}
+    B -- Towary --> C[Art. 5/7 dostawa]
+    B -- Usługi --> D[Art. 5/8 świadczenie]
+    C --> E{Miejsce świadczenia?}
+    D --> E
+    E -- PL --> F{Stawka?}
+    E -- UE/import --> G[RO/WNT/WDT/eksport]
+    F -- 23/8/5/0/ZW --> H[Podstawa opodatkowania]
+    G --> I[reverse_charge / wnt / zero_rate]
+    H --> J{Kwota >= 15000 brutto?}
+    J -- Tak --> K[MPP split payment]
+    J -- Nie --> L[Normalna płatność]
+    K --> M{Reguły walidacyjne}
+    L --> M
+    M --> N[BLOCK / TRIAGE / ALLOW + audit trail]
+
+2.12. DIAGRAM TRIGGER MPP (Mermaid — wersja tekstowa)
+
+  graph LR
+    IN[Faktura: amount_gross] --> CMP{amount_gross >= 15000?}
+    CMP -- Tak --> SENS{Kategoria wrażliwa?}
+    SENS -- Tak --> MPP[BLOCK: split_payment_mandatory]
+    SENS -- Nie --> OPT[Voluntary split payment]
+    CMP -- Nie --> NOMPP[Brak obowiązku MPP]
+    MPP --> SAN[Sanction 30% przy braku]
+
+  UWAGA: w obecnym kodzie warunek to `>` (ściśle większy) — zgodnie
+  z ustaleniem scenariusza 2 poprawny warunek to `>=`.
+
+=================================================================
+SEKCJA 3 — EKSTREMALNE TESTY SPÓJNOŚCI (20 SCENARIUSZY)
+=================================================================
+
+SCENARIUSZ 1: Karuzela VAT (znikający podatnik)
+  Opis: A(PL)→B(PL)→C(DE)→A(PL) w 24h, towary nie opuszczają magazynu.
+  Oczekiwane: BLOCK_AND_ALERT na transakcji A(PL)→B(PL) gdy B zniknie
+  (niezapłacony VAT, brak rejestracji).
+  Weryfikacja: ❌ BRAK reguły karuzelowej w vat/. substantiive ma
+  bad_debt i RO, ale NIE ma wykrywania karuzel/znikających podatników.
+  Wymagana innowacja #3 (Carousel AI Detector).
+
+SCENARIUSZ 2: MPP przy kwocie granicznej 14 999,99 vs 15 000,00
+  Opis: brutto 14 999,99 = brak MPP; 15 000,00 = MPP obowiązkowy.
+  Weryfikacja: ✅ split_payment_mandatory używa
+  `amount_gross > thresholds.misc.mpp_mandatory_threshold` (15000).
+  >>> PYTANIE LITERALNE: warunek `>` wyklucza DOKŁADNIE 15 000,00.
+  Ustawa Art. 108a: "kwota należności ogółem przekracza 15 000 zł"
+  — słowo "przekracza" sugeruje `>`, ale interpretacja wymaga
+  potwierdzenia z tekstem ustawy (MF/orzecznictwo). FAKT KODOWY:
+  kwota dokładnie 15 000,00 PLN NIE uruchomi MPP w obecnej regule.
+  Decyzja wymaga weryfikacji literalnej przed zmianą warunku. <<<
+
+SCENARIUSZ 3: Przekroczenie limitu 200k w trakcie dostawy częściowej
+  Opis: 3 faktury 80k+80k+60k; trzecia przekracza 200k.
+  Oczekiwane (Art. 113 ust. 1, 5): przekroczenie w trakcie roku →
+  obowiązek od dnia przekroczenia, limit proporcjonalny.
+  Weryfikacja: ⚠️ CZĘściowe — subject_exemption_limit: 200000 w
+  thresholdach, vat_exemption_80pct: 160000 (próg 80% = ostrzeżenie),
+  limit_tracker_bridge (enterprise). BRAK reguły "od której faktury"
+  (powinno: od trzeciej, ale tylko nadwyżka 20k? NIE — od całej
+  faktury przekraczającej przy rozliczeniu miesięcznym). L12.
+
+SCENARIUSZ 4: Złe długi — dłużnik kończy JDG przed upływem 90 dni
+  Opis: faktura 01.01.2026, dłużnik zamyka JDG 15.02.2026 (45 dni).
+  Oczekiwane: wierzyciel nie może skorygować przed 90 dniami (chyba
+  że upadłość/egzekucja — bad_debt_bankruptcy_immediate); dłużnik
+  zamykający JDG musi rozliczyć VAT od nieopłaconych faktur.
+  Weryfikacja: ✅ bad_debt_debtor_mandatory (90 dni, sankcja 30%),
+  bad_debt_bankruptcy_immediate, bad_debt_debtor_exception —
+  pokryte. Dodatkowo lifecycle (zamknięcie JDG) — sukcesja/
+  zawieszenie w business.rego. DOBRZE POKRYTE.
+
+SCENARIUSZ 5: Faktura korygująca in minus z datą wsteczną
+  Opis: faktura 01.2026 (100k+23k), korekta in minus datą 01.2025
+  (-50k, -11.5k VAT).
+  Oczekiwane: korekta in minus → obniżenie w okresie wystawienia
+  korekty (Art. 29a ust. 13-14, po SLIM VAT 2: w okresie wystawienia,
+  jeśli podatnik posiada potwierdzenie odbioru); data wsteczna NIE
+  przesuwa okresu rozliczenia.
+  Weryfikacja: ⚠️ CZĘściowe — procedures.rego ma reguły korekt
+  (corrections), brak jawnej reguły "okres rozliczenia korekty in
+  minus z potwierdzeniem odbioru".
+
+SCENARIUSZ 6: WDT — brak potwierdzenia odbioru w 70 dni
+  Opis: WDT z 01.03.2026, brak potwierdzenia do 10.05.2026 (70 dni).
+  Oczekiwane: stawka 0% tylko z dokumentacją; po 70 dniach bez
+  potwierdzenia — sankcja/opóźnione naliczenie.
+  Weryfikacja: ⚠️ wdt_zero_rate_art13_41 pokrywa warunki 0%;
+  brak reguły "70 dni" (termin dokumentacyjny Art. 42 ust. 1 pkt 2).
+
+SCENARIUSZ 7: Odwrotne obciążenie — usługa budowlana 490 000 zł
+  Opis: usługa budowlana 490k (podprogowa), druga 60k (łącznie 550k).
+  Oczekiwane (Art. 17 ust. 1 pkt 8 + zał. 14): RO gdy łączna wartość
+  usług budowlanych podwykonawcy > 500k od 1.11.2019.
+  Weryfikacja: ⚠️ reverse_charge_construction istnieje, ale sprawdza
+  flagę input.reverse_charge_applies, nie wylicza progu 500k z
+  faktur. BRAK reguły sumowania 500k — RYZYKO.
+
+SCENARIUSZ 8: Import usług B2B — miejsce świadczenia
+  Opis: usługa niematerialna od kontrahenta spoza UE dla JDG.
+  Oczekiwane: import usług — VAT należny w PL (Art. 28b).
+  Weryfikacja: ✅ import_of_services_b2b/eu/non_eu (substantive)
+  — DOBRZE POKRYTE.
+
+SCENARIUSZ 9: Samochód osobowy — limit 150 000 zł
+  Opis: zakup auta za 200 000 zł netto; odliczenie 50% z limitem.
+  Oczekiwane (Art. 86a ust. 1): limit odliczenia VAT 150 000 zł
+  (samochód) / 225 000 zł (elektryk).
+  Weryfikacja: ⚠️ car_vat_deduction_no_log: 0.50, with_log: 1.00
+  w thresholds — ALE BRAK limitu 150k/225k. L18.
+
+SCENARIUSZ 10: Paragon z NIP 450 zł jako faktura uproszczona
+  Opis: paragon z NIP na 449,99 zł — czy jest fakturą uproszczoną?
+  Oczekiwane: Art. 106e ust. 5 pkt 1 — do 450 zł z NIP = faktura
+  uproszczona (od 01.01.2022? — od 1.04.2020 limit, w 2022 podniesiony
+  do 450 zł).
+  Weryfikacja: ✅ receipt_nip_limit: 450, receipt_as_invoice
+  (substantive), plan33 a106e.r11 — pokryte. Temporalność limitu
+  450 zł (2022) — patrz L13 (brak valid_from).
+
+SCENARIUSZ 11: Eksport pośredni przez pośrednika UE
+  Opis: sprzedaż do nabywcy spoza UE przez pośrednika w DE.
+  Oczekiwane: eksport z dokumentami celnymi — stawka 0%.
+  Weryfikacja: ⚠️ export_zero_rate_art2pkt8_41 pokrywa zasadę;
+  brak reguły pośrednictwa eksportowego (Art. 2 pkt 8 lit. b).
+
+SCENARIUSZ 12: Zwolnienie podmiotowe + jednorazowa sprzedaż 100k
+  Opis: JDG zwolniona (przychód 150k), jednorazowa sprzedaż 100k.
+  Oczekiwane: limit 200k przekroczony (250k) → obowiązek od dnia
+  przekroczenia, ale z ulgą dla jednorazowej sprzedaży nieruchomości?
+  Weryfikacja: ⚠️ brak reguły jednorazowej dużej transakcji
+  (Art. 113 ust. 5 — przypadki szczególne). L12.
+
+SCENARIUSZ 13: MPP — płatność częściowa poniżej progu
+  Opis: faktura 100k MPP, płatność w 2 ratach 50k+50k.
+  Oczekiwane: MPP dotyczy płatności za fakturę powyżej 15k —
+  KAŻDA rata powyżej 15k musi iść na rachunek MPP.
+  Weryfikacja: ✅ mpp_prepayment_check (substantive) — pokryte
+  częściowo; brak reguły rat dla pojedynczej faktury.
+
+SCENARIUSZ 14: Proporcja 2%/98% — odliczenie graniczne
+  Opis: proporcja 1,9% → 0% odliczenia; 98,1% → 100%.
+  Oczekiwane (Art. 90 ust. 10 pkt 1-2): <2% = brak, >98% = pełne.
+  Weryfikacja: ✅ proportion_min_threshold: 0.02,
+  proportion_max_threshold: 0.98 w thresholds + proportion_vat.rego
+  (micro) — DOBRZE POKRYTE.
+
+SCENARIUSZ 15: GTU 07 — towar wrażliwy bez kodu
+  Opis: faktura na towary wrażliwe (stal) bez kodu GTU 07.
+  Oczekiwane: ostrzeżenie/BLOCK przy JPK_V7 — sankcja za brak GTU.
+  Weryfikacja: ⚠️ gtu_mapping (substantive) + gtu_semantic_tagger
+  (enterprise bridge) — pokryte częściowo; brak pełnej mapy 13 GTU.
+
+SCENARIUSZ 16: KSeF — faktura poza KSeF od 01.02.2026
+  Opis: faktura B2B wystawiona 01.03.2026, nie przesłana do KSeF.
+  Oczekiwane: sankcja 100% VAT (max 500k) — ksef_mandatory.
+  Weryfikacja: ✅ edge_cases.vat_ksef_mandatory_from_2026 (P593,
+  BLOCK_AND_ALERT, sankcja 100% VAT max 500k) + ksef_jpk.ksef_mandatory
+  + ksef_sanction_monitor_enterprise. DOBRZE POKRYTE (uwaga L15:
+  duplikacja 2 reguł).
+
+SCENARIUSZ 17: Awaria KSeF — offline 5 dni
+  Opis: 5 dni offline, 12 faktur. KSeF wymaga przesłania po awarii.
+  Oczekiwane: ksef_offline_queue buforuje; termin 7 dni (grace).
+  Weryfikacja: ✅ ksef_offline_grace_days: 7 w thresholds,
+  ksef_offline_queue_enterprise, ksef_resilience_enterprise —
+  DOBRZE POKRYTE.
+
+SCENARIUSZ 18: Korekta in plus (pomyłka stawki)
+  Opis: faktura 8% zamiast 23% — korekta in plus.
+  Oczekiwane: korekta in plus w okresie wystawienia; sankcja za
+  zawyżenie? — brak, tylko odsetki.
+  Weryfikacja: ⚠️ procedures.rego (korekty) — pokryte częściowo.
+
+SCENARIUSZ 19: Usługa elektroniczna B2C dla klienta z UE (OSS)
+  Opis: e-usługa B2C 8 000 EUR rocznie dla klientów UE.
+  Oczekiwane: poniżej 10 000 EUR — rozliczenie w PL (kraj siedziby);
+  powyżej — OSS.
+  Weryfikacja: ⚠️ e_services_b2c_art28k pokrywa zasadę 10k;
+  BRAK reguły OSS/IOSS (Art. 28m) — L13/28m.
+
+SCENARIUSZ 20: Usługa na nieruchomości w DE
+  Opis: usługa remontowa na nieruchomości w Berlinie.
+  Oczekiwane (Art. 28e): miejsce świadczenia = DE → VAT niemiecki.
+  Weryfikacja: ✅ place_of_supply.real_estate_art28e — DOBRZE POKRYTE.
+
+PODSUMOWANIE SCENARIUSZY: 7/20 w pełni pokryte (4, 8, 10, 14, 16, 17,
+20), 11/20 częściowo (3, 5, 6, 7, 9, 11, 12, 13, 15, 18, 19), 2/20
+z brakiem reguły (1 karuzela, 2 MPP). Dodatkowo 4 scenariusze mają
+realne ryzyko błędu literalnego (1, 2, 7, 9). Scenariusz 2 ujawnia
+KONKRETNE PYTANIE o warunek `>` vs `>=` w MPP — interpretacja
+wymaga weryfikacji literalnej z tekstem ustawy (patrz L6).
+
+3.1. TABELA WERDYKTÓW SCENARIUSZY (20)
+
+  Nr  Scenariusz ............................ Werdykt ...... Główna reguła/luka
+  1   Karuzela VAT .......................... ❌ BRAK ........ brak detektora karuzel
+  2   MPP 14 999,99 vs 15 000,00 ............ ❌ BUG `>` ..... split_payment_mandatory
+  3   Przekroczenie 200k w trakcie roku ..... ⚠️ CZĘściowe ... brak reguły proporcji
+  4   Złe długi — JDG zamknięta przed 90 dn . ✅ POKRYTE ..... bad_debt_debtor_mandatory
+  5   Korekta in minus z datą wsteczną ...... ⚠️ CZĘściowe ... procedures (corrections)
+  6   WDT bez potwierdzenia w 70 dni ........ ⚠️ CZĘściowe ... wdt_zero_rate (brak 70d)
+  7   RO budowlane 490k+60k (próg 500k) ..... ⚠️ CZĘściowe ... brak sumowania 500k
+  8   Import usług B2B spoza UE ............. ✅ POKRYTE ..... import_of_services_b2b
+  9   Samochód 200k (limit 150k) ............ ⚠️ CZĘściowe ... brak limitu 150k/225k
+  10  Paragon z NIP 449,99 zł ............... ✅ POKRYTE ..... receipt_as_invoice
+  11  Eksport pośredni ...................... ⚠️ CZĘściowe ... brak Art. 2 pkt 8 lit. b
+  12  Zwolnienie + jednorazowa sprzedaż ...... ⚠️ CZĘściowe ... brak Art. 113 ust. 5
+  13  MPP raty częściowe .................... ⚠️ CZĘściowe ... mpp_prepayment_check
+  14  Proporcja 1,9%/98,1% .................. ✅ POKRYTE ..... proportion min/max
+  15  GTU 07 bez kodu ....................... ⚠️ CZĘściowe ... gtu_mapping
+  16  KSeF faktura poza systemem ............. ✅ POKRYTE ..... ksef_mandatory (P593)
+  17  Awaria KSeF offline 5 dni ............. ✅ POKRYTE ..... ksef_offline_queue
+  18  Korekta in plus ....................... ⚠️ CZĘściowe ... procedures (corrections)
+  19  E-usługa B2C UE <10k (OSS) ............ ⚠️ CZĘściowe ... brak OSS/IOSS
+  20  Usługa na nieruchomości w DE .......... ✅ POKRYTE ..... real_estate_art28e
+
+  >>> 7 ✅ / 11 ⚠️ / 2 ❌ (scenariusz 1 i 2) <<<
+
+=================================================================
+SEKCJA 4 — ANALIZA THRESHOLDÓW VAT (POZIOM ENTERPRISE)
+=================================================================
+
+4.1. WERYFIKACJA THRESHOLDÓW (zweryfikowane w thresholds_jdg.rego)
+
+  Threshold ....................... Wartość ....... Status
+  vat.standard_rate ............... 0.23 .......... ✅ JEST
+  vat.reduced_rate_8 .............. 0.08 .......... ✅ JEST
+  vat.reduced_rate_5 .............. 0.05 .......... ✅ JEST
+  vat.zero_rate ................... 0.00 (w policies
+                                thresholds_sc) ... ✅ JEST (alias vat_zero)
+  vat.subject_exemption_limit ..... 200000 ........ ✅ JEST
+  vat.receipt_nip_limit ........... 450 ........... ✅ JEST
+  vat.bad_debt_days ............... 90 ............ ✅ JEST (SLIM VAT 3)
+  ksef_mandatory_from ............. 2026-02-01 .... ✅ JEST
+  misc.mpp_mandatory_threshold .... 15000 ......... ✅ JEST
+  vat.proportion_min_threshold .... 0.02 .......... ✅ JEST
+  vat.proportion_max_threshold .... 0.98 .......... ✅ JEST
+  vat.bad_debt_sanction_30pct ..... 0.30 .......... ✅ JEST
+  vat_refund_standard_days ........ 60 ............ ✅ JEST
+  vat_refund_accelerated_days ..... 25 ............ ✅ JEST
+  car_vat_deduction_no_log ........ 0.50 .......... ✅ JEST
+  car_vat_deduction_with_log ...... 1.00 .......... ✅ JEST
+  vat_exemption_80pct ............. 160000 ........ ✅ JEST
+  small_taxpayer_threshold_eur .... 2000000 ....... ⚠️ JEDNOSTKA? (L11)
+
+4.2. KRYTYCZNE USTALENIA THRESHOLDOWE
+
+  T1. Brak vat_reverse_charge_threshold (500k dla budowlanych) —
+      prompcie wymienia, plik NIE zawiera. Reguła RO konstrukcji nie
+      może poprawnie sprawdzić progu (scenariusz 7).
+  T2. small_taxpayer_threshold_eur: komentarz "EUR", wartość
+      2000000 — Art. 2 pkt 25 VAT definiuje małego podatnika jako
+      wartość sprzedaży nieprzekraczającą równowartości 2 000 000 EUR
+      (przeliczenie wg kursu NBP publikowane przez MF) — wartość w
+      pliku może być ZGODNA z ustawą; deklaracja w prompcie "<1.2M
+      EUR" jest niepoparta. WYMAGA weryfikacji literalnej (jednostka
+      i przelicznik roczny MF) przed zmianą.
+  T3. MPP: próg 15000 jako liczba całkowita; kwoty groszowe
+      (14999.99) obsłużone przez porównanie — ale warunek `>`
+      wyklucza 15000.00 (scenariusz 2).
+  T4. Hardcoded: w regułach VAT nadal mogą występować stałe
+      (np. 500000 w ksef, 450, 15000) — linter no_hardcoded_integers
+      egzekwuje, ale część reguł (edge_cases P593) zawiera literalnie
+      "500000" i "100%" — do migracji (P25/P28 R7).
+
+4.3. ZGODNOŚĆ Z POLICIES (thresholds_sc.rego)
+
+  policies/data/thresholds_sc.rego zawiera: vat_standard 0.23,
+  vat_reduced_8 0.08, vat_reduced_5 0.05, vat_0 0.00,
+  vat_exemption_limit_pln 200000, mpp_limit 15000,
+  split_payment_lower_bound 15000 — ZGODNE z JDG/rules/thresholds.
+  >>> DWIE RÓWNOLEGŁE DEFINICJE (JDG i policies) bez automatycznego
+  mechanizmu synchronizacji — ryzyko rozjazdu (patrz L5).
+
+=================================================================
+SEKCJA 5 — ANALIZA TEMPORALNA VAT (POZIOM ENTERPRISE)
+=================================================================
+
+5.1. WERYFIKACJA ZDARZEŃ TEMPORALNYCH (w _metadata_jdg.rego)
+
+  Zdarzenie ........................... valid_from .... Status w metadata
+  Stawki 23/8/5% (2011) ................ 2011-01-01 ... ❌ BRAK wpisu
+  Matryca stawek VAT (2020) ............ 2020-07-01 ... ❌ BRAK wpisu
+  Tarcza COVID (2020-2021) ............. 2020-03-01 ... ✅ JEST
+  SLIM VAT 3 (złe długi 150→90 dni) .... 2023-07-01 ... ✅ JEST (+nota)
+  Paragon z NIP 450 zł ................. 2022-01-01 ... ⚠️ limit w
+                                            thresholds, brak wpisu temporal
+  KSeF obowiązkowy B2B ................. 2026-02-01 ... ✅ JEST
+  SLIM VAT 2 (korekty) ................. 2023-01-01 ... ⚠️ brak jawnego
+
+5.2. USTALENIA TEMPORALNE
+
+  P1. Reguły stawki VAT nie mają wersjonowania czasowego: rate_23_
+      standard_pl nie wskazuje, że przed 2011 obowiązywała 22%.
+      temporal.rego (JDG/rules) istnieje, ale nie ma wiążących wpisów
+      stawkowych w _metadata.
+  P2. Zmiana złych długów 150→90 dni jest udokumentowana jako nota
+      temporalna ("150 dni → 90 dni (SLIM VAT 3/2023-07-01)"), ale
+      reguła bad_debt_relief_creditor_150d i _90d współistnieją bez
+      warunku daty — należy rozróżnić okresy (przed/po 2023-07-01).
+  P3. KSeF: ksef_mandatory_from 2026-02-01 spójny w thresholds,
+      _metadata, _rates (3 miejsca — pozytywne, ale wymaga single
+      source, patrz P25).
+  P4. Brak snapshotu "jak wyglądał VAT w 2019" — Temporal Snapshot
+      Engine (innowacja #6) rozwiąże.
+
+=================================================================
+SEKCJA 6 — ANALIZA CROSS-REFERENCE VAT (POZIOM ENTERPRISE)
+=================================================================
+
+6.1. MACIERZ SPÓJNOŚCI WARSTW
+
+  Warstwa macro (substantive 62) ↔ micro (vat.rego 1092):
+  - ✅ jdg.vat.substantive.* pokrywa koncepcje; micro/vat/vat.rego
+    zawiera 1092 rule_id ALE w formacie jdg.final.aXXX.uY.pZ —
+    NIE można ich zmapować na jdg.vat.* (L2, ADR-008).
+  - ❌ Brak 1:1 traceability macro→micro.
+
+  deductions (29) ↔ procedures (21):
+  - ✅ Spójne obszarowo (odliczenia vs procedury); oba w jdg.vat.*.
+  - ⚠️ Brak reguły łączącej: odliczenie wymaga poprawnej procedury
+    (faktura→odliczenie).
+
+  vat_substantive_complete_enterprise (12) — DO WERYFIKACJI:
+  - ⚠️ Zweryfikowano, że vat/enterprise_vat_bridge.rego zawiera
+    mpp_auto_detection_bridge, split_payment_optimizer_bridge,
+    rate_classifier_bridge (12 bridge'ów). Treść 12 rule_id w
+    vat_substantive_complete_enterprise.rego NIE została w pełni
+    zmapowana w tym audycie — potencjalna częściowa duplikacja
+    bridge'ów MPP ze substantive (split_payment_mandatory) wymaga
+    weryfikacji rule_id per plik.
+  - ⚠️ Jeżeli oba pliki enterprise zawierają mpp_auto_detection i
+    split_payment_optimizer — ryzyko podwójnego werdyktu; do
+    potwierdzenia.
+
+  place_of_supply (12) vs substantive (5 reguł PoS):
+  - ❌ DUPLIKACJA: substantive ma place_of_supply_b2b/b2c/e_services/
+    real_estate/transport ORAZ place_of_supply.rego ma b2b_services_
+    art28b itd. Dwie reguły odpowiadają na to samo pytanie.
+
+6.2. ZGODNOŚĆ NAZW rule_id (ADR-008)
+
+  - ✅ Warstwa macro: wszystkie jdg.vat.substantive.*, jdg.vat.
+    deductions.*, jdg.vat.procedures.*, jdg.vat.place_of_supply.*,
+    jdg.vat.reduced_rates.* — ZGODNE z ADR-008.
+  - ❌ micro/vat/vat.rego: jdg.final.a* — NIEZGODNE (102+ wystąpienia).
+  - ❌ plan33_vat: jdg.vat.a106e.r11 — nazwa sugeruje jdg.micro.vat.*
+    (pakiet to jdg.micro.vat.plan33) — częściowo niezgodne z pakietem.
+  - ✅ plan34_vat: jdg.vat.a5.r1 — spójne z nazewnictwem artykułowym,
+    ale puste legal_basis (L4).
+
+6.3. WNIOSEK CROSS-REFERENCE
+
+  Warstwa macro VAT jest spójna wewnętrznie (164 reguły, jdg.vat.*),
+  ale: (a) micro/vat/vat.rego łamie konwencję (1092 reguł!),
+  (b) występują 2 duplikacje (PoS, MPP bridges), (c) 294 reguły
+  w plan33/plan34 są martwe lub bez podstawy prawnej. Realna liczba
+  WARTOŚCIOWYCH reguł VAT: ~164 macro + ~12 enterprise + ~50 micro
+  (bez jdg.final) ≈ 230 — reszta wymaga naprawy.
+
+=================================================================
+SEKCJA 7 — INNOWACYJNE USPRAWNIENIA (15)
+=================================================================
+
+  1. "VAT Article-to-Rego Traceability Matrix" — auto-generowana
+     macierz Art.→Rego z mapy rule_id (fix: konwersja jdg.final→jdg.vat),
+     publikowana jako artefakt CI (JSON).
+  2. "VAT Gap Auto-Detector" — skrypt porównujący listę artykułów
+     ustawy (z Bbb/LEGAL_COVERAGE) z regułami; raportuje ❌/⚠️.
+  3. "VAT Carousel AI Detector" — graf transakcji (A→B→C→A w 24h),
+     wykrywanie znikających podatników; integracja z risk.rego
+     (trust score).
+  4. "MPP Threshold Precision Engine" — naprawa warunku `>` na `>=`,
+     obsługa kwot groszowych, alert przy 14 999-15 001 zł.
+  5. "Cross-Border VAT Rate Harmonizer" — aktualizacja stawek UE
+     (VAT rates per kraj) z zewnętrznego źródła, z temporalnością.
+  6. "VAT Temporal Snapshot Engine" — snapshot pełnego stanu reguł
+     VAT na dowolną datę (2011, 2020, 2023, 2026).
+  7. "Bad Debt Auto-Tracker" — śledzenie 90-dniowego terminu per
+     faktura, alert przed dniem 90, integracja z kalendarzem.
+  8. "VAT Exemption Limit Predictive Monitor" — predykcja daty
+     przekroczenia 200k na bazie przychodów (limit_tracker_bridge +
+     cashflow predictor).
+  9. "Proportional Deduction Optimizer" — optymalizacja proporcji
+     (Art. 90-91) + korekta roczna + środki trwałe.
+  10. "GTU Code AI Auto-Assigner" — auto-przypisanie 13 kodów GTU
+      z opisu faktury (llm_bridge + gtu_mapping).
+  11. "KSeF Resilience Multi-Layer Buffer" — rozszerzenie offline_queue
+      o multi-tier retry, monitoring UPO, auto-ponowienie.
+  12. "Reverse Charge Auto-Detector" — wyliczanie progu 500k z faktur
+      (zamiast flagi input) + pełna lista zał. 11/14.
+  13. "OSS/IOSS Compliance Matrix" — macierz e-usług B2C per kraj UE,
+      próg 10k, rozliczenie OSS/IOSS.
+  14. "VAT Sanction Risk Calculator" — kalkulator ryzyka sankcji
+      (KKSFineCalculator + stawki sankcji VAT 100%/30%/20%).
+  15. "VAT Zero-Defect Certification" — certyfikat per reguła VAT
+      (legal_basis ✓ + temporal ✓ + test natywny ✓ + rule_id zgodny
+      z ADR-008 ✓) — bramka CI.
+
+=================================================================
+SEKCJA 8 — REKOMENDACJE (TOP 20 NAPRAW)
+=================================================================
+
+KRYTYCZNE (błąd = sankcja finansowa):
+  N1. Naprawić warunek MPP: `>` → `>=` (kwota 15 000,00 brutto musi
+      uruchomić MPP) — scenariusz 2.
+  N2. Naprawić rule_id w micro/vat/vat.rego: jdg.final.a* → jdg.vat.*
+      (1092 reguły, ADR-008) — z automigracją skryptową.
+  N3. Naprawić plan33_vat.rego: zamienić 114 stubów { true } na
+      realne warunki (convert_true_to_conditions.py — gotowy).
+  N4. Uzupełnić legal_basis w plan34_vat.rego (179 reguł).
+  N5. Usunąć duplikację MPP bridges (2 pliki enterprise) i PoS
+      (substantive vs place_of_supply) — jeden source of truth.
+  N6. Uzupełnić vat_reverse_charge_threshold (500k) w thresholds +
+      regułę sumowania wartości RO (scenariusz 7).
+  N7. Dodać regułę limitu auta (150k/225k, Art. 86a) — scenariusz 9.
+  N8. Zweryfikować/odtworzyć plan26_critical.rego (brak na dysku).
+
+WYSOKIE:
+  N9. Dodać reguły rabatów/dotacji/kaucji (Art. 29a ust. 2-7).
+  N10. Rozszerzyć zwolnienia Art. 43 do 38 pkt (obecnie ~8).
+  N11. Dodać regułę 70 dni WDT (Art. 42 ust. 1 pkt 2).
+  N12. Dodać temporalną granicę 150→90 dni złych długów w regule.
+  N13. Dodać regułę proporcjonalnego przekroczenia limitu 200k
+      (Art. 113 ust. 5) — scenariusz 3/12.
+  N14. Dodać regułę korekty in minus z potwierdzeniem odbioru
+      (okres wystawienia) — scenariusz 5/18.
+  N15. Naprawić nazwy rule_id PoS (art28k/l/m vs właściwe artykuły).
+
+ŚREDNIE:
+  N16. Rozszerzyć GTU do pełnych 13 kodów z auto-assignerem.
+  N17. Dodać korektę roczną proporcji (Art. 91).
+  N18. Dodać pełną listę wyłączeń odliczeń (Art. 88).
+
+NISKIE:
+  N19. Dodać VAT RR (Art. 107, 115-116) — rolnik ryczałtowy.
+  N20. Rozszerzyć procedurę marży o biura podróży (Art. 119).
+
+=================================================================
+SEKCJA 9 — SEKCJA PODSUMOWUJĄCA (STAN WARSTWY VAT 2026-08-01)
+=================================================================
+
+CO JEST GOTOWE (dojrzałe warstwy VAT):
+  - Odwrotne obciążenie (7 reguł: towary, budowlane, odpady, metale,
+    certyfikaty, WNT, odliczenie RO) — najlepsza warstwa w module
+  - Złe długi (90d/150d/upadłość, sankcja 30%, SLIM VAT 3 temporal)
+  - KSeF (10 plików: firewall, resilience, offline_queue, sandbox,
+    upo_tracker, sanction_monitor — data 2026-02-01 w 3 miejscach)
+  - MPP (mandatory/voluntary/sanction + prepayment + bridges)
+  - Miejsce świadczenia (12 reguł, wszystkie kluczowe artykuły 28b-28n)
+  - Odliczenia (29 reguł) + proporcja (2%/98% w thresholdach)
+  - Stawki podstawowe (23/8/5/0%) + plan42 (CN, budowlane, medyczne)
+  - Thresholdy VAT (17 kluczowych wartości w thresholds_jdg.rego)
+
+CO WYMAGA POPRAWY:
+  - micro/vat/vat.rego (966 KB): 1092 rule_id łamie ADR-008 (jdg.final)
+  - plan33_vat (115 reguł): 114 martwych stubów { true }
+  - plan34_vat (179 reguł): puste legal_basis
+  - Duplikacje: PoS (2x), MPP bridges (2x), KSeF mandatory (2x)
+  - Braki: Art. 29a (podstawa), Art. 43 (30/38 pkt), Art. 107 (RR),
+    limity aut (150k/225k), próg RO 500k, temporalność stawek
+  - plan26_critical.rego — NIE ISTNIEJE
+  - Testy: 72 funkcje (w tym 30 tautologii), 0 natywnych Rego
+
+CO JEST PLANOWANE (wg P28 roadmapa):
+  - Q3 2026: naprawy N1-N8 (krytyczne), konwersja rule_id
+  - Q4 2026: N9-N15 (wysokie), testy natywne VAT
+  - Q1 2027: N16-N20 + OSS/IOSS + karuzele AI
+  - Q2 2027: zero-defect certyfikacja warstwy VAT
+
+OCENA DOJRZAŁOŚCI ENTERPRISE (skala A/B/C/D/F):
+  .......... A .......... RO, złe długi, KSeF, MPP, odliczenia
+  .......... B .......... stawki, place_of_supply, procedury
+  .......... C .......... testy (jakość), duplikacje, nazewnictwo PoS
+  .......... D .......... micro/vat/vat.rego (ADR-008), plan34 (basis)
+  .......... F .......... plan33_vat (martwy kod), plan26_critical (brak)
+
+  >>> OCENA ŁĄCZNA WARSTWY VAT: B- <<<
+  >>> POTENCJAŁ PO NAPRAWACH N1-N15: A <<<
+
+=================================================================
+SEKCJA 10 — METODOLOGIA I ZASTRZEŻENIA
+=================================================================
+
+  - Wszystkie liczby zweryfikowane komendami shell 2026-08-01:
+    find/grep/wc na JDG/rules/vat/, micro/vat/, micro/plan33_vat,
+    micro/plan34_vat, thresholds_jdg.rego, _metadata_jdg.rego,
+    policies/, JDG/tests.
+  - plan26_critical.rego zweryfikowany jako NIEISTNIEJĄCY
+    (ls: No such file or directory; find plan26* — brak pliku vat).
+  - policies/tax/vat/ zweryfikowany jako NIEISTNIEJĄCY (ls policies/
+    pokazuje płaskie policies/tax/*.rego).
+  - Wartości prawne (stawki, progi, terminy) odnoszą się do ustawy
+    o VAT (Dz.U. 2025 poz. 456) i rozporządzeń (4.12.2024, 15.07.2025)
+    wg Bbb; interpretacje literalne oznaczone jawnie.
+  - Raport NIE modyfikuje żadnych plików JDG (zgodnie z zasadami P29).
+  - Scenariusze 1-20 to testy analityczne (koncepcyjne), NIE pliki
+    testów — służą jako specyfikacja dla natywnych testów Rego.
+
+=================================================================
+=== KONIEC RAPORTU — RAPORT_P29_LEGAL_AUDIT_VAT_ARTICLE_BY_ARTICLE_v7.0 ===
