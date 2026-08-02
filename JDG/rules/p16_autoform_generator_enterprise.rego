@@ -179,7 +179,7 @@ else := verdict {
     employee_first_name := object.get(input.jdg_entrepreneur, "employee_first_name", "")
     employee_last_name := object.get(input.jdg_entrepreneur, "employee_last_name", "")
     employee_pesel := object.get(input.jdg_entrepreneur, "employee_pesel", "")
-    salary_gross := object.get(input.jdg_entrepreneur, "employee_salary_gross", 4666)
+    salary_gross := object.get(input.jdg_entrepreneur, "employee_salary_gross", 4800)
     contract_start_date := object.get(input.jdg_entrepreneur, "employee_start_date", "")
     zus_code := "05 10" { is_entrepreneur; not is_employee }
     zus_code := "05 12" { is_entrepreneur; object.get(input.jdg_entrepreneur, "ceidg_resume_from_suspension", false) }
@@ -207,8 +207,8 @@ else := verdict {
     # Podstawa wymiaru składek
     base_amount := salary_gross { is_employee }
     base_amount := 0 { not is_employee; object.get(input.jdg_entrepreneur, "zus_status", "STANDARD") == "START_RELIEF" }
-    base_amount := floor(4666 * 0.30 * 100) / 100 { not is_employee; object.get(input.jdg_entrepreneur, "zus_status", "STANDARD") == "PREFERENTIAL" }
-    base_amount := floor(4666 * 0.60 * 100) / 100 { not is_employee }
+    base_amount := floor(4800 * 0.30 * 100) / 100 { not is_employee; object.get(input.jdg_entrepreneur, "zus_status", "STANDARD") == "PREFERENTIAL" }
+    base_amount := floor(4800 * 0.60 * 100) / 100 { not is_employee }
 
     zus_zua_form := {
         "form_type": "ZUS ZUA",
@@ -352,7 +352,7 @@ else := verdict {
 
     employee_name := object.get(input.jdg_entrepreneur, "employee_name", "")
     employee_pesel := object.get(input.jdg_entrepreneur, "employee_pesel", "")
-    salary_gross := object.get(input.jdg_entrepreneur, "employee_salary_gross", 4666)
+    salary_gross := object.get(input.jdg_entrepreneur, "employee_salary_gross", 4800)
     tax_month := object.get(input.jdg_entrepreneur, "employee_tax_month", 1)
     tax_year := object.get(input.jdg_entrepreneur, "employee_tax_year", 2026)
     nip := object.get(input.jdg_entrepreneur, "nip", "")
@@ -515,7 +515,7 @@ else := verdict {
     service_type := object.get(input.invoice, "category_code", "SERVICES")
     is_unregistered := object.get(input.jdg_entrepreneur, "is_unregistered_activity", false)
 
-    unregistered_limit := floor(4666 * 0.50 * 100) / 100
+    unregistered_limit := floor(4800 * 0.50 * 100) / 100
     exceeds_limit := amount > unregistered_limit
     monthly_revenue := object.get(input.jdg_entrepreneur, "monthly_revenue_current", 0)
     monthly_exceeds_limit := monthly_revenue > unregistered_limit

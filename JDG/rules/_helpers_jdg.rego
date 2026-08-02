@@ -380,3 +380,16 @@ get_temporal_bundle(eval_date) = bundle {
     snapshot := get_temporal_snapshot(eval_date)
     bundle := concat("", ["jdg.snapshot.", snapshot])
 }
+
+# ── Cumulative Sum Helper (P31 FAZA 3.13) ─────────────────────────────────────
+# Sumuje pierwsze N elementów tablicy (narastający przychód/dochód od stycznia)
+cumulative_sum(arr, n) = sum_val {
+    count(arr) > 0
+    n > 0
+    sum_val := sum([arr[i] | i := numbers.range(0, min([n, count(arr)]) - 1)])
+} else = 0 {
+    true
+}
+
+# Minimum of two numbers
+min_num(a, b) = a { a < b } else = b

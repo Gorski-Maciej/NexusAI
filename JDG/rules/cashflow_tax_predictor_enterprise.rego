@@ -63,7 +63,7 @@ decide := {
     is_vat_payer := object.get(input.jdg_entrepreneur, "vat_status", "ACTIVE") != "EXEMPT"
     has_employees := object.get(input.jdg_entrepreneur, "has_employees", false)
 
-    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
     avg_wage := object.get(object.get(data.thresholds, "bounds", {}), "average_wage", 8000)
 
     # ---- VAT forecast (monthly, due 25th) ----

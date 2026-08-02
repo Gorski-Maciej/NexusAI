@@ -14,7 +14,7 @@ import future.keywords.in
 # CORRECTED THRESHOLDS (2026)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-min_wage_2026 := 4666.00
+min_wage_2026 := 4800.00
 avg_salary_2026 := 8190.00
 
 # CORRECTED: 200× minimalnego wynagrodzenia ≈ 933 200 PLN (NOT 200 000!)

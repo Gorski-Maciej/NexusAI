@@ -893,7 +893,7 @@ else := verdict {
     object.get(input.jdg_entrepreneur, "hiring_employee", false) == true
 
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
-    salary_gross := object.get(input.jdg_entrepreneur, "employee_salary_gross", 4666)
+    salary_gross := object.get(input.jdg_entrepreneur, "employee_salary_gross", 4800)
     contract_type := object.get(input.jdg_entrepreneur, "employee_contract_type", "EMPLOYMENT")
     is_first_employee := object.get(input.jdg_entrepreneur, "employee_count", 0) == 0
     enrolled_ppk := object.get(input.jdg_entrepreneur, "employee_ppk_enrolled", false)

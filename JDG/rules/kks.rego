@@ -2433,7 +2433,7 @@ else := {
 } {
     monthly_income := object.get(input.jdg_entrepreneur, "monthly_income_avg_12m", 0)
     monthly_income > 0
-    min_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "minimum_wage_gross", 4800)
     daily_rate_min = floor(min_wage / 30)
     daily_rate_max = floor(monthly_income * 0.70 / 30) { monthly_income > 0 }
     calculated_rate = floor(monthly_income * 0.30 / 30) { monthly_income > 0 }

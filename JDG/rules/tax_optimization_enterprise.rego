@@ -557,7 +557,7 @@ else := {
     last_year_revenue := object.get(input.jdg_entrepreneur, "last_year_revenue", 96000)
     had_previous_business := object.get(input.jdg_entrepreneur, "had_previous_business_24mo", false)
     is_previous_employee := object.get(input.jdg_entrepreneur, "was_employee_same_employer_12mo", false)
-    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
 
     standard_zus := floor(min_wage * 0.60 * 0.3812 * 100) / 100 + floor(min_wage * 0.09 * 100) / 100
     preferential_zus := floor(min_wage * 0.30 * 0.3812 * 100) / 100 + floor(min_wage * 0.09 * 100) / 100

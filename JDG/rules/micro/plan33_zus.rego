@@ -201,8 +201,8 @@ else :=   {"matched":true,"rule_id":"jdg.zus.a26.r14","package":"jdg.micro.zus",
     object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"; object.get(input.jdg_entrepreneur, "benefit_claim_filed", false) == true
 }
 
-# jdg.zus.a26.r2 — `sickness_benefit_waiting_period`: Okres wyczekiwania: 30 dni dobrowolnego ubezpieczenia chorobowego → 30 dni
-else :=   {"matched":true,"rule_id":"jdg.zus.a26.r2","package":"jdg.micro.zus","priority":2339,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Okres wyczekiwania: 30 dni dobrowolnego ubezpieczenia chorobowego","_legal_basis":"Art. 4 ust. 1 ustawy zasiłkowej","_warnings":["[MICRO] Okres wyczekiwania: 30 dni dobrowolnego ubezpieczenia chorobowego"]} {
+# jdg.zus.a26.r2 — `sickness_benefit_waiting_period`: Okres wyczekiwania: 90 dni dobrowolnego ubezpieczenia chorobowego (FIX v7.1 K7) → 90 dni
+else :=   {"matched":true,"rule_id":"jdg.zus.a26.r2","package":"jdg.micro.zus","priority":2339,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Okres wyczekiwania: 90 dni dobrowolnego ubezpieczenia chorobowego","_legal_basis":"Art. 4 ust. 1 pkt 2 ustawy zasiłkowej (90 dni dla dobrowolnego)","_warnings":["[MICRO] Okres wyczekiwania: 90 dni dobrowolnego ubezpieczenia chorobowego"]} {
     object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"; object.get(input.jdg_entrepreneur, "zus_sickness_voluntary", false) == true; object.get(input.jdg_entrepreneur, "benefit_claim_filed", false) == true
 }
 
@@ -296,8 +296,8 @@ else :=   {"matched":true,"rule_id":"jdg.zus.a47.r4","package":"jdg.micro.zus","
     object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"; object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"; object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"
 }
 
-# jdg.zus.a47.r5 — `payment_deadline_health_20th`: Składka zdrowotna za dany miesiąc -> do 20. dnia następnego miesiąca → Termin 20. dzień
-else :=   {"matched":true,"rule_id":"jdg.zus.a47.r5","package":"jdg.micro.zus","priority":2358,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Składka zdrowotna za dany miesiąc -> do 20. dnia następnego miesiąca","_legal_basis":"Art. 79b ustawy zdrowotnej","_warnings":["[MICRO] Składka zdrowotna za dany miesiąc -> do 20. dnia następnego miesiąca"]} {
+# jdg.zus.a47.r5 — `payment_deadline_health_20th`: Składka zdrowotna za dany miesiąc -> do 10. dnia następnego miesiąca (FIX v7.1 W10) → Termin 10. dzień
+else :=   {"matched":true,"rule_id":"jdg.zus.a47.r5","package":"jdg.micro.zus","priority":2358,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Składka zdrowotna za dany miesiąc -> do 10. dnia następnego miesiąca","_legal_basis":"Art. 47 ust. 1 pkt 2 SUS (10. dzień dla JDG, NIE 20!)","_warnings":["[MICRO] Składka zdrowotna za dany miesiąc -> do 10. dnia następnego miesiąca"]} {
     object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"; object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"; object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"
 }
 

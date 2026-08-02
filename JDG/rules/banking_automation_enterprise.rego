@@ -160,7 +160,7 @@ else := {
     zus_account_nr := object.get(input.jdg_entrepreneur, "zus_account_number", "")
     pesel := object.get(input.jdg_entrepreneur, "pesel", "")
 
-    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
     avg_wage := object.get(object.get(data.thresholds, "bounds", {}), "average_wage", 8000)
 
     social_base := min_wage * 0.60 { zus_status == "STANDARD" }

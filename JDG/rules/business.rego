@@ -281,7 +281,7 @@ else := {
 } {
     input.jdg_entrepreneur.is_unregistered_activity == true
     monthly_rev := object.get(input.jdg_entrepreneur,"monthly_revenue_current",0)
-    min_wage := object.get(object.get(object.get(data.thresholds,"jdg",{}),"bounds",{}),"minimum_wage_gross",4666)
+    min_wage := object.get(object.get(object.get(data.thresholds,"jdg",{}),"bounds",{}),"minimum_wage_gross",4800)
     monthly_rev > floor(0.50 * min_wage)
 }
 

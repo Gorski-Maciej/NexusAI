@@ -729,7 +729,7 @@ else := {
     "_warnings": warnings
 } {
     monthly_revenue := object.get(input.jdg_entrepreneur, "monthly_revenue_unregistered_pln", 0)
-    min_wage := 4666  # 2026 minimalne wynagrodzenie PLN
+    min_wage := 4800  # 2026 minimalne wynagrodzenie PLN
     limit_75pct := min_wage * 0.75
     limit_exceeded := monthly_revenue > limit_75pct
 
@@ -1043,7 +1043,7 @@ else := {
     "_warnings": warnings
 } {
     # Dynamic min wage lookup
-    min_wage_val := 4666  # 2026
+    min_wage_val := 4800  # 2026
     limit_val := min_wage_val * 0.75
 
     historical := [
@@ -1051,11 +1051,11 @@ else := {
         {"year": 2024_h1, "min_wage": 4242, "limit": 3181.50},
         {"year": 2024_h2, "min_wage": 4300, "limit": 3225},
         {"year": 2025, "min_wage": 4666, "limit": 3499.50},
-        {"year": 2026, "min_wage": 4666, "limit": 3499.50}
+        {"year": 2026, "min_wage": 4800, "limit": 3499.50}
     ]
 
     changed := false  # Would be true if 2027 min wage changes
-    changed := true { min_wage_val != 4666 }
+    changed := true { min_wage_val != 4800 }
 
     warnings := [sprintf("[L-PP-2 Auto-Indexation] Limit działalności nieewidencjonowanej: %.2f PLN miesięcznie (75%% z %d PLN płacy minimalnej 2026). Limit zmienia się automatycznie przy każdej zmianie płacy minimalnej. Historycznie: 2023=%.2f, 2024=%.2f, 2025=%.2f, 2026=%.2f PLN.",
         [limit_val, min_wage_val, 2617.50, 3225.00, 3499.50, 3499.50])]

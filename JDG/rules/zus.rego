@@ -100,12 +100,13 @@ else := {
 } {
     input.jdg_entrepreneur.has_mandate_contract == true
     mandate_base := object.get(input.jdg_entrepreneur, "mandate_monthly_base", 0)
-    min_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "minimum_wage_gross", 4800)
     mandate_base >= min_wage
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
+    # K3 FIX v7.1: LUMP_SUM health_rate = 0.09 (ryczałt 9%, nie 4.9%!)
     health_rate = "0.09" { pit_form == "PIT_SCALE" }
     health_rate = "0.049" { pit_form == "LINEAR" }
-    health_rate = "0.049" { pit_form == "LUMP_SUM" }
+    health_rate = "0.09" { pit_form == "LUMP_SUM" }
     health_rate = "0.09" { pit_form == "TAX_CARD" }
 }
 
@@ -177,6 +178,8 @@ decide := {
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # P741: zus_maly_plus_jdg — Mały ZUS Plus (36 miesięcy)
+# FIX v7.1 K2: podstawa = 30% przeciętnego miesięcznego dochodu z poprzedniego roku
+# (z dolnym limitem 30% min. wynagrodzenia i górnym 60% przeciętnego)
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true, "rule_id": "jdg.zus.maly_plus",
@@ -186,13 +189,14 @@ else := {
     "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "MALY_ZUS_PLUS", "zus_social_base_percent": 30,
-    "zus_base_amount": floor(0.30 * min_wage),
+    "zus_base_amount": maly_plus_base,
+    "zus_maly_plus_prev_year_income": prev_year_monthly_income,
     "zus_health_rate": "0.09",
     "zus_months_remaining": 36 - used_months,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 18c ustawy o SUS",
-    "_warnings": [sprintf("Mały ZUS Plus — podstawa %.2f PLN, pozostało %d miesięcy", [floor(0.30 * min_wage), 36 - used_months])],
+    "_legal_basis": "Art. 18c ust. 4-5 SUS (30% przeciętnego dochodu poprzedniego roku)",
+    "_warnings": [sprintf("Mały ZUS Plus — podstawa %.2f PLN (30%% dochodu: %.2f PLN, clamp [%.2f, %.2f]). Pozostało %d miesięcy", [maly_plus_base, prev_year_monthly_income, min_bound, max_bound, 36 - used_months])],
     "_future_events": [{
         "event_id":"maly_plus_expiry",
         "event_type":"ZUS_RELIEF_EXPIRY",
@@ -205,7 +209,18 @@ else := {
     input.jdg_entrepreneur.zus_status == "MALY_ZUS_PLUS"
     used_months := object.get(input.jdg_entrepreneur, "zus_months_used_current_status", 0)
     used_months < 36
-    min_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "minimum_wage_gross", 4800)
+    avg_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "avg_monthly_wage", 8190)
+    # K2 FIX: podstawa = 30% przeciętnego miesięcznego dochodu poprzedniego roku
+    prev_year_annual_income := object.get(input.jdg_entrepreneur, "maly_plus_prev_year_income", 0)
+    prev_year_months := object.get(input.jdg_entrepreneur, "maly_plus_prev_year_months", 12)
+    prev_year_monthly_income := prev_year_annual_income / max([prev_year_months, 1])
+    raw_base := floor(prev_year_monthly_income * 0.30 * 100) / 100
+    # Dolny limit: 30% minimalnego wynagrodzenia
+    min_bound := floor(min_wage * 0.30 * 100) / 100
+    # Górny limit: 60% prognozowanego przeciętnego wynagrodzenia
+    max_bound := floor(avg_wage * 0.60 * 100) / 100
+    maly_plus_base = max([min_bound, min([raw_base, max_bound])])
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
 }
 
@@ -268,11 +283,11 @@ else := {
     sickness_rate = "0.00" { input.jdg_entrepreneur.zus_sickness_voluntary == false }
     sickness_rate = "0.0245" { input.jdg_entrepreneur.zus_sickness_voluntary == true }
 
-    # Health insurance rate depends on tax form
+    # Health insurance rate depends on tax form (FIX v7.1 K3: LUMP_SUM = 9%, nie 4.9%!)
     health_rate = "0.09" { pit_form == "PIT_SCALE" }
     health_rate = "0.09" { pit_form == "TAX_CARD" }
     health_rate = "0.049" { pit_form == "LINEAR" }
-    health_rate = "0.049" { pit_form == "LUMP_SUM" }
+    health_rate = "0.09" { pit_form == "LUMP_SUM" }
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -317,7 +332,8 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# P724: zus_health_lump_sum_jdg — Składka zdrowotna ryczałt (progi)
+# P724: zus_health_lump_sum_jdg — Składka zdrowotna ryczałt (progi) 9%!
+# FIX v7.1 K3: LUMP_SUM = 9% (nie 4.9%!)
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true, "rule_id": "jdg.zus.health_lump_sum",
@@ -326,13 +342,13 @@ else := {
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "LUMP_SUM", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "0.049",
+    "zus_social_base_type": "", "zus_health_rate": "0.09",
     "zus_health_base": "LUMP_SUM_TIERS", "zus_health_limit_type": "LUMP_SUM_TIER",
     "zus_health_tier": tier, "zus_health_tier_base_percent": tier_percent,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 81 ust. 2a-2c ustawy o świadczeniach opieki zdrowotnej",
-    "_warnings": [sprintf("Składka zdrowotna ryczałt — próg %s, podstawa %.0f%% przeciętnego wynagrodzenia", [tier, tier_percent])]
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy o świadczeniach opieki zdrowotnej (9% od podstawy progowej)",
+    "_warnings": [sprintf("Składka zdrowotna ryczałt 9%% — próg %s, podstawa %.0f%% przeciętnego wynagrodzenia", [tier, tier_percent])]
 } {
     input.jdg_entrepreneur.tax_form == "LUMP_SUM"
     revenue := object.get(input.jdg_entrepreneur, "lump_sum_annual_revenue", 0)
@@ -349,6 +365,7 @@ else := {
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # P743: concurrent_employment_exemption — Zbieg etat+JDG → tylko zdrowotna
+# FIX v7.1 W9: dodane gałęzie LUMP_SUM i TAX_CARD dla health_rate
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true, "rule_id": "jdg.zus.concurrent_employment",
@@ -375,10 +392,12 @@ else := {
 } {
     input.jdg_entrepreneur.concurrent_employment == true
     input.jdg_entrepreneur.concurrent_employment_salary >= min_wage
-    min_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "minimum_wage_gross", 4800)
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
     health_rate = "0.09" { pit_form == "PIT_SCALE" }
+    health_rate = "0.09" { pit_form == "TAX_CARD" }
     health_rate = "0.049" { pit_form == "LINEAR" }
+    health_rate = "0.09" { pit_form == "LUMP_SUM" }
 }
 
 # ══════ P1222: zus_concurrent_low_salary — Zbieg etat+JDG (pensja < min) (Doc 36) ══════
@@ -398,19 +417,23 @@ else := {
 } {
     input.jdg_entrepreneur.concurrent_employment == true
     salary := object.get(input.jdg_entrepreneur, "concurrent_employment_salary", 0)
-    min_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "minimum_wage_gross", 4800)
     salary < min_wage
     salary > 0
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
-    health_rate := "0.09" { pit_form == "PIT_SCALE" }
-    health_rate := "0.049" { pit_form == "LINEAR" }
+    health_rate = "0.09" { pit_form == "PIT_SCALE" }
+    health_rate = "0.09" { pit_form == "TAX_CARD" }
+    health_rate = "0.049" { pit_form == "LINEAR" }
+    health_rate = "0.09" { pit_form == "LUMP_SUM" }
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  Ustawa o świadczeniach pieniężnych z ubezpieczenia społecznego           ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
-# ══════ P1200zs: zus_sickness_benefit — Zasiłek chorobowy 80% / 100% ══════
+# ══════ P1200zs: zus_sickness_benefit — Zasiłek chorobowy 80% / 100%
+# FIX v7.1 K7: okres wyczekiwania 90 dni dla JDG (dobrowolne ubezpieczenie!)
+# ══════
 else := {
     "matched": true, "rule_id": "jdg.zus.sickness_benefit",
     "package": "jdg.zus", "priority": 1200,
@@ -420,17 +443,16 @@ else := {
     "zus_social_base_type": "", "zus_health_rate": "",
     "business_status": "", "ceidg_registration_required": false,
     "zus_benefit_type": "SICKNESS", "zus_benefit_rate": benefit_rate,
-    "zus_benefit_eligible": true, "zus_waiting_period_days": waiting_days,
+    "zus_benefit_eligible": eligible, "zus_waiting_period_days": waiting_days,
     "zus_benefit_max_days": 182,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 6-18 Ustawy o świadczeniach pieniężnych z ubezpieczenia społecznego",
-    "_warnings": [sprintf("ZASIŁEK CHOROBOWY — stawka %s%% podstawy wymiaru. Okres oczekiwania: %d dni. Max 182 dni (270 dni przy gruźlicy/ciąży)", [benefit_pct, waiting_days])]
+    "_legal_basis": "Art. 4 ust. 1 pkt 2, Art. 6-18 Ustawy o świadczeniach pieniężnych",
+    "_warnings": [sprintf("ZASIŁEK CHOROBOWY — %s. Stawka %s%% podstawy. Okres oczekiwania: %d dni (dobrowolne ubezpieczenie JDG). Max 182 dni (270 dni gruźlica/ciąża). Status: %s", [benefit_pct, waiting_days, eligibility_msg])]
 } {
     input.jdg_entrepreneur.zus_sickness_voluntary == true
     sickness_days := object.get(input.jdg_entrepreneur, "zus_sickness_days", 0)
     sickness_days > 0
 
-    # 80% standard, 100% przy wypadku przy pracy / ciąży
     is_accident := object.get(input.jdg_entrepreneur, "zus_sickness_accident_related", false)
     is_pregnancy := object.get(input.jdg_entrepreneur, "zus_sickness_pregnancy_related", false)
 
@@ -441,8 +463,12 @@ else := {
     benefit_pct = "100" { benefit_rate == "1.00" }
     benefit_pct = "80" { benefit_rate == "0.80" }
 
-    # Okres oczekiwania: 30 dni dla JDG (ubezpieczenie dobrowolne)
-    waiting_days = 30 {
+    # K7 FIX: Okres wyczekiwania = 90 dni dla JDG (dobrowolne ubezpieczenie)
+    waiting_days := 90
+    insured_days := object.get(input.jdg_entrepreneur, "zus_sickness_insured_days", 0)
+    eligible := insured_days >= waiting_days
+    eligibility_msg = "PRAWO NABYTE" { eligible }
+    eligibility_msg = sprintf("BRAK PRAWA — potrzebujesz %d dni (masz %d)", [waiting_days, insured_days]) { not eligible }_days = 30 {
         object.get(input.jdg_entrepreneur, "zus_sickness_insurance_months", 0) < 3
     }
     waiting_days = 0 {
@@ -500,7 +526,9 @@ else := {
     care_max_days = 30 { care_type == "DISABLED_CHILD_UNDER_18" }
 }
 
-# ══════ P1203zs: zus_rehabilitation_benefit — Świadczenie rehabilitacyjne ══════
+# ══════ P1203zs: zus_rehabilitation_benefit — Świadczenie rehabilitacyjne
+# FIX v7.1 W3: usunięto błędną stawkę 60% po 9 mies. (nie istnieje w ustawie!)
+# Poprawnie: 90% przez 3 mies., 75% przez pozostałe 9 mies. (Art. 18 ustawy zasiłkowej)
 else := {
     "matched": true, "rule_id": "jdg.zus.rehabilitation_benefit",
     "package": "jdg.zus", "priority": 1203,
@@ -512,19 +540,17 @@ else := {
     "zus_benefit_type": "REHABILITATION", "zus_benefit_rate": rehab_rate,
     "zus_benefit_eligible": true, "zus_rehab_max_months": 12,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 18 Ustawy o świadczeniach pieniężnych z ubezpieczenia społecznego",
-    "_warnings": [sprintf("ŚWIADCZENIE REHABILITACYJNE — %s%% podstawy przez max 12 miesięcy. Po wyczerpaniu zasiłku chorobowego (182 dni)", [rehab_pct])]
+    "_legal_basis": "Art. 18 Ustawy o świadczeniach pieniężnych (90% przez 3 mies., 75% przez 9 mies.)",
+    "_warnings": [sprintf("ŚWIADCZENIE REHABILITACYJNE — %s%% podstawy (miesiąc %d/12). 90%% przez 3 mies., 75%% przez pozostałe.", [rehab_pct, rehab_month])]
 } {
     input.jdg_entrepreneur.zus_sickness_voluntary == true
     input.jdg_entrepreneur.zus_rehabilitation_claim == true
 
     rehab_month := object.get(input.jdg_entrepreneur, "zus_rehab_month", 1)
     rehab_rate = "0.90" { rehab_month <= 3 }
-    rehab_rate = "0.75" { rehab_month > 3; rehab_month <= 9 }
-    rehab_rate = "0.60" { rehab_month > 9 }
+    rehab_rate = "0.75" { rehab_month > 3 }
     rehab_pct = "90" { rehab_month <= 3 }
-    rehab_pct = "75" { rehab_month > 3; rehab_month <= 9 }
-    rehab_pct = "60" { rehab_month > 9 }
+    rehab_pct = "75" { rehab_month > 3 }
 }
 
 # ══════ P1204zs: zus_accident_benefit — Zasiłek wypadkowy 100% ══════

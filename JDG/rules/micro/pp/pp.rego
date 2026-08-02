@@ -4027,7 +4027,7 @@ decide := {
     "business_status": "UNREGISTERED",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
-    "min_wage_2026_pln": 4666,
+    "min_wage_2026_pln": 4800,
     "limit_75pct_2026_pln": 3499.50,
     "auto_indexation": true,
     "_routing": "",
@@ -4062,7 +4062,7 @@ else := {
         {"year": 2023, "min_wage": 3490, "limit": 2617.50},
         {"year": 2024, "min_wage": 4300, "limit": 3225.00},
         {"year": 2025, "min_wage": 4666, "limit": 3499.50},
-        {"year": 2026, "min_wage": 4666, "limit": 3499.50}
+        {"year": 2026, "min_wage": 4800, "limit": 3499.50}
     ],
     "_routing": "",
     "_routing_reason": "L-PP-2: Historyczne limity dla działalności nieewidencjonowanej",

@@ -31,13 +31,14 @@ zus_total_social_rate := 0.3164  # 19.52 + 8 + 2.45 + 1.67
 # CONTRIBUTION BASE THRESHOLDS (Art. 18, 18a, 18c SUS)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# 2026 values
+# 2026 values — FIX v7.1 K4/K5: unified minimum_wage 4800 PLN (2026), average 8190 PLN
 zus_base_thresholds := {
     "average_salary_pln": 8190.00,
-    "minimum_salary_pln": 4666.00,
-    "standard_base_60pct": 4914.00,        # 60% przeciętnego
-    "preferential_base_30pct": 1399.80,    # 30% minimalnego
-    "health_min_base_75pct": 6142.50,       # 75% przeciętnego
+    "minimum_salary_pln": 4800.00,
+    "standard_base_60pct": 4914.00,        # 60% przeciętnego (8190 × 0.60)
+    "preferential_base_30pct": 1440.00,    # 30% minimalnego (4800 × 0.30)
+    "health_min_base_100pct": 4800.00,      # 100% minimalnego (standard)
+    "health_min_base_first_year_75pct": 3600.00,  # 75% minimalnego (pierwszy rok)
 }
 
 zus_relief_periods := {
@@ -51,10 +52,11 @@ zus_relief_periods := {
 # PAYMENT DEADLINES (Art. 36, 47 SUS)
 # ═══════════════════════════════════════════════════════════════════════════════
 
+# FIX v7.1 W10: health_only deadline = 10 dla JDG (20 dotyczy jednostek budżetowych!)
 zus_payment_deadlines := {
-    "social_without_employees": 10,   # 10. dzień miesiąca
+    "social_without_employees": 10,   # 10. dzień miesiąca (JDG, art. 47 ust. 1 pkt 2 SUS)
     "social_with_employees": 15,       # 15. dzień miesiąca (DRA)
-    "health_only": 20,                  # 20. dzień miesiąca
+    "health_only": 10,                  # 10. dzień miesiąca dla JDG (NIE 20!)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -74,10 +76,10 @@ health_contribution_variants := {
         "rate": 0.049,
         "name": "Liniowy 4.9%",
         "deductible": true,
-        "deduction_limit_2026": 12900,
+        "deduction_limit_2026": 14100,
         "basis": "Dochód roczny",
         "deadline": "30 kwietnia",
-        "legal": "Art. 81 ust. 2c u.ś.o.z."
+        "legal": "Art. 81 ust. 2c u.ś.o.z. (limit odliczenia 14 100 PLN, nie wysokości składki!)"
     },
     "LUMP_SUM": {
         "rate": 0.09,
@@ -97,8 +99,8 @@ health_contribution_variants := {
         "name": "Karta podatkowa 9%",
         "deductible": false,
         "basis": "Minimalne wynagrodzenie",
-        "monthly_base": 4666.00,
-        "monthly_contribution": 419.94,
+        "monthly_base": 4800.00,
+        "monthly_contribution": 432.00,
         "deadline": "31 stycznia",
         "legal": "Art. 81 ust. 2a u.ś.o.z."
     },
@@ -116,7 +118,7 @@ sickness_benefit_rates := {
         "max_days_extended": 270,
         "waiting_period_days": 90,
         "daily_formula": "podstawa × 80% / 30",
-        "legal": "Art. 19 ustawy zasiłkowej"
+        "legal": "Art. 4 ust. 1 pkt 2, Art. 19 ustawy zasiłkowej (90 dni dla dobrowolnego)"
     },
     "MACIERZYNSKI": {
         "rate": 1.00,
@@ -147,9 +149,9 @@ sickness_benefit_rates := {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 kks_thresholds := {
-    "crime_threshold_200x_min_wage": 933200,  # 200 × 4666 PLN
-    "daily_rate_min": 155.53,                  # 4666 / 30
-    "daily_rate_max": 1866400.00,              # 400 × 4666
+    "crime_threshold_200x_min_wage": 960000,  # 200 × 4800 PLN
+    "daily_rate_min": 160.00,                  # 4800 / 30
+    "daily_rate_max": 1920000.00,              # 400 × 4800
     "mandatory_prison_threshold": 5000000,     # Art. 62 §3 KKS
 }
 

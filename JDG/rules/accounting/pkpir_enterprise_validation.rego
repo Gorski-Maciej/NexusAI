@@ -439,7 +439,7 @@ else := {
     input.invoice.pkpir_column_validation == true
     col14_amount := object.get(input.invoice, "pkpir_col14_wages", 0)
     employee_count := object.get(input.jdg_entrepreneur, "employee_count", 0)
-    min_wage := object.get(data.jdg.thresholds.bounds, "minimum_wage_gross", 4666)
+    min_wage := object.get(data.jdg.thresholds.bounds, "minimum_wage_gross", 4800)
     avg_wage := col14_amount / max([employee_count, 1])
     min_wage_ok := [avg_wage >= min_wage * 0.9, employee_count > 0]==[true,true]
     wages_routing:={true: "TRIAGE_QUEUE", false: ""}[min_wage_ok==false]

@@ -408,7 +408,7 @@ else := {
     monthly_revenue := object.get(input.jdg_entrepreneur, "monthly_revenue_avg", 15000)
     revenue_trend := object.get(input.jdg_entrepreneur, "revenue_trend_6mo_pct", 0)
     current_hours_utilization := object.get(input.jdg_entrepreneur, "hours_utilization_pct", 0.80)
-    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
 
     hiring_monthly_cost := min_wage * 1.40
     hiring_breakeven := hiring_monthly_cost / 0.30

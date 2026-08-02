@@ -54,7 +54,7 @@ decide := {
     health_rate = "0.09" { pit_form == "PIT_SCALE" }
     health_rate = "0.09" { pit_form == "TAX_CARD" }
     health_rate = "0.049" { pit_form == "LINEAR" }
-    health_rate = "0.049" { pit_form == "LUMP_SUM" }
+    health_rate = "0.09" { pit_form == "LUMP_SUM" }
     # Okres wyczekiwania: 90 dni nieprzerwanego ubezpieczenia
     waiting_days := object.get(object.get(data.jdg.thresholds, "zus", {}), "sickness_waiting_days", 90)
     insured_days := object.get(input.jdg_entrepreneur, "zus_sickness_insured_days", 0)
@@ -108,7 +108,7 @@ else := {
     input.jdg_entrepreneur.zus_sickness_voluntary == true
     input.jdg_entrepreneur.zus_sickness_claim == true
     # Podstawa wymiaru: średnia z 12 miesięcy przychodu pomniejszona o 13.71%
-    avg_income := object.get(input.jdg_entrepreneur, "zus_sickness_avg_monthly_income", 4666)
+    avg_income := object.get(input.jdg_entrepreneur, "zus_sickness_avg_monthly_income", 4800)
     base_amount := avg_income * 0.8629  # minus 13.71% składek społecznych
     is_hospitalized := object.get(input.jdg_entrepreneur, "zus_hospitalized", false)
     has_tb := object.get(input.jdg_entrepreneur, "zus_has_tuberculosis", false)
@@ -147,13 +147,15 @@ else := {
     pit_rate = "0.12" { pit_form == "TAX_CARD" }
     health_rate = "0.09" { pit_form == "PIT_SCALE" }
     health_rate = "0.049" { pit_form == "LINEAR" }
-    health_rate = "0.049" { pit_form == "LUMP_SUM" }
+    health_rate = "0.09" { pit_form == "LUMP_SUM" }
     health_rate = "0.09" { pit_form == "TAX_CARD" }
     # Szacunkowa zaliczka: PIT od zasiłku (ZUS nie pobiera)
     estimated_advance := floor(monthly_benefit * 0.12 * 100) / 100
 }
 
-# ── P748: sickness_zus_health_during_illness — Zdrowotna NADAL podczas choroby! ──
+# ── P748: sickness_zus_health_during_illness — Zdrowotna podczas choroby (FIX v7.1 W5)
+# Rozróżnienie: JDG zawieszona (podstawa 0) vs aktywna (zdrowotna należna)
+# Zasiłek: składka zdrowotna finansowana z budżetu państwa (art. 86 ust. 1 pkt 2)
 else := {
     "matched": true, "rule_id": "jdg.zus.benefits.sickness_health_during",
     "package": "jdg.zus.benefits", "priority": 748,
@@ -163,23 +165,41 @@ else := {
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "SUSPENDED_DURING_SICKNESS",
     "zus_social_due": false,
-    "zus_health_due": true,
+    "zus_health_due": health_is_due,
     "zus_health_rate": health_rate,
     "zus_health_monthly_pln": health_monthly,
-    "business_status": "", "ceidg_registration_required": false,
+    "zus_health_state_funded": health_state_funded,
+    "business_status": biz_note,
+    "ceidg_registration_required": false,
     "_routing": "BLOCK_AND_ALERT",
-    "_routing_reason": "Składka zdrowotna NADAL należna podczas choroby — nie przerywaj opłacania!",
-    "_legal_basis": "Art. 81 ust. 1 ustawy o świadczeniach opieki zdrowotnej, Art. 36a ust. 1 SUS",
-    "_warnings": [sprintf("KRYTYCZNE! Podczas zasiłku chorobowego: społeczne = 0 (ZUS pokrywa), ALE ZDROWOTNA NADAL NALEŻNA (~%.2f PLN/mies). NIE PRZERYWAJ opłacania składki zdrowotnej — przerwa = brak ubezpieczenia zdrowotnego! Brak zdrowotnej przez 30+ dni = wygaśnięcie prawa do świadczeń NFZ.", [health_monthly])]
+    "_routing_reason": sprintf("Zdrowotna %s — %s", [health_status_text, biz_note]),
+    "_legal_basis": "Art. 81 ust. 1, Art. 86 ust. 1 pkt 2 u.ś.o.z.",
+    "_warnings": [sprintf("%s — JDG %s: społeczne=0, zdrowotna %s (~%.2f PLN/mies). %s", [health_status_text, biz_note, health_note, health_monthly, health_action])]
 } {
     input.jdg_entrepreneur.zus_sickness_claim == true
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
     health_rate = "0.09" { pit_form == "PIT_SCALE" }
     health_rate = "0.09" { pit_form == "TAX_CARD" }
     health_rate = "0.049" { pit_form == "LINEAR" }
-    health_rate = "0.049" { pit_form == "LUMP_SUM" }
-    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    health_rate = "0.09" { pit_form == "LUMP_SUM" }
+    is_suspended := object.get(input.jdg_entrepreneur, "business_suspended", false)
+    is_receiving_benefit := object.get(input.jdg_entrepreneur, "receiving_sickness_benefit", false)
+    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
     health_monthly := floor(min_wage * 0.09 * 100) / 100
+    health_is_due = false { is_suspended }
+    health_is_due = true { not is_suspended }
+    health_state_funded = true { is_receiving_benefit }
+    health_state_funded = false { not is_receiving_benefit }
+    biz_note = "ZAWIESZONA" { is_suspended }
+    biz_note = "AKTYWNA" { not is_suspended }
+    health_status_text = "KRYTYCZNE" { health_is_due }
+    health_status_text = "OK" { not health_is_due }
+    health_note = "finansowana z budżetu państwa (nie płać!)" { health_state_funded }
+    health_note = "NADAL NALEŻNA (płać!)" { not health_state_funded; health_is_due }
+    health_note = "brak obowiązku" { not health_is_due }
+    health_action = "NIE PRZERYWAJ opłacania — przerwa = utrata NFZ!" { health_is_due; not health_state_funded }
+    health_action = "ZUS finansuje — nie obciąża JDG" { health_state_funded }
+    health_action = "Brak przychodu = podstawa 0" { not health_is_due }
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -209,7 +229,7 @@ else := {
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
     health_rate = "0.09" { pit_form == "PIT_SCALE" }
     health_rate = "0.049" { pit_form == "LINEAR" }
-    health_rate = "0.049" { pit_form == "LUMP_SUM" }
+    health_rate = "0.09" { pit_form == "LUMP_SUM" }
     health_rate = "0.09" { pit_form == "TAX_CARD" }
     # Warunek: 90 dni ubezpieczenia chorobowego przed porodem
     insured_days := object.get(input.jdg_entrepreneur, "zus_sickness_insured_days", 0)
@@ -220,8 +240,8 @@ else := {
     duration_weeks = 20 { children == 1 }
     duration_weeks = 31 { children == 2 }
     duration_weeks = 33 { children == 3 }
-    duration_weeks = 34 { children == 4 }
-    duration_weeks = 35 { children >= 5 }
+    duration_weeks = 35 { children == 4 }
+    duration_weeks = 37 { children >= 5 }
     eligibility_msg = "PRAWO NABYTE" { is_eligible }
     eligibility_msg = sprintf("BRAK PRAWA — potrzebne %d dni ubezpieczenia chorobowego", [min_insurance_days]) { not is_eligible }
 }
@@ -250,11 +270,11 @@ else := {
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
     health_rate = "0.09" { pit_form == "PIT_SCALE" }
     health_rate = "0.049" { pit_form == "LINEAR" }
-    health_rate = "0.049" { pit_form == "LUMP_SUM" }
+    health_rate = "0.09" { pit_form == "LUMP_SUM" }
     health_rate = "0.09" { pit_form == "TAX_CARD" }
     continues_business := object.get(input.jdg_entrepreneur, "zus_maternity_continues_business", false)
     can_operate := true  # JDG może prowadzić firmę na macierzyńskim
-    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
     health_monthly := floor(min_wage * 0.09 * 100) / 100
     operation_msg = "Prowadzisz firmę + pobierasz zasiłek (DOZWOLONE)" { continues_business }
     operation_msg = "Zawieszona działalność — tylko zasiłek" { not continues_business }
@@ -291,7 +311,7 @@ else := {
     max_days = 60 { care_for_child }
     max_days = 14 { care_for_family }
     max_days = 14 { not care_for_child; not care_for_family }
-    avg_income := object.get(input.jdg_entrepreneur, "zus_sickness_avg_monthly_income", 4666)
+    avg_income := object.get(input.jdg_entrepreneur, "zus_sickness_avg_monthly_income", 4800)
     daily_benefit := floor(avg_income * 0.8629 * 0.80 / 30 * 100) / 100
 }
 
@@ -320,7 +340,7 @@ else := {
     rehab_month := object.get(input.jdg_entrepreneur, "zus_rehab_month", 1)
     rehab_rate = 0.90 { rehab_month <= 3 }
     rehab_rate = 0.75 { rehab_month > 3 }
-    avg_income := object.get(input.jdg_entrepreneur, "zus_sickness_avg_monthly_income", 4666)
+    avg_income := object.get(input.jdg_entrepreneur, "zus_sickness_avg_monthly_income", 4800)
     monthly_benefit := floor(avg_income * 0.8629 * rehab_rate * 100) / 100
 }
 
@@ -350,13 +370,13 @@ else := {
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
     monthly_revenue := object.get(input.jdg_entrepreneur, "monthly_revenue_avg", 10000)
     # Standardowe składki ZUS 2026
-    social_base := object.get(object.get(data.jdg.thresholds, "bounds", {}), "zus_social_base_standard", 4666)
-    social_amount := floor(social_base * 0.3812 * 100) / 100  # emerytalna 19.52% + rentowa 8% + wypadkowa 1.67% + FP 2.45% + chorobowa 2.45%
+    social_base := object.get(object.get(data.jdg.thresholds, "bounds", {}), "zus_social_base_standard", 4800)
+    social_amount := floor(social_base * 0.3409 * 100) / 100  # emerytalna 19.52% + rentowa 8% + wypadkowa 1.67% + chorobowa 2.45% + FP 2.45% = 34.09%
     fp_amount := floor(social_base * 0.0245 * 100) / 100
     health_rate = "0.09" { pit_form == "PIT_SCALE" }
     health_rate = "0.09" { pit_form == "TAX_CARD" }
     health_rate = "0.049" { pit_form == "LINEAR" }
-    health_rate = "0.049" { pit_form == "LUMP_SUM" }
+    health_rate = "0.09" { pit_form == "LUMP_SUM" }
     health_amount := floor(social_base * 0.09 * 100) / 100
     total_zus := social_amount + health_amount + fp_amount
     annual_zus := total_zus * 12
@@ -404,7 +424,8 @@ else := {
     cost_increase := next_zus_est - current_zus
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
     increase_pct := floor((cost_increase / current_zus) * 100)
-    transition_date := "2026-07-01"  # placeholder — powinno być dynamiczne
+    transition_date := object.get(input.jdg_entrepreneur, "zus_relief_start_date", "2026-01-01")
+    # FIX v7.1: dynamiczna data przejścia (nie hardcoded!)
 }
 
 # ── P790: zus_vat_interaction_guard — Guard: ZUS a odliczenia VAT ──

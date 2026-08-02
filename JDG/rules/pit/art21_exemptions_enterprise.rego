@@ -335,9 +335,9 @@ else := {
     input.invoice.income_type == "SEVERANCE_PAY"
     severance_amount := object.get(input.invoice, "amount_net", 0)
     severance_type := object.get(input.invoice, "severance_type", "COLLECTIVE")
-    severance_limit = 15 * 4666 { severance_type == "COLLECTIVE" }
-    severance_limit = 3 * 4666 { severance_type == "RETIREMENT" }
-    severance_limit = 3 * 4666 { severance_type == "LABOR_CODE" }
+    severance_limit = 15 * 4800 { severance_type == "COLLECTIVE" }
+    severance_limit = 3 * 4800 { severance_type == "RETIREMENT" }
+    severance_limit = 3 * 4800 { severance_type == "LABOR_CODE" }
     severance_limit = 0 { true }
     is_exempt := severance_amount <= severance_limit and severance_limit > 0
     sev_status = "ZWOLNIONE" { is_exempt }

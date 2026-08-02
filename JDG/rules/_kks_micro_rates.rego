@@ -18,7 +18,7 @@
 package jdg.micro.kks_rates
 
 # ── 2026 Parameters ──
-min_wage_2026 := 4666.00
+min_wage_2026 := 4800.00
 
 # ── Daily Rates (Art. 23 §1 KKS) ──
 # Stawka dzienna = 1/30 minimalnego wynagrodzenia

@@ -70,7 +70,7 @@ decide := {
 
     # Gradation thresholds (Art. 53 § 3-6 KKS)
     # "Mała wartość" > 5 000 PLN / "znaczna wartość" > 200 000 PLN / "wielka wartość" > 1 000 000 PLN
-    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
 
     # KKS uses multiples of minimum wage
     # v7.0 FIX (LUKA-K53-1): threshold_minor = 5x min_wage (~23,330 PLN per Art. 53 § 2 KKS)

@@ -17,7 +17,7 @@
 
 package jdg.business_lifecycle_rates
 
-min_wage_2026 := 4666.00
+min_wage_2026 := 4800.00
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Fazy Cyklu Życia JDG

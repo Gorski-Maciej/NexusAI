@@ -344,7 +344,7 @@ else := {
     offense_type := object.get(input.jdg_entrepreneur, "kks_primary_offense_type", "TAX_EVASION")
 
     # Stawka dzienna = 1/30 minimalnego wynagrodzenia
-    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
     daily_rate := floor(min_wage / 30 * 100) / 100
 
     # Liczba stawek wg progu materialności

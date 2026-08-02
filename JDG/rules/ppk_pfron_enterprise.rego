@@ -177,8 +177,8 @@ else := {
 
     pfron_needed := total_ee >= pfron_threshold and actual_ratio < required_ratio and not is_zpchr
 
-    # PFRON monthly contribution calculation
-    missing_disabled := floor((total_ee * required_ratio) - disabled_ee)
+    # PFRON monthly contribution calculation (FIX v7.1: ceil zamiast floor!)
+    missing_disabled := ceil((total_ee * required_ratio) - disabled_ee)
     missing_disabled := max([missing_disabled, 0])
     pfron_amount := missing_disabled * avg_monthly_wage * 0.4065  # 40.65% przeciętnego wynagrodzenia
 

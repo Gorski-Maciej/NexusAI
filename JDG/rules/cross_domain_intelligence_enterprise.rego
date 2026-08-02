@@ -128,7 +128,7 @@ else := {
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
     zus_status := object.get(input.jdg_entrepreneur, "zus_status", "STANDARD")
     monthly_profit := object.get(input.jdg_entrepreneur, "monthly_profit_avg", 8000)
-    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
 
     social_base := min_wage * 0.60
     social_monthly := floor(social_base * 0.3812 * 100) / 100 { zus_status == "STANDARD" }
@@ -320,7 +320,7 @@ else := {
     monthly_revenue := object.get(input.jdg_entrepreneur, "monthly_revenue_avg", 15000)
     monthly_costs := object.get(input.jdg_entrepreneur, "monthly_costs_avg", 5000)
     monthly_profit := monthly_revenue - monthly_costs
-    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4666)
+    min_wage := object.get(object.get(data.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
 
     # Estimated PIT advance
     pit_advance := max([monthly_profit * 0.12, 0]) { pit_form == "PIT_SCALE"; monthly_profit * 12 <= 120000 }

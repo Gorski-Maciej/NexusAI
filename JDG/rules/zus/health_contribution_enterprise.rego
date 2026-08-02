@@ -36,6 +36,7 @@ default decide := {
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # ── H100: health_scale_basis — Podstawa wymiaru: dochód z JDG na skali ──
+# FIX v7.1 K6: min_base = 100% min. wynagrodzenia (nie 75%); 75% tylko w pierwszym roku
 decide := {
     "matched": true, "rule_id": "jdg.zus.health.scale_basis",
     "package": "jdg.zus.health_contribution", "priority": 100,
@@ -50,18 +51,19 @@ decide := {
     "_routing": scale_rt,
     "_routing_reason": scale_rs,
     "_legal_basis": "Art. 81 ust. 2 ustawy o świadczeniach (Polski Ład 2022)",
-    "_warnings": [sprintf("SKŁADKA ZDROWOTNA — SKALA 9%%. Dochód: %.2f PLN/mies → składka: %.2f PLN/mies. Min. podstawa: %.2f PLN (75%% przeciętnego wyn.). NIE odlicza się od PIT na skali! Zapłać do 10. dnia następnego miesiąca.", [monthly_income, health_monthly, min_wage_75pct])]
+    "_warnings": [sprintf("SKŁADKA ZDROWOTNA — SKALA 9%%. Dochód: %.2f PLN/mies → składka: %.2f PLN/mies. Min. podstawa: %.2f PLN (100%% min. wynagrodzenia = %.2f PLN, 75%% = %.2f PLN tylko w 1. roku). NIE odlicza się od PIT na skali! Zapłać do 10. dnia następnego miesiąca.", [monthly_income, health_monthly, min_base, min_wage, first_year_base])]
 } {
     input.jdg_entrepreneur.tax_form == "PIT_SCALE"
     input.jdg_entrepreneur.health_contribution_active == true
     # thresholds loaded via global data document (package jdg.thresholds)
     monthly_income := object.get(input.jdg_entrepreneur, "monthly_income_net", 0)
     min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
-    avg_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "avg_monthly_wage", 8674)
-    min_wage_75pct := floor(avg_wage * 0.75 * 100) / 100
-    min_base := floor(min_wage * 0.75 * 100) / 100
-    # Podstawa = max(d
-ochód miesięczny, 75%% min. wynagrodzenia)
+    # Podstawa = 100% min. wynagrodzenia (75% tylko w pierwszym roku działalności)
+    is_first_year := object.get(input.jdg_entrepreneur, "is_first_year_of_business", false)
+    first_year_base := floor(min_wage * 0.75 * 100) / 100
+    min_base = first_year_base { is_first_year }
+    min_base = min_wage { not is_first_year }
+    # Podstawa = max(dochód miesięczny, minimalna podstawa)
     health_basis := max([monthly_income, min_base])
     health_monthly := floor(health_basis * 0.09 * 100) / 100
     scale_rt = "TRIAGE_QUEUE" { health_monthly > 2000 }
@@ -107,29 +109,37 @@ else := {
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # ── H110: health_linear_basis — Podstawa: dochód — liniowy 4.9% ──
-else := {
+# FIX v7.1 K6: min_base = 100% min. wynagrodzenia; 75% tylko w pierwszym roku
+decide := {
     "matched": true, "rule_id": "jdg.zus.health.linear_basis",
     "package": "jdg.zus.health_contribution", "priority": 110,
     "pit_form": "LINEAR", "zus_health_rate": "0.049",
     "zus_health_basis_pln": health_basis,
     "zus_health_monthly_pln": health_monthly,
     "zus_health_deductible": true,
-    "zus_health_max_annual_deduction_pln": data.thresholds.zus.health_linear_deduction_limit,
+    "zus_health_max_annual_deduction_pln": health_linear_deduction_limit,
+    "zus_health_deduction_remaining_pln": deduction_remaining,
     "_routing": "",
-    "_routing_reason": sprintf("Składka zdrowotna liniowy: %.2f PLN/mies (4.9%% × %.2f PLN)", [health_monthly, health_basis]),
+    "_routing_reason": sprintf("Składka zdrowotna liniowy: %.2f PLN/mies (4.9%% × %.2f PLN). Odliczenie: %.2f/%.0f PLN", [health_monthly, health_basis, deduction_used, health_linear_deduction_limit]),
     "_legal_basis": "Art. 81 ust. 2c ustawy o świadczeniach",
-    "_warnings": [sprintf("SKŁADKA ZDROWOTNA — LINIOWY 4.9%%. Dochód: %.2f PLN/mies → składka: %.2f PLN/mies. MOŻNA ODLICZYĆ od dochodu do 14 100 PLN/rok! Efektywny koszt po odliczeniu: %.2f PLN/mies.", [monthly_income, health_monthly, effective_cost])]
+    "_warnings": [sprintf("SKŁADKA ZDROWOTNA — LINIOWY 4.9%%. Dochód: %.2f PLN/mies → składka: %.2f PLN/mies. MOŻNA ODLICZYĆ od dochodu do %.0f PLN/rok! Odliczono: %.2f PLN, pozostało: %.2f PLN.", [monthly_income, health_monthly, health_linear_deduction_limit, deduction_used, deduction_remaining])]
 } {
     input.jdg_entrepreneur.tax_form == "LINEAR"
     input.jdg_entrepreneur.health_contribution_active == true
     # thresholds loaded via global data document (package jdg.thresholds)
     monthly_income := object.get(input.jdg_entrepreneur, "monthly_income_net", 0)
     min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
-    min_base := floor(min_wage * 0.75 * 100) / 100
+    is_first_year := object.get(input.jdg_entrepreneur, "is_first_year_of_business", false)
+    first_year_base := floor(min_wage * 0.75 * 100) / 100
+    min_base = first_year_base { is_first_year }
+    min_base = min_wage { not is_first_year }
     health_basis := max([monthly_income, min_base])
     health_monthly := floor(health_basis * 0.049 * 100) / 100
-    # Efektywny koszt po odliczeniu PIT (19% od składki)
-    effective_cost := floor(health_monthly * 0.81 * 100) / 100
+    # SPOF: unified deduction limit 2026 = 14 100 PLN
+    health_linear_deduction_limit := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_linear_deduction_limit", 14100)
+    annual_paid := object.get(input.jdg_entrepreneur, "health_annual_paid", 0)
+    deduction_used := min([annual_paid, health_linear_deduction_limit])
+    deduction_remaining := max([0, health_linear_deduction_limit - annual_paid])
 }
 
 # ── H111: health_linear_deduction_tracker — Tracker rocznego odliczenia ──
@@ -155,25 +165,38 @@ else := {
     deduction_remaining := max([0, data.thresholds.zus.health_linear_deduction_limit - annual_paid])
 }
 
-# ── H112: health_linear_limit_exceeded — Po przekroczeniu limitu odliczenia składka 0 PLN ──
+# ── H112: health_linear_limit_exceeded — Po przekroczeniu limitu ODLICZENIA (składka NADAL należna!) ──
+# FIX v7.1 K1: Składka 4.9% płacona ZAWSZE, limit dotyczy tylko ODLICZENIA od dochodu!
+# art. 30c ust. 2 PIT: limit odliczenia 14 100 PLN/rok, ale składka bez górnego limitu
 else := {
     "matched": true, "rule_id": "jdg.zus.health.linear_limit_exceeded",
     "package": "jdg.zus.health_contribution", "priority": 112,
     "pit_form": "LINEAR", "zus_health_rate": "0.049",
-    "zus_health_monthly_pln": 0,
-    "zus_health_basis_pln": 0,
+    "zus_health_monthly_pln": health_monthly,
+    "zus_health_basis_pln": health_basis,
     "zus_health_deductible": false,
+    "zus_health_deduction_exhausted": true,
     "zus_health_annual_paid_pln": annual_paid,
-    "zus_health_deduction_limit_pln": data.thresholds.zus.health_linear_deduction_limit,
+    "zus_health_deduction_limit_pln": health_linear_deduction_limit,
+    "zus_health_no_deduction_remaining": true,
     "_routing": "WARNING",
-    "_routing_reason": sprintf("LIMIT ODLICZENIA OSIĄGNIĘTY — Zapłacono %.2f PLN z limitu %.0f PLN. Składka zdrowotna = 0 PLN/mies do końca roku.", [annual_paid, data.thresholds.zus.health_linear_deduction_limit]),
-    "_legal_basis": "Art. 30c ust. 2 PIT",
-    "_warnings": [sprintf("✅ LIMIT ODLICZENIA WYCZERPANY — Zapłacono %.2f PLN (limit %.0f PLN/rok). Składka zdrowotna 0 PLN do końca roku.", [annual_paid, data.thresholds.zus.health_linear_deduction_limit])]
+    "_routing_reason": sprintf("LIMIT ODLICZENIA WYCZERPANY — Zapłacono %.2f PLN z limitu %.0f PLN. Składka %.2f PLN NADAL NALEŻNA (4.9%% od dochodu bez limitu!), ale NIE podlega już odliczeniu od dochodu.", [annual_paid, health_linear_deduction_limit, health_monthly]),
+    "_legal_basis": "Art. 30c ust. 2 PIT (limit ODLICZENIA, nie składki!); Art. 81 ust. 2c u.ś.o.z.",
+    "_warnings": [sprintf("⚠️ LIMIT ODLICZENIA WYCZERPANY — Zapłacono %.2f PLN (limit %.0f PLN/rok). SKŁADKA %.2f PLN NADAL NALEŻNA! Zapłać 4.9%% × dochód = %.2f PLN. Brak odliczenia od PIT oznacza wyższy efektywny koszt. NIEPŁACENIE = utrata NFZ po 30 dniach!", [annual_paid, health_linear_deduction_limit, health_monthly, health_monthly])]
 } {
     input.jdg_entrepreneur.tax_form == "LINEAR"
     input.jdg_entrepreneur.health_contribution_active == true
+    monthly_income := object.get(input.jdg_entrepreneur, "monthly_income_net", 0)
+    min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
+    is_first_year := object.get(input.jdg_entrepreneur, "is_first_year_of_business", false)
+    first_year_base := floor(min_wage * 0.75 * 100) / 100
+    min_base = first_year_base { is_first_year }
+    min_base = min_wage { not is_first_year }
+    health_basis := max([monthly_income, min_base])
+    health_monthly := floor(health_basis * 0.049 * 100) / 100
     annual_paid := object.get(input.jdg_entrepreneur, "health_annual_paid", 0)
-    annual_paid >= data.thresholds.zus.health_linear_deduction_limit
+    health_linear_deduction_limit := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_linear_deduction_limit", 14100)
+    annual_paid >= health_linear_deduction_limit
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -274,23 +297,30 @@ else := {
 # ║  H140-H149: PODSTAWA MINIMALNA + ROCZNE ROZLICZENIE + NADPŁATA          ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
-# ── H140: health_minimum_base_guard — Minimalna podstawa wymiaru ──
-else := {
+# ── H140: health_minimum_base_guard — Minimalna podstawa wymiaru (FIX v7.1 K6) ──
+# 100% min. wynagrodzenia (standard), 75% tylko w pierwszym roku
+decide := {
     "matched": true, "rule_id": "jdg.zus.health.minimum_base_guard",
     "package": "jdg.zus.health_contribution", "priority": 140,
     "zus_health_min_base_applies": applies_min_base,
     "zus_health_min_base_pln": min_base,
+    "zus_health_is_first_year": is_first_year,
     "_routing": minbase_rt,
     "_routing_reason": minbase_rs,
     "_legal_basis": "Art. 81 ust. 2b ustawy o świadczeniach",
-    "_warnings": [sprintf("MINIMALNA PODSTAWA ZDROWOTNA — %s. %.2f PLN/mies. Składka zdrowotna NIE może być niższa niż 9%% od 75%% przeciętnego wynagrodzenia (2026: %.2f PLN × 9%% = %.2f PLN). Dotyczy wszystkich form PIT!", [minbase_note, min_wage, minbase_value])]
+    "_warnings": [sprintf("MINIMALNA PODSTAWA ZDROWOTNA — %s. Podstawa: %.2f PLN/mies (%s). Składka: %.2f PLN/mies. Dotyczy wszystkich form PIT!", [minbase_note, min_base, base_type, minbase_value])]
 } {
     input.jdg_entrepreneur.health_contribution_active == true
     tax_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
     tax_form in {"PIT_SCALE", "LINEAR"}
     # thresholds loaded via global data document (package jdg.thresholds)
     min_wage := object.get(object.get(data.jdg.thresholds, "bounds", {}), "minimum_wage_gross", 4800)
-    min_base := floor(min_wage * 0.75 * 100) / 100
+    is_first_year := object.get(input.jdg_entrepreneur, "is_first_year_of_business", false)
+    first_year_base := floor(min_wage * 0.75 * 100) / 100
+    min_base = first_year_base { is_first_year }
+    min_base = min_wage { not is_first_year }
+    base_type = "75%% min. wyn. (pierwszy rok)" { is_first_year }
+    base_type = "100%% min. wyn. (standard)" { not is_first_year }
     monthly_income := object.get(input.jdg_entrepreneur, "monthly_income_net", 0)
     applies_min_base := monthly_income < min_base
     minbase_value := floor(min_base * 0.09 * 100) / 100

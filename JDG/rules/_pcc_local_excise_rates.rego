@@ -18,7 +18,7 @@
 package jdg.pcc_local_excise_rates
 
 # ── 2026 Minimum Wage ──
-min_wage_2026 := 4666.00
+min_wage_2026 := 4800.00
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PCC Rates (Ustawa o podatku od czynności cywilnoprawnych)
