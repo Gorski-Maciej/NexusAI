@@ -128,7 +128,7 @@ dependencies = [
     "pypdfium2>=4.0.0",   # PDF → image conversion via PDFium engine
     "paddleocr>=2.8.0",
     "python-doctr>=0.9.0",
-    "easyocr>=1.7.0",
+    "easyocr>=1.7.2",
 
     # ═══════════════════════════════════════════════════════════════════════
     # Analytics / OLAP — DuckDB + Polars (zastępuje pandas)
