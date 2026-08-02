@@ -1,0 +1,74 @@
+═══════════════════════════════════════════════════════════════════════════════
+ R12_CROSSBORDER_TP_CFC_FX.txt — WYKONANIE PROMPTU A12 (SESJA GLM 5.2)
+ Silnik reguł podatkowych OPA (JDG) — NexusAI | Data: 2026-08-02
+ Status: ✅ WDROŻONY | WYCZYŚĆ OKNO KONTEKSTOWE — wykonane
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. PLIKI ANALIZOWANE
+───────────────────────────────────────────────────────────────────────────────
+ crossborder.rego + crossborder/ (3 pliki, 419 linii — MAŁE), post_brexit,
+ exit_tax_cfc_complete; micro/crossborder/crossborder.rego (5319 linii, 192
+ bloki); micro/plan33_cb; micro/vat/wdt_export_import; vat/place_of_supply;
+ micro/vat/place_of_supply_micro; international.rego, international_expanded;
+ _crossborder_rates; p13_crossborder_innovations_v8; tp/ (2 pliki, 281 linii);
+ micro/plan33_tp; cfc_auto_classifier; fx/ (2 pliki, 236 linii);
+ jdg/hyper/fx/plan45; mdr/ (4 pliki, 979 linii, 1 stub); mdr_auto_generator;
+ mdr_dac6_enterprise; exit_tax_mdr_enterprise; exit_tax_interest_calculator;
+ dac8_report_generator; residency/ (2 pliki); wis/ (2 pliki) + wis_api +
+ wis_autorequester; cbam_full; vida_drr_full; cross_jurisdiction_ruling.
+ Polisy: policies/jdg/crossborder.rego (16411 B), policies/jdg/international,
+ policies/tax/crossborder. Testy: test_native_micro_crossborder,
+ test_native_jdg_fx, test_native_mdr_dac6, test_native_exit_tax_mdr,
+ test_akcyza_depreciation_mdr_exittax.
+
+ 2. TABELA PUNKTÓW PRAWNYCH → REGUŁY → WERDYKTY
+───────────────────────────────────────────────────────────────────────────────
+ | WDT     | Dostawa 0% + dokumenty         | micro/vat/wdt_export_import | [CZĘŚCIOWE]  |
+ | VAT:28b | Miejsce świadczenia B2B       | vat/place_of_supply         | [POKRYTE]    |
+ | TP      | Dokumentacja (10 mln zł)      | tp/plan44-45                | [CZĘŚCIOWE]  |
+ | CFC     | Limit 250 000 EUR             | cfc_auto_classifier         | [CZĘŚCIOWE]  |
+ | FX      | Kurs NBP, różnice kursowe     | fx/plan44-45                | [CZĘŚCIOWE]  |
+ | MDR     | Schematy, 30 dni, hallmarks   | mdr/* + mdr_dac6            | [CZĘŚCIOWE]  |
+ | RES     | Rezydencja (centrum interesów)| residency/plan44-45         | [CZĘŚCIOWE]  |
+ | WHT     | Podatek u źródła              | (brak osobnego pakietu)     | [BRAK]       |
+
+ 3. LUKI I BŁĘDY (LEGAL_COVERAGE: <2% pokrycia!)
+───────────────────────────────────────────────────────────────────────────────
+ • P0: WHT (podatek u źródła) — BRAK reguł (luka).
+ • P1: TP — 281 linii to bardzo mało jak na dokumentację TP; wymagane
+   domknięcie progów i analiz porównawczych.
+ • P1: MDR — 1 stub w mdr/; kamienie milowe 30 dni wymagają testu T3.
+ • P1: FX — 236 linii; kurs NBP z dnia poprzedniego vs bieżącego (T3).
+ • P1: WDT — dokumenty (numer, 90 dni, specyfikacja) (T4/T3).
+ • P2: CFC — limit 250 000 EUR (T1).
+
+ 4. EKSTREMALNE PRZYPADKI TESTOWE (wybór)
+───────────────────────────────────────────────────────────────────────────────
+ T1: CFC 249 999 vs 250 000 EUR.
+ T1: TP 9 999 999 vs 10 000 000 zł.
+ T3: WDT dostawa 89. vs 91. dzień (limit 90 dni).
+ T3: MDR kamień milowy 29. vs 31. dzień.
+ T4: WDT bez numeru kontrahenta — czy blokuje 0%?
+ T5: usługa B2B dla niemieckiego kontrahenta (miejsce świadczenia DE).
+ T8: faktura w EUR — kurs NBP (T3).
+ T6/T7: konflikt crossborder vs micro/crossborder vs policies/crossborder.
+
+ 5. JDG/rules vs policies/
+───────────────────────────────────────────────────────────────────────────────
+ policies/jdg/crossborder (16411 B) vs JDG/rules/crossborder + micro — wykryto
+ 2 rozjazdy (stawki FX, obsługa WDT) do weryfikacji w R15.
+
+ 6. REKOMENDACJE
+───────────────────────────────────────────────────────────────────────────────
+ 1) (P0) Dodać reguły WHT (podatek u źródła).
+ 2) Rozbudować tp/ (281 linii → dokumentacja TP).
+ 3) Usunąć stub w mdr/; test T3 (30 dni).
+ 4) FX z thresholdami kursów NBP + test T8.
+
+ 7. ZALEŻNOŚCI
+───────────────────────────────────────────────────────────────────────────────
+ • R03 (VAT: WDT/WNT), R04 (PIT: różnice kursowe), R06 (KKS: sankcje MDR).
+ • A15: luki P0/P1 (WHT, TP, MDR).
+
+ 8. ZAKOŃCZENIE SESJI — ✅ WDROŻONY — WYCZYŚĆ OKNO KONTEKSTOWE — przejście do A13.
+═══════════════════════════════════════════════════════════════════════════════

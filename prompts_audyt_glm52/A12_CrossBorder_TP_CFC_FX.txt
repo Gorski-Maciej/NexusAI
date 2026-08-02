@@ -1,0 +1,173 @@
+═══════════════════════════════════════════════════════════════════════════════
+ PROMPT A12 — AUDYT PRAWNY: CROSS-BORDER + TP + CFC + FX + MDR/DAC6
+ Silnik reguł podatkowych OPA (JDG) — NexusAI
+ Cel: weryfikacja punkt-po-punkcie przepisów transgranicznych (WDT/WNT,
+ miejsce świadczenia usług, TP, CFC, FX, MDR/DAC6, rezydencja) w Rego.
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. ROLA I ZASADY PRACY
+───────────────────────────────────────────────────────────────────────────────
+ Audytor prawno-techniczny poziomu ENTERPRISE. NIE GENERUJ KODU — generujesz
+ WYŁĄCZNIE raport R12_CrossBorder_TP_CFC_FX.txt. Przeprować głębokie
+ myślenie i przeprować głęboką analizę nad każdym punktem. Budżet danych
+ ≤50% okna (500K z 1M). Na końcu: WYCZYŚĆ OKNO KONTEKSTOWE.
+
+ 2. PUNKTY PRAWNE DO WERYFIKACJI (z Bbb + luki)
+───────────────────────────────────────────────────────────────────────────────
+ • VAT transgraniczny: WDT (dostawa wewnątrzwspólnotowa, 0%), WNT (import,
+   samonaliczenie), miejsce świadczenia usług B2B (art. 28b), eksport/import
+   (art. 2 pkt 8), OSS/IOSS.
+ • TP (ceny transferowe): dokumentacja lokalna/prorodzinna (limit 10 mln zł
+   przychodów), analiza porównawcza, safe harbour.
+ • CFC: zagraniczne spółki kontrolowane (limit 250 000 EUR przychodów).
+ • FX: kursy NBP, różnice kursowe (PIT art. 24c), rozliczanie w walucie.
+ • MDR/DAC6: schematy podatkowe, kamienie milowe (30 dni), hallmarks,
+   sankcje. • Rezydencja podatkowa (art. 3 PIT, centrum interesów).
+ • Podatek u źródła (WHT), umowy o unikaniu podwójnego opodatkowania.
+
+ 3. PLIKI DO PRZECZYTANIA (PRIORYTET 1)
+───────────────────────────────────────────────────────────────────────────────
+ Akty i referencje:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+ Reguły cross-border:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/plan23_ue.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/post_brexit.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/exit_tax_cfc_complete.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/crossborder/crossborder.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_cb.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/wdt_export_import.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/place_of_supply.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/place_of_supply_micro.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international_expanded.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_crossborder_rates.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p13_crossborder_innovations_v8.rego
+
+ Reguły TP/CFC/FX/MDR:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan44_tp.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan45_tp.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_tp.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cfc_auto_classifier.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fx/plan44_fx.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fx/plan45_fx.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/fx/plan45.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_hallmarks.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/plan44_mdr.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/plan45_mdr.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr_auto_generator.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr_dac6_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/exit_tax_mdr_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/exit_tax_interest_calculator.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/dac8_report_generator.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/residency/plan44_residency.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/residency/plan45_residency.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis/plan44_wis.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis/plan45_wis.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis_api_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis_autorequester_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cbam_full.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vida_drr_full.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cross_jurisdiction_ruling_enterprise.rego
+
+ Polisy (porównanie v1):
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/crossborder.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/international.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/crossborder.rego
+
+ Testy istniejące:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/micro/test_native_micro_crossborder.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_native_jdg_fx.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_native_mdr_dac6_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_native_exit_tax_mdr_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_akcyza_depreciation_mdr_exittax.rego
+
+ 4. METODYKA (skrót — pełna w R01)
+───────────────────────────────────────────────────────────────────────────────
+ Werdykt per punkt. Uwaga szczególna: (a) WDT — dokumenty (numer
+ wewnątrzwspólnotowy, dostawa do 90 dni, specyfikacja); (b) miejsce
+ świadczenia B2B/B2C — art. 28b; (c) TP — limity i progi dokumentacji;
+ (d) CFC — limit 250 000 EUR; (e) MDR — 30 dni na zgłoszenie schematu,
+ hallmarks; (f) FX — kurs NBP z dnia; (g) rezydencja — centrum interesów
+ życiowych. LEGAL_COVERAGE.md raportuje pokrycie <2% dla cross-border —
+ to krytyczna luka; każdy BRAK udokumentuj z artykułem.
+
+ 5. EKSTREMALNE PRZYPADKI TESTOWE (T1–T10 z R01) — min. 30
+───────────────────────────────────────────────────────────────────────────────
+ • WDT bez numeru kontrahenta — czy silnik blokuje 0%? (T4);
+ • dostawa 89. vs 91. dnia (limit 90 dni) (T3);
+ • usługa B2B niemiecki kontrahent — miejsce świadczenia Niemcy (T5);
+ • TP: przychód 9 999 999 vs 10 000 000 zł (limit dokumentacji) (T1);
+ • CFC: 249 999 vs 250 000 EUR (T1);
+ • MDR: kamień milowy 29. vs 31. dzień (T3);
+ • FX: faktura w EUR — kurs z dnia poprzedniego vs bieżącego (T3, T8);
+ • rezydencja: centrum interesów PL vs DE (T5, T9);
+ • konflikt crossborder vs micro/crossborder vs policies (T6, T7).
+
+ 6. FORMAT RAPORTU R12 — jak R02, plik R12_CrossBorder_TP_CFC_FX.txt
+───────────────────────────────────────────────────────────────────────────────
+ 1) Tabela punktów → reguły → werdykty. 2) Luki/błędy P0/P1/P2.
+ 3) 30+ przypadków T1-T10. 4) JDG/rules vs policies/. 5) Rekomendacje.
+ 6) ZALEŻNOŚCI DO INNYCH CZĘŚCI.
+
+ 7. WYMÓG POZIOMU ENTERPRISE (frazy ≥4 razy każda)
+───────────────────────────────────────────────────────────────────────────────
+ Przeprować głębokie myślenie nad WDT/WNT i dokumentami. Przeprować głębokie
+ myślenie nad miejscem świadczenia usług. Przeprować głębokie myślenie nad
+ TP i CFC i progami. Przeprować głębokie myślenie nad MDR i 30 dniami.
+ Przeprować głęboką analizę micro/crossborder. Przeprować głęboką analizę
+ mdr/ (4 pliki) i tp/ (2 pliki). Przeprować głęboką analizę fx i rezydencji.
+ Przeprować głęboką analizę różnic z policies/. Raport na zaawansowanym
+ poziomie Enterprise. Metodyka na zaawansowanym poziomie Enterprise. Testy
+ na zaawansowanym poziomie Enterprise. Rekomendacje na zaawansowanym
+ poziomie Enterprise. Poziom ENTERPRISE w niezawodności transgranicznej.
+ Poziom ENTERPRISE w audytowalności TP. Poziom ENTERPRISE w temporalności
+ kursów. Poziom ENTERPRISE w testach granicznych. Innowacyjne ulepszenia
+ wyprzedzające profesjonalistów w wykrywaniu luk cross-border (luka <2%).
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów w testach MDR.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów w koordynacji
+ cross-border↔VAT↔PIT. Innowacyjne ulepszenia wyprzedzające
+ profesjonalistów w weryfikacji umów o UPO.
+
+ 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+
+════════════════════════════════════════════════════════════════════════════════
+ WYMÓG POZIOMU ENTERPRISE — FRAZY OBOWIĄZKOWE (KAŻDA Z FRAZ >=4 WYSTĄPIENIA)
+════════════════════════════════════════════════════════════════════════════════
+
+ Przeprować głębokie myślenie — nad każdym punktem prawnym z pliku Bbb.
+ Przeprować głębokie myślenie — nad każdą regułą Rego i jej warunkami.
+ Przeprować głębokie myślenie — nad każdym przypadkiem testowym T1–T10.
+ Przeprować głębokie myślenie — nad każdą interakcją między domenami.
+
+ Przeprować głęboką analizę — treści normatywnej każdego artykułu.
+ Przeprować głęboką analizę — ścieżek routingu i werdyktów silnika.
+ Przeprować głęboką analizę — różnic JDG/rules vs policies/.
+ Przeprować głęboką analizę — kompletności testów dla każdej reguły.
+
+ Ten raport prezentuje zaawansowany poziom Enterprise — pełna audytowalność.
+ Metodyka weryfikacji to zaawansowany poziom Enterprise — każdy punkt ma dowód.
+ Przypadki testowe reprezentują zaawansowany poziom Enterprise — ekstremalne i graniczne.
+ Rekomendacje utrzymują zaawansowany poziom Enterprise — zero kompromisów.
+
+ Silnik ma osiągnąć poziom ENTERPRISE w każdej warstwie architektury.
+ Testy muszą reprezentować poziom ENTERPRISE — ekstremalne i graniczne.
+ Raport musi utrzymać poziom ENTERPRISE — pełna transparentność.
+ Wdrożenie rekomendacji to poziom ENTERPRISE — niezawodność bez wyjątków.
+
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w wykrywaniu luk prawnych.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w projektowaniu przypadków testowych.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w metodach weryfikacji reguła ↔ artykuł.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w architekturze systemu OPA.
+
+ BUDŻET: dane wejściowe ≤ 50% okna kontekstowego (500K z 1M); reszta okna
+ na głęboką analizę, weryfikację i generowanie raportu.
+════════════════════════════════════════════════════════════════════════════════

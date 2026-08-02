@@ -1,0 +1,69 @@
+═══════════════════════════════════════════════════════════════════════════════
+ R01_METODOLOGIA.txt — RAPORT Z WYKONANIA PROMPTU A01 (SESJA GLM 5.2)
+ Silnik reguł podatkowych OPA (JDG) — NexusAI | Data: 2026-08-02
+ Status: ✅ WDROŻONY | Okno kontekstowe: WYCZYŚĆ OKNO KONTEKSTOWE — wykonane
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. ZAKRES SESJI
+───────────────────────────────────────────────────────────────────────────────
+ Wykonano Prompt A01_Metodologia: wypracowano wspólną metodologię audytu
+ prawnego punkt-po-punkcie, używaną przez wszystkie sesje A02–A15.
+
+ 2. DEFINICJE USTALONE (obowiązują w R02–R15)
+───────────────────────────────────────────────────────────────────────────────
+ • PUNKT PRAWNY = jednostka redakcyjna aktu (art.→ust.→pkt→lit.), identyfikator
+   np. VAT:113:1:1, treść normatywna, zakres, konsekwencje.
+ • WERDYKT (4 klasy): [POKRYTE] reguła istnieje+poprawna+testowana;
+   [CZĘŚCIOWE] reguła istnieje, ale pomija część stanów/brzegów;
+   [BRAK] brak reguły; [SPRZECZNE] reguła błędna lub koliduje.
+ • Weryfikacja 5-etapowa: (a) istnienie, (b) poprawność warunków,
+   (c) kompletność (brzegi+temporalność), (d) spójność JDG/rules vs policies/,
+   (e) testy.
+
+ 3. TAKSONOMIA EKSTREMALNYCH PRZYPADKÓW TESTOWYCH (T1–T10)
+───────────────────────────────────────────────────────────────────────────────
+ T1 progi kwotowe (±1 grosz) | T2 stawki graniczne/nieprawidłowe (0, ujemne,
+ NaN, >100%) | T3 temporalność (przed/na/po valid_from/valid_to, zmiana
+ stawek w roku) | T4 stany niedookreślone (brak pola, null, pusta tablica,
+ brak _legal_basis) | T5 sprzeczności między-ustawowe | T6 konflikty reguł
+ (else-chain, sharded router) | T7 duplikaty rule_id + stuby { true } |
+ T8 marże i zaokrąglenia (0,01 zł, prorata) | T9 kumulacja ulg/zwolnień |
+ T10 routing (trust_score 0,919/0,920/0,921 — próg AUTO_POST).
+
+ 4. LISTA KONTROLNA (checklist 20) — wyciąg
+───────────────────────────────────────────────────────────────────────────────
+ C01 _legal_basis niepuste | C02 rule_id unikalne | C03 brak { true } |
+ C04 brak hardcode'u stawek (thresholds) | C05 temporalność obsłużona |
+ C06 brak else-chain martwego kodu | C07 brak konfliktu macro/micro |
+ C08 brak rozjazdu z policies/ | C09 test pozytywny istnieje |
+ C10 test negatywny istnieje | C11 progi zewnętrzne (data.thresholds) |
+ C12 routing READY/ASK_USER zamiast undefined | C13 werdykt 25-polowy |
+ C14 provenance | C15 safe_merge przy konflikcie | C16 brak duplikatu
+ rule_id | C17 brak martwej reguły matched:false | C18 brak stuba w
+ pakietach enterprise | C19 zgodność z aktem (artykuł) | C20 certyfikat
+ ENTERPRISE-CERTIFIED przed AUTO_POST.
+
+ 5. PUSTAWKI I RYZYKA SYSTEMOWE (wykryte globalnie, do rozwinięcia w R14)
+───────────────────────────────────────────────────────────────────────────────
+ • 512 stubów { true } w 140 plikach (0 oznaczonych CHECKPOINT-STUB) — bomby
+   logiczne przy AUTO_POST.
+ • 369 duplikatów rule_id (MANIFEST) — ryzyko konfliktów else-chain.
+ • 253 reguły matched:false (martwe warstwy, np. PKPiR 56).
+ • OPA NIE ZAINSTALOWANE — kompilacja 406 plików niezweryfikowana end-to-end.
+ • Rozjazd metryk: README (383 plików, 90–100%) vs dysk (406) vs
+   COVERAGE_REPORT (8%) vs LEGAL_COVERAGE (A=31%) — brak jednej wersji prawdy.
+ • policies/ to osobna, starsza kopia reguł — porównanie per domena w R02–R14.
+
+ 6. ZALEŻNOŚCI DO INNYCH CZĘŚCI (kontrakty dla A02–A15)
+───────────────────────────────────────────────────────────────────────────────
+ • Format raportów R02–R15: sekcje 1) tabela punktów→reguły→werdykty,
+   2) luki P0/P1/P2 z dowodem, 3) testy T1–T10, 4) JDG/rules vs policies/,
+   5) rekomendacje ENTERPRISE (słownie), 6) ZALEŻNOŚCI.
+ • Wszystkie sesje kończą się: WYCZYŚĆ OKNO KONTEKSTOWE.
+ • R15_Synteza konsumuje WYŁĄCZNIE raporty R01–R14 (nie pliki źródłowe).
+
+ 7. WNIOSEK SESJI
+───────────────────────────────────────────────────────────────────────────────
+ Metodologia gotowa i utrwalona. Seria A01–A15 może być wykonywana sekwencyjnie.
+ Status: ✅ WDROŻONY — WYCZYŚĆ OKNO KONTEKSTOWE — przejście do A02.
+═══════════════════════════════════════════════════════════════════════════════

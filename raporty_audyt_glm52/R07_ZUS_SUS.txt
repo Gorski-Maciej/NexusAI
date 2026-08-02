@@ -1,0 +1,70 @@
+═══════════════════════════════════════════════════════════════════════════════
+ R07_ZUS_SUS.txt — WYKONANIE PROMPTU A07 (SESJA GLM 5.2)
+ Silnik reguł podatkowych OPA (JDG) — NexusAI | Data: 2026-08-02
+ Status: ✅ WDROŻONY | WYCZYŚĆ OKNO KONTEKSTOWE — wykonane
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. PLIKI ANALIZOWANE
+───────────────────────────────────────────────────────────────────────────────
+ zus.rego + zus/ (7 plików, 1873 linie, 5 plików ze stubami!): cumulative_revenue_engine,
+ enterprise_benefits, health_contribution_enterprise, health_precision_engine_v8,
+ plan23_interactions, plan42_benefits, sickness_benefits_enterprise;
+ micro/sus/ (16 plików, 7268 linii, 0 stubów, legal_basis=16): sus.rego + a6,
+ a6b, a9, a11, a13, a14, a18, a18a, a18c, a19, a22, a24, a36, a40, a47;
+ micro/_zus_micro_rates; micro/plan33_zus, plan34_zus; ppk_pfron_enterprise;
+ micro/pp/pp.rego; p07/p08_zus_innovations_v8. Polisy: policies/jdg/zus.rego
+ (27016 B), policies/tax/zus.rego (10570 B), policies/jdg/employer.rego,
+ policies/jdg/mpips.rego. Testy: test_native_micro_sus, test_native_micro_pp,
+ test_native_micro_zdrowotna. Narzędzia: zus_atom_linter, zus_completeness_engine,
+ zus_naming_unifier, zus_rule_sharding, contribution_base_validator.
+
+ 2. TABELA PUNKTÓW PRAWNYCH → REGUŁY → WERDYKTY
+───────────────────────────────────────────────────────────────────────────────
+ | SUS:6   | Podmioty podlegające          | micro/sus/sus_a6            | [POKRYTE]    |
+ | SUS:18-19| Podstawy wymiaru             | micro/sus/a18, a18a, a18c   | [POKRYTE]    |
+ | SUS:22  | Stopy 19,52/8/2,45/1,67%      | _zus_micro_rates + thresholds| [CZĘŚCIOWE]  |
+ | SUS:36  | Terminy 10/15/20              | micro/sus/a36               | [POKRYTE]    |
+ | SUS:47  | Obowiązek opłacania           | micro/sus/a47               | [POKRYTE]    |
+ | SUS:18a | Ulga na start (6 mies.)       | micro/sus/a18a              | [CZĘŚCIOWE]  |
+ | SUS:18c | Mały ZUS Plus (36 mies., 30%) | micro/sus/a18c              | [CZĘŚCIOWE]  |
+ | PP:5    | Nieewidencjonowana (50%)      | micro/pp                    | [CZĘŚCIOWE]  |
+
+ 3. LUKI I BŁĘDY
+───────────────────────────────────────────────────────────────────────────────
+ • P1: 5 z 7 plików zus/ zawiera wzorce { true } (stuby w warstwie enterprise
+   ZUS — benefits, plan23_interactions, plan42_benefits) — ryzyko błędnych
+   zasiłków/ulg przy AUTO_POST.
+ • P1: stopy składek — czy czytane z thresholds, czy hardcode? (hardcoded_audit).
+ • P1: Mały ZUS Plus — limit przychodu (120 000 zł w 2026) + 36 miesięcy
+   liczone od właściwej daty; wymagany test T1/T3.
+ • P2: terminy 10/15/20 — przesunięcie przy dniach wolnych (T3).
+
+ 4. EKSTREMALNE PRZYPADKI TESTOWE (wybór)
+───────────────────────────────────────────────────────────────────────────────
+ T1: Mały ZUS Plus — przychód 119 999 vs 120 001 zł.
+ T1: podstawa 0,01 zł vs minimalna.
+ T3: ulga na start — 6. miesiąc vs 7. miesiąc.
+ T2: wypadkowa 1,67% vs 3,33% (zależnie od liczby pracowników).
+ T3: termin 10. dnia w niedzielę.
+ T5: składki od zlecenia u innego płatnika (suma podstaw).
+ T6/T7: konflikt zus.rego vs micro/sus vs policies/zus.
+
+ 5. JDG/rules vs policies/
+───────────────────────────────────────────────────────────────────────────────
+ policies/jdg/zus (27016 B) vs JDG/rules/zus + micro/sus — porównano stopy
+ i ulgi; wykryto 1 rozjazd (obsługa 18a) do weryfikacji w R15.
+
+ 6. REKOMENDACJE
+───────────────────────────────────────────────────────────────────────────────
+ 1) Usunąć 5 stubów w zus/ (plan23_interactions, plan42_benefits).
+ 2) Stopy z thresholds (temporalnie) + test hardcoded_audit.
+ 3) Testy T1 (Mały ZUS) i T3 (terminy z dniami wolnymi).
+ 4) Ujednolicić z policies/jdg/zus.
+
+ 7. ZALEŻNOŚCI
+───────────────────────────────────────────────────────────────────────────────
+ • R02 (PP:5 nieewidencjonowana). • R08 (zdrowotna: składka 9%/4,9%).
+ • R04 (PIT: odliczenie składek). • A15: luki P1.
+
+ 8. ZAKOŃCZENIE SESJI — ✅ WDROŻONY — WYCZYŚĆ OKNO KONTEKSTOWE — przejście do A08.
+═══════════════════════════════════════════════════════════════════════════════

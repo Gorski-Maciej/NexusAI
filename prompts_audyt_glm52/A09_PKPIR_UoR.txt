@@ -1,0 +1,170 @@
+═══════════════════════════════════════════════════════════════════════════════
+ PROMPT A09 — AUDYT PRAWNY: UoR + PKPiR + EWIDENCJE
+ Silnik reguł podatkowych OPA (JDG) — NexusAI
+ Cel: weryfikacja punkt-po-punkcie ustawy o rachunkowości, rozporządzenia o
+ PKPiR i ewidencji przychodów w regułach Rego (obszar z "martwą warstwą").
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. ROLA I ZASADY PRACY
+───────────────────────────────────────────────────────────────────────────────
+ Audytor prawno-techniczny poziomu ENTERPRISE. NIE GENERUJ KODU — generujesz
+ WYŁĄCZNIE raport R09_PKPIR_UoR.txt. Przeprować głębokie myślenie i
+ przeprować głęboką analizę nad każdym punktem. Budżet danych ≤50% okna
+ (500K z 1M). Na końcu: WYCZYŚĆ OKNO KONTEKSTOWE.
+
+ 2. PUNKTY PRAWNE DO WERYFIKACJI (z Bbb)
+───────────────────────────────────────────────────────────────────────────────
+ • UoR art. 2 (jednostki zobowiązane), art. 4 (zasady rachunkowości: memoriał,
+   współmierność, ostrożność), art. 20-21 (dowody księgowe), art. 22
+   (podwójny zapis), art. 26 (inwentaryzacja), art. 28 (wycena), art. 32
+   (amortyzacja), art. 74 (przechowywanie dokumentacji — 5 lat). Progi UoR:
+   2 000 000 EUR przychodów / 50 zatrudnionych.
+ • Rozporządzenie MF 15.11.2025 — PKPiR (struktura, kolumny 1-17).
+ • PIT art. 24a — obowiązek PKPiR dla skali i liniowego.
+ • Ustawa o ryczałcie art. 15 — ewidencja przychodów ryczałtowców.
+ • VAT art. 109 — rejestry sprzedaży i zakupów.
+
+ 3. PLIKI DO PRZECZYTANIA (PRIORYTET 1)
+───────────────────────────────────────────────────────────────────────────────
+ Akty i referencje:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+ Reguły PKPiR:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_kolumny.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_korekty.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_koszty.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_nkup.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_przychody.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_remanent.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_live.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_validation.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_validator.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pkpir_rates.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p11_accounting_pkpir_innovations_v8.rego
+
+ Reguły UoR:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/uor/uor.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_assets.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_books.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_closing.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_costs.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_financial_stmt.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_inventory.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_obligation.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_revenue.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/plan42_uor.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/uor_enterprise_live.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/depreciation_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/depreciation_enterprise_complete.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/plan23_leasing.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/plan42_pkpir.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_uor_rates.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pkpir_to_uor_transformer.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p12_uor_innovations_v8.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_uor_supplement.rego
+
+ Polisy (porównanie v1):
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/accounting.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/accounting.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/uor_books.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/uor_reports.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/uor_valuation.rego
+
+ Testy istniejące:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/micro/test_native_micro_pkpir.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/micro/test_native_micro_uor.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_native_jdg_uor.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_uor_books.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_uor_inventory_closing_fs.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_uor_obligation.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_uor_revenue_costs_assets.rego
+
+ 4. METODYKA (skrót — pełna w R01)
+───────────────────────────────────────────────────────────────────────────────
+ Werdykt per punkt. UWAGA KRYTYCZNA: LEGAL_COVERAGE.md raportuje "martwą
+ warstwę PKPiR" (56 reguł matched:false). Twoim zadaniem jest zweryfikować,
+ które reguły micro/pkpir nigdy nie są wywoływane (martwy kod) i dlaczego.
+ Sprawdź też: (a) progi UoR 2 mln EUR — czy reguła istnieje i jest
+ temporalna? (b) kolumny PKPiR 1-17 — czy każda kolumna ma regułę walidacji?
+ (c) remanent — czy reguła liczy końcowy i początkowy poprawnie? (d) memoriał
+ vs kasowy w PKPiR (kasowy dla przychodów, memoriał dla kosztów? — wg
+ rozporządzenia).
+
+ 5. EKSTREMALNE PRZYPADKI TESTOWE (T1–T10 z R01) — min. 30
+───────────────────────────────────────────────────────────────────────────────
+ • przychód 1 999 999 vs 2 000 000 EUR (próg UoR) (T1);
+ • kolumna 13 PKPiR — korekta ujemna (T4, T8);
+ • remanent początkowy vs końcowy (T9);
+ • dowód księgowy bez daty (T4);
+ • leasing operacyjny vs finansowy w PKPiR (T5, T9);
+ • inwentaryzacja co 4 lata (T3);
+ • martwa reguła: wywołanie matched:false — udokumentuj ścieżkę (T7);
+ • konflikt micro/pkpir vs accounting vs policies/accounting (T6, T7).
+
+ 6. FORMAT RAPORTU R09 — jak R02, plik R09_PKPIR_UoR.txt
+───────────────────────────────────────────────────────────────────────────────
+ 1) Tabela punktów → reguły → werdykty. 2) Luki/błędy P0/P1/P2 (w tym lista
+ martwych reguł PKPiR). 3) 30+ przypadków T1-T10. 4) JDG/rules vs policies/.
+ 5) Rekomendacje. 6) ZALEŻNOŚCI DO INNYCH CZĘŚCI.
+
+ 7. WYMÓG POZIOMU ENTERPRISE (frazy ≥4 razy każda)
+───────────────────────────────────────────────────────────────────────────────
+ Przeprować głębokie myślenie nad martwą warstwą PKPiR — to największe
+ niedociągnięcie tej domeny. Przeprować głębokie myślenie nad progami UoR.
+ Przeprować głębokie myślenie nad kolumnami PKPiR 1-17. Przeprować głębokie
+ myślenie nad remanentem i inwentaryzacją. Przeprować głęboką analizę
+ micro/pkpir (7 plików) w całości. Przeprować głęboką analizę uor/ (10
+ plików). Przeprować głęboką analizę matched:false i ścieżek wywołań.
+ Przeprować głęboką analizę różnic z policies/. Raport na zaawansowanym
+ poziomie Enterprise. Metodyka na zaawansowanym poziomie Enterprise. Testy
+ na zaawansowanym poziomie Enterprise. Rekomendacje na zaawansowanym
+ poziomie Enterprise. Poziom ENTERPRISE w niezawodności księgowości.
+ Poziom ENTERPRISE w audytowalności zapisów. Poziom ENTERPRISE w
+ temporalności progów. Poziom ENTERPRISE w testach granicznych.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów w wykrywaniu
+ martwego kodu. Innowacyjne ulepszenia wyprzedzające profesjonalistów w
+ testach kolumn PKPiR. Innowacyjne ulepszenia wyprzedzające
+ profesjonalistów w koordynacji PKPiR↔VAT↔PIT. Innowacyjne ulepszenia
+ wyprzedzające profesjonalistów w weryfikacji rozporządzenia o PKPiR.
+
+ 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+
+════════════════════════════════════════════════════════════════════════════════
+ WYMÓG POZIOMU ENTERPRISE — FRAZY OBOWIĄZKOWE (KAŻDA Z FRAZ >=4 WYSTĄPIENIA)
+════════════════════════════════════════════════════════════════════════════════
+
+ Przeprować głębokie myślenie — nad każdym punktem prawnym z pliku Bbb.
+ Przeprować głębokie myślenie — nad każdą regułą Rego i jej warunkami.
+ Przeprować głębokie myślenie — nad każdym przypadkiem testowym T1–T10.
+ Przeprować głębokie myślenie — nad każdą interakcją między domenami.
+
+ Przeprować głęboką analizę — treści normatywnej każdego artykułu.
+ Przeprować głęboką analizę — ścieżek routingu i werdyktów silnika.
+ Przeprować głęboką analizę — różnic JDG/rules vs policies/.
+ Przeprować głęboką analizę — kompletności testów dla każdej reguły.
+
+ Ten raport prezentuje zaawansowany poziom Enterprise — pełna audytowalność.
+ Metodyka weryfikacji to zaawansowany poziom Enterprise — każdy punkt ma dowód.
+ Przypadki testowe reprezentują zaawansowany poziom Enterprise — ekstremalne i graniczne.
+ Rekomendacje utrzymują zaawansowany poziom Enterprise — zero kompromisów.
+
+ Silnik ma osiągnąć poziom ENTERPRISE w każdej warstwie architektury.
+ Testy muszą reprezentować poziom ENTERPRISE — ekstremalne i graniczne.
+ Raport musi utrzymać poziom ENTERPRISE — pełna transparentność.
+ Wdrożenie rekomendacji to poziom ENTERPRISE — niezawodność bez wyjątków.
+
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w wykrywaniu luk prawnych.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w projektowaniu przypadków testowych.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w metodach weryfikacji reguła ↔ artykuł.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w architekturze systemu OPA.
+
+ BUDŻET: dane wejściowe ≤ 50% okna kontekstowego (500K z 1M); reszta okna
+ na głęboką analizę, weryfikację i generowanie raportu.
+════════════════════════════════════════════════════════════════════════════════

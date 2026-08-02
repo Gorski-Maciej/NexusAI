@@ -1,0 +1,121 @@
+═══════════════════════════════════════════════════════════════════════════════
+ RAPORT ANALITYCZNY NA ZAAWANSOWANYM POZIOMIE ENTERPRISE — MODUŁ JDG
+ (SILNIK REGUŁ PODATKOWYCH OPA) — STRESZCZENIE WYKONAWCZE NA POZIOMIE ENTERPRISE
+ CZY MODUŁ JDG ZASTĄPI KSIĘGOWEGO?
+ Data: 2026-08-02 | Źródło: analiza katalogu JDG (406 plików rego + tools + docs)
+ ═══════════════════════════════════════════════════════════════════════════════
+
+■ CEL RAPORTU
+Odpowiedź na 3 pytania biznesowe:
+  1. Czy moduł JDG pokryje pracę księgowego?
+  2. Czy w razie braku 100% zastąpienia pracodawca wykona "te pare kliknięć"
+     bez problemu?
+  3. Czy reguły pokrywają wszystkie przepisy prawne ze wszystkich aktów/ustaw?
+Oraz: projekt rozbudowanej, inteligentnej sieci reguł na zaawansowanym poziomie
+Enterprise (pełna architektura w raporcie 04).
+
+───────────────────────────────────────────────────────────────────────────────
+■ KLUCZOWE LICZBY (zweryfikowane na dysku, nie z README)
+───────────────────────────────────────────────────────────────────────────────
+  Pliki rego w rules/ ............ 406   (README deklaruje 383 — rozbieżność!)
+  Testy rego .................... 103
+  Wszystkie pliki rego .......... 509
+  Linie kodu rego ............... 262 411  (~13,1 MB)
+  Unikalne rule_id .............. 10 509  (MANIFEST)
+  Duplikaty rule_id ............. 369
+  Stuby "{ true }" .............. 512 bloków w 140 plikach (0 oznaczonych)
+  matched:true .................. 7 560   (w tym micro: 5 166)
+  matched:false ................. 253     (w tym micro: 81)
+  Completeness Score ............ 78/100  (MANIFEST)
+  Aktualność manifestu .......... 53/100
+  Routing ....................... 62%
+  Pakiety w orkiestratorze ...... 154 importów w main_jdg.rego
+  Pliki z niepustą podstawą praw 217
+
+───────────────────────────────────────────────────────────────────────────────
+■ POKRYCIE PRAWNE (wg własnych raportów modułu — sprzeczne z README)
+───────────────────────────────────────────────────────────────────────────────
+  COVERAGE_REPORT.md (auto-generowany):
+     509 punktów prawnych przeanalizowanych  →  44 pokryte (8%)
+                                              465 brakujących (91%)
+  LEGAL_COVERAGE.md (1935 punktów w 13 aktach):
+     Klasa A (gotowe, z testami) ............ ~31%  (600 pkt)
+     Klasa B (szkielety) .................... ~57%  (1 100 pkt)
+     Klasa C (planowane) .................... ~12%  (235 pkt)
+  Największe luki: PCC+lokalne+akcyza ~1%, UoR ~0-85% (martwa warstwa PKPiR),
+  cross-border/TP <2%, AML/RODO/BDO ~5%, SUS ~15%, ryczałt ~20%.
+  ⚠ README deklaruje per akt 90-100% pokrycia — to zaprzecza powyższym
+    raportom tego samego modułu. README jest aspiracyjny; COVERAGE_REPORT
+    i LEGAL_COVERAGE są wiarygodniejsze (auto-generowane, z datami).
+
+───────────────────────────────────────────────────────────────────────────────
+■ WNIOSKI W SKRÓCIE
+───────────────────────────────────────────────────────────────────────────────
+  ✅ MOCNE STRONY: imponująca architektura (ADR-001..015, Multi-Pass,
+     Sharded Router, safe_merge, temporalność, thresholdy, werdykty
+     25-polowe, provenance), duża objętość realnej logiki w VAT (1091 bloków),
+     PIT (811), KKS (473), Ordynacja (423), KSeF/JPK, optymalizacje
+     Enterprise (S1-S24, neural mesh).
+
+  ❌ SŁABE STRONY (blokady 100% zastąpienia księgowego):
+     1. 512 stubów "{ true }" — reguły, które odpowiadają "match" na wszystko;
+        w trybie AUTO_POST mogłyby generować błędne decyzje.
+     2. Pokrycie prawne ~8-31% (wg COVERAGE_REPORT/LEGAL_COVERAGE).
+     3. OPA NIE JEST ZAINSTALOWANE w środowisku — nie można dziś uruchomić
+        "opa check" / "opa test" na 406 plikach; kompilacja całości
+        NIEZVERYFIKOWANA.
+     4. Brak spójności metryk: 383 vs 406 plików, README 90-100% vs 8-31%.
+     5. 369 duplikatów rule_id, 253 reguły z matched:false (martwe).
+     6. Integracja z aplikacją w toku (mcp_server.py, bundle_manager.py),
+        brak UI kliknięć w samym module JDG.
+
+───────────────────────────────────────────────────────────────────────────────
+■ ODPOWIEDZI WPROST
+───────────────────────────────────────────────────────────────────────────────
+  PYT. 1 — Czy JDG pokryje pracę księgowego?
+  ODP.  Nie w 100% dziś. Realistycznie: ~30% klasy A + duża warstwa makro.
+        Silnik doskonale radzi sobie z decyzjami podatkowo-składkowymi
+        (stawki, KUP, zaliczki, składki), ale nie pokrywa całości przepisów
+        i nie jest zweryfikowany end-to-end.
+
+  PYT. 2 — Czy pracodawca wykona "pare kliknięć" bez problemu?
+  ODP.  Mechanizm istnieje: AUTO_POST (≥0.92, 0 kliknięć), SUGGEST
+        (0.75-0.92, 1 klik), ASK_USER (<0.75, 2-3 kliknięcia). Jednak:
+        - to cel projektowy, nie pomiar (routing realnie 62%);
+        - 512 stubów { true } to ryzyko błędnych AUTO_POST;
+        - bez UI (którego w module nie ma) nie ma "kliknięć" w ogóle.
+        Konkluzja: KLIKNIĘCIA BĘDĄ MOŻLIWE, ale dopiero po wdrożeniu
+        (1) czyszczenia stubów, (2) OPA + testów, (3) UI, (4) kalibracji
+        trust-score na danych rzeczywistych.
+
+  PYT. 3 — Czy reguły pokrywają wszystkie przepisy?
+  ODP.  NIE. Wg własnych raportów modułu: 44/509 punktów Doc 50 (8%),
+        klasa A ~31%, 512 stubów, ~57% szkieletów klasy B. Reguły pokrywają
+        większość KLUCZOWYCH decyzji makro, ale NIE wszystkie przepisy
+        ze wszystkich aktów z pliku Bbb.
+
+───────────────────────────────────────────────────────────────────────────────
+■ CZEGO BRAKUJE DO "ZASTĄPIENIA KSIĘGOWEGO" (TOP 7)
+───────────────────────────────────────────────────────────────────────────────
+  1. Instalacja OPA + "opa check"/"opa test" na całości — twardy test
+     "czy to w ogóle działa".
+  2. Eliminacja 512 stubów { true } (reguły bez warunków) — przed trybem
+     AUTO_POST.
+  3. Domknięcie luk: PCC/lokalne/akcyza, UoR/PKPiR, cross-border, AML/BDO/RODO.
+  4. Ujednolicenie metryk (406 plików, pokrycie A/B/C) — jedna wersja prawdy.
+  5. Deduplikacja 369 rule_id + usunięcie 253 martwych reguł.
+  6. Kalibracja trust-score na realnych werdyktach + UI decyzji.
+  7. Testy E2E: dokument → decyzja → deklaracja → wysyłka.
+
+───────────────────────────────────────────────────────────────────────────────
+■ REKOMENDACJA STRATEGICZNA
+───────────────────────────────────────────────────────────────────────────────
+  Moduł JDG to NAJLEPSZY możliwy fundament silnika księgowości JDG.
+  W modelu współpracy "silnik + księgowy nadzorca" może już dziś
+  odciążyć księgowego w ~50-70% rutynowych decyzji. Do pełnej
+  automatyzacji (AUTO_POST ≥85% decyzji, zero lub jedno kliknięcie)
+  potrzeba ~4-8 tygodni pracy wg mapy drogowej (patrz raport 05).
+
+───────────────────────────────────────────────────────────────────────────────
+ Plik: 00_STRESZCZENIE.txt | Część 0 z 6 | Pełne analizy: 01-06
+ ═══════════════════════════════════════════════════════════════════════════════

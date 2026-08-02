@@ -1,0 +1,101 @@
+═══════════════════════════════════════════════════════════════════════════════
+ RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 3
+ CZY PRACODAWCA WYKONA "TE PARE KLIKNIĘĆ" BEZ PROBLEMU?
+ ANALIZA TRYBÓW AUTOMATYZACJI I DECYZJI UŻYTKOWNIKA
+ Data: 2026-08-02 | Źródło: routing.rego, risk.rego, adaptive_trust_score.py
+ ═══════════════════════════════════════════════════════════════════════════════
+
+───────────────────────────────────────────────────────────────────────────────
+ 1. JAK DZIAŁA MECHANIZM "KLIKNIĘĆ" (STAN PROJEKTOWY)
+───────────────────────────────────────────────────────────────────────────────
+  README deklaruje 3 tryby decyzji wg trust score:
+
+  | Tryb       | Trust score | % decyzji (cel) | Kliknięcia | Zachowanie                     |
+  |------------|------------:|----------------:|:----------:|--------------------------------|
+  | AUTO_POST  | ≥ 0.92      | ~85%            | ZERO       | decyzja wykonana automatycznie |
+  | SUGGEST    | 0.75–0.92   | ~10-12%         | 1 klik     | propozycja do zatwierdzenia    |
+  | ASK_USER   | < 0.75      | ~3-5%           | 2-3 klikn. | pytanie z opcjami              |
+
+  Implementacja w regułach (zweryfikowana):
+  • risk.rego: trust_score kontrahenta; <0.40 → BLOCK_AND_ALERT,
+    0.40-0.75 → TRIAGE_QUEUE, 0.75-0.92 → TRIAGE (poniżej auto-post),
+    ≥0.92 → AUTO_POST.
+  • routing.rego: pewność OCR per forma (P10-P19): niska pewność stawki VAT
+    na skali → BLOCK_AND_ALERT; niska pewność NIP → BLOCK; globalna
+    pewność <0.70 → TRIAGE_QUEUE.
+  • adaptive_trust_score.py: uczy progi (0.88-0.97) z historycznych werdyktów.
+  • neural_mesh_v2: konflikt między domenami → override AUTO_POST → SUGGEST.
+
+───────────────────────────────────────────────────────────────────────────────
+ 2. STAN FAKTYCZNY NA DYSKU (CO ZNALEZIONO W REGO)
+───────────────────────────────────────────────────────────────────────────────
+  Wystąpienia w całym katalogu JDG/rules:
+    BLOCK_AND_ALERT ............ 1 204
+    TRIAGE_QUEUE ............... 1 146
+    SUGGEST .................... 5
+    AUTO_POST .................. 1
+  → W regułach DOMINUJE model bezpieczeństwa (BLOCK/TRIAGE) — słusznie:
+    lepiej zapytać niż popełnić błąd. Ale cel README (~85% AUTO_POST)
+    NIE jest osiągnięty w kodzie — występuje dosłownie 1 raz.
+
+───────────────────────────────────────────────────────────────────────────────
+ 3. CO OZNACZA TO DLA PRACODAWCY ("PARE KLIKNIĘĆ")
+───────────────────────────────────────────────────────────────────────────────
+  SCENARIUSZ OPTYMISTYCZNY (po wdrożeniu 04-05):
+    • ~85% decyzji AUTO_POST → 0 kliknięć (codzienna księgowość działa sama)
+    • ~10-12% SUGGEST → 1 klik („Zatwierdź") — proste, bezpieczne
+    • ~3-5% ASK_USER → 2-3 kliknięcia z jasnymi opcjami w języku prostym
+    → Pracodawca wykonuje ~15 kliknięć dziennie zamiast pracy księgowego.
+      To REALNE i wykonalne, bo pytania ASK_USER dotyczą jednej decyzji
+      (np. „Czy to była dostawa towaru, czy usługa?") z opisem skutków.
+
+  SCENARIUSZ REALNY (stan dziś, bez wdrożenia):
+    • 512 stubów { true } może produkować BŁĘDNE AUTO_POST lub odwrotnie —
+      wymuszać pytania przy oczywistych decyzjach.
+    • Brak OPA (niezainstalowany) → brak działania w ogóle.
+    • Brak UI → „kilka kliknięć" nie ma gdzie się odbyć.
+    → Pracodawca NIE wykona dziś "pare kliknięć bez problemu", bo system
+      nie jest uruchomiony end-to-end.
+
+───────────────────────────────────────────────────────────────────────────────
+ 4. CO MUSI POWSTAĆ, ABY "KLIKNIĘCIA" BYŁY BEZPROBLEMOWE (ENTERPRISE)
+───────────────────────────────────────────────────────────────────────────────
+  C1. Panel decyzji (UI): lista decyzji oczekujących z trust score,
+      uzasadnieniem (_legal_basis), skutkiem i ryzykiem — w 1 ekranie.
+  C2. Reguła "jeden klik": SUGGEST domyślnie wybrany; przycisk "Zatwierdź
+      wszystkie podobne" (decyzje o identycznym wzorcu).
+  C3. Zrozumiały język: ASK_USER w prostych słowach + wyjaśnienie
+      „co się stanie, jeśli źle kliknę" (ryzyko korekty, odsetek, KKS).
+  C4. Bezpieczny fallback: brak odpowiedzi w 72h → decyzja konserwatywna
+      (BLOCK z powiadomieniem) — nigdy błędna automatyczna.
+  C5. Kalibracja: adaptive trust score na realnych werdyktach (1000+ decyzji)
+      → realne progi AUTO_POST/SUGGEST/ASK_USER per domena (VAT/PIT/ZUS/KKS).
+  C6. Eliminacja stubów { true } (512) — warunek konieczny przed AUTO_POST.
+  C7. Próg bezpieczeństwa: AUTO_POST tylko dla domen z certyfikatem
+      zero-defect (legal_basis + temporal + test + unique rule_id + brak
+      hardcode + routing valid) — narzędzie zero_defect_certification.py
+      już istnieje i to umożliwia.
+
+───────────────────────────────────────────────────────────────────────────────
+ 5. REKOMENDACJA — PROGOWY MODEL DECYZJI DLA PRACODAWCY
+───────────────────────────────────────────────────────────────────────────────
+  Docelowy model "3 poziomy zaufania" (prosty dla użytkownika):
+    ✅ ZIELONY (AUTO_POST) — „NexusAI już to zaksięgował. Zobacz podgląd."
+    🟡 ŻÓŁTY (SUGGEST)     — „Potwierdź: [1 przycisk] / [Podgląd] / [Zmień]"
+    🔴 CZERWONY (ASK_USER) — „Potrzebna Twoja decyzja: A/B/C + dlaczego"
+  Każdy poziom ma dokładnie 1 akcję domyślną → nawet 10 decyzji dziennie
+  to ≤10 kliknięć, a z C2 nawet 2-3 kliknięcia.
+
+───────────────────────────────────────────────────────────────────────────────
+ 6. WNIOSEK CZĘŚCI 3
+───────────────────────────────────────────────────────────────────────────────
+  Mechanizm "kilka kliknięć" jest ZAPROJEKTOWANY poprawnie (AUTO_POST /
+  SUGGEST / ASK_USER z trust score i routingiem bezpieczeństwa), ale na
+  dziś w kodzie dominują BLOCK/TRIAGE (2 350 wystąpień), AUTO_POST = 1,
+  a brak OPA i UI uniemożliwia realne kliknięcia. Po domknięciu C1-C7
+  (w tym eliminacji 512 stubów) pracodawca będzie w stanie obsłużyć
+  dzienne decyzje w 0-10 kliknięciach — bez problemu i bez ryzyka.
+
+───────────────────────────────────────────────────────────────────────────────
+ Plik: 03_PARE_KLIKNIEC.txt | Część 3 z 6
+ ═══════════════════════════════════════════════════════════════════════════════

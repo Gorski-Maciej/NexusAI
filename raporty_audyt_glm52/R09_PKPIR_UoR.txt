@@ -1,0 +1,76 @@
+═══════════════════════════════════════════════════════════════════════════════
+ R09_PKPIR_UoR.txt — WYKONANIE PROMPTU A09 (SESJA GLM 5.2)
+ Silnik reguł podatkowych OPA (JDG) — NexusAI | Data: 2026-08-02
+ Status: ✅ WDROŻONY | WYCZYŚĆ OKNO KONTEKSTOWE — wykonane
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. PLIKI ANALIZOWANE
+───────────────────────────────────────────────────────────────────────────────
+ micro/pkpir/ (7 plików, 1534 linie, 6 plików ze stubami!): pkpir.rego,
+ pkpir_kolumny, pkpir_korekty, pkpir_koszty, pkpir_nkup, pkpir_przychody,
+ pkpir_remanent; accounting/pkpir_enterprise_live, pkpir_enterprise_validation,
+ pkpir_enterprise_validator; _pkpir_rates; p11_accounting_pkpir_innovations_v8;
+ uor/ (9 plików, 3834 linie, 0 stubów): uor_assets, uor_books, uor_closing,
+ uor_costs, uor_financial_stmt, uor_inventory, uor_obligation, uor_revenue,
+ plan42_uor; micro/uor/uor.rego; accounting/uor_enterprise_live,
+ depreciation_enterprise, depreciation_enterprise_complete, plan23_leasing,
+ plan42_pkpir; _uor_rates; pkpir_to_uor_transformer; p12_uor_innovations_v8;
+ p33_uor_supplement. Polisy: policies/jdg/accounting.rego (67730 B),
+ policies/tax/accounting.rego, policies/tax/uor_books/reports/valuation.
+ Testy: test_native_micro_pkpir, test_native_micro_uor, test_native_jdg_uor,
+ test_uor_books, test_uor_inventory_closing_fs, test_uor_obligation,
+ test_uor_revenue_costs_assets.
+
+ 2. TABELA PUNKTÓW PRAWNYCH → REGUŁY → WERDYKTY
+───────────────────────────────────────────────────────────────────────────────
+ | UoR:2   | Jednostki zobowiązane         | uor/uor_obligation          | [CZĘŚCIOWE]  |
+ | UoR:4   | Zasady rachunkowości          | uor/uor_books               | [POKRYTE]    |
+ | UoR:20-22| Dowody, podwójny zapis       | uor/uor_books               | [POKRYTE]    |
+ | UoR:26  | Inwentaryzacja                | uor/uor_inventory           | [CZĘŚCIOWE]  |
+ | UoR:28  | Wycena                        | uor/uor_financial_stmt      | [CZĘŚCIOWE]  |
+ | UoR:32  | Amortyzacja                   | accounting/depreciation     | [POKRYTE]    |
+ | UoR:74  | Przechowywanie (5 lat)        | retention.rego              | [POKRYTE]    |
+ | PROG    | 2 mln EUR / 50 os.            | uor/uor_obligation          | [CZĘŚCIOWE]  |
+ | PKPiR:1-17 | Kolumny PKPiR              | micro/pkpir_kolumny         | [CZĘŚCIOWE]  |
+ | PIT:24a | Obowiązek PKPiR               | micro/pkpir                 | [CZĘŚCIOWE]  |
+
+ 3. LUKI I BŁĘDY (KRYTYCZNE — "martwa warstwa")
+───────────────────────────────────────────────────────────────────────────────
+ • P0: 6 z 7 plików micro/pkpir zawiera wzorce { true } — zgodnie z
+   LEGAL_COVERAGE 56 reguł PKPiR ma matched:false (martwa warstwa). To
+   największe niedociągnięcie księgowości: kolumny 1-17 ewidencjonowane
+   powierzchownie.
+ • P1: Próg UoR 2 mln EUR — wymagany test T1 (1 999 999 vs 2 000 000) i
+   temporalność kursu.
+ • P1: Remanent — reguła liczy początkowy/końcowy; test T9 (zmiana wyceny).
+ • P2: Memoriał vs kasowy w PKPiR (przychody kasowo, koszty wg rozporządzenia).
+
+ 4. EKSTREMALNE PRZYPADKI TESTOWE (wybór)
+───────────────────────────────────────────────────────────────────────────────
+ T1: 1 999 999 vs 2 000 000 EUR (próg UoR).
+ T4: dowód księgowy bez daty.
+ T7: martwa reguła PKPiR — input trafiający w warunek matched:false.
+ T8: korekta ujemna w kolumnie 13.
+ T9: remanent początkowy vs końcowy; leasing operacyjny vs finansowy.
+ T6/T7: konflikt micro/pkpir vs accounting vs policies/accounting.
+
+ 5. JDG/rules vs policies/
+───────────────────────────────────────────────────────────────────────────────
+ policies/jdg/accounting (67730 B) — duża, częściowo pokrywająca się z
+ JDG/rules/accounting; porównano zasady PKPiR — wykryto 2 rozjazdy (kolumny,
+ remanent) do weryfikacji w R15.
+
+ 6. REKOMENDACJE
+───────────────────────────────────────────────────────────────────────────────
+ 1) (P0) Przepisać 6 stubów micro/pkpir na realne warunki kolumn 1-17.
+ 2) Test T1 dla progu UoR 2 mln EUR.
+ 3) Testy T9 dla remanentu i leasingu.
+ 4) Ujednolicić z policies/jdg/accounting.
+
+ 7. ZALEŻNOŚCI
+───────────────────────────────────────────────────────────────────────────────
+ • R03 (VAT: rejestry), R04 (PIT: KUP), R10 (JPK_PKPIR).
+ • A15: luki P0 (martwa warstwa PKPiR).
+
+ 8. ZAKOŃCZENIE SESJI — ✅ WDROŻONY — WYCZYŚĆ OKNO KONTEKSTOWE — przejście do A10.
+═══════════════════════════════════════════════════════════════════════════════

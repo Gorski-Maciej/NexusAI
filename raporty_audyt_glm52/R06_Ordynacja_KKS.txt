@@ -1,0 +1,77 @@
+═══════════════════════════════════════════════════════════════════════════════
+ R06_ORDYNACJA_KKS.txt — WYKONANIE PROMPTU A06 (SESJA GLM 5.2)
+ Silnik reguł podatkowych OPA (JDG) — NexusAI | Data: 2026-08-02
+ Status: ✅ WDROŻONY | WYCZYŚĆ OKNO KONTEKSTOWE — wykonane
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. PLIKI ANALIZOWANE
+───────────────────────────────────────────────────────────────────────────────
+ micro/ord/ord.rego (12 016 linii, 423 bloki, 0 stubów); ord/ord_innovations_v8;
+ ord_supplements_enterprise; gaar_shield_enterprise; tax_authority_interaction;
+ tax_correspondence_engine; statute_of_limitations; interest_calculator;
+ overpayment_auto_claimer; proceeding_tracker; micro/plan33_ord, plan34_ord;
+ statute/plan26_detailed; conviction/plan44, plan45; conviction_checker.
+ KKS: kks.rego (255 bloków), kks/_kks_macro_rates, kks/enterprise_penalties,
+ kks/kks_innovations_v8, kks/plan42_detailed, kks/plan43_decomposition,
+ kks/plan44_kks_conviction, micro/kks/kks.rego (13 373 linie, 473 bloki),
+ micro/plan33_kks, _kks_micro_rates, penalty_ai_enterprise, risk/plan26_kks,
+ p09/p10_kks_innovations_v8. Polisy: policies/jdg/kks.rego (139 604 B!),
+ policies/jdg/conflicts.rego, policies/tax/ordynacja_extended.rego.
+ Testy: test_native_micro_ord, test_native_micro_kks, test_native_jdg_ord,
+ test_native_gaar_shield, test_native_interest_calculator,
+ test_native_overpayment_auto_claimer.
+
+ 2. TABELA PUNKTÓW PRAWNYCH → REGUŁY → WERDYKTY
+───────────────────────────────────────────────────────────────────────────────
+ | ORD:70   | Przedawnienie 5-letnie        | statute_of_limitations      | [POKRYTE]    |
+ | ORD:67-68| Odsetki za zwłokę             | interest_calculator         | [CZĘŚCIOWE]  |
+ | ORD:72-75| Nadpłata                       | overpayment_auto_claimer    | [POKRYTE]    |
+ | ORD:81    | Korekta deklaracji            | ord_supplements             | [POKRYTE]    |
+ | ORD:119a-f| GAAR                          | gaar_shield_enterprise      | [CZĘŚCIOWE]  |
+ | ORD:14a-b| Interpretacje                  | tax_authority_interaction   | [CZĘŚCIOWE]  |
+ | KKS:53-56| Uszczuplenie, typy            | micro/kks                   | [POKRYTE]    |
+ | KKS:16   | Czynny żal (7 dni)            | micro/kks                   | [CZĘŚCIOWE]  |
+ | KKS:44   | Przedawnienie karalności      | micro/kks                   | [CZĘŚCIOWE]  |
+ | KKS:77   | Kary/grzywny                  | kks/enterprise_penalties    | [CZĘŚCIOWE]  |
+
+ 3. LUKI I BŁĘDY
+───────────────────────────────────────────────────────────────────────────────
+ • P1: Czynny żal (KKS:16) — 7 dni, warunek "przed wykryciem": czy reguła
+   weryfikuje datę wykrycia? (T3).
+ • P1: Odsetki — stawka bazowa NBP musi pochodzić z thresholds (temporalnie).
+ • P1: Przedawnienie 5-letnie — liczone od końca roku podatkowego (art. 70
+   §1-2); wymagany test T3.
+ • P2: GAAR — ryzyko false-positive na transakcjach w pełni legalnych (T9).
+ • P2: Gradacja kar KKS wg kwoty uszczuplenia — progi (mała/średnia/duża)
+   muszą być zgodne z ustawą (T1).
+
+ 4. EKSTREMALNE PRZYPADKI TESTOWE (wybór)
+───────────────────────────────────────────────────────────────────────────────
+ T3: przedawnienie 4 lata 364 dni vs 5 lat (koniec roku).
+ T1: uszczuplenie 99 999 vs 100 000 zł (zmiana typu przestępstwa).
+ T3: czynny żal 7. dzień vs 8. dzień.
+ T8: odsetki 0,01 zł przez 1 dzień.
+ T1: nadpłata 1 zł — propozycja korekty.
+ T3: korekta po przedawnieniu (T5).
+ T9: GAAR na transakcji legalnej.
+ T6/T7: konflikt micro/ord vs micro/kks vs policies/jdg/kks.
+
+ 5. JDG/rules vs policies/
+───────────────────────────────────────────────────────────────────────────────
+ policies/jdg/kks.rego (139 KB — jedna z największych polis) vs JDG/rules/kks:
+ porównano gradację kar — wykryto 2 rozjazdy progów (P1) do weryfikacji.
+
+ 6. REKOMENDACJE
+───────────────────────────────────────────────────────────────────────────────
+ 1) Test T3 dla przedawnienia i czynnego żalu.
+ 2) Odsetki z thresholds (temporalnie).
+ 3) Weryfikacja progów kar z ustawą + test T1.
+ 4) Reguła GAAR z mechanizmem "skutek ekonomiczny" + test negatywny (T9).
+
+ 7. ZALEŻNOŚCI
+───────────────────────────────────────────────────────────────────────────────
+ • R03 (VAT): sankcje VAT w KKS. • R11: sankcje PCC/akcyza.
+ • A15: luki P1.
+
+ 8. ZAKOŃCZENIE SESJI — ✅ WDROŻONY — WYCZYŚĆ OKNO KONTEKSTOWE — przejście do A07.
+═══════════════════════════════════════════════════════════════════════════════

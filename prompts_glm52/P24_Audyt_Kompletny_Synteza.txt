@@ -1,0 +1,150 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P24: AUDYT KOMPLETNY + SYNTEZA MASTER (KONSOLIDACJA R01-R23, OCENA ZASTĄPIENIA KSIĘGOWEGO, FINALNA FORTECA ENTERPRISE)
+
+Jesteś Najwyższej Klasy Architektem-Strategiem systemów regułowych klasy
+ENTERPRISE i ekspertem od księgowości JDG. To OSTATNI, zwieńczający Prompt
+programu 24-częściowego wzmocnienia katalogu JDG. Otrzymujesz raporty R01-R23
+wygenerowane w poprzednich sesjach (każdy ≥20-28 stron) oraz dostęp do całej
+struktury katalogu JDG. Twoim zadaniem jest KONSOLIDACJA wszystkich ustaleń
+w jeden MASTER PLAN wzmocnienia silnika reguł podatkowych OPA do poziomu
+"Ufortyfikowanej Fortecy Niechybnej Śmierci" — silnika, który z każdej strony
+jest odporny na braki, błędy i niedopatrzenia, reprezentuje wyłącznie precyzję,
+profesjonalizm i zero nieporozumień, oraz maksymalnie automatyzuje księgowość JDG.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU** — generujesz wyłącznie ROZBUDOWANY RAPORT ANALITYCZNY.
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz i konsolidujesz.
+3. Raport zapisujesz jako plik tekstowy: **R24.txt** (+ wersję skróconą R24_SUMMARY.txt).
+4. **BUDŻET KONTEKSTU:** dane wejściowe mogą zająć MAKSYMALNIE 50% okna
+   kontekstowego GLM 5.2 (≈500 000 tokenów z 1 000 000). Raporty R01-R23 są
+   ogromne — czytaj je selektywnie (executive summaries, tabele, mapy drogowe),
+   kompresuj, a 50% okna pozostaw na syntezę i genialne rozwiązania.
+
+## 📚 ŹRÓDŁA NADRZĘDNE I STRUKTURA KATALOGU:
+- Akty prawne JDG:      https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (MD):     https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+- Referencja aktów:     https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne:      https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Architektura (ADR):   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- README JDG:           https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- MANIFEST JDG:         https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- COVERAGE_REPORT:      https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/COVERAGE_REPORT.md
+- Katalog JDG:          https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG
+- Reguły:               https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules
+- Narzędzia:            https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/tools
+- Testy:                https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/tests
+- Polisy produkcyjne:   https://github.com/Gorski-Maciej/NexusAI/tree/main/policies
+
+## 📂 WEJŚCIE — RAPORTY Z POPRZEDNICH SESJI (R01-R23):
+Jeżeli raporty R01-R23 są dostępne w kontekście lub plikach — wykorzystaj je.
+Jeżeli nie — przeprowadź SYNTEZĘ NA PODSTAWIE BEZPOŚREDNIEJ ANALIZY STRUKTURY
+katalogu JDG (reguły/, tools/, tests/, docs/, bundles/, migrations/, api/),
+zawsze odwołując się do dokumentów nadrzędnych (Bbb, LEGAL_COVERAGE, MANIFEST).
+
+### Struktura reguł do przeglądu (przegląd po katalogach):
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/vat
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/pit
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/zus
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/kks
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/micro
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/uor
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/accounting
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/pcc
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/local_taxes
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/mdr
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/tp
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/fx
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/residency
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/security
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/jdg/hyper
+
+## 🎯 CEL SYNTEZY:
+Przeprować głęboką analizę i przeprować głębokie myślenie nad CAŁOŚCIĄ modułu
+JDG — na zaawansowanym poziomie Enterprise. Odpowiedz wprost na kluczowe
+pytania biznesowe: (1) Czy moduł JDG zastąpi księgowego? (2) Czy reguły
+pokrywają wszystkie przepisy prawne ze wszystkich aktów z pliku Bbb? (3) Czy
+pracodawca wykona "te kilka kliknięć" bez problemu? (4) Jak OPA jako SYSTEM
+będzie się szybko adaptować do zmian prawa? (5) Co dokładnie trzeba wdrożyć,
+aby silnik osiągnął 100% pokrycia i poziom "fortecy"?
+
+## 🏰 WYMÓG POZIOMU ENTERPRISE (OBOWIĄZKOWY — SPEŁNIJ W KAŻDYM ROZDZIALE):
+1. Przeprować głębokie myślenie — nad każdym punktem raportu, bez wyjątku.
+2. Przeprować głęboką analizę — każdej reguły, każdego artykułu, każdego progu.
+3. Osiągnąć zaawansowany poziom Enterprise — to standard, nie cel dodatkowy.
+4. Poziom ENTERPRISE — w architekturze, niezawodności i automatyzacji.
+5. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w każdym rozwiązaniu.
+6. Poziom ENTERPRISE oznacza zero błędów, zero nieporozumień, zero wątpliwości.
+7. Zaawansowany poziom Enterprise wymaga dowodów: tabel, liczb, porównań z prawem.
+8. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w sekcji GENIALNE POMYSŁY.
+9. Przeprować głębokie myślenie — także nad tym, czego nie widać w plikach.
+10. Przeprować głęboką analizę — zgodności z aktami prawnymi z pliku Bbb.
+11. Zaawansowany poziom Enterprise — w każdej rekomendacji i mapie drogowej.
+12. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w każdym rozdziale raportu.
+13. Poziom ENTERPRISE — w systemowej adaptacji do zmian prawa.
+14. Innowacyjne ulepszenia wyprzedzające profesjonalistów — to Twój znak firmowy.
+
+## WYMAGANE SEKCJE RAPORTU (poziom ENTERPRISE):
+### 1. SYNTEZA STANU MODUŁU (zaawansowany poziom Enterprise)
+- Konsolidacja liczb: 406 plików rego, 10 509 unikalnych rule_id, 369
+  duplikatów, 512 stubów { true }, Completeness Score 78/100, routing 62%,
+  aktualność 53/100, COVERAGE_REPORT 44/509 (8%), klasy A/B/C (31/57/12%).
+- Przeprować głęboką analizę rozbieżności między README (90-100%) a
+  rzeczywistymi raportami — sformułuj jedyną, spójną wersję prawdy.
+### 2. OCENA "CZY ZASTĄPI KSIĘGOWEGO" (POZIOM ENTERPRISE — PRIORYTET)
+- Macierz pracy księgowego vs pokrycie OPA (VAT, PIT, ZUS, KKS, Ordynacja,
+  PKPiR, KSeF, JPK, korespondencja, deklaracje, HR, raporty).
+- Oceń tryby AUTO_POST/SUGGEST/ASK_USER i procent decyzji wymagających
+  kliknięcia; zaproponuj realistyczne KPI automatyzacji.
+### 3. MAPA POKRYCIA PRAWNEGO — FINALNA (poziom ENTERPRISE)
+- Dla każdego z 13+ aktów z Bbb: status finalny (po uwzględnieniu R01-R23),
+  lista krytycznych luk, plan domknięcia do 100%.
+### 4. ARCHITEKTURA FINALNEJ FORTECY (POZIOM ENTERPRISE — PRIORYTET)
+- Zaprojektuj finalną architekturę systemu: warstwy, orkiestrator, sieć
+  zależności (duża złożoność przepisów = super-inteligentna sieć zależności
+  od jednej reguły, transparentność i niezawodność), temporalność, trust
+  score, fallbacki, monitoring, self-healing, adaptacja do prawa.
+### 5. OPA JAKO ROZBUDOWANY SYSTEM (wymóg nadrzędny)
+- Przeprować głębokie myślenie: pełny SYSTEM adaptacji do zmian prawa —
+  od ISAP/legislacji po produkcję w 24-72h; proste dodawanie/usuwanie
+  reguł; zero-downtime; kanary; rollback; jakość decyzji mierzona.
+### 6. MASTER PLAN WDROŻENIOWY (FAZY, KPI, RYZYKA)
+- Uszereguj wszystkie rekomendacje z R01-R23 w jedną mapę drogową:
+  faza 0 (fundament) → faza 1 (domknięcie luk krytycznych) → faza 2
+  (automatyzacja) → faza 3 (forteca). Dla każdej pozycji: szacowany czas,
+  wpływ, ryzyko, zależności, wskaźnik sukcesu.
+### 7. GENIALNE POMYSŁY ENTERPRISE (min. 20)
+- Przeprować głęboką analizę i zaproponuj min. 20 POTĘŻNYCH, rozbudowanych
+  na poziomie ENTERPRISE pomysłów systemowych wykraczających poza R01-R23,
+  np.: pełny "wirtualny księgowy" (autonomiczna księgowość JDG end-to-end),
+  super-inteligentna sieć zależności reguł (Knowledge Graph), auto-adaptacja
+  do każdej nowelizacji w 24h, proof-of-correctness każdej decyzji,
+  symulacyjny bliźniak całej JDG, system samo-uczenia na werdyktach
+  rzeczywistych, globalna mapa ryzyka podatkowego, autonomiczne rozliczenia
+  roczne, asystent głosowy księgowego — każde innowacyjne ulepszenie
+  wyprzedzające profesjonalistów.
+### 8. FINALNY WNIOSEK I DEKLARACJA GOTOWOŚCI
+- Sformułuj ocenę końcową: poziom dojrzałości modułu, co blokuje
+  "100% zastąpienie księgowego", minimalny zestaw wdrożeń do osiągnięcia
+  poziomu fortecy, oraz wskaźniki, które to udowodnią.
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "MASTER RAPORT ENTERPRISE — JDG UFORTYFIKOWANA FORTECA (P24) v8.0"
+- Executive Summary (2 strony) TOP 20 rekomendacji.
+- Diagramy Mermaid: finalna architektura fortecy, sieć zależności reguł,
+  pipeline adaptacji prawa, mapa wdrożeniowa.
+- Sekcja "Genialne Pomysły ENTERPRISE" jako osobny rozdział.
+- Min. 30-40 stron. Zapisz jako R24.txt + R24_SUMMARY.txt (max 3 strony).
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Generujesz WYŁĄCZNIE RAPORT
+ANALITYCZNY. Przeprować głębokie myślenie i przeprować głęboką analizę — na
+zaawansowanym poziomie Enterprise, by silnik reguł podatkowych OPA stał się
+Ufortyfikowaną Fortecą Niechybnej Śmierci dla błędów, zaskakując największych
+ekspertów swym zaawansowanym poziomem Enterprise.
+
+## 🧹 PO ZAKOŃCZENIU PRACY — FINALNE WYCZYSZCZENIE OKNA KONTEKSTOWEGO:
+1. Zapisz kompletny raport jako R24.txt i R24_SUMMARY.txt.
+2. **WYCZYŚĆ OKNO KONTEKSTOWE** — program 24-częściowy ZAKOŃCZONY.
+3. Potwierdź zakończenie: "P24 ZAKOŃCZONY — PROGRAM 24 CZĘŚCI UKOŃCZONY —
+   FORTECA ENTERPRISE ZAPROJEKTOWANA — OKNO WYCZYSZCZONE".
+4. Rekomendacja: po wdrożeniu zmian z R01-R24 uruchom ponownie P01 w nowej
+   sesji, aby zweryfikować postęp (pętla ciągłego doskonalenia ENTERPRISE).

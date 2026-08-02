@@ -1,0 +1,133 @@
+═══════════════════════════════════════════════════════════════════════════════
+ PROMPT A05 — AUDYT PRAWNY: RYCZAŁT OD PRZYCHODÓW EWIDENCJONOWANYCH
+ Silnik reguł podatkowych OPA (JDG) — NexusAI
+ Cel: weryfikacja punkt-po-punkcie ustawy o zryczałtowanym podatku dochodowym
+ (stawki, limity, ewidencja przychodów) w regułach Rego.
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. ROLA I ZASADY PRACY
+───────────────────────────────────────────────────────────────────────────────
+ Audytor prawno-techniczny poziomu ENTERPRISE. NIE GENERUJ KODU — generujesz
+ WYŁĄCZNIE raport R05_Ryczalt.txt. Przeprować głębokie myślenie i przeprować
+ głęboką analizę nad każdym punktem. Budżet danych ≤50% okna (500K z 1M).
+ Na końcu: WYCZYŚĆ OKNO KONTEKSTOWE.
+
+ 2. PUNKTY PRAWNE DO WERYFIKACJI (z Bbb)
+───────────────────────────────────────────────────────────────────────────────
+ • Ustawa o zryczałtowanym PIT: art. 6-12 (ryczałt ewidencjonowany — stawki
+   i warunki), art. 15 (ewidencja przychodów), art. 21-30 (karta podatkowa).
+ • Stawki ryczałtu wg rodzaju działalności (np. 17% wolne zawody, 15% IT,
+   12% usługi, 8,5% najem, 5,5% wytwórcza, 3% handel) — weryfikuj z
+   thresholds_jdg.rego.
+ • Limit przychodów ryczałtu (2 000 000 EUR) i przejście na skalę.
+ • Zmniejszenie o składki ZUS (95% składek społecznych, 50% zdrowotnej —
+   zależnie od roku 2026).
+
+ 3. PLIKI DO PRZECZYTANIA (PRIORYTET 1)
+───────────────────────────────────────────────────────────────────────────────
+ Akty i referencje:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+ Reguły ryczałt:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ryczalt/ryczalt.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ryc.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_transition_simulator_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_optimizer_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/forms.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/transitions.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+
+ Polisy (porównanie v1):
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/pit/forms.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/pit/transitions.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/direct/pit.rego
+
+ Testy istniejące:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/micro/test_native_micro_ryczalt.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_native_form_transition_simulator_enterprise.rego
+
+ 4. METODYKA (skrót — pełna w R01)
+───────────────────────────────────────────────────────────────────────────────
+ Werdykt per punkt. Uwaga szczególna: (a) stawki per branża — czy każda
+ stawka z ustawy jest osobną regułą z _legal_basis art. 12? (b) limit 2 mln
+ EUR — czy przeliczany średnim kursem NBP i czy temporalnie? (c) obniżka
+ o składki ZUS — czy 95% społecznych i 50% zdrowotnej w 2026, czy inne
+ wartości (to częsty błąd reguł!). (d) karta podatkowa — czy reguły w ogóle
+ istnieją, czy to stub?
+
+ 5. EKSTREMALNE PRZYPADKI TESTOWE (T1–T10 z R01) — min. 20
+───────────────────────────────────────────────────────────────────────────────
+ • przychód 1 999 999,99 EUR vs 2 000 000 vs 2 000 000,01 EUR (T1);
+ • stawka branżowa błędna o 1 pkt proc. (np. 12% zamiast 15% IT) (T2);
+ • obniżka o składki: 95%/50% vs 100%/75% (rozjazd roczników) (T3, T2);
+ • przychód z najmu prywatnego vs firmowego (T5, T9);
+ • konflikt stawki micro/ryczalt vs pit/forms vs policies (T6, T7);
+ • zmiana formy ze skali na ryczałt w trakcie roku (T3, T9);
+ • ewidencja przychodów art. 15 — brak wpisu (T4);
+ • karta podatkowa — czy reguła jest stubem { true }? (T7).
+
+ 6. FORMAT RAPORTU R05 — jak R02, plik R05_Ryczalt.txt
+───────────────────────────────────────────────────────────────────────────────
+ 1) Tabela punktów → reguły → werdykty. 2) Luki/błędy P0/P1/P2.
+ 3) 20+ przypadków T1-T10. 4) JDG/rules vs policies/. 5) Rekomendacje.
+ 6) ZALEŻNOŚCI DO INNYCH CZĘŚCI.
+
+ 7. WYMÓG POZIOMU ENTERPRISE (frazy ≥4 razy każda)
+───────────────────────────────────────────────────────────────────────────────
+ Przeprować głębokie myślenie nad każdą stawką ryczałtu. Przeprować głębokie
+ myślenie nad limitem 2 mln EUR i kursem NBP. Przeprować głębokie myślenie
+ nad obniżką o składki ZUS (95%/50%). Przeprować głębokie myślenie nad
+ kartą podatkową. Przeprować głęboką analizę micro/ryczalt/ryczalt.rego.
+ Przeprować głęboką analizę thresholdów stawek. Przeprować głęboką analizę
+ reguł przejścia formy opodatkowania. Przeprować głęboką analizę różnic z
+ policies/. Raport na zaawansowanym poziomie Enterprise. Metodyka na
+ zaawansowanym poziomie Enterprise. Testy na zaawansowanym poziomie
+ Enterprise. Rekomendacje na zaawansowanym poziomie Enterprise. Poziom
+ ENTERPRISE w niezawodności stawek. Poziom ENTERPRISE w temporalności
+ limitów. Poziom ENTERPRISE w audytowalności form. Poziom ENTERPRISE w
+ testach granicznych. Innowacyjne ulepszenia wyprzedzające profesjonalistów
+ w wykrywaniu błędów stawek branżowych. Innowacyjne ulepszenia wyprzedzające
+ profesjonalistów w testach limitów. Innowacyjne ulepszenia wyprzedzające
+ profesjonalistów w koordynacji ryczałt↔ZUS↔zdrowotna. Innowacyjne
+ ulepszenia wyprzedzające profesjonalistów w weryfikacji ustawy o ryczałcie.
+
+ 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+
+════════════════════════════════════════════════════════════════════════════════
+ WYMÓG POZIOMU ENTERPRISE — FRAZY OBOWIĄZKOWE (KAŻDA Z FRAZ >=4 WYSTĄPIENIA)
+════════════════════════════════════════════════════════════════════════════════
+
+ Przeprować głębokie myślenie — nad każdym punktem prawnym z pliku Bbb.
+ Przeprować głębokie myślenie — nad każdą regułą Rego i jej warunkami.
+ Przeprować głębokie myślenie — nad każdym przypadkiem testowym T1–T10.
+ Przeprować głębokie myślenie — nad każdą interakcją między domenami.
+
+ Przeprować głęboką analizę — treści normatywnej każdego artykułu.
+ Przeprować głęboką analizę — ścieżek routingu i werdyktów silnika.
+ Przeprować głęboką analizę — różnic JDG/rules vs policies/.
+ Przeprować głęboką analizę — kompletności testów dla każdej reguły.
+
+ Ten raport prezentuje zaawansowany poziom Enterprise — pełna audytowalność.
+ Metodyka weryfikacji to zaawansowany poziom Enterprise — każdy punkt ma dowód.
+ Przypadki testowe reprezentują zaawansowany poziom Enterprise — ekstremalne i graniczne.
+ Rekomendacje utrzymują zaawansowany poziom Enterprise — zero kompromisów.
+
+ Silnik ma osiągnąć poziom ENTERPRISE w każdej warstwie architektury.
+ Testy muszą reprezentować poziom ENTERPRISE — ekstremalne i graniczne.
+ Raport musi utrzymać poziom ENTERPRISE — pełna transparentność.
+ Wdrożenie rekomendacji to poziom ENTERPRISE — niezawodność bez wyjątków.
+
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w wykrywaniu luk prawnych.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w projektowaniu przypadków testowych.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w metodach weryfikacji reguła ↔ artykuł.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w architekturze systemu OPA.
+
+ BUDŻET: dane wejściowe ≤ 50% okna kontekstowego (500K z 1M); reszta okna
+ na głęboką analizę, weryfikację i generowanie raportu.
+════════════════════════════════════════════════════════════════════════════════

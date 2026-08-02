@@ -1,0 +1,160 @@
+═══════════════════════════════════════════════════════════════════════════════
+ PROMPT A11 — AUDYT PRAWNY: PCC + PODATKI LOKALNE + AKCYZAC
+ Silnik reguł podatkowych OPA (JDG) — NexusAI
+ Cel: weryfikacja punkt-po-punkcie ustawy o PCC, ustawy o podatkach i opłatach
+ lokalnych oraz ustawy o akcyzie w regułach Rego (NAJWIĘKSZE LUKI P0!).
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. ROLA I ZASADY PRACY
+───────────────────────────────────────────────────────────────────────────────
+ Audytor prawno-techniczny poziomu ENTERPRISE. NIE GENERUJ KODU — generujesz
+ WYŁĄCZNIE raport R11_PCC_Lokalne_Akcyza.txt. Przeprować głębokie myślenie
+ i przeprować głęboką analizę nad każdym punktem. Budżet danych ≤50% okna
+ (500K z 1M). Na końcu: WYCZYŚĆ OKNO KONTEKSTOWE.
+
+ 2. PUNKTY PRAWNE DO WERYFIKACJI (z Bbb + luk P0)
+───────────────────────────────────────────────────────────────────────────────
+ • PCC: czynności cywilnoprawne (sprzedaż, pożyczka, spółka, darowizna),
+   stawki (2% nieruchomości, 1% ruchomości, 0,5% pożyczki, 0,5% spółka),
+   deklaracja PCC-3 w terminie 14 dni, wyłączenia (VAT, zamiana),
+   odpowiedzialność nabywcy.
+ • Podatki lokalne: podatek od nieruchomości (grunty, budynki, budowle —
+   stawki gminne, DN-1), podatek od środków transportowych, opłata
+   targowa, opłata uzdrowiskowa, opłata miejscowa.
+ • Akcyza: paliwa, alkohol, tytoń, energia elektryczna — rejestracja,
+   skład podatkowy, zwolnienia, stawki, ewidencje.
+
+ 3. PLIKI DO PRZECZYTANIA (PRIORYTET 1)
+───────────────────────────────────────────────────────────────────────────────
+ Akty i referencje:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+ Reguły PCC:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pcc/pcc_rates.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pcc/pcc_sales.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pcc/pcc_loans.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pcc/pcc_companies.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pcc/plan42_pcc.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pcc/pcc.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_pcc.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_pcc_complete.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_enterprise_complete.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_excise_enterprise.rego
+
+ Reguły lokalne i akcyza:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/real_estate.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/transport.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/plan26_local.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/local_procedures_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/akcyza_fuel.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/akcyza_alcohol.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/excise_enterprise_complete.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/akcyza/akcyza.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_agricultural_tax.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pcc_local_excise_rates.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_excise_supplement.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p15_pcc_local_excise_innovations_v8.rego
+
+ Polisy (porównanie v1):
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/local_taxes.rego
+
+ Testy istniejące:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/micro/test_native_micro_pcc.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/micro/test_native_micro_akcyza.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_native_jdg_pcc.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_pcc_loans_companies_rates.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_pcc_sales.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_akcyza_depreciation_mdr_exittax.rego
+
+ Narzędzia:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p15_pcc_local_excise_toolkit.py
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p15_local_taxes_toolkit.py
+
+ 4. METODYKA (skrót — pełna w R01)
+───────────────────────────────────────────────────────────────────────────────
+ Werdykt per punkt. Uwaga szczególna: (a) czy PCC-3 w 14 dni ma regułę
+ terminu? (b) stawki gminne — czy thresholdy są konfigurowalne per gmina?
+ (c) DN-1 (podatek od nieruchomości) — czy reguła istnieje? (d) akcyza —
+ czy rejestracja i skład podatkowy są pokryte? (e) czy stawki PCC 2%/1%/0,5%
+ są poprawne i czy wyłączenia (VAT) działają? LEGAL_COVERAGE.md raportuje
+ pokrycie ~1-15% dla tej domeny — zweryfikuj każdą regułę, która istnieje,
+ i oznacz BRAK tam, gdzie nic nie ma.
+
+ 5. EKSTREMALNE PRZYPADKI TESTOWE (T1–T10 z R01) — min. 25
+───────────────────────────────────────────────────────────────────────────────
+ • pożyczka 99 999 vs 100 000 zł (stawka 0,5%) (T1);
+ • sprzedaż nieruchomości opodatkowana VAT — wyłączenie z PCC (T5);
+ • termin PCC-3: 13. vs 14. dzień (T3);
+ • nieruchomość z budynkiem i budowlą — stawki różne (T2, T9);
+ • środek transportowy — stawka per gmina (T4, T1);
+ • akcyza na energię — zwolnienie małego odbiorcy (T5);
+ • konflikt pcc.rego vs local_taxes vs policies/local_taxes (T6, T7);
+ • brak reguły DN-1 — udokumentuj lukę (T7).
+
+ 6. FORMAT RAPORTU R11 — jak R02, plik R11_PCC_Lokalne_Akcyza.txt
+───────────────────────────────────────────────────────────────────────────────
+ 1) Tabela punktów → reguły → werdykty. 2) Luki/błędy P0/P1/P2 (tu najwięcej
+ P0!). 3) 25+ przypadków T1-T10. 4) JDG/rules vs policies/. 5) Rekomendacje.
+ 6) ZALEŻNOŚCI DO INNYCH CZĘŚCI.
+
+ 7. WYMÓG POZIOMU ENTERPRISE (frazy ≥4 razy każda)
+───────────────────────────────────────────────────────────────────────────────
+ Przeprować głębokie myślenie nad każdą czynnością PCC. Przeprować głębokie
+ myślenie nad stawkami lokalnymi per gmina. Przeprować głębokie myślenie
+ nad akcyzą i składem podatkowym. Przeprować głębokie myślenie nad
+ terminami PCC-3 i DN-1. Przeprować głęboką analizę pcc/ (5 plików).
+ Przeprować głęboką analizę local_taxes/ (10 plików). Przeprować głęboką
+ analizę micro/akcyza. Przeprować głęboką analizę różnic z policies/.
+ Raport na zaawansowanym poziomie Enterprise. Metodyka na zaawansowanym
+ poziomie Enterprise. Testy na zaawansowanym poziomie Enterprise.
+ Rekomendacje na zaawansowanym poziomie Enterprise. Poziom ENTERPRISE w
+ niezawodności PCC. Poziom ENTERPRISE w audytowalności lokalnych.
+ Poziom ENTERPRISE w temporalności stawek gminnych. Poziom ENTERPRISE w
+ testach granicznych. Innowacyjne ulepszenia wyprzedzające profesjonalistów
+ w wykrywaniu luk PCC (największa luka P0). Innowacyjne ulepszenia
+ wyprzedzające profesjonalistów w testach lokalnych. Innowacyjne
+ ulepszenia wyprzedzające profesjonalistów w koordynacji PCC↔VAT↔akcyza.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów w weryfikacji
+ ustawy o PCC i podatkach lokalnych.
+
+ 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+
+════════════════════════════════════════════════════════════════════════════════
+ WYMÓG POZIOMU ENTERPRISE — FRAZY OBOWIĄZKOWE (KAŻDA Z FRAZ >=4 WYSTĄPIENIA)
+════════════════════════════════════════════════════════════════════════════════
+
+ Przeprować głębokie myślenie — nad każdym punktem prawnym z pliku Bbb.
+ Przeprować głębokie myślenie — nad każdą regułą Rego i jej warunkami.
+ Przeprować głębokie myślenie — nad każdym przypadkiem testowym T1–T10.
+ Przeprować głębokie myślenie — nad każdą interakcją między domenami.
+
+ Przeprować głęboką analizę — treści normatywnej każdego artykułu.
+ Przeprować głęboką analizę — ścieżek routingu i werdyktów silnika.
+ Przeprować głęboką analizę — różnic JDG/rules vs policies/.
+ Przeprować głęboką analizę — kompletności testów dla każdej reguły.
+
+ Ten raport prezentuje zaawansowany poziom Enterprise — pełna audytowalność.
+ Metodyka weryfikacji to zaawansowany poziom Enterprise — każdy punkt ma dowód.
+ Przypadki testowe reprezentują zaawansowany poziom Enterprise — ekstremalne i graniczne.
+ Rekomendacje utrzymują zaawansowany poziom Enterprise — zero kompromisów.
+
+ Silnik ma osiągnąć poziom ENTERPRISE w każdej warstwie architektury.
+ Testy muszą reprezentować poziom ENTERPRISE — ekstremalne i graniczne.
+ Raport musi utrzymać poziom ENTERPRISE — pełna transparentność.
+ Wdrożenie rekomendacji to poziom ENTERPRISE — niezawodność bez wyjątków.
+
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w wykrywaniu luk prawnych.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w projektowaniu przypadków testowych.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w metodach weryfikacji reguła ↔ artykuł.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w architekturze systemu OPA.
+
+ BUDŻET: dane wejściowe ≤ 50% okna kontekstowego (500K z 1M); reszta okna
+ na głęboką analizę, weryfikację i generowanie raportu.
+════════════════════════════════════════════════════════════════════════════════

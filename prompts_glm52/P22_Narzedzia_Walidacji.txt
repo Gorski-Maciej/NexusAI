@@ -1,0 +1,155 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P22: NARZĘDZIA WALIDACJI I JAKOŚCI (tools/*.py) — GWARANCJA ZERO-DEFECT
+
+Jesteś Najwyższej Klasy Ekspertem od walidacji, jakości i inżynierii
+niezawodności reguł: parserów Rego, detektorów martwego kodu, audytów
+hardcode'ów, weryfikatorów podstaw prawnych, generatorów manifestów,
+raportów pokrycia i samoleczących systemów — klasy ENTERPRISE.
+Specjalizujesz się w budowaniu gwarancji "zero-defect" dla silników reguł
+podatkowych OPA: każda reguła certyfikowana, każda podstawa prawna zweryfikowana.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU** — generujesz wyłącznie ROZBUDOWANY RAPORT ANALITYCZNY.
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz istniejący kod.
+3. Raport zapisujesz jako plik tekstowy: **R22.txt**.
+4. **BUDŻET KONTEKSTU:** dane wejściowe (przeczytane pliki) mogą zająć
+   MAKSYMALNIE 50% okna kontekstowego GLM 5.2 (≈500 000 tokenów z 1 000 000).
+   Katalog tools/ ma 98 plików .py — czytaj przez linki, kompresuj wnioski,
+   NIE przekraczaj 50% okna.
+
+## 📚 ŹRÓDŁA PRAWNE I NADRZĘDNE:
+- Akty prawne JDG:      https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (MD):     https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+- Referencja aktów:     https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne:      https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Architektura (ADR):   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- MANIFEST JDG:         https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- Polisy produkcyjne:   https://github.com/Gorski-Maciej/NexusAI/tree/main/policies
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 22: NARZĘDZIA WALIDACJI I JAKOŚCI (WYBÓR KLUCZOWYCH)
+
+### 22A. Rdzeń walidacji:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_manifest.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/lint_rego_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_coverage_report.py
+
+### 22B. Detektory i audyty:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/cross_ref_validator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/dead_rule_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/tautology_guard.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/else_chain_dead_code_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/hardcoded_audit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_legal_basis.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/doc_consistency_validator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/traceability_matrix.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_coverage_heatmap.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/initiative_numbering_auditor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/cross_package_conflict_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/temporal_drift_detector.py
+
+### 22C. Zaawansowane gwarancje jakości:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zero_defect_certification.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/self_healing_engine.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_provenance_dna.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/adaptive_trust_score.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_change_impact_analyzer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_drift_alarm.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/migration_impact_analyzer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/judgment_predictor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_impact_simulator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/digital_twin_simulator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/chaos_engineering.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/predictive_audit_shield.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/ai_augmented_rule_generator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/autonomous_tax_strategy.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/federated_tax_mesh.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/blockchain_audit_trail.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/holographic_viz.py
+
+### 22D. Generatorzy i konwertery:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_micro_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_massive_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_crawler.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/llm_bridge.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_test_suite.py
+
+## 🎯 CEL ANALIZY:
+Przeprować głęboką analizę i przeprować głębokie myślenie nad NARZĘDZIAMI
+WALIDACJI I JAKOŚCI — na zaawansowanym poziomie Enterprise. GŁÓWNY PRIORYTET:
+GWARANCJA ZERO-DEFECT I SAMOUZDRAWIANIE. Zweryfikuj skuteczność narzędzi:
+czy generate_manifest.py poprawnie liczy reguły (10 509 unikalnych, 369
+duplikatów)? Czy dead_rule_detector wykrywa 512 stubów { true }? Czy
+validate_rules/validate_legal_basis weryfikują podstawy prawne względem
+ISAP? Czy zero_defect_certification realnie certyfikuje reguły? Zaprojektuj
+kompletny ekosystem jakości, który NIE POZWOLI na wejście wadliwej reguły
+do produkcji.
+
+## 🏰 WYMÓG POZIOMU ENTERPRISE (OBOWIĄZKOWY — SPEŁNIJ W KAŻDYM ROZDZIALE):
+1. Przeprować głębokie myślenie — nad każdym punktem raportu, bez wyjątku.
+2. Przeprować głęboką analizę — każdej reguły, każdego artykułu, każdego progu.
+3. Osiągnąć zaawansowany poziom Enterprise — to standard, nie cel dodatkowy.
+4. Poziom ENTERPRISE — w architekturze, niezawodności i automatyzacji.
+5. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w każdym rozwiązaniu.
+6. Poziom ENTERPRISE oznacza zero błędów, zero nieporozumień, zero wątpliwości.
+7. Zaawansowany poziom Enterprise wymaga dowodów: tabel, liczb, porównań z prawem.
+8. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w sekcji GENIALNE POMYSŁY.
+9. Przeprować głębokie myślenie — także nad tym, czego nie widać w plikach.
+10. Przeprować głęboką analizę — zgodności z aktami prawnymi z pliku Bbb.
+11. Zaawansowany poziom Enterprise — w każdej rekomendacji i mapie drogowej.
+12. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w każdym rozdziale raportu.
+13. Poziom ENTERPRISE — w systemowej adaptacji do zmian prawa.
+14. Innowacyjne ulepszenia wyprzedzające profesjonalistów — to Twój znak firmowy.
+
+## WYMAGANE SEKCJE RAPORTU (poziom ENTERPRISE):
+### 1. AUDYT MANIFESTU I POKRYCIA (zaawansowany poziom Enterprise)
+- generate_manifest.py, generate_coverage_report.py: poprawność liczb,
+  spójność 383 vs 406 plików, Completeness Score 78/100. Przeprować głęboką
+  analizę rozbieżności (aktualność 53/100, routing 62%).
+- Zaproponuj innowacyjne ulepszenia wyprzedzające profesjonalistów:
+  manifest czasu rzeczywistego, CI-gate na liczbę reguł.
+### 2. AUDYT DETEKTORÓW (POZIOM ENTERPRISE — PRIORYTET)
+- dead_rule_detector (512 stubów), tautology_guard, else_chain_dead_code,
+  hardcoded_audit (265 hardcode'ów), cross_package_conflict_detector.
+- Oceń skuteczność i zaproponuj usprawnienia: detekcja semantyczna,
+  property-based testing, fuzzing reguł, analiza przepływu danych.
+### 3. AUDYT ZERO-DEFECT I SELF-HEALING
+- zero_defect_certification (kryteria: legal_basis, temporal, test, unique
+  rule_id, no_hardcoded, metadata, routing), self_healing_engine,
+  rule_provenance_dna, adaptive_trust_score. Zaprojektuj certyfikat
+  "ENTERPRISE-CERTIFIED" per reguła.
+### 4. AUDYT ANALIZY WPŁYWU ZMIAN PRAWA
+- legal_change_impact_analyzer, isap_drift_alarm, migration_impact_analyzer,
+  judgment_predictor — oceń gotowość do szybkiej adaptacji. Zaprojektuj
+  "impact matrix" zmiany prawa → dotknięte reguły.
+### 5. AUDYT SYMULATORÓW I CHAOS ENGINEERING
+- digital_twin_simulator, rule_impact_simulator, chaos_engineering,
+  predictive_audit_shield — oceń pokrycie scenariuszy ekstremalnych.
+### 6. OPA JAKO ROZBUDOWANY SYSTEM
+- Przeprować głębokie myślenie: jak narzędzia mają wspierać cykl życia
+  reguł przy zmianach prawa — zaprojektuj zintegrowany pipeline jakości.
+### 7. GENIALNE POMYSŁY ENTERPRISE (min. 15)
+- Przeprować głęboką analizę i zaproponuj min. 15 potężnych rozwiązań na
+  poziomie ENTERPRISE, np.: CI/CD quality-gates, fuzzer reguł, samouczący
+  się walidator podstaw prawnych, wizualny panel jakości, auto-korekta
+  reguł z raportów, detektor regresji prawnej — każde innowacyjne
+  ulepszenie wyprzedzające profesjonalistów.
+### 8. REKOMENDACJE — MAPA DROGOWA
+- Uszereguj luki P0/P1/P2, oszacuj czas naprawy i ryzyko.
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG NARZĘDZIA JAKOŚCI (P22) v8.0"
+- Executive Summary TOP 10, diagramy Mermaid (pipeline jakości, cykl
+  certyfikacji), tabela narzędzi (skuteczność, luki), min. 20-28 stron.
+- Zapisz jako plik txt: R22.txt.
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Generujesz WYŁĄCZNIE RAPORT
+ANALITYCZNY. Przeprować głębokie myślenie i przeprować głęboką analizę — na
+zaawansowanym poziomie Enterprise, by żadna wadliwa reguła nie weszła do
+produkcji.
+
+## 🧹 PO ZAKOŃCZENIU PRACY — WYCZYŚĆ OKNO KONTEKSTOWE:
+1. Zapisz kompletny raport jako R22.txt.
+2. **WYCZYŚĆ OKNO KONTEKSTOWE** (NOWA, czysta sesja/rozmowa) — przejście płynne
+   do Promptu P23 z pełnym oknem 1M na analizę.
+3. Potwierdź: "P22 ZAKOŃCZONY — OKNO WYCZYSZCZONE — GOTOWY NA P23".

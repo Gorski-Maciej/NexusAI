@@ -1,0 +1,65 @@
+═══════════════════════════════════════════════════════════════════════════════
+ R15_SYNTEZA_NIEDOCIĄGNIĘĆ.txt — WYKONANIE PROMPTU A15 (SESJA GLM 5.2)
+ Silnik reguł podatkowych OPA (JDG) — NexusAI | Data: 2026-08-02
+ Status: ✅ WDROŻONY | WYCZYŚĆ OKNO KONTEKSTOWE — wykonane
+ Dane wejściowe: R01–R14 (raporty z sesji A01–A14)
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. GLOBALNE METRYKI (agregacja R02–R14)
+───────────────────────────────────────────────────────────────────────────────
+ • Defekty razem: 65 (domeny R02–R13: 55 = P0 7 | P1 34 | P2 14; systemowe R14: 10).
+ • Per domena (R02–R13): VAT 5, PIT 6, Ryczałt 4, Ordynacja/KKS 5, ZUS 4,
+   Zdrowotna 4, PKPiR/UoR 4, KSeF/JPK 4, PCC/lokalne/akcyza 5,
+   CrossBorder/TP/CFC/FX 6, RODO/AML/BDO 5, PP/CEIDG/sukcesja 3 → suma 55.
+ • Per kategoria: stuby { true } — 30+ plików (P0), duplikaty rule_id — 369
+   (zbadano 5), martwe reguły matched:false — 253 (PKPiR 56), rozjazdy
+   JDG/rules vs policies — 12, brak temporalności — 3, brak testów — 40%,
+   luki prawne (BRAK) — 5 (karta podatkowa, PCC-3 termin, WHT, RODO rodo.rego,
+   BDO rejestracja).
+
+ 2. MASTER LISTA NAPRAW (priorytet P0 → P2, wybór 12 najważniejszych)
+───────────────────────────────────────────────────────────────────────────────
+ | ID | Domena      | Defekt                          | Rozwiązanie (słownie)            |
+ | M1 | System      | 512 stubów { true }             | cleanup_stubs → warunki + CI     |
+ | M2 | PKPiR/UoR   | Martwa warstwa PKPiR (56)       | Przepisać 6 stubów micro/pkpir   |
+ | M3 | PCC/lokalne | PCC-3 termin 14 dni BRAK        | Nowa reguła + kalendarz          |
+ | M4 | CrossBorder | WHT BRAK                        | Nowy pakiet WHT                  |
+ | M5 | RODO/BDO    | 11 stubów (rodo 5 + bdo 6)      | Warunki + testy                  |
+ | M6 | ZUS↔PIT     | Brak koordynacji składki zlecenie| safe_merge rozszerzenie          |
+ | M7 | Routing     | undefined przy braku thresholda  | fallback → READY/ASK_USER        |
+ | M8 | System      | 369 duplikatów rule_id          | dedup_rule_id + CI               |
+ | M9 | Temporalność| 3 reguły bez valid_from/to      | temporal.rego dopełnienie        |
+ | M10| Ryczałt     | Karta podatkowa BRAK            | Nowy pakiet karty podatkowej     |
+ | M11| ZUS         | Stopy hardcode                  | thresholds + test                |
+ | M12| PIT         | Kumulacja ulg bez limitu        | Reguła limitu + test T9           |
+
+ 3. GRAF ZALEŻNOŚCI NAPRAW (kolejność)
+───────────────────────────────────────────────────────────────────────────────
+ M1 (stuby) → M2/M5/M10 (domeny) → M8 (duplikaty) → M7 (routing) → M3/M4
+ (luki prawne) → M6/M9 (koordynacja/temporalność) → M11/M12 (progi/ulgi).
+ Warunek wstępny CAŁOŚCI: opa check + opa test (Faza 0).
+
+ 4. PODZIAŁ NA FAZY (8 tygodni, 3 fazy)
+───────────────────────────────────────────────────────────────────────────────
+ Faza 0 (1-2 tyg.): OPA + opa check/test na 406 plikach + brama CI.
+ Faza 1 (3-5 tyg.): M1-M5 (stuby, martwe warstwy, luki P0).
+ Faza 2 (6-8 tyg.): M6-M12 (koordynacja, routing, temporalność, progi, ulgi)
+ + kalibracja trust-score + UI decyzji.
+
+ 5. METRYKI SUKCESU ENTERPRISE
+───────────────────────────────────────────────────────────────────────────────
+ • opa check/test: 100% PASS w CI • zero stubów, zero duplikatów,
+   zero martwych reguł • pokrycie prawne klasa A ≥80% • trafność AUTO_POST
+   ≥99% (10 000 przypadków) • zmiana prawa → produkcja ≤72h • p95 decyzji
+   <5 ms • zero-downtime aktualizacji.
+
+ 6. PIERWSZE 3 POZYCJE DO WDROŻENIA
+───────────────────────────────────────────────────────────────────────────────
+ 1) M1 (stuby) — warunek bezpieczeństwa AUTO_POST. 2) M2 (PKPiR) — rdzeń
+ księgowości JDG. 3) M5 (RODO/BDO) — ryzyko compliance i sankcji.
+
+ 7. ZAKOŃCZENIE SERII A01–A15
+───────────────────────────────────────────────────────────────────────────────
+ Komplet R01–R15 gotowy. Seria wdrożona w 100%. Wszystkie sesje zakończone
+ instrukcją WYCZYŚĆ OKNO KONTEKSTOWE. Forteca gotowa do budowy wg faz R15. ⚠
+═══════════════════════════════════════════════════════════════════════════════

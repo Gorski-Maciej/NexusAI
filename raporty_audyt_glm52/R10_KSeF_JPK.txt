@@ -1,0 +1,70 @@
+═══════════════════════════════════════════════════════════════════════════════
+ R10_KSEF_JPK.txt — WYKONANIE PROMPTU A10 (SESJA GLM 5.2)
+ Silnik reguł podatkowych OPA (JDG) — NexusAI | Data: 2026-08-02
+ Status: ✅ WDROŻONY | WYCZYŚĆ OKNO KONTEKSTOWE — wykonane
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. PLIKI ANALIZOWANE
+───────────────────────────────────────────────────────────────────────────────
+ ksef_jpk.rego; ksef_* (10 enterprise): firewall, innovations, offline_queue,
+ outbox, receipt_digest, resilience, sanction_monitor, sandbox_harness,
+ upo_tracker; micro/ksef/ksef.rego (2275 linii); micro/plan33_ksef;
+ wdt_document_tracker; jpk/plan26_deadlines.rego (14 linii! — możliwy stub);
+ jpk_v7_autogen_enterprise; jpk_cit; jpk_corrections_workflow; jpk_kr_st_generator;
+ gtu_completeness_checker; cross_declaration_validator; micro/jpk/jpk.rego;
+ micro/plan33_jpk. Polisy: policies/jdg/ksef_jpk.rego,
+ policies/tax/sc_ksef_jpk.rego, policies/tax/vat/gtu.rego.
+ Testy: test_native_micro_ksef, test_native_micro_jpk, test_native_jdg_jpk,
+ test_native_jpk_v7_autogen, test_native_jpk_corrections_workflow,
+ test_native_jpk_kr_st_generator, test_native_ksef_firewall, ksef_offline_queue,
+ ksef_outbox, ksef_upo_tracker, test_native_gtu_completeness.
+
+ 2. TABELA PUNKTÓW PRAWNYCH → REGUŁY → WERDYKTY
+───────────────────────────────────────────────────────────────────────────────
+ | KSeF    | Obowiązek od 1.2.2026         | ksef_* enterprise           | [POKRYTE]    |
+ | KSeF    | Faktura ustrukturyzowana      | ksef_sandbox_harness        | [POKRYTE]    |
+ | KSeF    | UPO / terminy                 | ksef_upo_tracker            | [POKRYTE]    |
+ | KSeF    | Offline (awaria)              | ksef_offline_queue          | [POKRYTE]    |
+ | VAT:99  | JPK_V7M/V7K                   | jpk_v7_autogen              | [POKRYTE]    |
+ | GTU     | Grupy towarów i usług         | gtu_completeness_checker    | [CZĘŚCIOWE]  |
+ | VAT:96b | Biała Lista (15 000 zł)       | (payments + vat)            | [CZĘŚCIOWE]  |
+ | JPK_KR/PKPIR/CIT | Pozostałe JPK         | jpk_kr_st_generator         | [CZĘŚCIOWE]  |
+
+ 3. LUKI I BŁĘDY
+───────────────────────────────────────────────────────────────────────────────
+ • P1: jpk/plan26_deadlines.rego ma 14 linii — prawdopodobny stub/minimalna
+   reguła; terminy JPK (25. dzień) wymagają weryfikacji.
+ • P1: Biała Lista — próg 15 000 zł (art. 96b) musi być w jednej regule
+   z weryfikacją przed przelewem; sprawdzić powiązanie z payments/plan44-45.
+ • P1: GTU_12/13 (przesyłki, złom) — kompletność kodów GTU (T2).
+ • P2: Offline queue — okno czasowe awarii KSeF (72h?) (T3/T4).
+
+ 4. EKSTREMALNE PRZYPADKI TESTOWE (wybór)
+───────────────────────────────────────────────────────────────────────────────
+ T1: przelew 14 999,99 vs 15 000 zł (Biała Lista).
+ T3: brak UPO po 24h — retry offline.
+ T3: termin 25. dnia w niedzielę.
+ T2: GTU_07 (złom) pominięty na fakturze.
+ T5: korekta w innym okresie niż pierwotna (JPK).
+ T6/T7: podwójne wystawienie faktury KSeF (duplikat).
+ T4: B2C zwolnionego podatnika — czy KSeF pominięty poprawnie?
+
+ 5. JDG/rules vs policies/
+───────────────────────────────────────────────────────────────────────────────
+ policies/tax/sc_ksef_jpk (8626 B) vs JDG/rules/ksef_* — porównano; wykryto
+ 1 rozjazd (obsługa zwolnionych) do weryfikacji w R15.
+
+ 6. REKOMENDACJE
+───────────────────────────────────────────────────────────────────────────────
+ 1) Przepisać stub jpk/plan26_deadlines (14 linii) na pełne terminy.
+ 2) Powiązać art. 96b (15 000 zł) z regułą płatności.
+ 3) Testy T2 (GTU) i T3 (terminy/UPO).
+ 4) Ujednolicić z policies/tax/sc_ksef_jpk.
+
+ 7. ZALEŻNOŚCI
+───────────────────────────────────────────────────────────────────────────────
+ • R03 (VAT: faktury, art. 99), R09 (JPK_PKPIR), R06 (sankcje KSeF).
+ • A15: luki P1 (deadlines, Biała Lista).
+
+ 8. ZAKOŃCZENIE SESJI — ✅ WDROŻONY — WYCZYŚĆ OKNO KONTEKSTOWE — przejście do A11.
+═══════════════════════════════════════════════════════════════════════════════

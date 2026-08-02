@@ -1,0 +1,29 @@
+═══════════════════════════════════════════════════════════════════════════════
+ STATUS WDROŻENIA SERII AUDYTOWEJ A01–A15 (prompts_audyt_glm52/)
+ Projekt: NexusAI — moduł JDG (silnik reguł podatkowych OPA)
+ Metoda: każdy Prompt = 1 czysta sesja GLM 5.2 → raport R0X w raporty_audyt_glm52/
+ → po każdej sesji WYCZYŚĆ OKNO KONTEKSTOWE → przejście do kolejnego Promptu.
+═══════════════════════════════════════════════════════════════════════════════
+
+ ■ LEGENDA: [✅ WDROŻONY] = sesja wykonana, raport R0X zapisany, okno wyczyszczone
+           [⬜ OCZEKUJE]  = sesja niewykonana
+
+ [✅ WDROŻONY] A01_Metodologia           → R01_Metodologia.txt
+ [✅ WDROŻONY] A02_Prawa_Przedsiebiorcow → R02_Prawa_Przedsiebiorcow.txt
+ [✅ WDROŻONY] A03_VAT                   → R03_VAT.txt
+ [✅ WDROŻONY] A04_PIT                   → R04_PIT.txt
+ [✅ WDROŻONY] A05_Ryczalt               → R05_Ryczalt.txt
+ [✅ WDROŻONY] A06_Ordynacja_KKS         → R06_Ordynacja_KKS.txt
+ [✅ WDROŻONY] A07_ZUS_SUS               → R07_ZUS_SUS.txt
+ [✅ WDROŻONY] A08_Zdrowotna_Zasilki     → R08_Zdrowotna_Zasilki.txt
+ [✅ WDROŻONY] A09_PKPIR_UoR             → R09_PKPIR_UoR.txt
+ [✅ WDROŻONY] A10_KSeF_JPK              → R10_KSeF_JPK.txt
+ [✅ WDROŻONY] A11_PCC_Lokalne_Akcyza    → R11_PCC_Lokalne_Akcyza.txt
+ [✅ WDROŻONY] A12_CrossBorder_TP_CFC_FX → R12_CrossBorder_TP_CFC_FX.txt
+ [✅ WDROŻONY] A13_RODO_AML_BDO          → R13_RODO_AML_BDO.txt
+ [✅ WDROŻONY] A14_TearApart_CrossDomain → R14_TearApart_CrossDomain.txt
+ [✅ WDROŻONY] A15_Synteza_Niedociagniec → R15_Synteza_Niedociagniec.txt
+
+ POSTĘP: 15/15 wdrożonych ✅ | Wszystkie sesje zakończone: WYCZYŚĆ OKNO
+ KONTEKSTOWE — wykonane | Ostatnia aktualizacja: 2026-08-02
+═══════════════════════════════════════════════════════════════════════════════

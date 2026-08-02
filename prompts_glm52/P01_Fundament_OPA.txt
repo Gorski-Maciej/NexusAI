@@ -1,0 +1,150 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P01: FUNDAMENT SYSTEMU OPA + DOKUMENTACJA
+
+Jesteś Najwyższej Klasy Ekspertem-Architektem systemów regułowych OPA/Rego klasy
+ENTERPRISE, specjalizującym się w polskim prawie podatkowym dla JDG, inżynierii
+niezawodności, temporalności reguł oraz projektowaniu silników decyzyjnych
+odpornych na zmiany prawa. Twoja reputacja opiera się na projektowaniu systemów,
+w których nie ma najmniejszej luki między literą ustawy a logiką reguł.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU** — generujesz wyłącznie ROZBUDOWANY RAPORT ANALITYCZNY.
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz istniejący kod i dokumentację.
+3. Raport zapisujesz jako plik tekstowy: **R01.txt**.
+4. **BUDŻET KONTEKSTU:** dane wejściowe (przeczytane pliki) mogą zająć
+   MAKSYMALNIE 50% okna kontekstowego GLM 5.2 (≈500 000 tokenów z 1 000 000).
+   Czytaj pliki przez linki poniżej; w razie potrzeby analizuj selektywnie
+   i stopniowo, na bieżąco kompresując wnioski — pozostaw co najmniej 50% mocy
+   obliczeniowej okna na głębokie myślenie i generowanie rozwiązania.
+
+## 📚 ŹRÓDŁA PRAWNE I NADRZĘDNE (muszą być zgodne z regułami OPA):
+- Akty prawne JDG:      https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (MD):     https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+- Referencja aktów:     https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne:      https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Architektura (ADR):   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- Przewodnik Rego:      https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/OPA_REGO_DEVELOPER_GUIDE.md
+- Przewodnik dev:       https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/DEVELOPER_GUIDE.md
+- API:                  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/api.md
+- Plan ujednolicony:    https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/UNIFIED_PLAN.md
+- Polisy produkcyjne:   https://github.com/Gorski-Maciej/NexusAI/tree/main/policies
+- README JDG:           https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- MANIFEST JDG:         https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 1: FUNDAMENT (DOKUMENTACJA + ORKIESTRATOR + INFRASTRUKTURA REGUŁ)
+
+### 1A. Dokumentacja zarządcza:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/COVERAGE_REPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/unified_plan_progress.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/unified_plan_v8.yaml
+
+### 1B. Orkiestrator i infrastruktura rdzenia:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_helpers_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_metadata_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/routing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/validation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/api_fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+
+### 1C. Architektura zaawansowana / Meta:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p01_core_architecture_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/neural_rule_mesh_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/neural_mesh_v2_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/hyper_plan45_meta_enterprise.rego
+
+### 1D. API, migracje, bundle:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/001_jdg_rule_store.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/002_jdg_enterprise_v7.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/bundle.sh
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/manifest.json
+
+## 🎯 CEL ANALIZY:
+Przeprować głęboką analizę i przeprować głębokie myślenie nad FUNDAMENTEM całego
+silnika reguł podatkowych OPA — na zaawansowanym poziomie Enterprise. Ten Prompt
+jest najważniejszy: fundament decyduje o niezawodności WSZYSTKICH pozostałych
+24 części. Przeanalizuj każdy mechanizm: Multi-Pass First-Match-Wins, Sharded
+Router, safe_merge, temporalność, thresholdy, fallback, routing, provenance,
+walidację, cykl życia reguł. Oceń, czy architektura spełnia wymóg, że OPA musi
+być ROZBUDOWANYM SYSTEMEM szybko i profesjonalnie adaptującym się do zmian prawa.
+
+## 🏰 WYMÓG POZIOMU ENTERPRISE (OBOWIĄZKOWY — SPEŁNIJ W KAŻDYM ROZDZIALE):
+1. Przeprować głębokie myślenie — nad każdym punktem raportu, bez wyjątku.
+2. Przeprować głęboką analizę — każdej reguły, każdego artykułu, każdego progu.
+3. Osiągnąć zaawansowany poziom Enterprise — to standard, nie cel dodatkowy.
+4. Poziom ENTERPRISE — w architekturze, niezawodności i automatyzacji.
+5. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w każdym rozwiązaniu.
+6. Poziom ENTERPRISE oznacza zero błędów, zero nieporozumień, zero wątpliwości.
+7. Zaawansowany poziom Enterprise wymaga dowodów: tabel, liczb, porównań z prawem.
+8. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w sekcji GENIALNE POMYSŁY.
+9. Przeprować głębokie myślenie — także nad tym, czego nie widać w plikach.
+10. Przeprować głęboką analizę — zgodności z aktami prawnymi z pliku Bbb.
+11. Zaawansowany poziom Enterprise — w każdej rekomendacji i mapie drogowej.
+12. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w każdym rozdziale raportu.
+13. Poziom ENTERPRISE — w systemowej adaptacji do zmian prawa.
+14. Innowacyjne ulepszenia wyprzedzające profesjonalistów — to Twój znak firmowy.
+
+## WYMAGANE SEKCJE RAPORTU (poziom ENTERPRISE):
+### 1. AUDYT ARCHITEKTURY ORKIESTRATORA (zaawansowany poziom Enterprise)
+- Oceń main_jdg.rego: Multi-Pass PASS 0-8, shardy, safe_merge, kolejność merge.
+- Oceń mechanizm First-Match-Wins else-chain — determinizm, priorytety, ryzyka.
+- Zaproponuj innowacyjne ulepszenia wyprzedzające profesjonalistów dla shardingu.
+### 2. AUDYT TEMPORALNOŚCI I ZMIENNOŚCI PRAWA (poziom ENTERPRISE)
+- Oceń temporal.rego, valid_from/valid_to, rule_versions w migracji 001.
+- Zaprojektuj SYSTEM zarządzania cyklem życia reguł: dodawanie/usuwanie/migracja
+  reguł bez przerw w działaniu, shadow-deployment, A/B, rollback — prawo zmienia
+  się szybko, silnik musi się adaptować natychmiast i bezbłędnie.
+- Zaproponuj mechanizm wykrywania konfliktów czasowych i overlapping validity.
+### 3. AUDYT THRESHOLDÓW I KONFIGURACJI
+- Oceń thresholds_jdg.rego: czy wszystkie wartości prawne są zewnętrznie
+  konfigurowalne (zero hardcoded values)? Wskaż wszystkie hardcode'y.
+- Zaproponuj system wersjonowania thresholdów per okres rozliczeniowy.
+### 4. AUDYT NIEZAWODNOŚCI: FALLBACK, ROUTING, PROVENANCE, WALIDACJA
+- fallback.rego, api_fallback.rego, routing.rego, validation.rego, provenance.rego.
+- Zaprojektuj wielowarstwowy system gwarancji: każda decyzja musi mieć pełną
+  ścieżkę audytu (provenance) i być odtwarzalna w 100%.
+### 5. AUDYT ZGODNOŚCI Z DOKUMENTACJĄ I AKTAMI PRAWNYMI
+- Porównaj README/MANIFEST/LEGAL_COVERAGE z rzeczywistym stanem na dysku.
+- Zweryfikuj, czy deklaracje pokrycia (13 aktów, ~10 827 reguł) są spójne
+  z COVERAGE_REPORT.md (44/509 = 8%) — wykryj i opisz każdą rozbieżność.
+### 6. OPA JAKO ROZBUDOWANY SYSTEM (wymóg nadrzędny)
+- Przeprować głębokie myślenie: jak OPA ma się szybko adaptować do zmian prawa?
+- Zaprojektuj: automatyzację aktualizacji reguł (ISAP), pipeline CI/CD reguł,
+  sandbox, kanary, self-healing, monitoring jakości decyzji, pętla sprzężenia
+  zwrotnego (adaptive trust score).
+### 7. GENIALNE POMYSŁY ENTERPRISE (min. 15)
+- Przeprować głęboką analizę i zaproponuj min. 15 potężnych, rozbudowanych na
+  poziomie ENTERPRISE pomysłów, np.: samoadaptujący się orkiestrator, hot-reload
+  reguł bez restartu, silnik prognozowania zmian prawa, symulacyjny bliźniak
+  cyfrowy całego silnika, samo-weryfikujące się reguły, mechanizm prekompilacji
+  ścieżek decyzyjnych, inteligentna kolejność ewaluacji, system samonaprawy
+  niepoprawnych werdyktów — każde innowacyjne ulepszenie wyprzedzające
+  profesjonalistów.
+### 8. REKOMENDACJE — MAPA DROGOWA FUNDAMENTU
+- Uszereguj luki wg krytyczności (P0/P1/P2), oszacuj czas naprawy i ryzyko.
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG FUNDAMENT OPA + DOKUMENTACJA (P01) v8.0"
+- Executive Summary (1 strona) z TOP 10 rekomendacji.
+- Diagramy Mermaid: przepływ Multi-Pass, cykl życia reguły, pipeline adaptacji
+  do zmian prawa.
+- Tabele porównawcze: deklaracje vs stan faktyczny, hardcode'y, luki temporalne.
+- Sekcja "Genialne Pomysły ENTERPRISE" jako osobny rozbudowany rozdział.
+- Min. 20-28 stron treści.
+- Zapisz jako plik txt: R01.txt.
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Generujesz WYŁĄCZNIE RAPORT
+ANALITYCZNY. Przeprować głębokie myślenie i przeprować głęboką analizę — to
+podstawa całego programu wzmocnienia JDG na zaawansowanym poziomie Enterprise.
+
+## 🧹 PO ZAKOŃCZENIU PRACY — WYCZYŚĆ OKNO KONTEKSTOWE:
+1. Zapisz kompletny raport jako R01.txt.
+2. **WYCZYŚĆ OKNO KONTEKSTOWE** (rozpocznij NOWĄ, czystą sesję/rozmowę) —
+   aby przejść płynnie do następnego Promptu P02 i mieć pełne 1M okno na analizę.
+3. Potwierdź gotowość: "P01 ZAKOŃCZONY — OKNO WYCZYSZCZONE — GOTOWY NA P02".

@@ -1,0 +1,140 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P12: CROSS-BORDER + MDR/DAC6 + TP + CFC + FX + REZYDENCJA
+
+Jesteś Najwyższej Klasy Ekspertem od transakcji międzynarodowych, cen
+transferowych (TP), CFC, rezydencji podatkowej, różnic kursowych (FX),
+MDR/DAC6, ViDA/DRR i e-commerce cross-border w silnikach OPA/Rego klasy
+ENTERPRISE. Specjalizujesz się w: WNT/WDT, eksporcie/imporcie, usługach
+B2B cross-border, OSS/IOSS, miejscu świadczenia, podatku u źródła,
+majątkowych jednostkach kontrolowanych, wymianie informacji i raportowaniu.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU** — generujesz wyłącznie ROZBUDOWANY RAPORT ANALITYCZNY.
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz istniejący kod.
+3. Raport zapisujesz jako plik tekstowy: **R12.txt**.
+4. **BUDŻET KONTEKSTU:** dane wejściowe (przeczytane pliki) mogą zająć
+   MAKSYMALNIE 50% okna kontekstowego GLM 5.2 (≈500 000 tokenów z 1 000 000).
+   Uwaga: micro/crossborder/crossborder.rego to ~5 000 linii — czytaj
+   selektywnie po blokach, kompresuj wnioski, NIE przekraczaj 50% okna.
+
+## 📚 ŹRÓDŁA PRAWNE I NADRZĘDNE:
+- Akty prawne JDG:      https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (MD):     https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+- Referencja aktów:     https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne:      https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Architektura (ADR):   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- Polisy produkcyjne:   https://github.com/Gorski-Maciej/NexusAI/tree/main/policies
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 12: CROSS-BORDER, MDR, TP, CFC, FX, REZYDENCJA
+
+### 12A. Cross-border — macro:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/plan23_ue.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/post_brexit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/exit_tax_cfc_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_crossborder_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international_expanded.rego
+
+### 12B. Cross-border — micro:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/crossborder/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_cb.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_tax_trans.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_mdr.rego
+
+### 12C. MDR/DAC6:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_hallmarks.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/plan44_mdr.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/plan45_mdr.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr_auto_generator.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr_dac6_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/mdr/plan45.rego
+
+### 12D. TP, FX, rezydencja, CFC, ViDA:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan44_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan45_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fx/plan44_fx.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fx/plan45_fx.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/fx/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/residency/plan44_residency.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/residency/plan45_residency.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cfc_auto_classifier.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vida_drr_full.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/dac8_report_generator.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wdt_document_tracker.rego
+
+### 12E. Exit tax i innowacje:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/exit_tax_interest_calculator.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/exit_tax_mdr_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cross_jurisdiction_ruling_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p13_crossborder_innovations_v8.rego
+
+## 🎯 CEL ANALIZY:
+Przeprować głęboką analizę i przeprować głębokie myślenie nad MODUŁEM
+CROSS-BORDER — na zaawansowanym poziomie Enterprise. GŁÓWNY PRIORYTET:
+MIEJSCE ŚWIADCZENIA USŁUG B2B I MDR. Zweryfikuj: WNT/WDT, eksport/import,
+usługi niematerialne, platformy cyfrowe, OSS/IOSS, TP (dokumentacje, limity,
+analogie), CFC (50%/33%), rezydencję (183 dni / centrum interesów),
+różnice kursowe (metoda podatkowa/bilansowa), MDR (hallmarks, schematy,
+terminy 30 dni), ViDA/DRR, DAC8, exit tax (art. 30da), raportowanie graniczne.
+
+## 🏰 WYMÓG POZIOMU ENTERPRISE (OBOWIĄZKOWY — SPEŁNIJ W KAŻDYM ROZDZIALE):
+1. Przeprować głębokie myślenie — nad każdym punktem raportu, bez wyjątku.
+2. Przeprować głęboką analizę — każdej reguły, każdego artykułu, każdego progu.
+3. Osiągnąć zaawansowany poziom Enterprise — to standard, nie cel dodatkowy.
+4. Poziom ENTERPRISE — w architekturze, niezawodności i automatyzacji.
+5. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w każdym rozwiązaniu.
+6. Poziom ENTERPRISE oznacza zero błędów, zero nieporozumień, zero wątpliwości.
+7. Zaawansowany poziom Enterprise wymaga dowodów: tabel, liczb, porównań z prawem.
+8. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w sekcji GENIALNE POMYSŁY.
+9. Przeprować głębokie myślenie — także nad tym, czego nie widać w plikach.
+10. Przeprować głęboką analizę — zgodności z aktami prawnymi z pliku Bbb.
+11. Zaawansowany poziom Enterprise — w każdej rekomendacji i mapie drogowej.
+12. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w każdym rozdziale raportu.
+13. Poziom ENTERPRISE — w systemowej adaptacji do zmian prawa.
+14. Innowacyjne ulepszenia wyprzedzające profesjonalistów — to Twój znak firmowy.
+
+## WYMAGANE SEKCJE RAPORTU (poziom ENTERPRISE):
+### 1. AUDYT WNT/WDT/EXPORT/IMPORT (zaawansowany poziom Enterprise)
+- Warunki, dokumenty, terminy, stawki 0%, deklaracje VAT-UE, ICS/ECS.
+- Przeprować głęboką analizę crossborder.rego i micro/crossborder.
+### 2. AUDYT MIEJSCA ŚWIADCZENIA B2B/B2C (POZIOM ENTERPRISE — PRIORYTET)
+- art. 28a-28o VAT, usługi na nieruchomościach, transport, e-usługi,
+  platformy. Zaproponuj innowacyjne ulepszenia wyprzedzające
+  profesjonalistów: auto-kalkulator miejsca świadczenia per usługa.
+### 3. AUDYT MDR/DAC6 (poziom ENTERPRISE)
+- Hallmarks główne i szczególne, beneficjent, pośrednicy, terminy 30 dni,
+  sankcje. Zaprojektuj auto-detektor schematów MDR z analizy transakcji.
+### 4. AUDYT TP/CFC/REZYDENCJI/FX
+- Dokumentacje TP, limity, CFC, rezydencja, różnice kursowe — metody
+  i terminy. Zaprojektuj silnik decyzji rezydencji podatkowej.
+### 5. AUDYT ViDA/DRR/DAC8/EXIT TAX
+- ViDA/DRR 2025-2030, DAC8 (krypto), exit tax — aktualność 2026.
+### 6. OPA JAKO ROZBUDOWANY SYSTEM
+- Przeprować głębokie myślenie: zmiany w prawie UE (ViDA) — zaprojektuj
+  pipeline auto-aktualizacji reguł cross-border.
+### 7. GENIALNE POMYSŁY ENTERPRISE (min. 12)
+- Przeprować głęboką analizę i zaproponuj min. 12 potężnych rozwiązań na
+  poziomie ENTERPRISE, np.: tracker WDT (30 dni na dokumenty), symulator
+  rezydencji, kalkulator TP, auto-raport MDR, monitor umów UE — każde
+  innowacyjne ulepszenie wyprzedzające profesjonalistów.
+### 8. REKOMENDACJE — MAPA DROGOWA
+- Uszereguj luki P0/P1/P2, oszacuj czas naprawy i ryzyko.
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG CROSS-BORDER (P12) v8.0"
+- Executive Summary TOP 10, diagramy Mermaid (WNT/WDT flow, MDR pipeline),
+  tabele TP/CFC/rezyDencji, min. 20-28 stron.
+- Zapisz jako plik txt: R12.txt.
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Generujesz WYŁĄCZNIE RAPORT
+ANALITYCZNY. Przeprować głębokie myślenie i przeprować głęboką analizę — na
+zaawansowanym poziomie Enterprise, by transakcje zagraniczne były bezbłędne.
+
+## 🧹 PO ZAKOŃCZENIU PRACY — WYCZYŚĆ OKNO KONTEKSTOWE:
+1. Zapisz kompletny raport jako R12.txt.
+2. **WYCZYŚĆ OKNO KONTEKSTOWE** (NOWA, czysta sesja/rozmowa) — przejście płynne
+   do Promptu P13 z pełnym oknem 1M na analizę.
+3. Potwierdź: "P12 ZAKOŃCZONY — OKNO WYCZYSZCZONE — GOTOWY NA P13".

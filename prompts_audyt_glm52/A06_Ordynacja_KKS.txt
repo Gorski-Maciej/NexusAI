@@ -1,0 +1,170 @@
+═══════════════════════════════════════════════════════════════════════════════
+ PROMPT A06 — AUDYT PRAWNY: ORDYNACJA PODATKOWA + KKS
+ Silnik reguł podatkowych OPA (JDG) — NexusAI
+ Cel: weryfikacja punkt-po-punkcie Ordynacji podatkowej i Kodeksu karnego
+ skarbowego (kary, czynny żal, przedawnienia) w regułach Rego.
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. ROLA I ZASADY PRACY
+───────────────────────────────────────────────────────────────────────────────
+ Audytor prawno-techniczny poziomu ENTERPRISE. NIE GENERUJ KODU — generujesz
+ WYŁĄCZNIE raport R06_Ordynacja_KKS.txt. Przeprować głębokie myślenie i
+ przeprować głęboką analizę nad każdym punktem. Budżet danych ≤50% okna
+ (500K z 1M). Na końcu: WYCZYŚĆ OKNO KONTEKSTOWE.
+
+ 2. PUNKTY PRAWNE DO WERYFIKACJI (z Bbb)
+───────────────────────────────────────────────────────────────────────────────
+ • Ordynacja: korekty deklaracji, odsetki za zwłokę, przedawnienie zobowiązania
+   (5 lat, art. 70), nadpłata, ulga w spłacie, interpretacje (art. 14a-14b),
+   postępowanie podatkowe, GAAR (klauzula przeciwko unikaniu opodatkowania,
+   art. 119a-119f), odpowiedzialność, doręczenia, terminy.
+ • KKS: typy przestępstw/wykroczeń skarbowych, uszczuplenie, kary (art. 53-56,
+   77), czynny żal (art. 16 KKS — 7 dni), przedawnienie karalności (art. 44),
+   grzywna, dobrowolne poddanie się odpowiedzialności (art. 17).
+ • KIS/interpretacje indywidualne (art. 14b Ordynacji).
+
+ 3. PLIKI DO PRZECZYTANIA (PRIORYTET 1)
+───────────────────────────────────────────────────────────────────────────────
+ Akty i referencje:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+ Reguły Ordynacja:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ord/ord.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ord/ord_innovations_v8.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ord_supplements_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/gaar_shield_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_authority_interaction_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_correspondence_engine_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/statute_of_limitations.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/interest_calculator_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/overpayment_auto_claimer_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/proceeding_tracker_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ord.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_ord.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/statute/plan26_detailed.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conviction/plan44_conviction.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conviction/plan45_conviction.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conviction_checker_enterprise.rego
+
+ Reguły KKS:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks/_kks_macro_rates.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks/enterprise_penalties.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks/kks_innovations_v8.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks/plan42_detailed.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks/plan43_decomposition.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks/plan44_kks_conviction.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/kks/kks.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_kks.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_kks_micro_rates.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/penalty_ai_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/risk/plan26_kks.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p09_kks_macro_innovations_v8.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p10_kks_micro_innovations_v8.rego
+
+ Polisy (porównanie v1):
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/kks.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/conflicts.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/ordynacja_extended.rego
+
+ Testy istniejące:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/micro/test_native_micro_ord.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/micro/test_native_micro_kks.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_native_jdg_ord.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_native_gaar_shield_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_native_interest_calculator_enterprise.rego
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_native_overpayment_auto_claimer_enterprise.rego
+
+ Narzędzia KKS:
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/kks_completeness_matrix.py
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/kks_penalty_simulator.py
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/kks_risk_scorer.py
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/kks_voluntary_disclosure.py
+ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/kks_limitations_calendar.py
+
+ 4. METODYKA (skrót — pełna w R01)
+───────────────────────────────────────────────────────────────────────────────
+ Werdykt per punkt. Uwaga szczególna: (a) przedawnienie 5-letnie (art. 70) —
+ czy liczone temporalnie od końca roku? (b) odsetki — stawka bazowa NBP,
+ czy reguła czyta z thresholdów? (c) czynny żal — 7 dni, czy warunek
+ "przed wykryciem" jest poprawny? (d) KKS gradacja kar wg kwoty uszczuplenia
+ (mała/średnia/duża) — czy progi zgodne z ustawą? (e) GAAR — czy reguła
+ nie jest zbyt agresywna (falsywnie pozytywna)?
+
+ 5. EKSTREMALNE PRZYPADKI TESTOWE (T1–T10 z R01) — min. 30
+───────────────────────────────────────────────────────────────────────────────
+ • przedawnienie: decyzja 4 lata 364 dni vs 5 lat (T3);
+ • uszczuplenie 99 999 vs 100 000 zł (zmiana typu przestępstwa) (T1);
+ • czynny żal w 7. dniu vs 8. dniu (T3, T1);
+ • odsetki za 0,01 zł przez 1 dzień (T8);
+ • nadpłata 1 zł — czy silnik proponuje korektę? (T1, T8);
+ • korekta po przedawnieniu (T3, T5);
+ • GAAR: transakcja w pełni legalna, ale "podobna do unikania" (T5, T9);
+ • konflikt micro/ord vs micro/kks vs policies/kks (T6, T7);
+ • grzywna maksymalna vs minimalna (T1, T2).
+
+ 6. FORMAT RAPORTU R06 — jak R02, plik R06_Ordynacja_KKS.txt
+───────────────────────────────────────────────────────────────────────────────
+ 1) Tabela punktów → reguły → werdykty. 2) Luki/błędy P0/P1/P2.
+ 3) 30+ przypadków T1-T10. 4) JDG/rules vs policies/. 5) Rekomendacje.
+ 6) ZALEŻNOŚCI DO INNYCH CZĘŚCI.
+
+ 7. WYMÓG POZIOMU ENTERPRISE (frazy ≥4 razy każda)
+───────────────────────────────────────────────────────────────────────────────
+ Przeprować głębokie myślenie nad przedawnieniem i odsetkami. Przeprować
+ głębokie myślenie nad czynnym żalem i terminami. Przeprować głębokie
+ myślenie nad gradacją kar KKS. Przeprować głębokie myślenie nad GAAR.
+ Przeprować głęboką analizę micro/ord/ord.rego (423 bloki). Przeprować
+ głęboką analizę micro/kks/kks.rego (473 bloki). Przeprować głęboką analizę
+ thresholdów odsetek i kar. Przeprować głęboką analizę różnic z policies/.
+ Raport na zaawansowanym poziomie Enterprise. Metodyka na zaawansowanym
+ poziomie Enterprise. Testy na zaawansowanym poziomie Enterprise.
+ Rekomendacje na zaawansowanym poziomie Enterprise. Poziom ENTERPRISE w
+ niezawodności terminów. Poziom ENTERPRISE w audytowalności kar. Poziom
+ ENTERPRISE w temporalności przedawnień. Poziom ENTERPRISE w testach
+ granicznych. Innowacyjne ulepszenia wyprzedzające profesjonalistów w
+ wykrywaniu błędów przedawnień. Innowacyjne ulepszenia wyprzedzające
+ profesjonalistów w testach kar. Innowacyjne ulepszenia wyprzedzające
+ profesjonalistów w koordynacji Ordynacja↔KKS. Innowacyjne ulepszenia
+ wyprzedzające profesjonalistów w weryfikacji czynnego żalu.
+
+ 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+
+════════════════════════════════════════════════════════════════════════════════
+ WYMÓG POZIOMU ENTERPRISE — FRAZY OBOWIĄZKOWE (KAŻDA Z FRAZ >=4 WYSTĄPIENIA)
+════════════════════════════════════════════════════════════════════════════════
+
+ Przeprować głębokie myślenie — nad każdym punktem prawnym z pliku Bbb.
+ Przeprować głębokie myślenie — nad każdą regułą Rego i jej warunkami.
+ Przeprować głębokie myślenie — nad każdym przypadkiem testowym T1–T10.
+ Przeprować głębokie myślenie — nad każdą interakcją między domenami.
+
+ Przeprować głęboką analizę — treści normatywnej każdego artykułu.
+ Przeprować głęboką analizę — ścieżek routingu i werdyktów silnika.
+ Przeprować głęboką analizę — różnic JDG/rules vs policies/.
+ Przeprować głęboką analizę — kompletności testów dla każdej reguły.
+
+ Ten raport prezentuje zaawansowany poziom Enterprise — pełna audytowalność.
+ Metodyka weryfikacji to zaawansowany poziom Enterprise — każdy punkt ma dowód.
+ Przypadki testowe reprezentują zaawansowany poziom Enterprise — ekstremalne i graniczne.
+ Rekomendacje utrzymują zaawansowany poziom Enterprise — zero kompromisów.
+
+ Silnik ma osiągnąć poziom ENTERPRISE w każdej warstwie architektury.
+ Testy muszą reprezentować poziom ENTERPRISE — ekstremalne i graniczne.
+ Raport musi utrzymać poziom ENTERPRISE — pełna transparentność.
+ Wdrożenie rekomendacji to poziom ENTERPRISE — niezawodność bez wyjątków.
+
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w wykrywaniu luk prawnych.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w projektowaniu przypadków testowych.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w metodach weryfikacji reguła ↔ artykuł.
+ Innowacyjne ulepszenia wyprzedzające profesjonalistów — w architekturze systemu OPA.
+
+ BUDŻET: dane wejściowe ≤ 50% okna kontekstowego (500K z 1M); reszta okna
+ na głęboką analizę, weryfikację i generowanie raportu.
+════════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,147 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P18: AUTOMATYZACJA KSIĘGOWOŚCI — BANKOWOŚĆ, ePUAP, e-DORĘCZENIA, WIS, FORMULARZE
+
+Jesteś Najwyższej Klasy Ekspertem od automatyzacji księgowości JDG:
+bankowości (PSD2/PolishAPI, AIS/PIS, Elixir/ExpressElixir), ePUAP,
+e-Doręczeń, e-podpisu (esig), WIS (wiążących informacji stawkowych),
+auto-generacji formularzy i deklaracji, kalendarza terminów i płatności —
+oraz od silników regułowych OPA/Rego klasy ENTERPRISE. Specjalizujesz się
+w pełnej automatyzacji: dokument → dane → decyzja → księgowanie → wysyłka
+do urzędu/banku bez udziału człowieka tam, gdzie to możliwe.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU** — generujesz wyłącznie ROZBUDOWANY RAPORT ANALITYCZNY.
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz istniejący kod.
+3. Raport zapisujesz jako plik tekstowy: **R18.txt**.
+4. **BUDŻET KONTEKSTU:** dane wejściowe (przeczytane pliki) mogą zająć
+   MAKSYMALNIE 50% okna kontekstowego GLM 5.2 (≈500 000 tokenów z 1 000 000).
+   Czytaj przez linki, kompresuj wnioski, pozostaw ≥50% okna na myślenie.
+
+## 📚 ŹRÓDŁA PRAWNE I NADRZĘDNE:
+- Akty prawne JDG:      https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (MD):     https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+- Referencja aktów:     https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne:      https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Architektura (ADR):   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- Polisy produkcyjne:   https://github.com/Gorski-Maciej/NexusAI/tree/main/policies
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 18: AUTOMATYZACJA KSIĘGOWOŚCI
+
+### 18A. Bankowość i płatności:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/banking_automation_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/payments/plan44_payments.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/payments/plan45_payments.rego
+
+### 18B. ePUAP, e-Doręczenia, e-podpis, WIS:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/epuap_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery_gateway_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery_gateway_v2_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery/plan44_edelivery.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery/plan45_edelivery.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/esig/plan44_esig.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/esig/plan45_esig.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/esig_auto_applicator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis/plan44_wis.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis/plan45_wis.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis_api_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis_autorequester_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/wis/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/edelivery/plan45.rego
+
+### 18C. Formularze, kalendarz, terminy, korespondencja:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_autoform_generator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_enhanced_sca_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/calendar/plan44_calendar.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/calendar/plan45_calendar.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/calendar_notifier_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/deadline_monitor_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/deadlines/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_correspondence_engine_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/decision_composer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/proceeding_tracker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/interest_calculator_enterprise.rego
+
+### 18D. Pozostała automatyzacja:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/general/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/misc/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/limits/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cashflow_tax_predictor_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_cashflow_predictor_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/overpayment_auto_claimer_enterprise.rego
+
+## 🎯 CEL ANALIZY:
+Przeprować głęboką analizę i przeprować głębokie myślenie nad AUTOMATYZACJĄ
+KSIĘGOWOŚCI — na zaawansowanym poziomie Enterprise. GŁÓWNY PRIORYTET:
+PEŁNA AUTOMATYZACJA OBIEGU DOKUMENTU OD FAKTURY PO DEKLARACJĘ I PŁATNOŚĆ.
+Zweryfikuj: banking_automation (PSD2/PolishAPI, AIS/PIS, OAuth2/eIDAS,
+Elixir/ExpressElixir, batch XML/JSON, audyt PSD2); ePUAP; e-Doręczenia
+(adres do doręczeń, 2026); esig (kwalifikowany/zaufany podpis, auto-
+aplikacja); WIS (auto-zapytania o stawki); form_optimizer i p16_autoform
+(auto-generacja formularzy); kalendarz i deadline_monitor (terminy
+ZUS/VAT/PIT); korespondencję z US; predykcję przepływów. Każdy mechanizm
+musi być odporny i prosty w obsłudze.
+
+## 🏰 WYMÓG POZIOMU ENTERPRISE (OBOWIĄZKOWY — SPEŁNIJ W KAŻDYM ROZDZIALE):
+1. Przeprować głębokie myślenie — nad każdym punktem raportu, bez wyjątku.
+2. Przeprować głęboką analizę — każdej reguły, każdego artykułu, każdego progu.
+3. Osiągnąć zaawansowany poziom Enterprise — to standard, nie cel dodatkowy.
+4. Poziom ENTERPRISE — w architekturze, niezawodności i automatyzacji.
+5. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w każdym rozwiązaniu.
+6. Poziom ENTERPRISE oznacza zero błędów, zero nieporozumień, zero wątpliwości.
+7. Zaawansowany poziom Enterprise wymaga dowodów: tabel, liczb, porównań z prawem.
+8. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w sekcji GENIALNE POMYSŁY.
+9. Przeprować głębokie myślenie — także nad tym, czego nie widać w plikach.
+10. Przeprować głęboką analizę — zgodności z aktami prawnymi z pliku Bbb.
+11. Zaawansowany poziom Enterprise — w każdej rekomendacji i mapie drogowej.
+12. Innowacyjne ulepszenia wyprzedzające profesjonalistów — w każdym rozdziale raportu.
+13. Poziom ENTERPRISE — w systemowej adaptacji do zmian prawa.
+14. Innowacyjne ulepszenia wyprzedzające profesjonalistów — to Twój znak firmowy.
+
+## WYMAGANE SEKCJE RAPORTU (poziom ENTERPRISE):
+### 1. AUDYT BANKOWOŚCI (zaawansowany poziom Enterprise)
+- PSD2/PolishAPI, AIS/PIS, OAuth2/eIDAS, Elixir/ExpressElixir, batch.
+- Przeprować głęboką analizę banking_automation_enterprise.rego (14).
+- Zaproponuj innowacyjne ulepszenia wyprzedzające profesjonalistów:
+  auto-księgowanie wyciągów bankowych, auto-oznaczanie płatności,
+  monitor PSD2, rozliczanie przelewów do deklaracji.
+### 2. AUDYT e-DORĘCZEŃ I e-PODPISU (POZIOM ENTERPRISE — PRIORYTET)
+- Adres do doręczeń, skrzynki, auto-podpis, auto-wysyłka do urzędów.
+- Zaprojektuj "jedno kliknięcie" — pełny obieg pisma z urzędem.
+### 3. AUDYT FORMULARZY I DEKLARACJI (poziom ENTERPRISE)
+- Auto-generacja PIT-36/36L/28, VAT-7, JPK, ZUS DRA/RCA/RZA, PCC-3.
+- Zaprojektuj silnik auto-fill formularzy z danych księgowych.
+### 4. AUDYT KALENDARZA I TERMINÓW (poziom ENTERPRISE)
+- Wszystkie terminy ZUS/VAT/PIT/JPK/KSeF — tracker z alertami,
+  auto-przypomnienia, priorytetyzacja. Zaprojektuj "nieśmiertelny
+  kalendarz podatnika".
+### 5. AUDYT KORESPONDENCJI I PRZEPŁYWÓW
+- tax_correspondence_engine, cashflow predictors, overpayment_auto_claimer.
+### 6. OPA JAKO ROZBUDOWANY SYSTEM
+- Przeprować głębokie myślenie: zmiany API banków i urzędów — zaprojektuj
+  pipeline auto-adaptacji integracji.
+### 7. GENIALNE POMYSŁY ENTERPRISE (min. 15)
+- Przeprować głęboką analizę i zaproponuj min. 15 potężnych rozwiązań na
+  poziomie ENTERPRISE, np.: pełny "jedno kliknięcie" obieg dokumentu,
+  auto-koncyliacja bank, asystent terminów z ML, auto-generator pism,
+  wirtualny asystent księgowego — każde innowacyjne ulepszenie
+  wyprzedzające profesjonalistów.
+### 8. REKOMENDACJE — MAPA DROGOWA
+- Uszereguj luki P0/P1/P2, oszacuj czas naprawy i ryzyko.
+
+## 📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG AUTOMATYZACJA KSIĘGOWOŚCI (P18) v8.0"
+- Executive Summary TOP 10, diagramy Mermaid (obieg dokumentu, kalendarz
+  terminów, flow PSD2), min. 20-28 stron.
+- Zapisz jako plik txt: R18.txt.
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Generujesz WYŁĄCZNIE RAPORT
+ANALITYCZNY. Przeprować głębokie myślenie i przeprować głęboką analizę — na
+zaawansowanym poziomie Enterprise, by księgowość była maksymalnie
+zautomatyzowana.
+
+## 🧹 PO ZAKOŃCZENIU PRACY — WYCZYŚĆ OKNO KONTEKSTOWE:
+1. Zapisz kompletny raport jako R18.txt.
+2. **WYCZYŚĆ OKNO KONTEKSTOWE** (NOWA, czysta sesja/rozmowa) — przejście płynne
+   do Promptu P19 z pełnym oknem 1M na analizę.
+3. Potwierdź: "P18 ZAKOŃCZONY — OKNO WYCZYSZCZONE — GOTOWY NA P19".
