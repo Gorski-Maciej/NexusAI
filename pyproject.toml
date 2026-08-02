@@ -140,7 +140,7 @@ dependencies = [
     # ═══════════════════════════════════════════════════════════════════════
     # LLM Inference — llama-cpp-python (GGUF, CPU/GPU)
     # ═══════════════════════════════════════════════════════════════════════
-    "llama-cpp-python>=0.2.0",
+    "llama-cpp-python>=0.3.34",
 
     # ═══════════════════════════════════════════════════════════════════════
     # Model Downloader — własny system pobierania modeli.
