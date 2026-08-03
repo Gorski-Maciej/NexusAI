@@ -282,16 +282,71 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FALLBACK
+# C155: cross_relief_accumulation_limit — T9 (R04 P1): kumulacja ulg nie może
+# przekroczyć dochodu (IP Box + B+R + termo ≤ dochód). Limit ochronny KKS.
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true,
-    "rule_id": "jdg.pit.cross_relief.fallback",
+    "rule_id": "jdg.pit.cross_relief.accumulation_limit",
+    "package": "jdg.pit.cross_relief",
+    "priority": 155,
+    "pit_form": pit_form,
+    "cross_relief_accumulation_exceeded": true,
+    "cross_relief_accumulation_total": relief_total,
+    "cross_relief_accumulation_income": annual_income,
+    "cross_relief_accumulation_detail": sprintf("IP Box: %.2f + B+R: %.2f + termo: %.2f", [ip_income, rd_costs, thermo_costs]),
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": sprintf("Kumulacja ulg (%.2f PLN) przekracza dochód (%.2f PLN) — suma odliczeń nie może być wyższa niż dochód!", [relief_total, annual_income]),
+    "_legal_basis": "Art. 26-30cb PIT (ograniczenie: suma odliczeń ≤ dochód)",
+    "_warnings": [sprintf("🚨 KUMULACJA ULG PRZEKRACZA DOCHÓD: IP Box %.2f + B+R %.2f + termo %.2f = %.2f PLN > dochód %.2f PLN. Zmniejsz podstawę odliczeń!", [ip_income, rd_costs, thermo_costs, relief_total, annual_income])]
+} {
+    input.cross_relief_accumulation_check == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    annual_income := object.get(input.jdg_entrepreneur, "annual_taxable_income", 0)
+    ip_income := object.get(input.jdg_entrepreneur, "ip_box_qualifying_income", 0)
+    rd_costs := object.get(input.jdg_entrepreneur, "rd_total_qualified_costs", 0)
+    thermo_costs := object.get(input.jdg_entrepreneur, "thermo_total_costs", 0)
+    relief_total := ip_income + rd_costs + thermo_costs
+    relief_total > annual_income
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# C156: cross_relief_accumulation_ok — T9: kumulacja w limicie (≤ dochód)
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true,
+    "rule_id": "jdg.pit.cross_relief.accumulation_ok",
+    "package": "jdg.pit.cross_relief",
+    "priority": 156,
+    "pit_form": pit_form,
+    "cross_relief_accumulation_exceeded": false,
+    "cross_relief_accumulation_total": relief_total,
+    "cross_relief_accumulation_income": annual_income,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Art. 26-30cb PIT (ograniczenie: suma odliczeń ≤ dochód)",
+    "_warnings": [sprintf("✅ Kumulacja ulg OK: suma odliczeń %.2f PLN ≤ dochód %.2f PLN.", [relief_total, annual_income])]
+} {
+    input.cross_relief_accumulation_check == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    annual_income := object.get(input.jdg_entrepreneur, "annual_taxable_income", 0)
+    ip_income := object.get(input.jdg_entrepreneur, "ip_box_qualifying_income", 0)
+    rd_costs := object.get(input.jdg_entrepreneur, "rd_total_qualified_costs", 0)
+    thermo_costs := object.get(input.jdg_entrepreneur, "thermo_total_costs", 0)
+    relief_total := ip_income + rd_costs + thermo_costs
+    relief_total <= annual_income
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# NO-MATCH (R04 P1: stub { true } usunięty — nie generuje fałszywego matched:true)
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": false,
+    "rule_id": "jdg.pit.cross_relief.no_match",
     "package": "jdg.pit.cross_relief",
     "priority": 999,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 26-30cb PIT",
-    "_warnings": ["Cross-Relief Optimizer — sprawdź dostępne ulgi i ich kompatybilność. Pamiętaj: B+R i IP Box NIE na tym samym dochodzie!"]
+    "_legal_basis": "Art. 26-30cb PIT"
 } {
-    true
+    false
 }

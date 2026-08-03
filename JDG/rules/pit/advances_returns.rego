@@ -28,6 +28,7 @@
 package jdg.pit.advances
 
 import data.jdg.helpers
+import future.keywords.in
 
 default decide := {
     "matched": false, "rule_id": "jdg.pit.advances.no_match",
@@ -115,6 +116,53 @@ else := {
     input.invoice.expense_type == "ZUS_SOCIAL_ENTREPRENEUR"
     input.invoice.is_paid == true
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P559: pit_advance_deadline_holiday_shift — Termin 20. dnia wypada w weekend/
+# święto → przesunięcie na następny dzień roboczy (R04 P2)
+# Podstawa: art. 12 § 5 OrdPU w zw. z art. 44 PIT.
+# Input: input.pit_advance_deadline_check == true + pit_advance_deadline.due_weekday
+# (1=Pn..7=Nd) + pit_advance_deadline.due_is_public_holiday (bool).
+# UMIESZCZONY PRZED P550/P552/P554 — aby nie był shadowowany przez reguły zeznań
+# rocznych w else-chain (P550 odpala się przy tax_form == PIT_SCALE).
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.advances.deadline_holiday_shift",
+    "package": "jdg.pit.advances", "priority": 559,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "pit_advance_due_day": 20,
+    "pit_advance_shifted_due_day": shifted_day,
+    "pit_advance_deadline_shifted": true,
+    "pit_advance_shift_reason": shift_reason,
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": sprintf("Termin 20. dnia wypada w %s — płatność do %d. dnia miesiąca", [shift_reason, shifted_day]),
+    "_legal_basis": "Art. 44 PIT w zw. z art. 12 § 5 OrdPU",
+    "_warnings": [sprintf("⚠️ Termin zaliczki PIT: 20. dzień wypada w %s. Przesunięcie na %d. dzień (następny dzień roboczy) — zgodnie z art. 12 § 5 OrdPU.", [shift_reason, shifted_day])]
+} {
+    input.pit_advance_deadline_check == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    due_weekday := object.get(input.pit_advance_deadline, "due_weekday", 0)
+    is_public_holiday := object.get(input.pit_advance_deadline, "due_is_public_holiday", false)
+    # Termin 20. dnia wypada w dzień wolny — każda z poniższych gałęzi
+    # definiuje shifted_day tylko dla swojego warunku; brak dopasowania
+    # (dzień roboczy bez święta) → reguła nie odpala się (fallback P550+).
+    # NOTA R04: wzorzec `= val { cond }` zgodny z resztą codebase (v0).
+    shifted_day = 22 { due_weekday == 6; not is_public_holiday }
+    shifted_day = 21 { due_weekday == 7; not is_public_holiday }
+    shifted_day = 21 { is_public_holiday; due_weekday not in {6, 7} }
+    shifted_day = 22 { is_public_holiday; due_weekday == 6 }
+    shifted_day = 21 { is_public_holiday; due_weekday == 7 }
+
+    shift_reason = "sobotę (weekend)" { due_weekday == 6; not is_public_holiday }
+    shift_reason = "niedzielę (weekend)" { due_weekday == 7; not is_public_holiday }
+    shift_reason = "święto państwowe" { is_public_holiday; due_weekday not in {6, 7} }
+    shift_reason = "święto przypadające w sobotę" { is_public_holiday; due_weekday == 6 }
+    shift_reason = "święto przypadające w niedzielę" { is_public_holiday; due_weekday == 7 }
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

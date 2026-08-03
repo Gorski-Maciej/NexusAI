@@ -7,11 +7,12 @@
 
  ■ LEGENDA: [✅ WDROŻONY] = sesja wykonana, raport R0X zapisany, okno wyczyszczone
            [⬜ OCZEKUJE]  = sesja niewykonana
+           [🔨 IMPLEMENTACJA] = rekomendacje raportu wdrożone w kodzie (JDG/rules)
 
  [✅ WDROŻONY] A01_Metodologia           → R01_Metodologia.txt
  [✅ WDROŻONY] A02_Prawa_Przedsiebiorcow → R02_Prawa_Przedsiebiorcow.txt
  [✅ WDROŻONY] A03_VAT                   → R03_VAT.txt
- [✅ WDROŻONY] A04_PIT                   → R04_PIT.txt
+ [✅ WDROŻONY] A04_PIT                   → R04_PIT.txt  🔨 IMPLEMENTACJA 2026-08-03 (stuby P1, T1, T9, klasa średnia, terminy P2)
  [✅ WDROŻONY] A05_Ryczalt               → R05_Ryczalt.txt
  [✅ WDROŻONY] A06_Ordynacja_KKS         → R06_Ordynacja_KKS.txt
  [✅ WDROŻONY] A07_ZUS_SUS               → R07_ZUS_SUS.txt

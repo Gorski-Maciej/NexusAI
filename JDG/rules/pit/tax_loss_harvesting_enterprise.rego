@@ -223,16 +223,15 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FALLBACK
+# NO-MATCH (R04 P1: stub { true } usunięty — nie generuje fałszywego matched:true)
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
-    "matched": true,
-    "rule_id": "jdg.pit.tax_loss.fallback",
+    "matched": false,
+    "rule_id": "jdg.pit.tax_loss.no_match",
     "package": "jdg.pit.tax_loss_harvesting",
     "priority": 999,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 9 ust. 3-5 PIT",
-    "_warnings": ["Tax Loss Harvesting — rozliczaj straty w ciągu 5 lat, max 50% rocznie. Odliczaj w latach z wyższym dochodem dla maksymalnej oszczędności."]
+    "_legal_basis": "Art. 9 ust. 3-5 PIT"
 } {
-    true
+    false
 }

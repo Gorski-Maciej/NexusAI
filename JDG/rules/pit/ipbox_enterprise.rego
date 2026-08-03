@@ -280,16 +280,15 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FALLBACK
+# NO-MATCH (R04 P1: stub { true } usunięty — nie generuje fałszywego matched:true)
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
-    "matched": true,
-    "rule_id": "jdg.pit.ipbox.fallback",
+    "matched": false,
+    "rule_id": "jdg.pit.ipbox.no_match",
     "package": "jdg.pit.ipbox",
     "priority": 999,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 30ca-30cb PIT",
-    "_warnings": ["IP Box (Innovation Box) — 5% stawka od dochodu z kwalifikowanych IP. Sprawdź czy Twoje oprogramowanie/patent/wzór się kwalifikuje. Potencjalna oszczędność: zamiana 12%/19%/32% na 5%."]
+    "_legal_basis": "Art. 30ca-30cb PIT"
 } {
-    true
+    false
 }

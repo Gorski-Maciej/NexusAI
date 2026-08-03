@@ -41,6 +41,89 @@ test_tax_bracket_120k_01_above if {
         }
     }
     result.pit_bracket != "LOW (12%)"
+    result.pit_reducing_amount == 0
+}
+
+# ── Test: T1 Scale Boundary Precision (R04) ────────────────────────────────
+# Próg 120 000 zł: 119 999,99 vs 120 000 vs 120 000,01 + kwota zmniejszająca
+
+test_tax_bracket_119999_99 if {
+    result := plan26_critical.decide with input as {
+        "jdg_entrepreneur": {
+            "tax_form": "PIT_SCALE",
+            "annual_taxable_income": 119999.99
+        }
+    }
+    result.pit_bracket == "LOW (12%)"
+    result.pit_reducing_amount > 0  # kwota zmniejszająca jeszcze aktywna (degresja)
+}
+
+test_tax_bracket_119999_99_degression if {
+    result := plan26_critical.decide with input as {
+        "jdg_entrepreneur": {
+            "tax_form": "PIT_SCALE",
+            "annual_taxable_income": 119999.99
+        }
+    }
+    result.pit_tax_free_degression_applied == true
+    result.tax_free_degression_start == 30000
+    result.tax_free_degression_end == 120000
+}
+
+test_tax_reducing_amount_full_30k if {
+    result := plan26_critical.decide with input as {
+        "jdg_entrepreneur": {
+            "tax_form": "PIT_SCALE",
+            "annual_taxable_income": 30000
+        }
+    }
+    # Kwota zmniejszająca 3 600 PLN przy dochodzie ≤ 30 000 (pełna kwota wolna)
+    result.pit_reducing_amount == 3600
+    result.pit_tax_calculated == 0
+}
+
+test_tax_reducing_amount_zero_120k if {
+    result := plan26_critical.decide with input as {
+        "jdg_entrepreneur": {
+            "tax_form": "PIT_SCALE",
+            "annual_taxable_income": 120000
+        }
+    }
+    # Kwota zmniejszająca 0 przy dochodzie ≥ 120 000 (koniec degresji)
+    result.pit_reducing_amount == 0
+    result.pit_tax_free_degression_applied == false
+}
+
+test_tax_120k_01_high_bracket if {
+    result := plan26_critical.decide with input as {
+        "jdg_entrepreneur": {
+            "tax_form": "PIT_SCALE",
+            "annual_taxable_income": 120000.01
+        }
+    }
+    startswith(result.pit_bracket, "HIGH (12%")
+    result.pit_reducing_amount == 0
+}
+
+test_tax_120k_boundary_routing_triage if {
+    result := plan26_critical.decide with input as {
+        "jdg_entrepreneur": {
+            "tax_form": "PIT_SCALE",
+            "annual_taxable_income": 119999.99
+        }
+    }
+    result._routing == "TRIAGE_QUEUE"  # próg ±100 zł → weryfikacja stawek
+}
+
+test_tax_120k_01_tax_amount if {
+    result := plan26_critical.decide with input as {
+        "jdg_entrepreneur": {
+            "tax_form": "PIT_SCALE",
+            "annual_taxable_income": 120000.01
+        }
+    }
+    # 120000*0.12 + 0.01*0.32 = 14400 + 0.0032 ≈ 14400.00
+    result.pit_tax_calculated == 14400.0032
 }
 
 # ── Test: Exit Tax ──────────────────────────────────────────────────────────

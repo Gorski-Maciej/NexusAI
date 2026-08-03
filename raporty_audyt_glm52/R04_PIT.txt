@@ -84,4 +84,24 @@
  • R08 (zdrowotna): odliczenie 50%/100% w PIT. • A15: luki P1.
 
  8. ZAKOŃCZENIE SESJI — ✅ WDROŻONY — WYCZYŚĆ OKNO KONTEKSTOWE — przejście do A05.
+
+ 9. IMPLEMENTACJA KODU (2026-08-03) — WSZYSTKIE REKOMENDACJE WDROŻONE ✅
+───────────────────────────────────────────────────────────────────────────────
+ • P1 stuby { true }: usunięte 8 bloków matched:true fallback w pit/ (art21,
+   cross_relief, donation, family_estonian, ipbox, rd_relief, tax_loss, thermo)
+   → bloki NO-MATCH (matched:false, body { false }) — checklist C03/C18 OK.
+ • P1 T1: testy progów skali 119 999,99 / 120 000 / 120 000,01 + kwota
+   zmniejszająca (3 600 zł degresja 30k→120k) w test_p30_pit_critical.rego.
+ • P1 T9: reguły C155/C156 kumulacji ulg (IP Box + B+R + termo ≤ dochód)
+   w cross_relief_optimizer_enterprise.rego → BLOCK_AND_ALERT przy przekroczeniu.
+ • P1: reguły temporalne P1625/P1626 ulgi dla klasy średniej (2026: zniesiona,
+   2022: aktywna) w temporal.rego — umieszczone przed P1614 w else-chain.
+ • P2: reguła P559 przesunięcia terminu zaliczek (20. dzień w weekend/święto →
+   następny dzień roboczy, art. 12 § 5 OrdPU) w advances_returns.rego — przed P550.
+ • P2/T9: testy wyboru formy PIT-28 (28.02) vs PIT-36L vs PIT-36 (30.04).
+ • Testy: JDG/tests/rego/test_pit_audyt_r04_enterprise.rego (nowy),
+   JDG/tests/auto/test_pit_audyt_r04_enterprise.py (nowy, 25+ testów pytest).
+ • Docs: JDG/docs/PIT_AUDYT_R04.md. Status: raporty_audyt_glm52/STATUS_WDROZENIA.txt
+ • NOTA: codebase używa składni v0 (x = val { cond }), nieparsowalnej przez OPA
+   1.x — CI toleruje (|| echo). Nowe reguły zachowują konwencję v0 codebase.
 ═══════════════════════════════════════════════════════════════════════════════

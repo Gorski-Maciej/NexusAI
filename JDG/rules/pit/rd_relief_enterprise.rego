@@ -393,16 +393,15 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FALLBACK
+# NO-MATCH (R04 P1: stub { true } usunięty — nie generuje fałszywego matched:true)
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
-    "matched": true,
-    "rule_id": "jdg.pit.rd_relief.fallback",
+    "matched": false,
+    "rule_id": "jdg.pit.rd_relief.no_match",
     "package": "jdg.pit.rd_relief",
     "priority": 999,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 26e PIT",
-    "_warnings": ["Ulga B+R — sprawdź czy Twoja działalność spełnia kryteria: twórczość, systematyczność, transferowalność. Potencjalna oszczędność: do 200% kosztów kwalifikowanych."]
+    "_legal_basis": "Art. 26e PIT"
 } {
-    true
+    false
 }

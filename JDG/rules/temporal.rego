@@ -165,6 +165,45 @@ else := {
     input.temporal.retention_expiry_year <= time.now_ns() / 1000000000 / 86400 / 365 + 1970
 }
 
+# ══ P1625: middle_class_relief_2026 — Ulga dla klasy średniej (R04 P1) ══
+# Ulga dla klasy średniej (art. 26 ust. 1 pkt 2aa-2ab PIT) obowiązywała w 2022
+# (Polski Ład). ZNIESIONA z dniem 01.01.2023. Dla 2026 → niedostępna.
+# UMIESZCZONA PRZED P1614 — P1614 odpala się dla każdego effective_date_year
+# i shadowowałaby tę regułę w else-chain.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched":true,"rule_id":"jdg.temporal.middle_class_relief_2026","package":"jdg.temporal","priority":1625,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","middle_class_relief_active":false,"middle_class_relief_year":tax_year,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 26 ust. 1 pkt 2aa-2ab PIT (uchylony z dniem 01.01.2023)",
+    "_warnings":["Ulga dla klasy średniej ZNIESIONA od 01.01.2023 — NIE odliczaj jej w 2026! Obowiązywała tylko w 2022 (Polski Ład). Korekty za 2022: nadal możliwe do 5 lat."]
+} {
+    tax_year:=object.get(input.temporal,"effective_date_year",2026)
+    tax_year>=2023
+    object.get(input.temporal,"middle_class_relief_check",false)==true
+}
+
+# ══ P1626: middle_class_relief_2022 — aktywna tylko w 2022 (R04 P1) ══
+else := {
+    "matched":true,"rule_id":"jdg.temporal.middle_class_relief_2022","package":"jdg.temporal","priority":1626,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","middle_class_relief_active":true,"middle_class_relief_year":2022,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 26 ust. 1 pkt 2aa-2ab PIT (stan prawny 2022)",
+    "_warnings":["Ulga dla klasy średniej AKTYWNA w 2022: dochody 30 000-120 000 zł (skala), wzór: (A*6.68%-380.50)/0.17 dla A≤100k, (A*7.24%-525.12)/0.17 dla A>100k. Od 2023 zniesiona."]
+} {
+    tax_year:=object.get(input.temporal,"effective_date_year",2026)
+    tax_year==2022
+    object.get(input.temporal,"middle_class_relief_check",false)==true
+}
+
 # ══ P1614: tax_free_amount_temporal — Kwota wolna od podatku temporalna (Doc 35) ══
 else := {
     "matched":true,"rule_id":"jdg.temporal.tax_free_amount_temporal",

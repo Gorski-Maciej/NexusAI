@@ -233,16 +233,15 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FALLBACK
+# NO-MATCH (R04 P1: stub { true } usunięty — nie generuje fałszywego matched:true)
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
-    "matched": true,
-    "rule_id": "jdg.pit.donation_relief.fallback",
+    "matched": false,
+    "rule_id": "jdg.pit.donation_relief.no_match",
     "package": "jdg.pit.donation_relief",
     "priority": 999,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 26 ust. 1 pkt 9 PIT",
-    "_warnings": ["Darowizny — odlicz do 6% dochodu (OPP + kościół). Krwiodawstwo BEZ limitu %. Pamiętaj o przelewie bankowym!"]
+    "_legal_basis": "Art. 26 ust. 1 pkt 9 PIT"
 } {
-    true
+    false
 }

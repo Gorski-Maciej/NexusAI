@@ -368,16 +368,15 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FALLBACK
+# NO-MATCH (R04 P1: stub { true } usunięty — nie generuje fałszywego matched:true)
 # ═══════════════════════════════════════════════════════════════════════════════
 else := {
-    "matched": true,
-    "rule_id": "jdg.pit.thermo_relief.fallback",
+    "matched": false,
+    "rule_id": "jdg.pit.thermo_relief.no_match",
     "package": "jdg.pit.thermo_relief",
     "priority": 999,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 26h PIT",
-    "_warnings": ["Ulga termomodernizacyjna — sprawdź czy spełniasz warunki: budynek jednorodzinny, jesteś właścicielem/współwłaścicielem, masz fakturę VAT."]
+    "_legal_basis": "Art. 26h PIT"
 } {
-    true
+    false
 }
