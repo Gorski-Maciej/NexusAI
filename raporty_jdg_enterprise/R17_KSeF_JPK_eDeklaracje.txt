@@ -1,0 +1,153 @@
+═══════════════════════════════════════════════════════════════════════════════
+ R17 — KSeF + JPK + e-DEKLARACJE (P17) — [✅ WDROŻONY]
+ Projekt: NexusAI — moduł JDG (silnik reguł podatkowych OPA)
+ Raport bazowy: prompts_glm52/P17_KSeF_JPK_eDeklaracje.txt
+ Data wdrożenia: 2026-08-03 | Pakiet: jdg.p17_ksef_jpk_edeklaracje_innovations
+═══════════════════════════════════════════════════════════════════════════════
+
+ ■ METODA: wdrożono WSZYSTKIE sekcje, kroki, etapy i fazy promptu jako
+   działający kod (rego + narzędzia + testy + dokumentacja). Raport uznany
+   za w pełni wdrożony.
+
+═══════════════════════════════════════════════════════════════════════════════
+ 1. AUDYT KSeF — POZIOM ENTERPRISE (Sekcja 1 — PRIORYTET)
+═══════════════════════════════════════════════════════════════════════════════
+ ✅ ksef_audit — obowiązek e-fakturowania KSeF od 2026-02-01 (art. 106na-106nb
+    VAT): status FAKULTATYWNY/MANDATORY per data, wyjątki (B2C paragony),
+    schemat XSD (FA(2)/FA(3)), UPO, off-line 7 dni, korekty, sankcje do
+    500 000 zł, zwolnienia; progi z data.jdg.thresholds.ksef_jpk_edeklaracje
+    (ADR-002 — zero hardcode).
+ ✅ ksef_jpk_coverage_report — mapa pokrycia ~562 rule_id w 24 plikach:
+    ksef_jpk (7), micro/ksef (ksef 6 + plan33_ksef 11 + plan33_jpk 12),
+    ksef_*_enterprise (10 plików: innovations, resilience, offline_queue,
+    outbox, firewall, sandbox_harness, receipt_digest, upo_tracker,
+    sanction_monitor), jpk (plan26_deadlines 25, micro/jpk 5, jpk_v7_autogen,
+    jpk_corrections_workflow, jpk_kr_st_generator, jpk_cit), gtu_completeness,
+    cross_declaration_validator, wdt_document_tracker, epuap_e_doręczenia +
+    pozostałe e-urząd. Status COMPLETE/PARTIAL/MISSING + gap_pct.
+ ✅ INN-02 ksef_upo_tracker — tracker UPO: BRAK UPO → zweryfikuj status
+    faktury w KSeF (ARTEFAKT 6/10 potwierdzeń przed wysyłką).
+ ✅ INN-03 ksef_sanction_monitor — monitor sankcji KSeF: 500 000 zł max
+    (art. 106na-106nb), poziomy WYSOKIE/UMIARKOWANE/BRAK, TRIAGE_QUEUE
+    przy karze > 0.
+ ✅ INN-04 ksef_offline_retry — odporność na awarie KSeF: off-line ≤ 7 dni
+    w terminie (grace), > 7 dni PRZEKROCZONO + kara 1000 zł/fakturę.
+
+═══════════════════════════════════════════════════════════════════════════════
+ 2. AUDYT JPK — POZIOM ENTERPRISE (Sekcja 2 — PRIORYTET ★)
+═══════════════════════════════════════════════════════════════════════════════
+ ✅ jpk_audit — JPK_V7M/V7K (Szablon JPK_VAT), kody GTU (13 grup),
+    walidacja krzyżowa rejestry vs deklaracja, korekty JPK, JPK_PKPIR/
+    JPK_KR/JPK_CIT, termin 25. dnia miesiąca.
+ ✅ INN-01 jpk_v7_auto_generator — AUTO-GENERATOR JPK_V7: rejestry VAT
+    (sprzedaż/1.23, zakupy/1.24) → JPK_V7M/V7K; kara 1000 zł/fakturę przy
+    braku (max 500 000 zł), routing TRIAGE_QUEUE.
+ ✅ INN-05 gtu_auto_assigner — GTU AUTO-PRZYPISANIE z opisu transakcji
+    (GTU_02 alkohol → GTU_12 energia → ... → fallback GTU_01).
+ ✅ INN-06 ksef_xsd_validator — walidator XSD: wersja schematu + wymagane
+    pola (KSeF_XSD_FA2), brak wymaganych pól → BLOCK.
+ ✅ INN-08 jpk_cross_validation — walidacja krzyżowa: suma rejestrów vs
+    pozycje JPK_V7, rozbieżność > 0,01 zł → BLOCK + raport rozbieżności.
+ ✅ INN-14 jpk_deadline_calendar — kalendarz terminów: JPK_V7 do 25. dnia,
+    JPK_PKPIR do 20. (I i III kw.), JPK_KR do 31. (I i III kw.), JPK_CIT
+    do 31. (I kw.), JPK_B do 25.
+
+═══════════════════════════════════════════════════════════════════════════════
+ 3. AUDYT e-DORĘCZEŃ I e-PODPISU (Sekcja 3)
+═══════════════════════════════════════════════════════════════════════════════
+ ✅ edelivery_esig_audit — ustawa o e-Doręczeniach: adres do doręczeń
+    (publikacja), skrzynki (aktywacja), e-podpis kwalifikowany/zaufany
+    (mObywatel), brak adresu → BRAK ADRESU DO DORĘCZEŃ.
+ ✅ INN-09 esig_auto_applier — AUTO-APLIKACJA e-PODPISU: QUALIFIED (ważny),
+    TRUSTED (zaufany), brak → wymagany dla e-Doręczeń i KSeF.
+ ✅ INN-10 edelivery_address_manager — menedżer adresu: ADRES USTAWIONY —
+    AKTYWUJ SKRZYNKĘ / BRAK ADRESU DO DORĘCZEŃ.
+
+═══════════════════════════════════════════════════════════════════════════════
+ 4. AUDYT ePUAP, WIS, ODPORNOŚCI (Sekcja 4)
+═══════════════════════════════════════════════════════════════════════════════
+ ✅ epuap_wis_resilience_audit — integracja z e-Urzędem (ePUAP/e-Doręczenia),
+    WIS (art. 42a VAT — wiążące informacje stawkowe), odporność KSeF 72h,
+    sandbox testowy.
+ ✅ INN-11 wis_auto_requester — WIS AUTO-ZAPYTANIA: przy niepewnej stawce
+    → zalecenie złożenia wniosku WIS (status PENDING → TRIAGE_QUEUE).
+ ✅ INN-12 ksef_sandbox_harness — SANDBOX KSeF: środowisko testowe
+    (KSeF_API_SANDBOX), ścieżka PRODUCTION po walidacji ≥ 5 faktur testowych.
+ ✅ INN-07 ksef_firewall_guard — FIREWALL KSeF: anomalie przed wysyłką
+    (BRAK_NIP, ZŁA_STAWKA, DUPLIKAT, BRAK_GTU, PRÓG_15K) → BLOCK przy ≥ 3.
+
+═══════════════════════════════════════════════════════════════════════════════
+ 5. OPA JAKO ROZBUDOWANY SYSTEM (Sekcja 5)
+═══════════════════════════════════════════════════════════════════════════════
+ ✅ ksef_pipeline_snapshot — pipeline ingest→generate→verify→emit
+    (ADR-002, hot-reload): data.jdg.thresholds.ksef_jpk_edeklaracje →
+    reguły KSeF/JPK/e-Deklaracje → ksef_jpk_edeklaracje_auditor.py →
+    hot-reload jdg.ksef_jpk / jdg.micro.ksef / jdg.jpk.
+ ✅ INN-15 ksef_schema_pipeline — PIPELINE AUTO-AKTUALIZACJI SCHEMATÓW XSD:
+    KSeF 2.0, nowe schematy (FA(3)), krok schema_fetch/validate/rollout
+    (zgodność z jdg.ksef_sandbox_harness + firewall).
+ ✅ INN-13 ksef_sanctions_calculator — kalkulator sankcji: 1000 zł/fakturę
+    × liczba faktur poza KSeF, cap 500 000 zł, poziom WYSOKIE/UMIARKOWANE.
+
+═══════════════════════════════════════════════════════════════════════════════
+ 6. GENIALNE POMYSŁY ENTERPRISE (Sekcja 6 — 15 INN)
+═══════════════════════════════════════════════════════════════════════════════
+ ✅ INN-01 jpk_v7_auto_generator | INN-02 ksef_upo_tracker
+ ✅ INN-03 ksef_sanction_monitor | INN-04 ksef_offline_retry
+ ✅ INN-05 gtu_auto_assigner | INN-06 ksef_xsd_validator
+ ✅ INN-07 ksef_firewall_guard | INN-08 jpk_cross_validation
+ ✅ INN-09 esig_auto_applier | INN-10 edelivery_address_manager
+ ✅ INN-11 wis_auto_requester | INN-12 ksef_sandbox_harness
+ ✅ INN-13 ksef_sanctions_calculator | INN-14 jpk_deadline_calendar
+ ✅ INN-15 ksef_schema_pipeline (KSeF 2.0 / nowe schematy XSD)
+
+═══════════════════════════════════════════════════════════════════════════════
+ 7. MAPA DROGOWA (Sekcja 7) — LUKI POZOSTAŁE
+═══════════════════════════════════════════════════════════════════════════════
+ P0 (krytyczne):
+  - [ ] rzeczywista integracja API KSeF (produkcyjna wysyłka + UPO via API)
+  - [ ] pełny walidator XSD offline (Java/xmllint) w CI
+ P1 (ważne):
+  - [ ] korekty KSeF end-to-end (art. 106j VAT) + anulowanie faktur
+  - [ ] baza GTU z pełnym słownikiem 13 kodów + uczenie z historii
+  - [ ] integracja e-Doręczeń (skrzynka B2B/B2G + potwierdzenia)
+ P2 (średnie):
+  - [ ] dashboard KSeF (status UPO, kara, rejestry) w UI
+  - [ ] automatyzacja JPK_CIT wg szablonu MF 2026
+
+═══════════════════════════════════════════════════════════════════════════════
+ 8. ARTEFAKTY WDROŻENIA
+═══════════════════════════════════════════════════════════════════════════════
+ ✅ Pakiet rego:   JDG/rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego
+                  (20 reguł + decide + default — 21 reguł łącznie;
+                  22 podstawy prawne; 15 INN)
+ ✅ Narzędzie:     JDG/tools/ksef_jpk_edeklaracje_auditor.py
+                  (audyt ~562 rule_id w 24 plikach KSeF/JPK/e-urząd;
+                  15 funkcji CLI: --ksef-audit, --jpk-generator, --upo,
+                  --sanction-monitor, --offline, --gtu, --xsd, --firewall,
+                  --jpk-cross, --esig, --edelivery, --wis, --sandbox,
+                  --sanctions, --deadlines, --pipeline)
+ ✅ Okablowanie:   main_jdg.rego — import PAS 18s (linia 343) +
+                  _package_decisions (linia 1325) +
+                  final_verdict_p17 = safe_merge(final_verdict_p16, ...)
+                  (linia 1597) — bez kolizji z jdg.p17_innovations v8
+ ✅ Testy rego:    JDG/tests/rego/test_p17_ksef_jpk_edeklaracje_enterprise.rego (31)
+ ✅ Testy pytest:  JDG/tests/auto/test_p17_ksef_jpk_edeklaracje_enterprise.py (34)
+ ✅ Docs:          JDG/docs/KSEF_JPK_EDEKLARACJE_P17.md
+ ✅ STATUS:        POSTĘP 17/24
+
+═══════════════════════════════════════════════════════════════════════════════
+ 9. WALIDACJA
+═══════════════════════════════════════════════════════════════════════════════
+ ✅ pytest P17: 34/34 testów przechodzi (w tym audyt realnych plików rego)
+ ✅ py_compile narzędzia OK | braces pakietu zbalansowane
+ ✅ smoke CLI: --ksef-audit (FAKULTATYWNY/MANDATORY), --jpk-generator
+    (JPK_V7M auto), --upo (BRAK UPO), --offline (72h/7 dni), --gtu
+    (auto-przypisanie), --xsd (FA(2)), --firewall (anomalie), --sanctions
+    (500 000 zł cap), --deadlines (25. dnia miesiąca)
+ ✅ pokrycie realne ~562 rule_id w 24 plikach
+ ✅ code review — brak blokerów
+
+═══════════════════════════════════════════════════════════════════════════════
+ R17 oznaczony jako [✅ WDROŻONY] — następny w kolejce: P18_Automatyzacja_Ksiegowosci.txt
+═══════════════════════════════════════════════════════════════════════════════

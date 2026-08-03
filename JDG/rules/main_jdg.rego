@@ -332,6 +332,23 @@ import data.jdg.p14_pcc_lokalne_akcyza_innovations
 # sezonowość, CBAM (2023/956, raporty kwartalne), pipeline (ADR-002) + 12 INN
 import data.jdg.p15_srodowisko_bdo_innovations
 
+# ── PAS 18r: P16 RODO + AML + COMPLIANCE + BEZPIECZEŃSTWO + AUDYT v9.0 (2026-08-02) ──
+# P16 Sekcje 1-7: audyt RODO (PRIORYTET — rejestr czynności Art. 30, retencja,
+# erasure, podprocesorzy, AI marketing, sankcje Art. 83), audyt AML (PRIORYTET ★ —
+# CBDD, beneficjenci rzeczywiści, STR/GIF, transakcje > 15 000 EUR, scoring ryzyka),
+# audyt bezpieczeństwa (security_fortress_v8, HMAC, immutable verdicts), audyt
+# ścieżki decyzji (audit/plan44+45, audit_defense, merkle proof-chain), pipeline
+# auto-aktualizacji reguł compliance (ePrivacy, AMLR) + 14 INN
+import data.jdg.p16_rodo_aml_security_innovations
+import data.jdg.p17_ksef_jpk_edeklaracje_innovations
+import data.jdg.p18_automatyzacja_ksiegowosci_innovations
+import data.jdg.p19_hr_swiadczenia_innovations
+import data.jdg.p20_neural_mesh_innovations
+import data.jdg.p21_opa_system_innovations
+import data.jdg.p22_validation_tools_innovations
+import data.jdg.p23_test_rego_ci_innovations
+import data.jdg.p24_audyt_kompletny_innovations
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1311,6 +1328,15 @@ _package_decisions := {
     "jdg.p13_ryczalt_cykl_zycia_innovations": p13_ryczalt_cykl_zycia_innovations.decide,
     "jdg.p14_pcc_lokalne_akcyza_innovations": p14_pcc_lokalne_akcyza_innovations.decide,
     "jdg.p15_srodowisko_bdo_innovations": p15_srodowisko_bdo_innovations.decide,
+    "jdg.p16_rodo_aml_security_innovations": p16_rodo_aml_security_innovations.decide,
+    "jdg.p17_ksef_jpk_edeklaracje_innovations": p17_ksef_jpk_edeklaracje_innovations.decide,
+    "jdg.p18_automatyzacja_ksiegowosci_innovations": p18_automatyzacja_ksiegowosci_innovations.decide,
+    "jdg.p19_hr_swiadczenia_innovations": p19_hr_swiadczenia_innovations.decide,
+    "jdg.p20_neural_mesh_innovations": p20_neural_mesh_innovations.decide,
+    "jdg.p21_opa_system_innovations": p21_opa_system_innovations.decide,
+    "jdg.p22_validation_tools_innovations": p22_validation_tools_innovations.decide,
+    "jdg.p23_test_rego_ci_innovations": p23_test_rego_ci_innovations.decide,
+    "jdg.p24_audyt_kompletny_innovations": p24_audyt_kompletny_innovations.decide,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
     "jdg.p23_innovations": p23_innovations.decide,
@@ -1577,6 +1603,55 @@ final_verdict_p15 = safe_merge(final_verdict_p14,
         fallback.decide
     ))
 
-# final_verdict_p15 = kompletny werdykt P01 + ... + P14 + P15 (Środowisko + BDO + Branża).
+final_verdict_p16 = safe_merge(final_verdict_p15,
+    safe_merge(p16_rodo_aml_security_innovations.decide,
+        fallback.decide
+    ))
+
+final_verdict_p17 = safe_merge(final_verdict_p16,
+    safe_merge(p17_ksef_jpk_edeklaracje_innovations.decide,
+        fallback.decide
+    ))
+
+final_verdict_p18 = safe_merge(final_verdict_p17,
+    safe_merge(p18_automatyzacja_ksiegowosci_innovations.decide,
+        fallback.decide
+    ))
+
+final_verdict_p19 = safe_merge(final_verdict_p18,
+    safe_merge(p19_hr_swiadczenia_innovations.decide,
+        fallback.decide
+    ))
+
+final_verdict_p20 = safe_merge(final_verdict_p19,
+    safe_merge(p20_neural_mesh_innovations.decide,
+        fallback.decide
+    ))
+
+final_verdict_p21 = safe_merge(final_verdict_p20,
+    safe_merge(p21_opa_system_innovations.decide,
+        fallback.decide
+    ))
+
+final_verdict_p22 = safe_merge(final_verdict_p21,
+    safe_merge(p22_validation_tools_innovations.decide,
+        fallback.decide
+    ))
+
+final_verdict_p23 = safe_merge(final_verdict_p22,
+    safe_merge(p23_test_rego_ci_innovations.decide,
+        fallback.decide
+    ))
+
+final_verdict_p24 = safe_merge(final_verdict_p23,
+    safe_merge(p24_audyt_kompletny_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p20 = kompletny werdykt P01 + ... + P19 + P20 (Neural Mesh + Innowacje v8).
+# final_verdict_p19 = kompletny werdykt P01 + ... + P18 + P19 (HR i Świadczenia).
+# final_verdict_p18 = kompletny werdykt P01 + ... + P17 + P18 (Automatyzacja Księgowości).
+# final_verdict_p17 = kompletny werdykt P01 + ... + P16 + P17 (KSeF + JPK + e-Deklaracje).
+# final_verdict_p16 = kompletny werdykt P01 + ... + P15 + P16 (RODO + AML + Compliance + Bezpieczeństwo + Audyt).
 # Pakiet można też odpytować indywidualnie:
-# data.jdg.p15_srodowisko_bdo_innovations.decide.
+# data.jdg.p16_rodo_aml_security_innovations.decide.
