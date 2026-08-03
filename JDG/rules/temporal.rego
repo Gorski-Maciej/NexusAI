@@ -260,12 +260,9 @@ else := {
     fx_rule="Tabela C NBP (celna) z dnia poprzedzającego" { is_customs==true }
     fx_table="A" { is_customs==false }
     fx_table="C" { is_customs==true }
-}
-
-# ══ P1617: temporal_covid_legacy — Przedłużone terminy COVID (Doc 36) ══
+}# ══ P1617: temporal_covid_legacy — Przedłużone terminy COVID (Doc 36) ══
 else := {
-    "matched":true,"rule_id":"jdg.temporal.covid_legacy",
-    "package":"jdg.temporal","priority":1617,
+    "matched":true,"rule_id":"jdg.temporal.covid_legacy","package":"jdg.temporal","priority":1617,
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
@@ -279,4 +276,178 @@ else := {
     tax_year>=2020
     tax_year<=2021
     object.get(input.temporal,"covid_legacy_applies",false)==true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P01 SEK. 2 — ROZBUDOWA TEMPORALNOŚCI: WYKRYWANIE KONFLIKTÓW CZASOWYCH
+# I OVERLAPPING VALIDITY (A2+ / P01 Sekcja 2 — Rule Lifecycle Management)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Nowe reguły P1619-P1624:
+#   P1619: temporal_overlap_detector — nakładające się okna ważności reguł
+#          (konflikt czasowy między dwoma wpisami temporal_validity dla
+#          tej samej reguły lub reguł supersedujących się wzajemnie).
+#   P1620: temporal_rule_version_pin — pinning wersji reguły na datę ewaluacji
+#          (time-travel zgodny z rule_versions z migration 001).
+#   P1621: temporal_law_change_calendar — kalendarz zmian prawa dla reguł
+#          temporalnych (proaktywne alerty o zbliżających się zmianach).
+#   P1622: temporal_shadow_window — reguła w oknie shadow (przed valid_from)
+#          ewaluowana bez wpływu na decyzję.
+#   P1623: temporal_rollback_window — reguła po auto-rollback (valid_to przedłużony).
+#   P1624: temporal_gap_detector — luki czasowe między wersjami reguły.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ══ P1619: temporal_overlap_detector — Nakładające się okna ważności ══
+else := {
+    "matched":true,"rule_id":"jdg.temporal.overlap_detector","package":"jdg.temporal","priority":1619,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","temporal_overlaps":overlaps,"overlap_count":count(overlaps),
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Wykryto nakładające się okna ważności reguł — możliwy konflikt interpretacyjny",
+    "_legal_basis":"A2 Temporal Causality Chain + P01 Sekcja 2 (Rule Lifecycle Management)",
+    "_warnings":["Nakładające się okna ważności: dwie wersje reguły mogą obowiązywać jednocześnie. Wymagana korekta w rule_versions przed AUTO_POST."]
+} {
+    overlaps := [o |
+        some rule_id in object.keys(input.temporal_validity_overrides)
+        versions := input.temporal_validity_overrides[rule_id]
+        count(versions) > 1
+        some a in versions
+        some b in versions
+        a != b
+        a_from := object.get(a,"valid_from","0000-01-01")
+        b_from := object.get(b,"valid_from","0000-01-01")
+        a_to := object.get(a,"valid_to",null)
+        b_to := object.get(b,"valid_to",null)
+        a_from <= b_from
+        (a_to == null or b_from <= a_to)
+        o := {"rule_id":rule_id,"version_a":object.get(a,"version","?"),"version_b":object.get(b,"version","?"),"type":"OVERLAPPING_VALIDITY"}
+    ]
+    count(overlaps) > 0
+    input.temporal.overlap_check == true
+}
+
+# ══ P1620: temporal_rule_version_pin — Pinning wersji reguły na datę ══
+else := {
+    "matched":true,"rule_id":"jdg.temporal.rule_version_pin","package":"jdg.temporal","priority":1620,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","pinned_rule":rule_id,"pinned_version":version,"pinned_date":eval_date,
+    "_routing":"TIME_TRAVEL","_routing_reason":"Time-Travel OPA: przypięto wersję reguły obowiązującą w dacie ewaluacji",
+    "_legal_basis":"Art. 3 Ordynacja podatkowa + A2 Temporal Causality Chain",
+    "_warnings":["Wersja reguły przypięta do daty historycznej. NIE używać wersji bieżącej dla tej ewaluacji."]
+} {
+    rule_id := object.get(input.temporal,"pin_rule_id","")
+    rule_id != ""
+    eval_date := object.get(input.temporal,"evaluation_date","")
+    eval_date != ""
+    versions := object.get(input.temporal_validity_overrides,rule_id,[])
+    count(versions) > 0
+    eligible := [v |
+        some v in versions
+        object.get(v,"valid_from","0000-01-01") <= eval_date
+        vt := object.get(v,"valid_to",null)
+        (vt == null) or (eval_date <= vt)
+    ]
+    count(eligible) > 0
+    latest := max([object.get(v,"valid_from","") | some v in eligible])
+    version := object.get([v | some v in eligible; object.get(v,"valid_from","") == latest][0],"version","unknown")
+}
+
+# ══ P1621: temporal_law_change_calendar — Kalendarz zmian prawa ══
+else := {
+    "matched":true,"rule_id":"jdg.temporal.law_change_calendar","package":"jdg.temporal","priority":1621,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","law_changes":changes,"upcoming_changes":count(changes),
+    "_routing":"REPORT","_routing_reason":"Kalendarz zmian prawa — proaktywne alerty o zbliżających się zmianach progów/stawek",
+    "_legal_basis":"P01 Sekcja 2 — Rule Lifecycle Management (law-change forecasting)",
+    "_warnings":[sprintf("Zbliżających się zmian prawa: %d. Uwzględnij je w planowaniu okresów rozliczeniowych.",[count(changes)])]
+} {
+    changes := [c |
+        some key in object.keys(input.threshold_change_log)
+        versions := input.threshold_change_log[key]
+        some v in versions
+        vf := object.get(v,"valid_from","9999-12-31")
+        vf > object.get(input.temporal,"current_period","0000-01-01")
+        c := {"threshold":key,"valid_from":vf,"new_value":object.get(v,"value",0),"act":object.get(v,"act","")}
+    ]
+    count(changes) > 0
+    object.get(input.temporal,"law_change_calendar",false)==true
+}
+
+# ══ P1622: temporal_shadow_window — Okno shadow przed wejściem w życie ══
+else := {
+    "matched":true,"rule_id":"jdg.temporal.shadow_window","package":"jdg.temporal","priority":1622,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","shadow_rules":shadow_list,"shadow_count":count(shadow_list),
+    "_routing":"REPORT","_routing_reason":"Reguły w oknie shadow (przed valid_from) — ewaluacja testowa bez wpływu na decyzję",
+    "_legal_basis":"P01 Sekcja 2 — Shadow Deployment (Rule Lifecycle Management)",
+    "_warnings":["Shadow window: nowe wersje reguł ewaluowane testowo przed wejściem w życie (valid_from). Werdykty shadow nie są decyzyjne."]
+} {
+    shadow_list := [s |
+        some rule_id in object.keys(input.temporal_validity_overrides)
+        some v in input.temporal_validity_overrides[rule_id]
+        object.get(v,"status","") == "SHADOW"
+        s := {"rule_id":rule_id,"version":object.get(v,"version",""),"valid_from":object.get(v,"valid_from","")}
+    ]
+    count(shadow_list) > 0
+    object.get(input.temporal,"shadow_window",false)==true
+}
+
+# ══ P1623: temporal_rollback_window — Okno po auto-rollback ══
+else := {
+    "matched":true,"rule_id":"jdg.temporal.rollback_window","package":"jdg.temporal","priority":1623,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","rolled_back":rb_list,"rollback_count":count(rb_list),
+    "_routing":"REPORT","_routing_reason":"Wersje reguł po auto-rollback — przywrócono poprzednią wersję ACTIVE",
+    "_legal_basis":"P01 Sekcja 2 — Auto-Rollback (Rule Lifecycle Management)",
+    "_warnings":["Auto-rollback wykonany: kandydat generował zbyt wiele błędów. Działa wersja poprzednia."]
+} {
+    rb_list := [rb |
+        some rule_id in object.keys(input.temporal_validity_overrides)
+        some v in input.temporal_validity_overrides[rule_id]
+        object.get(v,"status","") == "ROLLED_BACK"
+        rb := {"rule_id":rule_id,"candidate":object.get(v,"version",""),"restored":object.get(v,"supersedes","")}
+    ]
+    count(rb_list) > 0
+    object.get(input.temporal,"rollback_window",false)==true
+}
+
+# ══ P1624: temporal_gap_detector — Luki czasowe między wersjami ══
+else := {
+    "matched":true,"rule_id":"jdg.temporal.gap_detector","package":"jdg.temporal","priority":1624,
+    "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","temporal_gaps":gaps,"gap_count":count(gaps),
+    "_routing":"TRIAGE_QUEUE","_routing_reason":"Luki czasowe między wersjami reguły — okresy bez obowiązującej reguły",
+    "_legal_basis":"A2 Temporal Causality Chain + P01 Sekcja 2",
+    "_warnings":["Wykryto lukę czasową: istnieje okres, w którym żadna wersja reguły nie obowiązuje. Uzupełnij rule_versions."]
+} {
+    gaps := [g |
+        some rule_id in object.keys(input.temporal_validity_overrides)
+        versions := input.temporal_validity_overrides[rule_id]
+        count(versions) > 1
+        sorted := sort([object.get(v,"valid_from","") | some v in versions])
+        some i
+        i < count(sorted) - 1
+        end_prev := object.get([v | some v in versions; object.get(v,"valid_from","") == sorted[i]][0],"valid_to",null)
+        end_prev != null
+        end_prev < sorted[i+1]
+        g := {"rule_id":rule_id,"gap_from":end_prev,"gap_to":sorted[i+1],"type":"TEMPORAL_GAP"}
+    ]
+    count(gaps) > 0
+    object.get(input.temporal,"gap_check",false)==true
 }

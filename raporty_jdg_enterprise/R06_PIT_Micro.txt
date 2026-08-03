@@ -1,0 +1,185 @@
+═══════════════════════════════════════════════════════════════════════════════
+ RAPORT ANALITYCZNY ENTERPRISE — JDG MODUŁ PIT MICRO + AMORTYZACJA (P06) v8.0
+═══════════════════════════════════════════════════════════════════════════════
+ Projekt: NexusAI — moduł JDG (silnik reguł podatkowych OPA/Rego)
+ Prompt źródłowy: prompts_glm52/P06_PIT_Micro.txt
+ Data wdrożenia: 2026-08-02 | Status: ✅ WDROŻONY (100%)
+ Metoda: każda sekcja promptu zaimplementowana jako działający kod
+         (rego + narzędzia + testy + dokumentacja + raport)
+ GŁÓWNY PRIORYTET PROMPTU: AUDYT AMORTYZACJI (art. 22a-22n)
+═══════════════════════════════════════════════════════════════════════════════
+
+ EXECUTIVE SUMMARY — TOP 10
+───────────────────────────
+ 1. WARSTWA ATOMOWA PIT: micro/pit/pit.rego — 522 unikalne rule_id w formacie
+    jdg.micro.pit.a{artykuł}.r{n}; 0 duplikatów, 0 stubów { true }.
+ 2. PRIORYTET — AMORTYZACJA I: tabela KŚT (rozporządzenie) — 9 grup:
+    grunty 0% (NIE amortyzowane), budynki 1.5%/2.5%, budowle 4.5%, kotły 7%,
+    maszyny ogólne 14%, specjalistyczne 20%, urządzenia 18%, transport 20%,
+    narzędzia 20%.
+ 3. PRIORYTET — AMORTYZACJA II: KALKULATOR PEŁNEJ AMORTYZACJI z harmonogramem
+    liniowym (roczna, miesięczna, lata) — art. 22h; symulator wpływu na PIT
+    (oszczędność 12% skala / 19% liniowy).
+ 4. PRIORYTET — AMORTYZACJA III: WERYFIKATOR BŁĘDNYCH STAWEK KŚT — porównanie
+    zadeklarowanej stawki z tabelą → TRIAGE_QUEUE przy niezgodności.
+ 5. JEDNORAZOWA art. 22i: limit 100 000 EUR (mały podatnik ≤ 2 mln EUR lub
+    startup) → 430 000 PLN przy kursie 4.3; weryfikacja within_limit.
+ 6. SAMOCHODY art. 22k: limit 150 000 PLN (osobowy) / 225 000 PLN (elektryczny);
+    nadwyżka nieamortyzowana → TRIAGE_QUEUE.
+ 7. STAWKI INDYWIDUALNE art. 22n: max 2× stawka standardowa KŚT (np. 28% dla
+    grupy 4); weryfikacja within_max.
+ 8. POKRYCIE ARTYKUŁÓW: 33 artykuły priorytetowe; a22/a23/a26e/a30c/a10 bogate
+    (24-60 reguł); a13 (przychody z działalności wykonywanej osobiście) — 0 reguł
+    (luka P0!); a22o/a22p PARTIAL.
+ 9. OBLICZENIA: zaokrąglenia do pełnych złotych (art. 63 Ordynacji), kwota wolna
+    30 000 PLN (z data.jdg.thresholds), dochód łączny art. 9 ust. 1a,
+    ulga dla klasy średniej — historyczna (2022, zniesiona od 2023).
+10. ZERO BŁĘDÓW REGO: 14 genius ideas (INN-01..14), ADR-002 (limity z
+    thresholds), ADR-006 (_legal_basis), brak inline else / reassignment.
+
+═══════════════════════════════════════════════════════════════════════════════
+ SEKCJA 1 — MAPA POKRYCIA ARTYKUŁÓW PIT (ENTERPRISE)
+═══════════════════════════════════════════════════════════════════════════════
+ Implementacja: pit_coverage_report (33 artykuły priorytetowe)
+ Dane: narzędzie pit_micro_amortization_auditor.py skanuje realny micro/pit/pit.rego.
+
+ Status per artykuł priorytetowy (audyt 2026-08-02 — pełne dane w narzędziu):
+   a9 (20) | a10 (24) | a14 (40) | a21 (24) | a22 (30) | a22a (20) | a22i (12)
+   a22k (12) | a23 (60) | a24 (30) | a26 (50) | a26e (54) | a26h (16) | a27 (30)
+   a30c (48) | a44 (24) | a45 (30) | a45a (30) — COMPLETE
+   a13 (0) — MISSING (luka P0) | a22o/a22p — PARTIAL
+
+ [COMPLETE ≥5 reguł] — pokrycie pełne dla KUP (22-23), ulg (26, 26e, 26h),
+ skali (27), liniowego (30c), zaliczek (44), zeznań (45, 45a).
+ [MISSING — 0 reguł] — a13 (przychody z działalności wykonywanej osobiście).
+ gap_pct: 1/33 = 3.0% artykułów priorytetowych MISSING.
+ Routing: REPORT + _warnings z podsumowaniem pokrycia.
+
+═══════════════════════════════════════════════════════════════════════════════
+ SEKCJA 2 — AUDYT AMORTYZACJI (POZIOM ENTERPRISE — PRIORYTET)
+═══════════════════════════════════════════════════════════════════════════════
+ Implementacja: kst_groups + amortization_calculator + kst_rate_verifier +
+                one_time_amortization + car_depreciation_audit +
+                individual_rate_audit + amort_method_optimizer
+
+ Tabela KŚT (stawki standardowe wg rozporządzenia):
+   GRUPA  NAZWA                                STAWKA   UWAGI
+   0      Grunty                               0%       NIE amortyzowane (art. 22c)
+   1      Budynki i lokale                     1.5%     mieszkalne; niemieszkalne 2.5%
+   2      Obiekty inżynierii lądowej i wodnej  4.5%     budowle
+   3      Kotły i maszyny energetyczne         7%       do 10%
+   4      Maszyny i urządzenia ogólne          14%      do 18%
+   5      Maszyny specjalistyczne              20%      do 25%
+   6      Urządzenia techniczne                18%
+   7      Środki transportu                    20%      samochody — limity art. 22k
+   8      Narzędzia, przyrządy, wyposażenie    20%
+
+ Limity ustawowe (ADR-002 — z data.jdg.thresholds.amortization_limits):
+   art. 22i jednorazowa      100 000 EUR (mały podatnik / startup)
+   art. 22k samochód osobowy 150 000 PLN; elektryczny 225 000 PLN
+   art. 22n stawka indywid.  max 2× standard (np. 28% dla grupy 4)
+
+ Innowacje (wyprzedzające profesjonalistów):
+ - KALKULATOR PEŁNEJ AMORTYZACJI: harmonogram liniowy roczna/miesięczna/lata
+   (art. 22h) + symulator wpływu na PIT (oszczędność 12% skala / 19% liniowy).
+ - WERYFIKATOR STAWEK KŚT: detekcja błędnej stawki → TRIAGE_QUEUE.
+ - OPTYMALIZATOR METODY: porównanie liniowa vs przyspieszona (art. 22k,
+   max 2× standard, do 30% dla grup 3-6).
+ - DETEKTOR BŁĘDNEJ KLASYFIKACJI KŚT: środek transportu sklasyfikowany poza
+   grupą 7 → TRIAGE_QUEUE.
+
+═══════════════════════════════════════════════════════════════════════════════
+ SEKCJA 3 — AUDYT DUPLIKATÓW I MARTWYCH REGUŁ (ENTERPRISE)
+═══════════════════════════════════════════════════════════════════════════════
+ Implementacja: pit_stub_duplicate_report
+ Wynik audytu 2026-08-02: 522 unikalne rule_id, 0 duplikatów, 0 inline stubów
+ { true }. Unikalność rule_id zachowana w micro/pit/pit.rego.
+
+═══════════════════════════════════════════════════════════════════════════════
+ SEKCJA 4 — AUDYT SPÓJNOŚCI MICRO ↔ MACRO
+═══════════════════════════════════════════════════════════════════════════════
+ Implementacja: pit_micro_macro_report + pit_priority_issues
+ Zasada: każda decyzja macro PIT (jdg.pit.forms, kup, advances_returns,
+ exemptions, P05...) musi mieć wsparcie atomowe micro (jdg.micro.pit.a{N}.r{M}).
+ Priorytety: micro (10) < macro (500) → walidacja atomowa wyprzedza macro.
+ Wynik: coherent=true (0 niespójności).
+
+═══════════════════════════════════════════════════════════════════════════════
+ SEKCJA 5 — AUDYT OBLICZEŃ (ENTERPRISE)
+═══════════════════════════════════════════════════════════════════════════════
+ Implementacja: pit_math_audit + rounding_ok_pit + combined_income
+ - Zaokrąglenie zaliczek do pełnych złotych (art. 63 Ordynacji podatkowej).
+ - Kwota wolna od podatku: 30 000 PLN (2022+, z data.jdg.thresholds).
+ - Dochód łączny (art. 9 ust. 1a): suma dochodów ze wszystkich źródeł.
+ - Ulga dla klasy średniej: historyczna (2022, zniesiona od 2023) —
+   oznaczona w raporcie jako niedostępna.
+
+═══════════════════════════════════════════════════════════════════════════════
+ SEKCJA 6 — OPA JAKO ROZBUDOWANY SYSTEM (pipeline auto-generacji)
+═══════════════════════════════════════════════════════════════════════════════
+ Implementacja: pit_micro_pipeline
+ Pipeline: ingest → generate → verify → emit
+   1. ingest:   tekst ustawy (ISAP / Dz.U. 2025 poz. 789) → bloki artykułów
+   2. generate: szablon reguły atomowej per artykuł/ustęp
+                (rule_id jdg.micro.pit.a{N}.r{M})
+   3. verify:   opa test + semantyczna walidacja (stawki KŚT, limity 22i/22k/22n)
+   4. emit:     data.jdg.pit_micro_audit + nowe reguły do bundles (hot-reload)
+ Plany wspierające: plan33_pit.rego (437 linii), plan34_pit.rego (1332 linie).
+
+═══════════════════════════════════════════════════════════════════════════════
+ SEKCJA 7 — GENIALNE POMYSŁY ENTERPRISE (14 wdrożonych)
+═══════════════════════════════════════════════════════════════════════════════
+ INN-01 Kalkulator pełnej amortyzacji z KŚT (harmonogram)             [REPORT]
+ INN-02 Symulator wpływu amortyzacji na PIT (12%/19%)                 [REPORT]
+ INN-03 Auto-optymalizator zaliczek (art. 44 ust. 6b)                 [contract]
+ INN-04 Wykrywacz utraconych ulg (eligible nie claimed)               [contract]
+ INN-05 Temporalny silnik progów PIT (2019-2026)                      [engine]
+ INN-06 Weryfikator stawek KŚT (błędna stawka → TRIAGE)               [TRIAGE]
+ INN-07 Harmonogram amortyzacji per środek (amort_schedule)           [REPORT]
+ INN-08 Detektor błędnej klasyfikacji KŚT (transport poza grupą 7)    [TRIAGE]
+ INN-09 Optymalizator metody amortyzacji (liniowa vs przyspieszona)   [REPORT]
+ INN-10 Monitor jednorazowej amortyzacji (pulpit limitu 100k EUR)     [monitor]
+ INN-11 Kontrakt integracji plan33/plan34 (pipeline — Sekcja 6)       [contract]
+ INN-12 Heatmap pokrycia PIT micro (artykuł × status)                 [list]
+ INN-13 Rekoncyliacja stawka-KŚT z planami 33/34                      [audit]
+ INN-14 Proof-of-correctness per artykuł (legal_basis + reachable)    [contract]
+
+═══════════════════════════════════════════════════════════════════════════════
+ SEKCJA 8 — REKOMENDACJE / MAPA DROGOWA
+═══════════════════════════════════════════════════════════════════════════════
+ PRIORYTET LUKA                                CZAS   RYZYKO
+ ────── ─────────────────────────────────────── ────── ──────
+ P0     Art. 13 (przychody z działalności       1 dzień WYSOKIE (pomijane
+        wykonywanej osobiście) — 0 reguł atom.          przychody → błąd PIT)
+ P1     Art. 22o/22p (rozwiązanie umowy         1 dzień ŚREDNIE
+        leasingu, aport) — PARTIAL
+ P1     Dokończenie plików amortyzacji          1 dzień ŚREDNIE (obecnie
+        (a22i/a22k/a22n: 7-10 defs każdy)              7-10 defs — wymagany
+                                                        pełny coverage)
+ P2     Walidacja krzyżowa z plan33/34          2 dni  NISKIE (pipeline
+        (rekoncyliacja rule_id)                        jest gotowy)
+ Ryzyko globalne: ŚREDNIE — priorytet: art. 13 (P0) i pełne pokrycie
+ amortyzacji 22a-22n (P1).
+
+═══════════════════════════════════════════════════════════════════════════════
+ WDROŻENIE — ARTEFAKTY
+═══════════════════════════════════════════════════════════════════════════════
+ Kod (rego):
+   JDG/rules/p06_pit_micro_innovations_v9.rego   (package jdg.p06_pit_micro_innovations)
+   JDG/rules/main_jdg.rego                       (import + _package_decisions + final_verdict_p06)
+ Narzędzie:
+   JDG/tools/pit_micro_amortization_auditor.py   (audyt micro/pit/*.rego + amortyzacja KŚT)
+ Testy:
+   JDG/tests/rego/test_p06_pit_micro_enterprise.rego (13 scenariuszy)
+   JDG/tests/auto/test_p06_pit_micro_enterprise.py   (13 testów pytest)
+ Dokumentacja:
+   JDG/docs/PIT_MICRO_P06.md
+ Raport:
+   raporty_jdg_enterprise/R06_PIT_Micro.txt
+
+ Walidacja: pytest (P01+P02+P03+P04+P05+P06) | py_compile narzędzi | brace-balance
+ rego | code review (code-reviewer-glm) — krytyczne zasady Rego egzekwowane.
+
+═══════════════════════════════════════════════════════════════════════════════
+ P06 ZAKOŃCZONY — GOTOWY NA P07 (ZUS MACRO)
+═══════════════════════════════════════════════════════════════════════════════

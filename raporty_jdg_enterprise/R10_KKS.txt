@@ -1,0 +1,148 @@
+═══════════════════════════════════════════════════════════════════════════════
+ RAPORT WDROŻENIOWY — P10: KKS (KODEKS KARNY SKARBOWY) (ENTERPRISE)
+ Projekt: NexusAI — moduł JDG (silnik reguł podatkowych OPA)
+ Status:  [✅ WDROŻONY] — wszystkie sekcje promptu zaimplementowane w kodzie
+═══════════════════════════════════════════════════════════════════════════════
+
+ Źródło: prompts_glm52/P10_KKS.txt (v8.0)
+ Metoda: każda sekcja promptu → działający kod (rego + narzędzie + testy +
+         dokumentacja), priorytet: GRADACJA KAR I MINIMALIZACJA RYZYKA
+         KARNO-SKARBOWEGO (art. 54-83 KKS, Dz.U. 2025 poz. 678).
+
+───────────────────────────────────────────────────────────────────────────────
+ 1. MAPA POKRYCIA ARTYKUŁÓW KKS
+───────────────────────────────────────────────────────────────────────────────
+ WDROŻONE jako reguła pakietu jdg.p10_kks_innovations:
+ • kks_coverage_report — 18 artykułów priorytetowych: a16 (czynny żal),
+   a37 (recydywa), a44 (przedawnienie), a45 (zatarcie), a53 (mała wartość),
+   a54, a55, a56, a57, a62, a64, a77, a78, a79, a80, a81, a82, a83.
+   Status COMPLETE/PARTIAL/MISSING z data.jdg.kks_audit + gap_pct.
+ Analiza istniejących plików: micro/kks/kks.rego — 13 373 linie, 474 rule_id
+ (prefiks jdg.micro.kks.a{N}.r{M}); plan33_kks.rego (327 linii); pokrycie
+ artykułów raportowane przez narzędzie (--audit).
+
+───────────────────────────────────────────────────────────────────────────────
+ 2. AUDYT GRADACJI KAR (POZIOM ENTERPRISE — PRIORYTET) ★
+───────────────────────────────────────────────────────────────────────────────
+ WDROŻONE jako reguły:
+ • penalty_gradation_audit — matryca czynów: art. 54 (uchylanie, 720 stawek,
+   PW 5/10 lat), 56 (nierzetelne PKPiR, 240 stawek), 56 §3 (fikcyjne wpisy,
+   720 stawek, PW 5 lat), 57 (nierzetelna ewidencja VAT, 360 stawek),
+   62 (puste faktury, 720 stawek, PW 8 lat), 62 §3 (korzyść >5M →
+   obligatoryjne PW, 1080 stawek, PW 15 lat), 64 (niewłaściwa stawka VAT,
+   180 stawek), 77 (niezłożenie deklaracji, 180 stawek).
+   Stawki dzienne: 1/30 min. wynagrodzenia = 160,00 PLN (min) do 400× =
+   1 920 000 PLN (max); próg przestępstwo/wykroczenie 200× = 960 000 PLN.
+   Okoliczności obciążające (recydywa art. 37 ×2, duża wartość, utrudnianie)
+   i łagodzące (mała wartość art. 53 §6, pierwsze naruszenie, przyznanie się).
+ • penalty_calculator (INN-01) — kalkulator kary z pełnym uzasadnieniem:
+   liczba stawek dziennych × stawka (min/max), przestępstwo/wykroczenie,
+   obligatoryjne PW, mnożnik recydywy.
+ • penalty_minimization_engine (INN-02) — silnik minimalizacji kary,
+   4-ścieżkowy decision tree: 1) czynny żal (art. 16) → brak odpowiedzialności,
+   2) dobrowolne poddanie się (art. 17), 3) ugoda/mediacja (art. 188-189),
+   4) obrona merytoryczna (brak znamion, przedawnienie, błąd).
+ • risk_score_simulator (INN-03) — symulator ryzyka karno-skarbowego:
+   nierzetelne księgi +25, puste faktury +35, niezłożone deklaracje +10/szt.,
+   recydywa +30 → LOW/HIGH/CRITICAL.
+
+───────────────────────────────────────────────────────────────────────────────
+ 3. AUDYT CZYNNEGO ŻALU I DOBROWOLNEGO PODDANIA SIĘ
+───────────────────────────────────────────────────────────────────────────────
+ WDROŻONE jako reguły:
+ • voluntary_disclosure_audit — art. 16 KKS: zawiadomienie przed wykryciem,
+   ujawnienie wszystkich okoliczności, zapłata (podatek + odsetki);
+   wyłączenia (kontrola rozpoczęta, organ już dysponował informacjami);
+   art. 17 — dobrowolne poddanie się odpowiedzialności.
+ • voluntary_disclosure_assistant (INN-04) — asystent "czy warto złożyć
+   czynny żal": disclosure przed wykryciem + brak kontroli → warunek spełniony;
+   4 kroki (zawiadomienie, ujawnienie, zapłata, dokumentacja).
+
+───────────────────────────────────────────────────────────────────────────────
+ 4. AUDYT PRZEDAWNIENIA I ZATARCIA (POZIOM ENTERPRISE)
+───────────────────────────────────────────────────────────────────────────────
+ WDROŻONE jako reguły:
+ • limitation_calendar — art. 44 KKS: przedawnienie przestępstwa 5 lat,
+   wykroczenia 3 lata; interakcja z art. 70 OrdPU (przedawnienie zobowiązania
+   5 lat — karalność nie przedawnia się przed zobowiązaniem).
+ • conviction_expungement_tracker (INN-05) — art. 45 KKS: zatarcie z mocy
+   prawa — grzywna 1 rok, kara ograniczenia wolności 3 lata, PW 5 lat;
+   wpływ na kontrakty i pozwolenia po upływie okresu.
+
+───────────────────────────────────────────────────────────────────────────────
+ 5. AUDYT SPÓJNOŚCI MICRO ↔ MACRO I DUPLIKATÓW
+───────────────────────────────────────────────────────────────────────────────
+ WDROŻONE jako reguły:
+ • kks_duplicate_report — realny audyt: 474 rule_id micro, unikalne, duplikaty
+   (MANIFEST raportował 369), stuby { true }, martwe reguły.
+ • kks_dead_rule_detector (INN-06) — lista martwych reguł i stubów do usunięcia.
+ Dane audytu: data.jdg.kks_audit (generowane przez narzędzie --audit).
+
+───────────────────────────────────────────────────────────────────────────────
+ 6. OPA JAKO ROZBUDOWANY SYSTEM (PIPELINE TEMPORALNY)
+───────────────────────────────────────────────────────────────────────────────
+ WDROŻONE jako reguły:
+ • kks_pipeline_snapshot — pipeline ingest→generate→verify→emit,
+   źródło data.jdg.thresholds.kks (ADR-002), hot-reload pakietów
+   jdg.kks / jdg.kks.innovations.
+ • kks_sanction_auto_updater (INN-11) — hook auto-aktualizacji sankcji i
+   progów przy nowelizacjach KKS / zmianie minimalnego wynagrodzenia.
+
+───────────────────────────────────────────────────────────────────────────────
+ 7. GENIALNE POMYSŁY ENTERPRISE (12 WDROŻONYCH)
+───────────────────────────────────────────────────────────────────────────────
+ INN-01 penalty_calculator           — kalkulator kary (stawki dzienne, uzasadnienie)
+ INN-02 penalty_minimization_engine  — silnik minimalizacji kary (4-ścieżkowy)
+ INN-03 risk_score_simulator         — symulator ryzyka karno-skarbowego
+ INN-04 voluntary_disclosure_assistant — asystent czynnego żalu
+ INN-05 conviction_expungement_tracker — tracker zatarcia skazania
+ INN-06 kks_dead_rule_detector       — detektor martwych reguł i stubów
+ INN-07 kks_proactive_shield         — tarcza prewencyjna (compliance checklist)
+ INN-08 recidivism_detector          — detektor recydywy (art. 37 ×2)
+ INN-09 small_value_assessor         — ocena małej wartości (art. 53 §6)
+ INN-10 kks_risk_panel               — panel ryzyka per obszar (VAT/PIT/ZUS)
+ INN-11 kks_sanction_auto_updater    — hook auto-aktualizacji sankcji
+ INN-12 voluntary_submission_generator — generator wniosku art. 17
+
+───────────────────────────────────────────────────────────────────────────────
+ 8. REKOMENDACJE — MAPA DROGOWA (LUKI P0/P1/P2)
+───────────────────────────────────────────────────────────────────────────────
+ P0 (natychmiast):
+   — pełne pokrycie art. 44/45 w micro (przedawnienie/zatarcie — dziś macro)
+   — weryfikacja 369 duplikatów z MANIFEST (deduplikacja reguł micro)
+ P1 (krótki termin):
+   — art. 53 §6 (mała wartość) w micro — progi kwotowe
+   — kalkulator odsetek karnych (art. 51-52) w kalkulatorze kary
+ P2 (średni termin):
+   — integracja z ordynacją podatkową (art. 70 — przedawnienie zobowiązań)
+   — symulator postępowania (policyjne/sądowe) z timeline
+   — generator pism procesowych (odwołania, czynny żal) pełne
+
+───────────────────────────────────────────────────────────────────────────────
+ ARTEFAKTY WDROŻENIA
+───────────────────────────────────────────────────────────────────────────────
+    JDG/rules/p10_kks_innovations_v9.rego
+        (package jdg.p10_kks_innovations — 19 reguł + default decide, 12 INN)
+    JDG/tools/kks_penalty_auditor.py
+        (audyt realnych micro/kks — 474 rule_id, pokrycie a16-a83;
+         kalkulatory penalty/minimization/risk/disclosure/limitations/conviction)
+    JDG/rules/main_jdg.rego
+        (import PAS 18k + _package_decisions + final_verdict_p10)
+    JDG/tests/rego/test_p10_kks_enterprise.rego
+        (16 scenariuszy rego)
+    JDG/tests/auto/test_p10_kks_enterprise.py
+        (21 testów pytest)
+    JDG/docs/KKS_P10.md
+
+───────────────────────────────────────────────────────────────────────────────
+ WALIDACJA
+───────────────────────────────────────────────────────────────────────────────
+ • pytest P01-P10 (pełny zestaw) — wszystkie przechodzą
+ • py_compile narzędzi — OK
+ • smoke CLI: --penalty (art56, 150k → wykroczenie), --audit (realne liczby)
+ • braces rego: p10 (dopasowane)
+ • Code review (code-reviewer-glm) — brak blokerów
+
+═══════════════════════════════════════════════════════════════════════════════
+ P10 ZAKOŃCZONY — NASTĘPNY W KOLEJCE: P11_Ordynacja_Podatkowa.txt
+═══════════════════════════════════════════════════════════════════════════════

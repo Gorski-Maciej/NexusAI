@@ -1,0 +1,40 @@
+═══════════════════════════════════════════════════════════════════════════════
+ STATUS WDROŻENIA SERII P01–P24 (prompts_glm52/)
+ Projekt: NexusAI — moduł JDG (silnik reguł podatkowych OPA)
+ Metoda: każdy Prompt = 1 raport R0X w raporty_jdg_enterprise/
+ → wdrożenie WSZYSTKICH kroków/etapów/faz/ulepszeń z promptu w kodzie
+ → po pełnym wdrożeniu raport oznaczony [✅ WDROŻONY] → przejście do kolejnego.
+═══════════════════════════════════════════════════════════════════════════════
+
+ ■ LEGENDA: [✅ WDROŻONY] = wszystkie sekcje promptu zaimplementowane w kodzie
+                             (rego + narzędzia + testy + dokumentacja + raport R0X)
+           [🔄 W TOKU]    = wdrożenie w trakcie
+           [⬜ OCZEKUJE]  = wdrożenie niewykonane
+
+ [✅ WDROŻONY] P01_Fundament_OPA.txt            → R01_Fundament_OPA.txt
+ [✅ WDROŻONY] P02_Warstwa_Deczyjna_Core.txt    → R02_Warstwa_Deczyjna_Core.txt
+ [✅ WDROŻONY] P03_VAT_Macro.txt                → R03_VAT_Macro.txt
+ [✅ WDROŻONY] P04_VAT_Micro.txt                → R04_VAT_Micro.txt
+ [✅ WDROŻONY] P05_PIT_Macro.txt                → R05_PIT_Macro.txt
+ [✅ WDROŻONY] P06_PIT_Micro.txt                → R06_PIT_Micro.txt
+ [✅ WDROŻONY] P07_ZUS_Macro.txt                → R07_ZUS_Macro.txt
+ [✅ WDROŻONY] P08_ZUS_Micro.txt                → R08_ZUS_Micro.txt
+ [✅ WDROŻONY] P09_Ksiegowosc_PKPIR_UoR.txt     → R09_Ksiegowosc_PKPIR_UoR.txt
+ [✅ WDROŻONY] P10_KKS.txt                      → R10_KKS.txt
+ [✅ WDROŻONY] P11_Ordynacja_Podatkowa.txt      → R11_Ordynacja_Podatkowa.txt
+ [✅ WDROŻONY] P12_CrossBorder_MDR_TP_CFC_FX.txt→ R12_CrossBorder_MDR_TP_CFC_FX.txt
+ [✅ WDROŻONY] P13_Ryczalt_Cykl_zycia.txt       → R13_Ryczalt_Cykl_zycia.txt
+ [✅ WDROŻONY] P14_PCC_Lokalne_Akcyza.txt       → R14_PCC_Lokalne_Akcyza.txt
+ [✅ WDROŻONY] P15_Srodowisko_BDO_Branza.txt    → R15_Srodowisko_BDO_Branza.txt
+ [⬜ OCZEKUJE] P16_RODO_AML_Bezpieczenstwo.txt  → R16_RODO_AML_Bezpieczenstwo.txt
+ [⬜ OCZEKUJE] P17_KSeF_JPK_eDeklaracje.txt     → R17_KSeF_JPK_eDeklaracje.txt
+ [⬜ OCZEKUJE] P18_Automatyzacja_Ksiegowosci.txt→ R18_Automatyzacja_Ksiegowosci.txt
+ [⬜ OCZEKUJE] P19_HR_Swiadczenia.txt           → R19_HR_Swiadczenia.txt
+ [⬜ OCZEKUJE] P20_Neural_Mesh_Innowacje.txt    → R20_Neural_Mesh_Innowacje.txt
+ [⬜ OCZEKUJE] P21_OPA_jako_System.txt          → R21_OPA_jako_System.txt
+ [⬜ OCZEKUJE] P22_Narzedzia_Walidacji.txt      → R22_Narzedzia_Walidacji.txt
+ [⬜ OCZEKUJE] P23_Testy_Rego_CI.txt            → R23_Testy_Rego_CI.txt
+ [⬜ OCZEKUJE] P24_Audyt_Kompletny_Synteza.txt  → R24_Audyt_Kompletny_Synteza.txt
+
+ POSTĘP: 15/24 wdrożonych ✅ | Ostatnia aktualizacja: 2026-08-02
+═══════════════════════════════════════════════════════════════════════════════

@@ -228,6 +228,109 @@ import data.jdg.form_optimizer
 # ── PAS 18: Provenance (A1 + ADR-006 Immutable Audit Trail) ──
 # KRYTYCZNE-2 FIX: provenance.enrich_verdict() podłączony do final_verdict_enriched
 import data.jdg.provenance
+# ── PAS 18b: P01 Fundament OPA v9.0 — Rule Lifecycle + Reliability + Genius Ideas (2026-08-02) ──
+# P01 Sekcja 2: Rule Lifecycle Management (shadow/A-B/rollback/temporal conflicts)
+# P01 Sekcja 4: Reliability Guarantee Layer (provenance gate, fallback ladder, determinism)
+# P01 Sekcja 7: Genius Ideas Enterprise (self-adapting orchestrator, hot-reload, forecasting)
+import data.jdg.rule_lifecycle
+import data.jdg.reliability_guarantee
+import data.jdg.p01_fundament_innovations
+# ── PAS 18c: P02 Warstwa Decyzyjna Core v9.0 (2026-08-02) ──
+# P02 Sekcja 1: Adaptive Trust Scoring (ML scoring, counterparty risk, fraud patterns)
+# P02 Sekcja 2: Conflict Declaration System (registry + deterministic hierarchy)
+# P02 Sekcje 3-5: Edge Case Completeness + Limitations Calendar + Liability/Retention
+# P02 Sekcja 7: Genius Ideas Enterprise (never-wrong engine, dead rule detector, etc.)
+import data.jdg.adaptive_trust
+import data.jdg.conflict_declaration
+import data.jdg.decision_core_completeness
+import data.jdg.p02_decision_core_innovations
+# ── PAS 18d: P03 VAT MACRO ENTERPRISE v9.0 (2026-08-02) ──
+# P03 Sekcja 1: Rates & Exemptions Audit (mapa stawek PKWiU/CN, limit 200k mid-year)
+# P03 Sekcja 3: Deductions & Corrections Audit (art. 86-95, proporcja, złe długi)
+# P03 Sekcja 4: MPP / Split Payment Audit (PRIORYTET — art. 108a, Załącznik 15, sankcje)
+# P03 Sekcja 6: VAT Fraud Detection (puste faktury, karuzele, znikający podatnik)
+# P03 Sekcje 2/5/7/8: POS + KSeF 2026 + pipeline thresholdów + genius ideas
+import data.jdg.vat_rates_audit
+import data.jdg.vat_deductions_audit
+import data.jdg.vat_mpp_split_payment
+import data.jdg.vat_fraud_detection
+import data.jdg.p03_vat_macro_innovations
+# ── PAS 18e: P04 VAT MICRO ENTERPRISE v9.0 (2026-08-02) ──
+# P04 Sekcje 1-7: mapa pokrycia artykułów atomowych, audyt duplikatów/stubów,
+# spójność micro↔macro, gwarancje matematyczne (grosze/zaokrąglenia),
+# audyt pakietów specjalistycznych (KSeF micro, marża, POS, proporcja, WDT/IE),
+# pipeline auto-generacji reguł mikro z ISAP + 14 genius ideas
+import data.jdg.p04_vat_micro_innovations
+# ── PAS 18f: P05 PIT MACRO ENTERPRISE v9.0 (2026-08-02) ──
+# P05 Sekcje 1-8: formy opodatkowania (skala/liniowy/ryczałt/karta), audyt ulg
+# (PRIORYTET — B+R, IP Box, termo, prototyp, robotyzacja, ekspansja, PIT-0),
+# KUP/NKUP, zaliczki art. 44 + zeznanie art. 45, zwolnienia Art. 21,
+# thresholdy temporalne (ADR-002) + 15 genius ideas
+import data.jdg.p05_pit_macro_innovations
+# ── PAS 18g: P06 PIT MICRO + AMORTYZACJA ENTERPRISE v9.0 (2026-08-02) ──
+# P06 Sekcje 1-8: mapa pokrycia artykułów PIT micro 1-45, audyt amortyzacji
+# (PRIORYTET — art. 22a-22n: KŚT, jednorazowa 100k EUR, samochody 150k/225k,
+# stawki indywidualne), duplikaty/stuby, spójność micro↔macro, audyt obliczeń,
+# pipeline auto-generacji + 14 genius ideas
+import data.jdg.p06_pit_micro_innovations
+# ── PAS 18h: P07 ZUS/SUS MACRO ENTERPRISE v9.0 (2026-08-02) ──
+# P07 Sekcje 1-8: audyt składki zdrowotnej (PRIORYTET — skala 9%, liniowy 4,9%,
+# ryczałt 3 progi 60%/100%/180%, karta 9%), składki społeczne (19,52/8/2,45/1,67,
+# 30-krotność, ulga na start, Mały ZUS Plus, preferencyjny, terminy 10/15/20),
+# zasiłki (chorobowy 80/100%, wyczekiwanie, macierzyński, opiekuńczy, rehab),
+# PPK/PFRON/FS, zbiegi tytułów (etat+JDG, emeryt+JDG, student+JDG, urlop
+# wychowawczy+JDG), thresholdy temporalne (ADR-002) + 15 genius ideas
+import data.jdg.p07_zus_macro_innovations
+# ── PAS 18i: P08 ZUS/SUS MICRO ENTERPRISE v9.0 (2026-08-02) ──
+# P08 Sekcje 1-8: mapa pokrycia artykułów ZUS micro (sus a6-a47, zdrowotna
+# a79-a82, zasilkowa a19-a33), audyt zdrowotnej mikro (PRIORYTET — progi
+# ryczałtowe 60K/300K, stawki, korekta roczna, składka od nadwyżki, silnik
+# auto-przeliczenia progu), zasiłki mikro (wyczekiwanie, stawki, limity),
+# duplikaty/stuby, spójność micro↔macro (P07), pipeline temporalny + 14 genius ideas
+import data.jdg.p08_zus_micro_innovations
+# ── PAS 18j: P09 KSIĘGOWOŚĆ PKPiR + UoR ENTERPRISE v9.0 (2026-08-02) ──
+# P09 Sekcje 1-8: audyt struktury PKPiR (kolumny 1-17, dekretacja, terminy),
+# audyt UoR (PRIORYTET — próg 2M EUR, silnik decyzji PKPiR-czy-UoR,
+# zasady memoriałowe, dowody, inwentaryzacja), amortyzacja i leasing (KŚT,
+# jednorazowa 100k EUR, auta 150k/225k, operacyjny/finansowy), remanent
+# i korekty, transformacja PKPiR→UoR, pipeline temporalny + 15 genius ideas
+import data.jdg.p09_ksiegowosc_pkpir_uor_innovations
+# ── PAS 18k: P10 KKS — KODEKS KARNY SKARBOWY ENTERPRISE v9.0 (2026-08-02) ──
+# P10 Sekcje 1-8: mapa pokrycia artykułów KKS (a16-a83, 474 reguły micro),
+# audyt gradacji kar (PRIORYTET — typy czynów, stawki dzienne, mnożniki,
+# recydywa, mała wartość, kalkulator kary, silnik minimalizacji 4-ścieżkowy,
+# symulator ryzyka), czynny żal (art. 16) i dobrowolne poddanie się (art. 17),
+# przedawnienie (art. 44) i zatarcie (art. 45), spójność micro↔macro, pipeline
+# auto-aktualizacji sankcji (ADR-002) + 12 genius ideas
+import data.jdg.p10_kks_innovations
+# ── PAS 18l: P11 ORDYNACJA PODATKOWA ENTERPRISE v9.0 (2026-08-02) ──
+# P11 Sekcje 1-8: mapa pokrycia artykułów OrdPU (a16-a193a, 424 reguły micro),
+# audyt przedawnień (PRIORYTET — art. 70: 5 lat od końca roku, przerwanie §4,
+# zawieszenie §6, kalendarz z alertami), korekty/nadpłaty (art. 81/81b, 72-80,
+# silnik auto-korekty), auto-korespondencja z urzędem (A-Z), GAAR (art. 119a),
+# Biała Lista (art. 117ba — 30 dni, 20%), pipeline (ADR-002) + 15 genius ideas
+import data.jdg.p11_ordynacja_podatkowa_innovations
+
+# P12 Cross-Border (WNT/WDT, miejsce świadczenia art. 28a-28o, MDR/DAC6,
+# TP/CFC/rezydencja/FX, ViDA/DRR/DAC8, exit tax) + 12 genius ideas
+import data.jdg.p12_crossborder_innovations
+
+# P13 Ryczałt + Cykl Życia (stawki PKWiU, karta podatkowa, cykl życia JDG,
+# sukcesja, zawieszenia, działalność nieewidencjonowana) + 12 genius ideas
+import data.jdg.p13_ryczalt_cykl_zycia_innovations
+
+# P14 PCC + Podatki Lokalne + Akcyza (stawki PCC, PCC-3, nieruchomości DN-1,
+# transport >3,5t, rejestr stawek gminnych, akcyza paliwa/alkohol) + 12 genius ideas
+import data.jdg.p14_pcc_lokalne_akcyza_innovations
+
+# ── PAS 18q: P15 ŚRODOWISKO + BDO + BRANŻA ENTERPRISE v9.0 (2026-08-02) ──
+# P15 Sekcje 1-8: mapa pokrycia modułów BDO (rejestracja/ewidencja/EWC/transport/
+# zezwolenia/WEEE-baterie), audyt BDO (PRIORYTET — opłaty 100-500 zł, kara 5000 zł
+# art. 194 UoO, KPO, ewidencja kwartalna, opakowania), audyt budownictwa
+# (PRIORYTET — pozwolenia, zgłoszenia, nadzór), transport/rolnictwo (licencje,
+# tachografy, rolnik ryczałtowy, podatek rolny), zawody regulowane/tax-free/
+# sezonowość, CBAM (2023/956, raporty kwartalne), pipeline (ADR-002) + 12 INN
+import data.jdg.p15_srodowisko_bdo_innovations
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
@@ -1181,6 +1284,33 @@ _package_decisions := {
     "jdg.pit.tax_loss_harvesting": tax_loss_harvesting.decide,
     "jdg.pit.family_estonian": family_estonian.decide,
     "jdg.form_optimizer": form_optimizer.decide,
+    # ── PAS 18b: P01 Fundament OPA v9.0 (2026-08-02) ──
+    "jdg.rule_lifecycle": rule_lifecycle.decide,
+    "jdg.reliability_guarantee": reliability_guarantee.decide,
+    "jdg.p01_fundament_innovations": p01_fundament_innovations.decide,
+    # ── PAS 18c: P02 Warstwa Decyzyjna Core v9.0 (2026-08-02) ──
+    "jdg.adaptive_trust": adaptive_trust.decide,
+    "jdg.conflict_declaration": conflict_declaration.decide,
+    "jdg.decision_core_completeness": decision_core_completeness.decide,
+    "jdg.p02_decision_core_innovations": p02_decision_core_innovations.decide,
+    # ── PAS 18d: P03 VAT Macro Enterprise v9.0 (2026-08-02) ──
+    "jdg.vat_rates_audit": vat_rates_audit.decide,
+    "jdg.vat_deductions_audit": vat_deductions_audit.decide,
+    "jdg.vat_mpp_split_payment": vat_mpp_split_payment.decide,
+    "jdg.vat_fraud_detection": vat_fraud_detection.decide,
+    "jdg.p03_vat_macro_innovations": p03_vat_macro_innovations.decide,
+    "jdg.p04_vat_micro_innovations": p04_vat_micro_innovations.decide,
+    "jdg.p05_pit_macro_innovations": p05_pit_macro_innovations.decide,
+    "jdg.p06_pit_micro_innovations": p06_pit_micro_innovations.decide,
+    "jdg.p07_zus_macro_innovations": p07_zus_macro_innovations.decide,
+    "jdg.p08_zus_micro_innovations": p08_zus_micro_innovations.decide,
+    "jdg.p09_ksiegowosc_pkpir_uor_innovations": p09_ksiegowosc_pkpir_uor_innovations.decide,
+    "jdg.p10_kks_innovations": p10_kks_innovations.decide,
+    "jdg.p11_ordynacja_podatkowa_innovations": p11_ordynacja_podatkowa_innovations.decide,
+    "jdg.p12_crossborder_innovations": p12_crossborder_innovations.decide,
+    "jdg.p13_ryczalt_cykl_zycia_innovations": p13_ryczalt_cykl_zycia_innovations.decide,
+    "jdg.p14_pcc_lokalne_akcyza_innovations": p14_pcc_lokalne_akcyza_innovations.decide,
+    "jdg.p15_srodowisko_bdo_innovations": p15_srodowisko_bdo_innovations.decide,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
     "jdg.p23_innovations": p23_innovations.decide,
@@ -1205,3 +1335,248 @@ _provenance_context := {
     "_evaluation_ms": 0
 }
 final_verdict_with_provenance = provenance.enrich_verdict(final_verdict_enriched, _provenance_context)
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18b: P01 FUNDAMENT OPA v9.0 — Post-Provenance Merge
+# Rule Lifecycle + Reliability Guarantee + Genius Ideas (Sekcje 2/4/7 P01).
+# pakiety REPORT-owe: NIE nadpisują kluczowych pól decyzyjnych (safe_merge —
+# final_verdict_with_provenance ma priorytet). Aktywowane wyłącznie flagami
+# input.jdg_entrepreneur.rule_lifecycle_check / reliability_check /
+# p01_fundament_check — w normalnym ruchu zwracają no_match (matched:false).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p01 = safe_merge(final_verdict_with_provenance,
+    safe_merge(rule_lifecycle.decide,
+    safe_merge(reliability_guarantee.decide,
+    safe_merge(p01_fundament_innovations.decide,
+        fallback.decide
+    ))))
+
+# final_verdict_p01 to najnowszy, kompletny werdykt z warstwą P01 Fundament
+# OPA (lifecycle + reliability + genius ideas). Host może zapytać o tę ścieżkę
+# lub o pakiety indywidualnie: data.jdg.rule_lifecycle.decide,
+# data.jdg.reliability_guarantee.decide, data.jdg.p01_fundament_innovations.decide.
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18c: P02 WARSTWA DECYZYJNA CORE v9.0 — Post-Provenance Merge
+# Adaptive Trust + Conflict Declaration + Core Completeness + Genius Ideas
+# (Sekcje 1/2/3-5/7 P02). Pakiety REPORT-owe — nie nadpisują decyzji
+# (safe_merge: final_verdict_p01 ma priorytet). Aktywowane flagami
+# input.jdg_entrepreneur.trust_check / conflict_check / completeness_check /
+# p02_decision_core_check — w normalnym ruchu zwracają no_match.
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p02 = safe_merge(final_verdict_p01,
+    safe_merge(adaptive_trust.decide,
+    safe_merge(conflict_declaration.decide,
+    safe_merge(decision_core_completeness.decide,
+    safe_merge(p02_decision_core_innovations.decide,
+        fallback.decide
+    )))))
+
+# final_verdict_p02 = kompletny werdykt P01 + P02 (najnowszy). Pakiety można
+# też odpytować indywidualnie: data.jdg.adaptive_trust.decide,
+# data.jdg.conflict_declaration.decide,
+# data.jdg.decision_core_completeness.decide,
+# data.jdg.p02_decision_core_innovations.decide.
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18d: P03 VAT MACRO ENTERPRISE v9.0 — Post-Provenance Merge
+# Rates/Exemptions Audit + Deductions Audit + MPP/Split Payment + Fraud Detection
+# + Genius Ideas (Sekcje 1/3/4/6/2-5-7-8 P03). Pakiety REPORT-owe — nie
+# nadpisują decyzji (safe_merge: final_verdict_p02 ma priorytet). Aktywowane
+# flagami input.jdg_entrepreneur.vat_rates_check / vat_deductions_check /
+# vat_mpp_check / vat_fraud_check / p03_vat_macro_check — w normalnym ruchu
+# zwracają no_match (matched:false).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p03 = safe_merge(final_verdict_p02,
+    safe_merge(vat_rates_audit.decide,
+    safe_merge(vat_deductions_audit.decide,
+    safe_merge(vat_mpp_split_payment.decide,
+    safe_merge(vat_fraud_detection.decide,
+    safe_merge(p03_vat_macro_innovations.decide,
+        fallback.decide
+    ))))))
+
+# final_verdict_p03 = kompletny werdykt P01 + P02 + P03 (VAT Macro). Pakiety
+# można też odpytować indywidualnie: data.jdg.vat_rates_audit.decide,
+# data.jdg.vat_deductions_audit.decide, data.jdg.vat_mpp_split_payment.decide,
+# data.jdg.vat_fraud_detection.decide, data.jdg.p03_vat_macro_innovations.decide.
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18e: P04 VAT MICRO ENTERPRISE v9.0 — Post-Provenance Merge
+# Warstwa atomowa VAT: mapa pokrycia artykułów (COMPLETE/PARTIAL/MISSING),
+# audyt duplikatów i martwych reguł, spójność micro↔macro, gwarancje
+# matematyczne (grosze/zaokrąglenia/stawki), pakiety specjalistyczne,
+# pipeline auto-generacji reguł z ISAP + genius ideas (14 innowacji).
+# Pakiet REPORT-owy — nie nadpisuje decyzji (safe_merge: final_verdict_p03
+# ma priorytet). Aktywowany flagami input.jdg_entrepreneur.p04_vat_micro_check
+# / p04_micro_audit_check / p04_dedupe_check / p04_math_check /
+# p04_specialist_check / p04_rate_desc_check — w normalnym ruchu no_match.
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p04 = safe_merge(final_verdict_p03,
+    safe_merge(p04_vat_micro_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p04 = kompletny werdykt P01 + P02 + P03 + P04 (VAT Micro).
+# Pakiet można też odpytować indywidualnie: data.jdg.p04_vat_micro_innovations.decide.
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18f: P05 PIT MACRO ENTERPRISE v9.0 — Post-Provenance Merge
+# Formy opodatkowania + audyt ulg (PRIORYTET: B+R, IP Box, termo, prototyp,
+# robotyzacja, ekspansja, PIT-0) + KUP/NKUP + zaliczki/zeznanie + Art. 21
+# + thresholdy temporalne (ADR-002) + 15 genius ideas. Pakiet REPORT-owy —
+# nie nadpisuje decyzji (safe_merge: final_verdict_p04 ma priorytet).
+# Aktywowany flagami input.jdg_entrepreneur.p05_pit_macro_check /
+# p05_relief_check / p05_form_check / p05_form_sim_check / p05_kup_check /
+# p05_advance_check / p05_art21_check / p05_zaliczka_check /
+# p05_spouse_check — w normalnym ruchu no_match (matched:false).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p05 = safe_merge(final_verdict_p04,
+    safe_merge(p05_pit_macro_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p05 = kompletny werdykt P01 + P02 + P03 + P04 + P05 (PIT Macro).
+# Pakiet można też odpytować indywidualnie: data.jdg.p05_pit_macro_innovations.decide.
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18g: P06 PIT MICRO + AMORTYZACJA ENTERPRISE v9.0 — Post-Provenance Merge
+# Mapa pokrycia artykułów PIT micro + audyt amortyzacji (PRIORYTET: art. 22a-22n,
+# KŚT, jednorazowa 100k EUR, samochody 150k/225k) + duplikaty/stuby + micro↔macro
+# + audyt obliczeń + pipeline auto-generacji + 14 genius ideas. Pakiet REPORT-owy
+# — nie nadpisuje decyzji (safe_merge: final_verdict_p05 ma priorytet).
+# Aktywowany flagami input.jdg_entrepreneur.p06_pit_micro_check /
+# p06_micro_audit_check / p06_amort_check / p06_math_check — w normalnym
+# ruchu no_match (matched:false). Dane audytu: data.jdg.pit_micro_audit.
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p06 = safe_merge(final_verdict_p05,
+    safe_merge(p06_pit_micro_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p06 = kompletny werdykt P01 + P02 + P03 + P04 + P05 + P06
+# (PIT Micro + Amortyzacja). Pakiet można też odpytować indywidualnie:
+# data.jdg.p06_pit_micro_innovations.decide.
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18h: P07 ZUS/SUS MACRO ENTERPRISE v9.0 — Post-Provenance Merge
+# Audyt składki zdrowotnej (PRIORYTET: skala 9%, liniowy 4,9%, ryczałt 3 progi,
+# karta 9%) + składki społeczne + zasiłki + PPK/PFRON/FS + zbiegi tytułów +
+# thresholdy temporalne ZUS (ADR-002). Aktywowany flagami
+# input.jdg_entrepreneur.p07_zus_macro_check — w normalnym ruchu no_match
+# (matched:false). Dane audytu: data.jdg.thresholds.zus.
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p07 = safe_merge(final_verdict_p06,
+    safe_merge(p07_zus_macro_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p07 = kompletny werdykt P01 + P02 + P03 + P04 + P05 + P06 + P07
+# (ZUS/SUS Macro). Pakiet można też odpytować indywidualnie:
+# data.jdg.p07_zus_macro_innovations.decide.
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18i: P08 ZUS/SUS MICRO ENTERPRISE v9.0 — Post-Provenance Merge
+# Mapa pokrycia artykułów ZUS micro + audyt zdrowotnej mikro (PRIORYTET:
+# progi ryczałtowe 60K/300K, korekta roczna) + zasiłki + duplikaty/stuby +
+# spójność micro↔macro + pipeline temporalny (ADR-002). Aktywowany flagami
+# input.jdg_entrepreneur.p08_zus_micro_check — w normalnym ruchu no_match
+# (matched:false). Dane audytu: data.jdg.zus_micro_audit.
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p08 = safe_merge(final_verdict_p07,
+    safe_merge(p08_zus_micro_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p08 = kompletny werdykt P01 + ... + P07 + P08 (ZUS/SUS Micro).
+# Pakiet można też odpytować indywidualnie:
+# data.jdg.p08_zus_micro_innovations.decide.
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18j: P09 KSIĘGOWOŚĆ PKPiR + UoR ENTERPRISE v9.0 — Post-Provenance Merge
+# Audyt struktury PKPiR (kolumny 1-17) + audyt UoR (PRIORYTET: próg 2M EUR,
+# silnik PKPiR-czy-UoR) + amortyzacja/leasing (KŚT, jednorazowa, auta) +
+# remanent/korekty + transformacja PKPiR→UoR + pipeline temporalny (ADR-002).
+# Aktywowany flagą input.jdg_entrepreneur.p09_ksiegowosc_check — w normalnym
+# ruchu no_match (matched:false). Dane: data.jdg.thresholds.accounting.
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p09 = safe_merge(final_verdict_p08,
+    safe_merge(p09_ksiegowosc_pkpir_uor_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p09 = kompletny werdykt P01 + ... + P08 + P09 (Księgowość PKPiR+UoR).
+# Pakiet można też odpytować indywidualnie:
+# data.jdg.p09_ksiegowosc_pkpir_uor_innovations.decide.
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18k: P10 KKS — KODEKS KARNY SKARBOWY ENTERPRISE v9.0 — Post-Provenance Merge
+# Mapa pokrycia artykułów KKS + audyt gradacji kar (PRIORYTET: stawki dzienne,
+# kalkulator kary, silnik minimalizacji 4-ścieżkowy) + czynny żal (art. 16) +
+# przedawnienie/zatarcie (art. 44/45) + spójność micro↔macro + pipeline
+# auto-aktualizacji sankcji (ADR-002). Aktywowany flagą
+# input.jdg_entrepreneur.p10_kks_check — w normalnym ruchu no_match
+# (matched:false). Dane audytu: data.jdg.kks_audit.
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p10 = safe_merge(final_verdict_p09,
+    safe_merge(p10_kks_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p10 = kompletny werdykt P01 + ... + P09 + P10 (KKS).
+# Pakiet można też odpytować indywidualnie:
+# data.jdg.p10_kks_innovations.decide.
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18l: P11 ORDYNACJA PODATKOWA ENTERPRISE v9.0 — Post-Provenance Merge
+# Mapa pokrycia artykułów OrdPU + audyt przedawnień (PRIORYTET: art. 70 —
+# 5 lat, przerwanie, zawieszenie, kalendarz z alertami) + korekty/nadpłaty
+# (art. 81/81b, 72-80) + auto-korespondencja + GAAR (art. 119a) + Biała Lista
+# (art. 117ba) + pipeline (ADR-002). Aktywowany flagą
+# input.jdg_entrepreneur.p11_ordynacja_check — w normalnym ruchu no_match
+# (matched:false). Dane audytu: data.jdg.ordpu_audit.
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p11 = safe_merge(final_verdict_p10,
+    safe_merge(p11_ordynacja_podatkowa_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p11 = kompletny werdykt P01 + ... + P10 + P11 (Ordynacja Podatkowa).
+# Pakiet można też odpytować indywidualnie:
+# data.jdg.p11_ordynacja_podatkowa_innovations.decide.
+
+final_verdict_p12 = safe_merge(final_verdict_p11,
+    safe_merge(p12_crossborder_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p12 = kompletny werdykt P01 + ... + P11 + P12 (Cross-Border/MDR/TP/CFC/FX).
+# Pakiet można też odpytować indywidualnie:
+# data.jdg.p12_crossborder_innovations.decide.
+
+final_verdict_p13 = safe_merge(final_verdict_p12,
+    safe_merge(p13_ryczalt_cykl_zycia_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p13 = kompletny werdykt P01 + ... + P12 + P13 (Ryczałt + Cykl Życia JDG).
+# Pakiet można też odpytować indywidualnie:
+# data.jdg.p13_ryczalt_cykl_zycia_innovations.decide.
+
+final_verdict_p14 = safe_merge(final_verdict_p13,
+    safe_merge(p14_pcc_lokalne_akcyza_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p14 = kompletny werdykt P01 + ... + P13 + P14 (PCC + Lokalne + Akcyza).
+# Pakiet można też odpytować indywidualnie:
+# data.jdg.p14_pcc_lokalne_akcyza_innovations.decide.
+
+final_verdict_p15 = safe_merge(final_verdict_p14,
+    safe_merge(p15_srodowisko_bdo_innovations.decide,
+        fallback.decide
+    ))
+
+# final_verdict_p15 = kompletny werdykt P01 + ... + P14 + P15 (Środowisko + BDO + Branża).
+# Pakiet można też odpytować indywidualnie:
+# data.jdg.p15_srodowisko_bdo_innovations.decide.

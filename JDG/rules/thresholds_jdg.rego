@@ -622,3 +622,73 @@ get_temporal_threshold(threshold_key, eval_date) = value {
     # Przed wejściem w życie — zwróć poprzednią wartość
     value := object.get(t, "previous_value", t.value)
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P01 SEK. 3 — WERSJONOWANIE THRESHOLDÓW PER OKRES ROZLICZENIOWY (A2+) ENTERPRISE
+# ═══════════════════════════════════════════════════════════════════════════════
+# System wersjonowania progów: każdy próg może mieć N wersji z oknami
+# ważności valid_from/valid_to (per okres rozliczeniowy). Host wstrzykuje
+# pełną historię (data.jdg.threshold_versions), a get_threshold_for_period()
+# zwraca wartość obowiązującą dla danego okresu — w 100% odtwarzalnie
+# (time-travel OPA zgodne z A2 Temporal Causality Chain).
+#
+# Struktura rekordu:
+#   {"key": [{"valid_from": "2022-01-01", "valid_to": "2025-12-31",
+#             "value": 120000, "act": "Art. 27 PIT", "reason": "Polski Ład"}, ...]}
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Domyślne wersje per okres (fallback — host może nadpisać data.jdg.threshold_versions)
+default_threshold_versions := {
+    "pit.scale_threshold": [
+        {"valid_from": "2019-01-01", "valid_to": "2021-12-31", "value": 85528, "act": "Art. 27 PIT (przed Polskim Ładem)", "reason": "Próg 85 528 PLN"},
+        {"valid_from": "2022-01-01", "valid_to": null, "value": 120000, "act": "Art. 27 PIT", "reason": "Polski Ład 2022 — podwyższenie progu"}
+    ],
+    "pit.tax_free_amount": [
+        {"valid_from": "2019-01-01", "valid_to": "2021-12-31", "value": 8000, "act": "Art. 27 ust. 1 PIT", "reason": "Kwota wolna 8 000 PLN"},
+        {"valid_from": "2022-01-01", "valid_to": null, "value": 30000, "act": "Art. 27 ust. 1 PIT", "reason": "Polski Ład 2022 — 30 000 PLN"}
+    ],
+    "vat.bad_debt_days": [
+        {"valid_from": "2020-01-01", "valid_to": "2023-06-30", "value": 150, "act": "Art. 89a VAT (przed SLIM VAT 3)", "reason": "150 dni"},
+        {"valid_from": "2023-07-01", "valid_to": null, "value": 90, "act": "Art. 89a VAT", "reason": "SLIM VAT 3 — 90 dni"}
+    ],
+    "zus.health_linear_deduction": [
+        {"valid_from": "2022-01-01", "valid_to": "2025-12-31", "value": 8700, "act": "Art. 26 ust. 1 pkt 2aa PIT", "reason": "Polski Ład 2022"},
+        {"valid_from": "2026-01-01", "valid_to": null, "value": 14100, "act": "Art. 26 ust. 1 pkt 2aa PIT", "reason": "Limit 2026"}
+    ],
+    "pit.lump_sum_annual_limit_eur": [
+        {"valid_from": "2019-01-01", "valid_to": "2021-12-31", "value": 250000, "act": "Art. 6 ustawy o ryczałcie", "reason": "250k EUR"},
+        {"valid_from": "2022-01-01", "valid_to": null, "value": 2000000, "act": "Art. 6 ustawy o ryczałcie", "reason": "Polski Ład — 2M EUR"}
+    ]
+}
+
+# Źródło wersji: data.jdg.threshold_versions (hot-reload) > domyślne
+get_threshold_versions() = object.get(data.jdg, "threshold_versions", default_threshold_versions)
+
+# Wartość progu dla okresu (data ISO YYYY-MM-DD) — wersjonowanie per okres
+get_threshold_for_period(threshold_key, period) = value {
+    versions := object.get(get_threshold_versions(), threshold_key, [])
+    count(versions) > 0
+    # Tylko wersje z valid_from <= period i (valid_to null lub >= period)
+    eligible := [v |
+        some v in versions
+        object.get(v, "valid_from", "0000-01-01") <= period
+        vt := object.get(v, "valid_to", null)
+        (vt == null) or (period <= vt)
+    ]
+    count(eligible) > 0
+    # Najnowsza z kwalifikowanych (maks valid_from)
+    latest := max([object.get(v, "valid_from", "") | some v in eligible])
+    value := object.get([v | some v in eligible; object.get(v, "valid_from", "") == latest][0], "value", 0)
+} else = 0 {
+    true
+}
+
+# Lista okresów, w których zmienił się dany próg (do kalendarza zmian prawa)
+threshold_change_periods(threshold_key) = periods {
+    versions := object.get(get_threshold_versions(), threshold_key, [])
+    periods := [{"valid_from": object.get(v, "valid_from", ""), "value": object.get(v, "value", 0), "act": object.get(v, "act", "")} |
+        some v in versions
+    ]
+} else = [] {
+    true
+}

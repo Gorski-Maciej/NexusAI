@@ -1,0 +1,113 @@
+═══════════════════════════════════════════════════════════════════════════════
+ RAPORT ANALITYCZNY ENTERPRISE — JDG MODUŁ ZUS/SUS MACRO (P07) v9.0
+ Status: [✅ WDROŻONY] — wszystkie sekcje promptu wdrożone jako działający kod
+ Data: 2026-08-02
+═══════════════════════════════════════════════════════════════════════════════
+
+EXECUTIVE SUMMARY — TOP 10
+──────────────────────────
+ 1. SKŁADKA ZDROWOTNA (PRIORYTET) wdrożona per forma: skala 9% od dochodu,
+    liniowy 4,9% (limit odliczenia 14 100 PLN), ryczałt 4,9% z 3 progami
+    (≤60K → 491,40; 60-300K → 819,00; >300K → 1474,20 PLN/mies), karta 9%
+    od minimalnego (432 PLN/mies przy 4800 PLN).
+ 2. Kalkulator realtime (INN-01) — deterministyczny wybór najtańszej formy
+    składki zdrowotnej na bieżącym dochodzie (sort par [amount, form]).
+ 3. Predykcja roczna (INN-02) — 12 mies. × składka + limit odliczenia liniowego.
+ 4. Symulator zmiany formy a zdrowotna (INN-03) — delta miesięczna/roczna.
+ 5. Składki społeczne: emerytalna 19,52% + rentowa 8% + chorobowa 2,45%
+    (dobrowolna) + wypadkowa 1,67% = 31,64% od podstawy (60% przeciętnego =
+    5204,40 PLN 2026).
+ 6. Ulgi: ulga na start (6 mies. — brak społecznych), preferencyjny (24 mies.,
+    30% minimalnego = 1440 PLN), Mały ZUS Plus (36 mies., 30% minimalnego,
+    limit dochodu 60K / przychodu 120K). Detektor fazy ulgi automatyczny.
+ 7. Limit 30-krotności (318 600 PLN 2026) — monitor nadwyżki (brak
+    emerytalnej/rentowej od nadwyżki).
+ 8. Zasiłki: chorobowy 80%/100% (1/30 podstawy dziennie), wyczekiwanie 90 dni,
+    macierzyński 140 dni, opiekuńczy 80%, rehabilitacyjny 90%, limit 85 528.
+ 9. Zbiegi tytułów: etat+JDG / emeryt+JDG / student+JDG / urlop wychowawczy+JDG
+    → z JDG tylko składka zdrowotna (silnik determinacji obowiązków).
+10. Thresholdy temporalne (ADR-002 — zero hardcode) z data.jdg.thresholds.zus,
+    migawka 2026 + dryf vs 2025, hot-reload.
+
+TABELA SKŁADEK (stawki, podstawy, limity)
+────────────────────────────────────────
+ SKŁADKA ZDROWOTNA (mies., 2026):
+   skala         9,00%   od dochodu          korekta roczna w zeznaniu
+   liniowy       4,90%   od dochodu          limit odliczenia 14 100 PLN/rok
+   ryczałt       4,90%   ≤60K → 491,40       (60% przeciętnego)
+                        60-300K → 819,00    (100% przeciętnego)
+                        >300K → 1474,20     (180% przeciętnego)
+   karta         9,00%   od minimalnego      = 432,00 PLN (min. 4800)
+
+ SKŁADKI SPOŁECZNE (2026):
+   emerytalna    19,52%  | rentowa 8,00% | chorobowa 2,45% | wypadkowa 1,67%
+   RAZEM         31,64%  od podstawy wymiaru
+   podstawa standardowa: 5204,40 PLN (60% × 8674)
+   preferencyjny: 30% min. = 1440,00 PLN (24 mies.)
+   Mały ZUS Plus: 30% min. = 1440,00 PLN (36 mies.; dochód ≤60K, przychód ≤120K)
+   30-krotność:   318 600 PLN — brak emerytalnej/rentowej od nadwyżki
+   terminy:       10 (osoba fizyczna) / 15 (spółka) / 20 (płatnik zatrudniający)
+
+ ZASIŁKI:
+   chorobowy      80% podstawy (100% ciąża/wypadek w drodze) — wyczekiwanie 90 dni
+   macierzyński   100% × 140 dni (20 tyg.)
+   opiekuńczy     80% | rehabilitacyjny 90% | limit roczny 85 528 PLN
+
+ PPK/PFRON/FS:
+   PPK: pracownik 2%, pracodawca 1,5-4%
+   PFRON: ≥25 etatowych pracowników, wskaźnik 6%
+   FS: 1,45%
+
+WDROŻONE SEKCJE → KOD
+──────────────────────
+ Sekcja 1: health_contribution_audit + health_form_matrix + 3 kalkulatory per
+           forma + korekta roczna + INN-01/02/03 (pakiet jdg.p07_zus_macro_innovations)
+ Sekcja 2: social_contribution_audit + calculator + relief_phase_detector +
+           INN-04..07 (30x, ulga start, MZP, preferencyjny)
+ Sekcja 3: benefits_audit + sickness_benefit_calculator + INN-08 (wyczekiwanie)
+ Sekcja 4: ppk_pfron_solidarity_audit
+ Sekcja 5: concurrent_title_engine + matrix + INN-09 (etat+JDG)
+ Sekcja 6: zus_thresholds_snapshot + zus_limit_drift (ADR-002 temporalne)
+ Sekcja 7: INN-01..15 (15 genialnych pomysłów Enterprise)
+ Sekcja 8: mapa drogowa poniżej (luki P0/P1/P2)
+
+ARTEFAKTY
+─────────
+   JDG/rules/p07_zus_macro_innovations_v9.rego  (package jdg.p07_zus_macro_innovations)
+   JDG/tools/zus_macro_auditor.py               (CLI audytowe + matematyka ZUS)
+   JDG/rules/main_jdg.rego                      (import PAS 18h + _package_decisions + final_verdict_p07)
+   JDG/tests/rego/test_p07_zus_macro_enterprise.rego  (18 scenariuszy)
+   JDG/tests/auto/test_p07_zus_macro_enterprise.py    (18 testów pytest)
+   JDG/docs/ZUS_MACRO_P07.md                    (dokumentacja)
+
+MAPA DROGOWA — LUKI P0/P1/P2
+────────────────────────────
+ ZDROWOTNA:
+   [P0] Brak reguły automatycznego przełączania progu ryczałtu między latami
+        przy zmianie przychodu w trakcie roku (prognoza przy przekroczeniu).
+   [P1] Brak walidacji minimalnej składki zdrowotnej w trakcie roku (korekta
+        tylko roczna).
+   [P2] Brak porównania składki zdrowotnej z odliczeniem podatkowym PIT.
+
+ SPOŁECZNE:
+   [P0] Brak monitora przekroczenia 30-krotności w trybie ciągłym (obecnie
+        jednorazowe sprawdzenie cumulative_zus_base).
+   [P1] Brak automatycznego przejścia faza→faza (ulga na start → preferencyjny
+        → standard) bez flagi months_since_start.
+   [P2] Brak walidacji podstawy dla spółek osobowych (15 dzień miesiąca).
+
+ ZASIŁKI:
+   [P0] Brak symulacji przejścia z chorobowego na rehabilitacyjny (90%).
+   [P1] Brak kalkulatora zasiłku macierzyńskiego per tydzień urlopu.
+   [P2] Brak integracji z kalkulatorem wynagrodzeń PIT-4R.
+
+ PPK/PFRON:
+   [P1] Brak kalkulatora wpłat PPK per pracownik (2%/1,5-4%).
+   [P2] Brak symulacji kary PFRON przy wskaźniku < 6%.
+
+WALIDACJA
+─────────
+ - 85/85 testów pytest przechodzi (P01-P07), py_compile OK
+ - Code review (3 rundy) — spójność sprintf verb/typ (%v dla to_number),
+   determinizm sortowania, pełna iniekcja limitów w testach
+═══════════════════════════════════════════════════════════════════════════════

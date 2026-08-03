@@ -1,0 +1,112 @@
+═══════════════════════════════════════════════════════════════════════════════
+ RAPORT ANALITYCZNY ENTERPRISE — JDG MODUŁ ZUS/SUS MICRO (P08) v9.0
+ Status: [✅ WDROŻONY] — wszystkie sekcje promptu wdrożone jako działający kod
+ Data: 2026-08-02
+═══════════════════════════════════════════════════════════════════════════════
+
+EXECUTIVE SUMMARY — TOP 10
+──────────────────────────
+ 1. MAPA POKRYCIA ARTYKUŁÓW ZUS MICRO: 25 priorytetowych artykułów (SUS sus_a6-sus_a47,
+    zdrowotna h_a79-h_a82, zasiłkowa z_a19-z_a33) z automatycznym statusem
+    COMPLETE/PARTIAL/MISSING i wskaźnikiem luki gap_pct (z data.jdg.zus_micro_audit).
+ 2. ZDROWOTNA MIKRO (PRIORYTET): progi ryczałtowe 60K/300K (60%/100%/180%
+    przeciętnego → 491,40/819,00/1474,20 PLN/mies), stawki skala 9% / liniowy
+    4,9% / karta 9% od minimalnego (432 PLN), minimalna składka, korekta roczna.
+ 3. SILNIK PROGU RYCZAŁTOWEGO Z AUTO-PRZELICZENIEM (INN-01): wykrywa
+    przekroczenie progu 60K/300K na podstawie przychodu rocznego i liczy
+    roczny wpływ zmiany składki (np. 819,00×12 − 491,40×12 = 3931,20 PLN/rok).
+ 4. SKŁADKA OD NADWYŻKI (INN-02): nadwyżka ponad minimalną składkę
+    (900,00 − 432,00 = 468,00 PLN przy dochodzie 10 000).
+ 5. ZASIŁKI MIKRO: wyczekiwanie 90 dni (3 mies.), stawki 80%/100% z podwójnym
+    zaokrąglaniem wg praktyki ZUS (podstawa/30 → grosze, potem × stawka),
+    macierzyński 140 dni, rehabilitacyjny 90%, limit roczny 85 528,
+    termin wypłaty 30 dni (art. 33 zasiłkowa).
+ 6. ATOMOWY SILNIK ZBIEGÓW (a6/a9 SUS): etat/emeryt/student/urlop wychowawczy
+    + JDG → z JDG tylko składka zdrowotna (podleganie art. 6, zbiegi art. 9).
+ 7. AUDYT DUPLIKATÓW I STUBÓW: rule_id z MANIFEST — duplikaty, stuby { true },
+    plan deduplikacji MERGE_INTO_HIGHEST_PRIORITY, detektor dead-code.
+ 8. SPÓJNOŚĆ MICRO ↔ MACRO (P07): decyzje macro ZUS (P720-P770) mają atomowe
+    wsparcie w warstwie micro (a6-a47) — priorytety spójne.
+ 9. WYKRYTA NIEKONSEKWENCJA: plan33_zus.rego używa prefiksów rule_id
+    jdg.zus.a{N} (bez .micro.), a katalogi sus/zdrowotna/zasilkowa używają
+    jdg.micro.<domena>.a{N}.r{M} — do ujednolicenia (ADR-006).
+10. PIPELINE TEMPORALNY (ADR-002): ingest→generate→verify→emit, migawki
+    2022-2026 (minimalne 3010→4800, podstawa 3474,60→5204,40), hot-reload.
+
+MAPA POKRYCIA ARTYKUŁÓW (25 priorytetowych)
+───────────────────────────────────────────
+ SUS (Dz.U. 2025 poz. 345): sus_a6, sus_a6b, sus_a9, sus_a11, sus_a13,
+                            sus_a14, sus_a18, sus_a18a, sus_a18c, sus_a19,
+                            sus_a22, sus_a24, sus_a36, sus_a40, sus_a47
+ Zdrowotna (poz. 890):      h_a79, h_a81, h_a81b, h_a81c, h_a81d, h_a82
+ Zasilkowa:                 z_a19, z_a29, z_a32, z_a33
+ Status: COMPLETE = reguła atomowa istnieje (jdg.micro.<domena>.a{N})
+         w realnych plikach sus/*.rego, zdrowotna/*.rego, zasilkowa/*.rego
+
+ZDROWOTNA MIKRO — TABELA (2026)
+───────────────────────────────
+ Forma          Stawka   Podstawa           Miesięcznie
+ skala          9,00%    dochód             np. 900,00 (dochód 10 000)
+ liniowy        4,90%    dochód             np. 490,00 (dochód 10 000)
+ ryczałt        4,90%    ≤60K → 491,40      (60% przeciętnego)
+                        60-300K → 819,00   (100% przeciętnego)
+                        >300K → 1474,20    (180% przeciętnego)
+ karta          9,00%    minimalne 4800     = 432,00
+ Korekta roczna (skala): 9% × dochód roczny − zaliczki (w zeznaniu PIT-36)
+
+ZASIŁKI MIKRO — TABELA
+──────────────────────
+ Zasiłek                Stawka  Podstawa/30×stawka   Uwagi
+ chorobowy (standard)   80%     138,78 (podstawa 5204,40)
+ chorobowy (ciąża)      100%    173,48               wypadek w drodze też 100%
+ macierzyński           100%    173,48 × 140 dni     (20 tyg.)
+ opiekuńczy             80%     138,78               na dziecko/opiekę
+ rehabilitacyjny        90%     156,13               po wyczerpaniu 182 dni
+ Wyczekiwanie: 90 dni (3 mies. ubezpieczenia) | Limit roczny: 85 528
+ Termin wypłaty: 30 dni od wyjaśnienia okoliczności (art. 33)
+
+WDROŻONE SEKCJE → KOD
+──────────────────────
+ Sekcja 1: zus_coverage_report + article_status + coverage_summary
+ Sekcja 2: health_micro_audit + 4 kalkulatory atomowe + INN-01/02
+ Sekcja 3: benefits_micro_audit + zus_sickness_benefit + INN-03
+ Sekcja 4: zus_stub_duplicate_report + INN-08/09 (deduplikator, dead-code)
+ Sekcja 5: zus_micro_macro_report + INN-04 (atomowy silnik zbiegów)
+ Sekcja 6: zus_micro_pipeline_snapshot + INN-14 (hook temporalny)
+ Sekcja 7: INN-01..14 (14 genialnych pomysłów Enterprise)
+ Sekcja 8: mapa drogowa poniżej (luki P0/P1/P2)
+
+ARTEFAKTY
+─────────
+   JDG/rules/p08_zus_micro_innovations_v9.rego  (package jdg.p08_zus_micro_innovations)
+   JDG/tools/zus_micro_auditor.py               (CLI audytowe + matematyka mikro ZUS)
+   JDG/rules/main_jdg.rego                      (import PAS 18i + _package_decisions + final_verdict_p08)
+   JDG/tests/rego/test_p08_zus_micro_enterprise.rego  (14 scenariuszy)
+   JDG/tests/auto/test_p08_zus_micro_enterprise.py    (16 testów pytest)
+   JDG/docs/ZUS_MICRO_P08.md                    (dokumentacja)
+
+MAPA DROGOWA — LUKI P0/P1/P2
+────────────────────────────
+ ZDROWOTNA:
+   [P0] Brak atomowych reguł dla art. 80 (finansowanie NFZ) — jedynie a79/a81-a82.
+   [P1] Brak reguły przełączania progu ryczałtu w trakcie roku (auto-przeliczenie
+        istnieje, ale bez historycznej walidacji miesięcy).
+   [P2] Brak porównania składki zdrowotnej z odliczeniem PIT.
+
+ ZASIŁKI:
+   [P0] Brak reguł art. 8-12 zasiłkowej (ubezpieczenie chorobowe — zgłoszenie).
+   [P1] Brak kalkulatora zasiłku opiekuńczego per dzień (60 dni rocznie).
+   [P2] Brak integracji macierzyńskiego z urlopem tacierzyńskim (15 tyg.).
+
+ SPÓJNOŚĆ RULE_ID:
+   [P1] plan33_zus.rego: prefiks jdg.zus.a{N} vs jdg.micro.sus.a{N}.r{M} —
+        ujednolicić do jdg.micro.zus.a{N}.r{M} (ADR-006).
+   [P2] plan33_health.rego vs zdrowotna/*.rego — ten sam problem prefiksów.
+
+WALIDACJA
+─────────
+ - 101/101 testów pytest przechodzi (P01-P08), py_compile OK
+ - Code review (3 rundy) — spójność sprintf verb/typ (%v dla to_number),
+   determinizm sortowania, pełna iniekcja danych audytowych w testach,
+   poprawka uszkodzonego testu rego (test_p08_main_decide)
+═══════════════════════════════════════════════════════════════════════════════

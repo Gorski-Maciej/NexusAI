@@ -1,0 +1,101 @@
+═══════════════════════════════════════════════════════════════════════════════
+ R14 — RAPORT WDROŻENIA P14_PCC_Lokalne_Akcyza.txt  [✅ WDROŻONY]
+ Projekt: NexusAI — moduł JDG (silnik reguł podatkowych OPA)
+ Data: 2026-08-02
+═══════════════════════════════════════════════════════════════════════════════
+
+■ PRIORYTET WDROŻENIA (z promptu):
+   1. Podatki lokalne (nieruchomości DN-1, transport >3,5t, opłata targowa)
+      + REJESTR STAWEK GMINNYCH (obszar ~1% pokrycia — największa luka)
+   2. PCC (stawki art. 6-7, PCC-3 w 14 dni, zwolnienia)
+   3. Akcyza (paliwa, alkohol, tytoń, energia, skład podatkowy)
+
+■ WDROŻONE SEKCJE JAKO KOD:
+
+ [Sekcja 1] MAPA POKRYCIA ARTYKUŁÓW PCC+LOKALNE+AKCYZA
+   → pcc_local_excise_coverage_report (rego) + --audit (narzędzie)
+   12 artykułów priorytetowych; realne pokrycie micro: 12/12 COMPLETE
+   (a1-a7 PCC, a8/a12/a16 transport, a26/a30/a99 akcyza)
+
+ [Sekcja 1] ★ AUDYT PCC (PRIORYTET)
+   → pcc_audit + pcc3_generator (INN-01) + pcc_detector (INN-02)
+   Czynności art. 1 (sprzedaż, pożyczka, spółki, zamiana, darowizna, hipoteka)
+   Obowiązek art. 4 (strona nabywająca)
+   Stawki art. 6-7: sprzedaż 2%, pożyczka 0,5%, spółki 0,5%, hipoteka 0,1%,
+   wymiana nieruchomości 2% / pozostała 1%
+   Zwolnienia: kwoty ≤ 1000 zł (art. 9 pkt 1), pożyczka rodzinna 36 120 zł,
+   wyłączenia VAT (art. 2 pkt 4)
+   PCC-3 w 14 dni (art. 10) — auto-generator deklaracji + załącznika PCC-3/A
+
+ [Sekcja 2] ★ AUDYT PODATKÓW LOKALNYCH (PRIORYTET)
+   → local_taxes_audit + gmina_rates_registry (INN-03) + real_estate_tax_calculator (INN-04)
+     + transport_tax_calculator (INN-05) + dn1_tracker (INN-06)
+   Nieruchomości 2026: grunty biznes 1,43 zł/m², grunty pozostałe 0,71,
+   budynki biznes 33,10 zł/m², budynki mieszkalne 1,15, budowle 2% wartości
+   DN-1 w 14 dni od nabycia/zmiany; raty 15.03/15.05/15.09/15.11
+   Środki transportowe >3,5t (art. 8-13 ustawy lokalnej)
+   Opłata targowa (art. 15), opłata uzdrowiskowa (art. 17)
+   REJESTR STAWEK GMINNYCH — system thresholdów lokalnych + auto-aktualizacja
+   (uchwały rad gmin zmieniające się corocznie)
+
+ [Sekcja 3] AUDYT AKCYZY
+   → excise_audit + excise_fuel_calculator (INN-07) + excise_alcohol_calculator (INN-08)
+     + excise_cost_detector (INN-09) + excise_warehouse_tracker (INN-11)
+   Paliwa 2026 (PLN/1000l): benzyna 1566, ON 1206, LPG 695 (art. 89)
+   Alkohol (PLN/hl): etanol 6900, piwo 8,57/°Plato, wino 185 (art. 92-96)
+   Tytoń (art. 99), energia (art. 89)
+   Skład podatkowy — obowiązkowy dla produkcji alkoholu/paliw
+   (produkcja bez składu = PRZESTĘPSTWO SKARBOWE art. 65 KKS)
+   Banderole na wyrobach alkoholowych >100ml
+
+ [Sekcja 4] AUDYT LUK I DUPLIKATÓW
+   → gaps_duplicates_audit
+   LEGAL_COVERAGE.md: 225 punktów PCC+lokalne+akcyza — największa luka (~1%)
+   Porównanie rule_id z MANIFEST, stuby, brakujące obszary:
+   opłata targowa per gmina, opłata uzdrowiskowa, tytoń, energia
+
+ [Sekcja 5] OPA JAKO ROZBUDOWANY SYSTEM
+   → local_taxes_pipeline_snapshot + gmina_rates_hook (INN-10)
+   Pipeline ingest→generate→verify→emit (ADR-002, hot-reload stawek gminnych)
+
+ [Sekcja 6] GENIALNE POMYSŁY ENTERPRISE (12)
+   INN-01 pcc3_generator             INN-02 pcc_detector
+   INN-03 gmina_rates_registry       INN-04 real_estate_tax_calculator
+   INN-05 transport_tax_calculator   INN-06 dn1_tracker
+   INN-07 excise_fuel_calculator     INN-08 excise_alcohol_calculator
+   INN-09 excise_cost_detector       INN-10 gmina_rates_hook
+   INN-11 excise_warehouse_tracker   INN-12 pcc_local_excise_compliance_panel
+
+ [Sekcja 7] MAPA DROGOWA P0/P1/P2 (luki realne)
+   P1: opłata targowa/uzdrowiskowa micro (stawki per gmina)
+   P1: tytoń — pełne stawki akcyzy
+   P2: energia — stawki akcyzy; rejestr gmin (pełna baza); formularze DN-1/PCC-3
+
+■ ARTEFAKTY:
+   - Rego:    JDG/rules/p14_pcc_lokalne_akcyza_innovations_v9.rego (18 reguł + default decide)
+   - Tool:    JDG/tools/pcc_local_excise_auditor.py
+   - Rego t.: JDG/tests/rego/test_p14_pcc_lokalne_akcyza_enterprise.rego (20 scenariuszy)
+   - Py t.:   JDG/tests/auto/test_p14_pcc_lokalne_akcyza_enterprise.py (23 testy)
+   - Docs:    JDG/docs/PCC_LOKALNE_AKCYZA_P14.md
+   - Wiring:  main_jdg.rego — import PAS 18p + _package_decisions + final_verdict_p14
+              (stary pakiet jdg.p14_innovations v8 pozostaje nietknięty — brak kolizji)
+
+■ OKABLOWANIE:
+   import data.jdg.p14_pcc_lokalne_akcyza_innovations
+   "jdg.p14_pcc_lokalne_akcyza_innovations": p14_pcc_lokalne_akcyza_innovations.decide
+   final_verdict_p14 = safe_merge(final_verdict_p13, p14_pcc_lokalne_akcyza_innovations.decide, fallback)
+
+■ PROGI USTAWOWE (ADR-002 — data.jdg.thresholds.pcc_local_excise):
+   PCC: sprzedaż 2%, pożyczka 0,5%, spółki 0,5%, hipoteka 0,1% | próg 1000 zł
+   Pożyczka rodzinna 36 120 zł | PCC-3 14 dni | nieruchomości 1,43/33,10 zł/m²
+   DN-1 14 dni | transport >3,5t | akcyza paliwa 1566/1206/695 | alkohol 6900/8,57/185
+
+■ WALIDACJA:
+   - pytest P01-P14: pełny przebieg
+   - py_compile narzędzia: OK
+   - Smoke CLI: --pcc3 (100k → 2000 PLN, 14 dni), --real-estate (100/200 m² → 6 763 PLN),
+     --fuel (1000 l benzyny → 1566 PLN), --alcohol (1 hl → 6900 PLN, skład wymagany)
+   - Code review: brak blokerów
+
+■ STATUS: [✅ WDROŻONY] — wszystkie sekcje promptu zaimplementowane w kodzie.
+═══════════════════════════════════════════════════════════════════════════════
