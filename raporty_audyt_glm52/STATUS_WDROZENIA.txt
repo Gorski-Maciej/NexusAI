@@ -10,7 +10,7 @@
            [🔨 IMPLEMENTACJA] = rekomendacje raportu wdrożone w kodzie (JDG/rules)
 
  [✅ WDROŻONY] A01_Metodologia           → R01_Metodologia.txt
- [✅ WDROŻONY] A02_Prawa_Przedsiebiorcow → R02_Prawa_Przedsiebiorcow.txt
+ [✅ WDROŻONY] A02_Prawa_Przedsiebiorcow → R02_Prawa_Przedsiebiorcow.txt 🔨 IMPLEMENTACJA 2026-08-04 (limit nieewidencjonowanej 50→75% od 01.07.2023 / 225% kwartalnie 2026, sukcesja bez zarządcy, prokura↔poa_manager, T1/T3/T4/T5/T7/T9/T10)
  [✅ WDROŻONY] A03_VAT                   → R03_VAT.txt
  [✅ WDROŻONY] A04_PIT                   → R04_PIT.txt  🔨 IMPLEMENTACJA 2026-08-03 (stuby P1, T1, T9, klasa średnia, terminy P2)
  [✅ WDROŻONY] A05_Ryczalt               → R05_Ryczalt.txt
@@ -25,6 +25,6 @@
  [✅ WDROŻONY] A14_TearApart_CrossDomain → R14_TearApart_CrossDomain.txt
  [✅ WDROŻONY] A15_Synteza_Niedociagniec → R15_Synteza_Niedociagniec.txt
 
- POSTĘP: 15/15 wdrożonych ✅ | Wszystkie sesje zakończone: WYCZYŚĆ OKNO
- KONTEKSTOWE — wykonane | Ostatnia aktualizacja: 2026-08-02
+ POSTĘP: 15/15 wdrożonych ✅ (sesje) | Implementacja kodu: A04 ✅, A02 ✅ (2026-08-04)
+ | Ostatnia aktualizacja: 2026-08-04 | WYCZYŚĆ OKNO KONTEKSTOWE — wykonane
 ═══════════════════════════════════════════════════════════════════════════════

@@ -241,8 +241,10 @@ ord := {
     "whitelist_verification_days": 30,           # 30 dni (P663)
     "whitelist_buffer_days": 3,                  # 3 dni buforu (P664)
 
-    # Art. 5 PP — działalność nieewidencjonowana
-    "unregistered_revenue_pct": 0.50,            # 50% min. wynagrodzenia (P930)
+    # Art. 5 ust. 1 pkt 1 PP — działalność nieewidencjonowana (R02 P1)
+    # Historia: 50% mies. (do 30.06.2023) → 75% mies. (od 01.07.2023) →
+    # od 01.01.2026 limit KWARTALNY = 225% płacy min. (ekwiwalent mies. 75%).
+    "unregistered_revenue_pct": 0.75,            # 75% min. wynagrodzenia (P930, od 01.07.2023)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -605,6 +607,15 @@ temporal_thresholds := {
         "valid_from": "2018-04-01",
         "value": 6,
         "reason": "Wprowadzenie ulgi na start"
+    },
+
+    # P930 — limit działalności nieewidencjonowanej: 50% → 75% (01.07.2023)
+    "unregistered_revenue_pct": {
+        "valid_from": "2023-07-01",
+        "value": 0.75,
+        "previous_value": 0.50,
+        "previous_valid_from": "2018-04-30",
+        "reason": "Art. 5 ust. 1 pkt 1 PP — podwyższenie limitu z 50% do 75% płacy minimalnej (nowelizacja obowiązująca od 01.07.2023)"
     }
 }
 
@@ -621,6 +632,29 @@ get_temporal_threshold(threshold_key, eval_date) = value {
     t := temporal_thresholds[threshold_key]
     # Przed wejściem w życie — zwróć poprzednią wartość
     value := object.get(t, "previous_value", t.value)
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# R02 P1 — DZIAŁALNOŚĆ NIEEWIDENCJONOWANA: LIMIT TEMPORALNY (art. 5 ust. 1 pkt 1 PP)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Jedno źródło prawdy dla procentu limitu — weryfikowalnie zewnętrzne
+# (data.thresholds). Reguły NIE hardkodują kwot ani procentów.
+#   - do 2023-06-30:  50% płacy minimalnej miesięcznie
+#   - 2023-07-01 → 2025-12-31: 75% płacy minimalnej miesięcznie
+#   - od 2026-01-01:  225% płacy minimalnej KWARTALNIE (ekwiwalent mies. 75%)
+
+# Miesięczny ekwiwalent procentu (50% → 75% od 01.07.2023; 2026: 225%/3 = 75%)
+unregistered_limit_pct(eval_date) = pct {
+    pct := to_number(get_temporal_threshold("unregistered_revenue_pct", eval_date))
+} else = 0.75 {
+    true
+}
+
+# Mnożnik limitu kwartalnego (2026+): 225% płacy minimalnej na kwartał; 0 = brak trybu kwartalnego
+unregistered_quarterly_multiplier(eval_date) = 2.25 {
+    eval_date >= "2026-01-01"
+} else = 0.0 {
+    true
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -658,6 +692,11 @@ default_threshold_versions := {
     "pit.lump_sum_annual_limit_eur": [
         {"valid_from": "2019-01-01", "valid_to": "2021-12-31", "value": 250000, "act": "Art. 6 ustawy o ryczałcie", "reason": "250k EUR"},
         {"valid_from": "2022-01-01", "valid_to": null, "value": 2000000, "act": "Art. 6 ustawy o ryczałcie", "reason": "Polski Ład — 2M EUR"}
+    ],
+    "business.unregistered_revenue_pct": [
+        {"valid_from": "2018-04-30", "valid_to": "2023-06-30", "value": 0.50, "act": "Art. 5 ust. 1 pkt 1 PP (brzmienie pierwotne)", "reason": "50% płacy minimalnej miesięcznie"},
+        {"valid_from": "2023-07-01", "valid_to": "2025-12-31", "value": 0.75, "act": "Art. 5 ust. 1 pkt 1 PP", "reason": "Podwyższenie do 75% miesięcznie (nowelizacja z 01.07.2023)"},
+        {"valid_from": "2026-01-01", "valid_to": null, "value": 2.25, "act": "Art. 5 ust. 1 pkt 1 PP", "reason": "2026: limit kwartalny = 225% płacy minimalnej"}
     ]
 }
 

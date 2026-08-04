@@ -104,8 +104,8 @@ key_thresholds := {
     "vat_exemption_limit": 200000,
     "small_taxpayer_cit_limit_pln": 2000000,
     "small_taxpayer_cit_limit_eur": 2000000,
-    "unregistered_activity_limit_pct": 50,
-    "unregistered_activity_limit_pln": floor(min_wage_2026 * 0.50),
+    "unregistered_activity_limit_pct": 75,             # art. 5 ust. 1 pkt 1 PP — 75% płacy min. (50% do 30.06.2023; od 2026: 225% kwartalnie)
+    "unregistered_activity_limit_pln": floor(min_wage_2026 * 0.75),
     "ksef_mandatory_date": "2026-02-01",
     "suspension_max_months": 6,
     "succession_max_months_standard": 24,

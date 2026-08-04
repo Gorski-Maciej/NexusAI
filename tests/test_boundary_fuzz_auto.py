@@ -37,7 +37,7 @@ THRESHOLDS: dict[str, dict] = {
     "P740": {"limit": 6.0, "rego": "zus.rego", "rule": "start_relief_check", "desc": "ZUS start relief"},
     "P741": {"limit": 36.0, "rego": "zus.rego", "rule": "maly_plus_check", "desc": "Mały ZUS+"},
     "P742": {"limit": 24.0, "rego": "zus.rego", "rule": "preferential_check", "desc": "ZUS preferential"},
-    "P930": {"limit": 50.0, "rego": "pit/exemptions.rego", "rule": "unregistered_check", "desc": "Unregistered activity"},
+    "P930": {"limit": 75.0, "rego": "pit/exemptions.rego", "rule": "unregistered_check", "desc": "Unregistered activity (R02: 75% płacy min. od 01.07.2023; 50% do 30.06.2023; 2026: 225% kwartalnie)"},
     "R0613": {"limit": 11.0, "rego": "nip.rego", "rule": "nip_checksum_check", "desc": "NIP checksum"},
     "P36": {"limit": 450.0, "rego": "vat/procedures.rego", "rule": "simplified_receipt_check", "desc": "Simplified receipt"},
     "P953": {"limit": 200.0, "rego": "vat/procedures.rego", "rule": "ksef_attachment_size_check", "desc": "KSeF attachment"},
@@ -285,10 +285,10 @@ def test_boundary_p742(value: float, expected_category: str) -> None:
     assert category == expected_category, f"P742: value={value}, expected={expected_category}, got={category}"
 
 
-# ══ P930: 7 boundary tests (unregistered_activity_percent = 50.0) ══
+# ══ P930: 7 boundary tests (unregistered_activity_percent = 75.0 — R02: aktualny stan prawny) ══
 @pytest.mark.parametrize("value,expected_category", [
-    (-50.0, "BELOW"), (49.0, "BELOW"), (49.99, "BELOW"),
-    (50.0, "AT"), (50.01, "ABOVE"), (51.0, "ABOVE"), (150.0, "ABOVE"),
+    (-75.0, "BELOW"), (74.0, "BELOW"), (74.99, "BELOW"),
+    (75.0, "AT"), (75.01, "ABOVE"), (76.0, "ABOVE"), (175.0, "ABOVE"),
 ])
 def test_boundary_p930(value: float, expected_category: str) -> None:
     t = THRESHOLDS["P930"]

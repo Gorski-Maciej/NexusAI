@@ -14,7 +14,7 @@
 # legal_basis: Art. 5-7 CEIDG, Art. 22-25 Prawa przedsiębiorców, Art. 36a SUS
 # edge_cases:
 #   - Zawieszenie: społeczne=0, zdrowotna NADAL (Art. 36a SUS)
-#   - Dział. nieewidencjonowana: limit 50% min. wynagrodzenia
+#   - Dział. nieewidencjonowana: limit 75% min. wynagrodzenia (50% do 30.06.2023; od 2026: 225% kwartalnie)
 #   - Sukcesja: NIP zmarłego + "w spadku"
 # package: jdg.business
 # deprecated: false
@@ -69,6 +69,67 @@ else := {
     else = "Przekroczono max 6 mies. zawieszenia — automatyczne wznowienie" { susp_months >= 6 }
     susp_months >= 6
     or emp_count > 0
+}
+
+# ══════ P921a: succession_no_manager_grace — 2-mies. okno na powołanie zarządcy (R02 P1) ══════
+# Cel: Po śmierci JDG bez zarządcy — spadkobiercy mają 2 miesiące na powołanie
+# zarządcy sukcesyjnego (art. 3 u.z.s.). W oknie: TRIAGE_QUEUE (przypomnienie).
+else := {
+    "matched":true,"rule_id":"jdg.business.succession_no_manager_grace",
+    "package":"jdg.business","priority":921,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"IN_SUCCESSIO",
+    "succession_manager_missing":true,
+    "succession_grace_days_left":max([0, 60 - days_since_death]),
+    "succession_grace_deadline":"60 dni od śmierci",
+    "_routing":"TRIAGE_QUEUE",
+    "_routing_reason":"Brak zarządcy sukcesyjnego — pozostało okno 2 mies. na powołanie (art. 3 u.z.s.)",
+    "_legal_basis":"Art. 3, 14-15 ustawy o zarządzie sukcesyjnym; art. 30 ust. 2 ustawy o CEIDG",
+    "_warnings":[sprintf("Brak zarządcy sukcesyjnego — %d dni po śmierci. Spadkobiercy mogą powołać zarządcę w ciągu 2 MIESIĘCY od śmierci (art. 3 u.z.s.). Po upływie terminu działalność WYGASA, a CEIDG wykreśla wpis z urzędu.", [days_since_death])]
+} {
+    input.jdg_entrepreneur.in_succession == true
+    object.get(input.jdg_entrepreneur, "succession_manager_nip", "") == ""
+    days_since_death := to_number(object.get(input.jdg_entrepreneur, "succession_days_elapsed", to_number(object.get(input.jdg_entrepreneur, "months_since_date_of_death", 0)) * 30))
+    days_since_death < 60
+}
+
+# ══════ P921b: succession_no_manager_expiry — Wygaśnięcie działalności po 2 mies. (R02 P1) ══════
+# Cel: Brak zarządcy po 2 miesiącach od śmierci → działalność WYGASA, wpis w CEIDG
+# wykreślany z urzędu (art. 30 ust. 2 ustawy o CEIDG), NIP traci ważność.
+else := {
+    "matched":true,"rule_id":"jdg.business.succession_no_manager_expiry",
+    "package":"jdg.business","priority":922,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"EXPIRED",
+    "succession_manager_missing":true,
+    "succession_expired":true,
+    "ceidg_deregistration_required":true,
+    "nip_status":"DECEASED_NO_SUCCESSOR",
+    "_routing":"BLOCK_AND_ALERT",
+    "_routing_reason":"Brak zarządcy sukcesyjnego po 2 miesiącach — działalność WYGASA, wykreślenie z CEIDG z urzędu",
+    "_legal_basis":"Art. 3, 14-15 ustawy o zarządzie sukcesyjnym; art. 30 ust. 2 ustawy o CEIDG",
+    "_warnings":["BRAK ZARZĄDCY SUKCESYJNEGO po 2 miesiącach od śmierci — działalność gospodarcza WYGASŁA. CEIDG wykreśla wpis z urzędu (w ciągu 7 dni po 2-mies. okresie). NIP wygasa. Spadkobiercy odpowiadają za zobowiązania do wysokości nabytego majątku."],
+    "_future_events":[
+        {
+            "event_id":"succession_no_manager_ceidg_dereg",
+            "event_type":"COMPLIANCE_CHECK",
+            "description":"Wykreślenie zmarłego przedsiębiorcy z CEIDG z urzędu (brak zarządcy)",
+            "due_date_horizon":"+7d",
+            "action":"CEIDG_DEREGISTER_EX_OFFICIO",
+            "priority":"CRITICAL"
+        }
+    ]
+} {
+    input.jdg_entrepreneur.in_succession == true
+    object.get(input.jdg_entrepreneur, "succession_manager_nip", "") == ""
+    days_since_death := to_number(object.get(input.jdg_entrepreneur, "succession_days_elapsed", to_number(object.get(input.jdg_entrepreneur, "months_since_date_of_death", 0)) * 30))
+    days_since_death >= 60
 }
 
 # ══════ P929c: succession_manager_appointment_valid — Ważność zarządcy ══════
@@ -265,7 +326,7 @@ else := {
     input.jdg_entrepreneur.succession_manager_nip != null
 }
 
-# ══════ P930: unregistered_activity_limit ══════
+# ══════ P930: unregistered_activity_limit (R02 P1 — limit z data.thresholds, temporalny) ══════
 else := {
     "matched":true,"rule_id":"jdg.business.unregistered_activity_limit_exceeded",
     "package":"jdg.business","priority":930,
@@ -276,13 +337,15 @@ else := {
     "business_status":"","unregistered_activity_limit_exceeded":true,"ceidg_registration_required":true,
     "_routing":"BLOCK_AND_ALERT",
     "_routing_reason":"Przekroczony limit działalności nieewidencjonowanej",
-    "_legal_basis":"Art. 5 Prawa przedsiębiorców",
-    "_warnings":["Przekroczony limit dział. nieewidencjonowanej (50% min. wynagrodzenia) — OBOWIĄZKOWA rejestracja CEIDG w 7 dni!"]
+    "_legal_basis":"Art. 5 ust. 1 pkt 1 Prawa przedsiębiorców",
+    "_warnings":["Przekroczony limit dział. nieewidencjonowanej (75% min. wynagrodzenia; kwartalnie 225% od 2026 — limit z data.thresholds) — OBOWIĄZKOWA rejestracja CEIDG w 7 dni!"]
 } {
     input.jdg_entrepreneur.is_unregistered_activity == true
-    monthly_rev := object.get(input.jdg_entrepreneur,"monthly_revenue_current",0)
-    min_wage := object.get(object.get(object.get(data.thresholds,"jdg",{}),"bounds",{}),"minimum_wage_gross",4800)
-    monthly_rev > floor(0.50 * min_wage)
+    monthly_rev := to_number(object.get(input.jdg_entrepreneur,"monthly_revenue_current",0))
+    min_wage := to_number(object.get(object.get(object.get(data.thresholds,"jdg",{}),"bounds",{}),"minimum_wage_gross",4800))
+    eval_date := object.get(input, "evaluation_date", object.get(input.jdg_entrepreneur, "effective_date", "2026-01-01"))
+    unreg_pct := to_number(data.jdg.thresholds.unregistered_limit_pct(eval_date))
+    monthly_rev > floor(min_wage * unreg_pct * 100) / 100
 }
 
 # ══════ P932: unregistered_activity_zus_exemption ══════
@@ -434,4 +497,112 @@ else := {
 } {
     object.get(input.jdg_entrepreneur,"tax_form_changed_this_year",false)==true
     object.get(input.jdg_entrepreneur,"has_pre_change_expenses",false)==true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# R02 — AUDYT LIMITU DZIAŁALNOŚCI NIEEWIDENCJONOWANEJ (P931, T1) + GRANICA ZAWIESZENIA (T3)
+# ═══════════════════════════════════════════════════════════════════════════════
+# R02 P1: limit w 100% z data.thresholds (płaca minimalna + procent temporalny) —
+# zero hardcode kwot. 2026+: tryb kwartalny (225% płacy min.).
+# Historia: 50% mies. (do 30.06.2023) → 75% mies. (01.07.2023) → 225% kwartalnie (2026).
+
+# Helper: efektywny limit (kwartalny jeśli dostępny przychód kwartalny w trybie kwartalnym)
+r02_eff_limit(q_mode, q_rev, quarterly_limit, monthly_limit) = v {
+    q_mode == true
+    q_rev > 0
+    v := quarterly_limit
+} else = v {
+    v := monthly_limit
+}
+
+# Helper: efektywny przychód do porównania z limitem
+r02_eff_rev(q_mode, q_rev, monthly_rev) = v {
+    q_mode == true
+    q_rev > 0
+    v := q_rev
+} else = v {
+    v := monthly_rev
+}
+
+# ══════ P931: unregistered_limit_check — Audyt limitu nieewidencjonowanej (R02 P1/T1) ══════
+else := {
+    "matched":true,"rule_id":"jdg.business.unregistered_limit_check",
+    "package":"jdg.business","priority":931,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"",
+    "unregistered_limit_monthly":limit_monthly,
+    "unregistered_limit_quarterly":limit_quarterly,
+    "unregistered_limit_pct":unreg_pct,
+    "unregistered_quarterly_mode":quarterly_mode,
+    "unregistered_revenue_checked":eff_rev,
+    "unregistered_limit_applied":eff_limit,
+    "unregistered_within_limit":within,
+    "unregistered_activity_limit_exceeded":exceeded,
+    "ceidg_registration_required":exceeded,
+    "_routing":routing_flag,
+    "_routing_reason":routing_reason,
+    "_legal_basis":"Art. 5 ust. 1 pkt 1 Prawa przedsiębiorców",
+    "_warnings":[warn_msg]
+} {
+    input.business_unregistered_limit_check == true
+    min_wage := to_number(object.get(object.get(object.get(data.thresholds,"jdg",{}),"bounds",{}),"minimum_wage_gross",4800))
+    eval_date := object.get(input, "evaluation_date", object.get(input.jdg_entrepreneur, "effective_date", "2026-01-01"))
+    unreg_pct := to_number(data.jdg.thresholds.unregistered_limit_pct(eval_date))
+    qm := to_number(data.jdg.thresholds.unregistered_quarterly_multiplier(eval_date))
+    limit_monthly := floor(min_wage * unreg_pct * 100) / 100
+    limit_quarterly := floor(min_wage * qm * 100) / 100
+    quarterly_mode := qm > 0
+    monthly_rev := to_number(object.get(input.jdg_entrepreneur,"monthly_revenue_current",0))
+    q_rev := to_number(object.get(input.jdg_entrepreneur,"quarterly_revenue",0))
+    eff_limit := r02_eff_limit(quarterly_mode, q_rev, limit_quarterly, limit_monthly)
+    eff_rev := r02_eff_rev(quarterly_mode, q_rev, monthly_rev)
+    exceeded := eff_rev > eff_limit
+    within := not exceeded
+    routing_flag = "BLOCK_AND_ALERT" { exceeded == true }
+    routing_flag = "" { exceeded == false }
+    routing_reason = "Przekroczony limit działalności nieewidencjonowanej — obowiązkowa rejestracja CEIDG w 7 dni!" { exceeded == true }
+    routing_reason = "Działalność nieewidencjonowana w limicie" { exceeded == false }
+    within_label := "W LIMICIE" { within == true }
+    within_label := "PRZEKROCZONY — REJESTRACJA CEIDG WYMAGANA!" { within == false }
+    warn_msg := sprintf("Działalność nieewidencjonowana: limit %.2f PLN/mies. (%.0f%% płacy min. %.0f PLN; kwartalnie %.2f PLN od 2026). Przychód ewaluowany: %.2f PLN — %s", [limit_monthly, unreg_pct * 100, min_wage, limit_quarterly, eff_rev, within_label])
+}
+
+# ══════ P918b: suspension_period_boundary — Granica okresu zawieszenia (R02 T3) ══════
+# Cel: Zawieszenie obejmuje okres [start, end] włącznie; dzień po zakończeniu =
+# wznowienie. Test T3: 31.12 23:59 (w okresie) vs 1.01 00:01 (wznowienie).
+else := {
+    "matched":true,"rule_id":"jdg.business.suspension_period_boundary",
+    "package":"jdg.business","priority":918,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":status_flag,
+    "suspension_in_period":in_period,
+    "suspension_resumed":resumed,
+    "suspension_start_date":start_date,
+    "suspension_end_date":end_date,
+    "suspension_eval_date":eval_date,
+    "_routing":"","_routing_reason":"",
+    "_legal_basis":"Art. 22-25 Prawa przedsiębiorców",
+    "_warnings":[warn_msg]
+} {
+    input.business_suspension_check == true
+    start_date := object.get(input.business_suspension, "start_date", "")
+    end_date := object.get(input.business_suspension, "end_date", "")
+    eval_date := object.get(input.business_suspension, "eval_date", object.get(input, "evaluation_date", ""))
+    start_date != ""
+    end_date != ""
+    eval_date != ""
+    in_period := (eval_date >= start_date) and (eval_date <= end_date)
+    resumed := eval_date > end_date
+    status_flag = "SUSPENDED" { in_period == true }
+    status_flag = "ACTIVE" { resumed == true }
+    status_flag = "PRE_SUSPENSION" { eval_date < start_date }
+    warn_msg = sprintf("Zawieszenie: okres [%s, %s], data ewaluacji %s — w okresie zawieszenia", [start_date, end_date, eval_date]) { in_period == true }
+    warn_msg = sprintf("Zawieszenie: okres [%s, %s] zakończony %s — działalność WZNOWIONA (dzień po końcu okresu)", [start_date, end_date, eval_date]) { resumed == true }
+    warn_msg = sprintf("Zawieszenie: okres [%s, %s] — data %s PRZED rozpoczęciem zawieszenia", [start_date, end_date, eval_date]) { eval_date < start_date }
 }

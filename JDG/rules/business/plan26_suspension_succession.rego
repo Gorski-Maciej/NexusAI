@@ -6,7 +6,8 @@
 package jdg.business
 import data.jdg.helpers
 
-default decide := {"matched":false,"rule_id":"jdg.business.no_match","package":"jdg.business","priority":99999}
+# R02 T7: usunięto zduplikowany default decide (rule_id jdg.business.no_match) —
+# pojedynczy default żyje w business.rego (1 wersja prawdy w pakiecie jdg.business).
 
 # jdg.business.resumption_procedure_valid — Wznowienie JDG — zgłoszenie CEIDG + obowiązki
 decide :=   {"matched":true,"rule_id":"jdg.business.resumption_procedure_valid","package":"jdg.business","priority":916,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"TRIAGE_QUEUE","_routing_reason":"Wznowienie JDG — zgłoszenie CEIDG + obowiązki","_legal_basis":"Art. 22-25 Prawa przedsiębiorców","_warnings":["Wznowienie bez zgłoszenia CEIDG — zgłoś natychmiast"]} {

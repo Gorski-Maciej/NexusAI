@@ -7,10 +7,34 @@
 package jdg.representation
 import data.jdg.helpers
 
-default decide := {"matched":false,"rule_id":"jdg.representation.no_match","package":"jdg.representation","priority":99999}
+# R02 T7: usunięto zduplikowany default decide (rule_id jdg.representation.no_match) —
+# pojedynczy default żyje w representation.rego (1 wersja prawdy w pakiecie jdg.representation).
+
+# jdg.representation.prokura_poa_manager_bridge — R02 P2: prokura (art. 18 PP) ↔ poa_manager_enterprise
+# Potwierdzenie integracji reprezentacji w werdyktach silnika: prokura łączy się
+# z pakietem jdg.poa_manager (rejestr pełnomocnictw PPS-1/UPL-1/PPD-1, CRPO,
+# e-Doręczenia, alerty wygaśnięcia). Trigger audytowy — nie koliduje z łańcuchem.
+decide := {
+    "matched":true,"rule_id":"jdg.representation.prokura_poa_manager_bridge",
+    "package":"jdg.representation","priority":1204,
+    "vat_rate":"","rounding_level":"","gtu_code":"",
+    "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
+    "kus_qualification":"","kus_percent":0,
+    "zus_social_base_type":"","zus_health_rate":"",
+    "business_status":"","prokura_poa_manager_linked":true,
+    "poa_manager_package":"jdg.poa_manager",
+    "representation_managed_by":"jdg.poa_manager (rejestr pełnomocnictw + CRPO + e-Doręczenia + alerty wygaśnięcia)",
+    "_routing":"",
+    "_routing_reason":"Prokura zintegrowana z poa_manager_enterprise",
+    "_legal_basis":"Art. 18 Prawa przedsiębiorców; Art. 1091-1099 KC; Art. 138a-138o OrdPU",
+    "_warnings":["Prokura (art. 18 PP) połączona z poa_manager_enterprise — pełne zarządzanie pełnomocnictwami podatkowymi (PPS-1/UPL-1/PPD-1) i monitorowanie terminów wygaśnięcia."]
+} {
+    input.business_audit_prokura_check == true
+    object.get(input.jdg_entrepreneur, "prokura_registered", false) == true
+}
 
 # jdg.representation.prokura_self_employed — Prokura samoistna — pełnomocnik działa samodzielnie
-decide := {
+else := {
     "matched":true,"rule_id":"jdg.representation.prokura_self_employed",
     "package":"jdg.representation","priority":1205,
     "vat_rate":"","rounding_level":"","gtu_code":"",

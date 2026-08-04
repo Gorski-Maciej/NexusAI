@@ -59,7 +59,7 @@ class ThresholdLimitExtractor:
         LimitConfig("tax_free_amount", 30000.0, "P508", "Art. 27 ust. 1 PIT"),
         LimitConfig("tax_scale_bracket", 120000.0, "P501", "Art. 27 ust. 1 PIT"),
         LimitConfig("health_deduction_linear_limit", 12900.0, "P722", "Art. 30c ust. 2 pkt 2 PIT"),
-        LimitConfig("unregistered_activity_percent", 50.0, "P930", "Art. 5 Prawa przedsiębiorców"),
+        LimitConfig("unregistered_activity_percent", 75.0, "P930", "Art. 5 ust. 1 pkt 1 Prawa przedsiębiorców (75% od 01.07.2023; 50% do 30.06.2023; 2026: 225% kwartalnie)"),
         LimitConfig("vat_simplified_receipt_limit", 450.0, "P36", "Art. 106e VAT"),
         LimitConfig("thermo_relief_limit", 53000.0, "P623", "Art. 26h PIT"),
         LimitConfig("rd_centrum_multiplier", 200.0, "P600", "Art. 26e ust. 10 PIT"),
