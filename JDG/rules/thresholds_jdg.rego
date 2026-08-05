@@ -267,6 +267,243 @@ automatyzacja_ksiegowosci := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# HR I ŚWIADCZENIA — data.jdg.thresholds.hr_swiadczenia (P19)
+# Dane dla pakietu jdg.p19_hr_swiadczenia_innovations (fallback w pakiecie).
+#   P0-1: pełny moduł płac end-to-end (brutto→netto→ZUS→PIT-4→wypłata)
+#   P0-2: integracja z Płatnikiem ZUS (import/eksport list płac)
+#   P1-1: panel świadczeń rodzinnych z automatycznymi wnioskami do ZUS/MPiPS
+#   P1-2: kalkulator wynagrodzeń z uwzględnieniem kwoty wolnej i ulg (PIT-2)
+#   P1-3: tracker PPK z pełną automatyzacją wpłat (2% + 1.5%)
+#   P2-1: dashboard HR (urlopy, płace, PFRON) w UI
+#   P2-2: e-wnioski pracownicze (urlop, siła wyższa) z auto-akceptacją
+# ═══════════════════════════════════════════════════════════════════════════════
+
+hr_swiadczenia := {
+    "kup_dojazdy_pln": 300,                        # KUP dojazdów (art. 22 ust. 2 pkt 4 u.PIT)
+    "zus_emerytalna_pct": 9.76,
+    "zus_rentowa_pct": 1.5,
+    "zus_chorobowa_pct": 2.45,
+    "zus_zdrowotna_pct": 9.0,
+    "pit_advance_pct": 12.0,
+    "force_majeure_days_max": 2,                  # art. 148¹ KP
+    "force_majeure_pay_pct": 50,
+    "family_800_plus_pln": 800,
+    "family_zasiłek_pln": 135,
+    "ppk_employee_pct": 2.0,
+    "ppk_employer_pct": 1.5,
+    "pfron_threshold_employees": 25,
+    "pfron_fee_per_etat_pln": 40.75,
+    "solidarity_donation_pct": 0.5,
+    "odprawa_months_max": 3,
+    "zamowienia_do_30k_pln": 30000,
+    "reklama_limit_pct": 0.25,
+
+    # ── P0-1: pełny moduł płac end-to-end ──
+    "payroll_e2e": {
+        "steps": ["1. brutto", "2. ZUS pracownika", "3. zdrowotna", "4. PIT-4", "5. wypłata netto", "6. ZUS pracodawcy", "7. FP/FGŚP"],
+        "required_steps": 7,
+        "deadline_payday": 10,                    # art. 85 KP
+        "auto_payroll": true,
+    },
+
+    # ── P0-2: integracja z Płatnikiem ZUS ──
+    "platnik_zus": {
+        "import_payroll": true,
+        "export_payroll": true,
+        "format": "IMPORT ZUS (XML) / EXPORT lista płac",
+        "zua_deadline_days": 7,                    # zgłoszenie do ZUS ZUA w 7 dni
+        "legal_basis": "Ustawa o systemie ubezpieczeń społecznych; Płatnik ZUS (PUE)",
+    },
+
+    # ── P1-1: panel świadczeń rodzinnych + auto-wnioski ──
+    "family_benefits_panel": {
+        "benefits": ["800+", "zasiłek rodzinny", "dodatek z tytułu samotnego wychowania", "świadczenie dobry start 300+"],
+        "auto_application": true,                  # auto-wniosek do ZUS/MPiPS
+        "targets": ["ZUS (e-wniosek)", "MPiPS"],
+        "application_deadline": "800+ od 1 lutego",
+    },
+
+    # ── P1-2: kalkulator wynagrodzeń z kwotą wolną i ulgami (PIT-2) ──
+    "salary_tax_optimized": {
+        "pit2_monthly_relief_pln": 300,            # ulga PIT-2 — 300 zł/mies. (art. 31c u.PIT)
+        "tax_free_amount_annual_pln": 30000,       # kwota wolna (od 2022)
+        "pit2_applicable": true,
+        "legal_basis": "Art. 31c u.PIT (PIT-2); art. 27 ust. 1 u.PIT (kwota wolna)",
+    },
+
+    # ── P1-3: tracker PPK z pełną automatyzacją wpłat ──
+    "ppk_auto": {
+        "employee_pct": 2.0,
+        "employer_pct": 1.5,
+        "auto_contributions": true,                # auto-wpłaty z listy płac
+        "deadline_payment_day": 15,                # do 15. dnia następnego miesiąca
+        "obligation_after_days": 90,               # obowiązek po 90 dniach zatrudnienia
+    },
+
+    # ── P2-1: dashboard HR w UI ──
+    "hr_dashboard": {
+        "widgets": ["urlopy", "płace", "PFRON", "PPK", "świadczenia", "e-wnioski"],
+        "refresh": "na żywo (hot-reload ADR-002)",
+        "export_formats": ["JSON", "CSV", "PDF"],
+    },
+
+    # ── P2-2: e-wnioski pracownicze z auto-akceptacją ──
+    "ewnioski": {
+        "types": ["urlop wypoczynkowy", "siła wyższa (art. 148¹ KP)"],
+        "auto_approval": true,                     # auto-akceptacja wniosków spełniających kryteria
+        "approval_flow": "wniosek → weryfikacja → auto-akceptacja → kalendarz/lista płac",
+    },
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# NEURAL MESH + INNOWACJE — data.jdg.thresholds.neural_mesh (P20)
+# Dane dla pakietu jdg.p20_neural_mesh_innovations (fallback w pakiecie).
+#   P0-1: pełna implementacja strategic_roadmap (mapa 5-letnia, transformacja)
+#   P0-2: pełna implementacja judicial_trend + cross_jurisdiction_ruling
+#   P1-1: integracja z legislacja.gov.pl (API projektów ustaw) — radar live
+#   P1-2: baza orzecznictwa NSA/WSA z parserem sygnatur
+#   P1-3: propagacja pewności w pełnym grafie reguł (P01-P20)
+#   P2-1: UI panelu SRO (orzecznictwo → zmiany reguł)
+#   P2-2: symulator nowelizacji z raportem wpływu na deklaracje
+# ═══════════════════════════════════════════════════════════════════════════════
+
+neural_mesh := {
+    "conflict_alert_threshold": 0.7,               # alert konfliktu — trust diff ≥ 0.7
+    "default_trust_score": 0.8,
+    "override_mode": "AUTO_POST",
+    "min_confidence_propagate": 0.5,
+    "dead_innovation_check_cycles": 12,
+    "judicial_impact_threshold": 0.6,
+    "legislative_alert_days": 30,
+
+    # ── P0-1: strategic_roadmap — pełna implementacja ──
+    "strategic_roadmap": {
+        "forms": ["skala", "liniowy", "ryczałt", "IP Box"],
+        "horizon_years": 5,
+        "projection_growth_default": 0.05,
+        "transformation_threshold_pln": 300000,    # JDG → Sp. z o.o. opłacalne powyżej
+        "legal_basis": "Art. 27/30c/30ca u.PIT; u.PCC; art. 119a OrdPU (GAAR)",
+    },
+
+    # ── P0-2: judicial_trend + cross_jurisdiction_ruling — pełna implementacja ──
+    "judicial_trend_rulings": {
+        "courts": ["NSA", "WSA", "TK", "TSUE"],
+        "precedence_weights": {"WSA": 1, "NSA_3": 3, "NSA_FULL": 8, "TK": 10, "TSUE": 10},
+        "unfavorable_trend_threshold_pct": 60,
+        "binding_scope": "Art. 14k-14m OrdPU (ochrona KKS)",
+    },
+
+    # ── P1-1: integracja z legislacja.gov.pl — radar live ──
+    "legislacja_gov_pl": {
+        "api": "https://legislacja.gov.pl/api (projekty ustaw)",
+        "radar_horizon_days": 30,
+        "monitored_areas": ["VAT", "PIT", "ZUS", "KKS", "Ordynacja", "KSeF", "PPK"],
+        "auto_alert": true,
+    },
+
+    # ── P1-2: baza orzecznictwa NSA/WSA z parserem sygnatur ──
+    "nsa_wsa_rulings_db": {
+        "signature_parser": "NSA/WSA sygnatury: I FSK 1234/25 (regex)",
+        "sources": ["CBOSA", "orzeczenia.nsa.gov.pl"],
+        "min_rulings_for_trend": 5,
+        "indexed_articles": ["16", "70", "119a"],
+    },
+
+    # ── P1-3: propagacja pewności w pełnym grafie reguł (P01-P20) ──
+    "full_graph_confidence": {
+        "domains": ["VAT", "PIT", "ZUS", "KKS", "ORD", "PKPiR", "KSeF", "RYC", "CB", "HR"],
+        "propagation_cutoff": 0.5,
+        "max_hops": 3,
+        "packages": "p01-p24 + p33-p35",
+    },
+
+    # ── P2-1: UI panelu SRO (orzecznictwo → zmiany reguł) ──
+    "sro_panel": {
+        "widgets": ["trendy orzecznicze", "orzeczenia per artykuł", "zmiany reguł", "alerty wpływu"],
+        "auto_rule_update": true,
+        "export_formats": ["JSON", "CSV", "PDF"],
+    },
+
+    # ── P2-2: symulator nowelizacji z raportem wpływu ──
+    "novelization_impact": {
+        "impact_levels": ["NISKI", "ŚREDNI", "WYSOKI", "KRYTYCZNY"],
+        "declaration_forms": ["VAT-7", "PIT-36", "ZUS DRA", "JPK_V7", "PCC-3"],
+        "auto_impact_report": true,
+    },
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# R21: OPA JAKO SYSTEM (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+opa_system := {
+    "canary_percent": 5,                         # deploy kanary — 5% ruchu
+    "canary_observation_minutes": 30,            # obserwacja kanary — 30 min
+    "rollback_quality_threshold": 0.95,          # jakość decyzji ≥ 95% → zatrzymaj kanary
+    "rollback_error_threshold": 0.01,            # błąd > 1% decyzji → auto-rollback
+    "bundle_max_files": 400,                     # max plików w bundle (obecnie 383)
+    "bundle_min_files": 100,                     # min plików w bundle
+    "bundle_min_rules": 10000,                   # min reguł w bundle (obecnie 10878)
+    "drift_alert_percent": 10,                   # dryf policies vs rules ≥ 10% → alert
+    "sync_check_hours": 24,                      # auto-sync co 24 h
+    "decision_monitor_days": 30,                 # monitoring jakości decyzji — 30 dni
+    "legislative_adapt_hours": 24,               # auto-adaptacja do nowelizacji w 24 h
+    "feature_flag_default": "ON",               # default feature-flag dla reguł
+    "signature_algorithm": "SHA256",             # weryfikacja podpisu bundle
+    "temporal_versions_keep": 5,                 # ile wersji temporalnych przechowujemy
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# R22: NARZĘDZIA WALIDACJI (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+narzedzia_walidacji := {
+    "manifest_min_rules": 10000,                 # CI-gate: min reguł w manifeście
+    "manifest_min_files": 300,                   # CI-gate: min plików
+    "duplicate_rule_ids_threshold": 500,         # alert przy > 500 duplikatów rule_id (baza 369)
+    "stub_threshold": 10,                        # alert przy > 10 stubów { true } na plik
+    "hardcoded_threshold": 10,                   # alert przy > 10 hardcode'ów na plik
+    "zero_defect_gates": 7,                      # 7 kryteriów certyfikacji
+    "certification_min_score": 100,              # ENTERPRISE-CERTIFIED = 100/100
+    "self_healing_max_fixes": 5,                 # max auto-napraw na cykl
+    "impact_analyzer_rules": 50,                 # max reguł w impact matrix
+    "chaos_scenarios": 8,                        # scenariusze chaos engineering
+    "coverage_min_pct": 90,                      # minimalne pokrycie prawne %
+    "legal_basis_confidence_min": 0.9,           # pewność weryfikacji podstaw prawnych
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# R23: TESTY REGO I CI (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+testy_rego_ci := {
+    "coverage_min_pct": 90,                      # min pokrycie testami %
+    "else_chain_test_min": 90,                   # min % plików z testem kolejności
+    "negative_test_min": 80,                     # min % pakietów z testem no_match
+    "fuzz_iterations": 10000,                    # iteracje fuzzingu na paczkę
+    "property_tests_min": 5,                     # min testów property per pakiet
+    "ci_gates_total": 6,                         # bramki CI: syntax, test, coverage, zero_defect, no_stubs, no_hardcoded
+    "mutation_score_min": 70,                    # min wynik mutacji %
+    "law_test_min": 3,                           # min testów zmiany prawa per pakiet
+    "temporal_test_min": 5,                      # min testów temporalnych per pakiet
+    "e2e_scenarios_min": 10,                     # min scenariuszy E2E
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# R24: AUDYT KOMPLETNY I SYNTEZA (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+audyt_kompletny := {
+    "target_coverage_pct": 100,                  # cel pokrycia prawnego 100%
+    "completeness_target": 100,                  # cel Completeness Score 100/100
+    "stub_target": 0,                            # cel: zero stubów { true }
+    "duplicate_target": 0,                       # cel: zero duplikatów rule_id
+    "auto_post_target_pct": 60,                  # cel: 60% decyzji AUTO_POST
+    "suggest_target_pct": 30,                    # cel: 30% SUGGEST
+    "ask_user_max_pct": 10,                      # cel: max 10% ASK_USER
+    "adaptation_hours": 72,                      # adaptacja do zmian prawa ≤ 72h
+    "fortress_score_target": 95,                 # cel: wskaźnik fortecy ≥ 95
+    "knowledge_graph_nodes": 10509,              # węzły Knowledge Graph (rule_id)
+    "proof_of_correctness_min": 100,             # proof-of-correctness 100% decyzji
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PIT THRESHOLDS
 # ═══════════════════════════════════════════════════════════════════════════════
 

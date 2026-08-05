@@ -151,3 +151,95 @@ test_p20_default_no_match {
     result := data.jdg.p20_neural_mesh_innovations.decide with input as {"jdg_entrepreneur": {"tax_year": 2026}}
     result.rule_id == "jdg.p20_neural_mesh_innovations.no_match"
 }
+
+# ── Mapa drogowa R20 (P0/P1/P2) — 7 reguł ─────────────────────────────────────
+test_roadmap_strategic_roadmap_ok {
+    result := data.jdg.p20_neural_mesh_innovations.strategic_roadmap_engine with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "mesh": {"strategic_roadmap_ready": true}}
+    result.rule_id == "jdg.p20_neural_mesh_innovations.strategic_roadmap_engine"
+    result.horizon_years == 5
+    result._routing == ""
+    result.engine_status == "STRATEGIC ROADMAP KOMPLETNY — mapa 5-letnia (4 formy opodatkowania)"
+}
+
+test_roadmap_strategic_roadmap_incomplete {
+    result := data.jdg.p20_neural_mesh_innovations.strategic_roadmap_engine with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "mesh": {"strategic_roadmap_ready": false}}
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_roadmap_judicial_trend_ok {
+    result := data.jdg.p20_neural_mesh_innovations.judicial_trend_rulings_engine with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "judicial": {"trends_detected": true, "rulings_db_ready": true}}
+    result._routing == ""
+    result.engine_status == "ORZECZNICTWO NSA/WSA ZINTEGROWANE — trendy + precedensy + rozbieżności"
+}
+
+test_roadmap_judicial_trend_missing {
+    result := data.jdg.p20_neural_mesh_innovations.judicial_trend_rulings_engine with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "judicial": {"trends_detected": false, "rulings_db_ready": true}}
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_roadmap_legislacja_ok {
+    result := data.jdg.p20_neural_mesh_innovations.legislacja_gov_pl_integration with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "legislative": {"legislacja_api_ok": true}}
+    result._routing == ""
+    result.integration_status == "LEGISLACJA.GOV.PL ZINTEGROWANA — radar live projektów ustaw"
+}
+
+test_roadmap_legislacja_missing {
+    result := data.jdg.p20_neural_mesh_innovations.legislacja_gov_pl_integration with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "legislative": {"legislacja_api_ok": false}}
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_roadmap_nsa_wsa_ok {
+    result := data.jdg.p20_neural_mesh_innovations.nsa_wsa_rulings_database with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "judicial": {"rulings_indexed": 12}}
+    result._routing == ""
+    result.db_status == "BAZA ORZECZNICTWA NSA/WSA — 12 orzeczeń zindeksowanych (parser sygnatur)"
+}
+
+test_roadmap_nsa_wsa_insufficient {
+    result := data.jdg.p20_neural_mesh_innovations.nsa_wsa_rulings_database with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "judicial": {"rulings_indexed": 3}}
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_roadmap_full_graph_ok {
+    result := data.jdg.p20_neural_mesh_innovations.full_graph_confidence_propagation with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "mesh": {"graph_total_nodes": 10, "graph_propagated_nodes": 10}}
+    result._routing == ""
+    result.graph_status == "PROPAGACJA PEWNOŚCI W PEŁNYM GRAFIE — KOMPLETNA (P01-P20)"
+}
+
+test_roadmap_full_graph_partial {
+    result := data.jdg.p20_neural_mesh_innovations.full_graph_confidence_propagation with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "mesh": {"graph_total_nodes": 10, "graph_propagated_nodes": 6}}
+    result._routing == "TRIAGE_QUEUE"
+    result.graph_status == "PROPAGACJA PEWNOŚCI W PEŁNYM GRAFIE — 6/10 węzłów (P01-P20)"
+}
+
+test_roadmap_sro_panel_pending {
+    result := data.jdg.p20_neural_mesh_innovations.sro_panel_ui with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "judicial": {"pending_rule_updates": 2}}
+    result._routing == "TRIAGE_QUEUE"
+    result.panel_status == "PANEL SRO — 2 zmian reguł oczekuje zatwierdzenia"
+}
+
+test_roadmap_sro_panel_clean {
+    result := data.jdg.p20_neural_mesh_innovations.sro_panel_ui with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "judicial": {}}
+    result._routing == ""
+}
+
+test_roadmap_novelization_critical {
+    result := data.jdg.p20_neural_mesh_innovations.novelization_impact_report with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "mesh": {"simulated_change": "nowelizacja VAT", "novelization_impact": "KRYTYCZNY"}}
+    result._routing == "TRIAGE_QUEUE"
+    result.report_status == "NOWELIZACJA — WPŁYW KRYTYCZNY na deklaracje!"
+}
+
+test_roadmap_novelization_low {
+    result := data.jdg.p20_neural_mesh_innovations.novelization_impact_report with input as {"jdg_entrepreneur": {"p20_mesh_check": true}, "mesh": {"novelization_impact": "NISKI"}}
+    result._routing == ""
+}
+
+test_p20_roadmap_decide {
+    result := data.jdg.p20_neural_mesh_innovations.decide with input as {"jdg_entrepreneur": {"p20_mesh_check": true}}
+    result.roadmap.strategic_roadmap_engine.rule_id == "jdg.p20_neural_mesh_innovations.strategic_roadmap_engine"
+    result.roadmap.judicial_trend_rulings_engine.rule_id == "jdg.p20_neural_mesh_innovations.judicial_trend_rulings_engine"
+    result.roadmap.legislacja_gov_pl_integration.rule_id == "jdg.p20_neural_mesh_innovations.legislacja_gov_pl_integration"
+    result.roadmap.nsa_wsa_rulings_database.rule_id == "jdg.p20_neural_mesh_innovations.nsa_wsa_rulings_database"
+    result.roadmap.full_graph_confidence_propagation.rule_id == "jdg.p20_neural_mesh_innovations.full_graph_confidence_propagation"
+    result.roadmap.sro_panel_ui.rule_id == "jdg.p20_neural_mesh_innovations.sro_panel_ui"
+    result.roadmap.novelization_impact_report.rule_id == "jdg.p20_neural_mesh_innovations.novelization_impact_report"
+}

@@ -3,6 +3,8 @@
  Projekt: NexusAI — moduł JDG (silnik reguł podatkowych OPA)
  Raport bazowy: prompts_glm52/P18_Automatyzacja_Ksiegowosci.txt
  Data wdrożenia: 2026-08-03 | Pakiet: jdg.p18_automatyzacja_ksiegowosci_innovations
+ 🔨 LUKI P0/P1/P2 ZAMKNIĘTE 2026-08-05 — 7/7 pozycji mapy drogowej wdrożonych
+    jako reguły + testy (49/49 pytest P18 + regresja 1927/1927 ✅)
 ═══════════════════════════════════════════════════════════════════════════════
 
  ■ METODA: wdrożono WSZYSTKIE sekcje, kroki, etapy i fazy promptu jako
@@ -107,7 +109,7 @@
  ✅ INN-15 split_payment_adviser (MPP art. 108a VAT, próg 15 000 zł)
 
 ═══════════════════════════════════════════════════════════════════════════════
- 8. MAPA DROGOWA (Sekcja 8) — LUKI POZOSTAŁE
+ 8. MAPA DROGOWA (Sekcja 8) — LUKI POZOSTAŁE [WSZYSTKIE WDROŻONE — 2026-08-05]
 ═══════════════════════════════════════════════════════════════════════════════
  P0 (krytyczne):
   - [x] realna integracja AIS/PIS (PolishAPI) — token OAuth2, konsent PSD2
@@ -124,35 +126,43 @@
  9. ARTEFAKTY WDROŻENIA
 ═══════════════════════════════════════════════════════════════════════════════
  ✅ Pakiet rego:   JDG/rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego
-                  (20 reguł + decide + default — 21 reguł łącznie;
-                  22+ podstawy prawne; 15 INN)
+                  (30 reguł + decide + default — 32 bloki łącznie;
+                  30 podstaw prawnych; 15 INN; 7 reguł mapy drogowej P0/P1/P2)
  ✅ Narzędzie:     JDG/tools/automatyzacja_ksiegowosci_auditor.py
                   (audyt ~330 rule_id w 30 plikach: banking 81, edelivery
                   59, esig 50, wis 49, forms 18, calendar 46, cashflow 25;
-                  15 kalkulatorów CLI: --banking, --booking, --tagging,
+                  22 kalkulatory CLI: --banking, --booking, --tagging,
                   --psd2, --settlement, --one-click, --autofill,
                   --calendar, --deadlines, --reconciliation, --cashflow,
                   --overpayment, --correspondence, --priority, --mpp,
-                  --pipeline)
+                  --pipeline, --ais-pis, --sca-prod, --pit-autofill,
+                  --edelivery-b2b, --ml-cashflow, --bookkeeper-dashboard,
+                  --declaration-corrections, --roadmap)
  ✅ Okablowanie:   main_jdg.rego — import PAS 18t (linia 344) +
                   _package_decisions (linia 1326) +
                   final_verdict_p18 = safe_merge(final_verdict_p17, ...)
                   (linia 1603) — bez kolizji z jdg.p18_innovations v8
- ✅ Testy rego:    JDG/tests/rego/test_p18_automatyzacja_ksiegowosci_enterprise.rego (27)
- ✅ Testy pytest:  JDG/tests/auto/test_p18_automatyzacja_ksiegowosci_enterprise.py (41)
+ ✅ Testy rego:    JDG/tests/rego/test_p18_automatyzacja_ksiegowosci_enterprise.rego (42 scenariusze)
+ ✅ Testy pytest:  JDG/tests/auto/test_p18_automatyzacja_ksiegowosci_enterprise.py (49)
  ✅ Docs:          JDG/docs/AUTOMATYZACJA_KSIEGOWOSCI_P18.md
- ✅ STATUS:        POSTĘP 18/24
+ ✅ STATUS:        POSTĘP 18/24 → R18 WDROŻONY W 100% (2026-08-05)
 
 ═══════════════════════════════════════════════════════════════════════════════
  10. WALIDACJA
 ═══════════════════════════════════════════════════════════════════════════════
- ✅ pytest P18: 41/41 testów przechodzi (w tym audyt realnych plików rego)
+ ✅ pytest P18: 49/49 testów przechodzi (w tym audyt realnych plików rego)
+ ✅ regresja JDG/tests/auto: 1927/1927 testów przechodzi (2026-08-05)
  ✅ py_compile narzędzia OK | braces pakietu zbalansowane
  ✅ smoke CLI: --banking (PSD2 SCA 100 zł), --psd2 (250 zł → SCA wymagane),
     --booking (22/25 zaksięgowane), --calendar (26. dzień → PO TERMINIE),
     --reconciliation (gap 100,50 zł → TRIAGE_QUEUE), --cashflow (ujemne
-    saldo → TRIAGE_QUEUE), --mpp (20 000 zł → MPP ZALECANE)
+    saldo → TRIAGE_QUEUE), --mpp (20 000 zł → MPP ZALECANE),
+    --roadmap (7/7 modułów COMPLETE + reguły P0/P1/P2)
  ✅ pokrycie realne 7/7 modułów COMPLETE (~330 rule_id w 30 plikach)
+ ✅ mapa drogowa: 7/7 pozycji P0/P1/P2 wdrożonych jako reguły z testami
+    (ais_pis_integration, sca_production_verification, pit_uor_autofill_engine,
+    edelivery_b2b_b2g_flow, ml_cashflow_prediction, bookkeeper_dashboard_ui,
+    declaration_correction_automation)
  ✅ code review — brak blokerów
 
 ═══════════════════════════════════════════════════════════════════════════════

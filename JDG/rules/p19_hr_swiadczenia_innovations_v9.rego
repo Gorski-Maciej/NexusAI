@@ -65,6 +65,57 @@ family_800_plus_pln := to_number(object.get(hr_limits, "family_800_plus_pln", 80
 pfron_threshold_employees := to_number(object.get(hr_limits, "pfron_threshold_employees", 25))
 solidarity_donation_pct := to_number(object.get(hr_limits, "solidarity_donation_pct", 0.5))
 
+# ── Konfiguracja Mapy drogowej P0/P1/P2 (ADR-002 — zero hardcode) ─────────────
+payroll_e2e := object.get(hr_limits, "payroll_e2e", {
+    "steps": ["1. brutto", "2. ZUS pracownika", "3. zdrowotna", "4. PIT-4", "5. wypłata netto", "6. ZUS pracodawcy", "7. FP/FGŚP"],
+    "required_steps": 7,
+    "deadline_payday": 10,
+    "auto_payroll": true,
+})
+
+platnik_zus := object.get(hr_limits, "platnik_zus", {
+    "import_payroll": true,
+    "export_payroll": true,
+    "format": "IMPORT ZUS (XML) / EXPORT lista płac",
+    "zua_deadline_days": 7,
+})
+
+family_panel := object.get(hr_limits, "family_benefits_panel", {
+    "benefits": ["800+", "zasiłek rodzinny", "dodatek z tytułu samotnego wychowania", "świadczenie dobry start 300+"],
+    "auto_application": true,
+    "targets": ["ZUS (e-wniosek)", "MPiPS"],
+    "application_deadline": "800+ od 1 lutego",
+})
+
+salary_tax_opt := object.get(hr_limits, "salary_tax_optimized", {
+    "pit2_monthly_relief_pln": 300,
+    "tax_free_amount_annual_pln": 30000,
+    "pit2_applicable": true,
+})
+
+ppk_auto := object.get(hr_limits, "ppk_auto", {
+    "employee_pct": 2.0,
+    "employer_pct": 1.5,
+    "auto_contributions": true,
+    "deadline_payment_day": 15,
+    "obligation_after_days": 90,
+})
+
+hr_dashboard_cfg := object.get(hr_limits, "hr_dashboard", {
+    "widgets": ["urlopy", "płace", "PFRON", "PPK", "świadczenia", "e-wnioski"],
+    "refresh": "na żywo (hot-reload ADR-002)",
+    "export_formats": ["JSON", "CSV", "PDF"],
+})
+
+ewnioski_cfg := object.get(hr_limits, "ewnioski", {
+    "types": ["urlop wypoczynkowy", "siła wyższa (art. 148¹ KP)"],
+    "auto_approval": true,
+    "approval_flow": "wniosek → weryfikacja → auto-akceptacja → kalendarz/lista płac",
+})
+
+pit2_monthly_relief := to_number(object.get(salary_tax_opt, "pit2_monthly_relief_pln", 300))
+tax_free_amount_annual := to_number(object.get(salary_tax_opt, "tax_free_amount_annual_pln", 30000))
+
 round2(x) = r {
     r := round(x * 100) / 100
 }
@@ -525,6 +576,227 @@ hr_pipeline_snapshot := {
 # INN-09: severance_calculator | INN-10: payroll_payments_monitor
 # INN-11: advertising_classifier | INN-12: hr_pipeline_snapshot
 
+# ── Funkcje pomocnicze Mapy drogowej P0/P1/P2 (else-chain) ────────────────────
+payroll_e2e_status(completed, required) = "MODUŁ PŁAC E2E KOMPLETNY — brutto→netto→ZUS→PIT-4→wypłata" { completed >= required }
+else = sprintf("MODUŁ PŁAC NIEKOMPLETNY — %d/%d kroków", [completed, required]) { true }
+
+payroll_e2e_routing(completed, required) = "TRIAGE_QUEUE" { completed < required }
+else = "" { true }
+
+platnik_status(import_ok, export_ok) = "PŁATNIK ZUS ZINTEGROWANY — import + eksport list płac OK" { import_ok == true; export_ok == true }
+else = "PŁATNIK ZUS — WYMAGA KONFIGURACJI importu/eksportu list płac" { true }
+
+platnik_routing(import_ok, export_ok) = "TRIAGE_QUEUE" { import_ok == false or export_ok == false }
+else = "" { true }
+
+family_panel_status(auto_applications, total) = sprintf("PANEL ŚWIADCZEŃ — %d/%d wniosków automatycznych (ZUS/MPiPS)", [auto_applications, total]) { auto_applications < total }
+else = "PANEL ŚWIADCZEŃ — WSZYSTKIE WNIOSKI AUTOMATYCZNE (ZUS/MPiPS)" { true }
+
+family_panel_routing(auto_applications, total) = "TRIAGE_QUEUE" { auto_applications < total }
+else = "" { true }
+
+salary_tax_status(pit2_applied, annual_income) = "KWOTA WOLNA 30 000 zł — PIT 0 zł (art. 27 ust. 1 u.PIT)" { annual_income <= tax_free_amount_annual }
+else = "PIT-2 ULGA ZASTOSOWANA — " + sprintf("%d zł/mies. (art. 31c u.PIT)", [pit2_monthly_relief]) { pit2_applied == true }
+else = "PIT-2 NIEZASTOSOWANE — złóż oświadczenie PIT-2 u pracodawcy" { true }
+
+ppk_auto_status(auto_contributions) = "PPK AUTO-WPŁATY AKTYWNE — 2% + 1.5% z listy płac" { auto_contributions == true }
+else = "PPK — WPŁATY WYMAGAJĄ URUCHOMIENIA AUTOMATYZACJI" { true }
+
+ppk_auto_routing(auto_contributions) = "TRIAGE_QUEUE" { auto_contributions == false }
+else = "" { true }
+
+hr_dashboard_routing(pending) = "TRIAGE_QUEUE" { pending > 0 }
+else = "" { true }
+
+ewnioski_status(applications, auto_approved) = sprintf("e-WNIOSKI — %d/%d zaakceptowanych automatycznie", [auto_approved, applications]) { applications > 0; auto_approved < applications }
+else = "e-WNIOSKI — auto-akceptacja 100% (urlop, siła wyższa)" { applications > 0 }
+else = "Brak e-wniosków pracowniczych" { true }
+
+ewnioski_routing(applications, auto_approved) = "TRIAGE_QUEUE" { applications > 0; auto_approved < applications }
+else = "" { true }
+
+pit4_value(base_pit, pit2_applied, annual_income) = 0 { annual_income <= tax_free_amount_annual }
+else = 0 { pit2_applied == true; round2(base_pit * to_number(object.get(hr_limits, "pit_advance_pct", 12.0)) / 100 - pit2_monthly_relief) < 0 }
+else = round2(base_pit * to_number(object.get(hr_limits, "pit_advance_pct", 12.0)) / 100 - pit2_monthly_relief) { pit2_applied == true }
+else = round2(base_pit * to_number(object.get(hr_limits, "pit_advance_pct", 12.0)) / 100) { true }
+
+tax_optimized_net(gross, kup, pit2_applied, annual_income) = net {
+    zus_total := round2(gross * (to_number(object.get(hr_limits, "zus_emerytalna_pct", 9.76)) + to_number(object.get(hr_limits, "zus_rentowa_pct", 1.5)) + to_number(object.get(hr_limits, "zus_chorobowa_pct", 2.45))) / 100)
+    zus_health := round2((gross - zus_total) * to_number(object.get(hr_limits, "zus_zdrowotna_pct", 9.0)) / 100)
+    base_pit := gross - zus_total - kup
+    net := round2(gross - zus_total - zus_health - pit4_value(base_pit, pit2_applied, annual_income))
+}
+
+pfron_extra_count(pfron_oblig) = 1 { pfron_oblig == true }
+else = 0 { true }
+
+# ── MAPA DROGOWA P0/P1/P2 — wdrożone (R19) ────────────────────────────────────
+# P0-1: pełny moduł płac end-to-end (brutto→netto→ZUS→PIT-4→wypłata).
+payroll_end_to_end_module := {
+    "rule_id": "jdg.p19_hr_swiadczenia_innovations.payroll_end_to_end_module",
+    "package": "jdg.p19_hr_swiadczenia_innovations",
+    "priority": 3380,
+    "matched": true,
+    "steps": object.get(payroll_e2e, "steps", []),
+    "required_steps": required_steps,
+    "completed_steps": completed_steps,
+    "auto_payroll": object.get(payroll_e2e, "auto_payroll", true),
+    "deadline_payday": object.get(payroll_e2e, "deadline_payday", 10),
+    "module_status": payroll_e2e_status(completed_steps, required_steps),
+    "note": "pełny moduł płac end-to-end — brutto→netto→ZUS→PIT-4→wypłata, ZUS pracodawcy, FP/FGŚP (P0)",
+    "_routing": payroll_e2e_routing(completed_steps, required_steps),
+    "_routing_reason": sprintf("Moduł płac e2e: %d/%d kroków", [completed_steps, required_steps]),
+    "_legal_basis": "Art. 85 KP; art. 31-32 u.PIT; art. 47 u.ZUS",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    required_steps := to_number(object.get(payroll_e2e, "required_steps", 7))
+    completed_steps := to_number(object.get(input.hr, "payroll_steps_completed", 0))
+}
+
+# P0-2: integracja z Płatnikiem ZUS (import/eksport list płac).
+platnik_zus_integration := {
+    "rule_id": "jdg.p19_hr_swiadczenia_innovations.platnik_zus_integration",
+    "package": "jdg.p19_hr_swiadczenia_innovations",
+    "priority": 3381,
+    "matched": true,
+    "import_payroll": import_ok,
+    "export_payroll": export_ok,
+    "format": object.get(platnik_zus, "format", "IMPORT ZUS (XML) / EXPORT lista płac"),
+    "zua_deadline_days": object.get(platnik_zus, "zua_deadline_days", 7),
+    "integration_status": platnik_status(import_ok, export_ok),
+    "note": "integracja z Płatnikiem ZUS — import/eksport list płac, zgłoszenia ZUA w 7 dni (P0)",
+    "_routing": platnik_routing(import_ok, export_ok),
+    "_routing_reason": sprintf("Płatnik ZUS: import=%v, eksport=%v", [import_ok, export_ok]),
+    "_legal_basis": "Ustawa o systemie ubezpieczeń społecznych; Płatnik ZUS (PUE)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    import_ok := object.get(input.hr, "platnik_import_ok", false)
+    export_ok := object.get(input.hr, "platnik_export_ok", false)
+}
+
+# P1-1: panel świadczeń rodzinnych z automatycznymi wnioskami do ZUS/MPiPS.
+family_benefits_panel := {
+    "rule_id": "jdg.p19_hr_swiadczenia_innovations.family_benefits_panel",
+    "package": "jdg.p19_hr_swiadczenia_innovations",
+    "priority": 3382,
+    "matched": true,
+    "benefits": object.get(family_panel, "benefits", ["800+"]),
+    "auto_application": object.get(family_panel, "auto_application", true),
+    "targets": object.get(family_panel, "targets", ["ZUS", "MPiPS"]),
+    "applications_total": applications_total,
+    "auto_applications": auto_applications,
+    "panel_status": family_panel_status(auto_applications, applications_total),
+    "note": "panel świadczeń rodzinnych — automatyczne wnioski do ZUS/MPiPS (800+, zasiłek rodzinny, 300+) (P1)",
+    "_routing": family_panel_routing(auto_applications, applications_total),
+    "_routing_reason": sprintf("Panel świadczeń: %d/%d wniosków automatycznych", [auto_applications, applications_total]),
+    "_legal_basis": "Ustawa 800+; ustawa o świadczeniach rodzinnych; ustawa 300+",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    applications_total := to_number(object.get(input.family, "applications_total", 0))
+    auto_applications := to_number(object.get(input.family, "auto_applications", 0))
+}
+
+# P1-2: kalkulator wynagrodzeń z uwzględnieniem kwoty wolnej i ulg (PIT-2).
+salary_calculator_tax_optimized := {
+    "rule_id": "jdg.p19_hr_swiadczenia_innovations.salary_calculator_tax_optimized",
+    "package": "jdg.p19_hr_swiadczenia_innovations",
+    "priority": 3383,
+    "matched": true,
+    "gross_pln": to_number(object.get(input.hr, "gross_pln", 0)),
+    "kup_pln": object.get(input.hr, "kup_pln", kup_dojazdy_pln),
+    "pit2_applied": pit2_applied,
+    "pit2_monthly_relief_pln": pit2_monthly_relief,
+    "tax_free_amount_annual_pln": tax_free_amount_annual,
+    "annual_income_pln": annual_income,
+    "net_pln": tax_optimized_net(to_number(object.get(input.hr, "gross_pln", 0)), object.get(input.hr, "kup_pln", kup_dojazdy_pln), pit2_applied, annual_income),
+    "tax_status": salary_tax_status(pit2_applied, annual_income),
+    "note": "kalkulator wynagrodzeń z kwotą wolną i ulgą PIT-2 — art. 31c u.PIT (P1)",
+    "_routing": "",
+    "_routing_reason": sprintf("Kalkulator PIT-2: brutto %.2f, PIT-2=%v, dochód roczny %.2f", [to_number(object.get(input.hr, "gross_pln", 0)), pit2_applied, annual_income]),
+    "_legal_basis": "Art. 31c u.PIT (PIT-2); art. 27 ust. 1 u.PIT (kwota wolna)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    pit2_applied := object.get(input.hr, "pit2_applied", object.get(salary_tax_opt, "pit2_applicable", true))
+    annual_income := to_number(object.get(input.hr, "annual_income_pln", 0))
+}
+
+# P1-3: tracker PPK z pełną automatyzacją wpłat (2% + 1.5%).
+ppk_auto_contribution_tracker := {
+    "rule_id": "jdg.p19_hr_swiadczenia_innovations.ppk_auto_contribution_tracker",
+    "package": "jdg.p19_hr_swiadczenia_innovations",
+    "priority": 3384,
+    "matched": true,
+    "employee_pct": object.get(ppk_auto, "employee_pct", 2.0),
+    "employer_pct": object.get(ppk_auto, "employer_pct", 1.5),
+    "gross_pln": to_number(object.get(input.hr, "gross_pln", 0)),
+    "employee_contribution_pln": round2(to_number(object.get(input.hr, "gross_pln", 0)) * to_number(object.get(ppk_auto, "employee_pct", 2.0)) / 100),
+    "employer_contribution_pln": round2(to_number(object.get(input.hr, "gross_pln", 0)) * to_number(object.get(ppk_auto, "employer_pct", 1.5)) / 100),
+    "auto_contributions": auto_contributions,
+    "deadline_payment_day": object.get(ppk_auto, "deadline_payment_day", 15),
+    "status": ppk_auto_status(auto_contributions),
+    "note": "tracker PPK z pełną automatyzacją wpłat — 2% pracownik + 1.5% pracodawca, termin do 15. (P1)",
+    "_routing": ppk_auto_routing(auto_contributions),
+    "_routing_reason": sprintf("PPK auto-wpłaty: %v (2%% + 1.5%%)", [auto_contributions]),
+    "_legal_basis": "Ustawa o PPK; art. 47 u.ZUS",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    auto_contributions := object.get(input.hr, "ppk_auto_contributions", object.get(ppk_auto, "auto_contributions", true))
+}
+
+# P2-1: dashboard HR (urlopy, płace, PFRON) w UI.
+hr_dashboard_ui := {
+    "rule_id": "jdg.p19_hr_swiadczenia_innovations.hr_dashboard_ui",
+    "package": "jdg.p19_hr_swiadczenia_innovations",
+    "priority": 3385,
+    "matched": true,
+    "widgets": object.get(hr_dashboard_cfg, "widgets", ["urlopy", "płace"]),
+    "export_formats": object.get(hr_dashboard_cfg, "export_formats", ["JSON", "CSV", "PDF"]),
+    "urlopy": {"used_days": leave_used, "remaining_days": leave_remaining},
+    "place": {"payroll_ready": payroll_ready},
+    "pfron": {"obligation": pfron_oblig},
+    "pending_items": pending_items,
+    "note": "dashboard HR w UI — urlopy, płace, PFRON, PPK, świadczenia, e-wnioski (P2)",
+    "_routing": hr_dashboard_routing(pending_items),
+    "_routing_reason": sprintf("Dashboard HR: %d pozycji do obsługi", [pending_items]),
+    "_legal_basis": "ADR-002; art. 154-155 KP; ustawa o PFRON",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    leave_used := to_number(object.get(input.dashboard, "leave_used_days", 0))
+    leave_remaining := to_number(object.get(input.dashboard, "leave_remaining_days", 0))
+    payroll_ready := to_number(object.get(input.dashboard, "payroll_ready", 0))
+    pfron_oblig := object.get(input.dashboard, "pfron_obligation", false)
+    pending_items := to_number(object.get(input.dashboard, "leave_pending", 0)) + to_number(object.get(input.dashboard, "payroll_pending", 0)) + pfron_extra_count(pfron_oblig)
+}
+
+# P2-2: e-wnioski pracownicze (urlop, siła wyższa) z auto-akceptacją.
+employee_ewnioski_workflow := {
+    "rule_id": "jdg.p19_hr_swiadczenia_innovations.employee_ewnioski_workflow",
+    "package": "jdg.p19_hr_swiadczenia_innovations",
+    "priority": 3386,
+    "matched": true,
+    "wnioski_types": object.get(ewnioski_cfg, "types", ["urlop wypoczynkowy"]),
+    "auto_approval": object.get(ewnioski_cfg, "auto_approval", true),
+    "approval_flow": object.get(ewnioski_cfg, "approval_flow", "wniosek → weryfikacja → auto-akceptacja"),
+    "applications": applications,
+    "auto_approved": auto_approved,
+    "status": ewnioski_status(applications, auto_approved),
+    "note": "e-wnioski pracownicze z auto-akceptacją — urlop, siła wyższa (art. 148¹ KP) (P2)",
+    "_routing": ewnioski_routing(applications, auto_approved),
+    "_routing_reason": sprintf("e-wnioski: %d zgłoszonych, %d auto-zaakceptowanych", [applications, auto_approved]),
+    "_legal_basis": "Art. 168-172 KP (urlopy); art. 148¹ KP (siła wyższa)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    applications := to_number(object.get(input.ewnioski, "applications", 0))
+    auto_approved := to_number(object.get(input.ewnioski, "auto_approved", 0))
+}
+
 # ── GŁÓWNY DECIDE (P19) — raport syntetyczny HR i świadczeń ───────────────────
 decide := {
     "rule_id": "jdg.p19_hr_swiadczenia_innovations.report",
@@ -537,6 +809,15 @@ decide := {
     "ppk_pfron_solidarity": ppk_pfron_solidarity_audit,
     "payments_procurement_advertising": payments_procurement_advertising_audit,
     "pipeline": hr_pipeline_snapshot,
+    "roadmap": {
+        "payroll_end_to_end_module": payroll_end_to_end_module,
+        "platnik_zus_integration": platnik_zus_integration,
+        "family_benefits_panel": family_benefits_panel,
+        "salary_calculator_tax_optimized": salary_calculator_tax_optimized,
+        "ppk_auto_contribution_tracker": ppk_auto_contribution_tracker,
+        "hr_dashboard_ui": hr_dashboard_ui,
+        "employee_ewnioski_workflow": employee_ewnioski_workflow,
+    },
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny HR i świadczeń (P19)",
     "_legal_basis": "Kodeks pracy; ustawa 800+; ustawa o PPK; ustawa o PFRON; u.PIT",

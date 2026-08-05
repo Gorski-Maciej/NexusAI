@@ -3,7 +3,7 @@
 **Pakiet:** `jdg.p18_automatyzacja_ksiegowosci_innovations`
 **Plik:** `JDG/rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego`
 **Raport:** `raporty_jdg_enterprise/R18_Automatyzacja_Ksiegowosci.txt`
-**Status:** [✅ WDROŻONY] — POSTĘP 18/24
+**Status:** [✅ WDROŻONY] — POSTĘP 18/24 | LUKI P0/P1/P2 ZAMKNIĘTE 2026-08-05 (7/7)
 
 ## Zakres (8 sekcji promptu wdrożone jako reguły)
 
@@ -68,7 +68,7 @@ Elixir cutoff 14:30, Express Elixir 15:30, SCA exempt 100 zł / 5 transakcji, MP
 
 ## Artefakty
 
-- Rego: `JDG/rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` (27 reguł + decide + default, 15 INN, 22+ podstaw prawnych)
+- Rego: `JDG/rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` (30 reguł + decide + default, 15 INN, 30 podstaw prawnych)
 - Narzędzie: `JDG/tools/automatyzacja_ksiegowosci_auditor.py` (audyt ~330 rule_id w 28 plikach + 22 kalkulatorów CLI)
 - Testy rego: `JDG/tests/rego/test_p18_automatyzacja_ksiegowosci_enterprise.rego` (42 scenariusze)
 - Testy pytest: `JDG/tests/auto/test_p18_automatyzacja_ksiegowosci_enterprise.py` (49 testów)

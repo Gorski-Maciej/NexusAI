@@ -142,3 +142,99 @@ test_p19_default_no_match {
     result := data.jdg.p19_hr_swiadczenia_innovations.decide with input as {"jdg_entrepreneur": {"tax_year": 2026}}
     result.rule_id == "jdg.p19_hr_swiadczenia_innovations.no_match"
 }
+
+# ── Mapa drogowa R19 (P0/P1/P2) — 7 reguł ─────────────────────────────────────
+test_roadmap_payroll_end_to_end_module_ok {
+    result := data.jdg.p19_hr_swiadczenia_innovations.payroll_end_to_end_module with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "hr": {"payroll_steps_completed": 7}}
+    result.rule_id == "jdg.p19_hr_swiadczenia_innovations.payroll_end_to_end_module"
+    result.module_status == "MODUŁ PŁAC E2E KOMPLETNY — brutto→netto→ZUS→PIT-4→wypłata"
+    result._routing == ""
+}
+
+test_roadmap_payroll_end_to_end_module_incomplete {
+    result := data.jdg.p19_hr_swiadczenia_innovations.payroll_end_to_end_module with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "hr": {"payroll_steps_completed": 5}}
+    result._routing == "TRIAGE_QUEUE"
+    result.module_status == "MODUŁ PŁAC NIEKOMPLETNY — 5/7 kroków"
+}
+
+test_roadmap_platnik_zus_ok {
+    result := data.jdg.p19_hr_swiadczenia_innovations.platnik_zus_integration with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "hr": {"platnik_import_ok": true, "platnik_export_ok": true}}
+    result._routing == ""
+    result.integration_status == "PŁATNIK ZUS ZINTEGROWANY — import + eksport list płac OK"
+}
+
+test_roadmap_platnik_zus_missing {
+    result := data.jdg.p19_hr_swiadczenia_innovations.platnik_zus_integration with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "hr": {"platnik_import_ok": false, "platnik_export_ok": true}}
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_roadmap_family_benefits_panel_ok {
+    result := data.jdg.p19_hr_swiadczenia_innovations.family_benefits_panel with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "family": {"applications_total": 3, "auto_applications": 3}}
+    result._routing == ""
+    result.panel_status == "PANEL ŚWIADCZEŃ — WSZYSTKIE WNIOSKI AUTOMATYCZNE (ZUS/MPiPS)"
+}
+
+test_roadmap_family_benefits_panel_pending {
+    result := data.jdg.p19_hr_swiadczenia_innovations.family_benefits_panel with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "family": {"applications_total": 3, "auto_applications": 1}}
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_roadmap_salary_tax_optimized_pit2 {
+    result := data.jdg.p19_hr_swiadczenia_innovations.salary_calculator_tax_optimized with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "hr": {"gross_pln": 6000, "annual_income_pln": 90000, "pit2_applied": true}}
+    result.tax_status == "PIT-2 ULGA ZASTOSOWANA — 300 zł/mies. (art. 31c u.PIT)"
+    result.net_pln > 0
+}
+
+test_roadmap_salary_tax_optimized_tax_free {
+    result := data.jdg.p19_hr_swiadczenia_innovations.salary_calculator_tax_optimized with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "hr": {"gross_pln": 2000, "annual_income_pln": 24000, "pit2_applied": true}}
+    result.pit4_pln == 0
+    result.tax_status == "KWOTA WOLNA 30 000 zł — PIT 0 zł (art. 27 ust. 1 u.PIT)"
+}
+
+test_roadmap_ppk_auto_ok {
+    result := data.jdg.p19_hr_swiadczenia_innovations.ppk_auto_contribution_tracker with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "hr": {"gross_pln": 6000, "ppk_auto_contributions": true}}
+    result.employee_contribution_pln == 120
+    result.employer_contribution_pln == 90
+    result._routing == ""
+}
+
+test_roadmap_ppk_auto_off {
+    result := data.jdg.p19_hr_swiadczenia_innovations.ppk_auto_contribution_tracker with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "hr": {"gross_pln": 6000, "ppk_auto_contributions": false}}
+    result._routing == "TRIAGE_QUEUE"
+    result.status == "PPK — WPŁATY WYMAGAJĄ URUCHOMIENIA AUTOMATYZACJI"
+}
+
+test_roadmap_hr_dashboard_pending {
+    result := data.jdg.p19_hr_swiadczenia_innovations.hr_dashboard_ui with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "dashboard": {"leave_pending": 2, "payroll_pending": 1, "pfron_obligation": true}}
+    result.pending_items == 4
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_roadmap_hr_dashboard_clean {
+    result := data.jdg.p19_hr_swiadczenia_innovations.hr_dashboard_ui with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "dashboard": {}}
+    result.pending_items == 0
+    result._routing == ""
+}
+
+test_roadmap_ewnioski_ok {
+    result := data.jdg.p19_hr_swiadczenia_innovations.employee_ewnioski_workflow with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "ewnioski": {"applications": 2, "auto_approved": 2}}
+    result._routing == ""
+    result.status == "e-WNIOSKI — auto-akceptacja 100% (urlop, siła wyższa)"
+}
+
+test_roadmap_ewnioski_pending {
+    result := data.jdg.p19_hr_swiadczenia_innovations.employee_ewnioski_workflow with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "ewnioski": {"applications": 2, "auto_approved": 1}}
+    result._routing == "TRIAGE_QUEUE"
+    result.status == "e-WNIOSKI — 1/2 zaakceptowanych automatycznie"
+}
+
+test_p19_roadmap_decide {
+    result := data.jdg.p19_hr_swiadczenia_innovations.decide with input as {"jdg_entrepreneur": {"p19_hr_check": true}}
+    result.roadmap.payroll_end_to_end_module.rule_id == "jdg.p19_hr_swiadczenia_innovations.payroll_end_to_end_module"
+    result.roadmap.platnik_zus_integration.rule_id == "jdg.p19_hr_swiadczenia_innovations.platnik_zus_integration"
+    result.roadmap.family_benefits_panel.rule_id == "jdg.p19_hr_swiadczenia_innovations.family_benefits_panel"
+    result.roadmap.salary_calculator_tax_optimized.rule_id == "jdg.p19_hr_swiadczenia_innovations.salary_calculator_tax_optimized"
+    result.roadmap.ppk_auto_contribution_tracker.rule_id == "jdg.p19_hr_swiadczenia_innovations.ppk_auto_contribution_tracker"
+    result.roadmap.hr_dashboard_ui.rule_id == "jdg.p19_hr_swiadczenia_innovations.hr_dashboard_ui"
+    result.roadmap.employee_ewnioski_workflow.rule_id == "jdg.p19_hr_swiadczenia_innovations.employee_ewnioski_workflow"
+}

@@ -10,16 +10,23 @@ sys.path.insert(0, str(BASE_DIR / "tools"))
 from hr_swiadczenia_auditor import (  # noqa: E402
     advertising_classifier,
     audit_rego_files,
+    employee_ewnioski_workflow,
     employer_audit,
     family_benefit_calculator,
+    family_benefits_panel,
     force_majeure_calculator,
+    hr_dashboard_ui,
     hr_pipeline_snapshot,
     leave_tracker,
+    payroll_end_to_end_module,
     payroll_generator,
     payroll_payments_monitor,
     pfron_contributor,
+    platnik_zus_integration,
+    ppk_auto_contribution_tracker,
     ppk_tracker,
     salary_calculator,
+    salary_calculator_tax_optimized,
     severance_calculator,
     solidarity_calculator,
 )
@@ -248,3 +255,104 @@ def test_p19_constants_match():
     assert force_majeure_calculator(days_used=2, gross_pln=1000.0)["pay_for_force_majeure_pln"] == 500.0
     assert pfron_contributor(employees=24)["_routing"] == ""
     assert pfron_contributor(employees=25)["_routing"] == "TRIAGE_QUEUE"
+
+
+# ── Mapa drogowa R19 (P0/P1/P2) — 7 nowych reguł ──────────────────────────────
+def test_r19_payroll_end_to_end_module():
+    """R19 P0-1: moduł płac e2e — 7/7 kroków → KOMPLETNY, bez routingu; 5/7 → TRIAGE_QUEUE."""
+    ok = payroll_end_to_end_module(completed_steps=7, required_steps=7)
+    assert ok["module_status"].startswith("MODUŁ PŁAC E2E KOMPLETNY")
+    assert ok["_routing"] == ""
+    bad = payroll_end_to_end_module(completed_steps=5, required_steps=7)
+    assert bad["_routing"] == "TRIAGE_QUEUE"
+    assert "5/7" in bad["module_status"]
+
+
+def test_r19_platnik_zus_integration():
+    """R19 P0-2: Płatnik ZUS — import+eksport OK → ZINTEGROWANY; brak importu → TRIAGE_QUEUE."""
+    ok = platnik_zus_integration(import_ok=True, export_ok=True)
+    assert ok["_routing"] == ""
+    assert "ZINTEGROWANY" in ok["integration_status"]
+    bad = platnik_zus_integration(import_ok=False, export_ok=True)
+    assert bad["_routing"] == "TRIAGE_QUEUE"
+    assert "WYMAGA KONFIGURACJI" in bad["integration_status"]
+
+
+def test_r19_family_benefits_panel():
+    """R19 P1-1: panel świadczeń — 3/3 auto-wniosków → OK; 1/3 → TRIAGE_QUEUE."""
+    ok = family_benefits_panel(applications_total=3, auto_applications=3)
+    assert ok["_routing"] == ""
+    assert "WSZYSTKIE WNIOSKI AUTOMATYCZNE" in ok["panel_status"]
+    bad = family_benefits_panel(applications_total=3, auto_applications=1)
+    assert bad["_routing"] == "TRIAGE_QUEUE"
+    assert "1/3" in bad["panel_status"]
+
+
+def test_r19_salary_calculator_tax_optimized_pit2():
+    """R19 P1-2: PIT-2 ulga 300 zł/mies. obniża zaliczkę; dochód 90 000 zł → ulga zastosowana."""
+    res = salary_calculator_tax_optimized(gross_pln=6000.0, annual_income_pln=90000.0)
+    assert res["pit2_applied"] is True
+    assert res["pit4_pln"] > 0
+    assert "PIT-2 ULGA ZASTOSOWANA" in res["tax_status"]
+    no_relief = salary_calculator_tax_optimized(gross_pln=6000.0, annual_income_pln=90000.0, pit2_applied=False)
+    assert res["pit4_pln"] < no_relief["pit4_pln"]
+    assert "NIEZASTOSOWANE" in no_relief["tax_status"]
+
+
+def test_r19_salary_calculator_tax_optimized_tax_free():
+    """R19 P1-2: kwota wolna 30 000 zł → PIT 0 zł, netto = brutto - ZUS."""
+    res = salary_calculator_tax_optimized(gross_pln=2000.0, annual_income_pln=24000.0)
+    assert res["pit4_pln"] == 0.0
+    assert "KWOTA WOLNA" in res["tax_status"]
+
+
+def test_r19_ppk_auto_contribution_tracker():
+    """R19 P1-3: PPK auto-wpłaty — 2% + 1.5% od 6000 zł = 120 + 90; brak auto → TRIAGE_QUEUE."""
+    res = ppk_auto_contribution_tracker(gross_pln=6000.0, auto_contributions=True)
+    assert res["employee_contribution_pln"] == 120.0
+    assert res["employer_contribution_pln"] == 90.0
+    assert res["_routing"] == ""
+    off = ppk_auto_contribution_tracker(gross_pln=6000.0, auto_contributions=False)
+    assert off["_routing"] == "TRIAGE_QUEUE"
+
+
+def test_r19_hr_dashboard_ui():
+    """R19 P2-1: dashboard HR — pending = urlopy + płace + PFRON; 0 → OK."""
+    d = hr_dashboard_ui(leave_pending=2, payroll_pending=1, pfron_obligation=True)
+    assert d["pending_items"] == 4
+    assert d["_routing"] == "TRIAGE_QUEUE"
+    clean = hr_dashboard_ui()
+    assert clean["pending_items"] == 0
+    assert clean["_routing"] == ""
+
+
+def test_r19_employee_ewnioski_workflow():
+    """R19 P2-2: e-wnioski — 2/2 auto-zaakceptowane → OK; 1/2 → TRIAGE_QUEUE."""
+    ok = employee_ewnioski_workflow(applications=2, auto_approved=2)
+    assert ok["_routing"] == ""
+    assert "auto-akceptacja 100%" in ok["status"]
+    bad = employee_ewnioski_workflow(applications=2, auto_approved=1)
+    assert bad["_routing"] == "TRIAGE_QUEUE"
+    assert "1/2" in bad["status"]
+    none = employee_ewnioski_workflow()
+    assert none["_routing"] == ""
+
+
+def test_r19_roadmap_rules_present_in_rego():
+    """Wszystkie 7 reguł mapy drogowej R19 obecnych w pakiecie rego z podstawą prawną."""
+    text = (BASE_DIR / "rules" / "p19_hr_swiadczenia_innovations_v9.rego").read_text(encoding="utf-8")
+    for rid in ["payroll_end_to_end_module", "platnik_zus_integration", "family_benefits_panel",
+                "salary_calculator_tax_optimized", "ppk_auto_contribution_tracker", "hr_dashboard_ui",
+                "employee_ewnioski_workflow"]:
+        assert f"jdg.p19_hr_swiadczenia_innovations.{rid}" in text, f"Brak reguły {rid}"
+    assert '"roadmap": {' in text
+    assert "p19_hr_check" in text
+
+
+def test_r19_thresholds_block_exists():
+    """ADR-002: blok data.jdg.thresholds.hr_swiadczenia istnieje w thresholds_jdg.rego."""
+    text = (BASE_DIR / "rules" / "thresholds_jdg.rego").read_text(encoding="utf-8")
+    assert "hr_swiadczenia := {" in text
+    for key in ["payroll_e2e", "platnik_zus", "family_benefits_panel", "salary_tax_optimized",
+                "ppk_auto", "hr_dashboard", "ewnioski"]:
+        assert f'"{key}":' in text, f"Brak konfiguracji {key} w thresholds"

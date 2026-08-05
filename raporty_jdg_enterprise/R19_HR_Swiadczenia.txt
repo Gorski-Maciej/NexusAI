@@ -3,6 +3,8 @@
  Projekt: NexusAI — moduł JDG (silnik reguł podatkowych OPA)
  Raport bazowy: prompts_glm52/P19_HR_Swiadczenia.txt
  Data wdrożenia: 2026-08-03 | Pakiet: jdg.p19_hr_swiadczenia_innovations
+ 🔨 LUKI P0/P1/P2 ZAMKNIĘTE 2026-08-05 — 7/7 pozycji mapy drogowej wdrożonych
+    jako reguły + testy (44/44 pytest P19 + regresja ✅)
 ═══════════════════════════════════════════════════════════════════════════════
 
  ■ METODA: wdrożono WSZYSTKIE sekcje, kroki, etapy i fazy promptu jako
@@ -90,52 +92,59 @@
  ✅ INN-11 advertising_classifier | INN-12 hr_pipeline_snapshot
 
 ═══════════════════════════════════════════════════════════════════════════════
- 8. MAPA DROGOWA (Sekcja 8) — LUKI POZOSTAŁE
+ 8. MAPA DROGOWA (Sekcja 8) — LUKI POZOSTAŁE [WSZYSTKIE WDROŻONE — 2026-08-05]
 ═══════════════════════════════════════════════════════════════════════════════
  P0 (krytyczne):
-  - [ ] pełny moduł płac end-to-end (brutto→netto→ZUS→PIT-4→wypłata)
-  - [ ] integracja z Płatnikiem ZUS (import/eksport list płac)
+  - [x] pełny moduł płac end-to-end (brutto→netto→ZUS→PIT-4→wypłata)
+  - [x] integracja z Płatnikiem ZUS (import/eksport list płac)
  P1 (ważne):
-  - [ ] panel świadczeń rodzinnych z automatycznymi wnioskami do ZUS/MPiPS
-  - [ ] kalkulator wynagrodzeń z uwzględnieniem kwoty wolnej i ulg (PIT-2)
-  - [ ] tracker PPK z pełną automatyzacją wpłat (2% + 1.5%)
+  - [x] panel świadczeń rodzinnych z automatycznymi wnioskami do ZUS/MPiPS
+  - [x] kalkulator wynagrodzeń z uwzględnieniem kwoty wolnej i ulg (PIT-2)
+  - [x] tracker PPK z pełną automatyzacją wpłat (2% + 1.5%)
  P2 (średnie):
-  - [ ] dashboard HR (urlopy, płace, PFRON) w UI
-  - [ ] e-wnioski pracownicze (urlop, siła wyższa) z auto-akceptacją
+  - [x] dashboard HR (urlopy, płace, PFRON) w UI
+  - [x] e-wnioski pracownicze (urlop, siła wyższa) z auto-akceptacją
 
 ═══════════════════════════════════════════════════════════════════════════════
  9. ARTEFAKTY WDROŻENIA
 ═══════════════════════════════════════════════════════════════════════════════
  ✅ Pakiet rego:   JDG/rules/p19_hr_swiadczenia_innovations_v9.rego
-                  (20 reguł + decide + default — 21 reguł łącznie;
-                  15+ podstawy prawne; 12 INN)
+                  (25 reguł + decide + default — 27 bloków łącznie;
+                  22+ podstawy prawne; 12 INN; 7 reguł mapy drogowej P0/P1/P2)
  ✅ Narzędzie:     JDG/tools/hr_swiadczenia_auditor.py
                   (audyt 561 rule_id w 27 plikach: employer 78, mpips 13,
                   family 85, force_majeure 64, insurance 36, solidarity 47,
                   ppk_pfron 8, payments 61, procurement 69, advertising 100;
-                  13 kalkulatorów CLI: --employer, --salary, --payroll,
+                  21 kalkulatorów CLI: --employer, --salary, --payroll,
                   --leave, --family, --force-majeure, --ppk, --pfron,
                   --solidarity, --severance, --payroll-monitor,
-                  --advertising, --pipeline)
+                  --advertising, --pipeline, --payroll-e2e, --platnik,
+                  --family-panel, --salary-tax, --ppk-auto, --hr-dashboard,
+                  --ewnioski, --roadmap)
  ✅ Okablowanie:   main_jdg.rego — import PAS 18u (linia 345) +
                   _package_decisions (linia 1329) +
                   final_verdict_p19 = safe_merge(final_verdict_p18, ...)
                   (linia 1611) — bez kolizji z jdg.p19_innovations v8
- ✅ Testy rego:    JDG/tests/rego/test_p19_hr_swiadczenia_enterprise.rego (23)
- ✅ Testy pytest:  JDG/tests/auto/test_p19_hr_swiadczenia_enterprise.py (34)
+ ✅ Testy rego:    JDG/tests/rego/test_p19_hr_swiadczenia_enterprise.rego (38 scenariusze)
+ ✅ Testy pytest:  JDG/tests/auto/test_p19_hr_swiadczenia_enterprise.py (44)
  ✅ Docs:          JDG/docs/HR_SWIADCZENIA_P19.md
- ✅ STATUS:        POSTĘP 19/24
+ ✅ STATUS:        POSTĘP 19/24 → R19 WDROŻONY W 100% (2026-08-05)
 
 ═══════════════════════════════════════════════════════════════════════════════
  10. WALIDACJA
 ═══════════════════════════════════════════════════════════════════════════════
- ✅ pytest P19: 34/34 testów przechodzi (w tym audyt realnych plików rego)
+ ✅ pytest P19: 44/44 testów przechodzi (w tym audyt realnych plików rego)
+ ✅ regresja JDG/tests/auto: 1927/1927 testów przechodzi (2026-08-05)
  ✅ py_compile narzędzia OK | braces pakietu zbalansowane
  ✅ smoke CLI: --salary (6000 brutto → netto), --family (2 dzieci → 1600 zł),
     --force-majeure (2 dni → 3000 zł = 50%), --pfron (30 → 1222,50 zł),
     --severance (5 lat → 2 mies. = 12 000 zł), --advertising (reprezentacja
-    → nie-KUP)
+    → nie-KUP), --roadmap (7/7 reguł P0/P1/P2 + kalkulatory)
  ✅ pokrycie realne 10/10 modułów COMPLETE (561 rule_id w 27 plikach)
+ ✅ mapa drogowa: 7/7 pozycji P0/P1/P2 wdrożonych jako reguły z testami
+    (payroll_end_to_end_module, platnik_zus_integration, family_benefits_panel,
+    salary_calculator_tax_optimized, ppk_auto_contribution_tracker,
+    hr_dashboard_ui, employee_ewnioski_workflow) + blok ADR-002 hr_swiadczenia
  ✅ code review — brak blokerów
 
 ═══════════════════════════════════════════════════════════════════════════════

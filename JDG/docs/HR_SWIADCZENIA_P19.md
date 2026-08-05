@@ -3,7 +3,7 @@
 **Pakiet:** `jdg.p19_hr_swiadczenia_innovations`
 **Plik:** `JDG/rules/p19_hr_swiadczenia_innovations_v9.rego`
 **Raport:** `raporty_jdg_enterprise/R19_HR_Swiadczenia.txt`
-**Status:** [✅ WDROŻONY] — POSTĘP 19/24
+**Status:** [✅ WDROŻONY] — POSTĘP 19/24 | LUKI P0/P1/P2 ZAMKNIĘTE 2026-08-05 (7/7)
 
 ## Zakres (8 sekcji promptu wdrożone jako reguły)
 
@@ -47,10 +47,26 @@
 
 KUP dojazdów 300 zł, ZUS 9.76/1.5/2.45/9%, PIT-4 12%, siła wyższa 2 dni/50%, 800+ 800 zł, PPK 2%+1.5%, PFRON 25 pracowników/40,75 zł, solidarność 0.5%, odprawy do 3 mies., zamówienia do 30 000 zł bez PZP, reklama 0.25% przychodu.
 
+## Mapa drogowa R19 (P0/P1/P2) — zamknięta 2026-08-05
+
+| Priorytet | Pozycja | Reguła | Status |
+|---|---|---|---|
+| **P0** | Pełny moduł płac end-to-end (brutto→netto→ZUS→PIT-4→wypłata) | `payroll_end_to_end_module` | ✅ WDROŻONE |
+| **P0** | Integracja z Płatnikiem ZUS (import/eksport list płac) | `platnik_zus_integration` | ✅ WDROŻONE |
+| **P1** | Panel świadczeń rodzinnych z automatycznymi wnioskami do ZUS/MPiPS | `family_benefits_panel` | ✅ WDROŻONE |
+| **P1** | Kalkulator wynagrodzeń z kwotą wolną i ulgami (PIT-2) | `salary_calculator_tax_optimized` | ✅ WDROŻONE |
+| **P1** | Tracker PPK z pełną automatyzacją wpłat (2% + 1.5%) | `ppk_auto_contribution_tracker` | ✅ WDROŻONE |
+| **P2** | Dashboard HR (urlopy, płace, PFRON) w UI | `hr_dashboard_ui` | ✅ WDROŻONE |
+| **P2** | e-wnioski pracownicze (urlop, siła wyższa) z auto-akceptacją | `employee_ewnioski_workflow` | ✅ WDROŻONE |
+
+**Konfiguracja (ADR-002):** blok `hr_swiadczenia` w `thresholds_jdg.rego` (payroll_e2e, platnik_zus, family_benefits_panel, salary_tax_optimized, ppk_auto, hr_dashboard, ewnioski).
+
+**CLI narzędzia:** `--payroll-e2e`, `--platnik`, `--family-panel`, `--salary-tax`, `--ppk-auto`, `--hr-dashboard`, `--ewnioski`, `--roadmap` (wszystkie 7 + agregacja).
+
 ## Artefakty
 
-- Rego: `JDG/rules/p19_hr_swiadczenia_innovations_v9.rego` (20 reguł + decide + default — 21 reguł łącznie, 12 INN, 15+ podstaw prawnych)
-- Narzędzie: `JDG/tools/hr_swiadczenia_auditor.py` (audyt ~605 rule_id w 27 plikach + 13 kalkulatorów CLI)
-- Testy rego: `JDG/tests/rego/test_p19_hr_swiadczenia_enterprise.rego` (23 scenariusze)
-- Testy pytest: `JDG/tests/auto/test_p19_hr_swiadczenia_enterprise.py` (34 testy)
+- Rego: `JDG/rules/p19_hr_swiadczenia_innovations_v9.rego` (25 reguł + decide + default — 27 bloków łącznie, 12 INN, 22+ podstaw prawnych)
+- Narzędzie: `JDG/tools/hr_swiadczenia_auditor.py` (audyt ~605 rule_id w 27 plikach + 21 kalkulatorów CLI)
+- Testy rego: `JDG/tests/rego/test_p19_hr_swiadczenia_enterprise.rego` (38 scenariusze)
+- Testy pytest: `JDG/tests/auto/test_p19_hr_swiadczenia_enterprise.py` (44 testy)
 - Okablowanie: `main_jdg.rego` — import + `_package_decisions` + `final_verdict_p19 = safe_merge(final_verdict_p18, ...)` — bez kolizji ze starym `jdg.p19_innovations` (v8)

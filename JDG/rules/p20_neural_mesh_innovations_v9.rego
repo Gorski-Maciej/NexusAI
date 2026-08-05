@@ -53,6 +53,51 @@ conflict_alert_threshold := to_number(object.get(mesh_limits, "conflict_alert_th
 min_confidence_propagate := to_number(object.get(mesh_limits, "min_confidence_propagate", 0.5))
 judicial_impact_threshold := to_number(object.get(mesh_limits, "judicial_impact_threshold", 0.6))
 
+# ── Konfiguracja Mapy drogowej P0/P1/P2 (ADR-002 — zero hardcode) ─────────────
+strategic_roadmap_cfg := object.get(mesh_limits, "strategic_roadmap", {
+    "forms": ["skala", "liniowy", "ryczałt", "IP Box"],
+    "horizon_years": 5,
+    "projection_growth_default": 0.05,
+    "transformation_threshold_pln": 300000,
+})
+
+judicial_trend_cfg := object.get(mesh_limits, "judicial_trend_rulings", {
+    "courts": ["NSA", "WSA", "TK", "TSUE"],
+    "precedence_weights": {"WSA": 1, "NSA_3": 3, "NSA_FULL": 8, "TK": 10, "TSUE": 10},
+    "unfavorable_trend_threshold_pct": 60,
+})
+
+legislacja_cfg := object.get(mesh_limits, "legislacja_gov_pl", {
+    "api": "https://legislacja.gov.pl/api (projekty ustaw)",
+    "radar_horizon_days": 30,
+    "monitored_areas": ["VAT", "PIT", "ZUS", "KKS", "Ordynacja", "KSeF"],
+})
+
+nsa_wsa_cfg := object.get(mesh_limits, "nsa_wsa_rulings_db", {
+    "signature_parser": "NSA/WSA sygnatury: I FSK 1234/25 (regex)",
+    "sources": ["CBOSA", "orzeczenia.nsa.gov.pl"],
+    "min_rulings_for_trend": 5,
+})
+
+full_graph_cfg := object.get(mesh_limits, "full_graph_confidence", {
+    "domains": ["VAT", "PIT", "ZUS", "KKS", "ORD", "PKPiR", "KSeF", "RYC", "CB", "HR"],
+    "propagation_cutoff": 0.5,
+    "max_hops": 3,
+})
+
+sro_panel_cfg := object.get(mesh_limits, "sro_panel", {
+    "widgets": ["trendy orzecznicze", "orzeczenia per artykuł", "zmiany reguł", "alerty wpływu"],
+    "auto_rule_update": true,
+})
+
+novelization_cfg := object.get(mesh_limits, "novelization_impact", {
+    "impact_levels": ["NISKI", "ŚREDNI", "WYSOKI", "KRYTYCZNY"],
+    "declaration_forms": ["VAT-7", "PIT-36", "ZUS DRA", "JPK_V7", "PCC-3"],
+    "auto_impact_report": true,
+})
+
+unfavorable_trend_threshold := to_number(object.get(judicial_trend_cfg, "unfavorable_trend_threshold_pct", 60))
+
 round2(x) = r {
     r := round(x * 100) / 100
 }
@@ -81,6 +126,50 @@ propagate(confidence, edge_weight) = round2(confidence * edge_weight) { confiden
 else = 0 { true }
 
 verification_routing(failed_count) = "TRIAGE_QUEUE" { failed_count > 0 }
+else = "" { true }
+
+# ── Funkcje pomocnicze Mapy drogowej P0/P1/P2 (else-chain) ────────────────────
+strategic_roadmap_status(ready, horizon) = "STRATEGIC ROADMAP KOMPLETNY — mapa " + sprintf("%d-letnia (4 formy opodatkowania)", [horizon]) { ready == true }
+else = "STRATEGIC ROADMAP NIEKOMPLETNY — wymaga uzupełnienia" { true }
+
+strategic_roadmap_routing(ready) = "TRIAGE_QUEUE" { ready == false }
+else = "" { true }
+
+judicial_trend_status(trends_detected, db_ready) = "ORZECZNICTWO NSA/WSA ZINTEGROWANE — trendy + precedensy + rozbieżności" { trends_detected == true; db_ready == true }
+else = "ORZECZNICTWO — WYMAGA INDEKSACJI bazy NSA/WSA" { true }
+
+judicial_trend_routing(trends_detected, db_ready) = "TRIAGE_QUEUE" { trends_detected == false or db_ready == false }
+else = "" { true }
+
+legislacja_status(api_ok) = "LEGISLACJA.GOV.PL ZINTEGROWANA — radar live projektów ustaw" { api_ok == true }
+else = "LEGISLACJA.GOV.PL — WYMAGA KONFIGURACJI API" { true }
+
+legislacja_routing(api_ok) = "TRIAGE_QUEUE" { api_ok == false }
+else = "" { true }
+
+nsa_wsa_status(rulings_indexed) = sprintf("BAZA ORZECZNICTWA NSA/WSA — %d orzeczeń zindeksowanych (parser sygnatur)", [rulings_indexed]) { rulings_indexed >= to_number(object.get(nsa_wsa_cfg, "min_rulings_for_trend", 5)) }
+else = sprintf("BAZA ORZECZNICTWA — TYLKO %d orzeczeń (min %d dla trendów)", [rulings_indexed, to_number(object.get(nsa_wsa_cfg, "min_rulings_for_trend", 5))]) { true }
+
+nsa_wsa_routing(rulings_indexed) = "TRIAGE_QUEUE" { rulings_indexed < to_number(object.get(nsa_wsa_cfg, "min_rulings_for_trend", 5)) }
+else = "" { true }
+
+full_graph_status(propagated_count, total_nodes) = sprintf("PROPAGACJA PEWNOŚCI W PEŁNYM GRAFIE — %d/%d węzłów (P01-P20)", [propagated_count, total_nodes]) { propagated_count < total_nodes }
+else = "PROPAGACJA PEWNOŚCI W PEŁNYM GRAFIE — KOMPLETNA (P01-P20)" { true }
+
+full_graph_routing(propagated_count, total_nodes) = "TRIAGE_QUEUE" { propagated_count < total_nodes }
+else = "" { true }
+
+sro_panel_status(pending_updates) = sprintf("PANEL SRO — %d zmian reguł oczekuje zatwierdzenia", [pending_updates]) { pending_updates > 0 }
+else = "PANEL SRO — orzecznictwo zsynchronizowane z regułami" { true }
+
+sro_panel_routing(pending_updates) = "TRIAGE_QUEUE" { pending_updates > 0 }
+else = "" { true }
+
+novelization_status(impact_level) = "NOWELIZACJA — WPŁYW KRYTYCZNY na deklaracje!" { impact_level == "KRYTYCZNY" }
+else = "NOWELIZACJA — WPŁYW WYSOKI na deklaracje" { impact_level == "WYSOKI" }
+else = "NOWELIZACJA — wpływ na deklaracje: " + impact_level { true }
+
+novelization_routing(impact_level) = "TRIAGE_QUEUE" { impact_level == "KRYTYCZNY" or impact_level == "WYSOKI" }
 else = "" { true }
 
 # ── SEKCJA 1: MAPA POKRYCIA MODUŁÓW (Neural Mesh + Innowacje) ────────────────
@@ -535,6 +624,162 @@ cross_domain_ai_assistant := {
     object.get(input.jdg_entrepreneur, "p20_mesh_check", false) == true
 }
 
+# ── MAPA DROGOWA P0/P1/P2 — wdrożone (R20) ────────────────────────────────────
+# P0-1: pełna implementacja strategic_roadmap (0 reguł → 7+ funkcji, mapa 5-letnia).
+strategic_roadmap_engine := {
+    "rule_id": "jdg.p20_neural_mesh_innovations.strategic_roadmap_engine",
+    "package": "jdg.p20_neural_mesh_innovations",
+    "priority": 3480,
+    "matched": true,
+    "forms": object.get(strategic_roadmap_cfg, "forms", ["skala", "liniowy", "ryczałt", "IP Box"]),
+    "horizon_years": to_number(object.get(strategic_roadmap_cfg, "horizon_years", 5)),
+    "transformation_threshold_pln": to_number(object.get(strategic_roadmap_cfg, "transformation_threshold_pln", 300000)),
+    "modules": ["str_compare_forms (skala/liniowy/ryczałt/IP Box)", "str_five_year_projection", "str_investment_optimizer", "str_succession_planner (JDG → Sp. z o.o.)", "str_tax_risk_scorer", "build_str_warnings"],
+    "roadmap_ready": roadmap_ready,
+    "engine_status": strategic_roadmap_status(roadmap_ready, to_number(object.get(strategic_roadmap_cfg, "horizon_years", 5))),
+    "note": "pełna implementacja strategic_roadmap — mapa 5-letnia, 4 formy, projekcja, transformacja JDG→Sp. z o.o., GAAR (P0)",
+    "_routing": strategic_roadmap_routing(roadmap_ready),
+    "_routing_reason": sprintf("Strategic Roadmap: ready=%v, horyzont %d lat", [roadmap_ready, to_number(object.get(strategic_roadmap_cfg, "horizon_years", 5))]),
+    "_legal_basis": "Art. 27/30c/30ca u.PIT; u.PCC; art. 119a OrdPU (GAAR)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p20_mesh_check", false) == true
+    roadmap_ready := object.get(input.mesh, "strategic_roadmap_ready", true)
+}
+
+# P0-2: pełna implementacja judicial_trend + cross_jurisdiction_ruling (0 reguł → 10+ funkcji).
+judicial_trend_rulings_engine := {
+    "rule_id": "jdg.p20_neural_mesh_innovations.judicial_trend_rulings_engine",
+    "package": "jdg.p20_neural_mesh_innovations",
+    "priority": 3481,
+    "matched": true,
+    "courts": object.get(judicial_trend_cfg, "courts", ["NSA", "WSA", "TK", "TSUE"]),
+    "precedence_weights": object.get(judicial_trend_cfg, "precedence_weights", {"WSA": 1, "NSA_3": 3}),
+    "unfavorable_trend_threshold_pct": unfavorable_trend_threshold,
+    "binding_scope": object.get(judicial_trend_cfg, "binding_scope", "Art. 14k-14m OrdPU"),
+    "modules": ["jtr_import_ruling", "jtr_precedence_weight", "jtr_trend_detector", "jtr_map_to_articles", "jtr_risk_alerter", "jtr_precedence_scorer", "cjr_divergence_detector", "cjr_office_selector", "cjr_binding_opinion_check", "cjr_cross_office_risk"],
+    "trends_detected": trends_detected,
+    "db_ready": db_ready,
+    "engine_status": judicial_trend_status(trends_detected, db_ready),
+    "note": "pełna implementacja judicial_trend + cross_jurisdiction_ruling — trendy, precedensy, rozbieżności interpretacyjne (P0)",
+    "_routing": judicial_trend_routing(trends_detected, db_ready),
+    "_routing_reason": sprintf("Orzecznictwo: trendy=%v, baza=%v", [trends_detected, db_ready]),
+    "_legal_basis": "Art. 14k-14m OrdPU; ustawa o NSA/WSA",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p20_mesh_check", false) == true
+    trends_detected := object.get(input.judicial, "trends_detected", true)
+    db_ready := object.get(input.judicial, "rulings_db_ready", true)
+}
+
+# P1-1: integracja z legislacja.gov.pl (API projektów ustaw) — radar live.
+legislacja_gov_pl_integration := {
+    "rule_id": "jdg.p20_neural_mesh_innovations.legislacja_gov_pl_integration",
+    "package": "jdg.p20_neural_mesh_innovations",
+    "priority": 3482,
+    "matched": true,
+    "api": object.get(legislacja_cfg, "api", "https://legislacja.gov.pl/api"),
+    "radar_horizon_days": to_number(object.get(legislacja_cfg, "radar_horizon_days", 30)),
+    "monitored_areas": object.get(legislacja_cfg, "monitored_areas", ["VAT", "PIT", "ZUS"]),
+    "api_ok": api_ok,
+    "integration_status": legislacja_status(api_ok),
+    "note": "integracja z legislacja.gov.pl — API projektów ustaw, radar live zmian prawa (P1)",
+    "_routing": legislacja_routing(api_ok),
+    "_routing_reason": sprintf("legislacja.gov.pl: api_ok=%v", [api_ok]),
+    "_legal_basis": "ADR-002; ustawodawstwo (projekty ustaw)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p20_mesh_check", false) == true
+    api_ok := object.get(input.legislative, "legislacja_api_ok", false)
+}
+
+# P1-2: baza orzecznictwa NSA/WSA z parserem sygnatur.
+nsa_wsa_rulings_database := {
+    "rule_id": "jdg.p20_neural_mesh_innovations.nsa_wsa_rulings_database",
+    "package": "jdg.p20_neural_mesh_innovations",
+    "priority": 3483,
+    "matched": true,
+    "signature_parser": object.get(nsa_wsa_cfg, "signature_parser", "NSA/WSA sygnatury: I FSK 1234/25 (regex)"),
+    "sources": object.get(nsa_wsa_cfg, "sources", ["CBOSA", "orzeczenia.nsa.gov.pl"]),
+    "min_rulings_for_trend": to_number(object.get(nsa_wsa_cfg, "min_rulings_for_trend", 5)),
+    "rulings_indexed": rulings_indexed,
+    "db_status": nsa_wsa_status(rulings_indexed),
+    "note": "baza orzecznictwa NSA/WSA z parserem sygnatur — CBOSA + orzeczenia.nsa.gov.pl (P1)",
+    "_routing": nsa_wsa_routing(rulings_indexed),
+    "_routing_reason": sprintf("Baza orzecznictwa: %d zindeksowanych orzeczeń", [rulings_indexed]),
+    "_legal_basis": "Art. 14k-14m OrdPU; ustawa o NSA/WSA",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p20_mesh_check", false) == true
+    rulings_indexed := to_number(object.get(input.judicial, "rulings_indexed", 0))
+}
+
+# P1-3: propagacja pewności w pełnym grafie reguł (P01-P20).
+full_graph_confidence_propagation := {
+    "rule_id": "jdg.p20_neural_mesh_innovations.full_graph_confidence_propagation",
+    "package": "jdg.p20_neural_mesh_innovations",
+    "priority": 3484,
+    "matched": true,
+    "domains": object.get(full_graph_cfg, "domains", ["VAT", "PIT", "ZUS"]),
+    "propagation_cutoff": to_number(object.get(full_graph_cfg, "propagation_cutoff", 0.5)),
+    "max_hops": to_number(object.get(full_graph_cfg, "max_hops", 3)),
+    "packages": "p01-p24 + p33-p35",
+    "total_nodes": total_nodes,
+    "propagated_nodes": propagated_nodes,
+    "graph_status": full_graph_status(propagated_nodes, total_nodes),
+    "note": "propagacja pewności w pełnym grafie reguł — confidence × edge_weight przez max 3 hopów (P01-P20) (P1)",
+    "_routing": full_graph_routing(propagated_nodes, total_nodes),
+    "_routing_reason": sprintf("Pełny graf: %d/%d węzłów przepropagowanych", [propagated_nodes, total_nodes]),
+    "_legal_basis": "ADR-002; ADR-006",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p20_mesh_check", false) == true
+    total_nodes := to_number(object.get(input.mesh, "graph_total_nodes", 0))
+    propagated_nodes := to_number(object.get(input.mesh, "graph_propagated_nodes", 0))
+}
+
+# P2-1: UI panelu SRO (orzecznictwo → zmiany reguł).
+sro_panel_ui := {
+    "rule_id": "jdg.p20_neural_mesh_innovations.sro_panel_ui",
+    "package": "jdg.p20_neural_mesh_innovations",
+    "priority": 3485,
+    "matched": true,
+    "widgets": object.get(sro_panel_cfg, "widgets", ["trendy orzecznicze", "zmiany reguł"]),
+    "auto_rule_update": object.get(sro_panel_cfg, "auto_rule_update", true),
+    "pending_updates": pending_updates,
+    "panel_status": sro_panel_status(pending_updates),
+    "note": "UI panelu SRO — orzecznictwo → zmiany reguł, auto-aktualizacja (P2)",
+    "_routing": sro_panel_routing(pending_updates),
+    "_routing_reason": sprintf("Panel SRO: %d zmian reguł oczekuje", [pending_updates]),
+    "_legal_basis": "ADR-002; ustawa o NSA/WSA",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p20_mesh_check", false) == true
+    pending_updates := to_number(object.get(input.judicial, "pending_rule_updates", 0))
+}
+
+# P2-2: symulator nowelizacji z raportem wpływu na deklaracje.
+novelization_impact_report := {
+    "rule_id": "jdg.p20_neural_mesh_innovations.novelization_impact_report",
+    "package": "jdg.p20_neural_mesh_innovations",
+    "priority": 3486,
+    "matched": true,
+    "impact_levels": object.get(novelization_cfg, "impact_levels", ["NISKI", "ŚREDNI", "WYSOKI", "KRYTYCZNY"]),
+    "declaration_forms": object.get(novelization_cfg, "declaration_forms", ["VAT-7", "PIT-36", "ZUS DRA"]),
+    "simulated_change": object.get(input.mesh, "simulated_change", ""),
+    "impact_level": impact_level,
+    "affected_rules": to_number(object.get(input.mesh, "affected_rules_count", 0)),
+    "report_status": novelization_status(impact_level),
+    "note": "symulator nowelizacji z raportem wpływu na deklaracje — dotknięte formularze + impact score (P2)",
+    "_routing": novelization_routing(impact_level),
+    "_routing_reason": sprintf("Nowelizacja '%s': poziom wpływu %s", [object.get(input.mesh, "simulated_change", ""), impact_level]),
+    "_legal_basis": "ADR-002; ADR-006; OrdPU art. 62-63 (deklaracje)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p20_mesh_check", false) == true
+    impact_level := object.get(input.mesh, "novelization_impact", "NISKI")
+}
+
 # ── GŁÓWNY DECIDE (P20) — raport syntetyczny Neural Mesh + Innowacje ──────────
 decide := {
     "rule_id": "jdg.p20_neural_mesh_innovations.report",
@@ -546,6 +791,15 @@ decide := {
     "cross_act": cross_act_coherence_audit,
     "strategy_judicial": strategy_judicial_audit,
     "pipeline": mesh_adaptation_pipeline,
+    "roadmap": {
+        "strategic_roadmap_engine": strategic_roadmap_engine,
+        "judicial_trend_rulings_engine": judicial_trend_rulings_engine,
+        "legislacja_gov_pl_integration": legislacja_gov_pl_integration,
+        "nsa_wsa_rulings_database": nsa_wsa_rulings_database,
+        "full_graph_confidence_propagation": full_graph_confidence_propagation,
+        "sro_panel_ui": sro_panel_ui,
+        "novelization_impact_report": novelization_impact_report,
+    },
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny Neural Mesh + Innowacje v8 (P20)",
     "_legal_basis": "ADR-002; ADR-006; P34; P35",

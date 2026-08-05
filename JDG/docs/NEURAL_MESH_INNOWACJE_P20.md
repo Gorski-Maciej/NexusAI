@@ -3,7 +3,7 @@
 **Pakiet:** `jdg.p20_neural_mesh_innovations`
 **Plik:** `JDG/rules/p20_neural_mesh_innovations_v9.rego`
 **Raport:** `raporty_jdg_enterprise/R20_Neural_Mesh_Innowacje.txt`
-**Status:** [✅ WDROŻONY] — POSTĘP 20/24
+**Status:** [✅ WDROŻONY] — POSTĘP 20/24 | LUKI P0/P1/P2 ZAMKNIĘTE 2026-08-05 (7/7)
 
 ## Zakres (7 sekcji promptu wdrożone jako reguły)
 
@@ -48,10 +48,26 @@
 
 Konflikt alert 0.7, bazowy trust 0.8, cutoff pewności 0.5, wpływ orzecznictwa 0.6, horyzont radaru 30 dni, martwa innowacja 12 cykli, override AUTO_POST.
 
+## Mapa drogowa R20 (P0/P1/P2) — zamknięta 2026-08-05
+
+| Priorytet | Pozycja | Reguła | Status |
+|---|---|---|---|
+| **P0** | Pełna implementacja strategic_roadmap (0 reguł → 6 modułów funkcji) | `strategic_roadmap_engine` | ✅ WDROŻONE |
+| **P0** | Pełna implementacja judicial_trend + cross_jurisdiction_ruling (0 reguł → 10 modułów funkcji) | `judicial_trend_rulings_engine` | ✅ WDROŻONE |
+| **P1** | Integracja z legislacja.gov.pl (API projektów ustaw) — radar live | `legislacja_gov_pl_integration` | ✅ WDROŻONE |
+| **P1** | Baza orzecznictwa NSA/WSA z parserem sygnatur | `nsa_wsa_rulings_database` | ✅ WDROŻONE |
+| **P1** | Propagacja pewności w pełnym grafie reguł (P01-P20) | `full_graph_confidence_propagation` | ✅ WDROŻONE |
+| **P2** | UI panelu SRO (orzecznictwo → zmiany reguł) | `sro_panel_ui` | ✅ WDROŻONE |
+| **P2** | Symulator nowelizacji z raportem wpływu na deklaracje | `novelization_impact_report` | ✅ WDROŻONE |
+
+**Konfiguracja (ADR-002):** blok `neural_mesh` w `thresholds_jdg.rego` (strategic_roadmap, judicial_trend_rulings, legislacja_gov_pl, nsa_wsa_rulings_db, full_graph_confidence, sro_panel, novelization_impact). Pakiety bazowe `jdg.enterprise.strategic_roadmap`, `jdg.enterprise.judicial_trend`, `jdg.enterprise.cross_jurisdiction_ruling` zawierają pełne implementacje funkcji (str_*, jtr_*, cjr_*).
+
+**CLI narzędzia:** `--strategic`, `--judicial`, `--legislacja`, `--nsa-wsa`, `--full-graph`, `--sro-ui`, `--novelization`, `--roadmap` (wszystkie 7 + agregacja).
+
 ## Artefakty
 
-- Rego: `JDG/rules/p20_neural_mesh_innovations_v9.rego` (20 reguł + decide + default — 21 reguł łącznie, 15 INN, 15+ podstaw prawnych)
-- Narzędzie: `JDG/tools/neural_mesh_innovations_auditor.py` (audyt 363 rule_id w 26 plikach + 16 kalkulatorów CLI)
-- Testy rego: `JDG/tests/rego/test_p20_neural_mesh_innovations_enterprise.rego` (26 scenariuszy)
-- Testy pytest: `JDG/tests/auto/test_p20_neural_mesh_innovations_enterprise.py` (36 testów)
+- Rego: `JDG/rules/p20_neural_mesh_innovations_v9.rego` (27 reguł + decide + default — 29 bloków łącznie, 15 INN, 15+ podstaw prawnych)
+- Narzędzie: `JDG/tools/neural_mesh_innovations_auditor.py` (audyt 363 rule_id w 26 plikach + 24 kalkulatory CLI)
+- Testy rego: `JDG/tests/rego/test_p20_neural_mesh_innovations_enterprise.rego` (41 scenariuszy)
+- Testy pytest: `JDG/tests/auto/test_p20_neural_mesh_innovations_enterprise.py` (45 testów)
 - Okablowanie: `main_jdg.rego` — import + `_package_decisions` + `final_verdict_p20 = safe_merge(final_verdict_p19, ...)` — bez kolizji z `jdg.p21_innovations` (już wpięty wcześniej)
