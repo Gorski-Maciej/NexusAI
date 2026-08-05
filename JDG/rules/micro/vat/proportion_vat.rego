@@ -9,6 +9,7 @@
 package jdg.micro.vat.proportion
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 default decide := {
     "matched": false,
@@ -82,7 +83,8 @@ else := {
     "_legal_basis": "Art. 90 ust. 5 VAT",
     "_warnings": ["[MICRO PROP] Proporcja < 2% — NIE ODLICZASZ VAT naliczonego"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_proportion_pct", 100.0) < 2.0
+    # R03 P1: próg de minimis z data.thresholds (0.02 × 100 = 2%) — zero hardcode
+    object.get(input.jdg_entrepreneur, "vat_proportion_pct", 100.0) < (thresholds.vat.proportion_min_threshold * 100)
 }
 
 # PROP-04: Proporcja > 98% → pełne odliczenie
@@ -102,7 +104,8 @@ else := {
     "_legal_basis": "Art. 90 ust. 4 VAT",
     "_warnings": ["[MICRO PROP] Proporcja > 98% — pełne prawo do odliczenia VAT"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_proportion_pct", 0.0) > 98.0
+    # R03 P1: próg pełnego odliczenia z data.thresholds (0.98 × 100 = 98%) — zero hardcode
+    object.get(input.jdg_entrepreneur, "vat_proportion_pct", 0.0) > (thresholds.vat.proportion_max_threshold * 100)
 }
 
 # PROP-05: Proporcja wstępna — na podstawie roku poprzedniego

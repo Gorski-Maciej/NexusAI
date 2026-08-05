@@ -10,12 +10,14 @@
 #   Reguły Rego używają wyłącznie data.thresholds.jdg.* — zero hardcoded values.
 #   Aktualizacja progów = zmiana tego pliku, bez rekompilacji WASM bundle.
 #   Dodano sekcje Environmental/AML/MDR (2026-07-17) z Enterprise packages
-#   architecture: Decoupled Data Layer (B2)
-#   package: jdg.thresholds
-#   deprecated: false
-# ═══════════════════════════════════════════════════════════════════════════════
+# architecture: Decoupled Data Layer (B2)
+# package: jdg.thresholds
+# deprecated: false
+#
 
 package jdg.thresholds
+
+import future.keywords.in
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # VAT THRESHOLDS
@@ -91,6 +93,7 @@ pit := {
     "car_kup_with_log": 1.00,                    # 100% KUP z ewidencją
     "car_value_limit_standard": 150000,          # PLN — limit wartości auta (P607)
     "car_value_limit_ev": 225000,               # PLN — limit EV
+    "car_lease_insurance_limit": 150000,        # PLN — limit składek na ubezpieczenie auta (leasing, Art. 23 PIT)
 
     # Art. 27 PIT — kwota zmniejszająca podatek
     "tax_reducing_amount": 3600,                 # PLN — kwota zmniejszająca (12% × 30k, P30 L9)
@@ -616,6 +619,15 @@ temporal_thresholds := {
         "previous_value": 0.50,
         "previous_valid_from": "2018-04-30",
         "reason": "Art. 5 ust. 1 pkt 1 PP — podwyższenie limitu z 50% do 75% płacy minimalnej (nowelizacja obowiązująca od 01.07.2023)"
+    },
+
+    # R03 P1 (A03) — art. 113 ust. 1 VAT: limit zwolnienia podmiotowego (200k, od 2017)
+    # Limit stały 200 000 PLN od 2017-01-01; art. 113 ust. 9 (SLIM VAT 2) — opcja
+    # kwartalna dla nowych podatników od 2021-07-01 (helper subject_exemption_quarterly_mode).
+    "subject_exemption_limit": {
+        "valid_from": "2017-01-01",
+        "value": 200000,
+        "reason": "Art. 113 ust. 1 VAT — limit zwolnienia podmiotowego 200 000 zł (stały od 2017; opcja kwartalna ust. 9 od 2021-07-01)"
     }
 }
 
@@ -647,6 +659,26 @@ get_temporal_threshold(threshold_key, eval_date) = value {
 unregistered_limit_pct(eval_date) = pct {
     pct := to_number(get_temporal_threshold("unregistered_revenue_pct", eval_date))
 } else = 0.75 {
+    true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# R03 P1 (A03) — ART. 113 UST. 1 VAT: LIMIT ZWOLNIENIA PODMIOTOWEGO (TEMPORALNY)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Jedno źródło prawdy: limit 200 000 zł czytany temporalnie z temporal_thresholds
+# (od 2017-01-01). Reguły (CRIT-5, P51, P51b, P131) NIE hardkodują 200 000.
+subject_exemption_limit_for_date(eval_date) = limit {
+    limit := to_number(get_temporal_threshold("subject_exemption_limit", eval_date))
+} else = 200000 {
+    true
+}
+
+# ── R03 P1 — ART. 113 UST. 9 VAT: OPCJA KWARTALNA (SLIM VAT 2, od 2021-07-01) ──
+# Nowi podatnicy mogą rozliczać limit proporcjonalnie wg kwartałów pozostałych
+# do końca roku (SLIM VAT 2 — art. 113 ust. 9 VAT, od 01.07.2021).
+subject_exemption_quarterly_mode(eval_date) = true {
+    eval_date >= "2021-07-01"
+} else = false {
     true
 }
 
@@ -697,23 +729,33 @@ default_threshold_versions := {
         {"valid_from": "2018-04-30", "valid_to": "2023-06-30", "value": 0.50, "act": "Art. 5 ust. 1 pkt 1 PP (brzmienie pierwotne)", "reason": "50% płacy minimalnej miesięcznie"},
         {"valid_from": "2023-07-01", "valid_to": "2025-12-31", "value": 0.75, "act": "Art. 5 ust. 1 pkt 1 PP", "reason": "Podwyższenie do 75% miesięcznie (nowelizacja z 01.07.2023)"},
         {"valid_from": "2026-01-01", "valid_to": null, "value": 2.25, "act": "Art. 5 ust. 1 pkt 1 PP", "reason": "2026: limit kwartalny = 225% płacy minimalnej"}
+    ],
+    "vat.subject_exemption_limit": [
+        {"valid_from": "2017-01-01", "valid_to": null, "value": 200000, "act": "Art. 113 ust. 1 VAT", "reason": "Limit zwolnienia podmiotowego 200 000 zł (opcja kwartalna ust. 9 od 2021-07-01)"}
     ]
 }
 
-# Źródło wersji: data.jdg.threshold_versions (hot-reload) > domyślne
-get_threshold_versions() = object.get(data.jdg, "threshold_versions", default_threshold_versions)
-
 # Wartość progu dla okresu (data ISO YYYY-MM-DD) — wersjonowanie per okres
+# (źródło: default_threshold_versions; host może nadpisać ten blok wprost)
 get_threshold_for_period(threshold_key, period) = value {
-    versions := object.get(get_threshold_versions(), threshold_key, [])
+    versions := object.get(default_threshold_versions, threshold_key, [])
     count(versions) > 0
     # Tylko wersje z valid_from <= period i (valid_to null lub >= period)
-    eligible := [v |
+    # Rego v0 nie ma operatorów 'and'/'or' — dwie comprehensions połączone concat.
+    eligible_open := [v |
         some v in versions
         object.get(v, "valid_from", "0000-01-01") <= period
         vt := object.get(v, "valid_to", null)
-        (vt == null) or (period <= vt)
+        vt == null
     ]
+    eligible_dated := [v |
+        some v in versions
+        object.get(v, "valid_from", "0000-01-01") <= period
+        vt := object.get(v, "valid_to", null)
+        vt != null
+        period <= vt
+    ]
+    eligible := array.concat(eligible_open, eligible_dated)
     count(eligible) > 0
     # Najnowsza z kwalifikowanych (maks valid_from)
     latest := max([object.get(v, "valid_from", "") | some v in eligible])
@@ -724,7 +766,7 @@ get_threshold_for_period(threshold_key, period) = value {
 
 # Lista okresów, w których zmienił się dany próg (do kalendarza zmian prawa)
 threshold_change_periods(threshold_key) = periods {
-    versions := object.get(get_threshold_versions(), threshold_key, [])
+    versions := object.get(default_threshold_versions, threshold_key, [])
     periods := [{"valid_from": object.get(v, "valid_from", ""), "value": object.get(v, "value", 0), "act": object.get(v, "act", "")} |
         some v in versions
     ]

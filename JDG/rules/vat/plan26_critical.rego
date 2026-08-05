@@ -14,10 +14,11 @@
 # legal_basis: Art. 28o, 86a, 90-91, 106e, 107, 108a, 113, 115-116 VAT
 # package: jdg.vat.plan26_critical
 # deprecated: false
-# ═══════════════════════════════════════════════════════════════════════════════
+#
 
 package jdg.vat.plan26_critical
 
+import future.keywords.in
 import data.jdg.helpers
 import data.jdg.thresholds
 
@@ -256,6 +257,8 @@ else := {
     "_warnings": warnings
 } {
     input.jdg_entrepreneur.is_vat_payer == false
+    # R03 P1: tryb audytowy kwartalny (CRIT-18) obsługuje vat_subject_exemption_check
+    not object.get(input.jdg_entrepreneur, "vat_subject_exemption_check", false)
 
     annual_turnover := object.get(input.jdg_entrepreneur, "annual_turnover_net", 0)
     ceidg_date := object.get(input.jdg_entrepreneur, "ceidg_entry_date", "")
@@ -265,9 +268,13 @@ else := {
     # Oblicz dzień roku
     current_day := object.get(input, "current_day_of_year", 365)
 
-    # Limit proporcjonalny = 200k / 365 * dni
-    proportional_limit = 200000 / 365 * current_day { is_new_jdg }
-    proportional_limit = 200000 { not is_new_jdg }
+    # R03 P1: limit z data.thresholds (jedno źródło prawdy, temporalnie — 200 000 PLN od 2017)
+    eval_date := object.get(input, "eval_date", "2026-01-01")
+    limit_full := thresholds.subject_exemption_limit_for_date(eval_date)
+
+    # Limit proporcjonalny = limit roczny / 365 * dni (dla nowych JDG, art. 113 ust. 5)
+    proportional_limit = limit_full / 365 * current_day { is_new_jdg }
+    proportional_limit = limit_full { not is_new_jdg }
 
     current_turnover = annual_turnover
 
@@ -862,7 +869,7 @@ else := {
 
     category := input.invoice.category_code
 
-    # Rozszerzona mapa zwolnień Art. 43 (10 dodatkowych punktów)
+    # Rozszerzona mapa zwolnień Art. 43 (R03: +4 punkty — łącznie 14)
     extended_exemptions := {
         "HOSPITAL_SERVICES": {"point": "18", "desc": "Usługi szpitalne i opieka medyczna"},
         "SOCIAL_CARE": {"point": "22", "desc": "Usługi opieki społecznej"},
@@ -873,9 +880,76 @@ else := {
         "RELIGIOUS_SERVICES": {"point": "31", "desc": "Usługi organizacji religijnych"},
         "TRADE_UNION_SERVICES": {"point": "32", "desc": "Usługi związków zawodowych"},
         "PUBLIC_BROADCASTING": {"point": "34", "desc": "Usługi publicznej radiofonii i telewizji"},
-        "LOTTERY_GAMBLING": {"point": "15", "desc": "Zakłady wzajemne i gry hazardowe"}
+        "LOTTERY_GAMBLING": {"point": "15", "desc": "Zakłady wzajemne i gry hazardowe"},
+        "EDUCATION_SERVICES": {"point": "26", "desc": "Usługi edukacyjne (art. 43 ust. 1 pkt 26)"},
+        "SPORT_SERVICES": {"point": "28", "desc": "Usługi związane ze sportem (art. 43 ust. 1 pkt 28)"},
+        "CULTURAL_SERVICES": {"point": "33", "desc": "Usługi kulturalne (art. 43 ust. 1 pkt 33)"},
+        "FINANCIAL_SERVICES": {"point": "36", "desc": "Usługi finansowe (art. 43 ust. 1 pkt 36)"}
     }
 
     exemption_point := extended_exemptions[category].point
     exemption_desc := extended_exemptions[category].desc
+}
+
+# ── CRIT-18 helpers (Rego v0 — warunkowe wartości przez funkcje z argumentami) ──
+quarterly_excess_routing(exceeded) := "BLOCK_AND_ALERT" { exceeded }
+quarterly_excess_routing(exceeded) := "" { not exceeded }
+
+quarterly_excess_reason(exceeded, turnover, limit_prop, limit_full, quarters) := sprintf("PRZEKROCZENIE LIMITU KWARTALNEGO — przychód %.2f PLN > %.2f PLN (limit roczny %.2f PLN × %d/4 kwartały). Utrata zwolnienia z momentem przekroczenia — złóż VAT-R (art. 113 ust. 5)!", [turnover, limit_prop, limit_full, quarters]) { exceeded }
+quarterly_excess_reason(exceeded, turnover, limit_prop, limit_full, quarters) := "" { not exceeded }
+
+quarterly_excess_warnings(exceeded, turnover, limit_prop, quarters, limit_full) := [sprintf("⚠️ LIMIT KWARTALNY (art. 113 ust. 9) — %.2f PLN / %.2f PLN (%d pozostałe kwartały × %.2f/4). Przekroczenie = VAT-R OBOWIĄZKOWY.", [turnover, limit_prop, quarters, limit_full])] { exceeded }
+quarterly_excess_warnings(exceeded, turnover, limit_prop, quarters, limit_full) := [] { not exceeded }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CRIT-18: Subject Exemption Quarterly (R03 P1 — art. 113 ust. 9 VAT, SLIM VAT 2)
+# R03 P1: kalkulacja KWARTALNA limitu zwolnienia dla nowych podatników
+# (opcja kwartalna od 2021-07-01, art. 113 ust. 9 VAT). Przekroczenie w trakcie
+# roku/kwartału (art. 113 ust. 5) = utrata zwolnienia z momentem przekroczenia
+# → obowiązek rejestracji VAT-R (BLOCK_AND_ALERT). Trigger: vat_subject_exemption_check.
+# Uwaga: reguła po CRIT-5 (guard vat_subject_exemption_check na CRIT-5) — tryb audytowy.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.plan26_critical.subject_exemption_quarterly_excess",
+    "package": "jdg.vat.plan26_critical", "priority": 18,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "SUBJECT_EXEMPTION_QUARTERLY",
+    "vat_exemption": "SUBJECT_QUARTERLY",
+    "pit_form": "", "pit_rate": "",
+    "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "exemption_limit_annual": limit_full,
+    "exemption_limit_proportional": proportional_limit,
+    "exemption_quarterly_mode": quarterly_mode,
+    "exemption_current_turnover": current_turnover,
+    "exemption_exceeded_mid_quarter": exemption_exceeded,
+    "vat_registration_required": exemption_exceeded,
+    "_routing": routing,
+    "_routing_reason": routing_reason,
+    "_legal_basis": "Art. 113 ust. 5 i 9 VAT (SLIM VAT 2 — opcja kwartalna od 2021-07-01)",
+    "_warnings": warnings
+} {
+    input.jdg_entrepreneur.is_vat_payer == false
+    input.jdg_entrepreneur.vat_subject_exemption_check == true
+
+    # Limit roczny + tryb kwartalny z data.thresholds (jedno źródło prawdy, temporalnie)
+    eval_date := object.get(input, "eval_date", "2026-01-01")
+    limit_full := thresholds.subject_exemption_limit_for_date(eval_date)
+    quarterly_mode := thresholds.subject_exemption_quarterly_mode(eval_date)
+
+    annual_turnover := object.get(input.jdg_entrepreneur, "annual_turnover_net", 0)
+    remaining_quarters := object.get(input.jdg_entrepreneur, "remaining_quarters", 4)
+
+    # Limit kwartalny = limit roczny × (pozostałe kwartały / 4) — art. 113 ust. 9
+    proportional_limit := limit_full * remaining_quarters / 4
+
+    current_turnover := annual_turnover
+
+    exemption_exceeded := current_turnover > proportional_limit
+
+    routing := quarterly_excess_routing(exemption_exceeded)
+    routing_reason := quarterly_excess_reason(exemption_exceeded, current_turnover, proportional_limit, limit_full, remaining_quarters)
+    warnings := quarterly_excess_warnings(exemption_exceeded, current_turnover, proportional_limit, remaining_quarters, limit_full)
 }

@@ -149,13 +149,40 @@ sport pkt 28, kultura pkt 33, finanse pkt 36, najem mieszkalny pkt 2).
 - Mirror logiki: T1 (limity ±1 grosz, kwartały), T1 (proporcja 98/2), T3 (WDT
   90/91), P2 (Biała Lista ≥15k).
 
-### 4.3. Wynik
+### 4.3. Wynik (po pełnym wdrożeniu — 2026-08-04)
 
 ```
-22 passed (test_vat_audyt_r03_enterprise.py)
-+ brak regresji (103 testy: test_auto_block_vat*, test_p03/p04_vat_macro/micro,
-  test_business_audyt_r02, test_pit_audyt_r04 | 418 testy: micro/pkpir/edge_cases)
+22 passed (test_vat_audyt_r03_enterprise.py) ✅
++ brak regresji: 103 passed (test_auto_block_vat*, test_p03/p04_vat_macro/micro,
+  test_business_audyt_r02, test_pit_audyt_r04)
 ```
+
+**Weryfikacja runtime (opa eval, bin/opa 0.68):**
+- `subject_exemption_limit_for_date("2026-01-01")` → `200000` ✅ (temporalnie od 2017)
+- `subject_exemption_quarterly_mode("2021-06-30")` → `false` (SLIM VAT 2 od 2021-07-01) ✅
+- `whitelist_15k_binding` (20 000 zł, poza wykazem) → `BLOCK_AND_ALERT`, sankcja 20% = 4 000 zł,
+  `kup_denied: true` ✅; (14 999,99 zł) → reguła NIEDEFINIOWANA ✅; (16 000 zł, wykaz) → `whitelist_violation: false` ✅
+- `thresholds_jdg.rego` — `opa check` CZYSTY (parsuje się) ✅
+- `vat_mpp_split_payment_enterprise.rego` — `opa check` CZYSTY ✅
+
+### 4.4. Naprawy techniczne przy okazji wdrożenia (zgodność z OPA 0.68)
+
+- **METADATA + linie `═`**: komentarze z ramką wewnątrz bloków `# METADATA` łamały parsowanie YAML
+  (błąd `yaml: could not find expected ':'`) — zastąpiono bezpiecznym `#` (8 plików, w tym 4 R03).
+- **`import future.keywords.in`**: OPA 0.48–0.70 wymaga jawnego importu dla `in`/`some x in` —
+  dodano w thresholds_jdg, substantive (JDG/rules + policies), plan26, plan42, MPP.
+- **Rego v0 — brak `and`/`or`**: w thresholds_jdg (`get_threshold_for_period`) i MPP
+  (`solidary_liability_risk`, `decide`) rozbito wyrażenia na osobne reguły/komprehensje.
+- **Rekursja `data.jdg`**: `get_threshold_versions()` czytało całe `data.jdg` (cykl) —
+  źródłem wersji jest teraz bezpośrednio `default_threshold_versions`.
+- **Brakujący `car_lease_insurance_limit`** w mapie `pit` (undefined ref w `limits`) — dodano 150 000.
+- **Błędna ścieżka MPP**: `data.jdg.thresholds.vat.mpp_mandatory_threshold` →
+  `data.jdg.thresholds.misc.mpp_mandatory_threshold` (próg jest w `misc`; fallback 15 000 maskował błąd).
+- **Funkcje zeroargumentowe**: OPA 0.68 nie typuje `f() = v { ... }` („undefined function”) —
+  wbudowano wartość wprost.
+- NOTA: pliki z zagnieżdżonymi ciałami (`x = val { cond }` — niepoprawne we WSZYSTKICH wersjach Rego)
+  pozostają zgodne z konwencją repozytorium (dotyczy ~245/439 plików, w tym R02/R04) —
+  wdrożenie R03 NIE rozszerza tego stanu.
 
 ---
 

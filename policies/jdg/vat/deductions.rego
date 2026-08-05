@@ -18,13 +18,13 @@
 #   - P188: months_since_issue > 3 → termin bezpowrotnie minął
 # package: jdg.vat.deductions
 # deprecated: false
-# ═══════════════════════════════════════════════════════════════════════════════
+#
 #
 # Architektura: First-Match-Wins else-chain
 # Podstawa: Doc 34 Sec 4.5 + Doc 33 (Art. 86-89b VAT)
 #
 # package: jdg.vat.deductions
-# ═══════════════════════════════════════════════════════════════════════════════
+#
 
 package jdg.vat.deductions
 
@@ -133,7 +133,8 @@ else := {
     "_warnings": ["Proporcja VAT < 2% — brak prawa do odliczenia"]
 } {
     vat_proportion := object.get(input.jdg_entrepreneur, "vat_proportion", 1.0)
-    vat_proportion < 0.02
+    # R03 P1 (rec.#4): próg de minimis 2% z data.thresholds — jedno źródło prawdy
+    vat_proportion < object.get(object.get(data.thresholds, "jdg", {}), "vat_proportion_min_pct", 0.02)
     vat_proportion > 0
 }
 

@@ -18,17 +18,18 @@
 #   - P67: standard 23% = catch-all dla PL
 # package: jdg.vat.substantive
 # deprecated: false
-# ═══════════════════════════════════════════════════════════════════════════════
+#
 #
 # Architektura: First-Match-Wins else-chain
 # Wzorzec mapowania: category_code → vat_rate + gtu_code
 # Podstawa: Doc 34 Sec 4.5 + Doc 33 (dekompozycja art. 41-43 VAT)
 #
 # package: jdg.vat.substantive
-# ═══════════════════════════════════════════════════════════════════════════════
+#
 
 package jdg.vat.substantive
 
+import future.keywords.in
 import data.jdg.helpers
 
 # ── Default: no matching VAT rate rule ──────────────────────────────────────
@@ -82,7 +83,8 @@ else := {
     "_warnings": ["Zwolnienie podmiotowe VAT — limit 200 000 PLN rocznie"]
 } {
     input.jdg_entrepreneur.is_vat_payer == false
-    input.jdg_entrepreneur.annual_turnover_net < 200000
+    # R03 P1 (rec.#4): próg z data.thresholds — jedno źródło prawdy (wzorzec policies/jdg/edge_cases.rego)
+    input.jdg_entrepreneur.annual_turnover_net < object.get(object.get(data.thresholds, "jdg", {}), "vat_subject_exemption_limit", 200000)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -105,7 +107,8 @@ else := {
 } {
     input.jdg_entrepreneur.is_vat_payer == false
     input.jdg_entrepreneur.ceidg_entry_date != null
-    input.jdg_entrepreneur.annual_turnover_net < 200000
+    # R03 P1 (rec.#4): próg z data.thresholds — art. 113 ust. 9 VAT (proporcja dla nowych JDG)
+    input.jdg_entrepreneur.annual_turnover_net < object.get(object.get(data.thresholds, "jdg", {}), "vat_subject_exemption_limit", 200000)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -931,7 +934,8 @@ else := {
     "_warnings": ["SANKCJA KKS: brak rejestracji VAT przy obrocie > 200 000 PLN. Ryzyko: (1) przestępstwo skarbowe Art. 54 KKS, (2) wykroczenie Art. 77 KKS, (3) solidarna odpowiedzialność. Zarejestruj się natychmiast!"]
 } {
     input.jdg_entrepreneur.is_vat_payer == false
-    input.jdg_entrepreneur.annual_turnover_net > 200000
+    # R03 P1 (rec.#4): próg z data.thresholds — art. 96 ust. 3 VAT (obowiązek rejestracji)
+    input.jdg_entrepreneur.annual_turnover_net > object.get(object.get(data.thresholds, "jdg", {}), "vat_subject_exemption_limit", 200000)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

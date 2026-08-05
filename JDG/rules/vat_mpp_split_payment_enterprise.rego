@@ -32,7 +32,8 @@ import future.keywords.in
 default decide := {"matched":false,"rule_id":"jdg.vat_mpp_split_payment.no_match","package":"jdg.vat_mpp_split_payment","priority":999999}
 
 # ── Próg MPP (art. 108a ust. 1) — externalizowany (ADR-002) ──────────────────
-mpp_threshold := object.get(object.get(data.jdg.thresholds, "vat", {}), "mpp_mandatory_threshold", 15000)
+# R03: poprawka ścieżki — próg jest w data.jdg.thresholds.misc.mpp_mandatory_threshold
+mpp_threshold := object.get(data.jdg.thresholds.misc, "mpp_mandatory_threshold", 15000)
 
 # ── Załącznik 15 — towary wrażliwe (CN) ──────────────────────────────────────
 # Wbudowane podzbiory (pełna lista ~150 pozycji CN w data.jdg.vat.mpp_annex15 —
@@ -102,9 +103,7 @@ semantic_hits := [k |
     desc := lower(object.get(input.invoice, "description", ""))
     some k in semantic_keywords
     contains(desc, k)
-] else := [] {
-    true
-}
+]
 
 # ── MP-01 + MP-03: OBOWIĄZEK MPP + SANKCJE ──────────────────────────────────
 # Faktura ≥ 15 000 PLN brutto + towar/usługa z Załącznika 15 + brak MPP →
@@ -149,7 +148,7 @@ solidary_liability_risk := {
     "risk": {
         "whitelist_verified": object.get(input.vendor, "on_whitelist", false),
         "payment_to_whitelisted_account": object.get(input.invoice, "payment_to_whitelisted_account", false),
-        "solidary_liability_applies": object.get(input.invoice, "payment_to_whitelisted_account", false) == false and object.get(input.vendor, "on_whitelist", false) == true,
+        "solidary_liability_applies": solidary_applies,
         "note": "Zapłata na rachunek spoza białej listy (przy obowiązku MPP) = solidarna odpowiedzialność za VAT"
     },
     "_routing": "BLOCK_AND_ALERT",
@@ -165,6 +164,19 @@ solidary_liability_risk := {
     object.get(input.invoice, "split_payment_used", false) == false
 }
 
+# ── MP-04 helper: solidarna odpowiedzialność (Rego v0 — brak operatora 'and') ──
+# else-chain + catch-all → reguła TOTALNA (również dla inputu bez invoice/vendor)
+solidary_applies := true {
+    object.get(input.invoice, "payment_to_whitelisted_account", false) == false
+    object.get(input.vendor, "on_whitelist", false) == true
+} else := false {
+    object.get(input.invoice, "payment_to_whitelisted_account", false) == true
+} else := false {
+    object.get(input.vendor, "on_whitelist", false) == false
+} else := false {
+    true
+}
+
 # ── DECYZJA: RAPORT MPP ──────────────────────────────────────────────────────
 decide := {
     "matched": true,
@@ -176,8 +188,8 @@ decide := {
         "auto_mark": auto_mark_trigger,
         "semantic_hits": semantic_hits,
         "annex15_cn_entries": count(object.keys(annex15_cn)),
-        "violation_detected": object.get(input.invoice, "split_payment_used", false) == false and auto_mark_trigger != "" and object.get(input.invoice, "amount_gross", 0) >= mpp_threshold,
-        "solidary_risk": object.get(input.invoice, "payment_to_whitelisted_account", false) == false and object.get(input.invoice, "split_payment_used", false) == false
+        "violation_detected": violation_detected_flag,
+        "solidary_risk": solidary_risk_flag
     },
     "_routing": "REPORT",
     "_routing_reason": "Raport audytu MPP/split payment (Sekcja 4 P03 — PRIORYTET)",
@@ -185,4 +197,85 @@ decide := {
     "_warnings": [sprintf("MPP: próg %v PLN | Auto-mark: %s | Pozycje Załącznika 15: %d", [mpp_threshold, auto_mark_trigger, count(object.keys(annex15_cn))])]
 } {
     object.get(input.jdg_entrepreneur, "vat_mpp_check", false) == true
+}
+
+# ── MP-04/decide helpers: flagi raportu MPP (Rego v0 — brak operatora 'and') ──
+# else-chain + catch-all → reguła TOTALNA (nie spada do default dla braku invoice)
+violation_detected_flag := true {
+    object.get(input.invoice, "split_payment_used", false) == false
+    auto_mark_trigger != ""
+    object.get(input.invoice, "amount_gross", 0) >= mpp_threshold
+} else := false {
+    object.get(input.invoice, "split_payment_used", false) == true
+} else := false {
+    auto_mark_trigger == ""
+} else := false {
+    object.get(input.invoice, "amount_gross", 0) < mpp_threshold
+} else := false {
+    true
+}
+
+# else-chain + catch-all → reguła TOTALNA
+solidary_risk_flag := true {
+    object.get(input.invoice, "payment_to_whitelisted_account", false) == false
+    object.get(input.invoice, "split_payment_used", false) == false
+} else := false {
+    object.get(input.invoice, "payment_to_whitelisted_account", false) == true
+} else := false {
+    object.get(input.invoice, "split_payment_used", false) == true
+} else := false {
+    true
+}
+
+# ── R03 P2: BIAŁA LISTA × PRÓG 15 000 ZŁ (art. 96b ust. 1 i 1a VAT) — JEDNA REGUŁA ──
+# Wiąże art. 96b (obowiązek zapłaty na rachunek z białej listy dla płatności
+# ≥ 15 000 zł) z art. 108a (MPP). Naruszenie: sankcja 20% (art. 22p PIT),
+# NKUP w PIT/CIT oraz solidarna odpowiedzialność (art. 108b VAT).
+# Trigger: invoice.whitelist_15k_check. Poniżej 15 000 zł — poza zakresem.
+whitelist_15k_binding := {
+    "matched": true,
+    "rule_id": "jdg.vat_mpp_split_payment.whitelist_15k_binding",
+    "package": "jdg.vat_mpp_split_payment",
+    "priority": 350,
+    "binding": {
+        "whitelist_check_required": true,
+        "amount_gross": object.get(input.invoice, "amount_gross", 0),
+        "threshold": mpp_threshold,
+        "payment_to_whitelisted_account": object.get(input.invoice, "payment_to_whitelisted_account", false),
+        "whitelist_violation": true,
+        "sanction_20pct": round(object.get(input.invoice, "amount_gross", 0) * 0.20 * 100) / 100,
+        "kup_denied": true,
+        "solidary_liability": true
+    },
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Płatność ≥ 15 000 zł na rachunek spoza białej listy (art. 96b ust. 1a) — sankcja 20% + NKUP + solidarna odpowiedzialność",
+    "_legal_basis": "Art. 96b ust. 1 i 1a VAT + art. 22p PIT + art. 108b VAT",
+    "_warnings": [sprintf("BIAŁA LISTA: płatność %.2f zł ≥ 15 000 zł wymaga rachunku z wykazu podatników VAT. Sankcja 20%%: %.2f zł + NKUP + solidarna odpowiedzialność.", [object.get(input.invoice, "amount_gross", 0) * 1.0, round(object.get(input.invoice, "amount_gross", 0) * 0.20 * 100) / 100 * 1.0])]
+} {
+    input.invoice.whitelist_15k_check == true
+    input.invoice.direction == "PURCHASE"
+    amount_gross := object.get(input.invoice, "amount_gross", 0)
+    amount_gross >= mpp_threshold
+    object.get(input.invoice, "payment_to_whitelisted_account", false) == false
+} else := {
+    "matched": true,
+    "package": "jdg.vat_mpp_split_payment",
+    "priority": 350,
+    "binding": {
+        "whitelist_check_required": true,
+        "amount_gross": object.get(input.invoice, "amount_gross", 0),
+        "threshold": mpp_threshold,
+        "payment_to_whitelisted_account": object.get(input.invoice, "payment_to_whitelisted_account", false),
+        "whitelist_violation": false
+    },
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Art. 96b ust. 1a VAT",
+    "_warnings": []
+} {
+    input.invoice.whitelist_15k_check == true
+    input.invoice.direction == "PURCHASE"
+    amount_gross := object.get(input.invoice, "amount_gross", 0)
+    amount_gross >= mpp_threshold
+    object.get(input.invoice, "payment_to_whitelisted_account", false) == true
 }
