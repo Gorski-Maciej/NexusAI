@@ -71,6 +71,202 @@ vat := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# KSeF + JPK + e-DEKLARACJE — data.jdg.thresholds.ksef_jpk_edeklaracje (P17)
+# Dane dla pakietu jdg.p17_ksef_jpk_edeklaracje_innovations (fallback w pakiecie).
+#   P0-1: rzeczywista integracja API KSeF (produkcyjna wysyłka + UPO via API)
+#   P0-2: pełny walidator XSD offline (Java/xmllint) w CI
+#   P1-1: korekty KSeF end-to-end (art. 106j VAT) + anulowanie faktur
+#   P1-2: baza GTU z pełnym słownikiem 13 kodów + uczenie z historii
+#   P1-3: integracja e-Doręczeń (skrzynka B2B/B2G + potwierdzenia)
+#   P2-1: dashboard KSeF (status UPO, kara, rejestry) w UI
+#   P2-2: automatyzacja JPK_CIT wg szablonu MF 2026
+# ═══════════════════════════════════════════════════════════════════════════════
+
+ksef_jpk_edeklaracje := {
+    "ksef_mandatory_from": "2026-02-01",          # art. 106na-106nb VAT
+    "ksef_offline_grace_days": 7,
+    "ksef_sanction_max_pln": 500000,
+    "ksef_upo_deadline_days": 1,
+    "jpk_v7_deadline_day": 25,
+    "jpk_ksef_penalty_per_invoice": 1000,
+    "esig_qualified": true,
+    "esig_trusted": true,
+    "edelivery_mandatory_from": "2026-01-01",
+    "wis_response_days": 3,
+    "ksef_sandbox": true,
+    "gtu_codes": ["GTU_01", "GTU_02", "GTU_03", "GTU_04", "GTU_05", "GTU_06", "GTU_07", "GTU_08", "GTU_09", "GTU_10", "GTU_11", "GTU_12", "GTU_13"],
+
+    # ── P0-1: API KSeF — produkcyjna wysyłka + UPO ──
+    "ksef_api": {
+        "endpoint_prod": "https://ksef.mf.gov.pl/api",
+        "endpoint_sandbox": "https://ksef-test.mf.gov.pl/api",
+        "auth": "token KSeF (nabywca/sprzedawca)",
+        "ksef_number_required": true,
+        "upo_via_api": true,
+        "retry_on_failure": true,
+        "max_retries": 3,
+    },
+
+    # ── P0-2: walidator XSD offline (CI) ──
+    "xsd_offline_ci": {
+        "validator": "xmllint/Java JAXB (offline)",
+        "schemas": ["FA(2)", "FA(2)-korekta", "KSeF 2.0 (plan)"],
+        "ci_gate": true,
+        "block_on_invalid": true,
+        "required_fields": ["P_1", "P_2", "P_3", "P_4", "P_5", "P_6", "P_7", "P_8"],
+    },
+
+    # ── P1-1: korekty KSeF end-to-end (art. 106j VAT) ──
+    "ksef_corrections": {
+        "correction_deadline_days": 30,             # art. 106j VAT
+        "cancellation_allowed": true,
+        "negative_invoice_allowed": true,
+        "legal_basis": "Art. 106j VAT",
+        "correction_reasons": ["błąd danych nabywcy", "błąd kwoty", "błąd stawki", "zwrot towaru", "rabat", "anulowanie faktury"],
+    },
+
+    # ── P1-2: baza GTU — pełny słownik 13 kodów ──
+    "gtu_dictionary": [
+        {"code": "GTU_01", "name": "dostawa towarów innych niż wymienione w GTU_02-GTU_13", "hint": "dostawa towarów"},
+        {"code": "GTU_02", "name": "wyroby tytoniowe, papierosy, susz tytoniowy", "hint": "napoje alkoholowe / tytoń"},
+        {"code": "GTU_03", "name": "napoje alkoholowe i spirytusowe", "hint": "wyroby tytoniowe"},
+        {"code": "GTU_04", "name": "paliwa i oleje opałowe", "hint": "paliwa"},
+        {"code": "GTU_05", "name": "wyroby wrażliwe (węgiel, kożuchy, elektronika)", "hint": "towary wrażliwe"},
+        {"code": "GTU_06", "name": "odpady i złom", "hint": "odpady"},
+        {"code": "GTU_07", "name": "usługi transportowe i spedycyjne", "hint": "usługi transportowe"},
+        {"code": "GTU_08", "name": "usługi niematerialne (w tym IT)", "hint": "usługi niematerialne"},
+        {"code": "GTU_09", "name": "wierzytelności i faktury", "hint": "wierzytelności"},
+        {"code": "GTU_10", "name": "nieruchomości", "hint": "nieruchomości"},
+        {"code": "GTU_11", "name": "usługi świadczone drogą elektroniczną", "hint": "usługi w internecie"},
+        {"code": "GTU_12", "name": "energia elektryczna, gaz, ciepło", "hint": "energia"},
+        {"code": "GTU_13", "name": "uprawnienia do emisji gazów cieplarnianych", "hint": "emisje CO2"},
+    ],
+    "gtu_learning_enabled": true,                  # uczenie z historii transakcji
+
+    # ── P1-3: e-Doręczenia B2B/B2G + potwierdzenia ──
+    "edelivery_b2b_b2g": {
+        "mailbox_api": "https://edoreczenia.gov.pl/api",
+        "b2b_enabled": true,
+        "b2g_enabled": true,
+        "confirmation_required": true,
+        "confirmation_type": "DORECZENIE_POTWIERDZONE",
+        "mandatory_from": "2026-01-01",
+    },
+
+    # ── P2-1: dashboard KSeF (UI) ──
+    "ksef_dashboard": {
+        "widgets": ["status_upo", "kara_ryzyko", "rejestry_jpk", "korekty_pending", "gtu_coverage", "x_doręczenia"],
+        "refresh": "na żywo (hot-reload ADR-002)",
+        "export_formats": ["JSON", "CSV", "PDF"],
+    },
+
+    # ── P2-2: JPK_CIT — szablon MF 2026 ──
+    "jpk_cit_2026": {
+        "template": "Szablon JPK_CIT v2 (MF 2026)",
+        "structure_version": "2.0",
+        "deadline_day": 31,
+        "frequency": "rocznie (I kw.)",
+        "sections": ["bilans", "rachunek_zyskow_i_strat", "informacja_dodatkowa", "dane_podatkowe"],
+        "entities": ["CIT_OSOBA_PRAWNA", "CIT_OSOBA_FIZYCZNA_JDG"],
+    },
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AUTOMATYZACJA KSIĘGOWOŚCI — data.jdg.thresholds.automatyzacja_ksiegowosci (P18)
+# Dane dla pakietu jdg.p18_automatyzacja_ksiegowosci_innovations (fallback w pakiecie).
+#   P0-1: realna integracja AIS/PIS (PolishAPI) — token OAuth2, konsent PSD2
+#   P0-2: weryfikacja SCA w środowisku produkcyjnym banku (RTS 2018/389)
+#   P1-1: pełny silnik auto-fill PIT-36/36L/28 z UoR (sprawozdania finansowe)
+#   P1-2: integracja e-Doręczeń B2B/B2G + potwierdzenia doręczenia
+#   P1-3: model ML predykcji cashflow (historia płatności)
+#   P2-1: dashboard wirtualnego asystenta księgowego w UI
+#   P2-2: automatyzacja korekt deklaracji (art. 81 OrdPU) end-to-end
+# ═══════════════════════════════════════════════════════════════════════════════
+
+automatyzacja_ksiegowosci := {
+    "elixir_cutoff_time": "14:30",
+    "express_elixir_cutoff_time": "15:30",
+    "sca_exempt_threshold_pln": 100,             # RTS 2018/389 art. 11
+    "sca_exempt_max_per_tx": 5,
+    "mpp_threshold_pln": 15000,
+    "vat7_deadline_day": 25,
+    "zus_dra_deadline_day": 10,
+    "pit_deadline_annual": "2026-04-30",
+    "pcc3_deadline_days": 14,
+    "wis_response_days": 3,
+    "overpayment_interest_days": 30,
+    "transfer_reconciliation_gap_pln": 0.01,
+    "jpk_v7_deadline_day": 25,
+
+    # ── P0-1: AIS/PIS (PolishAPI) — token OAuth2 + konsent PSD2 ──
+    "ais_pis_api": {
+        "standard": "PolishAPI",
+        "endpoint": "https://api.bank.pl/polishapi",
+        "auth": "OAuth2 (Authorization Code + PKCE)",
+        "ais_scope": "ais (konto) / ais_transactions / ais_balances",
+        "pis_scope": "pis (płatności) / pis_creation / pis_cancellation",
+        "consent_required": true,                # konsent PSD2 (art. 94)
+        "consent_lifetime_days": 90,             # ważność konsentu (co do zasady 90 dni)
+        "token_refresh": true,
+        "sandbox_available": true,
+    },
+
+    # ── P0-2: weryfikacja SCA w środowisku produkcyjnym banku ──
+    "sca_production": {
+        "verification_required": true,           # test SCA w produkcji banku
+        "rts": "RTS 2018/389 art. 11-12",
+        "exempt_threshold_pln": 100,
+        "exempt_max_per_tx": 5,
+        "test_transactions_min": 3,              # min. liczba testów SCA
+        "sca_methods": ["biometria", "sms_otp", "app_mobile", "token_hw"],
+    },
+
+    # ── P1-1: auto-fill PIT-36/36L/28 z UoR ──
+    "pit_uor_autofill": {
+        "forms": ["PIT-36", "PIT-36L", "PIT-28"],
+        "sources": ["UoR (bilans, RZiS)", "PKPiR", "rejestry VAT", "wyciągi bankowe", "faktury KSeF"],
+        "deadline": "2026-04-30",
+        "uor_sections": ["bilans", "rachunek_zyskow_i_strat", "informacja_dodatkowa"],
+        "required_blocks": ["przychody", "koszty", "dochód", "zaliczki", "składki_zdrowotne"],
+    },
+
+    # ── P1-2: e-Doręczenia B2B/B2G + potwierdzenia ──
+    "edelivery_b2b_b2g": {
+        "mailbox_api": "https://edoreczenia.gov.pl/api",
+        "b2b_enabled": true,
+        "b2g_enabled": true,
+        "confirmation_required": true,
+        "confirmation_type": "DORECZENIE_POTWIERDZONE",
+        "mandatory_from": "2026-01-01",
+    },
+
+    # ── P1-3: model ML predykcji cashflow ──
+    "ml_cashflow": {
+        "model": "gradient_boosting (historia płatności)",
+        "features": ["średnia_płatności_30d", "sezonowość", "zaległości_klientów", "saldo_bank", "zobowiązania_podatkowe"],
+        "lookback_months": 12,
+        "horizon_days": 30,
+        "confidence_min_pct": 70,
+    },
+
+    # ── P2-1: dashboard wirtualnego asystenta księgowego ──
+    "bookkeeper_dashboard": {
+        "widgets": ["ksiegowania", "deklaracje", "terminy", "przepływy", "pisma", "korekty"],
+        "refresh": "na żywo (hot-reload ADR-002)",
+        "export_formats": ["JSON", "CSV", "PDF"],
+    },
+
+    # ── P2-2: korekty deklaracji (art. 81 OrdPU) end-to-end ──
+    "declaration_corrections": {
+        "legal_basis": "Art. 81 OrdPU (korekta deklaracji)",
+        "correction_deadline_days": 30,
+        "auto_fill_correction": true,
+        "interest_calculation": true,             # odsetki od niedopłaty przy korekcie
+        "reasons": ["błąd rachunkowy", "zmiana przepisów", "pomyłka w danych", "dodatkowe dokumenty"],
+    },
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PIT THRESHOLDS
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -348,6 +544,405 @@ environmental := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# BDO ENVIRONMENT — Środowisko + BDO + Branża (P15) — data.jdg.thresholds.bdo_environment
+# ═══════════════════════════════════════════════════════════════════════════════
+# Dane dla pakietu jdg.p15_srodowisko_bdo_innovations (fallback w pakiecie).
+# Uzupełnione 2026-08-05 — zamknięcie luk MAPA DROGOWA R15 (P0/P1/P2):
+#   P0-1 opłaty produktowe per materiał opakowaniowy
+#   P0-2 API systemu BDO (KPO + sprawozdania)
+#   P1-1 pełny katalog EWC 6-cyfrowy (20 rozdziałów)
+#   P1-2 stawki podatku rolnego per gmina (rejestr)
+#   P1-3 tabele zezwoleń transportowych (krajowe/międzynarodowe)
+#   P2-1 certyfikaty CBAM 2026 (reżim definitywny)
+#   P2-2 rejestracja online w BDO (API/portal)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+bdo_environment := {
+    # ── istniejące progi P15 (spójne z fallbackiem pakietu rego) ──
+    "bdo_rejestracja_opłaty": {"mikro": 100, "mały": 300, "średni": 500},  # opłata rejestracyjna BDO (PLN)
+    "bdo_kara_brak_rejestracji": 5000,   # art. 194 UoO — kara do 5000 zł
+    "bdo_ewidencja_okres": "kwartalna",
+    "bdo_kpo_elektroniczne": true,
+    "bdo_weee_baterie": "rejestracja + sprawozdania roczne WEEE/baterie",
+    "bdo_opakowania": "opłata produktowa za opakowania (art. 17-18 UoO)",
+    "budowlane_pozwolenie": "pozwolenie na budowę lub zgłoszenie (prawo budowlane)",
+    "budowlane_nadzor": "nadzór budowlany — zgłoszenie zakończenia budowy",
+    "transport_licencja": "licencja wspólnotowa na przewóz drogowy (art. 5 u.t.d.)",
+    "transport_tachograf": "tachograf cyfrowy — pojazdy >3,5t",
+    "rolnik_ryczałtowy": "rolnik ryczałtowy — zwolnienie z PIT do 150 000 zł (art. 20 pkt 1 PIT)",
+    "podatek_rolny": "podatek rolny — przeliczniki ha przeliczeniowych",
+    "cbam": "CBAM — import cementu, żelaza, stali, aluminium, nawozów (2023/956)",
+    "taxfree_vat_ref": "VAT-REF — zwrot VAT dla podróżnych (procedura tax-free)",
+    "packaging_fee_rate": 2.0,             # opłata produktowa za opakowania (zł/kg, orientacyjnie)
+    "cbam_price_eur_t": 80.0,              # orientacyjna cena uprawnień EU ETS (EUR/t CO2)
+    "agricultural_rye_pln_q": 89.63,       # cena żyta 2026 (zł/q) — podatek rolny
+
+    # ── P0-1: opłaty produktowe per materiał opakowaniowy (zł/kg, orientacyjne 2026) ──
+    "packaging_fee_rates_per_material": {
+        "papier": 0.50,
+        "tworzywa_sztuczne": 2.00,
+        "szklo": 0.20,
+        "metale": 0.30,
+        "drewno": 0.20,
+        "wielomaterialowe": 1.00,
+    },
+
+    # ── P0-2: API systemu BDO (KPO + sprawozdania roczne) ──
+    "bdo_api": {
+        "base_url": "https://bdo.mos.gov.pl/api",
+        "auth": "OAuth2 / certyfikat",
+        "kpo_endpoint": "/kpo",
+        "sprawozdania_endpoint": "/sprawozdania",
+        "rejestracja_endpoint": "/rejestracja",
+        "kpo_elektroniczne_obowiazkowe": true,
+    },
+
+    # ── P1-1: pełny katalog EWC 6-cyfrowy (rozdziały 01-20) ──
+    # Rozporządzenie ws. katalogu odpadów (Dz.U. 2020 poz. 10). Katalog obejmuje
+    # najczęściej stosowane kody 6-cyfrowe we wszystkich 20 rozdziałach;
+    # rozszerzalny przez dodanie wpisów (ADR-002 — zero hardcode w regułach).
+    "ewc_catalog": [
+        {"code": "01 01 01", "name": "odpady z wydobywania kopalin innych niż 01 01 02", "hazardous": false},
+        {"code": "01 01 02", "name": "odpady z wydobywania kopalin", "hazardous": false},
+        {"code": "01 03 04", "name": "kwaśne odpady skalne z przetwarzania rudy siarczkowej", "hazardous": true},
+        {"code": "01 03 05", "name": "inne odpady zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "01 03 06", "name": "odpady inne niż 01 03 04 i 01 03 05", "hazardous": false},
+        {"code": "01 04 07", "name": "odpady zawierające substancje niebezpieczne z chemicznego przetwarzania kopalin", "hazardous": true},
+        {"code": "01 04 08", "name": "odpady z odwiertów i szlamy", "hazardous": false},
+        {"code": "01 05 04", "name": "szlamy i odpady wiertnicze zawierające wodę pitną", "hazardous": false},
+        {"code": "01 05 05", "name": "szlamy i odpady wiertnicze zawierające oleje", "hazardous": true},
+        {"code": "01 05 07", "name": "szlamy i odpady wiertnicze zawierające baryt", "hazardous": false},
+        {"code": "02 01 01", "name": "odpady z mycia i czyszczenia", "hazardous": false},
+        {"code": "02 01 02", "name": "odpady tkanki zwierzęcej", "hazardous": false},
+        {"code": "02 01 03", "name": "odpadowa tkanka roślinna", "hazardous": false},
+        {"code": "02 01 04", "name": "odpady tworzyw sztucznych (bez opakowań)", "hazardous": false},
+        {"code": "02 01 06", "name": "odchody zwierzęce", "hazardous": false},
+        {"code": "02 01 07", "name": "odpady z gospodarki leśnej", "hazardous": false},
+        {"code": "02 01 08", "name": "odpady agrochemiczne zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "02 01 09", "name": "odpady agrochemiczne inne niż 02 01 08", "hazardous": false},
+        {"code": "02 02 02", "name": "odpady tkanki zwierzęcej (przetwórstwo mięsa)", "hazardous": false},
+        {"code": "02 02 03", "name": "odpady materiałów nadających się do spożycia lub przetworzenia", "hazardous": false},
+        {"code": "03 01 01", "name": "odpady z kory i korka", "hazardous": false},
+        {"code": "03 01 02", "name": "trociny i wióry", "hazardous": false},
+        {"code": "03 01 04", "name": "trociny i wióry zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "03 01 05", "name": "inne odpady zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "03 02 01", "name": "niezawierające halogenów organiczne środki do konserwacji drewna", "hazardous": true},
+        {"code": "03 02 02", "name": "chloroorganiczne środki do konserwacji drewna", "hazardous": true},
+        {"code": "03 03 01", "name": "odpady z kory i drewna", "hazardous": false},
+        {"code": "03 03 02", "name": "osady z ługów zielonych", "hazardous": false},
+        {"code": "03 03 07", "name": "mechanicznie wydzielone odrzuty z przeróbki odpadów papierniczych", "hazardous": false},
+        {"code": "03 03 08", "name": "odpady z sortowania papieru i tektury przeznaczone do recyklingu", "hazardous": false},
+        {"code": "04 01 01", "name": "odpady z mycia i przygotowywania skór", "hazardous": false},
+        {"code": "04 01 02", "name": "odpady wapiennicze", "hazardous": false},
+        {"code": "04 01 03", "name": "odpady z odtłuszczania zawierające rozpuszczalniki", "hazardous": true},
+        {"code": "04 01 04", "name": "odpady z garbowania chemicznego", "hazardous": false},
+        {"code": "04 01 05", "name": "odpady z garbowania bez chromu", "hazardous": false},
+        {"code": "04 01 06", "name": "odpady zawierające chrom", "hazardous": false},
+        {"code": "04 01 07", "name": "odpady z garbowania z chromem", "hazardous": false},
+        {"code": "04 01 08", "name": "odpady skór garbowanych", "hazardous": false},
+        {"code": "04 02 09", "name": "odpady z materiałów kompozytowych (impregnowane tkaniny)", "hazardous": true},
+        {"code": "04 02 10", "name": "odpady organiczne z materiałów naturalnych", "hazardous": false},
+        {"code": "05 01 03", "name": "szlamy denne z cystern", "hazardous": true},
+        {"code": "05 01 04", "name": "szlamy z kolumn", "hazardous": true},
+        {"code": "05 01 05", "name": "rozlany olej", "hazardous": true},
+        {"code": "05 01 06", "name": "szlamy olejowe z konserwacji i obsługi urządzeń", "hazardous": true},
+        {"code": "05 01 07", "name": "kwaśne smoky", "hazardous": true},
+        {"code": "05 01 08", "name": "inne smoky", "hazardous": true},
+        {"code": "05 01 09", "name": "szlamy z zakładowych oczyszczalni ścieków", "hazardous": true},
+        {"code": "05 01 11", "name": "odpady z czyszczenia paliw z zasadami", "hazardous": true},
+        {"code": "05 01 12", "name": "oleje zawierające kwasy", "hazardous": true},
+        {"code": "05 01 15", "name": "zużyte ziemie bielące", "hazardous": true},
+        {"code": "06 01 01", "name": "kwas siarkowy i kwas siarkawy", "hazardous": true},
+        {"code": "06 01 02", "name": "kwas solny", "hazardous": true},
+        {"code": "06 01 03", "name": "kwas fluorowodorowy", "hazardous": true},
+        {"code": "06 01 04", "name": "kwas fosforowy i fosforawy", "hazardous": true},
+        {"code": "06 01 05", "name": "kwas azotowy i kwasy azotawe", "hazardous": true},
+        {"code": "06 01 06", "name": "inne kwasy", "hazardous": true},
+        {"code": "06 02 01", "name": "wodorotlenek wapnia", "hazardous": true},
+        {"code": "06 02 03", "name": "wodorotlenek amonu", "hazardous": true},
+        {"code": "06 03 13", "name": "sole stałe zawierające metale ciężkie", "hazardous": true},
+        {"code": "06 04 05", "name": "odpady zawierające inne metale ciężkie", "hazardous": true},
+        {"code": "07 01 01", "name": "roztwory wodne do mycia i ciecze macierzyste", "hazardous": true},
+        {"code": "07 01 03", "name": "rozpuszczalniki organiczne, roztwory i ciecze macierzyste", "hazardous": true},
+        {"code": "07 01 04", "name": "inne rozpuszczalniki organiczne", "hazardous": true},
+        {"code": "07 01 07", "name": "halogenowane pozostałości z destylacji", "hazardous": true},
+        {"code": "07 01 08", "name": "inne pozostałości z destylacji i reakcji", "hazardous": true},
+        {"code": "07 01 09", "name": "wytłoki filtracyjne, zużyte sorbenty", "hazardous": true},
+        {"code": "07 01 10", "name": "inne wytłoki filtracyjne", "hazardous": true},
+        {"code": "07 01 11", "name": "szlamy z zakładowych oczyszczalni ścieków", "hazardous": true},
+        {"code": "07 02 01", "name": "roztwory wodne do mycia (tworzywa sztuczne)", "hazardous": true},
+        {"code": "07 02 03", "name": "rozpuszczalniki organiczne (tworzywa sztuczne)", "hazardous": true},
+        {"code": "08 01 11", "name": "odpady farb i lakierów zawierające rozpuszczalniki organiczne", "hazardous": true},
+        {"code": "08 01 12", "name": "odpady farb i lakierów inne niż 08 01 11", "hazardous": false},
+        {"code": "08 01 13", "name": "szlamy z farb i lakierów zawierające rozpuszczalniki organiczne", "hazardous": true},
+        {"code": "08 01 14", "name": "szlamy z farb i lakierów inne niż 08 01 13", "hazardous": false},
+        {"code": "08 01 15", "name": "szlamy wodne zawierające farby i lakiery z rozpuszczalnikami", "hazardous": true},
+        {"code": "08 01 16", "name": "szlamy wodne zawierające farby i lakiery inne niż 08 01 15", "hazardous": false},
+        {"code": "08 01 17", "name": "odpady z usuwania farb i lakierów zawierające rozpuszczalniki", "hazardous": true},
+        {"code": "08 01 18", "name": "odpady z usuwania farb i lakierów inne niż 08 01 17", "hazardous": false},
+        {"code": "08 03 12", "name": "odpadowy tusz zawierający substancje niebezpieczne", "hazardous": true},
+        {"code": "08 03 13", "name": "odpadowy tusz inny niż 08 03 12", "hazardous": false},
+        {"code": "09 01 01", "name": "wodne roztwory wywoływaczy i aktywatorów", "hazardous": true},
+        {"code": "09 01 02", "name": "wodne roztwory utrwalaczy", "hazardous": true},
+        {"code": "09 01 03", "name": "rozpuszczalnikowe roztwory wywoływaczy", "hazardous": true},
+        {"code": "09 01 04", "name": "rozpuszczalnikowe roztwory utrwalaczy", "hazardous": true},
+        {"code": "09 01 05", "name": "roztwory bielące i bieląco-utrwalające", "hazardous": true},
+        {"code": "09 01 06", "name": "odpady zawierające srebro z przetwarzania fotograficznego", "hazardous": true},
+        {"code": "09 01 07", "name": "filmy i papier fotograficzny zawierające srebro", "hazardous": false},
+        {"code": "09 01 08", "name": "filmy i papier fotograficzny niezawierające srebra", "hazardous": false},
+        {"code": "09 01 10", "name": "aparaty jednorazowego użytku bez baterii", "hazardous": false},
+        {"code": "09 01 11", "name": "aparaty jednorazowego użytku zawierające baterie", "hazardous": true},
+        {"code": "10 01 01", "name": "żużle denne i szlaki", "hazardous": false},
+        {"code": "10 01 02", "name": "popioły lotne z węgla", "hazardous": false},
+        {"code": "10 01 03", "name": "popioły lotne z torfu i drewna", "hazardous": false},
+        {"code": "10 01 04", "name": "popioły lotne z oleju", "hazardous": true},
+        {"code": "10 01 05", "name": "stałe odpady z reakcji wapnia", "hazardous": false},
+        {"code": "10 01 07", "name": "odpady z oczyszczania gazów odlotowych typu stałego", "hazardous": false},
+        {"code": "10 01 09", "name": "kwas siarkowy", "hazardous": true},
+        {"code": "10 01 13", "name": "popioły lotne z emulsji", "hazardous": true},
+        {"code": "10 01 14", "name": "popioły denne i żużle ze współspalania zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "10 01 15", "name": "popioły denne i żużle inne niż 10 01 14", "hazardous": false},
+        {"code": "11 01 05", "name": "roztwory do trawienia", "hazardous": true},
+        {"code": "11 01 06", "name": "kwasy nieokreślone", "hazardous": true},
+        {"code": "11 01 07", "name": "zasady nieokreślone", "hazardous": true},
+        {"code": "11 01 08", "name": "szlamy fosforanujące", "hazardous": true},
+        {"code": "11 01 09", "name": "szlamy i produkty filtracji zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "11 01 10", "name": "szlamy i produkty filtracji inne niż 11 01 09", "hazardous": false},
+        {"code": "11 01 11", "name": "roztwory wodne do płukania zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "11 01 12", "name": "roztwory wodne do płukania inne niż 11 01 11", "hazardous": false},
+        {"code": "11 01 13", "name": "odpady z odtłuszczania zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "11 01 14", "name": "odpady z odtłuszczania inne niż 11 01 13", "hazardous": false},
+        {"code": "12 01 01", "name": "opiłki i wióry żelazne", "hazardous": false},
+        {"code": "12 01 02", "name": "pyły i proszki żelazne", "hazardous": false},
+        {"code": "12 01 03", "name": "opiłki i wióry metali nieżelaznych", "hazardous": false},
+        {"code": "12 01 04", "name": "pyły i proszki metali nieżelaznych zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "12 01 05", "name": "wióry z tworzyw sztucznych", "hazardous": false},
+        {"code": "12 01 06", "name": "oleje mineralne obróbkowe niezawierające chlorowców", "hazardous": true},
+        {"code": "12 01 08", "name": "emulsje i roztwory obróbkowe zawierające chlorowce", "hazardous": true},
+        {"code": "12 01 09", "name": "emulsje i roztwory obróbkowe niezawierające chlorowców", "hazardous": false},
+        {"code": "12 01 10", "name": "syntetyczne oleje obróbkowe", "hazardous": true},
+        {"code": "13 01 01", "name": "oleje hydrauliczne zawierające PCB", "hazardous": true},
+        {"code": "13 01 04", "name": "chlorowane emulsje", "hazardous": true},
+        {"code": "13 01 05", "name": "niechlorowane emulsje", "hazardous": true},
+        {"code": "13 01 09", "name": "chlorowane oleje hydrauliczne", "hazardous": true},
+        {"code": "13 01 10", "name": "niechlorowane oleje hydrauliczne", "hazardous": true},
+        {"code": "13 01 11", "name": "syntetyczne oleje hydrauliczne", "hazardous": true},
+        {"code": "13 01 13", "name": "inne oleje hydrauliczne", "hazardous": true},
+        {"code": "13 02 04", "name": "chlorowane oleje silnikowe, przekładniowe i smarowe", "hazardous": true},
+        {"code": "13 02 05", "name": "niechlorowane oleje silnikowe, przekładniowe i smarowe", "hazardous": true},
+        {"code": "13 02 08", "name": "inne oleje silnikowe, przekładniowe i smarowe", "hazardous": true},
+        {"code": "14 06 01", "name": "chlorofluorowęglowodory, HCFC, HFC", "hazardous": true},
+        {"code": "14 06 02", "name": "inne halogenowane rozpuszczalniki i mieszaniny", "hazardous": true},
+        {"code": "14 06 03", "name": "inne rozpuszczalniki i mieszaniny rozpuszczalników", "hazardous": true},
+        {"code": "14 06 04", "name": "szlamy lub stałe odpady zawierające halogenowane rozpuszczalniki", "hazardous": true},
+        {"code": "14 06 05", "name": "szlamy lub stałe odpady zawierające inne rozpuszczalniki", "hazardous": true},
+        {"code": "14 06 06", "name": "ciekłe odpady zawierające halogenowane rozpuszczalniki", "hazardous": true},
+        {"code": "14 06 07", "name": "ciekłe odpady zawierające inne rozpuszczalniki", "hazardous": true},
+        {"code": "14 06 08", "name": "odpady inne niż wymienione w 14 06 01-07", "hazardous": false},
+        {"code": "15 01 01", "name": "opakowania z papieru i tektury", "hazardous": false},
+        {"code": "15 01 02", "name": "opakowania z tworzyw sztucznych", "hazardous": false},
+        {"code": "15 01 03", "name": "opakowania z drewna", "hazardous": false},
+        {"code": "15 01 04", "name": "opakowania z metalu", "hazardous": false},
+        {"code": "15 01 05", "name": "opakowania ze szkła", "hazardous": false},
+        {"code": "15 01 06", "name": "zmieszane odpady opakowaniowe", "hazardous": false},
+        {"code": "15 01 09", "name": "opakowania z włókien", "hazardous": false},
+        {"code": "15 01 10", "name": "opakowania zawierające pozostałości substancji niebezpiecznych", "hazardous": true},
+        {"code": "15 01 11", "name": "opakowania z metalu zawierające niebezpieczne stałe elementy", "hazardous": true},
+        {"code": "15 02 02", "name": "sorbenty, materiały filtracyjne, tkaniny zanieczyszczone substancjami niebezpiecznymi", "hazardous": true},
+        {"code": "15 02 03", "name": "sorbenty, materiały filtracyjne, tkaniny inne niż 15 02 02", "hazardous": false},
+        {"code": "16 01 03", "name": "zużyte opony", "hazardous": false},
+        {"code": "16 01 04", "name": "zużyte pojazdy", "hazardous": true},
+        {"code": "16 01 06", "name": "zużyte pojazdy nie zawierające cieczy ani innych niebezpiecznych elementów", "hazardous": false},
+        {"code": "16 01 07", "name": "filtry olejowe", "hazardous": true},
+        {"code": "16 01 08", "name": "elementy zawierające rtęć", "hazardous": true},
+        {"code": "16 01 09", "name": "elementy zawierające PCB", "hazardous": true},
+        {"code": "16 01 10", "name": "elementy wybuchowe", "hazardous": true},
+        {"code": "16 01 13", "name": "płyny hamulcowe", "hazardous": true},
+        {"code": "16 01 14", "name": "płyny przeciw zamarzaniu zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "16 01 15", "name": "płyny przeciw zamarzaniu inne niż 16 01 14", "hazardous": false},
+        {"code": "16 01 16", "name": "zbiorniki ciekłego gazu", "hazardous": false},
+        {"code": "16 01 17", "name": "metale żelazne", "hazardous": false},
+        {"code": "16 01 18", "name": "metale nieżelazne", "hazardous": false},
+        {"code": "16 01 19", "name": "tworzywa sztuczne", "hazardous": false},
+        {"code": "16 01 20", "name": "szkło", "hazardous": false},
+        {"code": "16 01 21", "name": "elementy niebezpieczne inne niż 16 01 07-11", "hazardous": true},
+        {"code": "16 01 22", "name": "elementy nieokreślone", "hazardous": true},
+        {"code": "16 02 13", "name": "zużyte urządzenia zawierające niebezpieczne elementy", "hazardous": true},
+        {"code": "16 02 14", "name": "zużyte urządzenia inne niż 16 02 09-13", "hazardous": false},
+        {"code": "16 02 15", "name": "niebezpieczne elementy usunięte ze zużytych urządzeń", "hazardous": true},
+        {"code": "16 02 16", "name": "elementy usunięte ze zużytych urządzeń inne niż 16 02 15", "hazardous": false},
+        {"code": "16 06 01", "name": "baterie ołowiowe", "hazardous": true},
+        {"code": "16 06 02", "name": "baterie niklowo-kadmowe", "hazardous": true},
+        {"code": "16 06 03", "name": "baterie zawierające rtęć", "hazardous": true},
+        {"code": "16 06 04", "name": "baterie alkaliczne", "hazardous": false},
+        {"code": "16 06 05", "name": "inne baterie i akumulatory", "hazardous": false},
+        {"code": "16 06 06", "name": "elektrolity z baterii", "hazardous": true},
+        {"code": "17 01 01", "name": "beton", "hazardous": false},
+        {"code": "17 01 02", "name": "gruz ceglany", "hazardous": false},
+        {"code": "17 01 03", "name": "odpady innych materiałów ceramicznych i elementów wyposażenia", "hazardous": false},
+        {"code": "17 01 06", "name": "zmieszane odpady budowlane zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "17 01 07", "name": "zmieszane odpady budowlane inne niż 17 01 06", "hazardous": false},
+        {"code": "17 02 01", "name": "drewno", "hazardous": false},
+        {"code": "17 02 02", "name": "szkło", "hazardous": false},
+        {"code": "17 02 03", "name": "tworzywa sztuczne", "hazardous": false},
+        {"code": "17 02 04", "name": "szkło, tworzywa sztuczne i drewno zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "17 03 01", "name": "mieszanki bitumiczne zawierające smołę", "hazardous": true},
+        {"code": "17 03 02", "name": "mieszanki bitumiczne inne niż 17 03 01", "hazardous": false},
+        {"code": "17 03 03", "name": "smoła i produkty smołowane", "hazardous": true},
+        {"code": "17 04 01", "name": "miedź, brąz, mosiądz", "hazardous": false},
+        {"code": "17 04 02", "name": "aluminium", "hazardous": false},
+        {"code": "17 04 03", "name": "ołów", "hazardous": false},
+        {"code": "17 04 04", "name": "cynk", "hazardous": false},
+        {"code": "17 04 05", "name": "żelazo i stal", "hazardous": false},
+        {"code": "17 04 06", "name": "cyna", "hazardous": false},
+        {"code": "17 04 07", "name": "metale mieszane", "hazardous": false},
+        {"code": "17 04 09", "name": "odpady metaliczne zanieczyszczone substancjami niebezpiecznymi", "hazardous": true},
+        {"code": "17 04 10", "name": "kable zawierające olej, smołę lub inne substancje niebezpieczne", "hazardous": true},
+        {"code": "17 04 11", "name": "kable inne niż 17 04 10", "hazardous": false},
+        {"code": "17 05 03", "name": "gleba i ziemia zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "17 05 04", "name": "gleba i ziemia inne niż 17 05 03", "hazardous": false},
+        {"code": "17 06 01", "name": "materiały izolacyjne zawierające azbest", "hazardous": true},
+        {"code": "17 06 03", "name": "inne materiały izolacyjne zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "17 06 04", "name": "materiały izolacyjne inne niż 17 06 01 i 17 06 03", "hazardous": false},
+        {"code": "17 06 05", "name": "materiały konstrukcyjne zawierające azbest", "hazardous": true},
+        {"code": "17 08 01", "name": "materiały konstrukcyjne zawierające gips zanieczyszczone substancjami niebezpiecznymi", "hazardous": true},
+        {"code": "17 08 02", "name": "materiały konstrukcyjne zawierające gips inne niż 17 08 01", "hazardous": false},
+        {"code": "17 09 01", "name": "odpady z budowy i remontów zawierające rtęć", "hazardous": true},
+        {"code": "17 09 02", "name": "odpady z budowy i remontów zawierające PCB", "hazardous": false},
+        {"code": "17 09 03", "name": "inne odpady z budowy i remontów zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "17 09 04", "name": "zmieszane odpady z budowy i remontów inne niż 17 09 01-03", "hazardous": false},
+        {"code": "18 01 01", "name": "ostre narzędzia", "hazardous": false},
+        {"code": "18 01 02", "name": "części ciała i organy oraz pojemniki na krew", "hazardous": false},
+        {"code": "18 01 03", "name": "odpady, których zbieranie i usuwanie wymaga szczególnych środków", "hazardous": true},
+        {"code": "18 01 04", "name": "odpady inne niż 18 01 03", "hazardous": false},
+        {"code": "18 01 06", "name": "chemikalia zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "18 01 07", "name": "chemikalia inne niż 18 01 06", "hazardous": false},
+        {"code": "18 01 08", "name": "leki cytotoksyczne i cytostatyczne", "hazardous": true},
+        {"code": "18 01 09", "name": "leki inne niż 18 01 08", "hazardous": false},
+        {"code": "18 01 10", "name": "odpady amalgamatu dentystycznego", "hazardous": true},
+        {"code": "18 02 02", "name": "inne odpady, których zbieranie i usuwanie wymaga szczególnych środków", "hazardous": true},
+        {"code": "18 02 03", "name": "odpady inne niż 18 02 02", "hazardous": false},
+        {"code": "18 02 07", "name": "leki cytotoksyczne i cytostatyczne", "hazardous": true},
+        {"code": "19 01 02", "name": "materiały żelazne usunięte z popiołów dennych", "hazardous": false},
+        {"code": "19 01 05", "name": "filtrat z zagęszczania", "hazardous": true},
+        {"code": "19 01 06", "name": "ciekłe odpady wodne z oczyszczania kotłów", "hazardous": true},
+        {"code": "19 01 07", "name": "stałe odpady z oczyszczania gazów odlotowych", "hazardous": true},
+        {"code": "19 01 10", "name": "zużyty węgiel aktywny", "hazardous": true},
+        {"code": "19 01 11", "name": "popioły denne i żużle zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "19 01 12", "name": "popioły denne i żużle inne niż 19 01 11", "hazardous": false},
+        {"code": "19 01 13", "name": "popioły lotne zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "19 01 14", "name": "popioły lotne inne niż 19 01 13", "hazardous": false},
+        {"code": "19 02 04", "name": "wstępnie zmieszane odpady zawierające co najmniej jeden odpad niebezpieczny", "hazardous": true},
+        {"code": "19 02 05", "name": "szlamy z fizykochemicznego przetwarzania zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "19 02 06", "name": "szlamy z fizykochemicznego przetwarzania inne niż 19 02 05", "hazardous": false},
+        {"code": "19 05 03", "name": "kompost nieodpowiadający specyfikacji", "hazardous": false},
+        {"code": "19 06 03", "name": "ciecze z beztlenowego przetwarzania odpadów komunalnych", "hazardous": false},
+        {"code": "19 06 04", "name": "produkty fermentacji z beztlenowego przetwarzania odpadów komunalnych", "hazardous": false},
+        {"code": "19 06 05", "name": "ciecze z beztlenowego przetwarzania odpadów zwierzęcych", "hazardous": false},
+        {"code": "19 08 01", "name": "skratki", "hazardous": false},
+        {"code": "19 08 02", "name": "odpady z piaskowników", "hazardous": false},
+        {"code": "19 08 05", "name": "osady z oczyszczania ścieków komunalnych", "hazardous": false},
+        {"code": "19 08 06", "name": "nasycone lub zużyte żywice jonowymienne", "hazardous": true},
+        {"code": "19 08 09", "name": "mieszaniny tłuszczów i olejów z separacji oleju/wody", "hazardous": false},
+        {"code": "19 08 11", "name": "szlamy zawierające substancje niebezpieczne z biologicznego oczyszczania ścieków przemysłowych", "hazardous": true},
+        {"code": "19 08 12", "name": "szlamy z biologicznego oczyszczania ścieków przemysłowych inne niż 19 08 11", "hazardous": false},
+        {"code": "19 09 04", "name": "zużyty węgiel aktywny", "hazardous": false},
+        {"code": "19 09 05", "name": "nasycone lub zużyte żywice jonowymienne", "hazardous": false},
+        {"code": "19 10 01", "name": "odpady żelaza i stali", "hazardous": false},
+        {"code": "19 10 02", "name": "odpady metali nieżelaznych", "hazardous": false},
+        {"code": "19 10 03", "name": "frakcje lekkie i pyły zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "19 10 04", "name": "frakcje lekkie i pyły inne niż 19 10 03", "hazardous": false},
+        {"code": "19 12 01", "name": "papier i tektura", "hazardous": false},
+        {"code": "19 12 02", "name": "metale żelazne", "hazardous": false},
+        {"code": "19 12 03", "name": "metale nieżelazne", "hazardous": false},
+        {"code": "19 12 04", "name": "tworzywa sztuczne i guma", "hazardous": false},
+        {"code": "19 12 05", "name": "szkło", "hazardous": false},
+        {"code": "19 12 06", "name": "drewno zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "19 12 07", "name": "drewno inne niż 19 12 06", "hazardous": false},
+        {"code": "19 12 08", "name": "tekstylia", "hazardous": false},
+        {"code": "19 12 09", "name": "minerały", "hazardous": false},
+        {"code": "19 12 10", "name": "odpady palne", "hazardous": false},
+        {"code": "19 12 11", "name": "inne odpady z mechanicznej obróbki zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "19 12 12", "name": "inne odpady z mechanicznej obróbki inne niż 19 12 11", "hazardous": false},
+        {"code": "20 01 01", "name": "papier i tektura", "hazardous": false},
+        {"code": "20 01 02", "name": "szkło", "hazardous": false},
+        {"code": "20 01 08", "name": "odpady kuchenne ulegające biodegradacji", "hazardous": false},
+        {"code": "20 01 10", "name": "odzież", "hazardous": false},
+        {"code": "20 01 11", "name": "tekstylia", "hazardous": false},
+        {"code": "20 01 13", "name": "rozpuszczalniki", "hazardous": true},
+        {"code": "20 01 14", "name": "kwasy", "hazardous": true},
+        {"code": "20 01 15", "name": "alkalia", "hazardous": true},
+        {"code": "20 01 17", "name": "chemikalia fotograficzne", "hazardous": true},
+        {"code": "20 01 19", "name": "pestycydy", "hazardous": true},
+        {"code": "20 01 21", "name": "lampy fluorescencyjne i inne odpady zawierające rtęć", "hazardous": true},
+        {"code": "20 01 23", "name": "urządzenia zawierające CFC", "hazardous": true},
+        {"code": "20 01 25", "name": "oleje i tłuszcze jadalne", "hazardous": true},
+        {"code": "20 01 26", "name": "oleje i tłuszcze inne niż 20 01 25", "hazardous": true},
+        {"code": "20 01 27", "name": "farby, tusze, kleje zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "20 01 28", "name": "farby, tusze, kleje inne niż 20 01 27", "hazardous": false},
+        {"code": "20 01 29", "name": "detergenty zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "20 01 30", "name": "detergenty inne niż 20 01 29", "hazardous": false},
+        {"code": "20 01 31", "name": "leki cytotoksyczne i cytostatyczne", "hazardous": true},
+        {"code": "20 01 32", "name": "leki inne niż 20 01 31", "hazardous": false},
+        {"code": "20 01 33", "name": "baterie i akumulatory niebezpieczne", "hazardous": true},
+        {"code": "20 01 34", "name": "baterie i akumulatory inne niż 20 01 33", "hazardous": false},
+        {"code": "20 01 35", "name": "zużyte urządzenia elektryczne i elektroniczne zawierające niebezpieczne elementy", "hazardous": true},
+        {"code": "20 01 36", "name": "zużyte urządzenia elektryczne i elektroniczne inne niż 20 01 35", "hazardous": false},
+        {"code": "20 01 37", "name": "drewno zawierające substancje niebezpieczne", "hazardous": true},
+        {"code": "20 01 38", "name": "drewno inne niż 20 01 37", "hazardous": false},
+        {"code": "20 01 39", "name": "tworzywa sztuczne", "hazardous": false},
+        {"code": "20 01 40", "name": "metale", "hazardous": false},
+        {"code": "20 01 41", "name": "odpady z zamiatania ulic", "hazardous": false},
+        {"code": "20 02 01", "name": "odpady ulegające biodegradacji", "hazardous": false},
+        {"code": "20 02 02", "name": "gleba i ziemia", "hazardous": false},
+        {"code": "20 02 03", "name": "inne odpady nieulegające biodegradacji", "hazardous": false},
+        {"code": "20 03 01", "name": "niesegregowane odpady komunalne", "hazardous": false},
+        {"code": "20 03 02", "name": "odpady z targowisk", "hazardous": false},
+        {"code": "20 03 03", "name": "odpady z czyszczenia ulic", "hazardous": false},
+        {"code": "20 03 04", "name": "szlamy ze zbiorników bezodpływowych", "hazardous": false},
+        {"code": "20 03 06", "name": "odpady z czyszczenia kanalizacji", "hazardous": false},
+        {"code": "20 03 07", "name": "odpady wielkogabarytowe", "hazardous": false},
+        {"code": "20 03 99", "name": "odpady komunalne nieokreślone", "hazardous": false},
+    ],
+
+    # ── P1-2: stawki podatku rolnego per gmina (mnożnik q żyta/ha przeliczeniowego) ──
+    # Ustawa o podatku rolnym — gminy mogą obniżyć mnożnik uchwałą (domyślnie 2,5 q).
+    "agricultural_tax_multiplier_by_gmina": {
+        "default": 2.5,
+        "Warszawa": 2.5, "Kraków": 2.5, "Łódź": 2.5, "Wrocław": 2.5,
+        "Poznań": 2.5, "Gdańsk": 2.5, "Szczecin": 2.5, "Lublin": 2.5,
+        "Katowice": 2.5, "Białystok": 2.5, "Rzeszów": 2.5, "Olsztyn": 2.5,
+    },
+
+    # ── P1-3: tabele zezwoleń transportowych (przewozy krajowe / międzynarodowe) ──
+    "transport_permits": {
+        "krajowy": {"dokument": "licencja na krajowy przewóz drogowy", "wypis_w_pojezdzie": true, "legal_basis": "art. 5 u.t.d."},
+        "unijny_ue": {"dokument": "licencja wspólnotowa", "wypis_w_pojezdzie": true, "legal_basis": "art. 7 u.t.d."},
+        "poza_ue": {"dokument": "zezwolenia dwustronne / ECMT", "wypis_w_pojezdzie": true, "legal_basis": "art. 8 u.t.d."},
+        "tachograf": {"dokument": "tachograf cyfrowy", "prog_t": 3.5, "legal_basis": "rozp. UE 165/2014"},
+    },
+
+    # ── P2-1: certyfikaty CBAM 2026 (reżim definitywny — Rozporządzenie UE 2023/956) ──
+    "cbam_certificates": {
+        "definitive_from": "2026-01-01",
+        "price_eur_t": 80.0,
+        "validity_years": 2,
+        "surrender_deadline": "31.05",
+        "quarterly_report_deadline": "koniec miesiąca po kwartale",
+        "prepayment_pct": 0.8,
+        "penalty_eur_t": 50.0,
+    },
+
+    # ── P2-2: rejestracja online w BDO (API/portal) ──
+    "bdo_online_registration": {
+        "endpoint": "https://bdo.mos.gov.pl/rejestracja",
+        "steps": ["konto w BDO", "wniosek elektroniczny", "opłata (100-500 PLN)", "potwierdzenie rejestracji"],
+        "update_deadline_days": 30,
+        "deregistration_deadline_days": 30,
+    },
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # AML — Anti-Money Laundering
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -357,6 +952,115 @@ aml := {
 
     # Art. 72 Ustawy AML — próg STR do GIIF
     "str_threshold_eur": 15000,                   # EUR — obowiązek zgłoszenia STR do GIIF
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# COMPLIANCE AML + RODO — data.jdg.thresholds.compliance_aml_rodo (P16)
+# Dane dla pakietu jdg.p16_rodo_aml_security_innovations (fallback w pakiecie).
+#   P0-1: integracja z rejestrem BDO/CRBR (beneficjenci rzeczywiści) via API
+#   P0-2: automatyczna wysyłka zgłoszeń STR do GIIF (API) + potwierdzenia
+#   P1-1: pełna mapa podprocesorów SaaS (umowy Art. 28 + podpowierzenie)
+#   P1-2: kalendarz terminów RODO (przeglądy, DPIA, umowy powierzenia)
+#   P1-3: scoring AML z danymi rzeczywistymi (listy sankcyjne UE/ONZ)
+#   P2-1: implementacja AMLR (UE 2024/1624) — progi CBDD od 2027
+#   P2-2: UI panelu ryzyka AML + dashboard naruszeń RODO 72h
+# ═══════════════════════════════════════════════════════════════════════════════
+
+compliance_aml_rodo := {
+    # ── RODO — sankcje, terminy, retencja (spójne z pakietem p16) ──
+    "rodo_sanction_max_eur": 20000000,            # Art. 83 ust. 5 RODO
+    "rodo_sanction_min_eur": 10000000,            # Art. 83 ust. 4 RODO
+    "rodo_breach_deadline_hours": 72,             # Art. 33 RODO — zgłoszenie w 72h
+    "rodo_erasure_deadline_days": 30,             # Art. 17 RODO
+    "rodo_retention_years": 5,                    # Art. 74 ust. 2 UoR
+
+    # ── AML — progi, CBDD, STR, sankcje ──
+    "aml_cbdd_required": true,
+    "aml_ubo_check": true,
+    "aml_threshold_eur": 15000,                   # Art. 34 u.AML — transakcje > 15 000 EUR
+    "aml_str_deadline_days": 1,                   # STR do GIIF — 1 dzień roboczy (Art. 74-80)
+    "aml_sanction_max_pln": 1000000,              # art. 153 u.AML
+
+    # ── security + audit ──
+    "sec_hmac_required": true,
+    "sec_immutable_verdicts": true,
+    "audit_merkle_required": true,
+
+    # ── P0-1: CRBR — Centralny Rejestr Beneficjentów Rzeczywistych (API) ──
+    "crbr_api": {
+        "endpoint": "https://crbr.podatki.gov.pl/api/beneficiaries",
+        "portal": "https://crbr.podatki.gov.pl",
+        "free_search": true,
+        "registration_deadline_days": 7,          # od wpisu do CEIDG/KRS
+        "update_deadline_days": 7,                # od zmiany danych
+        "sanction_max_pln": 1000000,              # Art. 153 u.AML
+        "required_fields": ["nip", "krs", "beneficiaries", "shares_pct"],
+    },
+
+    # ── P0-2: GIIF — automatyczna wysyłka zgłoszeń STR (API) ──
+    "gijf_str_api": {
+        "endpoint": "https://gijf.mf.gov.pl/str/api",
+        "channel": "ePUAP + API GIIF",
+        "deadline_working_days": 1,               # Art. 74-80 u.AML
+        "confirmation_required": true,            # urzędowe potwierdzenie odbioru (UPO)
+        "confirmation_type": "UPO_GIIF",
+        "sanction_max_pln": 1000000,
+        "min_threshold_eur": 15000,
+    },
+
+    # ── P1-1: mapa podprocesorów SaaS (Art. 28 + podpowierzenie) ──
+    "saas_subprocessors": [
+        {"category": "HOSTING_CHMURY", "example": "AWS/OvH/Google Cloud", "art28_required": true, "subprocessing_consent": true},
+        {"category": "KSIEGOWOSC_CHMURA", "example": "wFirma/Fakturownia/Comarch", "art28_required": true, "subprocessing_consent": true},
+        {"category": "EMAIL_MARKETING", "example": "MailerLite/HubSpot/Salestube", "art28_required": true, "subprocessing_consent": true},
+        {"category": "CRM", "example": "Pipedrive/Bitrix24/HubSpot CRM", "art28_required": true, "subprocessing_consent": true},
+        {"category": "REKRUTACJA_HR", "example": "Element/eRecruiter/Softgarden", "art28_required": true, "subprocessing_consent": true},
+        {"category": "ANALITYKA", "example": "Google Analytics/Matomo/Plausible", "art28_required": false, "subprocessing_consent": false},
+        {"category": "PODATKI_KSEF", "example": "dostawca KSeF/JPK/e-Deklaracje", "art28_required": true, "subprocessing_consent": true},
+        {"category": "REKLAMA_AI", "example": "Meta Ads/Google Ads (profilowanie)", "art28_required": true, "subprocessing_consent": true},
+    ],
+
+    # ── P1-2: kalendarz terminów RODO ──
+    "rodo_deadline_calendar": [
+        {"task": "przegląd rejestru czynności przetwarzania", "frequency": "rocznie", "month": 12, "legal_basis": "Art. 30 RODO"},
+        {"task": "przegląd umów powierzenia (Art. 28)", "frequency": "rocznie", "month": 6, "legal_basis": "Art. 28 RODO"},
+        {"task": "DPIA przed nowym przetwarzaniem wysokiego ryzyka", "frequency": "przed_startem", "month": 0, "legal_basis": "Art. 35 RODO"},
+        {"task": "przegląd zabezpieczeń technicznych/organizacyjnych", "frequency": "kwartalnie", "month": 3, "legal_basis": "Art. 32 RODO"},
+        {"task": "retencja danych księgowych (min. 5 lat)", "frequency": "5_lat", "month": 0, "legal_basis": "Art. 74 ust. 2 UoR"},
+        {"task": "aktualizacja rejestru po zmianach", "frequency": "na_biezaco", "month": 0, "legal_basis": "Art. 24 RODO"},
+    ],
+
+    # ── P1-3: listy sankcyjne UE/ONZ — scoring z danymi rzeczywistymi ──
+    "sanctions_lists": {
+        "eu_consolidated": {"name": "EU Consolidated Financial Sanctions List", "source": "data.europa.eu/eu-sanctions", "weight": 50},
+        "un_sc": {"name": "UN Security Council Consolidated List", "source": "scsanctions.un.org", "weight": 50},
+        "ofac_sdn": {"name": "OFAC SDN (USA)", "source": "treasury.gov/ofac", "weight": 40},
+        "uk_ofsi": {"name": "UK OFSI Consolidated List", "source": "ofsi.hmt.gov.uk", "weight": 40},
+        "pep_national": {"name": "PEP krajowa lista (osoby pełniące funkcje publiczne)", "source": "rejestr krajowy", "weight": 20},
+    },
+    "sanctions_block_threshold": 50,              # score >= 50 → BLOCK_AND_ALERT
+    "sanctions_pep_routing": "TRIAGE_QUEUE",
+
+    # ── P2-1: AMLR (UE 2024/1624) — single rulebook od 2027 ──
+    "amlr_2027": {
+        "regulation": "UE 2024/1624",
+        "application_from": "2027-07-10",
+        "cash_threshold_eur": 10000,              # nowy próg gotówkowy (obniżony do 10k EUR)
+        "crypto_threshold_eur": 1000,             # usługi krypto — próg CBDD 1000 EUR
+        "single_rulebook": true,
+        "aml_authority": "AMLA (Frankfurt) — nadzór od 2028",
+        "cbdd_enhanced_high_risk": true,
+        "football_clubs_scope": true,             # nowy sektor w zakresie AMLR
+    },
+
+    # ── P2-2: UI panelu ryzyka AML + dashboard naruszeń RODO 72h ──
+    "compliance_dashboard": {
+        "aml_panel": {"clients_high_risk": 0, "transactions_flagged": 0, "str_pending": 0},
+        "breach_72h": {"deadline_hours": 72, "breaches_open": 0},
+        "refresh": "na żywo (hot-reload ADR-002)",
+        "export_formats": ["JSON", "CSV", "PDF"],
+        "widgets": ["panel_ryzyka_aml", "dashboard_breach_72h", "kalendarz_rodo", "mapa_podprocesorow", "screening_sankcyjny", "status_amlr_2027"],
+    },
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

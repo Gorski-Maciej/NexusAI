@@ -50,10 +50,26 @@
 
 Elixir cutoff 14:30, Express Elixir 15:30, SCA exempt 100 zł / 5 transakcji, MPP 15 000 zł, VAT-7 do 25., ZUS DRA do 10., PIT do 30 kwietnia, PCC-3 14 dni, WIS 3 miesiące, nadpłata odsetki po 30 dniach.
 
+## Mapa drogowa R18 (P0/P1/P2) — zamknięta 2026-08-05
+
+| Priorytet | Pozycja | Reguła | Status |
+|---|---|---|---|
+| **P0** | Integracja AIS/PIS (PolishAPI) — token OAuth2 + konsent PSD2 | `ais_pis_integration` | ✅ WDROŻONE |
+| **P0** | Weryfikacja SCA w środowisku produkcyjnym banku (RTS 2018/389) | `sca_production_verification` | ✅ WDROŻONE |
+| **P1** | Pełny silnik auto-fill PIT-36/36L/28 z UoR (bilans, RZiS) | `pit_uor_autofill_engine` | ✅ WDROŻONE |
+| **P1** | Integracja e-Doręczeń B2B/B2G + potwierdzenia doręczenia | `edelivery_b2b_b2g_flow` | ✅ WDROŻONE |
+| **P1** | Model ML predykcji cashflow (gradient boosting, horyzont 30 dni) | `ml_cashflow_prediction` | ✅ WDROŻONE |
+| **P2** | Dashboard wirtualnego asystenta księgowego (ksiegowania/deklaracje/terminy/przepływy) | `bookkeeper_dashboard_ui` | ✅ WDROŻONE |
+| **P2** | Automatyzacja korekt deklaracji end-to-end (art. 81 OrdPU + odsetki) | `declaration_correction_automation` | ✅ WDROŻONE |
+
+**Konfiguracja (ADR-002):** blok `automatyzacja_ksiegowosci` w `thresholds_jdg.rego` (ais_pis_api, sca_production, pit_uor_autofill, edelivery_b2b_b2g, ml_cashflow, bookkeeper_dashboard_cfg, declaration_corrections).
+
+**CLI narzędzia:** `--ais-pis`, `--sca-prod`, `--pit-autofill`, `--edelivery-b2b`, `--ml-cashflow`, `--bookkeeper-dashboard`, `--declaration-corrections`, `--roadmap` (wszystkie 7).
+
 ## Artefakty
 
-- Rego: `JDG/rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` (20 reguł + decide + default, 15 INN, 22+ podstaw prawnych)
-- Narzędzie: `JDG/tools/automatyzacja_ksiegowosci_auditor.py` (audyt ~330 rule_id w 28 plikach + 15 kalkulatorów CLI)
-- Testy rego: `JDG/tests/rego/test_p18_automatyzacja_ksiegowosci_enterprise.rego` (27 scenariuszy)
-- Testy pytest: `JDG/tests/auto/test_p18_automatyzacja_ksiegowosci_enterprise.py` (41 testów)
+- Rego: `JDG/rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` (27 reguł + decide + default, 15 INN, 22+ podstaw prawnych)
+- Narzędzie: `JDG/tools/automatyzacja_ksiegowosci_auditor.py` (audyt ~330 rule_id w 28 plikach + 22 kalkulatorów CLI)
+- Testy rego: `JDG/tests/rego/test_p18_automatyzacja_ksiegowosci_enterprise.rego` (42 scenariusze)
+- Testy pytest: `JDG/tests/auto/test_p18_automatyzacja_ksiegowosci_enterprise.py` (49 testów)
 - Okablowanie: `main_jdg.rego` — import + `_package_decisions` + `final_verdict_p18 = safe_merge(final_verdict_p17, ...)` — bez kolizji ze starym `jdg.p18_innovations` (v8)

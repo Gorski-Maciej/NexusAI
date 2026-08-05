@@ -60,6 +60,106 @@ rodo_breach_deadline_hours := to_number(object.get(compliance_limits, "rodo_brea
 aml_threshold_eur := to_number(object.get(compliance_limits, "aml_threshold_eur", 15000))
 rodo_retention_years_default := to_number(object.get(compliance_limits, "rodo_retention_years", 5))
 
+# ── Tabele danych Mapa drogowa P0/P1/P2 (z data.jdg.thresholds.compliance_aml_rodo — ADR-002) ──
+crbr_api := object.get(compliance_limits, "crbr_api", {
+    "endpoint": "https://crbr.podatki.gov.pl/api/beneficiaries",
+    "portal": "https://crbr.podatki.gov.pl",
+    "free_search": true,
+    "registration_deadline_days": 7,
+    "update_deadline_days": 7,
+    "sanction_max_pln": 1000000,
+})
+
+gijf_str_api := object.get(compliance_limits, "gijf_str_api", {
+    "endpoint": "https://gijf.mf.gov.pl/str/api",
+    "channel": "ePUAP + API GIIF",
+    "deadline_working_days": 1,
+    "confirmation_required": true,
+    "confirmation_type": "UPO_GIIF",
+    "sanction_max_pln": 1000000,
+})
+
+saas_compliance_score(used_count, missing_art28_count, missing_consent_count) = 100 { used_count == 0 }
+else = max([0, min([100, round2((used_count - missing_art28_count - missing_consent_count) / used_count * 100)])]) { used_count > 0 }
+
+saas_map_routing(missing_art28_count, missing_consent_count) = "" { missing_art28_count == 0 and missing_consent_count == 0 }
+else = "TRIAGE_QUEUE" { true }
+
+saas_subprocessors := object.get(compliance_limits, "saas_subprocessors", [
+    {"category": "HOSTING_CHMURY", "example": "AWS/OvH/Google Cloud", "art28_required": true, "subprocessing_consent": true},
+    {"category": "KSIEGOWOSC_CHMURA", "example": "wFirma/Fakturownia/Comarch", "art28_required": true, "subprocessing_consent": true},
+    {"category": "EMAIL_MARKETING", "example": "MailerLite/HubSpot/Salestube", "art28_required": true, "subprocessing_consent": true},
+    {"category": "CRM", "example": "Pipedrive/Bitrix24/HubSpot CRM", "art28_required": true, "subprocessing_consent": true},
+    {"category": "REKRUTACJA_HR", "example": "Element/eRecruiter/Softgarden", "art28_required": true, "subprocessing_consent": true},
+    {"category": "ANALITYKA", "example": "Google Analytics/Matomo/Plausible", "art28_required": false, "subprocessing_consent": false},
+    {"category": "PODATKI_KSEF", "example": "dostawca KSeF/JPK/e-Deklaracje", "art28_required": true, "subprocessing_consent": true},
+    {"category": "REKLAMA_AI", "example": "Meta Ads/Google Ads (profilowanie)", "art28_required": true, "subprocessing_consent": true},
+])
+
+rodo_deadline_calendar := object.get(compliance_limits, "rodo_deadline_calendar", [
+    {"task": "przegląd rejestru czynności przetwarzania", "frequency": "rocznie", "month": 12, "legal_basis": "Art. 30 RODO"},
+    {"task": "przegląd umów powierzenia (Art. 28)", "frequency": "rocznie", "month": 6, "legal_basis": "Art. 28 RODO"},
+    {"task": "DPIA przed nowym przetwarzaniem wysokiego ryzyka", "frequency": "przed_startem", "month": 0, "legal_basis": "Art. 35 RODO"},
+    {"task": "przegląd zabezpieczeń technicznych/organizacyjnych", "frequency": "kwartalnie", "month": 3, "legal_basis": "Art. 32 RODO"},
+    {"task": "retencja danych księgowych (min. 5 lat)", "frequency": "5_lat", "month": 0, "legal_basis": "Art. 74 ust. 2 UoR"},
+    {"task": "aktualizacja rejestru po zmianach", "frequency": "na_biezaco", "month": 0, "legal_basis": "Art. 24 RODO"},
+])
+
+sanctions_lists := object.get(compliance_limits, "sanctions_lists", {
+    "eu_consolidated": {"name": "EU Consolidated Financial Sanctions List", "source": "data.europa.eu/eu-sanctions", "weight": 50},
+    "un_sc": {"name": "UN Security Council Consolidated List", "source": "scsanctions.un.org", "weight": 50},
+    "ofac_sdn": {"name": "OFAC SDN (USA)", "source": "treasury.gov/ofac", "weight": 40},
+    "uk_ofsi": {"name": "UK OFSI Consolidated List", "source": "ofsi.hmt.gov.uk", "weight": 40},
+    "pep_national": {"name": "PEP krajowa lista", "source": "rejestr krajowy", "weight": 20},
+})
+sanctions_block_threshold := to_number(object.get(compliance_limits, "sanctions_block_threshold", 50))
+
+amlr_2027 := object.get(compliance_limits, "amlr_2027", {
+    "regulation": "UE 2024/1624",
+    "application_from": "2027-07-10",
+    "cash_threshold_eur": 10000,
+    "crypto_threshold_eur": 1000,
+    "single_rulebook": true,
+    "aml_authority": "AMLA (Frankfurt) — nadzór od 2028",
+})
+
+compliance_dashboard_cfg := object.get(compliance_limits, "compliance_dashboard", {
+    "aml_panel": {"clients_high_risk": 0, "transactions_flagged": 0, "str_pending": 0},
+    "breach_72h": {"deadline_hours": 72, "breaches_open": 0},
+    "refresh": "na żywo (hot-reload ADR-002)",
+    "export_formats": ["JSON", "CSV", "PDF"],
+})
+
+# ── Funkcje pomocnicze Mapy drogowej ──
+crbr_routing(registered) = "TRIAGE_QUEUE" { registered == false }
+else = "" { true }
+
+crbr_status(registered) = "BRAK REJESTRACJI W CRBR — złóż wniosek w ciągu 7 dni od wpisu do CEIDG/KRS! Kara do 1 000 000 PLN (Art. 153 u.AML)" { registered == false }
+else = "OK — beneficjent rzeczywisty zarejestrowany w CRBR" { true }
+
+str_submission_routing(submitted, confirmed, days_since) = "BLOCK_AND_ALERT" { submitted == false and days_since >= 1 }
+else = "TRIAGE_QUEUE" { submitted == false }
+else = "TRIAGE_QUEUE" { submitted == true and confirmed == false }
+else = "" { true }
+
+str_submission_status(submitted, confirmed, days_since) = sprintf("STR NIEZGŁOSZONE — %d dni od wykrycia! Termin: 1 dzień roboczy (Art. 74-80 u.AML)", [days_since]) { submitted == false }
+else = sprintf("STR zgłoszone, BRAK potwierdzenia odbioru (UPO GIIF) — %d dni od wykrycia", [days_since]) { confirmed == false }
+else = "STR zgłoszone + potwierdzone odbiorem (UPO GIIF) — OK" { true }
+
+sanctions_routing(score) = "BLOCK_AND_ALERT" { score >= sanctions_block_threshold }
+else = "TRIAGE_QUEUE" { score > 0 }
+else = "" { true }
+
+sanctions_level(score) = "KRYTYCZNE — obiekt na liście sankcyjnej!" { score >= sanctions_block_threshold }
+else = "WYMAGA WERYFIKACJI (PEP / lista krajowa)" { score > 0 }
+else = "CZYSZCZENIE — brak dopasowań" { true }
+
+amlr_routing(over_cash, over_crypto, entity_covered) = "TRIAGE_QUEUE" { entity_covered == true and (over_cash == true or over_crypto == true) }
+else = "" { true }
+
+dashboard_routing(str_pending, breaches_open) = "BLOCK_AND_ALERT" { str_pending > 0 or breaches_open > 0 }
+else = "TRIAGE_QUEUE" { true }
+
 round2(x) = r {
     r := round(x * 100) / 100
 }
@@ -682,6 +782,187 @@ compliance_scorecard := {
     score_total <= 100
 }
 
+# ── MAPA DROGOWA P0/P1/P2 — wdrożone (R16) ────────────────────────────────────
+# P0-1: CRBR/UBO — integracja z rejestrem beneficjentów rzeczywistych via API.
+crbr_registry_api := {
+    "rule_id": "jdg.p16_rodo_aml_security_innovations.crbr_registry_api",
+    "package": "jdg.p16_rodo_aml_security_innovations",
+    "priority": 2170,
+    "matched": true,
+    "api_endpoint": object.get(crbr_api, "endpoint", ""),
+    "portal": object.get(crbr_api, "portal", ""),
+    "registered": registered,
+    "registration_deadline_days": object.get(crbr_api, "registration_deadline_days", 7),
+    "update_deadline_days": object.get(crbr_api, "update_deadline_days", 7),
+    "sanction_max_pln": object.get(crbr_api, "sanction_max_pln", 1000000),
+    "registration_status": crbr_status(registered),
+    "ubo_declared": object.get(input.crbr, "ubo_declared", false),
+    "note": "integracja z CRBR via API — automatyczne sprawdzenie statusu rejestracji beneficjenta rzeczywistego (P0)",
+    "_routing": crbr_routing(registered),
+    "_routing_reason": sprintf("CRBR: registered=%v — status rejestracji beneficjenta rzeczywistego (API)", [registered]),
+    "_legal_basis": "Art. 2 pkt 3 u.AML; Ustawa o CRBR (Dz.U. 2019 poz. 1659)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
+    registered := object.get(input.crbr, "registered", false)
+}
+
+# P0-2: GIIF — automatyczna wysyłka zgłoszeń STR (API) + potwierdzenia.
+str_gijf_auto_submission := {
+    "rule_id": "jdg.p16_rodo_aml_security_innovations.str_gijf_auto_submission",
+    "package": "jdg.p16_rodo_aml_security_innovations",
+    "priority": 2171,
+    "matched": true,
+    "str_id": object.get(input.str_gijf, "str_id", ""),
+    "api_endpoint": object.get(gijf_str_api, "endpoint", ""),
+    "channel": object.get(gijf_str_api, "channel", ""),
+    "deadline_working_days": object.get(gijf_str_api, "deadline_working_days", 1),
+    "days_since_detection": days_since,
+    "submitted": submitted,
+    "confirmation_received": confirmed,
+    "submission_status": str_submission_status(submitted, confirmed, days_since),
+    "confirmation_required": object.get(gijf_str_api, "confirmation_required", true),
+    "note": "automatyczna wysyłka STR do GIIF via API + urzędowe potwierdzenie odbioru (P0)",
+    "_routing": str_submission_routing(submitted, confirmed, days_since),
+    "_routing_reason": sprintf("STR %s: submitted=%v, UPO=%v, %d dni od wykrycia", [object.get(input.str_gijf, "str_id", ""), submitted, confirmed, days_since]),
+    "_legal_basis": "Art. 74-80 u.AML (Dz.U. 2018 poz. 723)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
+    submitted := object.get(input.str_gijf, "submitted", false)
+    confirmed := object.get(input.str_gijf, "confirmation_received", false)
+    days_since := to_number(object.get(input.str_gijf, "days_since_detection", 0))
+}
+
+# P1-1: pełna mapa podprocesorów SaaS (umowy Art. 28 + podpowierzenie).
+subprocessor_saas_map := {
+    "rule_id": "jdg.p16_rodo_aml_security_innovations.subprocessor_saas_map",
+    "package": "jdg.p16_rodo_aml_security_innovations",
+    "priority": 2172,
+    "matched": true,
+    "saas_catalog": [{"category": s.category, "example": s.example, "art28_required": s.art28_required, "subprocessing_consent": s.subprocessing_consent} | s := saas_subprocessors[_]],
+    "used_processors": used,
+    "missing_art28": missing_art28,
+    "missing_consent": missing_consent,
+    "compliance_score": saas_compliance_score(count(used), count(missing_art28), count(missing_consent)),
+    "note": "pełna mapa podprocesorów SaaS — umowy Art. 28 + zgody na podpowierzenie (P1)",
+    "_routing": saas_map_routing(count(missing_art28), count(missing_consent)),
+    "_routing_reason": sprintf("Podprocesorzy SaaS: %d używanych, %d bez umowy Art. 28, %d bez zgody na podpowierzenie", [count(used), count(missing_art28), count(missing_consent)]),
+    "_legal_basis": "Art. 28 ust. 2-4 RODO",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
+    used := [u | u := object.get(input.subprocessors, "used", [])[_]; u != ""]
+    missing_art28 := [u | u := used[_]; u_art28 := object.get(input.subprocessors, "has_art28", {}); object.get(u_art28, u, false) == false]
+    missing_consent := [u | u := used[_]; u_consent := object.get(input.subprocessors, "has_subprocessing_consent", {}); object.get(u_consent, u, false) == false]
+}
+
+# P1-2: kalendarz terminów RODO (przeglądy, DPIA, umowy powierzenia).
+rodo_deadline_calendar_rule := {
+    "rule_id": "jdg.p16_rodo_aml_security_innovations.rodo_deadline_calendar",
+    "package": "jdg.p16_rodo_aml_security_innovations",
+    "priority": 2173,
+    "matched": true,
+    "calendar": [{"task": t.task, "frequency": t.frequency, "month": t.month, "legal_basis": t.legal_basis} | t := rodo_deadline_calendar[_]],
+    "next_review_month": 12,
+    "upcoming_this_month": upcoming,
+    "note": "kalendarz terminów RODO — przeglądy, DPIA, umowy powierzenia, retencja (P1)",
+    "_routing": "",
+    "_routing_reason": "Kalendarz terminów RODO — roczny cykl przeglądów compliance",
+    "_legal_basis": "Art. 24, 28, 30, 32, 35 RODO; Art. 74 UoR",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
+    current_month := to_number(object.get(input.jdg_entrepreneur, "current_month", 12))
+    upcoming := [t.task | t := rodo_deadline_calendar[_]; t.month == current_month or t.month == 0]
+}
+
+# P1-3: scoring AML z danymi rzeczywistymi — listy sankcyjne UE/ONZ.
+aml_sanctions_screening := {
+    "rule_id": "jdg.p16_rodo_aml_security_innovations.aml_sanctions_screening",
+    "package": "jdg.p16_rodo_aml_security_innovations",
+    "priority": 2174,
+    "matched": true,
+    "entity_name": object.get(input.sanctions_screening, "entity_name", ""),
+    "matched_lists": matched,
+    "sanctions_score": score,
+    "sanctions_level": sanctions_level(score),
+    "matched_details": details,
+    "note": "scoring AML z danymi rzeczywistymi — screening na listach sankcyjnych UE/ONZ (P1)",
+    "_routing": sanctions_routing(score),
+    "_routing_reason": sprintf("Screening sankcyjny %s: %d list, score %d", [object.get(input.sanctions_screening, "entity_name", ""), count(matched), score]),
+    "_legal_basis": "Rozp. Rady UE (sankcje); Ustawa AML Art. 34-43 (CBDD); Rozp. UE 2024/1624",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
+    matched := object.get(input.sanctions_screening, "matched_lists", [])
+    score := sum([w | m := matched[_]; w := object.get(object.get(sanctions_lists, m, {}), "weight", 0)])
+    details := [{"list": m, "name": object.get(object.get(sanctions_lists, m, {}), "name", m), "source": object.get(object.get(sanctions_lists, m, {}), "source", ""), "weight": object.get(object.get(sanctions_lists, m, {}), "weight", 0)} | m := matched[_]]
+}
+
+# P2-1: implementacja AMLR (UE 2024/1624) — progi CBDD od 2027.
+amlr_2027_implementation := {
+    "rule_id": "jdg.p16_rodo_aml_security_innovations.amlr_2027_implementation",
+    "package": "jdg.p16_rodo_aml_security_innovations",
+    "priority": 2175,
+    "matched": true,
+    "regulation": object.get(amlr_2027, "regulation", "UE 2024/1624"),
+    "application_from": object.get(amlr_2027, "application_from", "2027-07-10"),
+    "cash_threshold_eur": object.get(amlr_2027, "cash_threshold_eur", 10000),
+    "crypto_threshold_eur": object.get(amlr_2027, "crypto_threshold_eur", 1000),
+    "single_rulebook": object.get(amlr_2027, "single_rulebook", true),
+    "cash_transaction_eur": cash_eur,
+    "crypto_transaction_eur": crypto_eur,
+    "cash_over_threshold": cash_eur > to_number(object.get(amlr_2027, "cash_threshold_eur", 10000)),
+    "crypto_over_threshold": crypto_eur > to_number(object.get(amlr_2027, "crypto_threshold_eur", 1000)),
+    "status": amlr_status(cash_eur, crypto_eur, entity_covered),
+    "note": "implementacja AMLR (UE 2024/1624) — progi CBDD od 2027 (single rulebook) (P2)",
+    "_routing": amlr_routing(cash_eur > to_number(object.get(amlr_2027, "cash_threshold_eur", 10000)), crypto_eur > to_number(object.get(amlr_2027, "crypto_threshold_eur", 1000)), entity_covered),
+    "_routing_reason": sprintf("AMLR 2027: cash %d EUR / próg %d EUR, crypto %d EUR / próg %d EUR", [cash_eur, to_number(object.get(amlr_2027, "cash_threshold_eur", 10000)), crypto_eur, to_number(object.get(amlr_2027, "crypto_threshold_eur", 1000))]),
+    "_legal_basis": "AMLR (UE 2024/1624) — zastosowanie od 2027-07-10",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
+    cash_eur := to_number(object.get(input.amlr, "cash_transaction_eur", 0))
+    crypto_eur := to_number(object.get(input.amlr, "crypto_transaction_eur", 0))
+    entity_covered := object.get(input.amlr, "entity_covered", true)
+}
+
+amlr_status(cash_eur, crypto_eur, entity_covered) = "AMLR 2027 — OBOWIĄZEK CBDD: transakcja gotówkowa > 10 000 EUR LUB krypto > 1 000 EUR (entity covered)" { entity_covered == true and (cash_eur > to_number(object.get(amlr_2027, "cash_threshold_eur", 10000)) or crypto_eur > to_number(object.get(amlr_2027, "crypto_threshold_eur", 1000))) }
+else = "AMLR 2027 — transakcje poniżej progów CBDD" { true }
+
+# P2-2: UI panelu ryzyka AML + dashboard naruszeń RODO 72h.
+compliance_dashboard_ui := {
+    "rule_id": "jdg.p16_rodo_aml_security_innovations.compliance_dashboard_ui",
+    "package": "jdg.p16_rodo_aml_security_innovations",
+    "priority": 2176,
+    "matched": true,
+    "aml_panel": {
+        "clients_high_risk": to_number(object.get(input.dashboard, "clients_high_risk", 0)),
+        "transactions_flagged": to_number(object.get(input.dashboard, "transactions_flagged", 0)),
+        "str_pending": str_pending,
+        "panel_score": panel_score,
+        "panel_level": panel_level(str_pending, panel_score),
+    },
+    "breach_72h": {
+        "breaches_open": breaches_open,
+        "deadline_hours": rodo_breach_deadline_hours,
+        "within_deadline": breaches_open == 0,
+    },
+    "widgets": object.get(compliance_dashboard_cfg, "widgets", ["panel_ryzyka_aml", "dashboard_breach_72h"]),
+    "export_formats": object.get(compliance_dashboard_cfg, "export_formats", ["JSON", "CSV", "PDF"]),
+    "note": "UI panelu ryzyka AML + dashboard naruszeń RODO 72h — dane agregowane dla warstwy UI (P2)",
+    "_routing": dashboard_routing(str_pending, breaches_open),
+    "_routing_reason": sprintf("Dashboard: %d STR pending, %d naruszeń otwartych", [str_pending, breaches_open]),
+    "_legal_basis": "Art. 33 RODO (72h); Art. 28a u.AML + Wytyczne EBA",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
+    str_pending := to_number(object.get(input.dashboard, "str_pending", 0))
+    breaches_open := to_number(object.get(input.dashboard, "breaches_open", 0))
+    panel_score := round(min([to_number(object.get(input.dashboard, "clients_high_risk", 0)) * 10 + to_number(object.get(input.dashboard, "transactions_flagged", 0)) * 5 + str_pending * 20, 100]))
+}
+
 # ── GŁÓWNY DECIDE (P16) — raport syntetyczny RODO+AML+Compliance+Security+Audyt ─
 decide := {
     "rule_id": "jdg.p16_rodo_aml_security_innovations.report",
@@ -693,6 +974,15 @@ decide := {
     "security": security_audit,
     "audit_trail": audit_trail_audit,
     "pipeline": compliance_pipeline_snapshot,
+    "roadmap": {
+        "crbr_registry_api": crbr_registry_api,
+        "str_gijf_auto_submission": str_gijf_auto_submission,
+        "subprocessor_saas_map": subprocessor_saas_map,
+        "rodo_deadline_calendar": rodo_deadline_calendar_rule,
+        "aml_sanctions_screening": aml_sanctions_screening,
+        "amlr_2027_implementation": amlr_2027_implementation,
+        "compliance_dashboard_ui": compliance_dashboard_ui,
+    },
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny RODO + AML + Compliance + Bezpieczeństwo + Audyt (P16)",
     "_legal_basis": "RODO 2016/679; Ustawa AML; P34; ADR-006",

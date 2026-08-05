@@ -13,23 +13,31 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BASE_DIR / "tools"))
 from rodo_aml_security_auditor import (  # noqa: E402
     COMPLIANCE,
+    SANCTIONS_LISTS,
     aml_risk_panel,
     aml_risk_scoring_client,
     aml_risk_scoring_transaction,
+    amlr_2027_check,
+    aml_sanctions_screening,
     audit_rego_files,
     beneficiary_verifier,
     breach_72h_tracker,
+    compliance_dashboard,
     compliance_pipeline,
     compliance_scorecard,
+    crbr_registry_check,
     decision_proof_chain,
     proof_chain_verifier,
     rodo_audit,
     rodo_breach_assistant,
+    rodo_deadline_calendar,
     rodo_register_automation,
     rodo_sanctions_calculator,
     rule_integrity_hmac,
     security_fortress_layers,
     self_audit_engine,
+    str_gijf_submission,
+    subprocessor_saas_map,
 )
 
 
@@ -304,6 +312,24 @@ def test_p16_tool_smoke():
     assert data["scorecard"]["score_total"] == 100
 
 
+def test_p16_tool_smoke_roadmap():
+    """Narzędzie CLI — nowe komendy mapy drogowej P0/P1/P2 działają end-to-end."""
+    proc = subprocess.run(
+        [sys.executable, str(BASE_DIR / "tools" / "rodo_aml_security_auditor.py"),
+         "--crbr", "--str-gijf", "--saas-map", "--rodo-calendar", "--sanctions-screen",
+         "--amlr", "--dashboard"],
+        capture_output=True, text=True, check=False, timeout=30)
+    assert proc.returncode == 0, proc.stderr
+    data = json.loads(proc.stdout)
+    assert data["crbr"]["registration_deadline_days"] == 7
+    assert data["str_gijf"]["deadline_working_days"] == 1
+    assert data["saas_map"]["compliance_score"] >= 0
+    assert len(data["rodo_calendar"]["calendar"]) >= 6
+    assert data["sanctions_screen"]["sanctions_score"] == 0
+    assert data["amlr"]["application_from"] == "2027-07-10"
+    assert data["dashboard"]["breach_72h"]["deadline_hours"] == 72
+
+
 def test_p16_tool_smoke_table():
     """Narzędzie CLI — tryb tabelaryczny."""
     proc = subprocess.run(
@@ -312,6 +338,102 @@ def test_p16_tool_smoke_table():
         capture_output=True, text=True, check=False, timeout=30)
     assert proc.returncode == 0, proc.stderr
     assert "AUDYT MICRO RODO+AML+SECURITY+AUDIT" in proc.stdout
+
+
+# ── Mapa drogowa P0/P1/P2 (R16) ───────────────────────────────────────────────
+def test_crbr_registry_check():
+    """P0-1: CRBR via API — brak rejestracji → TRIAGE_QUEUE + termin 7 dni."""
+    bad = crbr_registry_check(registered=False, nip="7777777777")
+    assert bad["_routing"] == "TRIAGE_QUEUE"
+    assert "BRAK REJESTRACJI W CRBR" in bad["registration_status"]
+    assert bad["registration_deadline_days"] == 7
+    assert bad["sanction_max_pln"] == 1_000_000
+    ok = crbr_registry_check(registered=True, nip="7777777777", ubo_declared=True)
+    assert ok["_routing"] == ""
+    assert ok["ubo_declared"] is True
+
+
+def test_str_gijf_submission():
+    """P0-2: STR do GIIF — brak zgłoszenia → BLOCK, brak UPO → TRIAGE, komplet → OK."""
+    missing = str_gijf_submission(submitted=False, days_since_detection=3)
+    assert missing["_routing"] == "BLOCK_AND_ALERT"
+    assert "NIEZGŁOSZONE" in missing["submission_status"]
+    no_upo = str_gijf_submission(submitted=True, confirmation_received=False, days_since_detection=1)
+    assert no_upo["_routing"] == "TRIAGE_QUEUE"
+    assert "BRAK potwierdzenia" in no_upo["submission_status"]
+    ok = str_gijf_submission(submitted=True, confirmation_received=True, days_since_detection=1)
+    assert ok["_routing"] == ""
+    assert ok["deadline_working_days"] == 1
+
+
+def test_subprocessor_saas_map():
+    """P1-1: mapa podprocesorów SaaS — brak umów Art. 28 obniża score, nigdy poniżej 0."""
+    bad = subprocessor_saas_map(used=["HOSTING_CHMURY", "CRM"])
+    assert bad["compliance_score"] == 0
+    assert len(bad["missing_art28"]) == 2
+    assert len(bad["saas_catalog"]) >= 8
+    good = subprocessor_saas_map(
+        used=["HOSTING_CHMURY", "CRM"],
+        has_art28={"HOSTING_CHMURY": True, "CRM": True},
+        has_subprocessing_consent={"HOSTING_CHMURY": True, "CRM": True})
+    assert good["compliance_score"] == 100
+    assert good["missing_art28"] == []
+
+
+def test_rodo_deadline_calendar():
+    """P1-2: kalendarz RODO — w grudniu 4 zadania (roczny + cykliczne), przegląd rejestru."""
+    dec = rodo_deadline_calendar(current_month=12)
+    assert any("rejestru czynności" in t for t in dec["upcoming_this_month"])
+    assert dec["next_review_month"] == 12
+    jun = rodo_deadline_calendar(current_month=6)
+    assert any("umów powierzenia" in t for t in jun["upcoming_this_month"])
+    assert len(dec["calendar"]) >= 6
+
+
+def test_aml_sanctions_screening():
+    """P1-3: screening sankcyjny — UE+ONZ → 100 pkt BLOCK; PEP → TRIAGE; brak → czyszczenie."""
+    block = aml_sanctions_screening("Entity X", ["eu_consolidated", "un_sc"])
+    assert block["sanctions_score"] == 100
+    assert block["_routing"] == "BLOCK_AND_ALERT"
+    assert "KRYTYCZNE" in block["sanctions_level"]
+    pep = aml_sanctions_screening("Osoba Y", ["pep_national"])
+    assert pep["sanctions_score"] == 20
+    assert pep["_routing"] == "TRIAGE_QUEUE"
+    clear = aml_sanctions_screening("Firma Z", [])
+    assert clear["sanctions_score"] == 0
+    assert clear["_routing"] == ""
+
+
+def test_amlr_2027_check():
+    """P2-1: AMLR — gotówka >10k EUR → CBDD obowiązkowy od 2027."""
+    over = amlr_2027_check(cash_transaction_eur=12_000, crypto_transaction_eur=500)
+    assert over["cash_over_threshold"] is True
+    assert over["crypto_over_threshold"] is False
+    assert over["_routing"] == "TRIAGE_QUEUE"
+    assert "2027-07-10" in over["application_from"]
+    below = amlr_2027_check(cash_transaction_eur=5_000, crypto_transaction_eur=500)
+    assert below["_routing"] == ""
+    crypto = amlr_2027_check(cash_transaction_eur=0, crypto_transaction_eur=2_000)
+    assert crypto["crypto_over_threshold"] is True
+
+
+def test_compliance_dashboard():
+    """P2-2: dashboard — zaległe STR lub otwarte naruszenia → BLOCK."""
+    bad = compliance_dashboard(str_pending=1, breaches_open=2)
+    assert bad["_routing"] == "BLOCK_AND_ALERT"
+    assert bad["breach_72h"]["deadline_hours"] == 72
+    assert bad["breach_72h"]["within_deadline"] is False
+    ok = compliance_dashboard(clients_high_risk=1, transactions_flagged=2)
+    assert ok["aml_panel"]["panel_score"] == 20
+    assert "JSON" in ok["export_formats"]
+
+
+def test_sanctions_lists_catalog():
+    """Katalog list sankcyjnych — 5 list UE/ONZ/OFAC/UK/PEP z wagami."""
+    assert len(SANCTIONS_LISTS) == 5
+    assert SANCTIONS_LISTS["eu_consolidated"]["weight"] == 50
+    assert SANCTIONS_LISTS["un_sc"]["weight"] == 50
+    assert SANCTIONS_LISTS["pep_national"]["weight"] == 20
 
 
 # ── Stałe ─────────────────────────────────────────────────────────────────────

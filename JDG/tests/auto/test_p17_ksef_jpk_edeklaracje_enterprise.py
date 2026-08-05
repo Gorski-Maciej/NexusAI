@@ -12,15 +12,22 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 sys.path.insert(0, str(BASE_DIR / "tools"))
 from ksef_jpk_edeklaracje_auditor import (  # noqa: E402
+    GTU_DICTIONARY,
     KSEF,
     audit_rego_files,
     edelivery_address_manager,
+    edelivery_b2b_b2g_integration,
     esig_auto_applier,
     gtu_auto_assigner,
+    gtu_full_dictionary,
+    jpk_cit_automation_2026,
     jpk_cross_validation,
     jpk_deadline_calendar,
     jpk_v7_auto_generator,
+    ksef_api_integration,
     ksef_audit,
+    ksef_corrections_e2e,
+    ksef_dashboard_ui,
     ksef_firewall_guard,
     ksef_offline_retry,
     ksef_pipeline,
@@ -28,9 +35,94 @@ from ksef_jpk_edeklaracje_auditor import (  # noqa: E402
     ksef_sanction_monitor,
     ksef_sanctions_calculator,
     ksef_upo_tracker,
+    ksef_xsd_offline_ci,
     ksef_xsd_validator,
     wis_auto_requester,
 )
+
+
+# ── Mapa drogowa P0/P1/P2 (R17) ───────────────────────────────────────────────
+def test_ksef_api_integration():
+    """P0-1: API KSeF — brak konfiguracji → TRIAGE, pełne → OK + UPO via API."""
+    unconfigured = ksef_api_integration(api_configured=False)
+    assert unconfigured["_routing"] == "TRIAGE_QUEUE"
+    assert "NIESKONFIGUROWANE" in unconfigured["integration_status"]
+    no_number = ksef_api_integration(api_configured=True, ksef_number="")
+    assert "BRAK NUMERU" in no_number["integration_status"]
+    ok = ksef_api_integration(api_configured=True, ksef_number="KSEF-123")
+    assert ok["_routing"] == ""
+    assert ok["upo_via_api"] is True
+    assert ok["endpoint_prod"] == "https://ksef.mf.gov.pl/api"
+
+
+def test_ksef_xsd_offline_ci():
+    """P0-2: walidator XSD offline — CI gate, BLOCK przy nieudanym przebiegu."""
+    ok = ksef_xsd_offline_ci(ci_last_run_ok=True)
+    assert ok["_routing"] == ""
+    assert len(ok["schemas"]) >= 2
+    assert ok["validator"] == "xmllint/Java JAXB (offline)"
+    bad = ksef_xsd_offline_ci(ci_last_run_ok=False)
+    assert bad["_routing"] == "BLOCK_AND_ALERT"
+    assert bad["block_on_invalid"] is True
+
+
+def test_ksef_corrections_e2e():
+    """P1-1: korekty KSeF end-to-end — art. 106j VAT, termin 30 dni."""
+    pending = ksef_corrections_e2e(corrections_pending=2)
+    assert pending["_routing"] == "TRIAGE_QUEUE"
+    assert "30 dni" in pending["status"]
+    assert pending["cancellation_allowed"] is True
+    clean = ksef_corrections_e2e()
+    assert clean["_routing"] == ""
+    assert len(clean["correction_reasons"]) >= 5
+
+
+def test_gtu_full_dictionary():
+    """P1-2: baza GTU — pełny słownik 13 kodów + uczenie z historii."""
+    res = gtu_full_dictionary("energia")
+    assert res["dictionary_size"] == 13
+    assert len(GTU_DICTIONARY) == 13
+    assert res["learning_enabled"] is True
+    assert res["entry_for_hint"]["code"] == "GTU_12"
+    assert all(c in KSEF["gtu_codes"] for c in res["codes"])
+
+
+def test_edelivery_b2b_b2g_integration():
+    """P1-3: e-Doręczenia — skrzynka nieaktywna → TRIAGE, pełne → OK."""
+    inactive = edelivery_b2b_b2g_integration(mailbox_active=False)
+    assert inactive["_routing"] == "TRIAGE_QUEUE"
+    assert "NIEAKTYWNA" in inactive["integration_status"]
+    no_confirm = edelivery_b2b_b2g_integration(mailbox_active=True, confirmations_ok=False)
+    assert "POTWIERDZEŃ" in no_confirm["integration_status"]
+    ok = edelivery_b2b_b2g_integration(mailbox_active=True, confirmations_ok=True)
+    assert ok["_routing"] == ""
+    assert ok["b2b_enabled"] is True and ok["b2g_enabled"] is True
+
+
+def test_ksef_dashboard_ui():
+    """P2-1: dashboard KSeF — braki UPO → TRIAGE, kara max → BLOCK."""
+    triage = ksef_dashboard_ui(invoices_sent=10, upo_received=8, invoices_outside=3, corrections_pending=0)
+    assert triage["status_upo"]["upo_missing"] == 2
+    assert triage["_routing"] == "TRIAGE_QUEUE"
+    block = ksef_dashboard_ui(invoices_sent=10, upo_received=10, invoices_outside=600, corrections_pending=0)
+    assert block["kara_ryzyko"]["estimated_fine_pln"] == 500_000
+    assert block["_routing"] == "BLOCK_AND_ALERT"
+    ok = ksef_dashboard_ui(invoices_sent=5, upo_received=5)
+    assert ok["_routing"] == ""
+    assert "JSON" in ok["export_formats"]
+
+
+def test_jpk_cit_automation_2026():
+    """P2-2: JPK_CIT — szablon MF 2026, ready po wygenerowaniu wszystkich sekcji."""
+    not_ready = jpk_cit_automation_2026(cit_blocks_generated=1)
+    assert not_ready["automation_ready"] is False
+    assert not_ready["_routing"] == "TRIAGE_QUEUE"
+    assert "2026" in not_ready["template"]
+    ready = jpk_cit_automation_2026(cit_blocks_generated=4)
+    assert ready["automation_ready"] is True
+    assert ready["_routing"] == ""
+    assert ready["structure_version"] == "2.0"
+    assert ready["deadline_day"] == 31
 
 
 # ── Sekcja 1: audyt KSeF ──────────────────────────────────────────────────────
@@ -124,6 +216,14 @@ def test_gtu_auto_assigner_fallback():
     res = gtu_auto_assigner("inne towary")
     assert res["assigned_gtu"] == "GTU_01"
     assert res["gtu_valid"] is True
+
+
+def test_gtu_auto_assigner_alcohol_tobacco():
+    """GTU_02 = wyroby tytoniowe, GTU_03 = napoje alkoholowe (oficjalne definicje)."""
+    tobacco = gtu_auto_assigner("wyroby tytoniowe")
+    assert tobacco["assigned_gtu"] == "GTU_02"
+    alcohol = gtu_auto_assigner("napoje alkoholowe")
+    assert alcohol["assigned_gtu"] == "GTU_03"
 
 
 # ── Sekcja 1: walidator XSD (INN-06) ──────────────────────────────────────────
@@ -308,6 +408,24 @@ def test_p17_no_collision():
 
 
 # ── Smoke CLI ──────────────────────────────────────────────────────────────────
+def test_p17_tool_smoke_roadmap():
+    """Narzędzie CLI — nowe komendy mapy drogowej P0/P1/P2 działają end-to-end."""
+    proc = subprocess.run(
+        [sys.executable, str(BASE_DIR / "tools" / "ksef_jpk_edeklaracje_auditor.py"),
+         "--ksef-api", "--xsd-ci", "--corrections", "--gtu-dict", "--edelivery-b2b",
+         "--ksef-dashboard", "--jpk-cit"],
+        capture_output=True, text=True, check=False, timeout=30)
+    assert proc.returncode == 0, proc.stderr
+    data = json.loads(proc.stdout)
+    assert data["ksef_api"]["upo_via_api"] is True
+    assert data["xsd_ci"]["ci_gate"] is True
+    assert data["corrections"]["correction_deadline_days"] == 30
+    assert data["gtu_dict"]["dictionary_size"] == 13
+    assert data["edelivery_b2b"]["confirmation_type"] == "DORECZENIE_POTWIERDZONE"
+    assert data["ksef_dashboard"]["export_formats"] == ["JSON", "CSV", "PDF"]
+    assert data["jpk_cit"]["structure_version"] == "2.0"
+
+
 def test_p17_tool_smoke():
     """Narzędzie CLI działa end-to-end."""
     proc = subprocess.run(

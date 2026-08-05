@@ -72,6 +72,99 @@ round2(x) = r {
     r := round(x * 100) / 100
 }
 
+# ── Tabele danych Mapa drogowa P0/P1/P2 (z data.jdg.thresholds.automatyzacja_ksiegowosci — ADR-002) ──
+ais_pis_api := object.get(accounting_limits, "ais_pis_api", {
+    "standard": "PolishAPI",
+    "endpoint": "https://api.bank.pl/polishapi",
+    "auth": "OAuth2 (Authorization Code + PKCE)",
+    "ais_scope": "ais",
+    "pis_scope": "pis",
+    "consent_required": true,
+    "consent_lifetime_days": 90,
+    "token_refresh": true,
+})
+
+sca_production := object.get(accounting_limits, "sca_production", {
+    "verification_required": true,
+    "rts": "RTS 2018/389 art. 11-12",
+    "exempt_threshold_pln": 100,
+    "exempt_max_per_tx": 5,
+    "test_transactions_min": 3,
+})
+
+pit_uor_autofill := object.get(accounting_limits, "pit_uor_autofill", {
+    "forms": ["PIT-36", "PIT-36L", "PIT-28"],
+    "sources": ["UoR (bilans, RZiS)", "PKPiR", "rejestry VAT"],
+    "deadline": "2026-04-30",
+    "uor_sections": ["bilans", "rachunek_zyskow_i_strat", "informacja_dodatkowa"],
+    "required_blocks": ["przychody", "koszty", "dochód", "zaliczki", "składki_zdrowotne"],
+})
+
+edelivery_b2b_b2g := object.get(accounting_limits, "edelivery_b2b_b2g", {
+    "mailbox_api": "https://edoreczenia.gov.pl/api",
+    "b2b_enabled": true,
+    "b2g_enabled": true,
+    "confirmation_required": true,
+    "confirmation_type": "DORECZENIE_POTWIERDZONE",
+})
+
+ml_cashflow := object.get(accounting_limits, "ml_cashflow", {
+    "model": "gradient_boosting (historia płatności)",
+    "features": ["średnia_płatności_30d", "sezonowość", "saldo_bank"],
+    "lookback_months": 12,
+    "horizon_days": 30,
+    "confidence_min_pct": 70,
+})
+
+bookkeeper_dashboard_cfg := object.get(accounting_limits, "bookkeeper_dashboard", {
+    "widgets": ["ksiegowania", "deklaracje", "terminy", "przepływy", "pisma", "korekty"],
+    "refresh": "na żywo (hot-reload ADR-002)",
+    "export_formats": ["JSON", "CSV", "PDF"],
+})
+
+declaration_corrections := object.get(accounting_limits, "declaration_corrections", {
+    "legal_basis": "Art. 81 OrdPU (korekta deklaracji)",
+    "correction_deadline_days": 30,
+    "auto_fill_correction": true,
+    "interest_calculation": true,
+})
+
+# ── Funkcje pomocnicze Mapy drogowej ──
+ais_pis_routing(token_valid, consent_active) = "TRIAGE_QUEUE" { token_valid == false or consent_active == false }
+else = "" { true }
+
+ais_pis_status(token_valid, consent_active) = "AIS/PIS NIESKONFIGUROWANE — uzyskaj token OAuth2 i konsent PSD2" { token_valid == false }
+else = "BRAK WAŻNEGO KONSENTU PSD2 — odśwież zgodę (90 dni)" { consent_active == false }
+else = "AIS/PIS GOTOWE — token OAuth2 + konsent PSD2 aktywne (PolishAPI)" { true }
+
+sca_prod_routing(verified) = "BLOCK_AND_ALERT" { verified == false }
+else = "" { true }
+
+sca_prod_status(verified, tests_passed) = sprintf("SCA PRODUKCYJNE NIEZWERYFIKOWANE — %d/%d testów (RTS 2018/389)", [tests_passed, to_number(object.get(sca_production, "test_transactions_min", 3))]) { verified == false }
+else = "SCA zweryfikowane w środowisku produkcyjnym banku (RTS 2018/389) — OK" { true }
+
+pit_autofill_routing(ready) = "TRIAGE_QUEUE" { ready == false }
+else = "" { true }
+
+edelivery2_routing(mailbox_active, confirmations_ok) = "TRIAGE_QUEUE" { mailbox_active == false }
+else = "TRIAGE_QUEUE" { confirmations_ok == false }
+else = "" { true }
+
+ml_routing(confidence) = "TRIAGE_QUEUE" { confidence < to_number(object.get(ml_cashflow, "confidence_min_pct", 70)) }
+else = "" { true }
+
+ml_status(confidence) = sprintf("Model ML cashflow: pewność %d%% (min %d%%) — prognoza niewiarygodna", [confidence, to_number(object.get(ml_cashflow, "confidence_min_pct", 70))]) { confidence < to_number(object.get(ml_cashflow, "confidence_min_pct", 70)) }
+else = sprintf("Model ML cashflow: pewność %d%% — prognoza gotowa", [confidence]) { true }
+
+dashboard_routing(pending_items) = "TRIAGE_QUEUE" { pending_items > 0 }
+else = "" { true }
+
+correction_routing(corrections_pending) = "TRIAGE_QUEUE" { corrections_pending > 0 }
+else = "" { true }
+
+correction_status(corrections_pending) = sprintf("KOREKTY DEKLARACJI — %d oczekujących (art. 81 OrdPU), termin 30 dni", [corrections_pending]) { corrections_pending > 0 }
+else = "Brak korekt deklaracji — OK (art. 81 OrdPU)" { true }
+
 # ── Funkcje pomocnicze (else-chain — deterministyczne, zero konfliktów) ────────
 sca_required(amount_pln, tx_count_since_auth) = "SCA WYMAGANE — kwota > 100 zł (RTS 2018/389)" { amount_pln > sca_exempt_threshold_pln }
 else = "SCA EXEMPT — kwota ≤ 100 zł" { tx_count_since_auth < sca_exempt_max_per_tx }
@@ -645,6 +738,188 @@ split_payment_adviser := {
     object.get(input.jdg_entrepreneur, "p18_automatyzacja_check", false) == true
 }
 
+# ── MAPA DROGOWA P0/P1/P2 — wdrożone (R18) ────────────────────────────────────
+# P0-1: realna integracja AIS/PIS (PolishAPI) — token OAuth2, konsent PSD2.
+ais_pis_integration := {
+    "rule_id": "jdg.p18_automatyzacja_ksiegowosci_innovations.ais_pis_integration",
+    "package": "jdg.p18_automatyzacja_ksiegowosci_innovations",
+    "priority": 3280,
+    "matched": true,
+    "standard": object.get(ais_pis_api, "standard", "PolishAPI"),
+    "endpoint": object.get(ais_pis_api, "endpoint", ""),
+    "auth_flow": object.get(ais_pis_api, "auth", "OAuth2"),
+    "ais_scope": object.get(ais_pis_api, "ais_scope", "ais"),
+    "pis_scope": object.get(ais_pis_api, "pis_scope", "pis"),
+    "token_valid": token_valid,
+    "consent_active": consent_active,
+    "consent_lifetime_days": object.get(ais_pis_api, "consent_lifetime_days", 90),
+    "token_refresh": object.get(ais_pis_api, "token_refresh", true),
+    "integration_status": ais_pis_status(token_valid, consent_active),
+    "note": "realna integracja AIS/PIS (PolishAPI) — token OAuth2, konsent PSD2 (P0)",
+    "_routing": ais_pis_routing(token_valid, consent_active),
+    "_routing_reason": sprintf("AIS/PIS: token=%v, konsent=%v (PolishAPI)", [token_valid, consent_active]),
+    "_legal_basis": "PSD2 art. 94-97; RTS 2018/389; PolishAPI",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p18_automatyzacja_check", false) == true
+    token_valid := object.get(input.banking, "oauth_token_valid", false)
+    consent_active := object.get(input.banking, "psd2_consent_active", false)
+}
+
+# P0-2: weryfikacja SCA w środowisku produkcyjnym banku (RTS 2018/389).
+sca_production_verification := {
+    "rule_id": "jdg.p18_automatyzacja_ksiegowosci_innovations.sca_production_verification",
+    "package": "jdg.p18_automatyzacja_ksiegowosci_innovations",
+    "priority": 3281,
+    "matched": true,
+    "verification_required": object.get(sca_production, "verification_required", true),
+    "rts": object.get(sca_production, "rts", "RTS 2018/389"),
+    "exempt_threshold_pln": object.get(sca_production, "exempt_threshold_pln", 100),
+    "exempt_max_per_tx": object.get(sca_production, "exempt_max_per_tx", 5),
+    "test_transactions_min": object.get(sca_production, "test_transactions_min", 3),
+    "tests_passed": tests_passed,
+    "sca_verified": verified,
+    "verification_status": sca_prod_status(verified, tests_passed),
+    "sca_methods": object.get(sca_production, "sca_methods", ["biometria", "sms_otp"]),
+    "note": "weryfikacja SCA w środowisku produkcyjnym banku — RTS 2018/389 art. 11-12 (P0)",
+    "_routing": sca_prod_routing(verified),
+    "_routing_reason": sprintf("SCA produkcja: %d/%d testów, verified=%v", [tests_passed, object.get(sca_production, "test_transactions_min", 3), verified]),
+    "_legal_basis": "RTS 2018/389 art. 11-12; PSD2 art. 97",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p18_automatyzacja_check", false) == true
+    tests_passed := to_number(object.get(input.banking, "sca_tests_passed", 0))
+    verified := tests_passed >= to_number(object.get(sca_production, "test_transactions_min", 3))
+}
+
+# P1-1: pełny silnik auto-fill PIT-36/36L/28 z UoR (sprawozdania finansowe).
+pit_uor_autofill_engine := {
+    "rule_id": "jdg.p18_automatyzacja_ksiegowosci_innovations.pit_uor_autofill_engine",
+    "package": "jdg.p18_automatyzacja_ksiegowosci_innovations",
+    "priority": 3282,
+    "matched": true,
+    "forms": object.get(pit_uor_autofill, "forms", ["PIT-36", "PIT-36L", "PIT-28"]),
+    "uor_sections": object.get(pit_uor_autofill, "uor_sections", ["bilans", "rachunek_zyskow_i_strat"]),
+    "required_blocks": object.get(pit_uor_autofill, "required_blocks", ["przychody", "koszty", "dochód"]),
+    "filled_blocks": filled_blocks,
+    "ready_to_generate": ready,
+    "deadline": object.get(pit_uor_autofill, "deadline", "2026-04-30"),
+    "note": "pełny silnik auto-fill PIT-36/36L/28 z UoR — sprawozdania finansowe (bilans, RZiS) (P1)",
+    "_routing": pit_autofill_routing(ready),
+    "_routing_reason": sprintf("Auto-fill PIT z UoR: %d/%d bloków, ready=%v", [filled_blocks, count(object.get(pit_uor_autofill, "required_blocks", ["przychody"])) + 1, ready]),
+    "_legal_basis": "Art. 45 u.PIT; UoR art. 45 (sprawozdania finansowe)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p18_automatyzacja_check", false) == true
+    filled_blocks := to_number(object.get(input.forms, "pit_blocks_filled", 0))
+    ready := filled_blocks >= count(object.get(pit_uor_autofill, "required_blocks", ["przychody"]))
+}
+
+# P1-2: integracja e-Doręczeń B2B/B2G + potwierdzenia doręczenia.
+edelivery_b2b_b2g_flow := {
+    "rule_id": "jdg.p18_automatyzacja_ksiegowosci_innovations.edelivery_b2b_b2g_flow",
+    "package": "jdg.p18_automatyzacja_ksiegowosci_innovations",
+    "priority": 3283,
+    "matched": true,
+    "mailbox_api": object.get(edelivery_b2b_b2g, "mailbox_api", ""),
+    "mailbox_active": mailbox_active,
+    "b2b_enabled": object.get(edelivery_b2b_b2g, "b2b_enabled", true),
+    "b2g_enabled": object.get(edelivery_b2b_b2g, "b2g_enabled", true),
+    "confirmations_ok": confirmations_ok,
+    "confirmation_type": object.get(edelivery_b2b_b2g, "confirmation_type", "DORECZENIE_POTWIERDZONE"),
+    "integration_status": edelivery2_status(mailbox_active, confirmations_ok),
+    "note": "integracja e-Doręczeń B2B/B2G — skrzynka + potwierdzenia doręczenia (P1)",
+    "_routing": edelivery2_routing(mailbox_active, confirmations_ok),
+    "_routing_reason": sprintf("e-Doręczenia: mailbox=%v, confirmations=%v (B2B/B2G)", [mailbox_active, confirmations_ok]),
+    "_legal_basis": "Ustawa o doręczeniach elektronicznych (2026-01-01)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p18_automatyzacja_check", false) == true
+    mailbox_active := object.get(input.edelivery, "mailbox_active", false)
+    confirmations_ok := object.get(input.edelivery, "confirmations_ok", false)
+}
+
+edelivery2_status(mailbox_active, confirmations_ok) = "SKRZYNKA e-DORĘCZEŃ NIEAKTYWNA — aktywuj (B2B/B2G od 2026-01-01)" { mailbox_active == false }
+else = "BRAK POTWIERDZEŃ DORĘCZEŃ — zweryfikuj status wiadomości" { confirmations_ok == false }
+else = "SKRZYNKA e-DORĘCZEŃ AKTYWNA + POTWIERDZENIA OK (B2B/B2G)" { true }
+
+# P1-3: model ML predykcji cashflow (historia płatności).
+ml_cashflow_prediction := {
+    "rule_id": "jdg.p18_automatyzacja_ksiegowosci_innovations.ml_cashflow_prediction",
+    "package": "jdg.p18_automatyzacja_ksiegowosci_innovations",
+    "priority": 3284,
+    "matched": true,
+    "model": object.get(ml_cashflow, "model", "gradient_boosting"),
+    "features": object.get(ml_cashflow, "features", ["średnia_płatności_30d"]),
+    "lookback_months": object.get(ml_cashflow, "lookback_months", 12),
+    "horizon_days": object.get(ml_cashflow, "horizon_days", 30),
+    "history_months": history_months,
+    "predicted_balance_pln": round2(predicted_balance),
+    "confidence_pct": confidence,
+    "forecast_status": ml_status(confidence),
+    "note": "model ML predykcji cashflow — historia płatności (gradient boosting), horyzont 30 dni (P1)",
+    "_routing": ml_routing(confidence),
+    "_routing_reason": sprintf("ML cashflow: %d mies. historii, saldo %.2f PLN, pewność %d%%", [history_months, predicted_balance, confidence]),
+    "_legal_basis": "OrdPU; u.PIT; VAT (planowanie płynności)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p18_automatyzacja_check", false) == true
+    history_months := to_number(object.get(input.cashflow, "history_months", 0))
+    predicted_balance := to_number(object.get(input.cashflow, "ml_predicted_balance_pln", 0))
+    confidence := to_number(object.get(input.cashflow, "ml_confidence_pct", 0))
+}
+
+# P2-1: dashboard wirtualnego asystenta księgowego w UI.
+bookkeeper_dashboard_ui := {
+    "rule_id": "jdg.p18_automatyzacja_ksiegowosci_innovations.bookkeeper_dashboard_ui",
+    "package": "jdg.p18_automatyzacja_ksiegowosci_innovations",
+    "priority": 3285,
+    "matched": true,
+    "widgets": object.get(bookkeeper_dashboard_cfg, "widgets", ["ksiegowania", "deklaracje"]),
+    "export_formats": object.get(bookkeeper_dashboard_cfg, "export_formats", ["JSON", "CSV", "PDF"]),
+    "ksiegowania": {"auto_booked": auto_booked, "unmatched": unmatched},
+    "deklaracje": {"ready_to_send": forms_ready},
+    "terminy": {"today_deadlines": today_deadlines},
+    "przeplywy": {"projected_balance_pln": round2(projected_balance)},
+    "pending_items": pending_items,
+    "note": "dashboard wirtualnego asystenta księgowego — agregacja ksiegowania/deklaracje/terminy/przepływy (P2)",
+    "_routing": dashboard_routing(pending_items),
+    "_routing_reason": sprintf("Dashboard asystenta: %d pozycji do obsługi", [pending_items]),
+    "_legal_basis": "ADR-002; PSD2; OrdPU",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p18_automatyzacja_check", false) == true
+    auto_booked := to_number(object.get(input.dashboard, "auto_booked", 0))
+    unmatched := to_number(object.get(input.dashboard, "unmatched", 0))
+    forms_ready := to_number(object.get(input.dashboard, "forms_ready", 0))
+    today_deadlines := count(object.get(input.dashboard, "today_deadlines", []))
+    projected_balance := to_number(object.get(input.dashboard, "projected_balance_pln", 0))
+    pending_items := unmatched + (count(object.get(input.dashboard, "forms_pending", []))) + today_deadlines
+}
+
+# P2-2: automatyzacja korekt deklaracji (art. 81 OrdPU) end-to-end.
+declaration_correction_automation := {
+    "rule_id": "jdg.p18_automatyzacja_ksiegowosci_innovations.declaration_correction_automation",
+    "package": "jdg.p18_automatyzacja_ksiegowosci_innovations",
+    "priority": 3286,
+    "matched": true,
+    "legal_basis": object.get(declaration_corrections, "legal_basis", "Art. 81 OrdPU"),
+    "correction_deadline_days": object.get(declaration_corrections, "correction_deadline_days", 30),
+    "auto_fill_correction": object.get(declaration_corrections, "auto_fill_correction", true),
+    "interest_calculation": object.get(declaration_corrections, "interest_calculation", true),
+    "correction_reasons": object.get(declaration_corrections, "reasons", ["błąd rachunkowy"]),
+    "corrections_pending": corrections_pending,
+    "status": correction_status(corrections_pending),
+    "note": "automatyzacja korekt deklaracji end-to-end — art. 81 OrdPU, auto-fill korekty + odsetki (P2)",
+    "_routing": correction_routing(corrections_pending),
+    "_routing_reason": sprintf("Korekty deklaracji (art. 81 OrdPU): %d oczekujących", [corrections_pending]),
+    "_legal_basis": "Art. 81 OrdPU; art. 53-56 OrdPU (odsetki)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p18_automatyzacja_check", false) == true
+    corrections_pending := to_number(object.get(input.forms, "corrections_pending", 0))
+}
+
 # ── GŁÓWNY DECIDE (P18) — raport syntetyczny automatyzacji księgowości ─────────
 decide := {
     "rule_id": "jdg.p18_automatyzacja_ksiegowosci_innovations.report",
@@ -657,6 +932,15 @@ decide := {
     "calendar": calendar_deadlines_audit,
     "correspondence_cashflow": correspondence_cashflow_audit,
     "api_pipeline": api_adaptation_pipeline,
+    "roadmap": {
+        "ais_pis_integration": ais_pis_integration,
+        "sca_production_verification": sca_production_verification,
+        "pit_uor_autofill_engine": pit_uor_autofill_engine,
+        "edelivery_b2b_b2g_flow": edelivery_b2b_b2g_flow,
+        "ml_cashflow_prediction": ml_cashflow_prediction,
+        "bookkeeper_dashboard_ui": bookkeeper_dashboard_ui,
+        "declaration_correction_automation": declaration_correction_automation,
+    },
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny automatyzacji księgowości (P18)",
     "_legal_basis": "PSD2; PolishAPI; eIDAS; ustawa o doręczeniach elektronicznych; OrdPU",

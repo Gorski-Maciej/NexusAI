@@ -22,7 +22,7 @@ Narzędzie: `JDG/tools/bdo_environment_auditor.py`
 | 5. CBAM | `cbam_audit` + `cbam_calculator` (INN-06) — rozporządzenie UE 2023/956, raporty kwartalne, certyfikaty od 2026, estoński CIT | ✅ |
 | 6. OPA jako system | `bdo_pipeline_snapshot` — pipeline ingest→generate→verify→emit (ADR-002, hot-reload) | ✅ |
 | 7. Genius ideas (12) | INN-01..12: bdo_assistant, kpo_generator, bdo_deadline_tracker, product_fee_tracker, budowlane_pozwolenie_calculator, cbam_calculator, branza_compliance_panel, branza_template_hook, regulated_profession_assistant, taxfree_calculator, seasonal_assistant, agricultural_tax_calculator | ✅ |
-| 8. Mapa drogowa | w raporcie R15 — luki P0/P1/P2 | ✅ |
+| 8. Mapa drogowa R15 (P0/P1/P2) | **UZUPEŁNIONE 2026-08-05** — 7 reguł: `product_fee_material_map` (P0-1), `bdo_api_integration` (P0-2), `ewc_full_catalog` (P1-1), `agricultural_tax_rate_registry` (P1-2), `transport_permit_tables` (P1-3), `cbam_certificates_2026` (P2-1), `bdo_online_registration` (P2-2) + lookup w `jdg.micro.bdo_ewc` | ✅ |
 
 ## Progi (ADR-002 — `data.jdg.thresholds.bdo_environment`)
 
@@ -33,6 +33,20 @@ Narzędzie: `JDG/tools/bdo_environment_auditor.py`
 - CBAM: 80 EUR/t CO2 (orientacyjna cena EU ETS)
 - Podatek rolny: 2,5 q żyta/ha × 89,63 zł/q (2026)
 - Tax-free: VAT 23%
+
+### Mapa drogowa R15 (uzupełniona 2026-08-05)
+
+| Luka | Reguła / dane | Status |
+|---|---|---|
+| P0-1 opłaty produktowe per materiał | `packaging_fee_rates_per_material` (papier 0,50 / tworzywa 2,00 / szkło 0,20 / metale 0,30 / drewno 0,20 / wielomateriałowe 1,00 zł/kg) + `product_fee_material_map` | ✅ |
+| P0-2 API BDO (KPO + sprawozdania) | `bdo_api` (endpointy, auth) + `bdo_api_integration` (status KPO/sprawozdań, ready) | ✅ |
+| P1-1 pełny katalog EWC 6-cyfrowy | `ewc_catalog` — **301 kodów w 20 rozdziałach** + `ewc_full_catalog` + `jdg.micro.bdo_ewc.ewc_catalog_lookup` | ✅ |
+| P1-2 stawki podatku rolnego per gmina | `agricultural_tax_multiplier_by_gmina` (rejestr + fallback 2,5 q) + `agricultural_tax_rate_registry` | ✅ |
+| P1-3 tabele zezwoleń transportowych | `transport_permits` (krajowy/unijny_ue/poza_ue/tachograf) + `transport_permit_tables` | ✅ |
+| P2-1 certyfikaty CBAM 2026 | `cbam_certificates` (2026-01-01, 80 EUR/t, umorzenie 31.05, kara 50 EUR/t) + `cbam_certificates_2026` | ✅ |
+| P2-2 rejestracja online BDO | `bdo_online_registration` (endpoint, kroki, opłata, terminy 30 dni) + reguła | ✅ |
+
+Wszystkie wartości w `JDG/rules/thresholds_jdg.rego` (sekcja `bdo_environment`) — zero hardcode w regułach (ADR-002). Katalog EWC rozszerzalny przez dodanie wpisów `{"code", "name", "hazardous"}`.
 
 ## Narzędzie CLI
 
@@ -45,13 +59,22 @@ python JDG/tools/bdo_environment_auditor.py --permit --project-type nowy_budynek
 python JDG/tools/bdo_environment_auditor.py --cbam --co2-t 10 --import-value 50000
 python JDG/tools/bdo_environment_auditor.py --taxfree --sale-amount 1230
 python JDG/tools/bdo_environment_auditor.py --agricultural --ha-conversion 4
+
+# ── R15 MAPA DROGOWA P0/P1/P2 ──
+python JDG/tools/bdo_environment_auditor.py --product-fee-material --material papier --packaging-kg 100   # P0-1 opłaty per materiał
+python JDG/tools/bdo_environment_auditor.py --bdo-api --api-configured --api-credentials                  # P0-2 API BDO (KPO/sprawozdania)
+python JDG/tools/bdo_environment_auditor.py --ewc-lookup --ewc-code "17 06 01*"                           # P1-1 katalog EWC 6-cyfrowy
+python JDG/tools/bdo_environment_auditor.py --agricultural --gmina Warszawa --ha-conversion 4             # P1-2 podatek rolny per gmina
+python JDG/tools/bdo_environment_auditor.py --transport --route-type poza_ue                              # P1-3 zezwolenia transportowe
+python JDG/tools/bdo_environment_auditor.py --cbam-certificates --co2-t 10 --authorized-declarant         # P2-1 certyfikaty CBAM 2026
+python JDG/tools/bdo_environment_auditor.py --bdo-register-online --registration-status nie_zarejestrowany  # P2-2 rejestracja online BDO
 ```
 
 ## Testy
 
-- Rego: `JDG/tests/rego/test_p15_srodowisko_bdo_enterprise.rego` (24 scenariusze)
-- Pytest: `JDG/tests/auto/test_p15_srodowisko_bdo_enterprise.py` (23 testy)
-- Pełny przebieg P01-P15: 256 testów
+- Rego: `JDG/tests/rego/test_p15_srodowisko_bdo_enterprise.rego` (24 + 14 scenariuszy R15 = **38**)
+- Pytest: `JDG/tests/auto/test_p15_srodowisko_bdo_enterprise.py` (23 + 20 testów R15 = **43**)
+- Pełny przebieg P01-P15: 256+ testów
 
 ## Okablowanie
 

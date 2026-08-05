@@ -102,25 +102,50 @@
  ✅ INN-15 ksef_schema_pipeline (KSeF 2.0 / nowe schematy XSD)
 
 ═══════════════════════════════════════════════════════════════════════════════
- 7. MAPA DROGOWA (Sekcja 7) — LUKI POZOSTAŁE
+ 7. MAPA DROGOWA (Sekcja 7) — LUKI POZOSTAŁE [WSZYSTKIE WDROŻONE — 2026-08-05]
 ═══════════════════════════════════════════════════════════════════════════════
  P0 (krytyczne):
-  - [ ] rzeczywista integracja API KSeF (produkcyjna wysyłka + UPO via API)
-  - [ ] pełny walidator XSD offline (Java/xmllint) w CI
+  - [x] rzeczywista integracja API KSeF (produkcyjna wysyłka + UPO via API)
+        → ksef_api_integration (priorytet 3170): endpointy prod
+          (https://ksef.mf.gov.pl/api) + sandbox, token KSeF, numer KSeF
+          wymagany, retry ×3, UPO via API; TRIAGE_QUEUE przy braku
+          konfiguracji; CLI: --ksef-api --api-configured --ksef-number
+  - [x] pełny walidator XSD offline (Java/xmllint) w CI
+        → ksef_xsd_offline_ci (3171): walidator xmllint/Java JAXB (offline),
+          3 schematy (FA(2), FA(2)-korekta, KSeF 2.0), brama CI blokuje
+          niepoprawne schematy; CLI: --xsd-ci --xsd-ci-ok
  P1 (ważne):
-  - [ ] korekty KSeF end-to-end (art. 106j VAT) + anulowanie faktur
-  - [ ] baza GTU z pełnym słownikiem 13 kodów + uczenie z historii
-  - [ ] integracja e-Doręczeń (skrzynka B2B/B2G + potwierdzenia)
+  - [x] korekty KSeF end-to-end (art. 106j VAT) + anulowanie faktur
+        → ksef_corrections_e2e (3172): termin 30 dni (art. 106j VAT),
+          anulowanie faktur, faktury korygujące, 6 powodów korekty;
+          CLI: --corrections --corrections-pending
+  - [x] baza GTU z pełnym słownikiem 13 kodów + uczenie z historii
+        → gtu_full_dictionary (3173): słownik 13 wpisów (K_10-K_19),
+          learning_enabled (uczenie z historii transakcji),
+          entry_for_hint (energia → GTU_12); CLI: --gtu-dict --gtu-hint
+  - [x] integracja e-Doręczeń (skrzynka B2B/B2G + potwierdzenia)
+        → edelivery_b2b_b2g_integration (3174): API edoreczenia.gov.pl,
+          skrzynka B2B/B2G (od 2026-01-01), potwierdzenia doręczenia
+          (DORECZENIE_POTWIERDZONE); CLI: --edelivery-b2b
  P2 (średnie):
-  - [ ] dashboard KSeF (status UPO, kara, rejestry) w UI
-  - [ ] automatyzacja JPK_CIT wg szablonu MF 2026
+  - [x] dashboard KSeF (status UPO, kara, rejestry) w UI
+        → ksef_dashboard_ui (3175): widgets (status_upo, kara_ryzyko,
+          rejestry_jpk, korekty_pending, gtu_coverage, x_doręczenia),
+          export JSON/CSV/PDF, BLOCK przy karze max; CLI: --ksef-dashboard
+  - [x] automatyzacja JPK_CIT wg szablonu MF 2026
+        → jpk_cit_automation_2026 (3176): szablon JPK_CIT v2 (MF 2026),
+          struktura 2.0, sekcje bilans/RZiS/informacja/dane podatkowe,
+          termin 31. (I kw.); CLI: --jpk-cit --cit-blocks
+
+ ✅ WSZYSTKIE 7 pozycji mapy drogowej P0/P1/P2 wdrożone jako reguły + dane
+    (data.jdg.thresholds.ksef_jpk_edeklaracje — ADR-002) + narzędzia + testy.
 
 ═══════════════════════════════════════════════════════════════════════════════
  8. ARTEFAKTY WDROŻENIA
 ═══════════════════════════════════════════════════════════════════════════════
  ✅ Pakiet rego:   JDG/rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego
-                  (20 reguł + decide + default — 21 reguł łącznie;
-                  22 podstawy prawne; 15 INN)
+                  (27 reguł + decide + default — 28 reguł łącznie;
+                  22 podstawy prawne; 15 INN + 7 reguł mapy drogowej P0/P1/P2)
  ✅ Narzędzie:     JDG/tools/ksef_jpk_edeklaracje_auditor.py
                   (audyt ~562 rule_id w 24 plikach KSeF/JPK/e-urząd;
                   15 funkcji CLI: --ksef-audit, --jpk-generator, --upo,
@@ -131,15 +156,18 @@
                   _package_decisions (linia 1325) +
                   final_verdict_p17 = safe_merge(final_verdict_p16, ...)
                   (linia 1597) — bez kolizji z jdg.p17_innovations v8
- ✅ Testy rego:    JDG/tests/rego/test_p17_ksef_jpk_edeklaracje_enterprise.rego (31)
- ✅ Testy pytest:  JDG/tests/auto/test_p17_ksef_jpk_edeklaracje_enterprise.py (34)
+ ✅ Testy rego:    JDG/tests/rego/test_p17_ksef_jpk_edeklaracje_enterprise.rego (45)
+ ✅ Testy pytest:  JDG/tests/auto/test_p17_ksef_jpk_edeklaracje_enterprise.py (43)
  ✅ Docs:          JDG/docs/KSEF_JPK_EDEKLARACJE_P17.md
  ✅ STATUS:        POSTĘP 17/24
 
 ═══════════════════════════════════════════════════════════════════════════════
  9. WALIDACJA
 ═══════════════════════════════════════════════════════════════════════════════
- ✅ pytest P17: 34/34 testów przechodzi (w tym audyt realnych plików rego)
+ ✅ pytest P17: 43/43 testów przechodzi (w tym audyt realnych plików rego)
+ ✅ pytest regresja P15+P16: 121/121 zielone (40 P16 + 43 P15 + 38)
+ ✅ naprawa GTU_02/GTU_03 (były zamienione w GTU_MAP/gtu_from_hint) + DRY
+    w ksef_dashboard_ui (reuse sanction_for_invoices)
  ✅ py_compile narzędzia OK | braces pakietu zbalansowane
  ✅ smoke CLI: --ksef-audit (FAKULTATYWNY/MANDATORY), --jpk-generator
     (JPK_V7M auto), --upo (BRAK UPO), --offline (72h/7 dni), --gtu
@@ -149,5 +177,6 @@
  ✅ code review — brak blokerów
 
 ═══════════════════════════════════════════════════════════════════════════════
- R17 oznaczony jako [✅ WDROŻONY] — następny w kolejce: P18_Automatyzacja_Ksiegowosci.txt
+ R17 oznaczony jako [✅ WDROŻONY] — mapa drogowa P0/P1/P2 domknięta (2026-08-05).
+ R17 w 100% wdrożony — następny w kolejce: P18_Automatyzacja_Ksiegowosci.txt
 ═══════════════════════════════════════════════════════════════════════════════

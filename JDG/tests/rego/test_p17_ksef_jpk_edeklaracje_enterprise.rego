@@ -283,6 +283,138 @@ test_ksef_schema_pipeline {
     result.hot_reload == true
 }
 
+# ── MAPA DROGOWA P0/P1/P2 (R17) ───────────────────────────────────────────────
+test_ksef_api_integration_unconfigured {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.ksef_api_integration with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true},
+                  "ksef": {"api_configured": false, "ksef_number": ""}}
+    result.api_configured == false
+    result.upo_via_api == true
+    result._routing == "TRIAGE_QUEUE"
+    "NIESKONFIGUROWANE" in result.integration_status
+}
+
+test_ksef_api_integration_ready {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.ksef_api_integration with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true},
+                  "ksef": {"api_configured": true, "ksef_number": "KSEF-123"}}
+    result.api_configured == true
+    result.ksef_number == "KSEF-123"
+    result._routing == ""
+    "GOTOWE" in result.integration_status
+}
+
+test_ksef_xsd_offline_ci_ok {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.ksef_xsd_offline_ci with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true},
+                  "ksef": {"xsd_ci_last_run_ok": true}}
+    result.ci_last_run_ok == true
+    result.ci_gate == true
+    result._routing == ""
+    count(result.schemas) >= 2
+}
+
+test_ksef_xsd_offline_ci_fail {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.ksef_xsd_offline_ci with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true},
+                  "ksef": {"xsd_ci_last_run_ok": false}}
+    result.ci_last_run_ok == false
+    result._routing == "BLOCK_AND_ALERT"
+    result.block_on_invalid == true
+}
+
+test_ksef_corrections_e2e_pending {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.ksef_corrections_e2e with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true},
+                  "ksef": {"corrections_pending": 2}}
+    result.corrections_pending == 2
+    result.correction_deadline_days == 30
+    result._routing == "TRIAGE_QUEUE"
+    "KOREKTY KSeF" in result.status
+}
+
+test_ksef_corrections_e2e_clean {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.ksef_corrections_e2e with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true}}
+    result.corrections_pending == 0
+    result._routing == ""
+    result.cancellation_allowed == true
+}
+
+test_gtu_full_dictionary {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.gtu_full_dictionary with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true},
+                  "invoice": {"gtu_hint": "energia"}}
+    result.dictionary_size == 13
+    result.learning_enabled == true
+    result.entry_for_hint.code == "GTU_12"
+    count(result.codes) == 13
+}
+
+test_gtu_full_dictionary_default {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.gtu_full_dictionary with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true}}
+    result.dictionary_size == 13
+    result.entry_for_hint.code == "GTU_01"
+}
+
+test_edelivery_b2b_b2g_inactive {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.edelivery_b2b_b2g_integration with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true},
+                  "edelivery": {"mailbox_active": false, "confirmations_ok": false}}
+    result.mailbox_active == false
+    result._routing == "TRIAGE_QUEUE"
+    "NIEAKTYWNA" in result.integration_status
+}
+
+test_edelivery_b2b_b2g_ok {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.edelivery_b2b_b2g_integration with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true},
+                  "edelivery": {"mailbox_active": true, "confirmations_ok": true}}
+    result.mailbox_active == true
+    result.confirmations_ok == true
+    result._routing == ""
+    result.b2b_enabled == true
+    result.b2g_enabled == true
+}
+
+test_ksef_dashboard_ui_triage {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.ksef_dashboard_ui with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true},
+                  "dashboard": {"invoices_sent": 10, "upo_received": 8, "invoices_outside": 3, "corrections_pending": 0}}
+    result.status_upo.upo_missing == 2
+    result.status_upo.upo_received == 8
+    result._routing == "TRIAGE_QUEUE"
+    "JSON" in result.export_formats
+}
+
+test_ksef_dashboard_ui_block {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.ksef_dashboard_ui with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true},
+                  "dashboard": {"invoices_sent": 10, "upo_received": 10, "invoices_outside": 600, "corrections_pending": 0}}
+    result.kara_ryzyko.estimated_fine_pln == 500000
+    result._routing == "BLOCK_AND_ALERT"
+}
+
+test_jpk_cit_automation_2026_not_ready {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_cit_automation_2026 with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true},
+                  "jpk": {"cit_blocks_generated": 1}}
+    result.automation_ready == false
+    result._routing == "TRIAGE_QUEUE"
+    "2026" in result.template
+}
+
+test_jpk_cit_automation_2026_ready {
+    result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_cit_automation_2026 with
+        input as {"jdg_entrepreneur": {"p17_ksef_check": true},
+                  "jpk": {"cit_blocks_generated": 4}}
+    result.automation_ready == true
+    result._routing == ""
+    result.structure_version == "2.0"
+    result.deadline_day == 31
+}
+
 # ── 21. Główny decide (P17) + no_match ────────────────────────────────────────
 test_p17_main_decide {
     result := data.jdg.p17_ksef_jpk_edeklaracje_innovations.decide with
@@ -294,6 +426,9 @@ test_p17_main_decide {
     result.jpk.jpk_v7.obowiązek != ""
     result.edelivery_esig.e_podpis.status != ""
     result.pipeline.hot_reload == true
+    result.roadmap.ksef_api_integration.upo_via_api == true
+    result.roadmap.gtu_full_dictionary.dictionary_size == 13
+    count(result.roadmap) == 7
 }
 
 test_p17_default_no_match {

@@ -57,6 +57,26 @@ bdo_limits := object.get(thresholds, "bdo_environment", {
 bdo_rejestracja_oplaty := object.get(bdo_limits, "bdo_rejestracja_opłaty", {"mikro": 100, "mały": 300, "średni": 500})
 bdo_kara_brak_rejestracji := to_number(object.get(bdo_limits, "bdo_kara_brak_rejestracji", 5000))
 
+# ── R15 MAPA DROGOWA: TABELE DANYCH P0/P1/P2 (ADR-002 — data.jdg.thresholds.bdo_environment) ──
+# Zamknięcie luk z Sekcji 8 raportu R15: opłaty per materiał, API BDO, katalog EWC,
+# stawki podatku rolnego per gmina, zezwolenia transportowe, certyfikaty CBAM 2026,
+# rejestracja online BDO. Wszystkie wartości z thresholds — zero hardcode.
+packaging_fee_rates_per_material := object.get(bdo_limits, "packaging_fee_rates_per_material", {"papier": 0.50, "tworzywa_sztuczne": 2.00, "szklo": 0.20, "metale": 0.30, "drewno": 0.20, "wielomaterialowe": 1.00})
+bdo_api_config := object.get(bdo_limits, "bdo_api", {"base_url": "https://bdo.mos.gov.pl/api", "auth": "OAuth2 / certyfikat", "kpo_endpoint": "/kpo", "sprawozdania_endpoint": "/sprawozdania", "rejestracja_endpoint": "/rejestracja", "kpo_elektroniczne_obowiazkowe": true})
+ewc_catalog := object.get(bdo_limits, "ewc_catalog", [])
+agricultural_gmina_rates := object.get(bdo_limits, "agricultural_tax_multiplier_by_gmina", {"default": 2.5})
+transport_permits_table := object.get(bdo_limits, "transport_permits", {})
+cbam_certificate_config := object.get(bdo_limits, "cbam_certificates", {"definitive_from": "2026-01-01", "price_eur_t": 80.0, "validity_years": 2, "surrender_deadline": "31.05", "quarterly_report_deadline": "koniec miesiąca po kwartale", "prepayment_pct": 0.8, "penalty_eur_t": 50.0})
+bdo_registration_config := object.get(bdo_limits, "bdo_online_registration", {"endpoint": "https://bdo.mos.gov.pl/rejestracja", "steps": ["konto w BDO", "wniosek elektroniczny", "opłata (100-500 PLN)", "potwierdzenie rejestracji"], "update_deadline_days": 30, "deregistration_deadline_days": 30})
+
+# Rozdział EWC = pierwsze 2 znaki kodu (helper — P1-1)
+ewc_chapter(code) = ch {
+    count(code) >= 2
+    ch := substring(code, 0, 2)
+} else = "" {
+    true
+}
+
 round2(x) = r {
     r := round(x * 100) / 100
 }
@@ -468,6 +488,192 @@ agricultural_tax_calculator := {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
 }
 
+# ── R15 MAPA DROGOWA P0-1: OPŁATY PRODUKTOWE PER MATERIAŁ (opakowania) ─────
+# Pełne mapowanie opłat produktowych za opakowania per materiał (art. 17-18 UoO +
+# ustawa o gospodarce opakowaniami). Stawki zł/kg z data.jdg.thresholds.bdo_environment.
+product_fee_material_map := {
+    "rule_id": "jdg.p15_srodowisko_bdo_innovations.product_fee_material_map",
+    "package": "jdg.p15_srodowisko_bdo_innovations",
+    "priority": 1126,
+    "matched": true,
+    "material": object.get(input.jdg_entrepreneur, "packaging_material", "tworzywa_sztuczne"),
+    "packaging_kg": to_number(object.get(input.jdg_entrepreneur, "packaging_kg", 0)),
+    "material_rate_pln_kg": object.get(packaging_fee_rates_per_material, object.get(input.jdg_entrepreneur, "packaging_material", "tworzywa_sztuczne"), 0.0),
+    "fee_due": round2(to_number(object.get(input.jdg_entrepreneur, "packaging_kg", 0)) * object.get(packaging_fee_rates_per_material, object.get(input.jdg_entrepreneur, "packaging_material", "tworzywa_sztuczne"), 0.0)),
+    "materials_covered": count(packaging_fee_rates_per_material),
+    "rates": packaging_fee_rates_per_material,
+    "note": "pełne mapowanie opłat produktowych per materiał opakowaniowy (P0-1) — stawki zł/kg z thresholds (ADR-002)",
+    "_routing": "",
+    "_routing_reason": "Opłaty produktowe per materiał opakowaniowy (P0-1) — papier, tworzywa, szkło, metale, drewno, wielomateriałowe",
+    "_legal_basis": "Ustawa o gospodarce opakowaniami i odpadami opakowaniowymi; art. 17-18 UoO",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
+}
+
+# ── R15 MAPA DROGOWA P0-2: INTEGRACJA Z SYSTEMEM BDO (API) dla KPO i sprawozdań ─
+bdo_api_integration := {
+    "rule_id": "jdg.p15_srodowisko_bdo_innovations.bdo_api_integration",
+    "package": "jdg.p15_srodowisko_bdo_innovations",
+    "priority": 1127,
+    "matched": true,
+    "api_configured": object.get(object.get(input, "bdo_api", {}), "configured", false),
+    "credentials_valid": object.get(object.get(input, "bdo_api", {}), "credentials_valid", false),
+    "endpoints": bdo_api_config,
+    "kpo_submission": {
+        "required": object.get(bdo_api_config, "kpo_elektroniczne_obowiazkowe", true),
+        "status": object.get(object.get(input, "bdo_api", {}), "kpo_status", "nie_wyslano"),
+        "note": "KPO przekazywane elektronicznie przez API BDO przy każdym przekazaniu odpadów (art. 66-70 UoO)",
+    },
+    "sprawozdania": {
+        "required": true,
+        "status": object.get(object.get(input, "bdo_api", {}), "reports_status", "nie_zlozono"),
+        "deadline": "roczne sprawozdanie o odpadach — do 15.03",
+    },
+    "ready": count([1 | object.get(object.get(input, "bdo_api", {}), "configured", false) == true; object.get(object.get(input, "bdo_api", {}), "credentials_valid", false) == true]) > 0,
+    "note": "integracja API BDO dla KPO i sprawozdań rocznych (P0-2) — endpointy z thresholds",
+    "_routing": "",
+    "_routing_reason": "Integracja z systemem BDO (API) — KPO i sprawozdania roczne (P0-2)",
+    "_legal_basis": "Ustawa o odpadach art. 66-74; rozporządzenia ws. systemu BDO",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
+}
+
+# ── R15 MAPA DROGOWA P1-1: PEŁNY KATALOG EWC 6-CYFROWY (rozdziały 01-20) ────
+# Rozporządzenie ws. katalogu odpadów (Dz.U. 2020 poz. 10). Katalog w thresholds;
+# reguła zwraca opis + flagę niebezpieczności + statystyki pokrycia rozdziałów.
+ewc_full_catalog := {
+    "rule_id": "jdg.p15_srodowisko_bdo_innovations.ewc_full_catalog",
+    "package": "jdg.p15_srodowisko_bdo_innovations",
+    "priority": 1128,
+    "matched": true,
+    "code_input": raw,
+    "code_normalized": normalized,
+    "found": count(matches) > 0,
+    "entry": object.get(matches, 0, {"code": normalized, "name": "NIEZNANY KOD EWC — sprawdź katalog", "hazardous": false}),
+    "hazardous": object.get(matches, 0, {"hazardous": false}).hazardous,
+    "chapter": ewc_chapter(normalized),
+    "catalog_size": count(ewc_catalog),
+    "chapters_covered": count({ewc_chapter(e.code) | e := ewc_catalog[_]}),
+    "hazardous_codes": count([1 | e := ewc_catalog[_]; e.hazardous == true]),
+    "note": "pełny katalog EWC 6-cyfrowy (P1-1) — 20 rozdziałów, rozszerzalny przez thresholds (ADR-002)",
+    "_routing": "",
+    "_routing_reason": "Katalog EWC 6-cyfrowy — wyszukiwanie kodu, opis, niebezpieczność (P1-1)",
+    "_legal_basis": "Rozporządzenie ws. katalogu odpadów (Dz.U. 2020 poz. 10)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
+    raw := object.get(object.get(input, "waste", {}), "ewc_code", "")
+    normalized := replace(raw, "*", "")
+    matches := [e | e := ewc_catalog[_]; e.code == normalized]
+}
+
+# ── R15 MAPA DROGOWA P1-2: STAWKI PODATKU ROLNEGO PER GMINA (rejestr) ───────
+# Ustawa o podatku rolnym — gminy mogą obniżyć mnożnik q żyta/ha uchwałą.
+# Rejestr w thresholds; gmina spoza rejestru → mnożnik domyślny 2,5 q.
+agricultural_tax_rate_registry := {
+    "rule_id": "jdg.p15_srodowisko_bdo_innovations.agricultural_tax_rate_registry",
+    "package": "jdg.p15_srodowisko_bdo_innovations",
+    "priority": 1129,
+    "matched": true,
+    "gmina": gmina,
+    "in_registry": count([1 | gmina != ""; agricultural_gmina_rates[gmina]]) > 0,
+    "multiplier": object.get(agricultural_gmina_rates, gmina, object.get(agricultural_gmina_rates, "default", 2.5)),
+    "rye_price_pln_q": to_number(object.get(bdo_limits, "agricultural_rye_pln_q", 89.63)),
+    "tax_per_ha": round2(object.get(agricultural_gmina_rates, gmina, object.get(agricultural_gmina_rates, "default", 2.5)) * to_number(object.get(bdo_limits, "agricultural_rye_pln_q", 89.63))),
+    "ha_conversion": to_number(object.get(object.get(input, "farm", {}), "ha_conversion", 0)),
+    "annual_tax": round2(to_number(object.get(object.get(input, "farm", {}), "ha_conversion", 0)) * object.get(agricultural_gmina_rates, gmina, object.get(agricultural_gmina_rates, "default", 2.5)) * to_number(object.get(bdo_limits, "agricultural_rye_pln_q", 89.63))),
+    "registry_size": count(agricultural_gmina_rates) - 1,
+    "note": "stawki podatku rolnego per gmina (P1-2) — rejestr mnożników w thresholds, fallback 2,5 q/ha",
+    "_routing": "",
+    "_routing_reason": "Stawki podatku rolnego per gmina (P1-2) — rejestr gmin + mnożnik domyślny",
+    "_legal_basis": "Ustawa o podatku rolnym (Dz.U. 2025 poz. 268)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
+    gmina := object.get(object.get(input, "farm", {}), "gmina", "")
+}
+
+# ── R15 MAPA DROGOWA P1-3: TABELE ZEZWOLEŃ TRANSPORTOWYCH ───────────────────
+# Przewozy krajowe (licencja krajowa), unijne (licencja wspólnotowa), poza UE
+# (zezwolenia dwustronne/ECMT) + tachograf cyfrowy >3,5t. Tabele z thresholds.
+transport_permit_tables := {
+    "rule_id": "jdg.p15_srodowisko_bdo_innovations.transport_permit_tables",
+    "package": "jdg.p15_srodowisko_bdo_innovations",
+    "priority": 1130,
+    "matched": true,
+    "route_type": route_type,
+    "permit": object.get(transport_permits_table, route_type, {"dokument": "sprawdź wymagania w urzędzie", "wypis_w_pojezdzie": true, "legal_basis": "ustawa o transporcie drogowym"}),
+    "tachograf": object.get(transport_permits_table, "tachograf", {}),
+    "tables_covered": count(transport_permits_table),
+    "note": "tabele zezwoleń transportowych (P1-3) — krajowe, unijne, poza UE, tachograf — z thresholds",
+    "_routing": "",
+    "_routing_reason": "Tabele zezwoleń transportowych — przewozy krajowe/międzynarodowe (P1-3)",
+    "_legal_basis": "Ustawa o transporcie drogowym art. 5-8; rozp. UE 165/2014 (tachograf)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
+    route_type := object.get(object.get(input, "transport", {}), "route_type", "krajowy")
+}
+
+# ── R15 MAPA DROGOWA P2-1: CERTYFIKATY CBAM 2026 (pełny mechanizm) ──────────
+# Reżim definitywny od 01.01.2026: upoważnieni deklaranci CBAM kupują certyfikaty,
+# raporty kwartalne, umorzenie do 31.05, kara za nieumorzenie 10-50 EUR/t (art. 26-30).
+cbam_certificates_2026 := {
+    "rule_id": "jdg.p15_srodowisko_bdo_innovations.cbam_certificates_2026",
+    "package": "jdg.p15_srodowisko_bdo_innovations",
+    "priority": 1131,
+    "matched": true,
+    "definitive_regime_from": object.get(cbam_certificate_config, "definitive_from", "2026-01-01"),
+    "authorized_declarant": object.get(object.get(input, "import_goods", {}), "authorized_declarant", false),
+    "certificates_required": object.get(object.get(input, "import_goods", {}), "authorized_declarant", false),
+    "emissions_t": to_number(object.get(object.get(input, "import_goods", {}), "co2_t", 0)),
+    "price_eur_t": to_number(object.get(cbam_certificate_config, "price_eur_t", 80.0)),
+    "certificates_to_purchase_eur": round2(to_number(object.get(object.get(input, "import_goods", {}), "co2_t", 0)) * to_number(object.get(cbam_certificate_config, "price_eur_t", 80.0))),
+    "validity_years": to_number(object.get(cbam_certificate_config, "validity_years", 2)),
+    "surrender_deadline": object.get(cbam_certificate_config, "surrender_deadline", "31.05"),
+    "quarterly_report_deadline": object.get(cbam_certificate_config, "quarterly_report_deadline", "koniec miesiąca po kwartale"),
+    "prepayment_pct": to_number(object.get(cbam_certificate_config, "prepayment_pct", 0.8)),
+    "penalty_eur_t": to_number(object.get(cbam_certificate_config, "penalty_eur_t", 50.0)),
+    "note": "pełny mechanizm certyfikatów CBAM 2026 (P2-1) — zakup, raporty kwartalne, umorzenie do 31.05, kara 10-50 EUR/t",
+    "_routing": "",
+    "_routing_reason": "Certyfikaty CBAM 2026 — pełny mechanizm (P2-1)",
+    "_legal_basis": "Rozporządzenie UE 2023/956 art. 21-30 (CBAM)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
+}
+
+# ── R15 MAPA DROGOWA P2-2: REJESTRACJA ONLINE W BDO (API/portal) ────────────
+bdo_online_registration := {
+    "rule_id": "jdg.p15_srodowisko_bdo_innovations.bdo_online_registration",
+    "package": "jdg.p15_srodowisko_bdo_innovations",
+    "priority": 1132,
+    "matched": true,
+    "registration_status": registration_status,
+    "steps": object.get(bdo_registration_config, "steps", []),
+    "endpoint": object.get(bdo_registration_config, "endpoint", "https://bdo.mos.gov.pl/rejestracja"),
+    "rejestracja_fee": object.get(bdo_rejestracja_oplaty, object.get(input.jdg_entrepreneur, "company_size", "mikro"), 100),
+    "update_deadline_days": to_number(object.get(bdo_registration_config, "update_deadline_days", 30)),
+    "deregistration_deadline_days": to_number(object.get(bdo_registration_config, "deregistration_deadline_days", 30)),
+    "alert": alert_text,
+    "note": "rejestracja online w BDO przez API/portal (P2-2) — kroki, opłata, terminy",
+    "_routing": "",
+    "_routing_reason": "Rejestracja online w BDO (P2-2) — status, kroki, opłata, terminy aktualizacji/wyrejestrowania",
+    "_legal_basis": "Ustawa o odpadach art. 49-55",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
+    registration_status := object.get(object.get(input, "bdo_api", {}), "registration_status", "nie_zarejestrowany")
+    # alert: czyste wyrażenie (object.get) — bez else na zmiennej lokalnej (kompatybilne ze wszystkimi wersjami OPA)
+    alert_text := object.get(
+        {"nie_zarejestrowany": "wniosek online wymagany — złóż w BDO przed rozpoczęciem wytwarzania odpadów"},
+        registration_status,
+        "status: " + registration_status
+    )
+}
+
 # ── GŁÓWNY DECIDE (P15) — raport syntetyczny Środowisko + BDO + Branża ────────
 decide := {
     "rule_id": "jdg.p15_srodowisko_bdo_innovations.report",
@@ -480,8 +686,17 @@ decide := {
     "regulated_taxfree_seasonal": regulated_taxfree_seasonal_audit,
     "cbam": cbam_audit,
     "pipeline": bdo_pipeline_snapshot,
+    "roadmap_v2": {
+        "product_fee_material_map": product_fee_material_map,
+        "bdo_api_integration": bdo_api_integration,
+        "ewc_full_catalog": ewc_full_catalog,
+        "agricultural_tax_rate_registry": agricultural_tax_rate_registry,
+        "transport_permit_tables": transport_permit_tables,
+        "cbam_certificates_2026": cbam_certificates_2026,
+        "bdo_online_registration": bdo_online_registration,
+    },
     "_routing": "REPORT",
-    "_routing_reason": "Raport syntetyczny Środowisko + BDO + Branża (P15) — BDO, budownictwo, transport, rolnictwo, CBAM",
+    "_routing_reason": "Raport syntetyczny Środowisko + BDO + Branża (P15) — BDO, budownictwo, transport, rolnictwo, CBAM + mapa drogowa P0/P1/P2",
     "_legal_basis": "Ustawa o odpadach; prawo budowlane; u.t.d.; podatek rolny; CBAM",
     "_warnings": [],
 } {

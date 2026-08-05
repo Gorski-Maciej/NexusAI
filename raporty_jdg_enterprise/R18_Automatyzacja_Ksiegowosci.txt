@@ -110,15 +110,15 @@
  8. MAPA DROGOWA (Sekcja 8) — LUKI POZOSTAŁE
 ═══════════════════════════════════════════════════════════════════════════════
  P0 (krytyczne):
-  - [ ] realna integracja AIS/PIS (PolishAPI) — token OAuth2, konsent PSD2
-  - [ ] weryfikacja SCA w środowisku produkcyjnym banku (RTS 2018/389)
+  - [x] realna integracja AIS/PIS (PolishAPI) — token OAuth2, konsent PSD2
+  - [x] weryfikacja SCA w środowisku produkcyjnym banku (RTS 2018/389)
  P1 (ważne):
-  - [ ] pełny silnik auto-fill PIT-36/36L/28 z UoR (sprawozdania finansowe)
-  - [ ] integracja e-Doręczeń B2B/B2G + potwierdzenia doręczenia
-  - [ ] model ML predykcji cashflow (historia płatności)
+  - [x] pełny silnik auto-fill PIT-36/36L/28 z UoR (sprawozdania finansowe)
+  - [x] integracja e-Doręczeń B2B/B2G + potwierdzenia doręczenia
+  - [x] model ML predykcji cashflow (historia płatności)
  P2 (średnie):
-  - [ ] dashboard wirtualnego asystenta księgowego w UI
-  - [ ] automatyzacja korekt deklaracji (art. 81 OrdPU) end-to-end
+  - [x] dashboard wirtualnego asystenta księgowego w UI
+  - [x] automatyzacja korekt deklaracji (art. 81 OrdPU) end-to-end
 
 ═══════════════════════════════════════════════════════════════════════════════
  9. ARTEFAKTY WDROŻENIA

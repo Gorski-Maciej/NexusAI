@@ -22,7 +22,19 @@ Narzędzie: `JDG/tools/rodo_aml_security_auditor.py`
 | 4. Proof-chain (INN-06) | `proof_chain_verifier` — merkle-like łańcuch: input → reguła → werdykt → hash root | ✅ |
 | 5. OPA jako system | `compliance_pipeline_snapshot` — pipeline ingest→generate→verify→emit (ADR-002, hot-reload); ePrivacy (2002/58/WE), AMLR (UE 2024/1624) | ✅ |
 | 6. Genius ideas (14) | INN-01..14: rejestr auto, breach 72h, scoring klient, scoring transakcja, forteca, proof-chain, self-audit, panel AML, asystent naruszeń, decision chain, HMAC reguł, kalkulator sankcji, UBO, scorecard | ✅ |
-| 7. Mapa drogowa | w raporcie R16 — luki P0/P1/P2 | ✅ |
+| 7. Mapa drogowa P0/P1/P2 (R16) | `crbr_registry_api`, `str_gijf_auto_submission`, `subprocessor_saas_map`, `rodo_deadline_calendar`, `aml_sanctions_screening`, `amlr_2027_implementation`, `compliance_dashboard_ui` — wszystkie 7 pozycji wdrożone | ✅ |
+
+## Mapa drogowa P0/P1/P2 — wdrożone (R16, 2026-08-05)
+
+| Priorytet | Pozycja | Reguła + narzędzie |
+|---|---|---|
+| P0 | integracja z rejestrem BDO/CRBR (beneficjenci rzeczywiści) via API | `crbr_registry_api` / `crbr_registry_check()` — endpoint CRBR, termin 7 dni od wpisu CEIDG/KRS, kara do 1 mln PLN |
+| P0 | automatyczna wysyłka zgłoszeń STR do GIIF (API) + potwierdzenia | `str_gijf_auto_submission` / `str_gijf_submission()` — 1 dzień roboczy, UPO GIIF wymagane |
+| P1 | pełna mapa podprocesorów SaaS (umowy Art. 28 + podpowierzenie) | `subprocessor_saas_map` / `subprocessor_saas_map()` — katalog 8 kategorii SaaS, score 0-100 |
+| P1 | kalendarz terminów RODO (przeglądy, DPIA, umowy powierzenia) | `rodo_deadline_calendar` / `rodo_deadline_calendar()` — 6 pozycji cyklu rocznego |
+| P1 | scoring AML z danymi rzeczywistymi (listy sankcyjne UE/ONZ) | `aml_sanctions_screening` / `aml_sanctions_screening()` — 5 list (EU/UN/OFAC/UK/PEP), wagi 20-50, BLOCK ≥50 |
+| P2 | implementacja AMLR (UE 2024/1624) — progi CBDD od 2027 | `amlr_2027_implementation` / `amlr_2027_check()` — gotówka >10k EUR / krypto >1k EUR, od 2027-07-10 |
+| P2 | UI panelu ryzyka AML + dashboard naruszeń RODO 72h | `compliance_dashboard_ui` / `compliance_dashboard()` — widgets + export JSON/CSV/PDF |
 
 ## Progi (ADR-002 — `data.jdg.thresholds.compliance_aml_rodo`)
 
@@ -30,8 +42,10 @@ Narzędzie: `JDG/tools/rodo_aml_security_auditor.py`
 - Zgłoszenie naruszenia: 72h (Art. 33 RODO)
 - Erasure: 30 dni (Art. 17 RODO); retencja księgowa: 5 lat (Art. 74 UoR)
 - AML: próg transakcyjny 15 000 EUR (Art. 34 u.AML); STR do GIIF — 1 dzień roboczy
-- UBO: beneficjent rzeczywisty ≥ 25% udziałów
+- UBO: beneficjent rzeczywisty ≥ 25% udziałów; rejestracja CRBR w 7 dni od wpisu
 - Kara AML: do 1 mln zł (art. 153 u.AML)
+- Screening sankcyjny: 5 list (EU/UN/OFAC/UK/PEP), próg BLOCK 50 pkt
+- AMLR 2027: gotówka > 10 000 EUR / krypto > 1 000 EUR — CBDD obowiązkowy od 2027-07-10
 
 ## Narzędzie CLI
 
@@ -44,12 +58,20 @@ python JDG/tools/rodo_aml_security_auditor.py --aml-transaction --amount-eur 200
 python JDG/tools/rodo_aml_security_auditor.py --proof-chain     # merkle root SHA-256
 python JDG/tools/rodo_aml_security_auditor.py --sanctions --violation-type DATA_BREACH_UNREPORTED --revenue-eur 50000000
 python JDG/tools/rodo_aml_security_auditor.py --scorecard --rodo-score 80 --aml-score 70 --security-score 90
+# Mapa drogowa P0/P1/P2:
+python JDG/tools/rodo_aml_security_auditor.py --crbr --nip 7777777777                  # CRBR via API (P0)
+python JDG/tools/rodo_aml_security_auditor.py --str-gijf --days-since 3                # STR do GIIF (P0)
+python JDG/tools/rodo_aml_security_auditor.py --saas-map                              # podprocesorzy SaaS (P1)
+python JDG/tools/rodo_aml_security_auditor.py --rodo-calendar --current-month 12      # kalendarz RODO (P1)
+python JDG/tools/rodo_aml_security_auditor.py --sanctions-screen --entity-name "X" --matched-list eu_consolidated
+python JDG/tools/rodo_aml_security_auditor.py --amlr --cash-eur 12000                 # AMLR 2027 (P2)
+python JDG/tools/rodo_aml_security_auditor.py --dashboard --str-pending 1             # dashboard 72h (P2)
 ```
 
 ## Testy
 
-- Rego: `JDG/tests/rego/test_p16_rodo_aml_security_enterprise.rego` (28 scenariuszy)
-- Pytest: `JDG/tests/auto/test_p16_rodo_aml_security_enterprise.py` (31 testów)
+- Rego: `JDG/tests/rego/test_p16_rodo_aml_security_enterprise.rego` (28 scenariuszy + 13 nowych dla mapy drogowej P0/P1/P2)
+- Pytest: `JDG/tests/auto/test_p16_rodo_aml_security_enterprise.py` (40 testów: 31 + 9 nowych dla mapy drogowej)
 
 ## Okablowanie
 

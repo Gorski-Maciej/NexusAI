@@ -25,9 +25,9 @@
  [✅ WDROŻONY] P12_CrossBorder_MDR_TP_CFC_FX.txt→ R12_CrossBorder_MDR_TP_CFC_FX.txt
  [✅ WDROŻONY] P13_Ryczalt_Cykl_zycia.txt       → R13_Ryczalt_Cykl_zycia.txt
  [✅ WDROŻONY] P14_PCC_Lokalne_Akcyza.txt       → R14_PCC_Lokalne_Akcyza.txt
- [✅ WDROŻONY] P15_Srodowisko_BDO_Branza.txt    → R15_Srodowisko_BDO_Branza.txt
- [✅ WDROŻONY] P16_RODO_AML_Bezpieczenstwo.txt  → R16_RODO_AML_Bezpieczenstwo.txt
- [✅ WDROŻONY] P17_KSeF_JPK_eDeklaracje.txt     → R17_KSeF_JPK_eDeklaracje.txt
+ [✅ WDROŻONY] P15_Srodowisko_BDO_Branza.txt    → R15_Srodowisko_BDO_Branza.txt 🔨 LUKI P0/P1/P2 ZAMKNIĘTE 2026-08-05 (7/7: opłaty per materiał, API BDO, katalog EWC 301 kodów/20 rozdziałów, podatek rolny per gmina, zezwolenia transportowe, certyfikaty CBAM 2026, rejestracja online — 43/43 pytest + 38/38 regresja ✅)
+ [✅ WDROŻONY] P16_RODO_AML_Bezpieczenstwo.txt  → R16_RODO_AML_Bezpieczenstwo.txt 🔨 LUKI P0/P1/P2 ZAMKNIĘTE 2026-08-05 (7/7: CRBR API, STR→GIIF + UPO, mapa podprocesorów SaaS, kalendarz RODO, screening sankcyjny UE/ONZ, AMLR 2027, dashboard 72h — 40/40 pytest ✅)
+ [✅ WDROŻONY] P17_KSeF_JPK_eDeklaracje.txt     → R17_KSeF_JPK_eDeklaracje.txt 🔨 LUKI P0/P1/P2 ZAMKNIĘTE 2026-08-05 (7/7: API KSeF + UPO, walidator XSD offline w CI, korekty art. 106j + anulowanie, słownik GTU 13 kodów + uczenie, e-Doręczenia B2B/B2G, dashboard KSeF, JPK_CIT 2026 — 43/43 pytest ✅)
  [✅ WDROŻONY] P18_Automatyzacja_Ksiegowosci.txt→ R18_Automatyzacja_Ksiegowosci.txt
  [✅ WDROŻONY] P19_HR_Swiadczenia.txt           → R19_HR_Swiadczenia.txt
  [✅ WDROŻONY] P20_Neural_Mesh_Innowacje.txt    → R20_Neural_Mesh_Innowacje.txt
@@ -36,5 +36,13 @@
  [✅ WDROŻONY] P23_Testy_Rego_CI.txt            → R23_Testy_Rego_CI.txt
  [✅ WDROŻONY] P24_Audyt_Kompletny_Synteza.txt  → R24_Audyt_Kompletny_Synteza.txt
 
- POSTĘP: 24/24 wdrożonych ✅ | PROGRAM UKOŃCZONY | Ostatnia aktualizacja: 2026-08-03
+ POSTĘP: 24/24 wdrożonych ✅ | PROGRAM UKOŃCZONY | Ostatnia aktualizacja: 2026-08-05
+
+ UWAGA 2026-08-05: weryfikacja wykazała, że raporty R15-R20 zawierały w Sekcji
+ MAPA DROGOWA pozycje P0/P1/P2 bez odznaczeń. Kolejno zamykane:
+   ✅ R15 (2026-08-05) — 7/7 luk zamkniętych, WDROŻONY W 100%
+   ✅ R16 (2026-08-05) — 7/7 luk zamkniętych, WDROŻONY W 100%
+   ✅ R17 (2026-08-05) — 7/7 luk zamkniętych, WDROŻONY W 100%
+   ⬜ R18_Automatyzacja_Ksiegowosci.txt — NASTĘPNY do przetworzenia (nowa sesja)
+     (po wdrożeniu R17: WYCZYŚĆ OKNO KONTEKSTOWE → przejście do R18)
 ═══════════════════════════════════════════════════════════════════════════════

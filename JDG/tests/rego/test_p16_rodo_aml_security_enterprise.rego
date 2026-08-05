@@ -250,7 +250,146 @@ test_compliance_scorecard {
     result.grade == "A — PEŁNA ZGODNOŚĆ"
 }
 
-# ── 12. Główny decide (P16) + no_match ────────────────────────────────────────
+# ── 12. MAPA DROGOWA P0/P1/P2 (R16) ──────────────────────────────────────────
+test_crbr_registry_api_missing {
+    result := data.jdg.p16_rodo_aml_security_innovations.crbr_registry_api with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true},
+                  "crbr": {"nip": "7777777777", "registered": false}}
+    result.registered == false
+    result.registration_deadline_days == 7
+    result.sanction_max_pln == 1000000
+    result._routing == "TRIAGE_QUEUE"
+    "BRAK REJESTRACJI W CRBR" in result.registration_status
+}
+
+test_crbr_registry_api_ok {
+    result := data.jdg.p16_rodo_aml_security_innovations.crbr_registry_api with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true},
+                  "crbr": {"nip": "7777777777", "registered": true, "ubo_declared": true}}
+    result.registered == true
+    result._routing == ""
+    result.ubo_declared == true
+}
+
+test_str_gijf_auto_submission_missing {
+    result := data.jdg.p16_rodo_aml_security_innovations.str_gijf_auto_submission with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true},
+                  "str_gijf": {"str_id": "STR-001", "submitted": false, "confirmation_received": false, "days_since_detection": 3}}
+    result.submitted == false
+    result.deadline_working_days == 1
+    result._routing == "BLOCK_AND_ALERT"
+    "NIEZGŁOSZONE" in result.submission_status
+}
+
+test_str_gijf_auto_submission_ok {
+    result := data.jdg.p16_rodo_aml_security_innovations.str_gijf_auto_submission with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true},
+                  "str_gijf": {"str_id": "STR-001", "submitted": true, "confirmation_received": true, "days_since_detection": 1}}
+    result.submitted == true
+    result.confirmation_received == true
+    result._routing == ""
+    "potwierdzone" in result.submission_status
+}
+
+test_subprocessor_saas_map {
+    result := data.jdg.p16_rodo_aml_security_innovations.subprocessor_saas_map with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true},
+                  "subprocessors": {"used": ["HOSTING_CHMURY", "CRM"],
+                                     "has_art28": {"HOSTING_CHMURY": false, "CRM": false},
+                                     "has_subprocessing_consent": {"HOSTING_CHMURY": false, "CRM": false}}}
+    count(result.used_processors) == 2
+    count(result.missing_art28) == 2
+    result.compliance_score == 0
+    count(result.saas_catalog) >= 8
+}
+
+test_subprocessor_saas_map_empty {
+    result := data.jdg.p16_rodo_aml_security_innovations.subprocessor_saas_map with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true}}
+    result.compliance_score == 100
+    count(result.used_processors) == 0
+}
+
+test_rodo_deadline_calendar_december {
+    result := data.jdg.p16_rodo_aml_security_innovations.rodo_deadline_calendar with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true, "current_month": 12}}
+    count(result.calendar) >= 6
+    result.next_review_month == 12
+    "rejestru czynności" in result.upcoming_this_month[_]
+}
+
+test_rodo_deadline_calendar_june {
+    result := data.jdg.p16_rodo_aml_security_innovations.rodo_deadline_calendar with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true, "current_month": 6}}
+    "umów powierzenia" in result.upcoming_this_month[_]
+}
+
+test_aml_sanctions_screening_block {
+    result := data.jdg.p16_rodo_aml_security_innovations.aml_sanctions_screening with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true},
+                  "sanctions_screening": {"entity_name": "Entity X", "matched_lists": ["eu_consolidated", "un_sc"]}}
+    result.sanctions_score == 100
+    result._routing == "BLOCK_AND_ALERT"
+    "KRYTYCZNE" in result.sanctions_level
+    count(result.matched_details) == 2
+}
+
+test_aml_sanctions_screening_pep {
+    result := data.jdg.p16_rodo_aml_security_innovations.aml_sanctions_screening with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true},
+                  "sanctions_screening": {"entity_name": "Osoba Y", "matched_lists": ["pep_national"]}}
+    result.sanctions_score == 20
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_aml_sanctions_screening_clear {
+    result := data.jdg.p16_rodo_aml_security_innovations.aml_sanctions_screening with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true},
+                  "sanctions_screening": {"entity_name": "Firma Z", "matched_lists": []}}
+    result.sanctions_score == 0
+    result._routing == ""
+}
+
+test_amlr_2027_implementation_over {
+    result := data.jdg.p16_rodo_aml_security_innovations.amlr_2027_implementation with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true},
+                  "amlr": {"cash_transaction_eur": 12000, "crypto_transaction_eur": 500, "entity_covered": true}}
+    result.cash_over_threshold == true
+    result.crypto_over_threshold == false
+    result.application_from == "2027-07-10"
+    result.cash_threshold_eur == 10000
+    result._routing == "TRIAGE_QUEUE"
+    "OBOWIĄZEK CBDD" in result.status
+}
+
+test_amlr_2027_implementation_below {
+    result := data.jdg.p16_rodo_aml_security_innovations.amlr_2027_implementation with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true},
+                  "amlr": {"cash_transaction_eur": 5000, "crypto_transaction_eur": 500, "entity_covered": true}}
+    result.cash_over_threshold == false
+    result._routing == ""
+    "poniżej progów" in result.status
+}
+
+test_compliance_dashboard_ui_block {
+    result := data.jdg.p16_rodo_aml_security_innovations.compliance_dashboard_ui with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true},
+                  "dashboard": {"clients_high_risk": 1, "transactions_flagged": 2, "str_pending": 1, "breaches_open": 2}}
+    result.aml_panel.str_pending == 1
+    result.breach_72h.deadline_hours == 72
+    result.breach_72h.within_deadline == false
+    result._routing == "BLOCK_AND_ALERT"
+}
+
+test_compliance_dashboard_ui_ok {
+    result := data.jdg.p16_rodo_aml_security_innovations.compliance_dashboard_ui with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true},
+                  "dashboard": {"clients_high_risk": 0, "transactions_flagged": 0, "str_pending": 0, "breaches_open": 0}}
+    result.breach_72h.within_deadline == true
+    result.aml_panel.panel_score == 0
+}
+
+# ── 13. Główny decide (P16) + no_match ────────────────────────────────────────
 test_p16_main_decide {
     result := data.jdg.p16_rodo_aml_security_innovations.decide with
         input as {"jdg_entrepreneur": {"p16_compliance_check": true}}
@@ -261,6 +400,9 @@ test_p16_main_decide {
     result.aml.transakcje.threshold_eur == 15000
     result.security.integralnosc.hmac_required == true
     result.audit_trail.sciezka_decyzji.merkle_required == true
+    result.roadmap.crbr_registry_api.registration_deadline_days == 7
+    result.roadmap.amlr_2027_implementation.application_from == "2027-07-10"
+    count(result.roadmap) == 7
 }
 
 test_p16_default_no_match {

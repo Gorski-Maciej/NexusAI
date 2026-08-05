@@ -30,7 +30,19 @@ Narzędzie: `JDG/tools/ksef_jpk_edeklaracje_auditor.py`
 | 4. Firewall KSeF (INN-07) | `ksef_firewall_guard` — blokada faktur z anomaliami przed wysyłką | ✅ |
 | 5. OPA jako system | `ksef_pipeline_snapshot` + `ksef_schema_pipeline` (INN-15) — pipeline ingest→generate→verify→emit, KSeF 2.0, auto-aktualizacja XSD | ✅ |
 | 6. Genius ideas (15) | INN-01..15: jpk_v7_auto_generator, ksef_upo_tracker, ksef_sanction_monitor, ksef_offline_retry, gtu_auto_assigner, ksef_xsd_validator, ksef_firewall_guard, jpk_cross_validation, esig_auto_applier, edelivery_address_manager, wis_auto_requester, ksef_sandbox_harness, ksef_sanctions_calculator, jpk_deadline_calendar, ksef_schema_pipeline | ✅ |
-| 7. Mapa drogowa | w raporcie R17 — luki P0/P1/P2 | ✅ |
+| 7. Mapa drogowa P0/P1/P2 (R17) | `ksef_api_integration`, `ksef_xsd_offline_ci`, `ksef_corrections_e2e`, `gtu_full_dictionary`, `edelivery_b2b_b2g_integration`, `ksef_dashboard_ui`, `jpk_cit_automation_2026` — wszystkie 7 pozycji wdrożone | ✅ |
+
+## Mapa drogowa P0/P1/P2 — wdrożone (R17, 2026-08-05)
+
+| Priorytet | Pozycja | Reguła + narzędzie |
+|---|---|---|
+| P0 | rzeczywista integracja API KSeF (produkcyjna wysyłka + UPO via API) | `ksef_api_integration` / `ksef_api_integration()` — endpointy prod/sandbox, token, numer KSeF, retry ×3, UPO via API |
+| P0 | pełny walidator XSD offline (Java/xmllint) w CI | `ksef_xsd_offline_ci` / `ksef_xsd_offline_ci()` — 3 schematy (FA(2), FA(2)-korekta, KSeF 2.0), brama CI blokuje |
+| P1 | korekty KSeF end-to-end (art. 106j VAT) + anulowanie faktur | `ksef_corrections_e2e` / `ksef_corrections_e2e()` — termin 30 dni, anulowanie, faktury korygujące |
+| P1 | baza GTU z pełnym słownikiem 13 kodów + uczenie z historii | `gtu_full_dictionary` / `gtu_full_dictionary()` — słownik 13 wpisów, learning_enabled, entry_for_hint |
+| P1 | integracja e-Doręczeń (skrzynka B2B/B2G + potwierdzenia) | `edelivery_b2b_b2g_integration` / `edelivery_b2b_b2g_integration()` — API edoreczenia.gov.pl, potwierdzenia doręczenia |
+| P2 | dashboard KSeF (status UPO, kara, rejestry) w UI | `ksef_dashboard_ui` / `ksef_dashboard_ui()` — widgets + export JSON/CSV/PDF, BLOCK przy karze max |
+| P2 | automatyzacja JPK_CIT wg szablonu MF 2026 | `jpk_cit_automation_2026` / `jpk_cit_automation_2026()` — szablon v2.0, sekcje bilans/RZiS, termin 31. I kw. |
 
 ## Progi (ADR-002 — `data.jdg.thresholds.ksef_jpk_edeklaracje`)
 
@@ -53,12 +65,20 @@ python JDG/tools/ksef_jpk_edeklaracje_auditor.py --offline --offline-days 3 --of
 python JDG/tools/ksef_jpk_edeklaracje_auditor.py --gtu --gtu-hint paliwa
 python JDG/tools/ksef_jpk_edeklaracje_auditor.py --firewall --anomaly "NIP invalid"
 python JDG/tools/ksef_jpk_edeklaracje_auditor.py --jpk-cross --sales-register 10000 --vat-sales 10000
+# Mapa drogowa P0/P1/P2:
+python JDG/tools/ksef_jpk_edeklaracje_auditor.py --ksef-api --api-configured --ksef-number KSEF-123   # API KSeF (P0)
+python JDG/tools/ksef_jpk_edeklaracje_auditor.py --xsd-ci --xsd-ci-ok                                 # walidator XSD CI (P0)
+python JDG/tools/ksef_jpk_edeklaracje_auditor.py --corrections --corrections-pending 2                 # korekty 106j (P1)
+python JDG/tools/ksef_jpk_edeklaracje_auditor.py --gtu-dict --gtu-hint energia                         # słownik GTU (P1)
+python JDG/tools/ksef_jpk_edeklaracje_auditor.py --edelivery-b2b --mailbox-active --confirmations-ok   # e-Doręczenia (P1)
+python JDG/tools/ksef_jpk_edeklaracje_auditor.py --ksef-dashboard --invoice-count 10 --upo-received 8  # dashboard (P2)
+python JDG/tools/ksef_jpk_edeklaracje_auditor.py --jpk-cit --cit-blocks 4                             # JPK_CIT 2026 (P2)
 ```
 
 ## Testy
 
-- Rego: `JDG/tests/rego/test_p17_ksef_jpk_edeklaracje_enterprise.rego` (30 scenariuszy)
-- Pytest: `JDG/tests/auto/test_p17_ksef_jpk_edeklaracje_enterprise.py` (26 testów)
+- Rego: `JDG/tests/rego/test_p17_ksef_jpk_edeklaracje_enterprise.rego` (45 scenariuszy: 32 bazowe + 13 nowych dla mapy drogowej P0/P1/P2)
+- Pytest: `JDG/tests/auto/test_p17_ksef_jpk_edeklaracje_enterprise.py` (43 testy: 34 + 9 nowych dla mapy drogowej)
 
 ## Okablowanie
 

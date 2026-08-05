@@ -24,6 +24,13 @@ from automatyzacja_ksiegowosci_auditor import (  # noqa: E402
     split_payment_adviser,
     tax_deadline_priority,
     transfer_to_declaration_settlement,
+    ais_pis_integration,
+    sca_production_verification,
+    pit_uor_autofill_engine,
+    edelivery_b2b_b2g_flow,
+    ml_cashflow_prediction,
+    bookkeeper_dashboard_ui,
+    declaration_correction_automation,
 )
 
 
@@ -291,3 +298,93 @@ def test_p18_constants_match():
     assert banking_audit()["psd2"]["sca_exempt_threshold_pln"] == 100
     assert split_payment_adviser(invoice_amount_pln=14999.99)["recommendation"].startswith("MPP FAKULTATYWNE")
     assert split_payment_adviser(invoice_amount_pln=15000.00)["recommendation"].startswith("MPP ZALECANE")
+
+
+# ── Mapa drogowa R18 (P0/P1/P2) — 7 nowych reguł ──────────────────────────────
+def test_r18_ais_pis_integration():
+    """R18 P0-1: AIS/PIS PolishAPI — token + konsent aktywne → GOTOWE, bez routingu."""
+    ok = ais_pis_integration(token_valid=True, consent_active=True)
+    assert ok["integration_status"].startswith("AIS/PIS GOTOWE")
+    assert ok["_routing"] == ""
+    bad = ais_pis_integration(token_valid=False, consent_active=False)
+    assert bad["_routing"] == "TRIAGE_QUEUE"
+    stale = ais_pis_integration(token_valid=True, consent_active=False)
+    assert "KONSENTU" in stale["integration_status"]
+
+
+def test_r18_sca_production_verification():
+    """R18 P0-2: SCA produkcja — 3/3 testów → zweryfikowane; 2/3 → BLOCK_AND_ALERT."""
+    ok = sca_production_verification(tests_passed=3, test_transactions_min=3)
+    assert ok["sca_verified"] is True
+    assert ok["_routing"] == ""
+    bad = sca_production_verification(tests_passed=2, test_transactions_min=3)
+    assert bad["sca_verified"] is False
+    assert bad["_routing"] == "BLOCK_AND_ALERT"
+    assert "2/3" in bad["verification_status"]
+
+
+def test_r18_pit_uor_autofill_engine():
+    """R18 P1-1: auto-fill PIT z UoR — 3/3 bloków → ready; 2/3 → TRIAGE_QUEUE."""
+    ok = pit_uor_autofill_engine(filled_blocks=3, required_blocks=3)
+    assert ok["ready_to_generate"] is True
+    assert ok["_routing"] == ""
+    bad = pit_uor_autofill_engine(filled_blocks=2, required_blocks=3)
+    assert bad["ready_to_generate"] is False
+    assert bad["_routing"] == "TRIAGE_QUEUE"
+
+
+def test_r18_edelivery_b2b_b2g_flow():
+    """R18 P1-2: e-Doręczenia — skrzynka aktywna bez potwierdzeń → TRIAGE_QUEUE."""
+    ok = edelivery_b2b_b2g_flow(mailbox_active=True, confirmations_ok=True)
+    assert ok["_routing"] == ""
+    assert "AKTYWNA" in ok["integration_status"]
+    half = edelivery_b2b_b2g_flow(mailbox_active=True, confirmations_ok=False)
+    assert half["_routing"] == "TRIAGE_QUEUE"
+    assert "POTWIERDZEŃ" in half["integration_status"]
+    off = edelivery_b2b_b2g_flow(mailbox_active=False, confirmations_ok=False)
+    assert "NIEAKTYWNA" in off["integration_status"]
+
+
+def test_r18_ml_cashflow_prediction():
+    """R18 P1-3: ML cashflow — pewność 82% ≥ 70% → prognoza gotowa; 55% → TRIAGE_QUEUE."""
+    ok = ml_cashflow_prediction(history_months=12, predicted_balance_pln=18500.75, confidence_pct=82)
+    assert ok["_routing"] == ""
+    assert ok["predicted_balance_pln"] == round(18500.75, 2)
+    low = ml_cashflow_prediction(history_months=6, predicted_balance_pln=500.0, confidence_pct=55)
+    assert low["_routing"] == "TRIAGE_QUEUE"
+    assert "niewiarygodna" in low["forecast_status"]
+
+
+def test_r18_bookkeeper_dashboard_ui():
+    """R18 P2-1: dashboard asystenta — pending = unmatched + forms + deadlines."""
+    d = bookkeeper_dashboard_ui(auto_booked=22, unmatched=3, forms_ready=2,
+                                today_deadlines=["VAT-7", "ZUS DRA"],
+                                projected_balance_pln=18500.75, forms_pending=["PIT-36"])
+    assert d["pending_items"] == 6
+    assert d["_routing"] == "TRIAGE_QUEUE"
+    assert d["przeplywy"]["projected_balance_pln"] == round(18500.75, 2)
+    clean = bookkeeper_dashboard_ui()
+    assert clean["pending_items"] == 0
+    assert clean["_routing"] == ""
+
+
+def test_r18_declaration_correction_automation():
+    """R18 P2-2: korekty deklaracji art. 81 — 1 oczekująca → TRIAGE_QUEUE + status."""
+    d = declaration_correction_automation(corrections_pending=1)
+    assert d["_routing"] == "TRIAGE_QUEUE"
+    assert "1 oczekujących" in d["status"]
+    assert d["legal_basis"] == "Art. 81 OrdPU"
+    clean = declaration_correction_automation(corrections_pending=0)
+    assert clean["_routing"] == ""
+    assert clean["status"].startswith("Brak")
+
+
+def test_r18_roadmap_rules_present_in_rego():
+    """Wszystkie 7 reguł mapy drogowej R18 obecnych w pakiecie rego z podstawą prawną."""
+    text = (BASE_DIR / "rules" / "p18_automatyzacja_ksiegowosci_innovations_v9.rego").read_text(encoding="utf-8")
+    for rid in ["ais_pis_integration", "sca_production_verification", "pit_uor_autofill_engine",
+                "edelivery_b2b_b2g_flow", "ml_cashflow_prediction", "bookkeeper_dashboard_ui",
+                "declaration_correction_automation"]:
+        assert f"jdg.p18_automatyzacja_ksiegowosci_innovations.{rid}" in text, f"Brak reguły {rid}"
+    assert "\"roadmap\": {" in text
+    assert "p18_automatyzacja_check" in text

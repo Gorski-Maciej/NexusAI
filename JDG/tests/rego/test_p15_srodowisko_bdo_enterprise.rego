@@ -194,7 +194,150 @@ test_agricultural_tax_calculator {
     result.annual_tax == 896.3
 }
 
-# ── 14. Główny decide (P15) + no_match ────────────────────────────────────────
+# ── 14. R15 MAPA DROGOWA P0-1: opłaty produktowe per materiał ─────────────────
+test_product_fee_material_map {
+    result := data.jdg.p15_srodowisko_bdo_innovations.product_fee_material_map with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true, "packaging_material": "papier", "packaging_kg": 100}}
+    result.matched == true
+    result.fee_due == 50.0
+    result.material_rate_pln_kg == 0.50
+    result.materials_covered == 6
+}
+
+test_product_fee_material_map_plastic {
+    result := data.jdg.p15_srodowisko_bdo_innovations.product_fee_material_map with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true, "packaging_material": "tworzywa_sztuczne", "packaging_kg": 100}}
+    result.fee_due == 200.0
+}
+
+# ── 15. R15 MAPA DROGOWA P0-2: integracja API BDO ─────────────────────────────
+test_bdo_api_integration_ready {
+    result := data.jdg.p15_srodowisko_bdo_innovations.bdo_api_integration with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true},
+                  "bdo_api": {"configured": true, "credentials_valid": true}}
+    result.ready == true
+    result.kpo_submission.required == true
+}
+
+test_bdo_api_integration_not_ready {
+    result := data.jdg.p15_srodowisko_bdo_innovations.bdo_api_integration with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}}
+    result.ready == false
+    result.sprawozdania.deadline == "roczne sprawozdanie o odpadach — do 15.03"
+}
+
+# ── 16. R15 MAPA DROGOWA P1-1: pełny katalog EWC 6-cyfrowy ───────────────────
+test_ewc_full_catalog_lookup {
+    result := data.jdg.p15_srodowisko_bdo_innovations.ewc_full_catalog with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true},
+                  "waste": {"ewc_code": "17 01 01"}}
+    result.found == true
+    result.entry.name == "beton"
+    result.entry.hazardous == false
+    result.chapter == "17"
+    result.catalog_size >= 250
+    result.chapters_covered == 20
+}
+
+test_ewc_full_catalog_hazardous {
+    result := data.jdg.p15_srodowisko_bdo_innovations.ewc_full_catalog with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true},
+                  "waste": {"ewc_code": "17 06 01*"}}
+    result.code_normalized == "17 06 01"
+    result.hazardous == true
+    "azbest" in result.entry.name
+}
+
+test_ewc_full_catalog_unknown {
+    result := data.jdg.p15_srodowisko_bdo_innovations.ewc_full_catalog with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true},
+                  "waste": {"ewc_code": "99 99 99"}}
+    result.found == false
+    "NIEZNANY" in result.entry.name
+}
+
+# ── 17. R15 MAPA DROGOWA P1-2: stawki podatku rolnego per gmina ───────────────
+test_agricultural_tax_registry_gmina {
+    result := data.jdg.p15_srodowisko_bdo_innovations.agricultural_tax_rate_registry with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true},
+                  "farm": {"gmina": "Warszawa", "ha_conversion": 4}}
+    result.in_registry == true
+    result.multiplier == 2.5
+    result.tax_per_ha == 224.08
+    result.annual_tax == 896.3
+}
+
+test_agricultural_tax_registry_default {
+    result := data.jdg.p15_srodowisko_bdo_innovations.agricultural_tax_rate_registry with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true},
+                  "farm": {"gmina": "Mała Wioska", "ha_conversion": 2}}
+    result.in_registry == false
+    result.multiplier == 2.5
+}
+
+# ── 18. R15 MAPA DROGOWA P1-3: tabele zezwoleń transportowych ────────────────
+test_transport_permit_tables {
+    result := data.jdg.p15_srodowisko_bdo_innovations.transport_permit_tables with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true},
+                  "transport": {"route_type": "krajowy"}}
+    "krajowy przewóz drogowy" in result.permit.dokument
+    result.permit.legal_basis == "art. 5 u.t.d."
+    result.tachograf.prog_t == 3.5
+    result.tables_covered == 4
+}
+
+test_transport_permit_tables_poza_ue {
+    result := data.jdg.p15_srodowisko_bdo_innovations.transport_permit_tables with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true},
+                  "transport": {"route_type": "poza_ue"}}
+    "ECMT" in result.permit.dokument
+}
+
+# ── 19. R15 MAPA DROGOWA P2-1: certyfikaty CBAM 2026 ──────────────────────────
+test_cbam_certificates_2026 {
+    result := data.jdg.p15_srodowisko_bdo_innovations.cbam_certificates_2026 with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true},
+                  "import_goods": {"authorized_declarant": true, "co2_t": 10}}
+    result.certificates_required == true
+    result.certificates_to_purchase_eur == 800.0
+    result.definitive_regime_from == "2026-01-01"
+    result.surrender_deadline == "31.05"
+    result.penalty_eur_t == 50.0
+}
+
+# ── 20. R15 MAPA DROGOWA P2-2: rejestracja online w BDO ───────────────────────
+test_bdo_online_registration {
+    result := data.jdg.p15_srodowisko_bdo_innovations.bdo_online_registration with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true, "company_size": "mikro"},
+                  "bdo_api": {"registration_status": "nie_zarejestrowany"}}
+    result.registration_status == "nie_zarejestrowany"
+    "wniosek online wymagany" in result.alert
+    result.rejestracja_fee == 100
+    count(result.steps) == 4
+    result.update_deadline_days == 30
+}
+
+test_bdo_online_registration_status {
+    result := data.jdg.p15_srodowisko_bdo_innovations.bdo_online_registration with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true},
+                  "bdo_api": {"registration_status": "zarejestrowany"}}
+    result.alert == "status: zarejestrowany"
+}
+
+# ── 21. R15 MAPA DROGOWA: roadmap_v2 w głównym decide ─────────────────────────
+test_p15_roadmap_v2_in_decide {
+    result := data.jdg.p15_srodowisko_bdo_innovations.decide with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}}
+    result.roadmap_v2.product_fee_material_map.matched == true
+    result.roadmap_v2.bdo_api_integration.matched == true
+    result.roadmap_v2.ewc_full_catalog.matched == true
+    result.roadmap_v2.agricultural_tax_rate_registry.matched == true
+    result.roadmap_v2.transport_permit_tables.matched == true
+    result.roadmap_v2.cbam_certificates_2026.matched == true
+    result.roadmap_v2.bdo_online_registration.matched == true
+}
+
+# ── 22. Główny decide (P15) + no_match ────────────────────────────────────────
 test_p15_main_decide {
     result := data.jdg.p15_srodowisko_bdo_innovations.decide with
         input as {"jdg_entrepreneur": {"p15_branza_check": true}}

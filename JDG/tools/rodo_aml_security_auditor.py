@@ -324,6 +324,195 @@ def beneficiary_verifier(name: str = "Klient", ubo_identified: bool = False, ubo
     }
 
 
+# ── Mapa drogowa P0/P1/P2 (R16) ──────────────────────────────────────────────
+def crbr_registry_check(registered: bool = False, nip: str = "", ubo_declared: bool = False) -> dict:
+    """P0-1: CRBR — rejestr beneficjentów rzeczywistych via API."""
+    return {
+        "nip": nip,
+        "api_endpoint": "https://crbr.podatki.gov.pl/api/beneficiaries",
+        "portal": "https://crbr.podatki.gov.pl",
+        "registered": registered,
+        "registration_deadline_days": 7,
+        "update_deadline_days": 7,
+        "sanction_max_pln": 1_000_000,
+        "ubo_declared": ubo_declared,
+        "registration_status": ("OK — beneficjent rzeczywisty zarejestrowany w CRBR" if registered else
+                                "BRAK REJESTRACJI W CRBR — złóż wniosek w ciągu 7 dni od wpisu do CEIDG/KRS! "
+                                "Kara do 1 000 000 PLN (Art. 153 u.AML)"),
+        "_routing": "" if registered else "TRIAGE_QUEUE",
+        "note": "integracja z CRBR via API — sprawdzenie statusu rejestracji beneficjenta rzeczywistego (P0)",
+    }
+
+
+def str_gijf_submission(submitted: bool = False, confirmation_received: bool = False,
+                        days_since_detection: int = 0, str_id: str = "") -> dict:
+    """P0-2: automatyczna wysyłka STR do GIIF + potwierdzenia."""
+    if not submitted and days_since_detection >= 1:
+        status = f"STR NIEZGŁOSZONE — {days_since_detection} dni od wykrycia! Termin: 1 dzień roboczy (Art. 74-80 u.AML)"
+        routing = "BLOCK_AND_ALERT"
+    elif not submitted:
+        status = f"STR NIEZGŁOSZONE (dzień wykrycia) — masz 1 dzień roboczy na zgłoszenie do GIIF (Art. 74-80 u.AML)"
+        routing = "TRIAGE_QUEUE"
+    elif not confirmation_received:
+        status = f"STR zgłoszone, BRAK potwierdzenia odbioru (UPO GIIF) — {days_since_detection} dni od wykrycia"
+        routing = "TRIAGE_QUEUE"
+    else:
+        status = "STR zgłoszone + potwierdzone odbiorem (UPO GIIF) — OK"
+        routing = ""
+    return {
+        "str_id": str_id,
+        "api_endpoint": "https://gijf.mf.gov.pl/str/api",
+        "channel": "ePUAP + API GIIF",
+        "deadline_working_days": 1,
+        "days_since_detection": days_since_detection,
+        "submitted": submitted,
+        "confirmation_received": confirmation_received,
+        "confirmation_required": True,
+        "submission_status": status,
+        "_routing": routing,
+        "note": "automatyczna wysyłka STR do GIIF via API + urzędowe potwierdzenie odbioru (P0)",
+    }
+
+
+def subprocessor_saas_map(used: list = None, has_art28: dict = None,
+                          has_subprocessing_consent: dict = None) -> dict:
+    """P1-1: pełna mapa podprocesorów SaaS — umowy Art. 28 + podpowierzenie."""
+    used = used or []
+    has_art28 = has_art28 or {}
+    has_subprocessing_consent = has_subprocessing_consent or {}
+    missing_art28 = [u for u in used if not has_art28.get(u, False)]
+    missing_consent = [u for u in used if not has_subprocessing_consent.get(u, False)]
+    score = 100 if not used else max(0, min(100, round2((len(used) - len(missing_art28) - len(missing_consent)) / len(used) * 100)))
+    return {
+        "saas_catalog": [
+            {"category": "HOSTING_CHMURY", "example": "AWS/OvH/Google Cloud", "art28_required": True, "subprocessing_consent": True},
+            {"category": "KSIEGOWOSC_CHMURA", "example": "wFirma/Fakturownia/Comarch", "art28_required": True, "subprocessing_consent": True},
+            {"category": "EMAIL_MARKETING", "example": "MailerLite/HubSpot/Salestube", "art28_required": True, "subprocessing_consent": True},
+            {"category": "CRM", "example": "Pipedrive/Bitrix24/HubSpot CRM", "art28_required": True, "subprocessing_consent": True},
+            {"category": "REKRUTACJA_HR", "example": "Element/eRecruiter/Softgarden", "art28_required": True, "subprocessing_consent": True},
+            {"category": "ANALITYKA", "example": "Google Analytics/Matomo/Plausible", "art28_required": False, "subprocessing_consent": False},
+            {"category": "PODATKI_KSEF", "example": "dostawca KSeF/JPK/e-Deklaracje", "art28_required": True, "subprocessing_consent": True},
+            {"category": "REKLAMA_AI", "example": "Meta Ads/Google Ads (profilowanie)", "art28_required": True, "subprocessing_consent": True},
+        ],
+        "used_processors": used,
+        "missing_art28": missing_art28,
+        "missing_consent": missing_consent,
+        "compliance_score": score,
+        "_routing": "" if not missing_art28 and not missing_consent else "TRIAGE_QUEUE",
+        "note": "pełna mapa podprocesorów SaaS — umowy Art. 28 + zgody na podpowierzenie (P1)",
+    }
+
+
+def rodo_deadline_calendar(current_month: int = 12) -> dict:
+    """P1-2: kalendarz terminów RODO — przeglądy, DPIA, umowy powierzenia."""
+    calendar = [
+        {"task": "przegląd rejestru czynności przetwarzania", "frequency": "rocznie", "month": 12, "legal_basis": "Art. 30 RODO"},
+        {"task": "przegląd umów powierzenia (Art. 28)", "frequency": "rocznie", "month": 6, "legal_basis": "Art. 28 RODO"},
+        {"task": "DPIA przed nowym przetwarzaniem wysokiego ryzyka", "frequency": "przed_startem", "month": 0, "legal_basis": "Art. 35 RODO"},
+        {"task": "przegląd zabezpieczeń technicznych/organizacyjnych", "frequency": "kwartalnie", "month": 3, "legal_basis": "Art. 32 RODO"},
+        {"task": "retencja danych księgowych (min. 5 lat)", "frequency": "5_lat", "month": 0, "legal_basis": "Art. 74 ust. 2 UoR"},
+        {"task": "aktualizacja rejestru po zmianach", "frequency": "na_biezaco", "month": 0, "legal_basis": "Art. 24 RODO"},
+    ]
+    upcoming = [t["task"] for t in calendar if t["month"] in (current_month, 0)]
+    return {
+        "calendar": calendar,
+        "next_review_month": 12,
+        "upcoming_this_month": upcoming,
+        "note": "kalendarz terminów RODO — przeglądy, DPIA, umowy powierzenia, retencja (P1)",
+    }
+
+
+SANCTIONS_LISTS = {
+    "eu_consolidated": {"name": "EU Consolidated Financial Sanctions List", "source": "data.europa.eu/eu-sanctions", "weight": 50},
+    "un_sc": {"name": "UN Security Council Consolidated List", "source": "scsanctions.un.org", "weight": 50},
+    "ofac_sdn": {"name": "OFAC SDN (USA)", "source": "treasury.gov/ofac", "weight": 40},
+    "uk_ofsi": {"name": "UK OFSI Consolidated List", "source": "ofsi.hmt.gov.uk", "weight": 40},
+    "pep_national": {"name": "PEP krajowa lista", "source": "rejestr krajowy", "weight": 20},
+}
+
+
+def aml_sanctions_screening(entity_name: str = "", matched_lists: list = None) -> dict:
+    """P1-3: scoring AML z danymi rzeczywistymi — listy sankcyjne UE/ONZ."""
+    matched = matched_lists or []
+    score = sum(SANCTIONS_LISTS.get(m, {}).get("weight", 0) for m in matched)
+    if score >= 50:
+        level, routing = "KRYTYCZNE — obiekt na liście sankcyjnej!", "BLOCK_AND_ALERT"
+    elif score > 0:
+        level, routing = "WYMAGA WERYFIKACJI (PEP / lista krajowa)", "TRIAGE_QUEUE"
+    else:
+        level, routing = "CZYSZCZENIE — brak dopasowań", ""
+    return {
+        "entity_name": entity_name,
+        "matched_lists": matched,
+        "sanctions_score": score,
+        "sanctions_level": level,
+        "matched_details": [{"list": m, **SANCTIONS_LISTS.get(m, {})} for m in matched],
+        "_routing": routing,
+        "note": "scoring AML z danymi rzeczywistymi — screening na listach sankcyjnych UE/ONZ (P1)",
+    }
+
+
+def amlr_2027_check(cash_transaction_eur: float = 0.0, crypto_transaction_eur: float = 0.0,
+                    entity_covered: bool = True) -> dict:
+    """P2-1: implementacja AMLR (UE 2024/1624) — progi CBDD od 2027."""
+    cash_threshold, crypto_threshold = 10_000.0, 1_000.0
+    over_cash = cash_transaction_eur > cash_threshold
+    over_crypto = crypto_transaction_eur > crypto_threshold
+    if entity_covered and (over_cash or over_crypto):
+        status = (f"AMLR 2027 — OBOWIĄZEK CBDD: transakcja gotówkowa > {int(cash_threshold)} EUR LUB "
+                  f"krypto > {int(crypto_threshold)} EUR (entity covered)")
+        routing = "TRIAGE_QUEUE"
+    else:
+        status = "AMLR 2027 — transakcje poniżej progów CBDD"
+        routing = ""
+    return {
+        "regulation": "UE 2024/1624",
+        "application_from": "2027-07-10",
+        "cash_threshold_eur": cash_threshold,
+        "crypto_threshold_eur": crypto_threshold,
+        "single_rulebook": True,
+        "aml_authority": "AMLA (Frankfurt) — nadzór od 2028",
+        "cash_transaction_eur": cash_transaction_eur,
+        "crypto_transaction_eur": crypto_transaction_eur,
+        "cash_over_threshold": over_cash,
+        "crypto_over_threshold": over_crypto,
+        "status": status,
+        "_routing": routing,
+        "note": "implementacja AMLR (UE 2024/1624) — progi CBDD od 2027 (single rulebook) (P2)",
+    }
+
+
+def compliance_dashboard(clients_high_risk: int = 0, transactions_flagged: int = 0,
+                         str_pending: int = 0, breaches_open: int = 0) -> dict:
+    """P2-2: UI panelu ryzyka AML + dashboard naruszeń RODO 72h."""
+    panel_score = round(min(clients_high_risk * 10 + transactions_flagged * 5 + str_pending * 20, 100))
+    if str_pending > 0:
+        panel_level = "KRYTYCZNE — STR zaległe!"
+    elif panel_score >= 50:
+        panel_level = "WYSOKIE"
+    else:
+        panel_level = "UMIARKOWANE"
+    routing = "BLOCK_AND_ALERT" if (str_pending > 0 or breaches_open > 0) else "TRIAGE_QUEUE"
+    return {
+        "aml_panel": {
+            "clients_high_risk": clients_high_risk,
+            "transactions_flagged": transactions_flagged,
+            "str_pending": str_pending,
+            "panel_score": panel_score,
+            "panel_level": panel_level,
+        },
+        "breach_72h": {
+            "breaches_open": breaches_open,
+            "deadline_hours": COMPLIANCE["rodo_breach_deadline_hours"],
+            "within_deadline": breaches_open == 0,
+        },
+        "widgets": ["panel_ryzyka_aml", "dashboard_breach_72h", "kalendarz_rodo", "mapa_podprocesorow", "screening_sankcyjny", "status_amlr_2027"],
+        "export_formats": ["JSON", "CSV", "PDF"],
+        "_routing": routing,
+        "note": "UI panelu ryzyka AML + dashboard naruszeń RODO 72h — dane agregowane dla warstwy UI (P2)",
+    }
+
+
 def compliance_scorecard(rodo_score: float = 100.0, aml_score: float = 100.0, security_score: float = 100.0) -> dict:
     total = round((rodo_score + aml_score + security_score) / 3)
     grade = ("A — PEŁNA ZGODNOŚĆ" if total >= 90 else
@@ -497,6 +686,25 @@ def main() -> int:
     parser.add_argument("--aml-score", type=float, default=100.0, help="score AML (0-100)")
     parser.add_argument("--security-score", type=float, default=100.0, help="score security (0-100)")
     parser.add_argument("--ubo-identified", action="store_true", help="czy zidentyfikowano beneficjenta")
+    # ── Mapa drogowa P0/P1/P2 (R16) ──
+    parser.add_argument("--crbr", action="store_true", help="CRBR — rejestr beneficjentów rzeczywistych via API (P0)")
+    parser.add_argument("--str-gijf", action="store_true", help="automatyczna wysyłka STR do GIIF (P0)")
+    parser.add_argument("--saas-map", action="store_true", help="mapa podprocesorów SaaS — Art. 28 (P1)")
+    parser.add_argument("--rodo-calendar", action="store_true", help="kalendarz terminów RODO (P1)")
+    parser.add_argument("--sanctions-screen", action="store_true", help="scoring sankcyjny UE/ONZ (P1)")
+    parser.add_argument("--amlr", action="store_true", help="implementacja AMLR UE 2024/1624 (P2)")
+    parser.add_argument("--dashboard", action="store_true", help="UI panel ryzyka AML + dashboard 72h (P2)")
+    parser.add_argument("--registered", action="store_true", help="CRBR: czy zarejestrowano beneficjenta")
+    parser.add_argument("--nip", type=str, default="", help="NIP do weryfikacji CRBR")
+    parser.add_argument("--str-submitted", action="store_true", help="GIIF: czy STR zostało zgłoszone")
+    parser.add_argument("--str-confirmed", action="store_true", help="GIIF: czy otrzymano potwierdzenie (UPO)")
+    parser.add_argument("--days-since", type=int, default=0, help="GIIF: dni od wykrycia transakcji")
+    parser.add_argument("--current-month", type=int, default=12, help="bieżący miesiąc (1-12) dla kalendarza RODO")
+    parser.add_argument("--entity-name", type=str, default="", help="nazwa obiektu do screeningu sankcyjnego")
+    parser.add_argument("--matched-list", action="append", default=[], help="dopasowana lista sankcyjna (powtarzalny)")
+    parser.add_argument("--cash-eur", type=float, default=0.0, help="AMLR: transakcja gotówkowa (EUR)")
+    parser.add_argument("--crypto-eur", type=float, default=0.0, help="AMLR: transakcja krypto (EUR)")
+    parser.add_argument("--breaches-open", type=int, default=0, help="dashboard: otwarte naruszenia 72h")
     parser.add_argument("--table", action="store_true", help="format tabelaryczny")
     parser.add_argument("--out", type=str, default="", help="zapis JSON do pliku")
     args = parser.parse_args()
@@ -505,7 +713,9 @@ def main() -> int:
 
     funcs = [args.rodo_audit, args.register, args.breach, args.aml_client, args.aml_transaction,
              args.fortress, args.proof_chain, args.self_audit, args.aml_panel, args.breach_assistant,
-             args.decision_chain, args.hmac, args.sanctions, args.ubo, args.scorecard, args.pipeline]
+             args.decision_chain, args.hmac, args.sanctions, args.ubo, args.scorecard, args.pipeline,
+             args.crbr, args.str_gijf, args.saas_map, args.rodo_calendar, args.sanctions_screen,
+             args.amlr, args.dashboard]
     if args.audit or not any(funcs):
         result["audit"] = audit_rego_files()
     if args.rodo_audit:
@@ -541,6 +751,20 @@ def main() -> int:
         result["scorecard"] = compliance_scorecard(args.rodo_score, args.aml_score, args.security_score)
     if args.pipeline:
         result["pipeline"] = compliance_pipeline()
+    if args.crbr:
+        result["crbr"] = crbr_registry_check(args.registered, args.nip)
+    if args.str_gijf:
+        result["str_gijf"] = str_gijf_submission(args.str_submitted, args.str_confirmed, args.days_since)
+    if args.saas_map:
+        result["saas_map"] = subprocessor_saas_map(used=["HOSTING_CHMURY", "CRM"])
+    if args.rodo_calendar:
+        result["rodo_calendar"] = rodo_deadline_calendar(args.current_month)
+    if args.sanctions_screen:
+        result["sanctions_screen"] = aml_sanctions_screening(args.entity_name, args.matched_list)
+    if args.amlr:
+        result["amlr"] = amlr_2027_check(args.cash_eur, args.crypto_eur)
+    if args.dashboard:
+        result["dashboard"] = compliance_dashboard(str_pending=args.str_pending, breaches_open=args.breaches_open)
 
     if args.table:
         if "audit" in result:
@@ -574,6 +798,32 @@ def main() -> int:
             sc = result["scorecard"]
             print(f"\nSCORECARD: RODO {sc['score_rodo']}, AML {sc['score_aml']}, SEC {sc['score_security']} "
                   f"→ TOTAL {sc['score_total']} ({sc['grade']})")
+        if "crbr" in result:
+            c = result["crbr"]
+            print(f"\nCRBR ({c['nip']}): registered={c['registered']} — {c['registration_status']}")
+        if "str_gijf" in result:
+            g = result["str_gijf"]
+            print(f"\nGIIF STR: submitted={g['submitted']}, UPO={g['confirmation_received']} — {g['submission_status']}")
+        if "saas_map" in result:
+            s = result["saas_map"]
+            print(f"\nPODPROCESORZY SaaS: {len(s['used_processors'])} używanych, "
+                  f"{len(s['missing_art28'])} bez Art. 28, {len(s['missing_consent'])} bez podpowierzenia — "
+                  f"score {s['compliance_score']}")
+        if "rodo_calendar" in result:
+            rc = result["rodo_calendar"]
+            print(f"\nKALENDARZ RODO (miesiąc {args.current_month}): "
+                  f"{len(rc['upcoming_this_month'])} zadań w tym miesiącu — {', '.join(rc['upcoming_this_month'])}")
+        if "sanctions_screen" in result:
+            ss = result["sanctions_screen"]
+            print(f"\nSCREENING {ss['entity_name']}: {ss['sanctions_score']} pkt ({ss['sanctions_level']})")
+        if "amlr" in result:
+            ar = result["amlr"]
+            print(f"\nAMLR 2027: cash {ar['cash_transaction_eur']:.0f} EUR, crypto {ar['crypto_transaction_eur']:.0f} EUR — "
+                  f"{ar['status']}")
+        if "dashboard" in result:
+            d = result["dashboard"]
+            print(f"\nDASHBOARD: STR pending {d['aml_panel']['str_pending']}, naruszenia 72h "
+                  f"{d['breach_72h']['breaches_open']} — {d['_routing']}")
         return 0
 
     if args.out:

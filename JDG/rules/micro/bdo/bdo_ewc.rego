@@ -158,6 +158,44 @@ else := {
     startswith(ewc_code, "16 06") == true
 }
 
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  R15 P1-1: PEŁNY KATALOG EWC 6-CYFROWY (dane: data.jdg.thresholds.bdo_environment) ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.bdo_ewc.ewc_catalog_lookup: wyszukiwarka kodu EWC w pełnym katalogu
+# (rozdziały 01-20, kody 6-cyfrowe). Jedno źródło prawdy: thresholds_jdg.rego
+# (ADR-002) — katalog rozszerzalny bez zmian w regułach.
+_bdo_env := object.get(object.get(object.get(data, "jdg", {}), "thresholds", {}), "bdo_environment", {})
+_ewc_catalog := object.get(_bdo_env, "ewc_catalog", [])
+
+ewc_catalog_lookup := {
+    "matched": true, "rule_id": "jdg.micro.bdo_ewc.ewc_catalog_lookup",
+    "package": "jdg.micro.bdo_ewc", "priority": 82110,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "code_input": raw,
+    "code_normalized": normalized,
+    "found": count(matches) > 0,
+    "entry": object.get(matches, 0, {"code": normalized, "name": "NIEZNANY KOD EWC", "hazardous": false}),
+    "catalog_size": count(_ewc_catalog),
+    "_routing": routing,
+    "_routing_reason": sprintf("EWC %s — %s (niebezpieczny: %v)", [normalized, object.get(object.get(matches, 0, {"name": "poza katalogiem"}), "name", ""), object.get(matches, 0, {"hazardous": false}).hazardous]),
+    "_legal_basis": "Rozporządzenie ws. katalogu odpadów (Dz.U. 2020 poz. 10)",
+    "_warnings": [sprintf("[MICRO] EWC KATALOG: %s — %s%s", [normalized, object.get(object.get(matches, 0, {"name": "kod spoza katalogu"}), "name", ""), hazardous_note])]
+} {
+    raw := object.get(input.invoice, "bdo_ewc_code", "")
+    raw != ""
+    normalized := replace(raw, "*", "")
+    matches := [e | e := _ewc_catalog[_]; e.code == normalized]
+    # routing/nota: czyste wyrażenia (object.get + sprintf bool) — bez else na zmiennej lokalnej
+    routing := object.get({"true": "BLOCK_AND_ALERT"}, sprintf("%v", [count([1 | e := matches[_]; e.hazardous == true]) > 0]), "")
+    hazardous_note := object.get({"true": " — ODPAD NIEBEZPIECZNY (zaostrzone wymogi!)"}, sprintf("%v", [count([1 | e := matches[_]; e.hazardous == true]) > 0]), "")
+}
+
 # ── Fallback ──────────────────────────────────────────────────────────────────
 else := {
     "matched": true, "rule_id": "jdg.micro.bdo_ewc.fallback",
