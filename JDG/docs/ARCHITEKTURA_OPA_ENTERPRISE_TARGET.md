@@ -4,6 +4,7 @@
 > **Charakter:** specyfikacja docelowa (target architecture) — jak ma wyglądać najdoskonalszy system klasy ENTERPRISE, w którym **OPA jest SYSTEMEM**, a nie tylko silnikiem
 > **Wymóg nadrzędny:** *prawo jest bardzo zmienne → zmiana reguł OPA oraz dodawanie i usuwanie reguł musi być sprawne, niezawodne, proste; silnik musi się szybko i profesjonalnie adaptować do zmian prawa*
 > **Baza analityczna:** [ANALIZA_STANU_OPA_JAKO_SYSTEM.md](ANALIZA_STANU_OPA_JAKO_SYSTEM.md) (stan obecny JDG) + dobre praktyki branżowe Policy-as-Code (OPA bundles, signing, OPAL, Styra DAS-style control plane, conftest, GitOps)
+> **Kontynuacja:** ten dokument to cel **V1**; ulepszona wizja V2 (niezachwiana pewność: Legal Twin, runtime invariants, dowód formalny, Decision Certificate, Law Radar, declarative change) znajduje się w [WIZJA_OPA_ENTERPRISE_V2.md](WIZJA_OPA_ENTERPRISE_V2.md)
 > **Data:** 2026-08-07
 
 ---

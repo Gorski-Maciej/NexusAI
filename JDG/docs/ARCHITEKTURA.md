@@ -434,13 +434,14 @@ policies/
 | Warstwa dokumentacji | Dokument |
 |---|---|
 | Wejście | README.md, FAQ.md |
-| Architektura | ARCHITEKTURA.md (ten dokument) |
+| Architektura | ARCHITEKTURA.md (ten dokument), [ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md](ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md) (cel V1), [WIZJA_OPA_ENTERPRISE_V2.md](WIZJA_OPA_ENTERPRISE_V2.md) (wizja V2 — niezachwiana pewność) |
 | Struktura danych | STRUKTURA_PROJEKTU.md |
 | Interfejs | API_REFERENCJA.md, api/openapi.yaml |
 | Logika | LOGIKA_BIZNESOWA.md |
 | Prawo | ZGODNOSC_PRAWNA.md, LEGAL_COVERAGE.md, LEGAL_REFERENCE_ACTS.md |
 | Użytkownik | PODRECZNIK_UZYTKOWNIKA.md |
 | Inicjatywy | P02…P24 (VAT_MACRO_P03.md, ZUS_MICRO_P08.md, AUDYT_KOMPLETNY_P24.md…) |
+| Analiza i wizja | ANALIZA_STANU_OPA_JAKO_SYSTEM.md, ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md, WIZJA_OPA_ENTERPRISE_V2.md |
 | Proces | RULE_LIFECYCLE.md, OPA_REGO_DEVELOPER_GUIDE.md, DEVELOPER_GUIDE.md |
 
 ---
