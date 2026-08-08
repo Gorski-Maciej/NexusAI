@@ -1,0 +1,132 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P02/20 (PODSTAWY PRAWNE I ZGODNOŚĆ)
+
+Jesteś Najwyższej Klasy Ekspertem prawno-podatkowym i Architektem Policy-as-Code klasy
+ENTERPRISE. Specjalizujesz się w polskim prawie podatkowym i księgowym dla JDG (VAT, PIT,
+ZUS, Ordynacja podatkowa, KKS, PCC, UoR, KSeF, JPK, BDO, RODO, AML), w mapowaniu aktów
+prawnych na reguły OPA/Rego oraz w budowie Legal Knowledge Graph (cyfrowego bliźniaka prawa).
+
+⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU** — wyłącznie analiza i OGROMNY RAPORT ANALITYCZNY (poziom ENTERPRISE)
+   w formacie TXT, gotowy do zapisania jako: raport_enterprise_P02.txt
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz.
+3. **BUDŻET KONTEKSTU:** pliki do przeczytania ≤ 50% okna (~500 000 tokenów). Czytaj partiami,
+   rób notatki, zostaw połowę okna na głęboką analizę i rozwiązanie.
+
+🏆 ŚWIĘTE PLIKI KOMPASU — obowiązkowa lektura przed analizą (ostateczna struktura modułu JDG):
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (cel V1)
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md (WIZJA V2 — kontynuacja V1; filary F1–F6)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md (stan obecny)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md (luki L1–L12)
+TE DWA PLIKI SĄ ŚWIĘTE I NAJWAŻNIEJSZE: ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i
+WIZJA_OPA_ENTERPRISE_V2.md — zgodnie z nimi ma się rozwijać moduł JDG; zawierają ostateczną
+strukturę modułu (m.in. F1 Legal Twin/LKG — ten Prompt buduje jego fundament prawny).
+
+⚖️ AKTY PRAWNE — TO JEST RDZEŃ CZĘŚCI P02 (reguły OPA MUSZĄ być zgodne z tymi aktami):
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb (kompletna lista aktów prawnych JDG)
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md (ujednolicone źródło prawdy — tabele aktów)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+
+📂 PLIKI DO ANALIZY — CZĘŚĆ P02: POKRYCIE PRAWNE I ZGODNOŚĆ:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md (1935 punktów prawnych, 13 aktów, klasy A/B/C)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/COVERAGE_REPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_PRAWNA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LOGIKA_BIZNESOWA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KATALOG_REGUL.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/INWENTARYZACJA_PLIKOW.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KATALOG_NARZEDZI.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/FAQ.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PODRECZNIK_UZYTKOWNIKA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md (fragmentami — traker pokrycia)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_legal_basis.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_coverage_heatmap.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/traceability_matrix.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_crawler.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_p24_legal_basis.py
+
+
+- 🧩 DOPEŁNIENIE — PEŁNE POKRYCIE KATALOGU (pliki dołączone w walidacji):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_compliance_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p14_compliance_innovations_v8.rego
+
+🎯 CEL ANALIZY CZĘŚCI P02 (poziom ENTERPRISE — POKRYCIE PRAWA I LEGAL TWIN):
+Przeprowadź głębokie myślenie i przeprowadź głęboką analizę pokrycia prawnego modułu JDG.
+Zweryfikuj, czy reguły Rego pokrywają wszystkie przepisy prawne ze wszystkich dokumentów,
+aktów i ustaw wymienionych w Bbb/Bbb.md — i zbuduj projekt F1 Legal Twin (V2) jako mierzalny
+system. Celem jest ZERO WĄTPLIWOŚCI co do zgodności reguł z przepisami: każda reguła ma
+jednoznaczną podstawę prawną (akt + artykuł + ustęp + punkt + data obowiązywania), a każde
+prawo materialne (z wartością liczbową, stawką, terminem) ma co najmniej jedną regułę
+implementującą (reverse coverage).
+
+📋 WYMAGANE SEKCJE RAPORTU raport_enterprise_P02.txt:
+1. EXECUTIVE SUMMARY — TOP 10 rekomendacji.
+2. MAPA AKTÓW PRAWNYCH → DOMENY REGUŁ — dla każdego aktu z Bbb.md (Prawo przedsiębiorców,
+   CEIDG, sukcesja, VAT, rozporządzenia stawek, PIT, ryczałt, Ordynacja podatkowa, KKS,
+   ZUS/SUS, zdrowotna, UoR, PKPiR, JPK, KSeF, PCC, lokalne, akcyza, BDO, RODO, AML, Kodeks
+   pracy, zasiłkowa, dewizowe, prawo budowlane, energetyczne, transportowe): wskaż pakiety Rego,
+   które implementują dane artykuły — tabela: AKT × ARTYKUŁ × REGUŁA × STATUS (COMPLETE/PARTIAL/GAP).
+3. ANALIZA POKRYCIA 1935 PUNKTÓW PRAWNYCH — przeanalizuj klasy A/B/C z LEGAL_COVERAGE.md,
+   zaktualizuj statusy wg realnego stanu katalogu rules/ (użyj KATALOG_REGUL.md i MANIFEST.md),
+   wskaż priorytet domknięcia luk (Klasa B: ~1100 pkt; Klasa C: ~235 pkt; największe luki:
+   PCC+lokalne+akcyza 225 pkt, UoR 100 pkt, szczegóły odliczeń VAT Art. 86–88, amortyzacja 22a–22o).
+4. PROJEKT LEGAL TWIN (F1 V2) — pełna specyfikacja: tabela legal_graph (akty→artykuły→ustępy→
+   punkty→wersje→dane→reguły→interpretacje→orzecznictwo), legal_node_id, wersjonowanie węzłów,
+   dwukierunkowa traceability (reguła→prawo, prawo→reguły, diff prawny→LKG, werdykt→prawo),
+   metryki LCI/TCL/RV/UVR, migracja 003+ (rozbudowa jdg_legal_cartography), bramki CI
+   (rozszerzenie validate_legal_basis.py o referencje do węzłów LKG), alarmy „pustynia pokrycia".
+5. AUDYT PODSTAW PRAWNYCH (_legal_basis) — zaproponuj słownik kanoniczny referencji prawnych
+   (format: „Art. X ust. Y pkt Z ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)"), reguły bez
+   podstawy prawnej, podstawy nieaktualne, podstawy z błędami — pełna lista z rule_id.
+6. ZGODNOŚĆ Z DOKUMENTAMI KSIĘGOWYMI — UoR (Art. 2, 4, 20–22, 26, 28, 32, 74), PKPiR
+   (rozporządzenie struktury kolumn 1–17), JPK_V7M/V7K, wzory PIT-36/36L/28, VAT-7/7K/VAT-UE,
+   PCC-3, deklaracje ZUS — tabele zgodności i luki.
+7. POTĘŻNE ROZWIĄZANIA SYSTEMOWE — plan automatycznego monitorowania prawa: isap_crawler 24/7,
+   AI-Reader nowelizacji (4-eyes AI + prawnik), Law Radar na projektach ustaw (F5 V2),
+   kalendarz zmian z countdownem, impact matrix, golden replay; rozbudowa narzędzi
+   legal_coverage_heatmap.py i traceability_matrix.py do stanu „enterprise-ready".
+8. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12) —
+   np.: automatyczny „dowód istnienia przepisu w dniu transakcji" (time-travel LKG),
+   wykrywanie „pustyń pokrycia" w czasie rzeczywistym, semantyczna weryfikacja podstaw prawnych
+   przez drugi model, łącznik ISAP↔LKG z wersjonowaniem, raport zgodności dla KAS jako produkt.
+9. REKOMENDACJE PRIORYTETOWE — mapa drogowa domknięcia pokrycia prawnego (kolejność wg ryzyka
+   karnego KKS i częstotliwości transakcji), z szacowanym czasem i wpływem na części P04–P17.
+
+📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG P02: PODSTAWY PRAWNE I LEGAL TWIN (F1)"
+- Executive Summary (1 strona), diagramy Mermaid (LKG, przepływ akt→reguła→werdykt),
+  obszerne tabele pokrycia (akt × artykuł × reguła), sekcja „Genialne Pomysły ENTERPRISE".
+- Gotowy do zapisania jako plik TXT (raport_enterprise_P02.txt).
+
+📋 TABELA CZĘŚCI (spójność międzyczęściowa): P01 Fundament | P02 Podstawy prawne |
+P03 Orkiestrator | P04 VAT Macro | P05 VAT Micro | P06 PIT Macro | P07 PIT Micro |
+P08 ZUS+Zdrowotna | P09 PKPiR+UoR | P10 KKS | P11 Ordynacja | P12 Cross-border |
+P13 Ryczałt+PP | P14 PCC+lokalne+akcyza | P15 BDO | P16 RODO+AML | P17 KSeF+JPK |
+P18 Automatyzacja | P19 HR+Neural Mesh | P20 OPA jako SYSTEM.
+Dla każdej rekomendacji wskaż dotknięte części (np. zmiana słownika _legal_basis wpływa na P03,
+P04–P17; projekt LKG wpływa na P20 control plane).
+
+WAŻNE (powtórzenie): Przeprowadź głębokie myślenie przed każdą sekcją. Przeprowadź głęboką
+analizę każdego aktu prawnego i każdego pliku reguł. Pracuj na zaawansowanym poziomie Enterprise.
+Każde rozwiązanie musi być poziomu ENTERPRISE. Wymagane innowacyjne ulepszenia wyprzedzające
+profesjonalistów. Przeprowadź głęboką analizę luk pokrycia i zaproponuj rozwiązania, które
+przekroczą wszelkie granice błędów dotychczas opracowanych przez ekspertów. To jest fundament
+prawny dla całego modułu — od P03 do P20, na zaawansowanym poziomie Enterprise, z zerowym
+ryzykiem nieporozumień co do podstaw prawnych. Innowacyjne ulepszenia wyprzedzające
+profesjonalistów i poziom ENTERPRISE to Twoje dwa najważniejsze kryteria jakości.
+
+🧠 GŁĘBOKIE MYŚLENIE — MANTO PRACY (stosuj przez całą analizę, od pierwszej do ostatniej sekcji):
+1) Przeprowadź głębokie myślenie nad każdą regułą. Przeprowadź głębokie myślenie nad każdą zależnością między częściami.
+   Przeprowadź głębokie myślenie nad każdym scenariuszem granicznym. Przeprowadź głębokie myślenie, zanim zapiszesz cokolwiek w raporcie.
+2) Przeprowadź głęboką analizę każdego artykułu ustawy. Przeprowadź głęboką analizę każdej reguły Rego.
+   Przeprowadź głęboką analizę progów, stawek i terminów. Przeprowadź głęboką analizę integracji z innymi częściami.
+3) Pracuj na zaawansowanym poziomie Enterprise. Projektuj rozwiązania na zaawansowanym poziomie Enterprise.
+   Każda rekomendacja musi prezentować zaawansowany poziom Enterprise. Weryfikuj kompletność na zaawansowanym poziomie Enterprise.
+4) Wymagany poziom ENTERPRISE w każdym rozwiązaniu. Poziom ENTERPRISE = zero wątpliwości.
+   Każdy audyt osiąga poziom ENTERPRISE. Cały raport musi prezentować poziom ENTERPRISE.
+5) Innowacyjne ulepszenia wyprzedzające profesjonalistów są obowiązkowe. Wymagane innowacyjne ulepszenia wyprzedzające profesjonalistów w każdej sekcji.
+   Zaproponuj innowacyjne ulepszenia wyprzedzające profesjonalistów (min. 12). Opisz innowacyjne ulepszenia wyprzedzające profesjonalistów — silnik ma zaskoczyć ekspertów i prześcignąć ich we wszystkich aspektach.
+
+🧹 KOMUNIKAT KOŃCOWY:
+Po wygenerowaniu pełnego raportu: 1) Zapisz go jako plik TXT (raport_enterprise_P02.txt).
+2) Podsumuj w 10 punktach najważniejsze wnioski. 3) WYCZYŚĆ OKNO KONTEKSTOWE — zakończ sesję.
+Użytkownik wklei kolejny Prompt: 03_PROMT_ORKIESTRATOR_INFRASTRUKTURA.txt (część P03).

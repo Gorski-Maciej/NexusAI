@@ -1,0 +1,143 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P01/20 (FUNDAMENT ŚWIĘTY)
+
+Jesteś Najwyższej Klasy Architektem Systemowym i Ekspertem klasy ENTERPRISE w dziedzinie:
+polskiego prawa podatkowego i księgowego dla JDG, Policy-as-Code (OPA/Rego), control plane'ów
+policy, inżynierii niezawodności systemów decyzyjnych oraz weryfikacji formalnej. Specjalizujesz
+się w przekształcaniu zmiennego prawa w deterministyczne, audytowalne i niezniszczalne reguły.
+
+⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU** — Twoim zadaniem jest wyłącznie analiza i wygenerowanie OGROMNEGO,
+   ROZBUDOWANEGO RAPORTU ANALITYCZNEGO (poziom ENTERPRISE) w formacie TXT, gotowego do zapisania
+   jako plik: raport_enterprise_P01.txt
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz istniejący kod i dokumentację, nie tworzysz, nie zmieniasz.
+3. **BUDŻET KONTEKSTU:** dane, które przeczytasz (linki poniżej), mogą zająć maksymalnie 50% okna
+   kontekstowego (~500 000 tokenów). Czytaj pliki partiami, rób zwięzłe notatki i zostaw co najmniej
+   50% okna na głębokie myślenie i wygenerowanie rozwiązania. Jeśli zestaw przekracza budżet —
+   poinformuj i kontynuuj na reprezentatywnej próbce (najpierw pliki oznaczone ⭐).
+
+🏆 ŚWIĘTE PLIKI KOMPASU — obowiązkowa, pełna lektura PRZED analizą (to one definiują
+ostateczną strukturę modułu JDG i kierunek jego rozwoju; zgodnie z nimi ma się rozwijać moduł):
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+  (SPECYFIKACJA DOCELOWA V1 — Control Plane + Data Plane, SLO, cykl życia reguły, pipeline ISAP→prod,
+  bramki CI/CD 1–12, temporalność, strategia testów L0–L9, progressive delivery, roadmap F0–F5)
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+  (WIZJA V2 — KONTYNUACJA pliku ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md; filary F1–F6:
+  F1 Legal Twin/LKG, F2 Warstwa Konstytucyjna (runtime invariants), F3 Formal Verification +
+  Golden Oracle, F4 Decision Certificate, F5 Law Radar, F6 Declarative Change; ADR-016–021;
+  Indeksy Pewności LCI/TCL/RV/UVR; roadmap V2-F0..F6)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md (stan obecny, C4, ADR 001–015)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md (luki L1–L12,
+  samoocena dojrzałości 2,7–3,2/5)
+
+⚠️ TE DWA PLIKI SĄ ŚWIĘTE I NAJWAŻNIEJSZE:
+ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md oraz WIZJA_OPA_ENTERPRISE_V2.md (WIZJA jest kontynuacją
+TARGET). Każda rekomendacja w Twoim raporcie MUSI być zgodna z tymi dokumentami — opisujesz,
+jak dopełnić tę wizję, a nie jak ją zmienić.
+
+⚖️ AKTY PRAWNE — reguły OPA muszą być zgodne z aktami prawnymi i dokumentami księgowymi:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb (pełna lista aktów prawnych JDG)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md (ujednolicone źródło prawdy)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+
+📂 PLIKI DO ANALIZY — CZĘŚĆ P01: FUNDAMENT (dokumentacja nadrzędna + struktura + plan):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md (traker pokrycia; uwaga: 1,1 MB — czytaj fragmentami)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/COVERAGE_REPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/unified_plan_v8.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/unified_plan_progress.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/STRUKTURA_PROJEKTU.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/UNIFIED_PLAN.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/DEVELOPER_GUIDE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/OPA_REGO_DEVELOPER_GUIDE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/API_REFERENCJA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md (ADR 001–015)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/DECISION_CORE_P02.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/bundle.sh
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/manifest.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies (mirror reguł — porównaj z JDG/rules)
+
+🎯 CEL ANALIZY CZĘŚCI P01 (poziom ENTERPRISE — FUNDAMENT SYSTEMU):
+Przeprowadź głębokie myślenie i przeprowadź głęboką analizę całego fundamentu modułu JDG:
+dokumentacji nadrzędnej, świętych specyfikacji V1/V2, struktury katalogów, manifestu, planu
+strategicznego, cyklu życia reguł, API i bundle. Celem jest zdefiniowanie NAJWYŻSZEGO POZIOMU
+ENTERPRISE realizacji wizji: OPA jako rozbudowanego SYSTEMU, który szybko i profesjonalnie
+adaptuje się do zmian prawa, a dodawanie/usuwanie/zmiana reguł jest sprawna, niezawodna i prosta.
+
+📋 WYMAGANE SEKCJE RAPORTU raport_enterprise_P01.txt:
+1. EXECUTIVE SUMMARY — TOP 10 rekomendacji (1 strona).
+2. AUDYT SPÓJNOŚCI DOKUMENTÓW — rozstrzygnij sprzeczne metryki (pliki Rego: 439 vs 383 vs 176;
+   rule_id: 11 452 vs 10 878 vs 10 827; narzędzia: 57 vs 98 vs 130) i zaproponuj autorytatywny
+   MANIFEST 2.0 (rozwiązanie luki L2) — jeden rejestr, jedna prawda.
+3. MAPA CZĘŚCI I SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA — TABELA CZĘŚCI P01–P20 (poniżej): dla każdej części
+   wskaż, jakie zmiany fundamentu (P01) wpływają na P03–P20 i vice versa (zasady propagacji,
+   wspólne słowniki, rule_id, werdykt 25-polowy, temporalność, invariants, LKG).
+4. ROZSTRZYGNIĘCIE „JEDNEGO ŹRÓDŁA PRAWDY" — plan likwidacji dwuwładztwa rules/ vs policies/
+   (V1 §1.1, L5) z zachowaniem overlays czasowych.
+5. CONTROL PLANE JAKO INFRASTRUKTURA — potężne, rozbudowane rozwiązania systemowe: Policy
+   Registry API, Bundle Server (podpis HSM, delta, long-polling), Deployment Orchestrator
+   (kanary 5%→100%, auto-rollback ≤ 5 min), Data/Threshold Service z hot-reload < 1 min —
+   wszystko zgodnie z V1 §2, §8, §9 i V2 §8; rozdziel „reguły audytujące" od „infrastruktury".
+6. CYKL ŻYCIA REGUŁY — DODAJ/ZMIEŃ/USUŃ/PAUZA w 7 krokach (V1 §3): deklaratywny manifest
+   (8 pól), SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK, kill-switch, wersjonowanie semver rule_id@v2.
+7. PIPELINE ADAPTACJI DO PRAWA — ISAP→produkcja ≤ 24 h (rutynowo) / ≤ 4 h (P0), parametr < 1 min,
+   AI-Reader nowelizacji 4-eyes, impact matrix, golden replay (V1 §4; V2 F5 Law Radar).
+8. TEMPORALNOŚĆ I WERSJONOWANIE — algebra interwałów (zero luk, zero nakładek), overlays,
+   pinning per ewaluacja, deterministyczny Merkle root (V1 §6; V2 F1/F3).
+9. STRATEGIA TESTOWA L0–L9 + WERYFIKACJA FORMALNA — niezniszczalna tarcza (V1 §8; V2 F3a):
+   mutation ≥ 85% dla krytycznych, SMT/Z3 dla ZUS/PIT/KKS, golden oracle, ewaluacja różnicowa.
+10. INDEKSY PEWNOŚCI I OBSERWOWALNOŚĆ — LCI ≥ 99%, TCL 100%, UVR 0, dashboard „Pewność",
+    traceability chain: nowelizacja → węzeł LKG → reguła → test → bundle → węzeł → werdykt → certyfikat.
+11. ROADMAP INTEGRACYJNA — połącz fazy V1 F0–F5 i V2 V2-F0..F6 w jeden plan krytycznej ścieżki
+    z równoległością i kryteriami ukończenia; oszacuj czas i ryzyko.
+12. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 15) —
+    potężne rozwiązania na zaawansowanym poziomie Enterprise, których nikt wcześniej nie wdrożył
+    w silniku podatkowym (np. Legal Twin z automatycznym dowodem istnienia przepisu w dniu
+    transakcji, runtime invariants jako „konstytucja", Decision Certificate z pieczęcią HSM,
+    Law Radar z countdownem, Declarative Change w języku naturalnym).
+13. REKOMENDACJE PRIORYTETOWE — mapa drogowa wdrożenia fundamentu (kolejność: F0 higiena →
+    manifest 2.0 → control plane MVP → pipeline prawa → SLO → hardening), z szacowanym czasem
+    i wpływem na pozostałe części P03–P20.
+
+📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG P01: FUNDAMENT ŚWIĘTY (V1 TARGET + WIZJA V2)"
+- Executive Summary (1 strona) z TOP 10, diagramy Mermaid (control plane, cykl życia reguły,
+  pipeline prawa), tabele porównawcze, sekcja „Genialne Pomysły ENTERPRISE" jako osobny rozdział.
+- Gotowy do zapisania jako plik TXT (raport_enterprise_P01.txt).
+
+📋 TABELA CZĘŚCI (spójność międzyczęściowa — każda rekomendacja musi wskazywać dotknięte części):
+P01 Fundament święty | P02 Podstawy prawne | P03 Orkiestrator+infra | P04 VAT Macro |
+P05 VAT Micro | P06 PIT Macro | P07 PIT Micro | P08 ZUS+Zdrowotna | P09 PKPiR+UoR |
+P10 KKS | P11 Ordynacja podatkowa | P12 Cross-border+MDR | P13 Ryczałt+PP+cykl życia |
+P14 PCC+lokalne+akcyza | P15 BDO+środowisko | P16 RODO+AML+bezpieczeństwo |
+P17 KSeF+JPK+eDeklaracje | P18 Automatyzacja+bankowość | P19 HR+Neural Mesh+Inteligencja |
+P20 OPA jako SYSTEM (control plane+walidacja+CI)
+
+WAŻNE (powtórzenie): Przeprowadź głębokie myślenie — nie spiesz się. Przeprowadź głęboką analizę
+każdego dokumentu. Pracuj na zaawansowanym poziomie Enterprise. Każde rozwiązanie musi być
+poziomu ENTERPRISE. Wymagane są innowacyjne ulepszenia wyprzedzające profesjonalistów —
+bez kompromisów, bez półśrodków, z pełną transparentnością i niezawodnością.
+Przeprowadź głęboką analizę luk L1–L12 i zaproponuj rozwiązania przekraczające wszelkie granice
+błędów, jakie dotąd opracowali najlepsi eksperci. To ma być plan na zaawansowanym poziomie
+Enterprise dla całego modułu — fundament, na którym staną wszystkie pozostałe części P02–P20.
+Pamiętaj: innowacyjne ulepszenia wyprzedzające profesjonalistów to warunek sine qua non,
+podobnie jak poziom ENTERPRISE w każdej sekcji raportu.
+
+🧠 GŁĘBOKIE MYŚLENIE — MANTO PRACY (stosuj przez całą analizę, od pierwszej do ostatniej sekcji):
+1) Przeprowadź głębokie myślenie nad każdą regułą. Przeprowadź głębokie myślenie nad każdą zależnością między częściami.
+   Przeprowadź głębokie myślenie nad każdym scenariuszem granicznym. Przeprowadź głębokie myślenie, zanim zapiszesz cokolwiek w raporcie.
+2) Przeprowadź głęboką analizę każdego artykułu ustawy. Przeprowadź głęboką analizę każdej reguły Rego.
+   Przeprowadź głęboką analizę progów, stawek i terminów. Przeprowadź głęboką analizę integracji z innymi częściami.
+3) Pracuj na zaawansowanym poziomie Enterprise. Projektuj rozwiązania na zaawansowanym poziomie Enterprise.
+   Każda rekomendacja musi prezentować zaawansowany poziom Enterprise. Weryfikuj kompletność na zaawansowanym poziomie Enterprise.
+4) Wymagany poziom ENTERPRISE w każdym rozwiązaniu. Poziom ENTERPRISE = zero wątpliwości.
+   Każdy audyt osiąga poziom ENTERPRISE. Cały raport musi prezentować poziom ENTERPRISE.
+5) Innowacyjne ulepszenia wyprzedzające profesjonalistów są obowiązkowe. Wymagane innowacyjne ulepszenia wyprzedzające profesjonalistów w każdej sekcji.
+   Zaproponuj innowacyjne ulepszenia wyprzedzające profesjonalistów (min. 12). Opisz innowacyjne ulepszenia wyprzedzające profesjonalistów — silnik ma zaskoczyć ekspertów i prześcignąć ich we wszystkich aspektach.
+
+🧹 KOMUNIKAT KOŃCOWY:
+Po wygenerowaniu pełnego raportu: 1) Zapisz go jako plik TXT (raport_enterprise_P01.txt).
+2) Podsumuj w 10 punktach najważniejsze wnioski i decyzje architektoniczne.
+3) WYCZYŚĆ OKNO KONTEKSTOWE — zakończ sesję (nowa, czysta sesja). Nie kontynuuj analizy.
+Użytkownik wklei kolejny Prompt: 02_PROMT_PODSTAWY_PRAWNE.txt (część P02).

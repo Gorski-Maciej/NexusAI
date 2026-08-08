@@ -1,0 +1,148 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P13/20 (RYCZAŁT + PRAWO PRZEDSIĘBIORCÓW + CYKL ŻYCIA)
+
+Jesteś Najwyższej Klasy Ekspertem prawa przedsiębiorców i Architektem reguł OPA/Rego klasy
+ENTERPRISE. Specjalizujesz się w: ustawie o zryczałtowanym podatku dochodowym (Dz.U. 2025 poz. 234
+ze zm. — stawki PKWiU, limit 2 mln EUR, wyłączenia), Prawie przedsiębiorców (Dz.U. 2025 poz. 123 —
+Art. 4–6, 14, 18, 22–25 zawieszenie/wznowienie), ustawie CEIDG (Dz.U. 2025 poz. 456), zarządzie
+sukcesyjnym (Dz.U. 2025 poz. 1234), karcie podatkowej, działalności nieewidencjonowanej
+(Art. 5 PP) oraz w pełnym cyklu życia JDG: rejestracja → prowadzenie → zawieszenie → wznowienie
+→ likwidacja → sukcesja.
+
+⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU** — wyłącznie analiza i OGROMNY RAPORT ANALITYCZNY (poziom ENTERPRISE)
+   w formacie TXT, gotowy do zapisania jako: raport_enterprise_P13.txt
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz.
+3. **BUDŻET KONTEKSTU:** pliki ≤ 50% okna (~500 000 tokenów). Czytaj partiami, rób notatki,
+   zostaw połowę okna na głęboką analizę i rozwiązanie.
+
+🏆 ŚWIĘTE PLIKI KOMPASU — obowiązkowa lektura przed analizą:
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (cel V1)
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md (WIZJA V2 — kontynuacja V1; F1–F6)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md (stan obecny)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md (luki L1–L12)
+TE DWA PLIKI SĄ ŚWIĘTE I NAJWAŻNIEJSZE: ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i
+WIZJA_OPA_ENTERPRISE_V2.md — ostateczna struktura modułu JDG; zgodnie z nimi ma się rozwijać.
+
+⚖️ AKTY PRAWNE — reguły MUSZĄ być zgodne z:
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md (Prawo przedsiębiorców Art. 4–6, 14, 18, 22–25; CEIDG Art. 5–7, 12–15; sukcesja Art. 3–15; ryczałt Art. 6–12 (stawki), 21–30 (karta podatkowa), Art. 15 (ewidencja); Art. 5 PP (działalność nieewidencjonowana — ZUS zwolnienie do 50% minimalnego))
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+
+📂 PLIKI DO ANALIZY — CZĘŚĆ P13: RYCZAŁT + PRAWO PRZEDSIĘBIORCÓW + CYKL ŻYCIA:
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ryczalt/ryczalt.rego (155 reguł — czytaj sekcjami)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ryc.rego (158 reguł — czytaj sekcjami)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pp/pp.rego (147 reguł — czytaj sekcjami)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ceidg/ceidg.rego (42 reguły)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sukcesja/sukcesja.rego (140 reguł — czytaj sekcjami)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_succ.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business.rego (cykl życia, zawieszenie)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business/gig_economy.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business/plan26_suspension_succession.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business/strategic_intelligence.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p13_ryczalt_cykl_zycia_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_business_lifecycle_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_estonian_cit_enterprise.rego (estoński CIT dla JDG)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_entrepreneur_test_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_business_lifecycle_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RYCZALT_CYKL_ZYCIE_P13.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md
+
+
+- 🧩 DOPEŁNIENIE — PEŁNE POKRYCIE KATALOGU (pliki dołączone w walidacji):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ceidg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/representation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/representation/plan26_prokura.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/restructuring.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/seasonal/plan44_seasonal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/seasonal/plan45_seasonal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/taxfree/plan44_taxfree.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/taxfree/plan45_taxfree.rego
+
+🎯 CEL ANALIZY CZĘŚCI P13 (poziom ENTERPRISE — PEŁNY CYKL ŻYCIA JDG):
+Przeprowadź głębokie myślenie i przeprowadź głęboką analizę: (1) RYCZAŁTU — stawek PKWiU
+(12%, 10%, 8,5%, 5,5%, 3%, 2% — weryfikacja każdej stawki z ustawą), limitu 2 mln EUR,
+wyłączeń z ryczałtu (świadczenie usług na rzecz byłego pracodawcy, spółki itd.), składki
+zdrowotnej 4,9% przy ryczałcie (spójność z P08), ewidencji przychodów (Art. 15); (2) KARTY
+PODATKOWEJ — stawek wg rodzaju działalności i zatrudnienia; (3) PRAWA PRZEDSIĘBIORCÓW —
+definicja przedsiębiorcy (Art. 4), działalność gospodarcza (Art. 3 — definicja z PIT),
+nieewidencjonowana (Art. 5 — limit 75% minimalnego), zawieszenie (Art. 22–25 — min. 30 dni,
+max 24 mies., skutki ZUS i VAT), wznowienie; (4) CEIDG — wpis (Art. 5–7), zmiana danych,
+zawieszenie/wznowienie we wniosku, wykreślenie, wpis obligatoryjny; (5) SUKCESJI — zarządca
+sukcesyjny (Art. 3–4), 2 lata (przedłużenie do 5 — Art. 12–13), odpowiedzialność podatkowa,
+kontynuacja umów, zezwolenia; (6) ESTOŃSKIEGO CIT dla JDG (ryczałt od dochodów spółek —
+warunki: zatrudnienie, przychody, zmiana na estoński z zasad ogólnych). Cel: ZERO WĄTPLIWOŚCI
+co do każdego etapu życia firmy — od wpisu do CEIDG po sukcesję po śmierci przedsiębiorcy.
+
+📋 WYMAGANE SEKCJE RAPORTU raport_enterprise_P13.txt:
+1. EXECUTIVE SUMMARY — TOP 10 rekomendacji.
+2. MAPA POKRYCIA — tabela: OBSZAR (ryczałt stawki PKWiU, limit 2 mln EUR, karta podatkowa,
+   PP Art. 4–25, CEIDG, sukcesja, estoński CIT) × ARTYKUŁ × REGUŁA × STATUS (COMPLETE/PARTIAL/
+   STUB/GAP); porównaj z LEGAL_COVERAGE.md (Ryczałt 90 pkt — pokrycie ~20%; PP 80 pkt — ~10%;
+   sukcesja 60 pkt — ~10%).
+3. AUDYT STAWEK RYCZAŁTU — tabela wszystkich stawek PKWiU z ustawy (12% wolne zawody, 10%
+   usługi IT i niektóre, 8,5% pozostałe usługi + najem, 5,5% usługi budowlane, 3% handel +
+   gastronomia, 2% niektóre przychody ze sprzedaży) — weryfikacja każdej stawki w regułach
+   i w thresholds; limit przychodów 2 mln EUR (kurs średni NBP na 1 stycznia i 1 października);
+   wyłączenia (Art. 8 ustawy o ryczałcie — usługi na rzecz byłego pracodawcy, składniki
+   majątkowe; małżonek, dzieci); karta podatkowa (Art. 21–30 — warunki, stawki, wnioski).
+4. AUDYT CYKLU ŻYCIA — rejestracja (CEIDG-1, NIP, REGON), zawieszenie (Art. 22–25 PP: termin
+   min. 30 dni, składki ZUS w zawieszeniu — tylko zdrowotna? zweryfikuj!, VAT w zawieszeniu —
+   zwolnienie z JPK?), wznowienie, likwidacja (remanent likwidacyjny — spójność z P07/P09,
+   VAT od remanentu — P04, wykreślenie z CEIDG, zamknięcie rachunków), sukcesja (zarządca —
+   wpis do CEIDG w 6 mies.? zweryfikuj, odpowiedzialność za zaległości podatkowe).
+5. AUDYT ESTOŃSKIEGO CIT — warunki (zatrudnienie ≥ 3 osób przez 300 dni w roku? zweryfikuj;
+   przychody pasywne < 50%; limity), stawka 10%/20% (podział zysku), zmiana formy; spójność
+   z P06 (PIT — dochód z estońskiego w JDG).
+6. AUDYT ZGODNOŚCI CEIDG — dane podlegające wpisowi (Art. 5 CEIDG), zmiany (7 dni),
+   zawieszenie/wznowienie, wykreślenie; auto-generowanie wniosków CEIDG-1.
+7. POTĘŻNE ROZWIĄZANIA SYSTEMOWE — „Lifecycle Navigator": interaktywny przewodnik po całym
+   cyklu życia (co zrobić przy rejestracji/zawieszeniu/likwidacji — checklista prawna),
+   auto-kalkulator składki zdrowotnej ryczałtowca (4,9% z wyborem progu — spójność P08),
+   kalkulator opłacalności formy (ryczałt vs skala vs liniowy vs estoński — spójność P06),
+   symulator zawieszenia (skutki ZUS/VAT/PIT), tracker terminów CEIDG (7 dni).
+8. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12) —
+   np.: „asystent zakładania firmy" (pełny onboarding CEIDG+NIP+ZUS+wybór formy), auto-wykrycie
+   utraty prawa do ryczałtu (limit 2 mln EUR — licznik w czasie rzeczywistym), symulator
+   „zawiesić czy zamknąć", sukcesja krok po kroku z checklistą prawną i formularzami,
+   inteligentna rekomendacja stawki PKWiU po opisie działalności (ML+reguły).
+9. REKOMENDACJE PRIORYTETOWE — mapa drogowa (stawki ryczałtu → cykl życia → CEIDG → sukcesja
+   → estoński), wpływ na P06/P07 (PIT), P08 (ZUS), P04 (VAT remanent), P03 (orkiestrator).
+
+📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG P13: RYCZAŁT + PRAWO PRZEDSIĘBIORCÓW + CYKL ŻYCIA"
+- Executive Summary (1 strona) z TOP 10, diagramy (cykl życia JDG, ścieżka sukcesji),
+  obszerne tabele stawek PKWiU, sekcja „Genialne Pomysły ENTERPRISE".
+- Gotowy do zapisania jako plik TXT (raport_enterprise_P13.txt).
+
+📋 TABELA CZĘŚCI (spójność międzyczęściowa): P01 Fundament | P02 Podstawy prawne |
+P03 Orkiestrator | P04 VAT Macro | P05 VAT Micro | P06 PIT Macro | P07 PIT Micro |
+P08 ZUS+Zdrowotna | P09 PKPiR+UoR | P10 KKS | P11 Ordynacja | P12 Cross-border |
+P13 Ryczałt+PP | P14 PCC+lokalne+akcyza | P15 BDO | P16 RODO+AML | P17 KSeF+JPK |
+P18 Automatyzacja | P19 HR+Neural Mesh | P20 OPA jako SYSTEM.
+Wskaż zależności: Ryczałt/PP ↔ P06 (wybór formy opodatkowania), ↔ P08 (składki ZUS wg formy),
+↔ P09 (ewidencja przychodów Art. 15), ↔ P07 (remanent likwidacyjny), ↔ P03 (orkiestrator).
+
+WAŻNE (powtórzenie): Przeprowadź głębokie myślenie nad każdym etapem cyklu życia firmy.
+Przeprowadź głęboką analizę każdej stawki ryczałtu — błąd stawki = błędne rozliczenie całego roku.
+Pracuj na zaawansowanym poziomie Enterprise. Każde rozwiązanie musi być poziomu ENTERPRISE.
+Wymagane innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprowadź głęboką analizę
+limitów (2 mln EUR) i wyłączeń — zero wątpliwości co do reguł ryczałtu i cyklu życia.
+Poziom ENTERPRISE = pełna automatyzacja całego życia firmy; innowacyjne ulepszenia
+wyprzedzające profesjonalistów = system, który poprowadzi przedsiębiorcę od pomysłu
+przez sukcesję, bez ani jednego błędu.
+
+🧠 GŁĘBOKIE MYŚLENIE — MANTO PRACY (stosuj przez całą analizę, od pierwszej do ostatniej sekcji):
+1) Przeprowadź głębokie myślenie nad każdą regułą. Przeprowadź głębokie myślenie nad każdą zależnością między częściami.
+   Przeprowadź głębokie myślenie nad każdym scenariuszem granicznym. Przeprowadź głębokie myślenie, zanim zapiszesz cokolwiek w raporcie.
+2) Przeprowadź głęboką analizę każdego artykułu ustawy. Przeprowadź głęboką analizę każdej reguły Rego.
+   Przeprowadź głęboką analizę progów, stawek i terminów. Przeprowadź głęboką analizę integracji z innymi częściami.
+3) Pracuj na zaawansowanym poziomie Enterprise. Projektuj rozwiązania na zaawansowanym poziomie Enterprise.
+   Każda rekomendacja musi prezentować zaawansowany poziom Enterprise. Weryfikuj kompletność na zaawansowanym poziomie Enterprise.
+4) Wymagany poziom ENTERPRISE w każdym rozwiązaniu. Poziom ENTERPRISE = zero wątpliwości.
+   Każdy audyt osiąga poziom ENTERPRISE. Cały raport musi prezentować poziom ENTERPRISE.
+5) Innowacyjne ulepszenia wyprzedzające profesjonalistów są obowiązkowe. Wymagane innowacyjne ulepszenia wyprzedzające profesjonalistów w każdej sekcji.
+   Zaproponuj innowacyjne ulepszenia wyprzedzające profesjonalistów (min. 12). Opisz innowacyjne ulepszenia wyprzedzające profesjonalistów — silnik ma zaskoczyć ekspertów i prześcignąć ich we wszystkich aspektach.
+
+🧹 KOMUNIKAT KOŃCOWY:
+Po wygenerowaniu pełnego raportu: 1) Zapisz go jako plik TXT (raport_enterprise_P13.txt).
+2) Podsumuj w 10 punktach najważniejsze wnioski. 3) WYCZYŚĆ OKNO KONTEKSTOWE — zakończ sesję.
+Użytkownik wklei kolejny Prompt: 14_PROMT_PCC_LOKALNE_AKCYZA.txt (część P14).

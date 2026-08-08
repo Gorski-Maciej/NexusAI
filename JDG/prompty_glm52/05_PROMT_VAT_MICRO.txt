@@ -1,0 +1,118 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P05/20 (VAT MICRO — ATOMOWE REGUŁY)
+
+Jesteś Najwyższej Klasy Ekspertem podatku VAT i Inżynierem reguł atomowych OPA/Rego klasy
+ENTERPRISE. Specjalizujesz się w mikro-regułach per artykuł ustawy o VAT, w walidacji
+else-chain (First-Match-Wins), w temporalności stawek i w eliminacji stubów, duplikatów
+i martwych reguł w warstwie micro.
+
+⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU** — wyłącznie analiza i OGROMNY RAPORT ANALITYCZNY (poziom ENTERPRISE)
+   w formacie TXT, gotowy do zapisania jako: raport_enterprise_P05.txt
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz.
+3. **BUDŻET KONTEKSTU:** micro/vat/vat.rego ma ~967 KB — czytaj go SEKCJAMI (po ~100–150 KB),
+   rób notatki, zostaw ≥ 50% okna na głęboką analizę i rozwiązanie.
+
+🏆 ŚWIĘTE PLIKI KOMPASU — obowiązkowa lektura przed analizą:
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (cel V1)
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md (WIZJA V2 — kontynuacja V1; F1–F6)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md (stan obecny)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md (luki L1–L12)
+TE DWA PLIKI SĄ ŚWIĘTE I NAJWAŻNIEJSZE: ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i
+WIZJA_OPA_ENTERPRISE_V2.md — ostateczna struktura modułu JDG; zgodnie z nimi ma się rozwijać.
+
+⚖️ AKTY PRAWNE (kontekst): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+(sekcja VAT: Art. 5–14, 19a–21, 28a–28o, 41–42, 43, 86–96, 99, 103, 106a–106nq, 108a–108f, 113, 120)
+· https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+
+📂 PLIKI DO ANALIZY — CZĘŚĆ P05: VAT MICRO (atomowe reguły per artykuł):
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/vat.rego (~1091 reguł — czytaj sekcjami!)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/ksef_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/margin_scheme_micro.rego (procedura marży Art. 120)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/place_of_supply_micro.rego (Art. 28a–28o)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/proportion_vat.rego (Art. 90–91)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/wdt_export_import.rego (WDT/WNT/import/eksport)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p03_vat_micro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p04_vat_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_MICRO_P04.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md (sekcja VAT — porównanie)
+
+🎯 CEL ANALIZY CZĘŚCI P05 (poziom ENTERPRISE — ATOMOWA PRECYZJA):
+Przeprowadź głębokie myślenie i przeprowadź głęboką analizę warstwy mikro VAT — reguł
+atomowych per artykuł ustawy o VAT (plan33/plan34 + vat.rego). Celem jest potwierdzenie, że
+KAŻDY artykuł ustawy ma swoją atomową regułę, że nie ma stubów ({ true } / matched:false),
+duplikatów rule_id, martwych else-chain, hardcoded stawek, błędnych podstaw prawnych ani luk
+temporalnych. Warstwa micro jest źródłem prawdy dla macro (P04) — musi być perfekcyjna.
+
+📋 WYMAGANE SEKCJE RAPORTU raport_enterprise_P05.txt:
+1. EXECUTIVE SUMMARY — TOP 10 rekomendacji.
+2. MAPA ATOMOWA — tabela: ARTYKUŁ USTAWY O VAT (5–173) × REGUŁA ATOMOWA (rule_id) × PLIK ×
+   STATUS (COMPLETE/PARTIAL/STUB/GAP); pełna inwentaryzacja vat.rego + plan33/34_vat;
+   wskaż artykuły bez reguł (pustynie pokrycia).
+3. AUDYT JAKOŚCI ELSE-CHAIN — First-Match-Wins: czy kolejność reguł jest poprawna wg
+   priorytetów? Wykryj: reguły zawsze-prawdziwe (tautologie), martwe gałęzie (dead code),
+   reguły nieosiągalne, konflikty między plan33/plan34/vat.rego, duplikaty rule_id
+   (MANIFEST: 369 duplikatów — zlokalizuj je w VAT).
+4. AUDYT STUBÓW I SZKIELETÓW — wszystkie matched:false, CHECKPOINT-STUB, „Punkt kontrolny",
+   reguły pustych treści w VAT; lista do uzupełnienia z pełną specyfikacją merytoryczną
+   (artykuł, ustęp, warunki, podstawa prawna) — bez kodu, ale z dokładnym opisem reguły.
+5. AUDYT ZGODNOŚCI Z USTAWĄ — wyrywkowa weryfikacja 30 kluczowych artykułów atomowych:
+   Art. 5, 7, 8, 15, 17, 19a, 20, 21, 28b, 29a, 41, 43, 86, 86a, 87, 88, 89a, 89b, 90, 91,
+   96, 99, 103, 106a, 106e, 106i, 106n, 108a, 113, 120 — każda reguła sprawdzona co do
+   warunków, progów i podstawy prawnej (zero wątpliwości).
+6. AUDYT TEMPORALNOŚCI — które reguły VAT mają valid_from/valid_to; projekcja pełnej
+   temporalności (stawki 2024/2025/2026, SLIM VAT 3, KSeF 2026) wg F2/F1 V2.
+7. AUDYT ZERO-HARDCODE — wartości liczbowe w regułach VAT vs thresholds_jdg.rego; lista
+   do migracji (stawki, limity, terminy, progi groszowe).
+8. POTĘŻNE ROZWIĄZANIA SYSTEMOWE — propozycja „micro-mesh": indeksowanie najczęściej
+   wywoływanych reguł, cache atomowych werdyktów, kompresja else-chain (bez zmiany semantyki),
+   automatyczne generowanie testów per artykuł (happy/negative/boundary/temporal) — zgodnie
+   z V1 §8 (L0–L4) i F6 (Declarative Change, szablony domenowe).
+9. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12) —
+   np.: atomowy „proof-of-law" per reguła (link do węzła LKG z datą obowiązywania — F1),
+   automatyczny detektor konfliktów micro↔macro, refaktoryzacja plan33/34 bez duplikatów,
+   golden dataset VAT (granice groszy 0.01/0.005/0.999, stawki brzegowe), matryca pokrycia
+   per artykuł generowana w CI.
+10. REKOMENDACJE PRIORYTETOWE — mapa drogowa domknięcia warstwy micro VAT (kolejność wg
+    ryzyka: stuby → duplikaty → temporalność → hardcode → testy), wpływ na P04 (macro),
+    P17 (KSeF/JPK), P03 (orkiestrator).
+
+📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG P05: VAT MICRO (ATOMOWE REGUŁY PER ARTYKUŁ)"
+- Executive Summary (1 strona) z TOP 10, tabele atomowe (artykuł × reguła × status),
+  diagramy zależności micro↔macro, sekcja „Genialne Pomysły ENTERPRISE".
+- Gotowy do zapisania jako plik TXT (raport_enterprise_P05.txt).
+
+📋 TABELA CZĘŚCI (spójność międzyczęściowa): P01 Fundament | P02 Podstawy prawne |
+P03 Orkiestrator | P04 VAT Macro | P05 VAT Micro | P06 PIT Macro | P07 PIT Micro |
+P08 ZUS+Zdrowotna | P09 PKPiR+UoR | P10 KKS | P11 Ordynacja | P12 Cross-border |
+P13 Ryczałt+PP | P14 PCC+lokalne+akcyza | P15 BDO | P16 RODO+AML | P17 KSeF+JPK |
+P18 Automatyzacja | P19 HR+Neural Mesh | P20 OPA jako SYSTEM.
+Wskaż zależności: VAT Micro ↔ P04 (macro), ↔ P12 (wdt_export_import), ↔ P17 (ksef_micro),
+↔ P03 (orkiestrator PASS 4), ↔ P02 (podstawy prawne/LKG).
+
+WAŻNE (powtórzenie): Przeprowadź głębokie myślenie nad każdym artykułem. Przeprowadź głęboką
+analizę każdej reguły atomowej — to jest warstwa, w której prawo styka się z kodem.
+Pracuj na zaawansowanym poziomie Enterprise. Każde rozwiązanie musi być poziomu ENTERPRISE.
+Wymagane innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprowadź głęboką analizę
+każdego else-chain i każdej podstawy prawnej — zero nieporozumień, zero wątpliwości co do
+reguł VAT. Poziom ENTERPRISE = atomowa precyzja; innowacyjne ulepszenia wyprzedzające
+profesjonalistów = przewaga, której nie ma żaden inny system na rynku.
+
+🧠 GŁĘBOKIE MYŚLENIE — MANTO PRACY (stosuj przez całą analizę, od pierwszej do ostatniej sekcji):
+1) Przeprowadź głębokie myślenie nad każdą regułą. Przeprowadź głębokie myślenie nad każdą zależnością między częściami.
+   Przeprowadź głębokie myślenie nad każdym scenariuszem granicznym. Przeprowadź głębokie myślenie, zanim zapiszesz cokolwiek w raporcie.
+2) Przeprowadź głęboką analizę każdego artykułu ustawy. Przeprowadź głęboką analizę każdej reguły Rego.
+   Przeprowadź głęboką analizę progów, stawek i terminów. Przeprowadź głęboką analizę integracji z innymi częściami.
+3) Pracuj na zaawansowanym poziomie Enterprise. Projektuj rozwiązania na zaawansowanym poziomie Enterprise.
+   Każda rekomendacja musi prezentować zaawansowany poziom Enterprise. Weryfikuj kompletność na zaawansowanym poziomie Enterprise.
+4) Wymagany poziom ENTERPRISE w każdym rozwiązaniu. Poziom ENTERPRISE = zero wątpliwości.
+   Każdy audyt osiąga poziom ENTERPRISE. Cały raport musi prezentować poziom ENTERPRISE.
+5) Innowacyjne ulepszenia wyprzedzające profesjonalistów są obowiązkowe. Wymagane innowacyjne ulepszenia wyprzedzające profesjonalistów w każdej sekcji.
+   Zaproponuj innowacyjne ulepszenia wyprzedzające profesjonalistów (min. 12). Opisz innowacyjne ulepszenia wyprzedzające profesjonalistów — silnik ma zaskoczyć ekspertów i prześcignąć ich we wszystkich aspektach.
+
+🧹 KOMUNIKAT KOŃCOWY:
+Po wygenerowaniu pełnego raportu: 1) Zapisz go jako plik TXT (raport_enterprise_P05.txt).
+2) Podsumuj w 10 punktach najważniejsze wnioski. 3) WYCZYŚĆ OKNO KONTEKSTOWE — zakończ sesję.
+Użytkownik wklei kolejny Prompt: 06_PROMT_PIT_MACRO.txt (część P06).

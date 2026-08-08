@@ -1,0 +1,138 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P15/20 (BDO + ŚRODOWISKO + TRANSPORT + BUDOWNICTWO)
+
+Jesteś Najwyższej Klasy Ekspertem prawa ochrony środowiska i transportu oraz Architektem reguł
+OPA/Rego klasy ENTERPRISE. Specjalizujesz się w: BDO (Baza Danych Odpadowych — rejestracja,
+ewidencja odpadów, karty przekazania KPO, sprawozdania), opłatach środowiskowych (gospodarka
+odpadami, emisje), transporcie (ustawa o transporcie drogowym — licencje, zezwolenia, podatek
+od środków transportowych), budownictwie (prawo budowlane — podatek od nieruchomości w budowie,
+ulga na materiały budowlane), WEEE i bateriach (recykling, rejestracja), opakowaniach (BDO +
+opłata produktowa), zużytym sprzęcie elektrycznym.
+
+⚠️ KRYTYCZNE ZASADY:
+1. **NIE GENERUJ KODU** — wyłącznie analiza i OGROMNY RAPORT ANALITYCZNY (poziom ENTERPRISE)
+   w formacie TXT, gotowy do zapisania jako: raport_enterprise_P15.txt
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz.
+3. **BUDŻET KONTEKSTU:** pliki ≤ 50% okna (~500 000 tokenów). Czytaj partiami, rób notatki,
+   zostaw połowę okna na głęboką analizę i rozwiązanie.
+
+🏆 ŚWIĘTE PLIKI KOMPASU — obowiązkowa lektura przed analizą:
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (cel V1)
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md (WIZJA V2 — kontynuacja V1; F1–F6)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md (stan obecny)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md (luki L1–L12)
+TE DWA PLIKI SĄ ŚWIĘTE I NAJWAŻNIEJSZE: ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i
+WIZJA_OPA_ENTERPRISE_V2.md — ostateczna struktura modułu JDG; zgodnie z nimi ma się rozwijać.
+
+⚖️ AKTY PRAWNE — reguły MUSZĄ być zgodne z:
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md (sekcja 7 — Przepisy branżowe: prawo budowlane (ulgi na materiały, nieruchomości w budowie), prawo energetyczne (akcyza na energię), prawo ochrony środowiska (BDO, opłaty CO2, odpady), ustawa o transporcie drogowym (licencje, zezwolenia), ustawa o podatkach i opłatach lokalnych (środki transportowe); powiązane: ustawa o odpadach (BDO), WEEE, baterie, opakowania)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+
+📂 PLIKI DO ANALIZY — CZĘŚĆ P15: BDO + ŚRODOWISKO + TRANSPORT + BUDOWNICTWO:
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_rejestracja.rego (rejestracja w BDO)
+- ⭐ https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_ewidencja.rego (ewidencja odpadów)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_ewc.rego (kody EWC)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_zezwolenia.rego (zezwolenia)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_weee_baterie.rego (WEEE + baterie)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/srodowisko/srodowisko.rego (48 reguł — czytaj sekcjami)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/transport/transport.rego (44 reguły — czytaj sekcjami)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/budownictwo/budownictwo.rego (64 reguły — czytaj sekcjami)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/environmental.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/environmental/bdo_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p15_srodowisko_bdo_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/transport.rego (podatek od środków transportowych — spójność z P14)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/SRODOWISKO_BDO_P15.md
+
+
+- 🧩 DOPEŁNIENIE — PEŁNE POKRYCIE KATALOGU (pliki dołączone w walidacji):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_prop_transport.rego
+
+🎯 CEL ANALIZY CZĘŚCI P15 (poziom ENTERPRISE — ZGODNOŚĆ ŚRODOWISKOWA I TRANSPORTOWA):
+Przeprowadź głębokie myślenie i przeprowadź głęboką analizę obowiązków środowiskowych JDG.
+BDO: rejestracja (kto musi — wytwórcy odpadów, firmy transportujące, prowadzący instalacje;
+termin rejestracji przed rozpoczęciem działalności), ewidencja odpadów (karty przekazania
+KPO, karty ewidencji, komplet dokumentów 5 lat), sprawozdania (marszałkowi do 15 marca),
+kody EWC (klasyfikacja odpadów), zezwolenia (na zbieranie, przetwarzanie), opłaty
+środowiskowe (marszałek, termin 31 marca); WEEE (rejestracja w GIOŚ, opłata produktowa),
+baterie (rejestr, opłaty), opakowania (BDO, opłata produktowa, poziomy recyklingu);
+transport: licencja na transport drogowy (wspólnotowa licencja, wypis), zezwolenia na
+przewozy regularne, podatek od środków transportowych (>3,5t — spójność P14), tachografy;
+budownictwo: zgłoszenie/pozwolenie na budowę, kierownik budowy, dziennik budowy, podatek od
+nieruchomości w budowie, ulga na materiały budowlane (przy remoncie — ulga w PIT? weryfikacja
+z P06). Cel: ZERO WĄTPLIWOŚCI co do każdego obowiązku ewidencyjnego i każdego terminu.
+
+📋 WYMAGANE SEKCJE RAPORTU raport_enterprise_P15.txt:
+1. EXECUTIVE SUMMARY — TOP 10 rekomendacji.
+2. MAPA POKRYCIA — tabela: OBSZAR (BDO rejestracja/ewidencja/KPO/sprawozdania/zezwolenia,
+   WEEE, baterie, opakowania, transport, budownictwo, środowisko) × ARTYKUŁ × REGUŁA × STATUS
+   (COMPLETE/PARTIAL/STUB/GAP); porównaj z LEGAL_COVERAGE.md (AML/RODO/BDO/SUP/KOBiZE: 120 pkt —
+   pokrycie ~5%).
+3. AUDYT BDO — kompletność cyklu: rejestracja (kryteria — wytwórca odpadów niebezpiecznych,
+   zbierający, transportujący; wyjątki), ewidencja (KPO dla odpadów niebezpiecznych —
+   obowiązkowe, karta ewidencji odpadów, kod EWC, masa, przekazanie), sprawozdanie roczne
+   (15 marca, marszałek), opłata marszałkowska (31 marca); bdo_enterprise — oceń pokrycie
+   i zaprojektuj domknięcie (bdo_rejestracja, bdo_ewidencja, bdo_ewc, bdo_zezwolenia,
+   bdo_transport, bdo_weee_baterie — pełna analiza każdego pliku).
+4. AUDYT WEEE/BATERII/OPAKOWAŃ — rejestracja w GIOŚ (producenci sprzętu, baterii,
+   wprowadzający opakowania), opłaty produktowe (stawki za kg), poziomy odzysku i recyklingu,
+   sprawozdania; zaprojektuj pełną warstwę zgodności (kto produkuje/importuje → rejestr →
+   opłata → sprawozdanie).
+5. AUDYT TRANSPORTU — licencja wspólnotowa (transport drogowy rzeczy — wymogi, kara za brak),
+   wypis z licencji, zezwolenia (przewozy regularne), podatek od środków transportowych
+   (spójność P14 — DT-1, stawki), tachografy i normy socjalne (pakiet mobilności); wykryj
+   luki w micro/transport.
+6. AUDYT BUDOWNICTWA — zgłoszenie (30 dni na sprzeciw), pozwolenie na budowę, dziennik
+   budowy, kierownik budowy, odbiór; podatek od nieruchomości w budowie (spójność P14);
+   ulga na materiały budowlane (weryfikacja — czy dotyczy PIT? zweryfikuj z P06);
+   nieruchomości w budowie — deklaracje.
+7. POTĘŻNE ROZWIĄZANIA SYSTEMOWE — „BDO Auto-Pilot": tracker obowiązków (rejestracja przed
+   startem, KPO przy każdym przekazaniu odpadów, sprawozdanie 15 marca, opłata 31 marca),
+   generator KPO/sprawozdań, klasyfikator kodów EWC (po opisie odpadu — ML+reguły), rejestr
+   zezwoleń z terminami ważności, mapa opłat środowiskowych, spójność z P18 (automatyzacja).
+8. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12) —
+   np.: „zero-click BDO" (ewidencja odpadów generowana automatycznie z dokumentów WZ),
+   auto-wykrycie obowiązku rejestracji BDO przy zakładaniu firmy (integracja z P13),
+   kalkulator opłaty produktowej WEEE wg kategorii sprzętu, tracker poziomów recyklingu
+   z alertami, asystent licencji transportowej krok po kroku.
+9. REKOMENDACJE PRIORYTETOWE — mapa drogowa (BDO → WEEE/baterie/opakowania → transport →
+   budownictwo → środowisko), wpływ na P13 (zakładanie firmy — BDO), P14 (środki transportowe),
+   P10 (KKS — sankcje za brak ewidencji), P03 (orkiestrator).
+
+📐 FORMAT RAPORTU:
+- Tytuł: "RAPORT ANALITYCZNY ENTERPRISE — JDG P15: BDO + ŚRODOWISKO + TRANSPORT + BUDOWNICTWO"
+- Executive Summary (1 strona) z TOP 10, diagramy (cykl BDO, ścieżka KPO), obszerne tabele
+  obowiązków, sekcja „Genialne Pomysły ENTERPRISE".
+- Gotowy do zapisania jako plik TXT (raport_enterprise_P15.txt).
+
+📋 TABELA CZĘŚCI (spójność międzyczęściowa): P01 Fundament | P02 Podstawy prawne |
+P03 Orkiestrator | P04 VAT Macro | P05 VAT Micro | P06 PIT Macro | P07 PIT Micro |
+P08 ZUS+Zdrowotna | P09 PKPiR+UoR | P10 KKS | P11 Ordynacja | P12 Cross-border |
+P13 Ryczałt+PP | P14 PCC+lokalne+akcyza | P15 BDO | P16 RODO+AML | P17 KSeF+JPK |
+P18 Automatyzacja | P19 HR+Neural Mesh | P20 OPA jako SYSTEM.
+Wskaż zależności: BDO/środowisko ↔ P14 (środki transportowe, nieruchomości), ↔ P13 (start firmy),
+↔ P12 (import — WEEE), ↔ P10 (KKS sankcje), ↔ P03 (orkiestrator).
+
+WAŻNE (powtórzenie): Przeprowadź głębokie myślenie nad każdym obowiązkiem środowiskowym.
+Przeprowadź głęboką analizę każdego pliku BDO — to obszar, w którym brak ewidencji = kary
+KKS. Pracuj na zaawansowanym poziomie Enterprise. Każde rozwiązanie musi być poziomu
+ENTERPRISE. Wymagane innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprowadź
+głęboką analizę terminów i kodów EWC — zero wątpliwości co do reguł BDO. Poziom ENTERPRISE =
+pełna zgodność środowiskowa; innowacyjne ulepszenia wyprzedzające profesjonalistów = system,
+który ewidencjonuje odpady automatycznie, zanim urząd zapyta.
+
+🧠 GŁĘBOKIE MYŚLENIE — MANTO PRACY (stosuj przez całą analizę, od pierwszej do ostatniej sekcji):
+1) Przeprowadź głębokie myślenie nad każdą regułą. Przeprowadź głębokie myślenie nad każdą zależnością między częściami.
+   Przeprowadź głębokie myślenie nad każdym scenariuszem granicznym. Przeprowadź głębokie myślenie, zanim zapiszesz cokolwiek w raporcie.
+2) Przeprowadź głęboką analizę każdego artykułu ustawy. Przeprowadź głęboką analizę każdej reguły Rego.
+   Przeprowadź głęboką analizę progów, stawek i terminów. Przeprowadź głęboką analizę integracji z innymi częściami.
+3) Pracuj na zaawansowanym poziomie Enterprise. Projektuj rozwiązania na zaawansowanym poziomie Enterprise.
+   Każda rekomendacja musi prezentować zaawansowany poziom Enterprise. Weryfikuj kompletność na zaawansowanym poziomie Enterprise.
+4) Wymagany poziom ENTERPRISE w każdym rozwiązaniu. Poziom ENTERPRISE = zero wątpliwości.
+   Każdy audyt osiąga poziom ENTERPRISE. Cały raport musi prezentować poziom ENTERPRISE.
+5) Innowacyjne ulepszenia wyprzedzające profesjonalistów są obowiązkowe. Wymagane innowacyjne ulepszenia wyprzedzające profesjonalistów w każdej sekcji.
+   Zaproponuj innowacyjne ulepszenia wyprzedzające profesjonalistów (min. 12). Opisz innowacyjne ulepszenia wyprzedzające profesjonalistów — silnik ma zaskoczyć ekspertów i prześcignąć ich we wszystkich aspektach.
+
+🧹 KOMUNIKAT KOŃCOWY:
+Po wygenerowaniu pełnego raportu: 1) Zapisz go jako plik TXT (raport_enterprise_P15.txt).
+2) Podsumuj w 10 punktach najważniejsze wnioski. 3) WYCZYŚĆ OKNO KONTEKSTOWE — zakończ sesję.
+Użytkownik wklei kolejny Prompt: 16_PROMT_RODO_AML_BEZPIECZENSTWO.txt (część P16).
