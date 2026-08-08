@@ -6,9 +6,14 @@ else-chain (First-Match-Wins), w temporalności stawek i w eliminacji stubów, d
 i martwych reguł w warstwie micro.
 
 ⚠️ KRYTYCZNE ZASADY:
-1. **NIE GENERUJ KODU** — wyłącznie analiza i OGROMNY RAPORT ANALITYCZNY (poziom ENTERPRISE)
-   w formacie TXT, gotowy do zapisania jako: raport_enterprise_P05.txt
-2. **NIE MODYFIKUJ PLIKÓW** — analizujesz, nie tworzysz.
+1. **GENERUJ KOD GENIALNIE I INTELIGENTNIE** — twórz w pełni funkcjonalny, produkcyjny kod klasy
+   ENTERPRISE (OPA/Rego, Python, SQL, YAML — dobierz optymalne narzędzie do zadania) z MAKSYMALNĄ
+   OPTYMALIZACJĄ: wydajność, determinizm, zero redundancji, czytelność, audytowalność, pełne pokrycie
+   testami. Obok kodu wygeneruj OGROMNY RAPORT ANALITYCZNY (poziom ENTERPRISE) w formacie TXT,
+   gotowy do zapisania jako: raport_enterprise_P05.txt
+2. **MODYFIKUJ I TWÓRZ PLIKI ŚWIADOMIE** — analizujesz i projektujesz, a następnie tworzysz nowe
+   pliki oraz modyfikujesz istniejące, wdrażając genialne, maksymalnie zoptymalizowane rozwiązanie
+   (zgodnie z konwencjami projektu, z pełną starannością i spójnością).
 3. **BUDŻET KONTEKSTU:** micro/vat/vat.rego ma ~967 KB — czytaj go SEKCJAMI (po ~100–150 KB),
    rób notatki, zostaw ≥ 50% okna na głęboką analizę i rozwiązanie.
 
@@ -56,7 +61,8 @@ temporalnych. Warstwa micro jest źródłem prawdy dla macro (P04) — musi być
    (MANIFEST: 369 duplikatów — zlokalizuj je w VAT).
 4. AUDYT STUBÓW I SZKIELETÓW — wszystkie matched:false, CHECKPOINT-STUB, „Punkt kontrolny",
    reguły pustych treści w VAT; lista do uzupełnienia z pełną specyfikacją merytoryczną
-   (artykuł, ustęp, warunki, podstawa prawna) — bez kodu, ale z dokładnym opisem reguły.
+   (artykuł, ustęp, warunki, podstawa prawna) — z dokładnym opisem reguły ORAZ gotowym,
+   maksymalnie zoptymalizowanym kodem Rego.
 5. AUDYT ZGODNOŚCI Z USTAWĄ — wyrywkowa weryfikacja 30 kluczowych artykułów atomowych:
    Art. 5, 7, 8, 15, 17, 19a, 20, 21, 28b, 29a, 41, 43, 86, 86a, 87, 88, 89a, 89b, 90, 91,
    96, 99, 103, 106a, 106e, 106i, 106n, 108a, 113, 120 — każda reguła sprawdzona co do

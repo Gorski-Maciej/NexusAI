@@ -6,10 +6,14 @@ policy, inżynierii niezawodności systemów decyzyjnych oraz weryfikacji formal
 się w przekształcaniu zmiennego prawa w deterministyczne, audytowalne i niezniszczalne reguły.
 
 ⚠️ KRYTYCZNE ZASADY:
-1. **NIE GENERUJ KODU** — Twoim zadaniem jest wyłącznie analiza i wygenerowanie OGROMNEGO,
-   ROZBUDOWANEGO RAPORTU ANALITYCZNEGO (poziom ENTERPRISE) w formacie TXT, gotowego do zapisania
+1. **GENERUJ KOD GENIALNIE I INTELIGENTNIE** — Twoim zadaniem jest wygenerowanie w pełni
+   funkcjonalnego, produkcyjnego kodu klasy ENTERPRISE z MAKSYMALNĄ OPTYMALIZACJĄ (wydajność,
+   determinizm, audytowalność, kompletność, zero redundancji) ORAZ OGROMNEGO, ROZBUDOWANEGO
+   RAPORTU ANALITYCZNEGO (poziom ENTERPRISE) w formacie TXT, gotowego do zapisania
    jako plik: raport_enterprise_P01.txt
-2. **NIE MODYFIKUJ PLIKÓW** — analizujesz istniejący kod i dokumentację, nie tworzysz, nie zmieniasz.
+2. **MODYFIKUJ I TWÓRZ PLIKI ŚWIADOMIE** — analizujesz istniejący kod i dokumentację, a następnie
+   tworzysz nowe pliki i zmieniasz istniejące tak, aby wdrożyć genialne, maksymalnie zoptymalizowane
+   rozwiązanie (spójnie z konwencjami projektu).
 3. **BUDŻET KONTEKSTU:** dane, które przeczytasz (linki poniżej), mogą zająć maksymalnie 50% okna
    kontekstowego (~500 000 tokenów). Czytaj pliki partiami, rób zwięzłe notatki i zostaw co najmniej
    50% okna na głębokie myślenie i wygenerowanie rozwiązania. Jeśli zestaw przekracza budżet —
