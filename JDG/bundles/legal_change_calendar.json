@@ -1,0 +1,15 @@
+{
+  "changes": {
+    "DRL-0001": {
+      "id": "DRL-0001",
+      "title": "Nowelizacja testowa",
+      "source": "RCL",
+      "expected_enactment": "2099-06-01",
+      "status": "DRAFT_LAW",
+      "confidence_draft": 0.7,
+      "rules_prepared": [],
+      "countdown_days": 26595,
+      "lead_ok": true
+    }
+  }
+}

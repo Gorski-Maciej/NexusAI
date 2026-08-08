@@ -239,6 +239,69 @@ temporal_validity := {
 
 ---
 
-*Wygenerowano przez NexusAI ADR Engine v8.1 — 2026-08-02*
+## ADR-016: Legal Twin / Legal Knowledge Graph (LKG) — [NOWY, v8.2 / P01 V2 F1]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P01 Fundament)
+
+**Decyzja:** Ewolucja tabeli `jdg_legal_cartography` do pełnego **Legal Knowledge Graph** (`legal_graph`, migracja 003): akty → artykuły → ustępy → punkty z wersjonowaniem czasowym (jak reguły). Każda reguła i parametr dwukierunkowo powiązane z węzłami prawa. Podstawa prawna przestaje być stringiem — staje się **referencją** do węzła LKG (`_legal_basis_refs`).
+
+**Metryki:** LCI (Legal Coverage Index ≥ 99%), TCL (Temporal Continuity 100%), RV (Rule–Law Verification 100%).
+
+**Narzędzia:** `tools/legal_twin.py` (build LKG + indeksy), bramka RV w CI.
+
+---
+
+## ADR-017: Warstwa Konstytucyjna — Runtime Invariants — [NOWY, v8.2 / P01 V2 F2]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P01 Fundament)
+
+**Decyzja:** Katalog ~30 twardych niezmienników (INV-001..030) egzekwowanych na **każdym werdykcie w runtime** (koniec POST-MERGE w `main_jdg.rego`), a nie tylko w CI. Naruszenie = `CERTAINTY_BLOCKED` + alarm + auto-revert. Trzy poziomy: BUILD (blokada merge), RUNTIME (blokada werdyktu), STATISTICAL (auto-rollback bundle).
+
+**Artefakty:** `rules/audit/runtime_invariants_enterprise.rego` (katalog INV + reguły egzekucji), `tools/invariant_checker.py` (bramka CI).
+
+---
+
+## ADR-018: Golden Oracle + Ewaluacja Różnicowa — [NOWY, v8.2 / P01 V2 F3]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P01 Fundament)
+
+**Decyzja:** Repozytorium złotych werdyktów (tabela `golden_verdicts`, migracja 003) jako „oracle przeszłości": żadna zmiana nie może zmienić historycznego werdyktu bez uzasadnienia w diffie prawnym (UVR = 0). Ewaluacja różnicowa: domeny krytyczne liczone na ≥ 2 węzłach, hash werdyktu (`decision_hash`) musi się zgadzać.
+
+**Narzędzia:** `tools/golden_replay.py` (record/replay/annotate/report), bramka GOLDEN_REPLAY w CI.
+
+---
+
+## ADR-019: Decision Certificate — [NOWY, v8.2 / P01 V2 F4]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P01 Fundament)
+
+**Decyzja:** Każdy werdykt generuje certyfikat decyzyjny z klasą pewności `CERTAIN` / `CONDITIONAL` / `NEEDS_ADVICE` oraz pieczęcią kryptograficzną (SHA-256 → Merkle → podpis HSM), weryfikowalną offline. Eksport PDF+XML dla KAS. AUTO_POST tylko dla CERTAIN.
+
+**Narzędzia:** `tools/decision_certificate.py` (issue/verify/classes/export), tabela `decision_certificates` (migracja 003).
+
+---
+
+## ADR-020: Law Radar — Proaktywna Adaptacja — [NOWY, v8.2 / P01 V2 F5]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P01 Fundament)
+
+**Decyzja:** Monitoring **projektów ustaw** (RCL, Sejm, Senat) — nie tylko opublikowanych nowelizacji. Reguły przygotowywane z wyprzedzeniem (SHADOW, `valid_from` = data wejścia) — w dniu wejścia tylko promote. KPI: `lead_time_avg ≥ 30 dni` przed wejściem w życie.
+
+**Narzędzia:** `tools/law_radar.py` (track/radar/status/prepare), tabela `draft_law_radar` (migracja 003).
+
+---
+
+## ADR-021: Declarative Change — [NOWY, v8.2 / P01 V2 F6]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P01 Fundament)
+
+**Decyzja:** Interfejs deklaratywny zmiany: człowiek opisuje zmianę w języku prostym (np. „stawka VAT 23% → 8% od 2027-01-01"), system mapuje na parametr/regułę, generuje diff, testy, impact, golden replay, PR 4-eyes i wdraża kanarkowo. Automatyzacja NIGDY: bez zdrowych metryk kanara, bez 2 podpisów dla domen niemutowalnych, bez dowodu zero referencji przy usuwaniu.
+
+**Narzędzia:** `tools/declarative_change.py` (plan/execute/template/history), integracja z data_service (ścieżka danych < 1 min).
+
+---
+
+*Wygenerowano przez NexusAI ADR Engine v8.2 — 2026-08-08 (P01 Fundament Święty)*
+*ADR-016..021 dodane na podstawie WIZJA_OPA_ENTERPRISE_V2.md §1.1 (V2 filary F1–F6)*
 *ADR-009..014 dodane na podstawie RAPORT_P25_JDG_DOCS_FINAL_AUDIT_v7.0 (R7)*
 *ADR-015 dodany na podstawie RAPORT_P26_JDG_MISSING_REGO_FILES_v7.0 (R12)*

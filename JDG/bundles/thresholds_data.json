@@ -1,0 +1,31 @@
+{
+  "parameters": {
+    "vat.standard_rate": {
+      "versions": [
+        {
+          "value": 0.23,
+          "type": "number",
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 41 ustawy o VAT",
+          "changed_by": "system",
+          "changed_at": "2026-08-08T11:34:34"
+        }
+      ],
+      "schema": {
+        "min": "0",
+        "max": "1",
+        "type": "number"
+      }
+    }
+  },
+  "changed_by_audit": [
+    {
+      "key": "vat.standard_rate",
+      "value": 0.23,
+      "changed_by": "system",
+      "at": "2026-08-08T11:34:34",
+      "source_act": "Art. 41 ustawy o VAT"
+    }
+  ]
+}

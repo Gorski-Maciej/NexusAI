@@ -18,6 +18,41 @@ from datetime import datetime
 JDG_ROOT = Path(__file__).resolve().parent.parent
 RULES_DIR = JDG_ROOT / "rules"
 
+# LKG coverage (enterprise-ready, P02 §7): akt → (węzły LKG, węzły pokryte)
+LKG_COVERAGE = {}
+
+
+def load_lkg_coverage() -> None:
+    """Wczytuje legal_graph.json i liczy pokrycie węzłów LKG per akt (V2 F1)."""
+    global LKG_COVERAGE
+    graph_path = JDG_ROOT / "bundles" / "legal_graph.json"
+    if not graph_path.exists():
+        print("⚠️  Brak legal_graph.json — uruchom: python tools/legal_twin.py build")
+        return
+    graph = json.loads(graph_path.read_text(encoding="utf-8"))
+    nodes = graph.get("nodes", [])
+    per_act = defaultdict(lambda: [0, 0])
+    for n in nodes:
+        per_act[n["act"]][0] += 1
+        if n.get("rule_ids"):
+            per_act[n["act"]][1] += 1
+    # Mapuj nazwy aktów LKG na skróty ACTS
+    for act_key, info in ACTS.items():
+        best, best_score = None, 0
+        for act_name, counts in per_act.items():
+            hay = act_name.lower()
+            score = 0
+            for kw in ("vat", "pit", "zus", "kks", "pcc", "uor", "ryczałt", "ryczalt",
+                       "ordynacj", "akcyz", "rachunkowości", "przedsiębiorc", "ceidg",
+                       "zdrowotn", "lokalnych", "odpadach", "rodo", "aml", "dewiz",
+                       "energetyczn", "transport", "budowlan", "sukcesj", "zasiłk"):
+                if kw in hay:
+                    score += 1
+            if score > best_score:
+                best_score, best = score, (act_name, counts)
+        if best:
+            LKG_COVERAGE[act_key] = best[1]
+
 
 # ── Definicje aktów prawnych ─────────────────────────────────────────────────
 
@@ -144,6 +179,14 @@ def generate_heatmap_html(act_data: dict) -> str:
             b = max(0, int(100 * (1 - heat / 100)))
         bg = f"rgb({r},{g},{b})"
 
+        lkg_td = ""
+        if LKG_COVERAGE.get(act):
+            total_lkg, covered_lkg = LKG_COVERAGE[act]
+            lkg_pct = round(covered_lkg / total_lkg * 100) if total_lkg else 0
+            lkg_td = f"<td style='text-align: right'>{covered_lkg}/{total_lkg} ({lkg_pct}%)</td>"
+        else:
+            lkg_td = "<td style='text-align: right'>—</td>"
+
         rows_html += f"""
         <tr style="background: {bg}">
             <td style="font-weight: bold; color: {info['color']}">{act}</td>
@@ -154,6 +197,7 @@ def generate_heatmap_html(act_data: dict) -> str:
             <td style="text-align: right">{matched}</td>
             <td style="text-align: right">{with_lb}</td>
             <td style="color: {klasa_color}; font-weight: bold">{klasa}</td>
+            {lkg_td}
         </tr>"""
 
     return f"""<!DOCTYPE html>
@@ -182,9 +226,8 @@ def generate_heatmap_html(act_data: dict) -> str:
   <span style="background: #F44336; color: white">Klasa C (&lt;30%)</span>
   <span style="background: #ddd">Intensywność = % pokrycia unikalnymi rule_id</span>
 </div>
-<table>
-  <tr>
-    <th>Akt</th><th>Nazwa</th><th>Punktów</th><th>Rule ID</th><th>% Pokrycia</th><th>Matched:true</th><th>Legal Basis</th><th>Klasa</th>
+<table>    <tr>
+    <th>Akt</th><th>Nazwa</th><th>Punktów</th><th>Rule ID</th><th>% Pokrycia</th><th>Matched:true</th><th>Legal Basis</th><th>Klasa</th><th>LKG (F1)</th>
   </tr>
   {rows_html}
 </table>
@@ -203,8 +246,8 @@ def generate_heatmap_markdown(act_data: dict) -> str:
         "",
         "## Mapa cieplna 13 aktów prawnych",
         "",
-        "| Akt | Nazwa | Punktów | Rule ID | % Pokrycia | Matched:true | Legal Basis | Klasa |",
-        "|-----|-------|:-------:|:-------:|:----------:|:------------:|:-----------:|:-----:|",
+        "| Akt | Nazwa | Punktów | Rule ID | % Pokrycia | Matched:true | Legal Basis | Klasa | LKG (F1) |",
+        "|-----|-------|:-------:|:-------:|:----------:|:------------:|:-----------:|:-----:|:--------:|",
     ]
 
     for act, info in ACTS.items():
@@ -216,7 +259,12 @@ def generate_heatmap_markdown(act_data: dict) -> str:
         wlb = data["with_legal_basis"]
         klasa = coverage_class(pct)
         bar = "█" * (pct // 10) + "░" * (10 - pct // 10)
-        lines.append(f"| **{act}** | {info['name']} | {tp} | {uid} | {pct}% {bar} | {mt} | {wlb} | {klasa} |")
+        if LKG_COVERAGE.get(act):
+            total_lkg, covered_lkg = LKG_COVERAGE[act]
+            lkg_col = f"{covered_lkg}/{total_lkg}"
+        else:
+            lkg_col = "—"
+        lines.append(f"| **{act}** | {info['name']} | {tp} | {uid} | {pct}% {bar} | {mt} | {wlb} | {klasa} | {lkg_col} |")
 
     lines.extend([
         "",
@@ -238,7 +286,9 @@ def generate_heatmap_markdown(act_data: dict) -> str:
 
 
 def main():
-    print("🗺️  Generowanie Legal Coverage Heatmap (Innowacja 5)...")
+    print("🗺️  Generowanie Legal Coverage Heatmap (Innowacja 5 + P02 §7 LKG)...")
+    if "--lkg" in sys.argv:
+        load_lkg_coverage()
     rules = extract_rule_id_data()
     print(f"   Reguł: {len(rules)}")
     act_data = classify_rules_by_act(rules)

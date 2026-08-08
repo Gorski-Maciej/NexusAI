@@ -86,20 +86,36 @@ def extract_adrs():
     return re.findall(r'ADR-\d+[^#]*', text)
 
 
-def generate_matrix(rules, tests, adrs):
-    """Generuje macierz identyfikowalności."""
+def load_lkg_node_ids() -> set[str]:
+    """Ładuje węzły LKG (legal_graph.json) do walidacji referencji (P02 §7, V2 F1)."""
+    graph_path = JDG_ROOT / "bundles" / "legal_graph.json"
+    if not graph_path.exists():
+        return set()
+    graph = json.loads(graph_path.read_text(encoding="utf-8"))
+    return {n["legal_node_id"] for n in graph.get("nodes", [])}
+
+
+def has_lkg_ref(legal_basis: str, lkg_nodes: set[str]) -> bool:
+    """Czy _legal_basis zawiera referencję do węzła LKG (legal_node_id)."""
+    if not legal_basis or not lkg_nodes:
+        return False
+    return any(node_id in legal_basis for node_id in lkg_nodes)
+
+
+def generate_matrix(rules, tests, adrs, lkg_nodes):
+    """Generuje macierz identyfikowalności (z kolumną referencji LKG — P02 §7)."""
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     lines = [
         "# 🔗 Doc-to-Rego Traceability Matrix — NexusAI JDG v8.0",
         "",
-        f"> **Wygenerowano:** {now} | **Innowacja 10**",
-        f"> **Reguł:** {len(rules)} | **Testów:** {len(tests)} | **ADR-ów:** {len(adrs)}",
+        f"> **Wygenerowano:** {now} | **Innowacja 10 + P02 §7 (LKG refs)**",
+        f"> **Reguł:** {len(rules)} | **Testów:** {len(tests)} | **ADR-ów:** {len(adrs)} | **Węzłów LKG:** {len(lkg_nodes)}",
         "",
         "## Macierz identyfikowalności",
         "",
-        "| Akt | Artykuł | Rule ID | Plik | Routing | Test? | ADR | Status |",
-        "|-----|---------|---------|------|:-------:|:-----:|-----|:------:|",
+        "| Akt | Artykuł | Rule ID | Plik | Routing | Test? | ADR | LKG ref | Status |",
+        "|-----|---------|---------|------|:-------:|:-----:|-----|:-------:|:------:|",
     ]
 
     for r in sorted(rules, key=lambda x: (x.get("act", ""), x["rule_id"]))[:200]:
@@ -111,12 +127,13 @@ def generate_matrix(rules, tests, adrs):
         # Poprawione: porównuj pełne rule_id z zawartością testów (nie tylko nazwy funkcji)
         has_test = "✅" if any(rid_part in tn or tn in rid for tn in tests for rid_part in rid.split(".")) else "⬜"
         has_adr = "✅" if act else "⬜"
+        lkg_ref = "✅" if has_lkg_ref(r.get("legal_basis", ""), lkg_nodes) else "⬜"
         status = "✅" if has_test == "✅" else ("🟡" if r.get("legal_basis") else "⬜")
 
-        lines.append(f"| {act} | {art} | `{rid[:50]}` | `{file[:40]}` | {routing} | {has_test} | {has_adr} | {status} |")
+        lines.append(f"| {act} | {art} | `{rid[:50]}` | `{file[:40]}` | {routing} | {has_test} | {has_adr} | {lkg_ref} | {status} |")
 
     if len(rules) > 200:
-        lines.append(f"| ... | ... | ... | ... | ... | ... | ... | *({len(rules)-200} więcej reguł)* |")
+        lines.append(f"| ... | ... | ... | ... | ... | ... | ... | ... | *({len(rules)-200} więcej reguł)* |")
 
     # Podsumowanie
     tested = sum(1 for r in rules if any(tn in r["rule_id"] or r["rule_id"] in tn for tn in tests))
@@ -139,16 +156,18 @@ def generate_matrix(rules, tests, adrs):
 
 
 def main():
-    print("🔗 Generowanie Traceability Matrix (Innowacja 10)...")
+    print("🔗 Generowanie Traceability Matrix (Innowacja 10 + P02 §7)...")
     rules = extract_all_rule_data()
     tests = extract_tests()
     adrs = extract_adrs()
+    lkg_nodes = load_lkg_node_ids() if "--lkg" in sys.argv else set()
 
     print(f"   Reguł: {len(rules)}")
     print(f"   Testów: {len(tests)}")
     print(f"   ADR-ów: {len(adrs)}")
+    print(f"   Węzłów LKG: {len(lkg_nodes)}")
 
-    matrix = generate_matrix(rules, tests, adrs)
+    matrix = generate_matrix(rules, tests, adrs, lkg_nodes)
     output = JDG_ROOT / "reports" / "traceability_matrix.md"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(matrix, encoding="utf-8")

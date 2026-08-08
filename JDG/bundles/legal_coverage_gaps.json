@@ -1,0 +1,446 @@
+{
+  "generated_at": "2026-08-08T12:11:23.468594+00:00",
+  "articles_total": 27,
+  "declared_points": 18,
+  "by_status": {
+    "COMPLETE": 15,
+    "GAP": 12
+  },
+  "priorities": {
+    "P1_KKS": 5,
+    "P1_VAT_odliczenia": 0,
+    "P1_amortyzacja": 0,
+    "P2_UoR": 0,
+    "P2_PCC_lokalne_akcyza": 0
+  },
+  "priority_details": {
+    "P1_KKS": [
+      "IV. KKS — KODEKS KARNY SKARBOWY Art. 16 — Czynny żal",
+      "IV. KKS — KODEKS KARNY SKARBOWY Art. 54 — Uchylanie się od opodatkowania",
+      "IV. KKS — KODEKS KARNY SKARBOWY Art. 56 — Nierzetelne księgi/PKPiR",
+      "IV. KKS — KODEKS KARNY SKARBOWY Art. 62 — Puste faktury",
+      "IV. KKS — KODEKS KARNY SKARBOWY Art. 57 — Nierzetelna ewidencja VAT"
+    ],
+    "P1_VAT_odliczenia": [],
+    "P1_amortyzacja": [],
+    "P2_UoR": [],
+    "P2_PCC_lokalne_akcyza": []
+  },
+  "rows": [
+    {
+      "act": "I. USTAWA O VAT",
+      "article": "5 — Definicja dostawy towarów i świadczenia usług",
+      "points": [
+        "V.01-V.05"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.vat.a5.r1"
+      ],
+      "existing_rules": [
+        "jdg.vat.a5.r1"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "I. USTAWA O VAT",
+      "article": "17 — Reverse charge (odwrotne obciążenie)",
+      "points": [
+        "V.17-V.23"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "GAP",
+      "declared_rules": [
+        "jdg.vat.a17.r5"
+      ],
+      "existing_rules": [],
+      "missing_rules": [
+        "jdg.vat.a17.r5"
+      ]
+    },
+    {
+      "act": "I. USTAWA O VAT",
+      "article": "41 — Stawki VAT (23%, 8%, 5%, 0%, ZW)",
+      "points": [
+        "V.41-V.45"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.vat.a41.r1"
+      ],
+      "existing_rules": [
+        "jdg.vat.a41.r1"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "I. USTAWA O VAT",
+      "article": "86 — Odliczenie VAT naliczonego",
+      "points": [
+        "V.86-V.95"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.vat.a86.r1"
+      ],
+      "existing_rules": [
+        "jdg.vat.a86.r1"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "I. USTAWA O VAT",
+      "article": "89a — Ulga na złe długi — wierzyciel",
+      "points": [
+        "V.89a.1-V.89a.9"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.vat.a89a.r1"
+      ],
+      "existing_rules": [
+        "jdg.vat.a89a.r1"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "I. USTAWA O VAT",
+      "article": "89b — Złe długi — obowiązek korekty dłużnika",
+      "points": [
+        "V.89b.1-V.89b.5"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.vat.a89b.r1"
+      ],
+      "existing_rules": [
+        "jdg.vat.a89b.r1"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "I. USTAWA O VAT",
+      "article": "90 — Proporcja VAT",
+      "points": [
+        "V.90.1-V.90.10"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "GAP",
+      "declared_rules": [
+        "jdg.vat.a90.r1"
+      ],
+      "existing_rules": [],
+      "missing_rules": [
+        "jdg.vat.a90.r1"
+      ]
+    },
+    {
+      "act": "I. USTAWA O VAT",
+      "article": "106e — Elementy faktury (paragon ≤450 zł z NIP)",
+      "points": [
+        "V.106e.1-V.106e.14"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.vat.a106e.r10"
+      ],
+      "existing_rules": [
+        "jdg.vat.a106e.r10"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "I. USTAWA O VAT",
+      "article": "113 — Zwolnienie podmiotowe do 200 000 PLN",
+      "points": [
+        "V.113.1-V.113.13"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "GAP",
+      "declared_rules": [
+        "jdg.vat.a113.r1"
+      ],
+      "existing_rules": [],
+      "missing_rules": [
+        "jdg.vat.a113.r1"
+      ]
+    },
+    {
+      "act": "I. USTAWA O VAT",
+      "article": "106na-106nq — KSeF (obowiązkowe e-faktury od 01.02.2026)",
+      "points": [
+        "V.106na-V.106nq"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "GAP",
+      "declared_rules": [
+        "jdg.ksef_jpk.*"
+      ],
+      "existing_rules": [],
+      "missing_rules": [
+        "jdg.ksef_jpk.*"
+      ]
+    },
+    {
+      "act": "II. USTAWA O PIT",
+      "article": "9 — Strata podatkowa",
+      "points": [
+        "P.09.1-P.09.5"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "GAP",
+      "declared_rules": [
+        "jdg.pit.advances_returns.loss_carry_forward"
+      ],
+      "existing_rules": [],
+      "missing_rules": [
+        "jdg.pit.advances_returns.loss_carry_forward"
+      ]
+    },
+    {
+      "act": "II. USTAWA O PIT",
+      "article": "14 — Przychody z działalności gospodarczej",
+      "points": [
+        "P.14.1-P.14.8"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.pit.a14.r1"
+      ],
+      "existing_rules": [
+        "jdg.pit.a14.r1"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "II. USTAWA O PIT",
+      "article": "22 — Koszty uzyskania przychodu",
+      "points": [
+        "P.22.1-P.22.15"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.pit.a22.r1"
+      ],
+      "existing_rules": [
+        "jdg.pit.a22.r1"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "II. USTAWA O PIT",
+      "article": "23 — Wydatki NKUP",
+      "points": [
+        "P.23.1-P.23.57"
+      ],
+      "declared_status": "PARTIAL",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.pit.a23.r1"
+      ],
+      "existing_rules": [
+        "jdg.pit.a23.r1"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "II. USTAWA O PIT",
+      "article": "27 — Skala podatkowa 12%/32%",
+      "points": [
+        "P.27.1-P.27.9"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.pit.a27.r1"
+      ],
+      "existing_rules": [
+        "jdg.pit.a27.r1"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "II. USTAWA O PIT",
+      "article": "30c — Podatek liniowy 19%",
+      "points": [
+        "P.30c.1-P.30c.3"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "GAP",
+      "declared_rules": [
+        "jdg.pit.a30c.r1"
+      ],
+      "existing_rules": [],
+      "missing_rules": [
+        "jdg.pit.a30c.r1"
+      ]
+    },
+    {
+      "act": "II. USTAWA O PIT",
+      "article": "30ca — IP Box (5%)",
+      "points": [
+        "P.30ca.1-P.30ca.11"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.pit.a30ca.r1"
+      ],
+      "existing_rules": [
+        "jdg.pit.a30ca.r1"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "II. USTAWA O PIT",
+      "article": "30f — CFC (Zagraniczna Spółka Kontrolowana)",
+      "points": [
+        "P.30f.1-P.30f.20"
+      ],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.crossborder.cfc_jdg_controlled"
+      ],
+      "existing_rules": [
+        "jdg.crossborder.cfc_jdg_controlled"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "III. ORDYNACJA PODATKOWA",
+      "article": "70 — Przedawnienie zobowiązań (5 lat)",
+      "points": [],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.ord.a70.r1"
+      ],
+      "existing_rules": [
+        "jdg.ord.a70.r1"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "III. ORDYNACJA PODATKOWA",
+      "article": "81 — Korekty deklaracji",
+      "points": [],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.ord.a81.r1"
+      ],
+      "existing_rules": [
+        "jdg.ord.a81.r1"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "III. ORDYNACJA PODATKOWA",
+      "article": "117ba — Biała Lista",
+      "points": [],
+      "declared_status": "COMPLETE",
+      "actual_status": "GAP",
+      "declared_rules": [
+        "jdg.ord.a117ba.r1"
+      ],
+      "existing_rules": [],
+      "missing_rules": [
+        "jdg.ord.a117ba.r1"
+      ]
+    },
+    {
+      "act": "IV. KKS — KODEKS KARNY SKARBOWY",
+      "article": "16 — Czynny żal",
+      "points": [],
+      "declared_status": "COMPLETE",
+      "actual_status": "GAP",
+      "declared_rules": [
+        "jdg.kks.voluntary_disclosure_*"
+      ],
+      "existing_rules": [],
+      "missing_rules": [
+        "jdg.kks.voluntary_disclosure_*"
+      ]
+    },
+    {
+      "act": "IV. KKS — KODEKS KARNY SKARBOWY",
+      "article": "44 — Przedawnienie karalności przestępstw (5 lat)",
+      "points": [],
+      "declared_status": "COMPLETE",
+      "actual_status": "COMPLETE",
+      "declared_rules": [
+        "jdg.kks.statute_of_limitations_crime_5y"
+      ],
+      "existing_rules": [
+        "jdg.kks.statute_of_limitations_crime_5y"
+      ],
+      "missing_rules": []
+    },
+    {
+      "act": "IV. KKS — KODEKS KARNY SKARBOWY",
+      "article": "54 — Uchylanie się od opodatkowania",
+      "points": [],
+      "declared_status": "PARTIAL",
+      "actual_status": "GAP",
+      "declared_rules": [
+        "jdg.kks.tax_evasion_*"
+      ],
+      "existing_rules": [],
+      "missing_rules": [
+        "jdg.kks.tax_evasion_*"
+      ]
+    },
+    {
+      "act": "IV. KKS — KODEKS KARNY SKARBOWY",
+      "article": "56 — Nierzetelne księgi/PKPiR",
+      "points": [],
+      "declared_status": "COMPLETE",
+      "actual_status": "GAP",
+      "declared_rules": [
+        "jdg.kks.unreliable_books_*"
+      ],
+      "existing_rules": [],
+      "missing_rules": [
+        "jdg.kks.unreliable_books_*"
+      ]
+    },
+    {
+      "act": "IV. KKS — KODEKS KARNY SKARBOWY",
+      "article": "62 — Puste faktury",
+      "points": [],
+      "declared_status": "COMPLETE",
+      "actual_status": "GAP",
+      "declared_rules": [
+        "jdg.kks.empty_invoice_*"
+      ],
+      "existing_rules": [],
+      "missing_rules": [
+        "jdg.kks.empty_invoice_*"
+      ]
+    },
+    {
+      "act": "IV. KKS — KODEKS KARNY SKARBOWY",
+      "article": "57 — Nierzetelna ewidencja VAT",
+      "points": [],
+      "declared_status": "COMPLETE",
+      "actual_status": "GAP",
+      "declared_rules": [
+        "jdg.kks.unreliable_vat_*"
+      ],
+      "existing_rules": [],
+      "missing_rules": [
+        "jdg.kks.unreliable_vat_*"
+      ]
+    }
+  ],
+  "actual_rule_ids": 11860
+}

@@ -1,0 +1,218 @@
+{
+  "canon_version": "1.0",
+  "canonical_format": "Art. X ust. Y pkt Z ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+  "generated": "2026-08-08",
+  "note": "Słownik kanoniczny referencji prawnych JDG — jedno źródło prawdy dla _legal_basis reguł (P02, sekcja 5). Każdy akt: canonical_short (używany w _legal_basis), full_name, dz_u, domain, keywords (dopasowanie odporne na odmianę).",
+  "acts": [
+    {
+      "canonical_short": "ustawa o VAT",
+      "full_name": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+      "dz_u": "Dz.U. 2024 poz. 1557 ze zm.",
+      "domain": "vat",
+      "keywords": ["vat", "towarów i usług"]
+    },
+    {
+      "canonical_short": "ustawa o PIT",
+      "full_name": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
+      "dz_u": "Dz.U. 2024 poz. 1760 ze zm.",
+      "domain": "pit",
+      "keywords": ["pit", "dochodowym od osób fizycznych"]
+    },
+    {
+      "canonical_short": "ustawa o CIT",
+      "full_name": "Ustawa z dnia 15 lutego 1992 r. o podatku dochodowym od osób prawnych",
+      "dz_u": "Dz.U. 2023 poz. 2805 ze zm.",
+      "domain": "cit",
+      "keywords": ["cit", "osób prawnych"]
+    },
+    {
+      "canonical_short": "ustawa o ryczałcie",
+      "full_name": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
+      "dz_u": "Dz.U. 1998 nr 144 poz. 930 ze zm.",
+      "domain": "pit",
+      "keywords": ["ryczałt", "ryczalt", "zryczałtowanym"]
+    },
+    {
+      "canonical_short": "Ordynacja podatkowa",
+      "full_name": "Ustawa z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa",
+      "dz_u": "Dz.U. 2024 poz. 1455 ze zm.",
+      "domain": "ordpu",
+      "keywords": ["ordynacj", "ordpu"]
+    },
+    {
+      "canonical_short": "Kodeks karny skarbowy",
+      "full_name": "Ustawa z dnia 10 września 1999 r. — Kodeks karny skarbowy",
+      "dz_u": "Dz.U. 2024 poz. 1739 ze zm.",
+      "domain": "kks",
+      "keywords": ["kks", "karny skarbowy", "karnym skarbowym"]
+    },
+    {
+      "canonical_short": "ustawa o SUS",
+      "full_name": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych",
+      "dz_u": "Dz.U. 2024 poz. 1743 ze zm.",
+      "domain": "zus",
+      "keywords": ["zus", "systemie ubezpieczeń", "sus"]
+    },
+    {
+      "canonical_short": "ustawa o świadczeniach opieki zdrowotnej",
+      "full_name": "Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych",
+      "dz_u": "Dz.U. 2024 poz. 1512 ze zm.",
+      "domain": "zus",
+      "keywords": ["zdrowotn", "opieki zdrowotnej"]
+    },
+    {
+      "canonical_short": "ustawa o zasiłku pieniężnym",
+      "full_name": "Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
+      "dz_u": "Dz.U. 2023 poz. 2641 ze zm.",
+      "domain": "zus",
+      "keywords": ["zasiłk", "choroby i macierzyństwa"]
+    },
+    {
+      "canonical_short": "ustawa o rachunkowości",
+      "full_name": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
+      "dz_u": "Dz.U. 2024 poz. 1705 ze zm.",
+      "domain": "uor",
+      "keywords": ["uor", "rachunkowości"]
+    },
+    {
+      "canonical_short": "rozporządzenie PKPiR",
+      "full_name": "Rozporządzenie Ministra Finansów z dnia 23 grudnia 2019 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
+      "dz_u": "Dz.U. 2019 poz. 2544 ze zm.",
+      "domain": "pkpir",
+      "keywords": ["pkpir", "księgi przychodów i rozchodów", "ksiegi przychodow i rozchodow"]
+    },
+    {
+      "canonical_short": "Prawo przedsiębiorców",
+      "full_name": "Ustawa z dnia 6 marca 2018 r. — Prawo przedsiębiorców",
+      "dz_u": "Dz.U. 2024 poz. 236 ze zm.",
+      "domain": "business",
+      "keywords": ["przedsiębiorc", "prawo przedsiębiorców"]
+    },
+    {
+      "canonical_short": "ustawa o CEIDG",
+      "full_name": "Ustawa z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy",
+      "dz_u": "Dz.U. 2024 poz. 1228 ze zm.",
+      "domain": "business",
+      "keywords": ["ceidg", "ewidencji i informacji o działalności"]
+    },
+    {
+      "canonical_short": "ustawa o zarządzie sukcesyjnym",
+      "full_name": "Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej",
+      "dz_u": "Dz.U. 2018 poz. 1629 ze zm.",
+      "domain": "business",
+      "keywords": ["sukcesj", "zarządzie sukcesyjnym"]
+    },
+    {
+      "canonical_short": "ustawa o PCC",
+      "full_name": "Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych",
+      "dz_u": "Dz.U. 2024 poz. 1631 ze zm.",
+      "domain": "pcc",
+      "keywords": ["pcc", "czynności cywilnoprawnych"]
+    },
+    {
+      "canonical_short": "ustawa o podatkach i opłatach lokalnych",
+      "full_name": "Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych",
+      "dz_u": "Dz.U. 2023 poz. 2174 ze zm.",
+      "domain": "local",
+      "keywords": ["lokalnych", "podatkach i opłatach lokalnych"]
+    },
+    {
+      "canonical_short": "ustawa o podatku akcyzowym",
+      "full_name": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
+      "dz_u": "Dz.U. 2024 poz. 1478 ze zm.",
+      "domain": "excise",
+      "keywords": ["akcyz"]
+    },
+    {
+      "canonical_short": "ustawa o podatku rolnym",
+      "full_name": "Ustawa z dnia 15 listopada 1984 r. o podatku rolnym",
+      "dz_u": "Dz.U. 2020 poz. 333 ze zm.",
+      "domain": "local",
+      "keywords": ["podatku rolnym"]
+    },
+    {
+      "canonical_short": "ustawa o podatkach i opłatach lokalnych (środki transportowe)",
+      "full_name": "Ustawa o podatkach i opłatach lokalnych — podatek od środków transportowych",
+      "dz_u": "Dz.U. 2023 poz. 2174 ze zm.",
+      "domain": "local",
+      "keywords": ["środków transportowych", "srodkow transportowych"]
+    },
+    {
+      "canonical_short": "ustawa o BDO",
+      "full_name": "Ustawa z dnia 14 grudnia 2012 r. o odpadach",
+      "dz_u": "Dz.U. 2023 poz. 1587 ze zm.",
+      "domain": "bdo",
+      "keywords": ["bdo", "odpadach"]
+    },
+    {
+      "canonical_short": "RODO",
+      "full_name": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r.",
+      "dz_u": "Dz.U. UE L 119, s. 1",
+      "domain": "rodo",
+      "keywords": ["rodo", "2016/679", "ochronie danych osobowych"]
+    },
+    {
+      "canonical_short": "ustawa o AML",
+      "full_name": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+      "dz_u": "Dz.U. 2023 poz. 1124 ze zm.",
+      "domain": "aml",
+      "keywords": ["aml", "praniu pieniędzy"]
+    },
+    {
+      "canonical_short": "ustawa o KSeF",
+      "full_name": "Ustawa o Krajowym Systemie e-Faktur (nowelizacja ustawy o VAT)",
+      "dz_u": "Dz.U. 2021 poz. 2070 ze zm.",
+      "domain": "ksef",
+      "keywords": ["ksef", "krajowym systemie e-faktur", "e-faktur"]
+    },
+    {
+      "canonical_short": "ustawa o e-Doręczeniach",
+      "full_name": "Ustawa z dnia 18 listopada 2020 r. o doręczeniach elektronicznych",
+      "dz_u": "Dz.U. 2023 poz. 285 ze zm.",
+      "domain": "edelivery",
+      "keywords": ["doręczeń", "edoreczenia", "edelivery"]
+    },
+    {
+      "canonical_short": "Kodeks pracy",
+      "full_name": "Ustawa z dnia 26 czerwca 1974 r. — Kodeks pracy",
+      "dz_u": "Dz.U. 2023 poz. 1465 ze zm.",
+      "domain": "hr",
+      "keywords": ["kodeks pracy", "kodeksie pracy"]
+    },
+    {
+      "canonical_short": "ustawa o rehabilitacji zawodowej",
+      "full_name": "Ustawa z dnia 27 sierpnia 1997 r. o rehabilitacji zawodowej i społecznej oraz zatrudnianiu osób niepełnosprawnych",
+      "dz_u": "Dz.U. 2024 poz. 1508 ze zm.",
+      "domain": "hr",
+      "keywords": ["rehabilitacj"]
+    },
+    {
+      "canonical_short": "Prawo budowlane",
+      "full_name": "Ustawa z dnia 7 lipca 1994 r. — Prawo budowlane",
+      "dz_u": "Dz.U. 2024 poz. 1728 ze zm.",
+      "domain": "construction",
+      "keywords": ["budowlan"]
+    },
+    {
+      "canonical_short": "ustawa o transporcie drogowym",
+      "full_name": "Ustawa z dnia 6 września 2001 r. o transporcie drogowym",
+      "dz_u": "Dz.U. 2023 poz. 1841 ze zm.",
+      "domain": "transport",
+      "keywords": ["transporcie drogowym", "transportu drogowego"]
+    },
+    {
+      "canonical_short": "Prawo dewizowe",
+      "full_name": "Ustawa z dnia 27 lipca 2002 r. — Prawo dewizowe",
+      "dz_u": "Dz.U. 2023 poz. 1231 ze zm.",
+      "domain": "crossborder",
+      "keywords": ["dewiz"]
+    },
+    {
+      "canonical_short": "ustawa o energii elektrycznej",
+      "full_name": "Ustawa z dnia 10 kwietnia 1997 r. — Prawo energetyczne",
+      "dz_u": "Dz.U. 2024 poz. 266 ze zm.",
+      "domain": "energy",
+      "keywords": ["energetyczn", "energii elektrycznej"]
+    }
+  ]
+}

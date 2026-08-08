@@ -1,0 +1,401 @@
+{
+  "generated_at": "2026-08-08T11:48:04.721557+00:00",
+  "changes": 1,
+  "affected_rules": 43,
+  "by_priority": {
+    "HIGH": 43
+  },
+  "by_change_type": {
+    "STAWKA": 43
+  },
+  "rows": [
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.annual_decl.pit36l_full_autofill",
+      "file": "rules/annual_declaration_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.cross_domain.pit_zus_interlock",
+      "file": "rules/cross_domain_intelligence_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.cross_domain.crossborder_vat_pit_domino",
+      "file": "rules/cross_domain_intelligence_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.edge_cases.pit_linear_health_underpayment",
+      "file": "rules/edge_cases.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.edge_cases.pit_tax_form_change_midyear",
+      "file": "rules/edge_cases.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.edge_cases.limit_health_linear",
+      "file": "rules/edge_cases.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.exit_tax.estonian_cit_vs_pit_analysis",
+      "file": "rules/exit_tax_mdr_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.form_transition.jdg_to_spzoo_analysis",
+      "file": "rules/form_transition_simulator_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.form_transition.health_contribution_details",
+      "file": "rules/form_transition_simulator_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.a32.r3",
+      "file": "rules/micro/plan33_pit.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.a32.r4",
+      "file": "rules/micro/plan33_pit.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.a32.r5",
+      "file": "rules/micro/plan33_pit.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.neural_mesh_v2.no_match",
+      "file": "rules/neural_mesh_v2_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.neural_mesh_v2.domain.cross_tax_form_vat.r1",
+      "file": "rules/neural_mesh_v2_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.neural_mesh.jpk_cit_pit_synapse",
+      "file": "rules/neural_rule_mesh_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.p04_innovations.no_match",
+      "file": "rules/p04_pit_macro_innovations_v8.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.p04_innovations.health_limit_fix",
+      "file": "rules/p04_pit_macro_innovations_v8.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.p06_innovations.pit_rate_linear_19pct",
+      "file": "rules/p06_pit_micro_innovations_v8.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.forms.linear",
+      "file": "rules/pit/forms.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.forms.linear_former_employer_block",
+      "file": "rules/pit/forms.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.forms.linear_no_joint_filing",
+      "file": "rules/pit/forms.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.kup.health_linear_deduction",
+      "file": "rules/pit/kup.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.kup_extended.health_scale_no_deduction",
+      "file": "rules/pit/kup_extended.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.kup_extended.health_deduction_maximizer",
+      "file": "rules/pit/kup_extended.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.transition_intel.no_match",
+      "file": "rules/pit/tax_form_transition_intelligence.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.transition.scale_to_linear",
+      "file": "rules/pit/tax_form_transition_intelligence.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.transition.forced_linear_to_scale",
+      "file": "rules/pit/tax_form_transition_intelligence.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.transitions.scale_to_linear_mid_year",
+      "file": "rules/pit/transitions.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.pit.transitions.scale_to_linear",
+      "file": "rules/pit/transitions.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.strategic.no_match",
+      "file": "rules/strategic_advisor_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.strategic.transformation_jdg_to_spzoo",
+      "file": "rules/strategic_advisor_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.tax_opt.zus_comparison_by_form",
+      "file": "rules/tax_optimization_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.tax_opt.health_contribution_strategy",
+      "file": "rules/tax_optimization_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.taxfree.hyper.linear_no_free_amount",
+      "file": "rules/taxfree/plan45_taxfree.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.taxfree.hyper.linear_no_deduction_reminder",
+      "file": "rules/taxfree/plan45_taxfree.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.taxfree.hyper.linear_communication",
+      "file": "rules/taxfree/plan45_taxfree.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.zus.cumulative.annual_reconciliation",
+      "file": "rules/zus/cumulative_revenue_engine.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.zus.cumulative.form_transition",
+      "file": "rules/zus/cumulative_revenue_engine.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.zus.health.linear_deduction_tracker",
+      "file": "rules/zus/health_contribution_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.zus.health.linear_limit_exceeded",
+      "file": "rules/zus/health_contribution_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.zus.precision.annual_reconciliation",
+      "file": "rules/zus/health_precision_engine_v8.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.zus.sickness.pit_taxation",
+      "file": "rules/zus/sickness_benefits_enterprise.rego",
+      "impact": "PARAMETER_ONLY"
+    },
+    {
+      "act": "ustawa o podatku dochodowym od osób fizycznych",
+      "article": "30c",
+      "change_type": "STAWKA",
+      "priority": "HIGH",
+      "rule_id": "jdg.zus.health_linear",
+      "file": "rules/zus.rego",
+      "impact": "PARAMETER_ONLY"
+    }
+  ],
+  "note": "Zmiana parametru → ścieżka DANYCH (data_service.py, hot-reload < 1 min); zmiana logiki → ścieżka REGUŁ (rule_lifecycle_manager.py, ≤ 24 h / 4 h P0)"
+}

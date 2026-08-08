@@ -1,0 +1,2616 @@
+{
+  "manifest_version": "2.0",
+  "generated_at": "2026-08-08T12:03:39.044445+00:00",
+  "generator": "manifest_v2.py",
+  "source": "realne skanowanie katalogów (rules/, tools/, tests/) — JEDNO ŹRÓDŁO PRAWDY",
+  "rules": {
+    "rego_files": 440,
+    "rule_blocks": 12960,
+    "matched_blocks": 12165,
+    "unique_rule_ids": 11858,
+    "duplicate_rule_ids": 587,
+    "duplicates_sample": [
+      "jdg.accounting.depreciation_one_off",
+      "jdg.accounting.no_match",
+      "jdg.accounting.pkpir.correction_storno",
+      "jdg.accounting.pkpir.cost_columns_validation",
+      "jdg.accounting.pkpir.fallback_no_match",
+      "jdg.accounting.pkpir.nkup_column_validation",
+      "jdg.accounting.pkpir.vat_evidence_journal",
+      "jdg.accounting.pkpir.vehicle_lease_limit",
+      "jdg.accounting.pkpir_col12_purchase_cost",
+      "jdg.accounting.pkpir_col13_ancillary",
+      "jdg.accounting.pkpir_col14_wages",
+      "jdg.accounting.pkpir_col15_other",
+      "jdg.accounting.pkpir_col1_sequential",
+      "jdg.accounting.pkpir_col3_entry_date",
+      "jdg.accounting.pkpir_col4_document_number",
+      "jdg.accounting.pkpir_col5_vendor_data",
+      "jdg.accounting.pkpir_col5b_nip_check",
+      "jdg.accounting.pkpir_col6_description",
+      "jdg.accounting.pkpir_col8_other_revenue",
+      "jdg.accounting.pkpir_column_mapping",
+      "jdg.accounting.pkpir_cross_column",
+      "jdg.accounting.pkpir_fixed_asset_register",
+      "jdg.accounting.pkpir_no_gaps",
+      "jdg.accounting.pkpir_remnant_reconciliation",
+      "jdg.accounting.pkpir_retention_5y",
+      "jdg.accounting.pkpir_vehicle_mileage",
+      "jdg.accounting.vat_jpk_consistency",
+      "jdg.accounting.vat_purchase_register",
+      "jdg.accounting.vat_register_pkpir_alignment",
+      "jdg.accounting.vat_retention",
+      "jdg.accounting.vat_sales_register",
+      "jdg.accounting.vat_split_payment_register",
+      "jdg.allowances.no_match",
+      "jdg.annual_decl.advance_reconciliation",
+      "jdg.audit_defense.voluntary_disclosure_strategy",
+      "jdg.autoform.ceidg1_autofill",
+      "jdg.autoform.pit_employee_autofill",
+      "jdg.autoform.receipt_generator",
+      "jdg.autoform.vat_z_autofill",
+      "jdg.autoform.zus_zua_autofill",
+      "jdg.autoform.zus_zwua_autofill",
+      "jdg.banking.elixir_payload_generator",
+      "jdg.banking.payment_status_tracking",
+      "jdg.banking.pis_payment_initiation",
+      "jdg.banking.zus_transfer_preparation",
+      "jdg.banking_sca.method_selection",
+      "jdg.cashflow.liquidity_gap_detection",
+      "jdg.cbam_full.quarterly_reporting",
+      "jdg.cbam_full.sector_classification",
+      "jdg.cfc_auto_classifier.jurisdiction_check"
+    ],
+    "stub_count": 905,
+    "stubs_sample": [
+      {
+        "file": "rules/_helpers_jdg.rego",
+        "block": 9579
+      },
+      {
+        "file": "rules/accounting/depreciation_enterprise.rego",
+        "block": 19825
+      },
+      {
+        "file": "rules/accounting/depreciation_enterprise.rego",
+        "block": 21461
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 40277
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 40347
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 40408
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 40519
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 41052
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 41139
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 41196
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 41297
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 41993
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 42993
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 43055
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 43151
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "block": 43747
+      },
+      {
+        "file": "rules/accounting/uor_enterprise_live.rego",
+        "block": 25592
+      },
+      {
+        "file": "rules/adaptive_trust_scoring_enterprise.rego",
+        "block": 1356
+      },
+      {
+        "file": "rules/adaptive_trust_scoring_enterprise.rego",
+        "block": 6064
+      },
+      {
+        "file": "rules/adaptive_trust_scoring_enterprise.rego",
+        "block": 7140
+      }
+    ],
+    "files_checksum": {
+      "rules/_business_lifecycle_rates.rego": "91be4f30752f007339b5c219b42e81b1d964043c3d62d8ce2a223d9b94e9d8b7",
+      "rules/_compliance_rates.rego": "1aaa676cd87169b981077b1bfc503b741012c3c1951a97d85f9c9525a744f518",
+      "rules/_crossborder_rates.rego": "4d4d1c2f72b34c6dbdc901f24dda1673fab9bfcccd043ddabeb107b331c04ff3",
+      "rules/_edge_cases_conflicts_rates.rego": "d3cf45aec833012999c8f89396325457098680750e9498441943fafdd1319290",
+      "rules/_helpers_jdg.rego": "a66861ec29d9f06b73af78e242ad50e5dbcc5abdf63f1f222a3416f952bde774",
+      "rules/_kks_micro_rates.rego": "78702c36b154587798c857dbcf9c1a7557433680c20906be0fcf0d5f771dc70d",
+      "rules/_metadata_jdg.rego": "fe52c06a8dec46250c8c7b2ec0cbd4de4a490af35a11a10533f372bc51611300",
+      "rules/_pcc_local_excise_rates.rego": "8dcec6d7d2fbb6c11a30187e081bf5a89811ef1c09a1f5e4e3d08214e75ea656",
+      "rules/_pkpir_rates.rego": "51358a245c273a18b6d9878f1ec95b435a6f81825be33b55d432f52b044e1c2a",
+      "rules/_uor_rates.rego": "87e7b01af9df5327db188e9342ff09a37cb7f29b7d311b9803ac6c71f99988ce",
+      "rules/accounting/depreciation_enterprise.rego": "11dee270d619fa58f59c4ee67ba95f3c62f68f26f7dbe8e8ac9b505b371ab8a6",
+      "rules/accounting/depreciation_enterprise_complete.rego": "762a8fde736de4e6dcb7643a20791fb620d009b0db9a10d20780e4c2ab684240",
+      "rules/accounting/pkpir_enterprise_live.rego": "bd48d720c2679c5fffc9ad5aa8faab41fe3e7feee2d250ca7a3b795defefe5d8",
+      "rules/accounting/pkpir_enterprise_validation.rego": "54cebb763943c6a516d8cfa4730325168a7e8916ea8d27134f38e5109b8c5d77",
+      "rules/accounting/pkpir_enterprise_validator.rego": "70adcb0f366bfd6eccbf3551b4e60feb5ebd94b3cd560471117709d90775f2b9",
+      "rules/accounting/plan23_leasing.rego": "776c9f492d0f475cdfe8865badd3d70a3ca50693a5f6451d6fa2062cd7130dec",
+      "rules/accounting/plan42_pkpir.rego": "d58c8b8d8a5f85b2df43432b791899600bca99ff7f1a0e173b46e1cbaadac117",
+      "rules/accounting/uor_enterprise_live.rego": "dc22b023be3ecbbca81ba03c6328dc38325b985d494e1888156398e9a7ff7c41",
+      "rules/accounting.rego": "040862313b88bbb9b1189c8f9bdbfa7e3f48b89cb30fff76a7ade73800ccef24",
+      "rules/adaptive_trust_scoring_enterprise.rego": "f42d0fb1bcc7173d94e5d6fe86046620f81192b97d8c0364f11a6ab392db25b0",
+      "rules/advertising/plan44_advertising.rego": "ccc5b3ce22472e737cbdcaf1bb5e8e06c46365dc31eb1984f9363ed18cc7558b",
+      "rules/advertising/plan45_advertising.rego": "0d76f2f134753d29c76e8ca3b23cbd8f91439a73e7fa67e42ba170109a3cc25a",
+      "rules/allowances/plan23_reliefs.rego": "323a80cfc99f6bae61aeee34abcab3ccab83ad40e9684037ef088e1a1e5e0e95",
+      "rules/allowances.rego": "295d29cf1bb31de398d3e990aa7cd73482bb0019ab793abdb29ee34e45ba8b2a",
+      "rules/annual_declaration_enterprise.rego": "b7281f6e3e9fc0d621728354fbba9380f01c80603e15540dfa627d31c5422c06",
+      "rules/api_fallback.rego": "c6c013c0037bf5383b08e58e19db508b473e4622ceaed6c02c56bf79434d6dc1",
+      "rules/audit/plan44_audit.rego": "166aaaf02d77d330c81a28f945fe517516049728b785ebe03778d6bc23147ffd",
+      "rules/audit/plan45_audit.rego": "fbf87d45df0bdca3747cb91249a3350ebeaee5ff62600768501e3aeb689d222a",
+      "rules/audit/runtime_invariants_enterprise.rego": "c8efb908c3c8e5024c608216006c6c676b1faee84fb975b308479e06c544a9dd",
+      "rules/audit_defense_enterprise.rego": "7f9132abfd65c30b4af23132edf424b745ec73fdd36c988fdf39dfb5de933cff",
+      "rules/banking_automation_enterprise.rego": "d8a8a2d8457cf49bc9646097fa60510503e3759f765b39915916ce21546c4015",
+      "rules/business/gig_economy.rego": "e675df12b4aa2a6b9f4e58ec6ca11879865b0235cd6373f6eca133c093856059",
+      "rules/business/plan26_suspension_succession.rego": "28f987857b5bdb23de8b9f116b277eed2642bd522e8ea5f095a19c2db06e661f",
+      "rules/business/strategic_intelligence.rego": "ac4dde21a5191a6c64cf23dfad72e87e3c3dd1c82e17ac78db3f168c1c9a6910",
+      "rules/business.rego": "10578c84430ad2c59d3812c21c7a4e43e994d6c7fa9fe6250a7e0fe479704c18",
+      "rules/calendar/plan44_calendar.rego": "97afca8223372d0b56f2e30ec6fcb1f54ebf2438d0ee975d1210c1d03807a92f",
+      "rules/calendar/plan45_calendar.rego": "ca912240191acaae1861207eb6cdd0c2666c8adf62f3a2f14df0ab1697e1b366",
+      "rules/calendar_notifier_enterprise.rego": "7e7876645245d1b31e83633bf025046ecaa6e4d1682daae9a16518eb7e558ce1",
+      "rules/cashflow_tax_predictor_enterprise.rego": "e84159afd5ae07cf18c51c68ea68715dba9b6d4cc7d1f67a63228567541f9e2b",
+      "rules/cbam_full.rego": "27c601e0fd7eea2969104cbf522d6bfc81135a15844575ffbcec0d90eacbd960",
+      "rules/cfc_auto_classifier.rego": "831693b9b69c29ba1d496f747dd256b4b77d0d8a29126ea4bd097170c3b4f1b3",
+      "rules/compliance/aml_enterprise.rego": "469c04238bc7108fc6c0d89fdfcd7b188f08e0dbea90aa13f93ccbb4541a415e",
+      "rules/compliance.rego": "a513399131ba646dbfc444d53fc4719482a439556502e9886ceaaa6bbdc7c7c6",
+      "rules/conflict_declaration_enterprise.rego": "e5bbf12022ac7ab529ba2cd7d5d2cf25024c92e7b0ecf8190013e954f73c3058",
+      "rules/conflicts.rego": "3eaaa5481d78e4792a4f96ef4d74f32a05a3af3784f107813fea3dec2ab2179d",
+      "rules/conviction/plan44_conviction.rego": "98b03c13db2e91c14fcec45dae8454bbf53b6e7e0a0f8cc6ae237181835ac7f2",
+      "rules/conviction/plan45_conviction.rego": "1860282c02e6b70c5fea532eacccb18a9bc2ae67820426110a6f4865f0d120b8",
+      "rules/conviction_checker_enterprise.rego": "460ef0590f0eedfb1feb2179627fda866ade30ae9b1a4c09ea787a2ae2db12d6",
+      "rules/corrections.rego": "b041ccbd8c94b5818f56c2a2d5c2eca8e205b0c80a36737103c14d28c99760d0",
+      "rules/cross_declaration_validator_enterprise.rego": "22e16fa1e7d558171dab78b5285280fd3ec9aade97efc09c314b33cbff5a5ccc",
+      "rules/cross_domain_intelligence_enterprise.rego": "41cc0ec9d7880171953072235db1b3e67bf47f14728cdf48abac6322064b5032",
+      "rules/cross_jurisdiction_ruling_enterprise.rego": "3dbd2ea465f048da504fae9fbd5b8e393e531c5350bdd353a800f6876f3be002",
+      "rules/crossborder/exit_tax_cfc_complete.rego": "856fc17fabacf309a2013ead199497abd1437d12ad7424dbac2d61a381adfaf9",
+      "rules/crossborder/plan23_ue.rego": "037c8d94beb6598ec06527ed4e8eac0b4fa09a2b85fa7c5b07336cbf262d7cac",
+      "rules/crossborder/post_brexit.rego": "8c25d0f53eb4261d4e85acdba11551b16ab433023fea76bd16487f9700b7e347",
+      "rules/crossborder.rego": "068abd05a71b7b282758163a76a875e6f5af769d36f68a61111695b5c3db69fa",
+      "rules/dac8_report_generator.rego": "2d5366e64238cfc08bb8dcdee276d3e29a92a4d61c84b0d6bb87bcbdb12d45de",
+      "rules/deadline_monitor_enterprise.rego": "a29f37a1184b405b5d473584bb85fd968f2be6cfe786835e9e2cd4e892cc2189",
+      "rules/decision_composer_enterprise.rego": "3416d0a4c9802ca75243a30333ebdc6a32976c6453d4765554fb981d0523e4de",
+      "rules/decision_core_completeness_enterprise.rego": "a0d429ee8b1cee31df76eb4cb4e4966e3f047da8850a1dc7656556a8ceff12af",
+      "rules/decision_scoring_enterprise.rego": "9540caae010c53294d7c7b702226e1771229c1566aa1436eb76e72b10e85b019",
+      "rules/defense_builder_enterprise.rego": "61fd94aa882fd26b7a09bf22fc8c7a3db124ea285f4c3fdf5c5411fbba2e68c5",
+      "rules/digital.rego": "39a8b5e8c9c712057fd870c2a12f1a0abccd16f0e4a4abdf822b6b3745d0a024",
+      "rules/edelivery/plan44_edelivery.rego": "12a2e7e4322c28f0119f2deaadaa0c5aa33578781f5df3960272db5e9efe011d",
+      "rules/edelivery/plan45_edelivery.rego": "fcbf67c85a54b0d1b01de866650ae5e910bbe7c437df07dbdbd184e6c917145e",
+      "rules/edelivery_gateway_enterprise.rego": "7726846849a334dbc8a735064c478c755d60a944510ce4fee0c74797f00a0ab6",
+      "rules/edelivery_gateway_v2_enterprise.rego": "21f97175540e32ba582d2f807d878eb0d5fabdf88ab4f2b838cc35e87cb5fd53",
+      "rules/edge_cases.rego": "05480d566cac27da3989c52ba5fa998d358a41fe6347d4255e61b38b0b6b25bd",
+      "rules/employer.rego": "c1e57555f502f620831f3588979139ce612fab3a9c03625b51f994f155b9da81",
+      "rules/environmental/bdo_enterprise.rego": "60e3c685dc144467b4166956bcf3b5e9b40dcea1c8c7630c59b70698f4d95a06",
+      "rules/environmental.rego": "e9a19464cd82aeccf176cbefd6eaf517c0ef947c0e048971ff15f2269a1aab14",
+      "rules/epuap_enterprise.rego": "bc7dffc074b59d8b36b4cd081dd3219c03a88fa47833ddb60d05c4cc9c327160",
+      "rules/esig/plan44_esig.rego": "74fb93ad849ceee1761ac6de527a4c0eb2151d8c2986a67d7891447e703ccfc3",
+      "rules/esig/plan45_esig.rego": "309e1c17789c01a74738c8b0063ff97101fe5454ed7486c5b7bbd428eef1f036",
+      "rules/esig_auto_applicator_enterprise.rego": "dd3864d13bab18134436999318d4aae3f4420c84ac438ee657a2987d9b1714fe",
+      "rules/exit_tax_interest_calculator.rego": "2bb7f7b800fa20dec08def336521f12fa07622ae4c193b5fa4d480544fabe99c",
+      "rules/exit_tax_mdr_enterprise.rego": "f66c4b14a6b208760b59c3314ffcd1c3837801d51746cc44a502a6466e5d84cf",
+      "rules/fallback.rego": "d1984e0c05ac6e3ea14d7771817c95cac725b05791d1cc4b77dadc4316927ec9",
+      "rules/family/plan44_family.rego": "785ae69f58a4ce20114a7ac45cb4b31b5ffe532af843df4be486896708473bee",
+      "rules/family/plan45_family.rego": "3e5d04c613440602235feb9dd0f54cd9e2ca6f4165cb64095942e81d427483f3",
+      "rules/financial_hardship_scorer_enterprise.rego": "8548174cd088ea3ef1e7bc6e134e23e78cd38248413009deceeb63585c436f36",
+      "rules/force_majeure/plan44_force_majeure.rego": "fd381596132fd031feb3726b3a6cf4425cb5789683af77033607a178a21a695d",
+      "rules/force_majeure/plan45_force_majeure.rego": "31f8759fc9a7e5f82c9defce5e7b2bd28c0974f4e9a9846383fdd7614275bef5",
+      "rules/form_optimizer_enterprise.rego": "3e22a8ba370259d3d418b4db88ab2f58639c60bcd608b049fd55755863476806",
+      "rules/form_transition_simulator_enterprise.rego": "7612bfb7f685bddf1652ce38ad67545a0a7cc349fa28bf26f8ea55caa3cde292",
+      "rules/fx/plan44_fx.rego": "ec52c67cd3d76ad5df879e962bac48db787159be73cd48a1f6aed039996bf8e1",
+      "rules/fx/plan45_fx.rego": "f2dcd2df33efd81796d80174ca338f5eee7ff1b1cc6a570cec1a7c7f8674c36c",
+      "rules/gaar_shield_enterprise.rego": "540204c7c18b0bfe46b89f5b173ace3f2641212b85961259f12978fd06b5852a",
+      "rules/gtu_completeness_checker_enterprise.rego": "109b8858a3447539bebf07061cd8684a0cfcce3428dff9e3dcb0dbf510d0dfe2",
+      "rules/hyper_plan45_meta_enterprise.rego": "ca9b0a1b3fdc007840fb33d681eb37156538eabd82537c4674e0397c492a36f0",
+      "rules/insurance/plan44_insurance.rego": "74e4f66b83fd8d01db1728e01dee0a5d5218117ea80941ff06ae86e4297aba48",
+      "rules/insurance/plan45_insurance.rego": "65e62827cf82d045ad2d2a17dc6448d5639864f045de1c0a58cf8d8cb0f24dfe",
+      "rules/insurance_tracker_enterprise.rego": "c2e779556581dbedff1774db0153ef70894aaf87392f9a7fd62566c961167427",
+      "rules/interest_calculator_enterprise.rego": "f3b3a94e012571083ed62058dfaec753a53ea6951169437998ac2a7eed00dd99",
+      "rules/international.rego": "2eec71ceaf4b56c075cdf6ef7c7c95a4bc7b1006eceb7d46b3e0a4d6d5b15ee5",
+      "rules/international_expanded.rego": "b178774be833a1374f147880d3d75655adbbb2ef642882d1f588c0916b82b9e3",
+      "rules/jdg/hyper/audit/plan45.rego": "c54cfdd0d45d03b093a0921e2b558e73ddbcdf88e751c96eaf39af0f98802846",
+      "rules/jdg/hyper/deadlines/plan45.rego": "f0fe6b3ea3cd6ffeab7e9a60eceaad48ded05e0e0b1c94dc791fcfbaba6be4a7",
+      "rules/jdg/hyper/edelivery/plan45.rego": "2c0c0c63f6f7625034f7918961511d8b7d412c0bf582af91ef8fe8f84279a0e1",
+      "rules/jdg/hyper/family/plan45.rego": "52aa82f1e4146c6c637d00ca94ff3ffa9ba7fa0540e62e56508df3bbb22781d3",
+      "rules/jdg/hyper/force_majeure/plan45.rego": "6fb3b1db2231914a06b8b753679e8f5b4dd46fa98a5dc15b8a7412da5ad16d79",
+      "rules/jdg/hyper/fx/plan45.rego": "7faefcf1eefd5f93d0ac9926fc52de7625e8d246af1010e43f545b1ed2813e60",
+      "rules/jdg/hyper/general/plan45.rego": "ff56563f24ba9acbeb36783a718434c59cbf0c41f7857b999c909e9e9e250e77",
+      "rules/jdg/hyper/limits/plan45.rego": "acfbae47ac5b95bb0f6f3553a955abe916997d32615bac28f2039306c7414085",
+      "rules/jdg/hyper/mdr/plan45.rego": "edb1511b39e18c27425aade9f606e40617e6f872c8605c8778225adbafcb3824",
+      "rules/jdg/hyper/misc/plan45.rego": "9ae2371a4148b674077047f3db2161e43b6e84e8e4ef5e23579ce172ea168e6c",
+      "rules/jdg/hyper/procurement/plan45.rego": "3da61d359fec937a5009f9abca8ac874b2747fa3892a7a13f4745e67f1efb6e8",
+      "rules/jdg/hyper/sanctions/plan45.rego": "940ef486ae210ae43c0f7fc494473299e3ed489c0c343add78dc0c51c4d4c475",
+      "rules/jdg/hyper/solidarity/plan45.rego": "38d18bb8f0f134e697ae024df8e41cfb4c5919643901e6f8b8fa8d8146c6f4b6",
+      "rules/jdg/hyper/wis/plan45.rego": "bd503dd8c945dfc25eb2c544d7976552fecc90e185d974dc8d2bc694bbbd85bc",
+      "rules/jpk/plan26_deadlines.rego": "48d7ae022bf552fa40ca53d21a705b3e0e72ef5653912901b238dd94a22c8a2e",
+      "rules/jpk_cit.rego": "569241e4caf2bda130709f54aff6f099ade4799cb1fcf3bbde5ad59291ed7438",
+      "rules/jpk_corrections_workflow_enterprise.rego": "11b0a8eced7cdcb7b217fd533c30a62bc9974254eb1ea7bf21953f47eb15633d",
+      "rules/jpk_kr_st_generator_enterprise.rego": "bf801734434507ab829b00999052814918661c43696d6e4d6067e46e8e29862e",
+      "rules/jpk_v7_autogen_enterprise.rego": "202f04b19059d5902f737d121e912ddb0149957b6aa1e796c191f2abece77841",
+      "rules/judicial_interpretations_enterprise.rego": "ceb1d536453a7d5dbdd7856cfe5799f9643d0b9cdf8aeab8d8639e8c82628792",
+      "rules/judicial_trend_enterprise.rego": "0a00d572c9535ee9ec483be0651259dec625690eba83c7227f65bdea7b4e61e3",
+      "rules/kks/_kks_macro_rates.rego": "e09dbdac8b74e6ebb0823660729ad65f9300db6c1197913392132e379f966fa4",
+      "rules/kks/enterprise_penalties.rego": "48802da18cd58e846437dc8de6ddcea30598b28e9272426e0ccd31adef4ddb8d",
+      "rules/kks/kks_innovations_v8.rego": "37ae62068332232f3cf3660a126b1d3547c40380738bda82a1380724f9fd5e91",
+      "rules/kks/plan42_detailed.rego": "38eb77062a9d3479add33ec9792aa4e6074ed53d5341107ae005e456ebfc3db3",
+      "rules/kks/plan43_decomposition.rego": "8a852696903188ded3e712dd26d5092c8064f2e8ebad830384160d059b4b1074",
+      "rules/kks/plan44_kks_conviction.rego": "310631a5c8c8ed85297d6f64353d518204c27cb9bd3294e463ce9a9d0aba774d",
+      "rules/kks.rego": "e6af484dcc25585f7153dd01ebcafde63a85f24086f8245720d6c92b7c9921d9",
+      "rules/ksef_firewall_enterprise.rego": "b0b4c36c5d849a05ce2bacc56edf5dcedcd39708b643ae8c13932014196e81c5",
+      "rules/ksef_innovations_enterprise.rego": "bf018a0998addd42659275ba2851b6a6945ac207a02d46d5a7f2f3cba9247b7a",
+      "rules/ksef_jpk.rego": "07adc2af012a4d04969b7955a3999f048079e8d6737a38f07d38c55896e79379",
+      "rules/ksef_offline_queue_enterprise.rego": "752f5265a946785fdc534d08afb85f6216322eb4c79ab49bd8f1a75e11eb6eaa",
+      "rules/ksef_outbox_enterprise.rego": "3344e3bcebb590c9f47d00a006e48f916f940691432cbab7716d83130fde7406",
+      "rules/ksef_receipt_digest_enterprise.rego": "0d3d6d71c3abe41ce2c17e3fd3de965b204a2ef08386ab681e032ddf6e64772d",
+      "rules/ksef_resilience_enterprise.rego": "2854d1b18b677c157d1208122be24e0032388a0d6f97f60a4b2d0b20fbf4fe80",
+      "rules/ksef_sanction_monitor_enterprise.rego": "3f4475d5e20b9e268b8e13f5a50b6814ce8098054edaa5a9de4ca4d592846f2a",
+      "rules/ksef_sandbox_harness_enterprise.rego": "7b7d93c9bc408ef41d1ff50f203cb3fe8621fe0b7c70284a83f6370c11ffec1f",
+      "rules/ksef_upo_tracker_enterprise.rego": "f8bd61a3544eb11c328d8fac52fd514cf6f05d79f489630bb6a0f5f7cdacab7a",
+      "rules/legislative_impact_analyzer_enterprise.rego": "94da22d8bf6184bce29eeea3486239ba868657a5901c33244931976fc37eb5ff",
+      "rules/legislative_monitor_enterprise.rego": "a6a1e0de1b35ffbfa7dcce873a10106c2e53413e0f0d96026777b7e5d3e43afb",
+      "rules/liability.rego": "788cae0eaf08ea40217030934bd2cc8b29c3efdf3a37d3be45d7e8d96754964b",
+      "rules/lifecycle_manager_enterprise.rego": "bcd20b369c30f140d0c470cda2bfa0a4f6feeeea8377b019b031b143f35e4247",
+      "rules/local_taxes/akcyza_alcohol.rego": "e1bdec59e7d1509337015260adb79bd89204d778c82f15930a5a202890974476",
+      "rules/local_taxes/akcyza_fuel.rego": "3f6157ddd041fb671ef2920b8275ac8a45eff0a52bc90c765f03f6cad4d8b02b",
+      "rules/local_taxes/excise_enterprise_complete.rego": "1b39d15f8e195bb29e82e0676b4d03d70719ec91ab06df214b4afe5b8e504c57",
+      "rules/local_taxes/local_procedures_enterprise.rego": "51efad7c87aa8d2550c455475cde9ac22418733c6c4b84e34c1162dda7e1a400",
+      "rules/local_taxes/pcc.rego": "dbea1bcc45d01d19359ee4c12050533b297defc6f2a2e74a9cff00b31cdcb418",
+      "rules/local_taxes/pcc_enterprise_complete.rego": "79598f7f37dda09467882703e889c726f4336a68f51d260bedc7cfcf82cd28fb",
+      "rules/local_taxes/pcc_excise_enterprise.rego": "c7ce2f1353ac89e09a6a3c9fb42b7c28cca58973b5b039a7a5c0821924be7b44",
+      "rules/local_taxes/plan26_local.rego": "f43d5407689cc7570cba6b9c008166ed5e67ee51b44ce2314dc7a033947adf7a",
+      "rules/local_taxes/real_estate.rego": "26564bc0a882feb52037e0f3baee63a2d45d2e7020dce1cfaa4cc3e30acb0c03",
+      "rules/local_taxes/transport.rego": "1f00e1d95562fcefb592a5c5b9dc36153cb518f69c38def97c8affbe686f5610",
+      "rules/local_taxes.rego": "45adb9e05e94101839b98af0b9d501abfb38785c59d1e51cae0fbff2fe407390",
+      "rules/main_jdg.rego": "7eb692f4a7d9dcf7215eb1b0ecc12e815e84b81db9e07cc060edfd9331639540",
+      "rules/mdr/mdr_enterprise.rego": "9a4afa9d48de24e077738a4def3957a58a03c9000b3aeccdb51d64f6de0ef5c5",
+      "rules/mdr/mdr_hallmarks.rego": "76d998a7739375274e11ecb379c2d44b6686b50bde10d4315551abf8be0ec7ab",
+      "rules/mdr/plan44_mdr.rego": "12e82419eac65364d6e0657c37e8d08d9eae534c532ff56df4567c52c8c01628",
+      "rules/mdr/plan45_mdr.rego": "a10ee7c10c33de63df92d1b4e1c3ea9bcdd26f4c4e0d10e3d3872a6d330db868",
+      "rules/mdr_auto_generator.rego": "bcda782191abda4dee4fbd3aa6f6a0711f1a6bbda18c0f26a293ad848a22f291",
+      "rules/mdr_dac6_enterprise.rego": "237cba88865257e24d6532e1b4822b060d8e4ea959bebb191980d997e6072089",
+      "rules/micro/_zus_micro_rates.rego": "120c8ee0ab017cbb24861e57ba5c91e90c470a936df213c8372faa1169175daf",
+      "rules/micro/akcyza/akcyza.rego": "ba4053a1ea873cbc4d951336789acec477d297761ad07119281227ecaa941c4d",
+      "rules/micro/aml/aml.rego": "d459d166a582ddb5633ca426ba66924a0eeb6455dccce2e028d0828b3c02eb00",
+      "rules/micro/aml/aml_cbdd.rego": "dd1f829738482e3f8c330a93af5315f69e32ea0407f4a648b3539f36f3946187",
+      "rules/micro/aml/aml_ryzyko.rego": "3cbde7ab8096074f10908c770745d3baf0008a9fd92511692098f87803e6fc1c",
+      "rules/micro/aml/aml_str_gif.rego": "3a0a5cec1917a6205d3c74bd3820bb20eae54e9d640debd0da7fbac9b93d60ba",
+      "rules/micro/aml/aml_transakcje.rego": "24fcb944cea5a32ca0c9d5cc9f3e0a19f631c7527878492a1b84de679a9addca",
+      "rules/micro/amortyzacja/pit_a22a.rego": "cf8bfa8f3df6b71fdabb7c5929acf84c51c2f4b329fdceeb0821a9cb3d4207b8",
+      "rules/micro/amortyzacja/pit_a22i.rego": "ba1178abb459a4b9d9b2f1542400f2422fed0b0d9878aff375063cd06c3ae996",
+      "rules/micro/amortyzacja/pit_a22k.rego": "8ac6c3fc89326998ce9572b5769eed443479e425a9434f6a77fb74c9fddef983",
+      "rules/micro/amortyzacja/pit_a22n.rego": "6ba0aa1d453a2683b77b32d1ff6bad7c0c7fe955cd3d63ae1ef3c98f00f5b4dc",
+      "rules/micro/bdo/bdo_ewc.rego": "208449cfc32b40f7d83d92aeeb35d84cb2a7d630771df4d04f796ae5ba75a837",
+      "rules/micro/bdo/bdo_ewidencja.rego": "44f8e50eb50aa91dfedb9afff9ab7e456775b3e17e1b53664721c76020e35688",
+      "rules/micro/bdo/bdo_rejestracja.rego": "618c0ccc57be4984194aaf5a85cb4918a402934daa1ad1846b267ffb030dc4fe",
+      "rules/micro/bdo/bdo_transport.rego": "1545f1547c85b35fc302289198ba0eaa19698a47537dfe536971d751ecd50cfd",
+      "rules/micro/bdo/bdo_weee_baterie.rego": "0452100f69d0a69d099b96980c143cd3a220bc22c65bcb0e5b06f921cb2ab550",
+      "rules/micro/bdo/bdo_zezwolenia.rego": "e9f5b71284ce1820b6100b51072438accf3740510818bcddd5dfbe66e2d6dc68",
+      "rules/micro/budownictwo/budownictwo.rego": "a08907027aecb796ea70260397b7c4ada47677ac808ec53f34d3bb0262439e91",
+      "rules/micro/ceidg/ceidg.rego": "299edb74723dc6069599c18a16d6c1ba608c5c429336be166c1997069a68b618",
+      "rules/micro/crossborder/crossborder.rego": "bc07f8690d7168792e8774d73ae7361eb1953c443e2b91b48ceab6325b376b17",
+      "rules/micro/jpk/jpk.rego": "f520af362478d53e2aba5b0b68dbc65bf615e8711734675fe705cd3877bab082",
+      "rules/micro/kks/kks.rego": "c1043f843d40b2e874f21b230157d059278b5a23471374bce80d7d19e0663a9d",
+      "rules/micro/ksef/ksef.rego": "44132c16d843ff82689101f66f6547c9b7126d7ed1110782e47ef9262d7e6013",
+      "rules/micro/ord/ord.rego": "d234d95664a8c18cf8692d18709976b6e60927ea6aec1e60e6e243793e0beeb1",
+      "rules/micro/p24_innovations_enterprise.rego": "12d8e942088e49661e604fbb5d02c7720036c63820cbd45825aca7c6d03eec4b",
+      "rules/micro/pcc/pcc.rego": "1b42a6cda9d86c1c99a806aa07ec46bdfec34067b8ecbe59de26589fccf1bf80",
+      "rules/micro/pit/pit.rego": "9a07d48293446f4a3ac8127006002c24116dee9b870fd16b450fbb8db6c51de0",
+      "rules/micro/pkpir/pkpir.rego": "b0571877ca6306b7c01082aa2eddedc49bf455ae360509b8289ae19230dec1c0",
+      "rules/micro/pkpir/pkpir_kolumny.rego": "447e85a94051264c3902e5c27935e6a06fa003992834404a79adca42246ba335",
+      "rules/micro/pkpir/pkpir_korekty.rego": "a0c0ce76f682b59488bfb3458fda0354c0f64eec848770f9704cd8f765a0f275",
+      "rules/micro/pkpir/pkpir_koszty.rego": "1bb7553205a2bf72a47b584effc0433c56cf2ef87169ead26c1226d634a7b6a0",
+      "rules/micro/pkpir/pkpir_nkup.rego": "58d1eb198be656b67d497273496d71603ad7d0e95d055852f078f446a60ab091",
+      "rules/micro/pkpir/pkpir_przychody.rego": "c0c3b382df6758875b903be25d06f0ca7faff2ef0c145ef64a207825a03b15b8",
+      "rules/micro/pkpir/pkpir_remanent.rego": "3a3fc3a7161b9bcd59236805b6dfef3149494773bbad778bd2d6796479ce5879",
+      "rules/micro/plan33_agricultural_tax.rego": "4e4a166138ee2ac35001a392bc7bab73fbb5c9163d9d87ceee6a30bcda230332",
+      "rules/micro/plan33_cb.rego": "2d5d3710f2b0cd42edc130b3da30842bc774f1913d163bea2d82cde0324a99ed",
+      "rules/micro/plan33_ceidg.rego": "71edc404007ef5d7860a6ecb4e3ea87e44a74996cb6a88f2444770143cddb916",
+      "rules/micro/plan33_est.rego": "82b7f3ac1359dc25d48ed67cd0da233d4cc9e1084bd40b8bf9141e7c7be9d4b5",
+      "rules/micro/plan33_health.rego": "03e0148dd9561c5964f45a9aafc3a4027350f7551fb0b995c4ba5d51958800a2",
+      "rules/micro/plan33_jpk.rego": "5f0e6d01cf5e3bde7aa300a0e10ecb3aa133bdaf9f94b88a60e43252896e8779",
+      "rules/micro/plan33_kks.rego": "4c351e681439c0569d1afc77a6c044741becd5b8aa1db2bb68c0b115122e9ec6",
+      "rules/micro/plan33_ksef.rego": "e466006456b24a8b17a44a0e06e8e0a7f57a9be15c590b89006d11066263236d",
+      "rules/micro/plan33_mdr.rego": "c99905142274ef1034861fd53cbe9ecef0c8c0265fcaa5b7e465be997acb141d",
+      "rules/micro/plan33_ord.rego": "07631918698f75d87d8ab27b22eb9bb82dbafa146d6e609c91dcc3d751ea1732",
+      "rules/micro/plan33_pcc.rego": "f334c0764ca1637e8abd6ec08d00f60409d8f0fee162feed24da7b2df5c0126b",
+      "rules/micro/plan33_pit.rego": "b73b6491859fa91b8a94f5f92f1aaf489988e190e6c8aa3b284549bdc24215c3",
+      "rules/micro/plan33_prop.rego": "98a3824c4046eca64fba96643e39dfeab0a3082d1afdebce3edcebbd02fc3236",
+      "rules/micro/plan33_prop_transport.rego": "8122729e3acbb8d77e38b6f42f4c10b2e7dc2979e9e41bcddfba3452b19c6aee",
+      "rules/micro/plan33_rodo.rego": "ca96165b7ab73fd1c073035173b5ee7125ac181f0951642ba5fff0abc733c5a0",
+      "rules/micro/plan33_ryc.rego": "70709fc14f384f5f7e40208b90d6e21dc937852664ac75ce7a83ad4537b15521",
+      "rules/micro/plan33_succ.rego": "9cecece3ec1201c09c560577bc228e86a0285886271c055ac56c73be65521fcf",
+      "rules/micro/plan33_tax_trans.rego": "d7109d767b065b6a5df582f4e8e768d96347cef40dd233d1ede63924d0344475",
+      "rules/micro/plan33_tp.rego": "468c1287edc139b0dceeab4df05e875453471b26d538261d629744bae7d0e491",
+      "rules/micro/plan33_uor.rego": "549b95007a2aa681b828043770a323dde47941a60b2c18f048f1f6a79779a102",
+      "rules/micro/plan33_vat.rego": "b0aa58ab05b73f164eb701c84ce2cab666dae6b870267d2d32def1e94f70b3f8",
+      "rules/micro/plan33_zus.rego": "9179d93578b49e03fa9c7c8e3a350a00ce541764fa3ec18adcbf6d90bb026a60",
+      "rules/micro/plan34_ord.rego": "8103210fd27862a7ac32a4b1e64dc634d3640c2bea97b8b6e1b39feebb2210d3",
+      "rules/micro/plan34_pit.rego": "bf17663237b031fdf9caa9d34334fffbc375c54c68c4d7ef4256e98a28c8d9a8",
+      "rules/micro/plan34_vat.rego": "15f69fca4526ff8415ff6818905cde2e64c717a1922fe9c851540245fd92ff7a",
+      "rules/micro/plan34_zus.rego": "157874741c1d87f1bc34a004e49f2284a8e33cf0b3a6dd793abd4a60c7710a28",
+      "rules/micro/pp/pp.rego": "ff379d71012d310aa9be73c9f343a614f592dd6b14b59bd05060bcdd81da8de3",
+      "rules/micro/rodo/rodo.rego": "8e54380c2692ee0a19a2b4b79413f253ede858ce9018336b4eb3a644ad94bf61",
+      "rules/micro/rodo/rodo_ai_marketing.rego": "db1f4c0a31fdb7191fee4d5a13c2088c56d1a5f5aaebb1fe110e722ff9d5458b",
+      "rules/micro/rodo/rodo_erasure.rego": "57cbaf0e6fc6079d1812abe9a050813cae6ab0c6434caf8dbfa55fc76c4b47dc",
+      "rules/micro/rodo/rodo_podprocesorzy.rego": "fa1e055dd8e1a3eb4654391128ada9dab4043ee1b48fb3a421a2ff69d89967b3",
+      "rules/micro/rodo/rodo_sankcje.rego": "1a0c75041366a5d87332c8a9fb591efcc689775855413680b801830db7242941",
+      "rules/micro/rodo/rodo_zatrudnienie.rego": "4402464b1c4ee1f18ba5d07463a823a482a048b95d9e4c23284122cddfcd7323",
+      "rules/micro/ryczalt/ryczalt.rego": "d4b925a3bd0e9411b09ded4e73fef69e5f0994315ad73b5c98822dacb82decac",
+      "rules/micro/srodowisko/srodowisko.rego": "8283974bb67d3383e479f4c2dde8da1ef79cb1e4cc6d97f55f1bab6d559f3ce9",
+      "rules/micro/sukcesja/sukcesja.rego": "7c8bd159a29b7b871e0f27c15b65e3b5a3d4d70e7b4830cbf7bbc2596df64a9f",
+      "rules/micro/sus/sus.rego": "5e2a1759384a515015d38f1e2207fb7b1559e69b04091be5c0532fd1bc9c2069",
+      "rules/micro/sus/sus_a11.rego": "f8678056f2e624a522f59de100a9d3fe6559f2559257b41fbfd2d4ef3f30ff81",
+      "rules/micro/sus/sus_a13.rego": "c634cbcb3c4c2924795d6e25724350164e16566e487cab7484bc9b293066b6c4",
+      "rules/micro/sus/sus_a14.rego": "1e959a13838e357690bb4d5576b84151661653e27470f21cce92c9131eed5c60",
+      "rules/micro/sus/sus_a18.rego": "113b125f16ae1718dbbe3bee5070ed8cb2cd1bf66d24676d700f7520c493bc08",
+      "rules/micro/sus/sus_a18a.rego": "a5a2c48221281772d591e8aae32145fd9039f2b8db6dfd8776dd5d17ff05dd40",
+      "rules/micro/sus/sus_a18c.rego": "6cd413f310869f6eeee421ac6631ad0b0a0349484d2fb60a9d5ee51bfa83300c",
+      "rules/micro/sus/sus_a19.rego": "d9fde8e7e7e3f768b5a0f7c02da8d32b5f8162108193f91e3e33fd64de7a5ba9",
+      "rules/micro/sus/sus_a22.rego": "cfea8adc48e3064126cbc792b1c42ead689f81a2de4572885453a7a5ca9c5de9",
+      "rules/micro/sus/sus_a24.rego": "a3754af103f201553e9d2d8cee9abd415d909c9112d453078214bbadf88310cd",
+      "rules/micro/sus/sus_a36.rego": "4c3ccc023ea7c7fea9d58268a80cc731d2381f2021909725268699169bea06c4",
+      "rules/micro/sus/sus_a40.rego": "d69eb80b553f29c02488f551af9b9049bce38fdb4d5e43ccfc8818e65a0ee4f6",
+      "rules/micro/sus/sus_a47.rego": "86049dc35e22993d34025269a417939a4d3276092cbd557468d3074d5c202384",
+      "rules/micro/sus/sus_a6.rego": "1406d9ac3cc7476ea6bc54acb5a4a419abb26a8779ac48acbec4fc825c4484ac",
+      "rules/micro/sus/sus_a6b.rego": "269a2e6aae0e659d5ff771646702b1fe2aa8aaafc06efdb4c1a5db1c6019aa64",
+      "rules/micro/sus/sus_a9.rego": "00fdd81b60b09856cb5c6a5bfa518f5ce674e4babbc85935e5045c6339ee4875",
+      "rules/micro/transport/transport.rego": "7723aaa8e6fd7425c5e1abc90d01f195aeeb48da6279779c1fa25253ccf7f102",
+      "rules/micro/uor/uor.rego": "6fd5d6ee444ad90719610908a2f5a37a241d56cb8650469e5ce9f13d1116b93f",
+      "rules/micro/vat/ksef_micro.rego": "ab1023bf2dfe0ef09f69212fd2cc7963399329cbe4041bdcea6d08db041a7fb7",
+      "rules/micro/vat/margin_scheme_micro.rego": "9938f6c6e76e509dd296055bf4d52ef453b015869b89b69fd7658a4ab59102ce",
+      "rules/micro/vat/place_of_supply_micro.rego": "78e39b2fbc1111d50635e16f8fa74c11c3b93482baae26bd176dcd66258be9eb",
+      "rules/micro/vat/proportion_vat.rego": "84e606f4fb71ae667cd609ef1fe35aa34bae460ce9a49bdd41dc192986d0e186",
+      "rules/micro/vat/vat.rego": "1393ee593714dbc56c0a4438117b592911e28e79ee3de3c85e2982fe46040880",
+      "rules/micro/vat/wdt_export_import.rego": "78b09539fbaf26a25f53b8e16c793d08d4b5bda14207a4c9fa900ce1a4b0d255",
+      "rules/micro/zasilkowa/zasilkowa.rego": "b562ebc855ff71d21e956888a57e25664d936cc1c49052ac1e440ef9a2f1f422",
+      "rules/micro/zasilkowa/zasilkowa_a19.rego": "0e77d50ca4fc54457544def35b4a9bf7efcc7c4fd3528e33c3f440a3f21f1029",
+      "rules/micro/zasilkowa/zasilkowa_a29.rego": "9a2ec334e3ce5a05232a3d08757c298615671d97d2d9640d9a58a8a6359928f5",
+      "rules/micro/zasilkowa/zasilkowa_a32.rego": "110b1851780f0fb1bc88f4c1f2608fc2c2cdaebe474cac3a8605e9ba1a75f635",
+      "rules/micro/zasilkowa/zasilkowa_a33.rego": "84116367529f24b5bee9ddc649522db3ffb98ad775db0cc0703c32e299bfd5c2",
+      "rules/micro/zdrowotna/zdrowotna.rego": "815ec09dc4013e49735b03c6f29b95af604df42549bab80e422813c845789cb7",
+      "rules/micro/zdrowotna/zdrowotna_a79.rego": "b0154c8d2e95a9a5b88ce6673114571eaf7f57d503ab3ae36f415bdc3b10f791",
+      "rules/micro/zdrowotna/zdrowotna_a81.rego": "7c3ba399867a4265194ecbe67f8460cea9833642498fb052e12af2338638c0fb",
+      "rules/micro/zdrowotna/zdrowotna_a81b.rego": "4460c8eaf9cb7773a7f6ec38347613470e87904eb3f63ba6882f46c40cc4ab14",
+      "rules/micro/zdrowotna/zdrowotna_a81c.rego": "af8d64defd6188bb64c38517e44cef0a6590c97082816b045c78ba01c19ea8de",
+      "rules/micro/zdrowotna/zdrowotna_a81d.rego": "a561c275135b22ae210e8ef723fba3efbb3e053dce10f83167297d8b22dfaa60",
+      "rules/micro/zdrowotna/zdrowotna_a82.rego": "3fd6c40733033343d073fb68ba40a43945414556d92ed3d415b3f13958a6b71a",
+      "rules/mpips.rego": "95f194f483147b3ade8165982c9c794347a63c9717763624cba2f61c2af81a12",
+      "rules/neural_mesh_v2_enterprise.rego": "c2c98fbd3f69736bdaddf1a2ed4f41360b4937561c9a2e63da0833222667eaa0",
+      "rules/neural_rule_mesh_enterprise.rego": "49c1d71d951487d672023757e8484d37812b404c8ea2ad161d3aa9e31ae739b3",
+      "rules/nkup_enterprise_complete.rego": "4786c4b744a459e1df9e8c35b0e67692a537dceae7a46c3d120fde90809071ff",
+      "rules/ord/ord_innovations_v8.rego": "af48654c62b611c51a77ad01853258092e4f5a367d99ee654dd825e143bb13f8",
+      "rules/ord_supplements_enterprise.rego": "49a149b82a6bd148c1b4ecfec3d7228cf3f3ae9dd9984a1715def4f7c74a28e3",
+      "rules/overpayment_auto_claimer_enterprise.rego": "806e9aeed78e3cc7d9f3c0b3e834ac6ccff75286a4f2ea610aa07ad5fca2faac",
+      "rules/p01_core_architecture_innovations_v8.rego": "e2af14dfbc235db195b5027ac9d31ffd68a17538e4df14e6b158ddb06321a1e9",
+      "rules/p01_fundament_innovations_v9.rego": "28273875316b1f0394c66423f1b19a47706be4cf434b6a780fe2729c2cd06b20",
+      "rules/p02_decision_core_innovations_v9.rego": "59f45d5fc6119826710756122485445eaea0dce8cefbf2bbec927df2be56f1b9",
+      "rules/p02_vat_macro_innovations_v8.rego": "8ad6a1a2b8d8051ad4577a55d6ce2ccdee2ba0cc4cf8a79482b4ee79ad0be4d1",
+      "rules/p03_vat_macro_innovations_v9.rego": "9ec824b8cdefcbd7c867b4e6e7fbf130be15b452de4c37bc546265c582838033",
+      "rules/p03_vat_micro_innovations_v8.rego": "1a00fa5bf122e448e0351cb756c44f867578cda8b110f9c88220948904720143",
+      "rules/p04_pit_macro_innovations_v8.rego": "55f6e05c820634c5d48d3483cd3206189a9c1434c142484e12862de9d4b61566",
+      "rules/p04_vat_micro_innovations_v9.rego": "22c7c223170bc645f652dd6e770e74eb263e54a4dd4c2aeb2f7123aead8f0656",
+      "rules/p05_pit_innovations_v8.rego": "324e93a243d0c672ee35ae6561505c1fad61fafa236fd4f498d351fb0329effb",
+      "rules/p05_pit_macro_innovations_v9.rego": "59a8509adc17525538ae3184ca75bb4c98766898f9c7d445509b02346787dff9",
+      "rules/p06_pit_micro_innovations_v8.rego": "fe8cb28d4ee506dc38d2f162938f0848ae846a5698a387f5af09c1fa60b786fc",
+      "rules/p06_pit_micro_innovations_v9.rego": "8c135cbb4df604e28a49d733ddbb2aefd55e5b8b6d3721349a0affb5b1c02ed7",
+      "rules/p07_zus_macro_innovations_v8.rego": "0cdd9c8575973788ab94ae28e213406de90a4499e9fa9db96b32b1400e644c01",
+      "rules/p07_zus_macro_innovations_v9.rego": "d44387bff784f39c03626744f8742a06ee06bc1f0ded88b673d87ff13ae2625b",
+      "rules/p08_zus_micro_innovations_v8.rego": "5acace7ccbb5d80523220b35093322afe223b9dbf1509fbb53adad6e6c71b8ad",
+      "rules/p08_zus_micro_innovations_v9.rego": "391a03e93edcdd7b8147c83ed3c958ec2fbe4e250ac44dc82234f9b5a1914d0b",
+      "rules/p09_kks_macro_innovations_v8.rego": "eecbe486b4385183d9db01db56927f377ff80882f478ddda1830cb48b3ecedf6",
+      "rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego": "4b5e1158cbfafdb68128b89074e1df106e05b7dbbc7bab815ecc831b22b76150",
+      "rules/p10_kks_innovations_v9.rego": "94d64b340d57439bc312a59e244ac5d6267b1da5c4f71d3e13e18a90482f1cda",
+      "rules/p10_kks_micro_innovations_v8.rego": "56434ada29bc793d65911856ed3f541bad76cb68ac32ea6fd6d2605216ef59b9",
+      "rules/p11_accounting_pkpir_innovations_v8.rego": "ffa9fe8b0cdd4e65a625baa77802f6c01d1a1dc4c5b2e16213a9526d942ed565",
+      "rules/p11_ordynacja_podatkowa_innovations_v9.rego": "3d3b70fa7962649c1f4fc04b94774b26ee1d4ab338d9b5da96be37cc4f768d2e",
+      "rules/p12_crossborder_innovations_v9.rego": "50adc78d1e52e73943c837c24ff8e29bdf7615aa76cca37d345e6d392d7e4ba4",
+      "rules/p12_uor_innovations_v8.rego": "45a44f6a35ad067f2ef4ee646f07701580541dfeefcd05c1ddbbe8373703e6a4",
+      "rules/p13_crossborder_innovations_v8.rego": "841eeae6337c063b46e1be719325e3b9d68451651df4d3ecdec66b7eb35ec8cd",
+      "rules/p13_ryczalt_cykl_zycia_innovations_v9.rego": "d60e67340596a08b8a7d0a36fee39acc9882f2ffd574e098f70e79af61695c82",
+      "rules/p14_compliance_innovations_v8.rego": "138ed9668e56729aff2010c4ebd022e2d7f8a819e615408196a32b84be95ff52",
+      "rules/p14_pcc_lokalne_akcyza_innovations_v9.rego": "3d1b611d0be2655ffbaf0e51fb727798b5c4ca229c788bb8b5267de0b91b4cc1",
+      "rules/p15_pcc_local_excise_innovations_v8.rego": "f913233811f3731b11dd1e360497437c926e8ab492a6eaf082e824052235bb1b",
+      "rules/p15_srodowisko_bdo_innovations_v9.rego": "f64ba8b4725e66d1be3ac7204786a6046794150eeb1fcb78ad0228f2aee2ff4c",
+      "rules/p16_autoform_generator_enterprise.rego": "9835f3d4242b5cb7b50f1ebecab19a8cab573cffddc01111d173fe3070df634e",
+      "rules/p16_business_lifecycle_innovations_v8.rego": "dd4f2b4c98d87ead6c0c0172305c5ccf92d641e45f1a5cc125e4bccb91f92500",
+      "rules/p16_enhanced_sca_enterprise.rego": "3e9df546d056ab605c6433844937a491f42fbf6989b193cf46d613fce0a78e1a",
+      "rules/p16_entrepreneur_test_enterprise.rego": "e3c327591ca8bd042093cc6973d62b1c1500fdddfd922f8db19cc68632e2b577",
+      "rules/p16_estonian_cit_enterprise.rego": "7de012a088270e523ff390685e6866e0289fbf80f53252466f2a9d25e82d7432",
+      "rules/p16_rodo_aml_security_innovations_v9.rego": "4b1dded1512172d42ab0a89acca1fcf380b42f0736cefe627624317703712a13",
+      "rules/p17_edge_conflicts_innovations_v8.rego": "7b312948a5dbceb873fc4f4cd782237cb1c5eef58ce098998d2033f3c62bfbf6",
+      "rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego": "814bdf3300e3b474e18d28d2fffe611beb4f2a623df36368025233d747c77d30",
+      "rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego": "23b3cbf0a78e4e86bdd537c6356fc96c79ddc7b3919a650b13d6874030ab6938",
+      "rules/p19_hr_swiadczenia_innovations_v9.rego": "7ef9ea38978e17e397c08b2fa2d1bfcf719538e6bc280a56443a20a83f60601c",
+      "rules/p20_neural_mesh_innovations_v9.rego": "d2b22f648fe7e3502bf14d22a8b5fd5ff6413036a2155fc84f0b6bffae35fc97",
+      "rules/p21_innovations_enterprise.rego": "068449c739a8a4e43dec31647d8e53f6f4b5decac8090bf8349af1d439983338",
+      "rules/p21_opa_system_innovations_v9.rego": "a0c358ff99ff14cafb1bf1cd66377991185dc70a0accbeec238034331305bba3",
+      "rules/p22_innovations_enterprise.rego": "a364f6201d9a852bea27f8dfc09dfb0da58561d85f9383f8d3cc665e4e0351c1",
+      "rules/p22_validation_tools_innovations_v9.rego": "7eeca2e2d642c5c35de56dfb14a40e1190f9aacf57a3a2278b9dd5a75d49ea3a",
+      "rules/p23_innovations_enterprise.rego": "76e05be6b3ce27f49db60c1f08e503310d3075fdf147c0a6fc885e3fddeeaca1",
+      "rules/p23_test_rego_ci_innovations_v9.rego": "5ea8eafc7b566e1627f10e175a08330e45a602ad6007e5c21fa55a51b39a8133",
+      "rules/p24_audyt_kompletny_innovations_v9.rego": "e0182e96f55717ffa294789e355aff351eca558db86fdf142abf2b43665da0e4",
+      "rules/p24_innovations_enterprise.rego": "025c1b94fb6760039e65a3fc4e7097eafe878bc8d03a563714c4a7d28af2c4c0",
+      "rules/p3233_innovations.rego": "82b9245d0d356e5b7022ebaea8fe42ae62a31d4ac4ba600d741441f5a0c99517",
+      "rules/p33_excise_supplement.rego": "d5ad42ee0232abaee94af86e4735c8b050a55e4812d5cca39af82a58a0e9efd8",
+      "rules/p33_ordpu_kks_supplement.rego": "b6f070b7d5d8be505dad0a5d814cb2a88d1ed4a3e2b38d5822132f8f57b81cb7",
+      "rules/p33_pcc_complete.rego": "973218af0aa8e0ed18efc25571a3694977d77e6ed64b1ad1adb28b9e399179f6",
+      "rules/p33_uor_supplement.rego": "487b7017468a8e94f08feaabb45130efe7a8785452a940ced38af239c26a5fb5",
+      "rules/p34_innovations_engine.rego": "25de23edfd379ace02b7f3f7cb5cdc9d4938e558d675c8317952a2569c5ce3f4",
+      "rules/p34_remaining_fixes.rego": "04b6efa587ef504e829defcdd78324acde0427635f937cf8953e5710b242adec",
+      "rules/p35_cross_act_coherence.rego": "413d34e444a5bb11b6d3c55e479d4c50f6956e0cf14e7af0c739242bb4fb5e27",
+      "rules/p35_innovations_engine.rego": "05e14a2b56f59a06847693c277a9aab71f015dfe060adf540cbabec2ff05d0ee",
+      "rules/p35_system_gaps.rego": "df8c4c17cc7ad6f9b4412e56eb77861d82ad297d3875e7f5172440a7b0cb3b7f",
+      "rules/payments/plan44_payments.rego": "5696f2b93ed323e60782368c8ebbcb382ed6641fa797b60849cbdbadcf714359",
+      "rules/payments/plan45_payments.rego": "eb8a633993ce259e67b9cbe202a6cbdc946c198004cc84faca0d04b753fd90b4",
+      "rules/pcc/pcc_companies.rego": "d02a94f19ef1c8192876c0fc9b32f4676e6f79931bc14bca237ef2f19bb50ce1",
+      "rules/pcc/pcc_loans.rego": "05f36639a28d59bf23967f7adc1122e983e600c33ed43de4e153676fd45f8c58",
+      "rules/pcc/pcc_rates.rego": "31e6f7173aade5fb2369ef03ca22e85faa8b8b6eb24d36a144b636174b58b11a",
+      "rules/pcc/pcc_sales.rego": "429806b7eaaae58ce886c7a2084a7d1f08ac9706d364eced9642e2cb45f6d9c2",
+      "rules/pcc/plan42_pcc.rego": "1651ef0d81cb2823b303fa7fdce65e5250ffdd383e10f9b7bf1abbdf41556e96",
+      "rules/penalty_ai_enterprise.rego": "c5855f39f6e7e5f7326dfaeb015ed3e6b00353f8db3041e44cfa3fea157df51c",
+      "rules/pit/advances_returns.rego": "26af0813d4ff11cab01bf7039c1e8fe61a9fa1f7255ecf13febc5078637206f2",
+      "rules/pit/art21_exemptions_enterprise.rego": "b2faf9048aec44fe486bcccb6baca325429d4477de7155eb6255f0a5fd9e50d6",
+      "rules/pit/cross_relief_optimizer_enterprise.rego": "dd8718934d4bc64dd51a36e25e73897ed1590616f992ade7a218cf8947e63089",
+      "rules/pit/donation_relief_enterprise.rego": "82d2d8ef5847a884ddb5f45eedb22b5b2fb1ee1484c655797d62759ac67a2bcf",
+      "rules/pit/elearning.rego": "6aa0834de135804b1f5b964f18a59b5501c812e398d11e7aefa6d3277e118d59",
+      "rules/pit/exemptions.rego": "2c49ebd94c614c4dbf53596569b514ad8b0ee048f93ae4efe5938a16f535cf10",
+      "rules/pit/family_estonian_enterprise.rego": "5d109690808bae7e07c8eacd163b9800605a129f956c67f2f8e5077dc9775912",
+      "rules/pit/forms.rego": "d4aec4d9935d17220869a333778723002edf03b234c084eb1531fafe89f8baf4",
+      "rules/pit/ipbox_enterprise.rego": "bf34c8c3fd32425785741bc5359174e6ff5fc0a0f103deeb57d9cbe1307f61c3",
+      "rules/pit/kup.rego": "ebf7891291cb7befd616cc6c10d85f57b2027019c4d302828485d2e57bbd8a18",
+      "rules/pit/kup_extended.rego": "003ca300645b7364b9ea5b90b15341c1ba4fcbcfc1cc14248a8dfd826e0225bc",
+      "rules/pit/plan23_exemptions.rego": "a54c8e234834bca73196d25e8a2d830e99125dcaf126cd7f40c91bd07699292e",
+      "rules/pit/plan23_tax_form_change.rego": "76dc148472efd428bbf6c0a33c667c86602a4e747a565aaea0cd8d403464cb15",
+      "rules/pit/plan26_detailed.rego": "82c3a8b3664c4f6ee7403bfbf968f18333ac9801fc42a980474a4855b955d6f7",
+      "rules/pit/plan26_pit_critical.rego": "75e06462a05b0b3aea3666c0ad73f48bd2533780c6ef03ad13dc01756ea7bebb",
+      "rules/pit/rd_relief_enterprise.rego": "29582c9e23d143a241d9106dbd542a2128a0ecc46ea6be037a401e2fb1ef83de",
+      "rules/pit/tax_form_transition_intelligence.rego": "e827247eed372b637f5b659cb0079ea4d34eebbc7d71fd5f9923cac1b2611374",
+      "rules/pit/tax_loss_harvesting_enterprise.rego": "e4ccbe141ae424b99631962629c72bcb587e628ed8af1b775bd11d77670bbfe3",
+      "rules/pit/thermo_relief_enterprise.rego": "776e8604f9b2d15693126603f6985ccaff8d8eb2dc0463a932ef13e80cf92118",
+      "rules/pit/transitions.rego": "909764f31e1e081d89a2438326b768281df6b787c09f124f2a0023130b8f1797",
+      "rules/pkpir_to_uor_transformer.rego": "71455c4443fc8140e7ff087f1feead9ab8080ddd4406fbd1984dfbffbb7e4975",
+      "rules/poa_manager_enterprise.rego": "a67fa8daeb39125ab07b8943d7addcd8525470d22a81ef6ec0e7136714bd1c47",
+      "rules/ppk_pfron_enterprise.rego": "0750fe7995c7c3ea98325e02405943cb07c3ef5cdebc38cdfbfc59975f7e0d02",
+      "rules/proceeding_tracker_enterprise.rego": "99d28e88c3fe614840a381befdb0e2e6a1ec58ba74aba73bcecf826751d11b11",
+      "rules/procurement/plan44_procurement.rego": "c7bac0828712af1d55c832300407bd2b72f6c0923f4fe6db1e75a0aef6f83ad5",
+      "rules/procurement/plan45_procurement.rego": "38ea795539d920e91d97cdc5414f40b6b0755ed0f13e84729b9885d0fc3b366b",
+      "rules/provenance.rego": "55e447fdb89ea97cd5155e9226e2c09440902379e1f2535197db26c946a061af",
+      "rules/regulated/plan44_regulated.rego": "b265528760e54d4797fc4693ceb9ac93448a4dadcbc298ff0d32b1678193c261",
+      "rules/regulated/plan45_regulated.rego": "76c28e72ed87d5456b9538cd223d986f407c38ba2857392756d56e4394fe34bd",
+      "rules/regulated_compliance_enterprise.rego": "1b59093086b2d00a12d63697c27a01d1d574d2bf43a0b17e4e7789e114fcae55",
+      "rules/reliability_guarantee_enterprise.rego": "0e3165b8632f1c7ad25c2c0b52745ee6c12b5544dff91e3a936deb0ecaaaba26",
+      "rules/representation/plan26_prokura.rego": "e1f290c0db7d5c40a358aaea43953891b354bac32c5987264ef82760a60b0615",
+      "rules/representation.rego": "96d1b978219e50842a8113f9f46abf5e98cdddbd8717a1dc7e0bcf17beaff267",
+      "rules/residency/plan44_residency.rego": "eb138e859e349d54860b04def5cb75b4e7fd577a36c4ca7b6362cebb1a6fece6",
+      "rules/residency/plan45_residency.rego": "8545a1e75fd7d5b0bed608ed14ca089f24cb49ebdb4c15f2d6ca0ed9340fde8f",
+      "rules/restructuring.rego": "bc2a00a27ae7f5cd75b11b3a67edd7c1221408f17b8b213f44b7496036709781",
+      "rules/retention.rego": "e9e5571c4c1acfa2f4b772c6ebf0a905934ccdbb5a396ed69b30bbe9eea24507",
+      "rules/risk/plan26_kks.rego": "25c94d88e7c1c1910a9ca8655cbe8afa3ec2dc4160e7faf5f2e83233f1896e35",
+      "rules/risk.rego": "2cb34a743918c3113a601b5d0ade245a107e5cbaa4515607b2a398e8148d368b",
+      "rules/rodo/plan42_rodo.rego": "a312f6e8c259819f1850ecd4c4965d56bc25867a9fb1dc6b6758fef61a2a4f25",
+      "rules/rodo.rego": "f48cd5b0df125f332a551293dd84f94d5a862dc806d8df8700129611966d194e",
+      "rules/rodo_extended.rego": "ea956c4374401b764a31630f3e80946fbcbf468ffecac9a480312fa5f1251a15",
+      "rules/routing.rego": "2bf3298b59fc05d7ece3e2d80780c59763c20ce4a2480d0651c9e3f64b055fc6",
+      "rules/rule_lifecycle_enterprise.rego": "725b62be74282f4a97c656c6a5656678976ce03ad2ddfd633928b280a31f0c76",
+      "rules/sanctions_optimization_enterprise.rego": "80d2aadc0941fab557ef3e67433cdd43c03a2b2ef9e461a61b54fbc1902ff000",
+      "rules/sanctions_supplements_enterprise.rego": "a9447e6de64cc4dce6ab7927718948fc2f289db6cf88fc038789e53c97b181bf",
+      "rules/seasonal/plan44_seasonal.rego": "89951ab1425f68405016dc68b89a6b22ab4a6c265b64210a0dc9852e1d1a5ecd",
+      "rules/seasonal/plan45_seasonal.rego": "ce5475aa23e9b1d224fda193e4e71c6b675e7d7514e2431f3b230754e9d7070f",
+      "rules/security/security_fortress_v8.rego": "4ae253f7badbb8e4c2ba0d02768ba83d810e9bd34bab624c013f3e39ab117c48",
+      "rules/solidarity/plan44_solidarity.rego": "e9ddc96632c891caa17d274be0e844e7b69da3314446652f4625b38ff8039e60",
+      "rules/solidarity/plan45_solidarity.rego": "f7b1d54f2212d178780e3870ae4acd58c67dccb04df63c7b72dae71d014bf98f",
+      "rules/solidarity_auto_calc_enterprise.rego": "750e2a253e282cac1f684c88801f2f3c58b266a889a17e89c9bc97078dbe0058",
+      "rules/statute/plan26_detailed.rego": "6563ac0657511f2d120f8cc0502d33964760c74163b3c1f9f28a63a4bcc93929",
+      "rules/statute_of_limitations.rego": "408bf07aa6542cead1c4e923ac96e2c2dca4fb3ef7812c4f630e752cd5d8c0b5",
+      "rules/strategic_advisor_enterprise.rego": "f10818769a30bb80b54543f73b2b6ee0dffc589d3ff75507c14037127e10b972",
+      "rules/strategic_roadmap_enterprise.rego": "c115718085f610e892a16843662dc1e83c4fe2512d97f8cc96cc3b8cc0c3b14f",
+      "rules/tax_authority_interaction_enterprise.rego": "248bab0dd0aa4fb30096f75f1e6c98215269c01c5c4486d41a6c57995d688366",
+      "rules/tax_correspondence_engine_enterprise.rego": "e5ee1ee8455e8fcc5f9d3786d3ff89d3deb2c38b0d00c120eac4780aa95c88d8",
+      "rules/tax_optimization_enterprise.rego": "320b60a8ebd8e0c0127f5a3db59b63dbdccf5cd57c866e978ffd99453238f92b",
+      "rules/tax_ruling_autodrafter_enterprise.rego": "a472ceb2900c91645dce6a98ccad06065d2e7c1a77ea98fc91e615f6f9a42dbe",
+      "rules/taxfree/plan44_taxfree.rego": "8e50b4902b4c50d8fd9bfc00a384e1f1ef81c75f890ee09131c006599827536c",
+      "rules/taxfree/plan45_taxfree.rego": "1cd9e2d03b03054ca1783f1e12b8a54137b2ee5dfe46cf41ec2c0487787839ae",
+      "rules/temporal.rego": "ae2e5d7caa43607f27063bb789e8c53a6f5c7977b12481628ff3a0184f3fa23a",
+      "rules/thresholds_jdg.rego": "f4ea4c56728d89429d39984de3772b65e741bc5ee1430dcaa362826b4aa9e418",
+      "rules/tp/plan44_tp.rego": "1c977d94613b070ebbbc86e9b659de0c85cc09daf6f0fe7b445d00d02978c0a7",
+      "rules/tp/plan45_tp.rego": "3688e069db6cd9b2269d5fb6e87671da5861985cdfbd1111f40aae24eaf9ec8f",
+      "rules/uor/plan42_uor.rego": "0ef0faada0f09980cefb2f4127be07f488d4690f4a76bc07dfcf302b9e38960f",
+      "rules/uor/uor_assets.rego": "46ced5c928a8767acc2ba9416a74aef81a8cfe1e4064788edbd6d456b11d2533",
+      "rules/uor/uor_books.rego": "b71533dae874d6a84c42d42ee483774b98debc91bcd333d6e4e8f5dfa34ffc84",
+      "rules/uor/uor_closing.rego": "aeba5c31559b75856b3cde699b4813a888427b0222efad8a26c2464f9096e1f6",
+      "rules/uor/uor_costs.rego": "5edcfde0d8efc064692f7bd3b00769791c7f12dd6718135e69a603f38e7c043f",
+      "rules/uor/uor_financial_stmt.rego": "3b77c5985833d34ded402e8f6f1ddbf1c61b21f3d96da0cdd96f4a37c4050fc2",
+      "rules/uor/uor_inventory.rego": "4f96944f92d2acce432a3eef183958970df2e29e34c8e825b5ef8eb84ee7a590",
+      "rules/uor/uor_obligation.rego": "1c86b61b8bf35e90979bd01b54c681619a7b815dd3bc1b7e24f3a323cfa076c3",
+      "rules/uor/uor_revenue.rego": "dab912c773767747ef06a386a628c791ae1799307ae05b66013df81b5f8188c5",
+      "rules/validation.rego": "7fdb119701a4dc5b7c958c611e737ebafeb1c1cc0b4b8ca4383a56df930c6289",
+      "rules/vat/deductions.rego": "7858b9de3622cba1be542fc8e2314d5968db5ff5467fbbb3323f5fa63dd343c8",
+      "rules/vat/enterprise_vat_bridge.rego": "c158ab7ad11e2f06932db3634884f5965e92eb64234b597e06ea8755dd849082",
+      "rules/vat/place_of_supply.rego": "83465216e24cc3bfa2972c26cb6ce75d452d23eecbcd1f123f540a3f05d2f385",
+      "rules/vat/plan23_detailed.rego": "ec9e481085d47e76588a97e24c267e39bd32d8fa7f31bd192a808047caf30460",
+      "rules/vat/plan26_critical.rego": "9926a876c4b5b9127866667a4ec08964214e9d8782dbd5d193027911bb3ed028",
+      "rules/vat/plan42_reduced_rates.rego": "856d20a54d8bfcb95350dc97664109923914901870ce6dcea1f4540085497168",
+      "rules/vat/procedures.rego": "f4edec855d7b0ca0ec4fc283e23546ae3bcde1a4cc9b7b0545cfbfdbb3fc1c17",
+      "rules/vat/substantive.rego": "f5554b25d0fb9bdfee9dc59c00865a09e7296beb425d3853e5b441ebd8bcf8b7",
+      "rules/vat_cashflow_predictor_enterprise.rego": "f231eefa9c9d0003d47cc78a92ee65b34da9665bcfa50c377e6d08084d6a1432",
+      "rules/vat_deductions_corrections_enterprise.rego": "15ad67b045b8921aa3c8f7ed298135a24e7181754d47f1449d425d0073a9f4f9",
+      "rules/vat_fraud_detection_enterprise.rego": "c0cab261426eab84941c12536bde7e6b736c9a601155895c8d85d34d266140ab",
+      "rules/vat_mpp_split_payment_enterprise.rego": "1be6af5d806e7a07d59dec67919e1898683212e9b72393d37a29719eec69b335",
+      "rules/vat_rates_exemptions_audit_enterprise.rego": "2717c40a2cfe787a28b3419585e343e7bbfcb517bea37e4847426869a6bfb1f9",
+      "rules/vat_substantive_complete_enterprise.rego": "697939354c0985af6508c40af56a59d39ebb36ce596a53a27adc22c7f94c2509",
+      "rules/vida_drr_full.rego": "b7f63eae2be21408386e54e80b3b87b764bb2d9133a112d55938d0c415218589",
+      "rules/wdt_document_tracker.rego": "dafa6d4229b33c033c6d9ce9d317b3bc562c469886f2bbb6d8f90ad1fe974a69",
+      "rules/wis/plan44_wis.rego": "70cbc9417b3746de2bcca403b5f4b0d48310773d3f8a96fa79559bdc0e0e1559",
+      "rules/wis/plan45_wis.rego": "5efe29c4f01ffcaad1881e9d40158808c10537612d05b9696cfb7e523da1e568",
+      "rules/wis_api_enterprise.rego": "8fd03a868a2c3f684265b57bac4a3976824e6177b13a50d1f504d277cf50a7cd",
+      "rules/wis_autorequester_enterprise.rego": "ab4a45c93e13bbca3bf5cc19e45920388142a7df3546fa299706a13ceaac48bf",
+      "rules/zus/cumulative_revenue_engine.rego": "5ed0dc369acc43358627f19aa305f8ee8f3ee506f1e45b62ba9d0f53f824f2b2",
+      "rules/zus/enterprise_benefits.rego": "984d1aadd06ee5a04071b7e9ab8ecd17d738cbd63561da8f2f642bdbf47757cd",
+      "rules/zus/health_contribution_enterprise.rego": "6c657196a19364633270cb4aeee86f2bb2527d5b558a18a15f386270b2e3a0b9",
+      "rules/zus/health_precision_engine_v8.rego": "3ea74bb3fa2c496a3c894c54d3aae2a8b26cf13362d8e1dd789d8114d95c0738",
+      "rules/zus/plan23_interactions.rego": "0874387d55a280fc1e7b9fe2177615e663e6e3ede2289153c6fdf9a91123a49a",
+      "rules/zus/plan42_benefits.rego": "1bc26b568ebc91ac5f97f820ff66f3c5543cffdf49e9f1714b4c74e362bd3859",
+      "rules/zus/sickness_benefits_enterprise.rego": "1ab4ea7debfd583ee055727d10e1c79c0524a1e42d82a889b2164b1915a8f41c",
+      "rules/zus.rego": "153e78aa73da2e700d6fbcf482495758653fdefa88625942b4cb3cbef468b52a"
+    },
+    "per_file_blocks": [
+      {
+        "file": "rules/_business_lifecycle_rates.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/_compliance_rates.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/_crossborder_rates.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/_edge_cases_conflicts_rates.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/_helpers_jdg.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/_kks_micro_rates.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/_metadata_jdg.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/_pcc_local_excise_rates.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/_pkpir_rates.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/_uor_rates.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/accounting/depreciation_enterprise.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/accounting/depreciation_enterprise_complete.rego",
+        "blocks": 30
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_live.rego",
+        "blocks": 13
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validation.rego",
+        "blocks": 108
+      },
+      {
+        "file": "rules/accounting/pkpir_enterprise_validator.rego",
+        "blocks": 36
+      },
+      {
+        "file": "rules/accounting/plan23_leasing.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/accounting/plan42_pkpir.rego",
+        "blocks": 2
+      },
+      {
+        "file": "rules/accounting/uor_enterprise_live.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/accounting.rego",
+        "blocks": 76
+      },
+      {
+        "file": "rules/adaptive_trust_scoring_enterprise.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/advertising/plan44_advertising.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/advertising/plan45_advertising.rego",
+        "blocks": 38
+      },
+      {
+        "file": "rules/allowances/plan23_reliefs.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/allowances.rego",
+        "blocks": 22
+      },
+      {
+        "file": "rules/annual_declaration_enterprise.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/api_fallback.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/audit/plan44_audit.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/audit/plan45_audit.rego",
+        "blocks": 56
+      },
+      {
+        "file": "rules/audit/runtime_invariants_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/audit_defense_enterprise.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/banking_automation_enterprise.rego",
+        "blocks": 20
+      },
+      {
+        "file": "rules/business/gig_economy.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/business/plan26_suspension_succession.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/business/strategic_intelligence.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/business.rego",
+        "blocks": 24
+      },
+      {
+        "file": "rules/calendar/plan44_calendar.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/calendar/plan45_calendar.rego",
+        "blocks": 36
+      },
+      {
+        "file": "rules/calendar_notifier_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/cashflow_tax_predictor_enterprise.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/cbam_full.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/cfc_auto_classifier.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/compliance/aml_enterprise.rego",
+        "blocks": 27
+      },
+      {
+        "file": "rules/compliance.rego",
+        "blocks": 14
+      },
+      {
+        "file": "rules/conflict_declaration_enterprise.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/conflicts.rego",
+        "blocks": 29
+      },
+      {
+        "file": "rules/conviction/plan44_conviction.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/conviction/plan45_conviction.rego",
+        "blocks": 31
+      },
+      {
+        "file": "rules/conviction_checker_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/corrections.rego",
+        "blocks": 20
+      },
+      {
+        "file": "rules/cross_declaration_validator_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/cross_domain_intelligence_enterprise.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/cross_jurisdiction_ruling_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/crossborder/exit_tax_cfc_complete.rego",
+        "blocks": 17
+      },
+      {
+        "file": "rules/crossborder/plan23_ue.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/crossborder/post_brexit.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/crossborder.rego",
+        "blocks": 33
+      },
+      {
+        "file": "rules/dac8_report_generator.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/deadline_monitor_enterprise.rego",
+        "blocks": 3
+      },
+      {
+        "file": "rules/decision_composer_enterprise.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/decision_core_completeness_enterprise.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/decision_scoring_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/defense_builder_enterprise.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/digital.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/edelivery/plan44_edelivery.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/edelivery/plan45_edelivery.rego",
+        "blocks": 42
+      },
+      {
+        "file": "rules/edelivery_gateway_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/edelivery_gateway_v2_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/edge_cases.rego",
+        "blocks": 189
+      },
+      {
+        "file": "rules/employer.rego",
+        "blocks": 28
+      },
+      {
+        "file": "rules/environmental/bdo_enterprise.rego",
+        "blocks": 24
+      },
+      {
+        "file": "rules/environmental.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/epuap_enterprise.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/esig/plan44_esig.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/esig/plan45_esig.rego",
+        "blocks": 37
+      },
+      {
+        "file": "rules/esig_auto_applicator_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/exit_tax_interest_calculator.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/exit_tax_mdr_enterprise.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/fallback.rego",
+        "blocks": 3
+      },
+      {
+        "file": "rules/family/plan44_family.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/family/plan45_family.rego",
+        "blocks": 52
+      },
+      {
+        "file": "rules/financial_hardship_scorer_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/force_majeure/plan44_force_majeure.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/force_majeure/plan45_force_majeure.rego",
+        "blocks": 33
+      },
+      {
+        "file": "rules/form_optimizer_enterprise.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/form_transition_simulator_enterprise.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/fx/plan44_fx.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/fx/plan45_fx.rego",
+        "blocks": 47
+      },
+      {
+        "file": "rules/gaar_shield_enterprise.rego",
+        "blocks": 3
+      },
+      {
+        "file": "rules/gtu_completeness_checker_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/hyper_plan45_meta_enterprise.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/insurance/plan44_insurance.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/insurance/plan45_insurance.rego",
+        "blocks": 29
+      },
+      {
+        "file": "rules/insurance_tracker_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/interest_calculator_enterprise.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/international.rego",
+        "blocks": 18
+      },
+      {
+        "file": "rules/international_expanded.rego",
+        "blocks": 24
+      },
+      {
+        "file": "rules/jdg/hyper/audit/plan45.rego",
+        "blocks": 26
+      },
+      {
+        "file": "rules/jdg/hyper/deadlines/plan45.rego",
+        "blocks": 57
+      },
+      {
+        "file": "rules/jdg/hyper/edelivery/plan45.rego",
+        "blocks": 22
+      },
+      {
+        "file": "rules/jdg/hyper/family/plan45.rego",
+        "blocks": 22
+      },
+      {
+        "file": "rules/jdg/hyper/force_majeure/plan45.rego",
+        "blocks": 22
+      },
+      {
+        "file": "rules/jdg/hyper/fx/plan45.rego",
+        "blocks": 25
+      },
+      {
+        "file": "rules/jdg/hyper/general/plan45.rego",
+        "blocks": 101
+      },
+      {
+        "file": "rules/jdg/hyper/limits/plan45.rego",
+        "blocks": 34
+      },
+      {
+        "file": "rules/jdg/hyper/mdr/plan45.rego",
+        "blocks": 39
+      },
+      {
+        "file": "rules/jdg/hyper/misc/plan45.rego",
+        "blocks": 50
+      },
+      {
+        "file": "rules/jdg/hyper/procurement/plan45.rego",
+        "blocks": 22
+      },
+      {
+        "file": "rules/jdg/hyper/sanctions/plan45.rego",
+        "blocks": 52
+      },
+      {
+        "file": "rules/jdg/hyper/solidarity/plan45.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/jdg/hyper/wis/plan45.rego",
+        "blocks": 19
+      },
+      {
+        "file": "rules/jpk/plan26_deadlines.rego",
+        "blocks": 2
+      },
+      {
+        "file": "rules/jpk_cit.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/jpk_corrections_workflow_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/jpk_kr_st_generator_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/jpk_v7_autogen_enterprise.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/judicial_interpretations_enterprise.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/judicial_trend_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/kks/_kks_macro_rates.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/kks/enterprise_penalties.rego",
+        "blocks": 22
+      },
+      {
+        "file": "rules/kks/kks_innovations_v8.rego",
+        "blocks": 14
+      },
+      {
+        "file": "rules/kks/plan42_detailed.rego",
+        "blocks": 13
+      },
+      {
+        "file": "rules/kks/plan43_decomposition.rego",
+        "blocks": 22
+      },
+      {
+        "file": "rules/kks/plan44_kks_conviction.rego",
+        "blocks": 3
+      },
+      {
+        "file": "rules/kks.rego",
+        "blocks": 256
+      },
+      {
+        "file": "rules/ksef_firewall_enterprise.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/ksef_innovations_enterprise.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/ksef_jpk.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/ksef_offline_queue_enterprise.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/ksef_outbox_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/ksef_receipt_digest_enterprise.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/ksef_resilience_enterprise.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/ksef_sanction_monitor_enterprise.rego",
+        "blocks": 3
+      },
+      {
+        "file": "rules/ksef_sandbox_harness_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/ksef_upo_tracker_enterprise.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/legislative_impact_analyzer_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/legislative_monitor_enterprise.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/liability.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/lifecycle_manager_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/local_taxes/akcyza_alcohol.rego",
+        "blocks": 21
+      },
+      {
+        "file": "rules/local_taxes/akcyza_fuel.rego",
+        "blocks": 19
+      },
+      {
+        "file": "rules/local_taxes/excise_enterprise_complete.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/local_taxes/local_procedures_enterprise.rego",
+        "blocks": 17
+      },
+      {
+        "file": "rules/local_taxes/pcc.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/local_taxes/pcc_enterprise_complete.rego",
+        "blocks": 52
+      },
+      {
+        "file": "rules/local_taxes/pcc_excise_enterprise.rego",
+        "blocks": 19
+      },
+      {
+        "file": "rules/local_taxes/plan26_local.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/local_taxes/real_estate.rego",
+        "blocks": 3
+      },
+      {
+        "file": "rules/local_taxes/transport.rego",
+        "blocks": 2
+      },
+      {
+        "file": "rules/local_taxes.rego",
+        "blocks": 28
+      },
+      {
+        "file": "rules/main_jdg.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/mdr/mdr_enterprise.rego",
+        "blocks": 18
+      },
+      {
+        "file": "rules/mdr/mdr_hallmarks.rego",
+        "blocks": 21
+      },
+      {
+        "file": "rules/mdr/plan44_mdr.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/mdr/plan45_mdr.rego",
+        "blocks": 43
+      },
+      {
+        "file": "rules/mdr_auto_generator.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/mdr_dac6_enterprise.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/micro/_zus_micro_rates.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/micro/akcyza/akcyza.rego",
+        "blocks": 133
+      },
+      {
+        "file": "rules/micro/aml/aml.rego",
+        "blocks": 126
+      },
+      {
+        "file": "rules/micro/aml/aml_cbdd.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/micro/aml/aml_ryzyko.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/micro/aml/aml_str_gif.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/micro/aml/aml_transakcje.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/micro/amortyzacja/pit_a22a.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/amortyzacja/pit_a22i.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/micro/amortyzacja/pit_a22k.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/micro/amortyzacja/pit_a22n.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/micro/bdo/bdo_ewc.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/micro/bdo/bdo_ewidencja.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/micro/bdo/bdo_rejestracja.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/micro/bdo/bdo_transport.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/micro/bdo/bdo_weee_baterie.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/micro/bdo/bdo_zezwolenia.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/micro/budownictwo/budownictwo.rego",
+        "blocks": 65
+      },
+      {
+        "file": "rules/micro/ceidg/ceidg.rego",
+        "blocks": 43
+      },
+      {
+        "file": "rules/micro/crossborder/crossborder.rego",
+        "blocks": 193
+      },
+      {
+        "file": "rules/micro/jpk/jpk.rego",
+        "blocks": 36
+      },
+      {
+        "file": "rules/micro/kks/kks.rego",
+        "blocks": 474
+      },
+      {
+        "file": "rules/micro/ksef/ksef.rego",
+        "blocks": 80
+      },
+      {
+        "file": "rules/micro/ord/ord.rego",
+        "blocks": 424
+      },
+      {
+        "file": "rules/micro/p24_innovations_enterprise.rego",
+        "blocks": 30
+      },
+      {
+        "file": "rules/micro/pcc/pcc.rego",
+        "blocks": 90
+      },
+      {
+        "file": "rules/micro/pit/pit.rego",
+        "blocks": 812
+      },
+      {
+        "file": "rules/micro/pkpir/pkpir.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/micro/pkpir/pkpir_kolumny.rego",
+        "blocks": 13
+      },
+      {
+        "file": "rules/micro/pkpir/pkpir_korekty.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/micro/pkpir/pkpir_koszty.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/micro/pkpir/pkpir_nkup.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/micro/pkpir/pkpir_przychody.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/micro/pkpir/pkpir_remanent.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/micro/plan33_agricultural_tax.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/micro/plan33_cb.rego",
+        "blocks": 21
+      },
+      {
+        "file": "rules/micro/plan33_ceidg.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/micro/plan33_est.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/micro/plan33_health.rego",
+        "blocks": 41
+      },
+      {
+        "file": "rules/micro/plan33_jpk.rego",
+        "blocks": 71
+      },
+      {
+        "file": "rules/micro/plan33_kks.rego",
+        "blocks": 65
+      },
+      {
+        "file": "rules/micro/plan33_ksef.rego",
+        "blocks": 75
+      },
+      {
+        "file": "rules/micro/plan33_mdr.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/plan33_ord.rego",
+        "blocks": 3
+      },
+      {
+        "file": "rules/micro/plan33_pcc.rego",
+        "blocks": 60
+      },
+      {
+        "file": "rules/micro/plan33_pit.rego",
+        "blocks": 87
+      },
+      {
+        "file": "rules/micro/plan33_prop.rego",
+        "blocks": 31
+      },
+      {
+        "file": "rules/micro/plan33_prop_transport.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/micro/plan33_rodo.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/plan33_ryc.rego",
+        "blocks": 159
+      },
+      {
+        "file": "rules/micro/plan33_succ.rego",
+        "blocks": 21
+      },
+      {
+        "file": "rules/micro/plan33_tax_trans.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/micro/plan33_tp.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/micro/plan33_uor.rego",
+        "blocks": 26
+      },
+      {
+        "file": "rules/micro/plan33_vat.rego",
+        "blocks": 116
+      },
+      {
+        "file": "rules/micro/plan33_zus.rego",
+        "blocks": 181
+      },
+      {
+        "file": "rules/micro/plan34_ord.rego",
+        "blocks": 190
+      },
+      {
+        "file": "rules/micro/plan34_pit.rego",
+        "blocks": 266
+      },
+      {
+        "file": "rules/micro/plan34_vat.rego",
+        "blocks": 180
+      },
+      {
+        "file": "rules/micro/plan34_zus.rego",
+        "blocks": 21
+      },
+      {
+        "file": "rules/micro/pp/pp.rego",
+        "blocks": 148
+      },
+      {
+        "file": "rules/micro/rodo/rodo.rego",
+        "blocks": 41
+      },
+      {
+        "file": "rules/micro/rodo/rodo_ai_marketing.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/micro/rodo/rodo_erasure.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/micro/rodo/rodo_podprocesorzy.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/micro/rodo/rodo_sankcje.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/micro/rodo/rodo_zatrudnienie.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/micro/ryczalt/ryczalt.rego",
+        "blocks": 156
+      },
+      {
+        "file": "rules/micro/srodowisko/srodowisko.rego",
+        "blocks": 49
+      },
+      {
+        "file": "rules/micro/sukcesja/sukcesja.rego",
+        "blocks": 141
+      },
+      {
+        "file": "rules/micro/sus/sus.rego",
+        "blocks": 123
+      },
+      {
+        "file": "rules/micro/sus/sus_a11.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/micro/sus/sus_a13.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/micro/sus/sus_a14.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/micro/sus/sus_a18.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/sus/sus_a18a.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/sus/sus_a18c.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/sus/sus_a19.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/micro/sus/sus_a22.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/micro/sus/sus_a24.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/micro/sus/sus_a36.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/micro/sus/sus_a40.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/micro/sus/sus_a47.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/micro/sus/sus_a6.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/micro/sus/sus_a6b.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/micro/sus/sus_a9.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/micro/transport/transport.rego",
+        "blocks": 45
+      },
+      {
+        "file": "rules/micro/uor/uor.rego",
+        "blocks": 149
+      },
+      {
+        "file": "rules/micro/vat/ksef_micro.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/vat/margin_scheme_micro.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/vat/place_of_supply_micro.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/micro/vat/proportion_vat.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/vat/vat.rego",
+        "blocks": 1092
+      },
+      {
+        "file": "rules/micro/vat/wdt_export_import.rego",
+        "blocks": 17
+      },
+      {
+        "file": "rules/micro/zasilkowa/zasilkowa.rego",
+        "blocks": 39
+      },
+      {
+        "file": "rules/micro/zasilkowa/zasilkowa_a19.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/zasilkowa/zasilkowa_a29.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/zasilkowa/zasilkowa_a32.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/zasilkowa/zasilkowa_a33.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/micro/zdrowotna/zdrowotna.rego",
+        "blocks": 137
+      },
+      {
+        "file": "rules/micro/zdrowotna/zdrowotna_a79.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/zdrowotna/zdrowotna_a81.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/zdrowotna/zdrowotna_a81b.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/micro/zdrowotna/zdrowotna_a81c.rego",
+        "blocks": 13
+      },
+      {
+        "file": "rules/micro/zdrowotna/zdrowotna_a81d.rego",
+        "blocks": 13
+      },
+      {
+        "file": "rules/micro/zdrowotna/zdrowotna_a82.rego",
+        "blocks": 83
+      },
+      {
+        "file": "rules/mpips.rego",
+        "blocks": 13
+      },
+      {
+        "file": "rules/neural_mesh_v2_enterprise.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/neural_rule_mesh_enterprise.rego",
+        "blocks": 25
+      },
+      {
+        "file": "rules/nkup_enterprise_complete.rego",
+        "blocks": 60
+      },
+      {
+        "file": "rules/ord/ord_innovations_v8.rego",
+        "blocks": 21
+      },
+      {
+        "file": "rules/ord_supplements_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/overpayment_auto_claimer_enterprise.rego",
+        "blocks": 3
+      },
+      {
+        "file": "rules/p01_core_architecture_innovations_v8.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/p01_fundament_innovations_v9.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/p02_decision_core_innovations_v9.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/p02_vat_macro_innovations_v8.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/p03_vat_macro_innovations_v9.rego",
+        "blocks": 14
+      },
+      {
+        "file": "rules/p03_vat_micro_innovations_v8.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/p04_pit_macro_innovations_v8.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/p04_vat_micro_innovations_v9.rego",
+        "blocks": 18
+      },
+      {
+        "file": "rules/p05_pit_innovations_v8.rego",
+        "blocks": 37
+      },
+      {
+        "file": "rules/p05_pit_macro_innovations_v9.rego",
+        "blocks": 24
+      },
+      {
+        "file": "rules/p06_pit_micro_innovations_v8.rego",
+        "blocks": 35
+      },
+      {
+        "file": "rules/p06_pit_micro_innovations_v9.rego",
+        "blocks": 22
+      },
+      {
+        "file": "rules/p07_zus_macro_innovations_v8.rego",
+        "blocks": 20
+      },
+      {
+        "file": "rules/p07_zus_macro_innovations_v9.rego",
+        "blocks": 27
+      },
+      {
+        "file": "rules/p08_zus_micro_innovations_v8.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/p08_zus_micro_innovations_v9.rego",
+        "blocks": 23
+      },
+      {
+        "file": "rules/p09_kks_macro_innovations_v8.rego",
+        "blocks": 15
+      },
+      {
+        "file": "rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego",
+        "blocks": 26
+      },
+      {
+        "file": "rules/p10_kks_innovations_v9.rego",
+        "blocks": 21
+      },
+      {
+        "file": "rules/p10_kks_micro_innovations_v8.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/p11_accounting_pkpir_innovations_v8.rego",
+        "blocks": 14
+      },
+      {
+        "file": "rules/p11_ordynacja_podatkowa_innovations_v9.rego",
+        "blocks": 24
+      },
+      {
+        "file": "rules/p12_crossborder_innovations_v9.rego",
+        "blocks": 21
+      },
+      {
+        "file": "rules/p12_uor_innovations_v8.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/p13_crossborder_innovations_v8.rego",
+        "blocks": 22
+      },
+      {
+        "file": "rules/p13_ryczalt_cykl_zycia_innovations_v9.rego",
+        "blocks": 21
+      },
+      {
+        "file": "rules/p14_compliance_innovations_v8.rego",
+        "blocks": 24
+      },
+      {
+        "file": "rules/p14_pcc_lokalne_akcyza_innovations_v9.rego",
+        "blocks": 20
+      },
+      {
+        "file": "rules/p15_pcc_local_excise_innovations_v8.rego",
+        "blocks": 17
+      },
+      {
+        "file": "rules/p15_srodowisko_bdo_innovations_v9.rego",
+        "blocks": 28
+      },
+      {
+        "file": "rules/p16_autoform_generator_enterprise.rego",
+        "blocks": 17
+      },
+      {
+        "file": "rules/p16_business_lifecycle_innovations_v8.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/p16_enhanced_sca_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/p16_entrepreneur_test_enterprise.rego",
+        "blocks": 2
+      },
+      {
+        "file": "rules/p16_estonian_cit_enterprise.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/p16_rodo_aml_security_innovations_v9.rego",
+        "blocks": 29
+      },
+      {
+        "file": "rules/p17_edge_conflicts_innovations_v8.rego",
+        "blocks": 17
+      },
+      {
+        "file": "rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego",
+        "blocks": 31
+      },
+      {
+        "file": "rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego",
+        "blocks": 31
+      },
+      {
+        "file": "rules/p19_hr_swiadczenia_innovations_v9.rego",
+        "blocks": 27
+      },
+      {
+        "file": "rules/p20_neural_mesh_innovations_v9.rego",
+        "blocks": 29
+      },
+      {
+        "file": "rules/p21_innovations_enterprise.rego",
+        "blocks": 49
+      },
+      {
+        "file": "rules/p21_opa_system_innovations_v9.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/p22_innovations_enterprise.rego",
+        "blocks": 49
+      },
+      {
+        "file": "rules/p22_validation_tools_innovations_v9.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/p23_innovations_enterprise.rego",
+        "blocks": 21
+      },
+      {
+        "file": "rules/p23_test_rego_ci_innovations_v9.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/p24_audyt_kompletny_innovations_v9.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/p24_innovations_enterprise.rego",
+        "blocks": 30
+      },
+      {
+        "file": "rules/p3233_innovations.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/p33_excise_supplement.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/p33_ordpu_kks_supplement.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/p33_pcc_complete.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/p33_uor_supplement.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/p34_innovations_engine.rego",
+        "blocks": 17
+      },
+      {
+        "file": "rules/p34_remaining_fixes.rego",
+        "blocks": 15
+      },
+      {
+        "file": "rules/p35_cross_act_coherence.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/p35_innovations_engine.rego",
+        "blocks": 17
+      },
+      {
+        "file": "rules/p35_system_gaps.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/payments/plan44_payments.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/payments/plan45_payments.rego",
+        "blocks": 51
+      },
+      {
+        "file": "rules/pcc/pcc_companies.rego",
+        "blocks": 20
+      },
+      {
+        "file": "rules/pcc/pcc_loans.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/pcc/pcc_rates.rego",
+        "blocks": 26
+      },
+      {
+        "file": "rules/pcc/pcc_sales.rego",
+        "blocks": 26
+      },
+      {
+        "file": "rules/pcc/plan42_pcc.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/penalty_ai_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/pit/advances_returns.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/pit/art21_exemptions_enterprise.rego",
+        "blocks": 30
+      },
+      {
+        "file": "rules/pit/cross_relief_optimizer_enterprise.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/pit/donation_relief_enterprise.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/pit/elearning.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/pit/exemptions.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/pit/family_estonian_enterprise.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/pit/forms.rego",
+        "blocks": 23
+      },
+      {
+        "file": "rules/pit/ipbox_enterprise.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/pit/kup.rego",
+        "blocks": 15
+      },
+      {
+        "file": "rules/pit/kup_extended.rego",
+        "blocks": 36
+      },
+      {
+        "file": "rules/pit/plan23_exemptions.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/pit/plan23_tax_form_change.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/pit/plan26_detailed.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/pit/plan26_pit_critical.rego",
+        "blocks": 17
+      },
+      {
+        "file": "rules/pit/rd_relief_enterprise.rego",
+        "blocks": 14
+      },
+      {
+        "file": "rules/pit/tax_form_transition_intelligence.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/pit/tax_loss_harvesting_enterprise.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/pit/thermo_relief_enterprise.rego",
+        "blocks": 13
+      },
+      {
+        "file": "rules/pit/transitions.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/pkpir_to_uor_transformer.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/poa_manager_enterprise.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/ppk_pfron_enterprise.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/proceeding_tracker_enterprise.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/procurement/plan44_procurement.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/procurement/plan45_procurement.rego",
+        "blocks": 39
+      },
+      {
+        "file": "rules/provenance.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/regulated/plan44_regulated.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/regulated/plan45_regulated.rego",
+        "blocks": 33
+      },
+      {
+        "file": "rules/regulated_compliance_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/reliability_guarantee_enterprise.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/representation/plan26_prokura.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/representation.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/residency/plan44_residency.rego",
+        "blocks": 11
+      },
+      {
+        "file": "rules/residency/plan45_residency.rego",
+        "blocks": 49
+      },
+      {
+        "file": "rules/restructuring.rego",
+        "blocks": 13
+      },
+      {
+        "file": "rules/retention.rego",
+        "blocks": 14
+      },
+      {
+        "file": "rules/risk/plan26_kks.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/risk.rego",
+        "blocks": 19
+      },
+      {
+        "file": "rules/rodo/plan42_rodo.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/rodo.rego",
+        "blocks": 13
+      },
+      {
+        "file": "rules/rodo_extended.rego",
+        "blocks": 18
+      },
+      {
+        "file": "rules/routing.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/rule_lifecycle_enterprise.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/sanctions_optimization_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/sanctions_supplements_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/seasonal/plan44_seasonal.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/seasonal/plan45_seasonal.rego",
+        "blocks": 29
+      },
+      {
+        "file": "rules/security/security_fortress_v8.rego",
+        "blocks": 22
+      },
+      {
+        "file": "rules/solidarity/plan44_solidarity.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/solidarity/plan45_solidarity.rego",
+        "blocks": 29
+      },
+      {
+        "file": "rules/solidarity_auto_calc_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/statute/plan26_detailed.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/statute_of_limitations.rego",
+        "blocks": 19
+      },
+      {
+        "file": "rules/strategic_advisor_enterprise.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/strategic_roadmap_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/tax_authority_interaction_enterprise.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/tax_correspondence_engine_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/tax_optimization_enterprise.rego",
+        "blocks": 14
+      },
+      {
+        "file": "rules/tax_ruling_autodrafter_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/taxfree/plan44_taxfree.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/taxfree/plan45_taxfree.rego",
+        "blocks": 39
+      },
+      {
+        "file": "rules/temporal.rego",
+        "blocks": 28
+      },
+      {
+        "file": "rules/thresholds_jdg.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/tp/plan44_tp.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/tp/plan45_tp.rego",
+        "blocks": 53
+      },
+      {
+        "file": "rules/uor/plan42_uor.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/uor/uor_assets.rego",
+        "blocks": 34
+      },
+      {
+        "file": "rules/uor/uor_books.rego",
+        "blocks": 53
+      },
+      {
+        "file": "rules/uor/uor_closing.rego",
+        "blocks": 26
+      },
+      {
+        "file": "rules/uor/uor_costs.rego",
+        "blocks": 27
+      },
+      {
+        "file": "rules/uor/uor_financial_stmt.rego",
+        "blocks": 28
+      },
+      {
+        "file": "rules/uor/uor_inventory.rego",
+        "blocks": 18
+      },
+      {
+        "file": "rules/uor/uor_obligation.rego",
+        "blocks": 31
+      },
+      {
+        "file": "rules/uor/uor_revenue.rego",
+        "blocks": 30
+      },
+      {
+        "file": "rules/validation.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/vat/deductions.rego",
+        "blocks": 29
+      },
+      {
+        "file": "rules/vat/enterprise_vat_bridge.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/vat/place_of_supply.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/vat/plan23_detailed.rego",
+        "blocks": 17
+      },
+      {
+        "file": "rules/vat/plan26_critical.rego",
+        "blocks": 21
+      },
+      {
+        "file": "rules/vat/plan42_reduced_rates.rego",
+        "blocks": 15
+      },
+      {
+        "file": "rules/vat/procedures.rego",
+        "blocks": 21
+      },
+      {
+        "file": "rules/vat/substantive.rego",
+        "blocks": 67
+      },
+      {
+        "file": "rules/vat_cashflow_predictor_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/vat_deductions_corrections_enterprise.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/vat_fraud_detection_enterprise.rego",
+        "blocks": 6
+      },
+      {
+        "file": "rules/vat_mpp_split_payment_enterprise.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/vat_rates_exemptions_audit_enterprise.rego",
+        "blocks": 8
+      },
+      {
+        "file": "rules/vat_substantive_complete_enterprise.rego",
+        "blocks": 14
+      },
+      {
+        "file": "rules/vida_drr_full.rego",
+        "blocks": 7
+      },
+      {
+        "file": "rules/wdt_document_tracker.rego",
+        "blocks": 4
+      },
+      {
+        "file": "rules/wis/plan44_wis.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/wis/plan45_wis.rego",
+        "blocks": 36
+      },
+      {
+        "file": "rules/wis_api_enterprise.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/wis_autorequester_enterprise.rego",
+        "blocks": 0
+      },
+      {
+        "file": "rules/zus/cumulative_revenue_engine.rego",
+        "blocks": 5
+      },
+      {
+        "file": "rules/zus/enterprise_benefits.rego",
+        "blocks": 12
+      },
+      {
+        "file": "rules/zus/health_contribution_enterprise.rego",
+        "blocks": 16
+      },
+      {
+        "file": "rules/zus/health_precision_engine_v8.rego",
+        "blocks": 14
+      },
+      {
+        "file": "rules/zus/plan23_interactions.rego",
+        "blocks": 10
+      },
+      {
+        "file": "rules/zus/plan42_benefits.rego",
+        "blocks": 9
+      },
+      {
+        "file": "rules/zus/sickness_benefits_enterprise.rego",
+        "blocks": 15
+      },
+      {
+        "file": "rules/zus.rego",
+        "blocks": 28
+      }
+    ]
+  },
+  "tools": {
+    "python_tools": 137,
+    "tools_list": [
+      "adaptive_trust_score.py",
+      "adr_auto_proposer.py",
+      "ai_augmented_rule_generator.py",
+      "api_doc_generator.py",
+      "audyt_kompletny_auditor.py",
+      "automatyzacja_ksiegowosci_auditor.py",
+      "autonomous_tax_strategy.py",
+      "bdo_environment_auditor.py",
+      "blockchain_audit_trail.py",
+      "chaos_engineering.py",
+      "confidence_dashboard.py",
+      "contribution_base_validator.py",
+      "convert_true_to_conditions.py",
+      "coverage_95_plan.py",
+      "cross_act_zus_checker.py",
+      "cross_jurisdiction_harmonizer.py",
+      "cross_package_conflict_detector.py",
+      "cross_ref_validator.py",
+      "crossborder_auditor.py",
+      "crossref_plan50.py",
+      "data_service.py",
+      "dead_rule_detector.py",
+      "debug_converter.py",
+      "decision_certificate.py",
+      "decision_quality_monitor.py",
+      "declarative_change.py",
+      "dedup_micro_plan33.py",
+      "deployment_orchestrator.py",
+      "digital_twin_simulator.py",
+      "doc_consistency_validator.py",
+      "else_chain_dead_code_detector.py",
+      "enterprise_dashboard.py",
+      "federated_tax_mesh.py",
+      "fix_hyper_legal_basis.py",
+      "fix_micro_plan33_legal_basis.py",
+      "fix_p06_legal_basis.py",
+      "fix_p07_thresholds.py",
+      "fix_p10_plan33_kks.py",
+      "fix_plan34_duplicates.py",
+      "fix_plan34_legal_basis.py",
+      "fix_zus_naming.py",
+      "generate_coverage_report.py",
+      "generate_enterprise_tests.py",
+      "generate_from_plan50.py",
+      "generate_manifest.py",
+      "generate_massive_rules.py",
+      "generate_micro_rules.py",
+      "generate_missing_package_tests.py",
+      "generate_test_suite.py",
+      "golden_replay.py",
+      "hardcoded_audit.py",
+      "health_reconciliation_micro.py",
+      "health_tier_recalculator.py",
+      "holographic_viz.py",
+      "hr_swiadczenia_auditor.py",
+      "initiative_numbering_auditor.py",
+      "invariant_checker.py",
+      "isap_crawler.py",
+      "isap_drift_alarm.py",
+      "isap_rule_update_pipeline.py",
+      "judgment_predictor.py",
+      "kks_completeness_matrix.py",
+      "kks_limitations_calendar.py",
+      "kks_penalty_auditor.py",
+      "kks_penalty_simulator.py",
+      "kks_risk_scorer.py",
+      "kks_voluntary_disclosure.py",
+      "ksef_jpk_edeklaracje_auditor.py",
+      "ksiegowosc_pkpir_uor_auditor.py",
+      "law_impact_matrix.py",
+      "law_radar.py",
+      "legal_change_impact_analyzer.py",
+      "legal_coverage_heatmap.py",
+      "legal_twin.py",
+      "limitations_calendar.py",
+      "lint_rego_rules.py",
+      "llm_bridge.py",
+      "manifest_v2.py",
+      "migration_impact_analyzer.py",
+      "neural_mesh_innovations_auditor.py",
+      "opa_system_auditor.py",
+      "ordpu_auditor.py",
+      "p10_kks_jurisprudence.py",
+      "p10_kks_micro_simulator.py",
+      "p10_kks_micro_toolkit.py",
+      "p10_kks_proactive_shield.py",
+      "p10_kks_test_generator.py",
+      "p11_accounting_toolkit.py",
+      "p12_uor_accounting_toolkit.py",
+      "p12_uor_toolkit.py",
+      "p13_crossborder_toolkit.py",
+      "p14_compliance_toolkit.py",
+      "p15_local_taxes_toolkit.py",
+      "p15_pcc_local_excise_toolkit.py",
+      "p16_business_lifecycle_toolkit.py",
+      "p17_edge_cases_conflicts_toolkit.py",
+      "parse_plan33_and_generate.py",
+      "pcc_local_excise_auditor.py",
+      "pit_innovation_tools.py",
+      "pit_micro_amortization_auditor.py",
+      "pit_reliefs_optimizer.py",
+      "pit_temporal_snapshot_engine.py",
+      "policies_sync_gate.py",
+      "policy_registry_api.py",
+      "predictive_audit_shield.py",
+      "preferential_period_tracker.py",
+      "quantum_safe_encryption.py",
+      "rodo_aml_security_auditor.py",
+      "rule_impact_simulator.py",
+      "rule_lifecycle_manager.py",
+      "rule_provenance_dna.py",
+      "ryczalt_lifecycle_auditor.py",
+      "self_healing_engine.py",
+      "sickness_duration_tracker.py",
+      "split_micro_tests.py",
+      "tautology_guard.py",
+      "temporal_drift_detector.py",
+      "test_rego_ci_auditor.py",
+      "traceability_matrix.py",
+      "validate_legal_basis.py",
+      "validate_p24_legal_basis.py",
+      "validate_rules.py",
+      "validation_tools_auditor.py",
+      "vat_gap_detector.py",
+      "vat_innovation_tools.py",
+      "vat_micro_auditor.py",
+      "vat_mpp_auto_detector.py",
+      "vat_ruleid_migrator.py",
+      "vat_traceability_matrix.py",
+      "zero_defect_certification.py",
+      "zus_atom_linter.py",
+      "zus_atom_test_matrix.py",
+      "zus_completeness_engine.py",
+      "zus_macro_auditor.py",
+      "zus_micro_auditor.py",
+      "zus_naming_unifier.py",
+      "zus_rule_sharding.py"
+    ],
+    "native_rego_tests": 91,
+    "native_test_files": [
+      "test_native_annual_declaration_enterprise.rego",
+      "test_native_audit_defense_enterprise.rego",
+      "test_native_banking_automation_enterprise.rego",
+      "test_native_cashflow_tax_predictor_enterprise.rego",
+      "test_native_cross_declaration_validator_enterprise.rego",
+      "test_native_cross_domain_intelligence_enterprise.rego",
+      "test_native_deadline_monitor_enterprise.rego",
+      "test_native_decision_composer_enterprise.rego",
+      "test_native_defense_builder_enterprise.rego",
+      "test_native_edelivery_gateway_enterprise.rego",
+      "test_native_epuap_enterprise.rego",
+      "test_native_esig_auto_applicator_enterprise.rego",
+      "test_native_exit_tax_mdr_enterprise.rego",
+      "test_native_form_optimizer_enterprise.rego",
+      "test_native_form_transition_simulator_enterprise.rego",
+      "test_native_gaar_shield_enterprise.rego",
+      "test_native_gtu_completeness_checker_enterprise.rego",
+      "test_native_hyper_plan45_meta_enterprise.rego",
+      "test_native_interest_calculator_enterprise.rego",
+      "test_native_jdg_advertising.rego",
+      "test_native_jdg_esig.rego",
+      "test_native_jdg_force_majeure.rego",
+      "test_native_jdg_fx.rego",
+      "test_native_jdg_jpk.rego",
+      "test_native_jdg_ord.rego",
+      "test_native_jdg_pcc.rego",
+      "test_native_jdg_seasonal.rego",
+      "test_native_jdg_security.rego",
+      "test_native_jdg_taxfree.rego",
+      "test_native_jdg_uor.rego",
+      "test_native_jpk_corrections_workflow_enterprise.rego",
+      "test_native_jpk_kr_st_generator_enterprise.rego",
+      "test_native_jpk_v7_autogen_enterprise.rego",
+      "test_native_judicial_interpretations_enterprise.rego",
+      "test_native_ksef_firewall_enterprise.rego",
+      "test_native_ksef_innovations_enterprise.rego",
+      "test_native_ksef_offline_queue_enterprise.rego",
+      "test_native_ksef_outbox_enterprise.rego",
+      "test_native_ksef_receipt_digest_enterprise.rego",
+      "test_native_ksef_resilience_enterprise.rego",
+      "test_native_ksef_sanction_monitor_enterprise.rego",
+      "test_native_ksef_sandbox_harness_enterprise.rego",
+      "test_native_ksef_upo_tracker_enterprise.rego",
+      "test_native_legislative_monitor_enterprise.rego",
+      "test_native_lifecycle_manager_enterprise.rego",
+      "test_native_mdr_dac6_enterprise.rego",
+      "test_native_micro_akcyza.rego",
+      "test_native_micro_aml.rego",
+      "test_native_micro_amortyzacja.rego",
+      "test_native_micro_bdo.rego",
+      "test_native_micro_budownictwo.rego",
+      "test_native_micro_ceidg.rego",
+      "test_native_micro_crossborder.rego",
+      "test_native_micro_jpk.rego",
+      "test_native_micro_kks.rego",
+      "test_native_micro_ksef.rego",
+      "test_native_micro_ord.rego",
+      "test_native_micro_pcc.rego",
+      "test_native_micro_pit.rego",
+      "test_native_micro_pkpir.rego",
+      "test_native_micro_pp.rego",
+      "test_native_micro_rodo.rego",
+      "test_native_micro_ryczalt.rego",
+      "test_native_micro_srodowisko.rego",
+      "test_native_micro_sukcesja.rego",
+      "test_native_micro_sus.rego",
+      "test_native_micro_transport.rego",
+      "test_native_micro_uor.rego",
+      "test_native_micro_vat.rego",
+      "test_native_micro_zasilkowa.rego",
+      "test_native_micro_zdrowotna.rego",
+      "test_native_neural_rule_mesh_enterprise.rego",
+      "test_native_overpayment_auto_claimer_enterprise.rego",
+      "test_native_p16_autoform_generator_enterprise.rego",
+      "test_native_p16_enhanced_sca_enterprise.rego",
+      "test_native_p16_entrepreneur_test_enterprise.rego",
+      "test_native_p16_estonian_cit_enterprise.rego",
+      "test_native_p21_innovations_enterprise.rego",
+      "test_native_p22_innovations_enterprise.rego",
+      "test_native_p23_innovations_enterprise.rego",
+      "test_native_p24_innovations_enterprise.rego",
+      "test_native_poa_manager_enterprise.rego",
+      "test_native_ppk_pfron_enterprise.rego",
+      "test_native_proceeding_tracker_enterprise.rego",
+      "test_native_sanctions_optimization_enterprise.rego",
+      "test_native_strategic_advisor_enterprise.rego",
+      "test_native_tax_authority_interaction_enterprise.rego",
+      "test_native_tax_optimization_enterprise.rego",
+      "test_native_vat_cashflow_predictor_enterprise.rego",
+      "test_native_vat_substantive_complete_enterprise.rego",
+      "test_native_wis_api_enterprise.rego"
+    ],
+    "pytest_files": 29
+  },
+  "completeness_score": 50,
+  "declared_sources": {
+    "rego_files": {
+      "README.md": 439,
+      "MANIFEST.md": 383,
+      "COVERAGE_REPORT.md": 176
+    },
+    "rule_ids": {
+      "README.md": 11452,
+      "bundles/manifest.json": 10878,
+      "unified_plan_v8.yaml": 10827
+    },
+    "tools": {
+      "README.md": 57,
+      "OPA_JAKO_SYSTEM_P21.md": 98,
+      "KATALOG_NARZEDZI.md": 130
+    }
+  },
+  "slo_targets": {
+    "duplicates": 0,
+    "stubs": 0,
+    "hardcoded_values": 0,
+    "lci": 99,
+    "tcl": 100,
+    "rv": 100,
+    "uvr": 0
+  }
+}

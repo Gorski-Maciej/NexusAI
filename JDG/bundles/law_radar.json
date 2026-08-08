@@ -1,0 +1,21 @@
+{
+  "drafts": {
+    "DRL-0001": {
+      "draft_id": "DRL-0001",
+      "source": "RCL",
+      "title": "Nowelizacja testowa",
+      "detected_at": "2026-08-08T11:39:52+00:00",
+      "status": "DRAFT_LAW",
+      "confidence_draft": 0.7,
+      "expected_enactment": "2099-06-01",
+      "lead_days": 26595,
+      "predicted_diff": null,
+      "rule_ids_prepared": [],
+      "reviewed_by": null
+    }
+  },
+  "kpi": {
+    "lead_time_avg_days": 26595.0,
+    "target_lead_days": 30
+  }
+}

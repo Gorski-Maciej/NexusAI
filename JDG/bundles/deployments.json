@@ -1,0 +1,18 @@
+{
+  "deployments": {
+    "smoke-bundle": {
+      "phase": "FULL_SOAK",
+      "rollout_pct": 100,
+      "started_at": "2026-08-08T11:39:50+00:00",
+      "canary_ok": false,
+      "shadow_delta_pct": null,
+      "soak_until": "2026-08-09T11:39:51.032159+00:00",
+      "quality": 100.0,
+      "error_rate": 0.0,
+      "latency_p95_ms": 0.0,
+      "rollback_reason": null,
+      "canary_started_at": "2026-08-08T11:39:50+00:00"
+    }
+  },
+  "healthy_versions": []
+}

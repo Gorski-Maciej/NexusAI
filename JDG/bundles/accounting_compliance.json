@@ -1,0 +1,326 @@
+{
+  "generated_at": "2026-08-08T12:11:27.405613+00:00",
+  "elements_total": 39,
+  "by_status": {
+    "COMPLETE": 11,
+    "GAP": 28
+  },
+  "rows": [
+    {
+      "doc": "UoR",
+      "element": "Art. 2 — definicje",
+      "status": "COMPLETE",
+      "rules": [
+        "jdg.security.fortress.small_taxpayer_distinction"
+      ],
+      "count": 1
+    },
+    {
+      "doc": "UoR",
+      "element": "Art. 4 — zasady rachunkowości",
+      "status": "COMPLETE",
+      "rules": [
+        "jdg.uor_live.accounting_principles_check",
+        "jdg.ksef_jpk.ksef_duplicate_detected",
+        "jdg.ord.innovations.uor_accounting_principles",
+        "jdg.p35.uor_foundations_check",
+        "jdg.risk.counterparty_trust_low"
+      ],
+      "count": 7
+    },
+    {
+      "doc": "UoR",
+      "element": "Art. 20–22 — księgi rachunkowe",
+      "status": "COMPLETE",
+      "rules": [
+        "jdg.uor_live.accounting_document_validation",
+        "jdg.jpk_kr_st.no_match",
+        "jdg.jpk_kr_st.kr_eligibility_check",
+        "jdg.micro.budownictwo.a5.r8",
+        "jdg.ord.innovations.uor_double_entry_validator"
+      ],
+      "count": 8
+    },
+    {
+      "doc": "UoR",
+      "element": "Art. 26 — wycena aktywów",
+      "status": "COMPLETE",
+      "rules": [
+        "jdg.uor_live.asset_valuation_check",
+        "jdg.ord.innovations.uor_asset_valuation",
+        "jdg.p12_innovations.asset_valuation_engine"
+      ],
+      "count": 3
+    },
+    {
+      "doc": "UoR",
+      "element": "Art. 28 — wycena bilansowa",
+      "status": "COMPLETE",
+      "rules": [
+        "jdg.edge_cases.fx_method_podatkowa_vs_bilansowa",
+        "jdg.p33_uor_supplement.art46_balance_sheet"
+      ],
+      "count": 2
+    },
+    {
+      "doc": "UoR",
+      "element": "Art. 32 — amortyzacja",
+      "status": "COMPLETE",
+      "rules": [
+        "jdg.p33_uor_supplement.art32_33_uor_vs_pit_depreciation",
+        "jdg.p34.depreciation_uor_vs_pit_split"
+      ],
+      "count": 2
+    },
+    {
+      "doc": "UoR",
+      "element": "Art. 74 — dokumentacja",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 1",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 2",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 3",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 4",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 5",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 6",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 7",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 8",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 9",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 10",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 11",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 12",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 13",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 14",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 15",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 16",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PKPiR",
+      "element": "Kolumna 17",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "JPK_V7M",
+      "element": "Sekcja ewidencja sprzedaży",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "JPK_V7M",
+      "element": "Sekcja ewidencja zakupów",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "JPK_V7M",
+      "element": "GTU (grupy towarów)",
+      "status": "COMPLETE",
+      "rules": [
+        "jdg.cross_validator.ceidg_vs_jpk_pkd",
+        "jdg.gtu_checker.no_match",
+        "jdg.gtu_checker.completeness_audit",
+        "jdg.hyper.audit.wis.gtu.mapping_obligation",
+        "jdg.jpk_v7.gtu_code_autoassignment"
+      ],
+      "count": 16
+    },
+    {
+      "doc": "JPK_V7K",
+      "element": "Ewidencja sprzedaży",
+      "status": "COMPLETE",
+      "rules": [
+        "jdg.jpk_v7.v7k_quarterly_support",
+        "jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_v7_auto_generator"
+      ],
+      "count": 2
+    },
+    {
+      "doc": "JPK_V7K",
+      "element": "Ewidencja zakupów",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PIT-36",
+      "element": "Skala podatkowa",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PIT-36",
+      "element": "Dochód z działalności",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PIT-36L",
+      "element": "Podatek liniowy 19%",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PIT-28",
+      "element": "Ryczałt od przychodów",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "VAT-7",
+      "element": "Deklaracja VAT-7",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "VAT-7K",
+      "element": "Deklaracja VAT-7K (kwartalna)",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "VAT-UE",
+      "element": "Informacja podsumowująca VAT-UE",
+      "status": "GAP",
+      "rules": [],
+      "count": 0
+    },
+    {
+      "doc": "PCC-3",
+      "element": "Deklaracja PCC-3",
+      "status": "COMPLETE",
+      "rules": [
+        "jdg.p33_pcc_complete.pcc3_auto_filler"
+      ],
+      "count": 1
+    },
+    {
+      "doc": "ZUS DRA",
+      "element": "Deklaracja rozliczeniowa ZUS DRA",
+      "status": "COMPLETE",
+      "rules": [
+        "jdg.employer.zus_dra_monthly",
+        "jdg.hyper.deadlines.tax.zus_dra_10th",
+        "jdg.p07_zus_macro_innovations.dra_optimizer",
+        "jdg.zus.dra_filing_deadline_check"
+      ],
+      "count": 4
+    },
+    {
+      "doc": "ZUS ZUA",
+      "element": "Zgłoszenie ubezpieczonego ZUS ZUA",
+      "status": "COMPLETE",
+      "rules": [
+        "jdg.employer.zus_zua_registration",
+        "jdg.autoform.zus_zua_autofill"
+      ],
+      "count": 2
+    }
+  ]
+}

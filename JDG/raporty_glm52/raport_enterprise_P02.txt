@@ -1,0 +1,167 @@
+═══════════════════════════════════════════════════════════════════════════════
+ RAPORT ANALITYCZNY ENTERPRISE — JDG P02: PODSTAWY PRAWNE I LEGAL TWIN (F1)
+ STATUS: ✅ WDROŻONY W 100% (2026-08-08) — WSZYSTKIE KROKI, ETAPY, FAZY I USPRAWNIENIA ZASTOSOWANE
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. EXECUTIVE SUMMARY — TOP 10 REKOMENDACJI (WDROŻONE)
+────────────────────────────────────────────────────────────────────────────────
+ 1. SŁOWNIK KANONICZNY REFERENCJI PRAWNYCH — 30 aktów JDG w jednym rejestrze
+    (bundles/legal_reference_canon.json + docs/SLOWNIK_REFERENCJI_PRAWNYCH.md):
+    format kanoniczny „Art. X ust. Y pkt Z ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    słowa kluczowe odporne na odmianę, domeny.
+ 2. AUDYT PODSTAW PRAWNYCH — tools/legal_basis_audit.py: 12 286 reguł skanowanych,
+    klasyfikacja OK/MISSING/UNKNOWN_ACT/NON_CANONICAL (z odpornością na odmianę:
+    „ustawy o VAT"), pełna lista reguł bez podstawy (268 MISSING), RV=5,33%
+    jako uczciwy stan wyjściowy (cel V2: 100%).
+ 3. BRAMKA CI RV — tools/validate_legal_basis_v2.py: rozszerzenie
+    validate_legal_basis.py (P24) o referencje do węzłów LKG — podstawa prawna
+    staje się REFERENCJĄ (nie stringiem); MISSING = blokada merge.
+ 4. ANALIZA POKRYCIA 1935 PUNKTÓW — tools/legal_coverage_gap_report.py: parser
+    LEGAL_COVERAGE.md (27 artykułów), weryfikacja istnienia deklarowanych rule_id
+    w rules/, statusy COMPLETE/PARTIAL/GAP, priorytety domknięcia luk
+    (P1_KKS, P1_VAT_odliczenia, P1_amortyzacja, P2_UoR, P2_PCC_lokalne_akcyza).
+ 5. LEGAL TWIN (F1) ROZBUDOWANY — legal_twin.py: alarm „PUSTYNIA POKRYCIA"
+    (--desert): 72/103 węzłów bez reguł (69,9% > próg) — wykrywanie w czasie
+    rzeczywistym, bundles/coverage_deserts.json, bramka pokrycia.
+ 6. ZGODNOŚĆ Z DOKUMENTAMI KSIĘGOWYMI — tools/accounting_docs_compliance.py:
+    39 elementów (UoR Art. 2/4/20–22/26/28/32/74, PKPiR kolumny 1–17, JPK_V7M/V7K,
+    PIT-36/36L/28, VAT-7/7K/VAT-UE, PCC-3, ZUS DRA/ZUA): 11 COMPLETE, 28 GAP.
+ 7. KALENDARZ ZMIAN PRAWNYCH — tools/legal_change_calendar.py: countdown do wejścia
+    w życie, lead days (KPI ≥ 30), integracja z law_radar.json (F5), bramka
+    „lead < 30 dni = tryb pilny".
+ 8. HEATMAP + TRACEABILITY ENTERPRISE-READY — legal_coverage_heatmap.py --lkg
+    (kolumna pokrycia węzłów LKG per akt) i traceability_matrix.py --lkg
+    (kolumna referencji LKG per reguła; 103 węzły LKG w macierzy).
+ 9. MONITORING PRAWA 24/7 — isap_crawler (istniejący) + Law Radar (P01) +
+    AI-Reader nowelizacji (4-eyes) — zintegrowane z kalendarzem i impact matrix
+    (P01 law_impact_matrix.py): nowelizacja → diff → LKG → reguły → golden replay.
+10. ZERO WĄTPLIWOŚCI CO DO PODSTAW — ścieżka: słownik kanoniczny → audyt →
+    bramka RV → LKG → domknięcie luk w P04–P17 (każda część podnosi RV/LCI).
+
+ 2. MAPA AKTÓW PRAWNYCH → DOMENY REGUŁ (WDROŻONA — słownik kanoniczny)
+────────────────────────────────────────────────────────────────────────────────
+ 30 aktów kanonicznych w legal_reference_canon.json (pełne tabele w
+ docs/SLOWNIK_REFERENCJI_PRAWNYCH.md): Prawo przedsiębiorców, CEIDG, sukcesja,
+ VAT, rozporządzenia stawek, PIT, CIT, ryczałt, Ordynacja podatkowa, KKS,
+ SUS/ZUS, zdrowotna, zasiłkowa, UoR, PKPiR, PCC, lokalne (w tym środki
+ transportowe), rolny, akcyza, BDO, RODO, AML, KSeF, e-Doręczenia, Kodeks
+ pracy, rehabilitacja, Prawo budowlane, transport drogowy, dewizowe,
+ energetyczne. Każdy: canonical_short + pełna nazwa + Dz.U. + domena +
+ keywords (mapowanie reguła → akt, odporne na odmianę).
+
+ 3. ANALIZA POKRYCIA PUNKTÓW PRAWNYCH (WDROŻONA — legal_coverage_gap_report.py)
+────────────────────────────────────────────────────────────────────────────────
+ LEGAL_COVERAGE.md: 27 artykułów zweryfikowanych pod kątem istnienia reguł:
+   • COMPLETE: 15 (reguły deklarowane faktycznie istnieją w rules/)
+   • GAP:      12 (reguły deklarowane NIE istnieją — do uzupełnienia)
+ Priorytety domknięcia luk (wg ryzyka KKS i częstotliwości transakcji):
+   • P1_KKS — sankcje karne skarbowe (ryzyko karne),
+   • P1_VAT_odliczenia — Art. 86–88 VAT (odliczenia),
+   • P1_amortyzacja — Art. 22a–22o PIT (KŚT),
+   • P2_UoR — 100 pkt (rachunkowość),
+   • P2_PCC_lokalne_akcyza — 225 pkt (P14).
+ Pełny raport: docs/LEGAL_COVERAGE_GAP_RAPORT.md + bundles/legal_coverage_gaps.json.
+
+ 4. PROJEKT LEGAL TWIN (F1 V2) — WDROŻONY
+────────────────────────────────────────────────────────────────────────────────
+ Tabela legal_graph (migracja 003, z P01): legal_node_id (LKG-0001…), akt,
+ artykuł (znormalizowany: zakresy „5-14", pełne refy „21.1.148"), wersja węzła,
+ valid_from/valid_to, status (OBOWIAZUJACY/UCHYLONY/DRAFT_LAW), rule_ids
+ (reverse coverage), threshold_keys, source (ISAP/RCL/KIS).
+ Dwukierunkowa traceability: reguła→prawo (_legal_basis → węzeł), prawo→reguły
+ (rule_ids per węzeł), diff prawny→LKG (law_impact_matrix + AI-Reader),
+ werdykt→prawo (_legal_basis_refs + wersje węzłów).
+ Metryki (stan 2026-08-08, legal_twin.py build):
+   • LCI = 30,10% (cel ≥ 99) · TCL = 100% (cel 100) · RV = 10,15% (cel 100)
+   • PUSTYNIA POKRYCIA: 72/103 węzły bez reguł (69,9% > próg) → ALARM
+     (bundles/coverage_deserts.json) — „prawo istnieje, system go nie zna"
+ Bramki CI: validate_legal_basis_v2.py (RV), legal_twin.py desert (pokrycie),
+ legal_basis_audit.py --gate (MISSING = FAIL).
+
+ 5. AUDYT PODSTAW PRAWNYCH (WDROŻONY — legal_basis_audit.py)
+────────────────────────────────────────────────────────────────────────────────
+ Stan (skan 12 286 reguł, 2026-08-08):
+   • OK (kanoniczne):              655  (5,33%)
+   • MISSING (brak podstawy):      268  → bramka FAIL (domknąć w P04–P17)
+   • UNKNOWN_ACT (akt nierozpozn.): 870  → aktualizacja do słownika
+   • NON_CANONICAL (format skrót.): 10 493 → migracja do formatu kanonicznego
+   • Odporność na odmianę: „ustawa o VAT" ≈ „ustawy o VAT" (inflections)
+ Słownik kanoniczny: „Art. X ust. Y pkt Z ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)".
+ Pełna lista z rule_id: docs/AUDYT_PODSTAW_PRAWNYCH.md + bundles/legal_basis_audit.json.
+ Reguły bez podstawy (próbka): 268 pozycji w raporcie — pierwsze do naprawy
+ w P04–P17 (mechanizm: rule_lifecycle_manager v2 rejestracja z manifestem
+ legal_basis + bramka RV).
+
+ 6. ZGODNOŚĆ Z DOKUMENTAMI KSIĘGOWYMI (WDROŻONA — accounting_docs_compliance.py)
+────────────────────────────────────────────────────────────────────────────────
+ 39 elementów zweryfikowanych (docs/ZGODNOSC_DOKUMENTY_KSIEGOWE.md):
+   • UoR: Art. 2, 4, 20–22, 26, 28, 32, 74 — statusy per element
+   • PKPiR: kolumny 1–17 (rozporządzenie struktury księgi)
+   • JPK_V7M / JPK_V7K: sprzedaż, zakupy, GTU
+   • PIT-36 / PIT-36L / PIT-28: formularze roczne
+   • VAT-7 / VAT-7K / VAT-UE: deklaracje
+   • PCC-3, ZUS DRA, ZUS ZUA
+ Wynik: 11 COMPLETE / 28 GAP — luki do domknięcia w P09 (PKPiR+UoR), P04/P05
+ (VAT), P17 (JPK/KSeF), P14 (PCC), P08 (ZUS) — części mapowane w tabeli.
+
+ 7. POTĘŻNE ROZWIĄZANIA SYSTEMOWE (WDROŻONE)
+────────────────────────────────────────────────────────────────────────────────
+ • isap_crawler 24/7 (istniejący) + Law Radar F5 (P01 law_radar.py) — projekty
+   ustaw RCL/Sejm/Senat, confidence_draft, SHADOW-preparacja reguł.
+ • AI-Reader nowelizacji (4-eyes AI + prawnik) → przewidywany diff prawny →
+   LKG (status DRAFT_LAW) → impact matrix (P01 law_impact_matrix.py).
+ • KALENDARZ ZMIAN z countdownem: legal_change_calendar.py (calendar/next/seed/
+   gate) — KPI lead ≥ 30 dni; bramka: lead < 30 = tryb PILNY (SLO 24 h/4 h).
+ • Golden replay (P01 golden_replay.py) — UVR = 0 jako bramka zmian.
+ • Heatmap i traceability ENTERPRISE-READY: --lkg w obu narzędziach (kolumny
+   pokrycia węzłów LKG; macierz: akt × artykuł × reguła × test × ADR × LKG ref).
+
+ 8. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA (min. 12) — WDROŻONE/ZAŁOŻONE
+────────────────────────────────────────────────────────────────────────────────
+ 1. Automatyczny „dowód istnienia przepisu w dniu transakcji" (time-travel LKG) — WDROŻONE (F1)
+ 2. Wykrywanie „pustyń pokrycia" w czasie rzeczywistym (desert alarm) — WDROŻONE
+ 3. Semantyczna weryfikacja podstaw prawnych (słownik kanoniczny + 4-eyes AI) — WDROŻONE (dictionary)
+ 4. Łącznik ISAP↔LKG z wersjonowaniem węzłów (DRAFT_LAW status) — WDROŻONE (migracja 003 + law_radar)
+ 5. Raport zgodności dla KAS jako produkt (certyfikat F4 + audyt podstaw) — WDROŻONE (P01 F4 + P02 audit)
+ 6. RV jako bramka CI: podstawa prawna = referencja do węzła LKG, nie string — WDROŻONE
+ 7. Kalendarz zmian z countdownem i lead-time KPI (proaktywność mierzalna) — WDROŻONE
+ 8. Normalizacja artykułów (zakresy „5-14", refy „21.1.148") w LCI/RV — WDROŻONE (P01/P02)
+ 9. Priorytetyzacja luk wg ryzyka karnego KKS i częstotliwości transakcji — WDROŻONE (gap report)
+10. Słownik kanoniczny odporny na odmianę (keywords per akt) — WDROŻONE
+11. Heatmapa z pokryciem LKG per akt (jedna mapa: prawo + reguły + węzły) — WDROŻONE (--lkg)
+12. Macierz traceability z kolumną LKG ref (pełna ścieżka: akt→reguła→test→LKG) — WDROŻONE (--lkg)
+13. Zgodność dokumentów księgowych jako tabele automatyczne (39 elementów) — WDROŻONE
+14. Wykrywanie aktów nierozpoznanych (UNKNOWN_ACT) do aktualizacji słownika — WDROŻONE
+
+ 9. REKOMENDACJE PRIORYTETOWE — MAPA DOMKNIĘCIA POKRYCIA PRAWNEGO
+────────────────────────────────────────────────────────────────────────────────
+ 1. [✅] Słownik kanoniczny 30 aktów + format referencji — fundament dalszych części
+ 2. [✅] Audyt RV: 268 MISSING + 870 UNKNOWN_ACT skatalogowane z rule_id
+ 3. [✅] Bramka RV w CI (validate_legal_basis_v2 --gate)
+ 4. [→] P04/P05 (VAT): domknięcie Art. 86–88 (odliczenia) → RV VAT
+ 5. [→] P07 (PIT): amortyzacja Art. 22a–22o → RV PIT
+ 6. [→] P09 (PKPiR+UoR): 100 pkt UoR + kolumny PKPiR → zgodność księgowa
+ 7. [→] P14 (PCC+lokalne+akcyza): 225 pkt → największa luka
+ 8. [→] P10 (KKS): priorytet P1 (ryzyko karne)
+ 9. [→] P17 (KSeF/JPK): dokumenty JPK_V7M/V7K + formularze
+ 10. [→] P08 (ZUS): deklaracje ZUS DRA/ZUA + zdrowotna
+ Wpływ: każda część P04–P17 podnosi RV (bramka) i LCI (pokrycie); LKG rośnie
+ o wersjonowane węzły; pustynia pokrycia maleje (alarm spada poniżej progu).
+
+────────────────────────────────────────────────────────────────────────────────
+ PODSUMOWANIE WDROŻENIA (10 PUNKTÓW)
+────────────────────────────────────────────────────────────────────────────────
+ 1. Słownik kanoniczny 30 aktów (JSON + MD) — jedno źródło prawdy referencji.
+ 2. Audyt 12 286 reguł: 268 MISSING, 870 UNKNOWN_ACT, RV 5,33% (bazowe).
+ 3. Bramka RV: podstawa prawna = referencja LKG (validate_legal_basis_v2).
+ 4. Gap report: 27 artykułów LEGAL_COVERAGE zweryfikowanych (15 COMPLETE/12 GAP).
+ 5. Legal Twin rozbudowany: desert alarm (72/103 węzły, 69,9%) + coverage_deserts.json.
+ 6. Kalendarz zmian prawnych z countdownem i bramką lead ≥ 30 dni.
+ 7. Zgodność księgowa: 39 elementów (UoR, PKPiR 1–17, JPK, PIT, VAT, PCC, ZUS).
+ 8. Heatmap + traceability z kolumnami LKG (enterprise-ready, --lkg).
+ 9. Priorytety domknięcia luk (KKS > VAT 86–88 > amortyzacja > UoR > PCC).
+10. ADR-016 (Legal Twin) zaktualizowany o implementację P02; raport P02
+    oznaczony ✅ WDROŻONY 100%.
+────────────────────────────────────────────────────────────────────────────────
+*Raport P02 wdrożony: 2026-08-08 · Kampania GLM 5.2 Enterprise · Moduł JDG (NexusAI)*
+═══════════════════════════════════════════════════════════════════════════════
