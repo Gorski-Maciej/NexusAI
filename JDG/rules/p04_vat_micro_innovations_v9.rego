@@ -28,7 +28,7 @@ import future.keywords.in
 
 default decide := {"matched":false,"rule_id":"jdg.p04_vat_micro_innovations.no_match","package":"jdg.p04_vat_micro_innovations","priority":999999}
 
-# ── Źródła danych audytu (host wstrzykuje z narzędzia vat_micro_auditor.py) ──
+# ── Źródła danych audytu (host wstrzykuje z narzędzia vat_micro_inventory.py) ──
 # data.jdg.vat_micro_audit = {"total_rules": N, "unique_rule_ids": N,
 #   "duplicates": [...], "stubs": [...], "coverage": {article: status}, ...}
 audit_data := object.get(data.jdg, "vat_micro_audit", {})
@@ -96,6 +96,13 @@ duplicate_rules := object.get(audit_data, "duplicates", [])
 # (lub z _legal_basis puste). Dane: data.jdg.vat_micro_audit.dead_rules.
 dead_rules := object.get(audit_data, "dead_rules", [])
 
+# Próbka pierwszego stuba (null gdy brak) — naprawa składni (guard poza wartością).
+first_stub_sample := stub_rules[0] {
+    count(stub_rules) > 0
+} else := null {
+    true
+}
+
 stub_duplicate_report := {
     "matched": true,
     "rule_id": "jdg.p04_vat_micro_innovations.stub_duplicate_report",
@@ -107,7 +114,7 @@ stub_duplicate_report := {
         "duplicate_count": count(duplicate_rules),
         "duplicates": duplicate_rules,
         "stub_count": count(stub_rules),
-        "stubs_sample": [s | some s in stub_rules; s][0] { count(stub_rules) > 0 },
+        "stubs_sample": first_stub_sample,
         "dead_count": count(dead_rules)
     },
     "_routing": "REPORT",
@@ -150,6 +157,7 @@ macro_micro_map := object.get(audit_data, "macro_micro_map", {})
 
 # Spójność priorytetów: micro priority > macro priority (atomowe najpierw) —
 # inaczej decyzja macro może wyprzedzić walidację atomową.
+# Comprehension nie może mieć else — pusta comprehension zwraca [] samoistnie.
 priority_coherence_issues := [m |
     some m in object.keys(macro_micro_map)
     entry := macro_micro_map[m]
@@ -158,9 +166,7 @@ priority_coherence_issues := [m |
     micro_priority >= macro_priority
     micro_priority != 999999
     m
-] else := [] {
-    true
-}
+]
 
 micro_macro_report := {
     "matched": true,
@@ -220,6 +226,15 @@ rate_math_ok := true {
     true
 }
 
+# Reguła pomocnicza — Rego nie ma operatora `and` (else-chain + catch-all).
+math_all_ok := true {
+    amount_contract_ok == true
+    rounding_ok == true
+    rate_math_ok == true
+} else := false {
+    true
+}
+
 math_guarantee := {
     "matched": true,
     "rule_id": "jdg.p04_vat_micro_innovations.math_guarantee",
@@ -229,7 +244,7 @@ math_guarantee := {
         "grosz_contract": amount_contract_ok,
         "rounding_level_valid": rounding_ok,
         "rate_math": rate_math_ok,
-        "all_ok": amount_contract_ok and rounding_ok and rate_math_ok
+        "all_ok": math_all_ok
     },
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Property-based guards kwotowe: rozbieżność netto+VAT vs brutto LUB błąd stawki",
@@ -237,7 +252,7 @@ math_guarantee := {
     "_warnings": [sprintf("Gwarancje: grosz=%v, rounding=%v, rate_math=%v", [amount_contract_ok, rounding_ok, rate_math_ok])]
 } {
     object.get(input.jdg_entrepreneur, "p04_math_check", false) == true
-    not (amount_contract_ok and rounding_ok and rate_math_ok)
+    not math_all_ok
 }
 
 # ── INNOWACJA: PROPERTY-BASED TESTING per formuła (Sekcja 4 genius) ──────────
@@ -250,7 +265,7 @@ math_property_contract := {
         {"id": "F4_REFUND", "formula": "refund ≤ excess_input_vat", "tolerance": 0.0},
         {"id": "F5_SANCTION_30", "formula": "sanction = vat × 0.30", "tolerance": 0.01}
     ],
-    "runner": "vat_micro_auditor.py --math --fuzz N",
+    "runner": "vat_micro_inventory.py --json bundles/vat_micro_inventory.json",
     "note": "Host uruchamia property-based tests per formuła (determinizm + monotoniczność)"
 }
 
@@ -270,15 +285,14 @@ specialist_packages := {
 
 specialist_actual_rules := object.get(audit_data, "specialist_rule_counts", {})
 
+# Comprehension nie może mieć else — pusta zwraca [] samoistnie.
 specialist_gaps := [pkg |
     some pkg in object.keys(specialist_packages)
     actual := object.get(specialist_actual_rules, pkg, 0)
     expected := object.get(specialist_packages[pkg], "expected_rules", 0)
     actual < expected
     pkg
-] else := [] {
-    true
-}
+]
 
 specialist_audit := {
     "matched": true,
@@ -303,7 +317,7 @@ specialist_audit := {
 # SEKCJA 6 — OPA JAKO ROZBUDOWANY SYSTEM: pipeline auto-generacji reguł mikro
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# Pipeline (narzędzie: vat_micro_auditor.py):
+# Pipeline (narzędzie: vat_micro_inventory.py):
 #   1. ingest:   tekst ustawy (ISAP/Dz.U.) → bloki artykułów
 #   2. generate: szablon reguły atomowej per artykuł/ustęp (rule_id jdg.micro.vat.*)
 #   3. verify:   opa test + semantyczna walidacja (stawka/limit vs litera prawa)
@@ -359,16 +373,26 @@ rate_description_mismatch := {
     object.get(input.invoice, "vat_rate", "") != detected_rate
 }
 
+# Rego v0 nie ma `or` — koniunkcja alternatywna przez comprehension (wzorzec P04).
 detected_rate := "5.00" {
     desc := lower(object.get(input.invoice, "description", ""))
-    contains(desc, "żywność") or contains(desc, "chleb") or contains(desc, "mleko") or contains(desc, "owoce") or contains(desc, "warzywa")
+    count([k | some k in {"żywność", "chleb", "mlek", "owoc", "warzyw"}; contains(desc, k)]) > 0
 } else := "8.00" {
     desc := lower(object.get(input.invoice, "description", ""))
-    contains(desc, "hotel") or contains(desc, "budownictwo mieszkaniowe") or contains(desc, "transport pasażerski") or contains(desc, "farmacja")
+    count([k | some k in {"hotel", "budownictwo mieszkaniowe", "transport pasażerski", "farmacj"}; contains(desc, k)]) > 0
 } else := "23.00" {
     desc := lower(object.get(input.invoice, "description", ""))
-    contains(desc, "elektronika") or contains(desc, "samochód") or contains(desc, "usługi konsultingowe") or contains(desc, "odzież")
+    count([k | some k in {"elektronik", "samochód", "konsulting", "odzież"}; contains(desc, k)]) > 0
 } else := "" {
+    true
+}
+
+# Reguła pomocnicza — alternatywa bez `or` (else-chain + catch-all).
+rate_desc_consistent := true {
+    object.get(input.invoice, "vat_rate", "") == detected_rate
+} else := true {
+    detected_rate == ""
+} else := false {
     true
 }
 
@@ -387,7 +411,7 @@ semantic_rate_verifier := {
     "verification": {
         "description_rate": detected_rate,
         "declared_rate": object.get(input.invoice, "vat_rate", ""),
-        "consistent": detected_rate == "" or object.get(input.invoice, "vat_rate", "") == detected_rate
+        "consistent": rate_desc_consistent
     },
     "_routing": "REPORT",
     "_routing_reason": "Semantyczny weryfikator stawki (opis → stawka) — Sekcja 7 INN-07",

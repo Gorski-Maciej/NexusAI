@@ -2,9 +2,12 @@
 # NexusAI JDG — Main Orchestrator (Multi-Pass First-Match-Wins + Sharded Router)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
-# title: JDG Main Orchestrator — Multi-Pass + Sharded Router (B1 Strategic Initiative)
-# description: |
+# DANE DOKUMENTACYJNE (komentarz zwykły — nie parsowany przez OPA):
+#   title: JDG Main Orchestrator — Multi-Pass + Sharded Router (B1)
+#   architecture: Multi-Pass OPA (ADR-001) + Sharded Router (B1) · legal_basis: N/A
+#   package: jdg.main · deprecated: false
+#
+# ── NOTATKI ROZBUDOWANE ──
 #   Główny plik decyzyjny JDG. Orkiestruje ewaluację wszystkich 40 pakietów
 #   w architekturze Multi-Pass zgodnej z Doc 34, Sekcja 1.3.
 #   B1: Sharded Index Router — hash kontekstu (tax_form × transaction_type ×
@@ -44,14 +47,8 @@
 #   compliance, health scorecard, exit strategy).
 #   Używa safe_merge() do scalania werdyktów z kolejnością: najniższy
 #   priorytet wewnątrz, najwyższy na zewnątrz (overrides).
-# architecture: Multi-Pass OPA (ADR-001) + Sharded Router (B1)
-# legal_basis: N/A (orchestrator — nie zawiera reguł podatkowych)
-# edge_cases:
-#   - Jeśli RISK lub ROUTING zwrócą BLOCK_AND_ALERT, dalsze passy abortowane
-#   - object.union nadpisuje klucze bez ostrzeżenia — kolejność mergowania jest krytyczna
-# priority: N/A (orchestrator)
-# package: jdg.main
-# deprecated: false
+#   Edge cases: RISK/ROUTING BLOCK_AND_ALERT → abort dalszych passów;
+#   object.union nadpisuje klucze bez ostrzeżenia — kolejność mergowania krytyczna.
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.main
@@ -255,6 +252,9 @@ import data.jdg.vat_deductions_audit
 import data.jdg.vat_mpp_split_payment
 import data.jdg.vat_fraud_detection
 import data.jdg.p03_vat_macro_innovations
+import data.jdg.p04_vat_macro_enterprise
+import data.jdg.p05_vat_micro_atomic
+import data.jdg.p06_pit_macro_enterprise
 # ── PAS 18e: P04 VAT MICRO ENTERPRISE v9.0 (2026-08-02) ──
 # P04 Sekcje 1-7: mapa pokrycia artykułów atomowych, audyt duplikatów/stubów,
 # spójność micro↔macro, gwarancje matematyczne (grosze/zaokrąglenia),
@@ -273,6 +273,8 @@ import data.jdg.p05_pit_macro_innovations
 # stawki indywidualne), duplikaty/stuby, spójność micro↔macro, audyt obliczeń,
 # pipeline auto-generacji + 14 genius ideas
 import data.jdg.p06_pit_micro_innovations
+import data.jdg.p07_pit_micro_atomic
+import data.jdg.p08_zus_macro_enterprise
 # ── PAS 18h: P07 ZUS/SUS MACRO ENTERPRISE v9.0 (2026-08-02) ──
 # P07 Sekcje 1-8: audyt składki zdrowotnej (PRIORYTET — skala 9%, liniowy 4,9%,
 # ryczałt 3 progi 60%/100%/180%, karta 9%), składki społeczne (19,52/8/2,45/1,67,
@@ -348,6 +350,12 @@ import data.jdg.p21_opa_system_innovations
 import data.jdg.p22_validation_tools_innovations
 import data.jdg.p23_test_rego_ci_innovations
 import data.jdg.p24_audyt_kompletny_innovations
+# ── PAS 18m: P03 GLM52 ORKIESTRATOR + INFRASTRUKTURA REGUŁ (2026-08-08) ──
+# Orkiestrator (Sekcje 6/7/8/9/10 raport_enterprise_P03): cache Merkle,
+# shadow twin, graf zależności, benchmarki, degraded context, kill-switch,
+# POST-MERGE runtime invariants (F2 V2, ADR-022) + decision certificate (F4).
+import data.jdg.p03_orchestrator_innovations
+import data.jdg.runtime_invariants
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
@@ -381,100 +389,112 @@ routing_context := {
 }
 
 # v7.0 P34 FIX (Atak 1): delivery.country, service_performed_country, vat_place_of_supply
-build_transaction_type(input) = tx_type {
-    input.invoice.direction == "SALE"
-    input.invoice.procedure == "EXPORT"
+build_transaction_type(inp) = tx_type {
+    inp.invoice.direction == "SALE"
+    inp.invoice.procedure == "EXPORT"
     tx_type := "EXPORT"
 } else = tx_type {
-    input.invoice.direction == "SALE"
-    vendor_country := object.get(input.vendor, "country", "PL")
-    delivery_country := object.get(input.delivery, "country", vendor_country)
-    service_country := object.get(input.invoice, "service_performed_country", delivery_country)
-    supply_country := object.get(input.invoice, "vat_place_of_supply", "PL")
+    inp.invoice.direction == "SALE"
+    vendor_country := object.get(inp.vendor, "country", "PL")
+    delivery_country := object.get(inp.delivery, "country", vendor_country)
+    service_country := object.get(inp.invoice, "service_performed_country", delivery_country)
+    supply_country := object.get(inp.invoice, "vat_place_of_supply", "PL")
     vendor_country != "PL"
     tx_type := "CROSS_BORDER_SALE"
 } else = tx_type {
-    input.invoice.direction == "SALE"
-    delivery_country := object.get(input.delivery, "country", "PL")
+    inp.invoice.direction == "SALE"
+    delivery_country := object.get(inp.delivery, "country", "PL")
     delivery_country != "PL"
     tx_type := "CROSS_BORDER_SALE"
 } else = tx_type {
-    input.invoice.direction == "SALE"
-    service_country := object.get(input.invoice, "service_performed_country", "PL")
+    inp.invoice.direction == "SALE"
+    service_country := object.get(inp.invoice, "service_performed_country", "PL")
     service_country != "PL"
     tx_type := "CROSS_BORDER_SALE"
 } else = tx_type {
-    input.invoice.direction == "SALE"
-    supply_country := object.get(input.invoice, "vat_place_of_supply", "PL")
+    inp.invoice.direction == "SALE"
+    supply_country := object.get(inp.invoice, "vat_place_of_supply", "PL")
     supply_country != "PL"
     tx_type := "CROSS_BORDER_SALE"
 } else = tx_type {
-    input.invoice.direction == "SALE"
+    inp.invoice.direction == "SALE"
     tx_type := "DOMESTIC_SALE"
 } else = tx_type {
-    input.invoice.direction == "PURCHASE"
-    vendor_country := object.get(input.vendor, "country", "PL")
-    delivery_country := object.get(input.delivery, "country", vendor_country)
+    inp.invoice.direction == "PURCHASE"
+    vendor_country := object.get(inp.vendor, "country", "PL")
+    delivery_country := object.get(inp.delivery, "country", vendor_country)
     vendor_country != "PL"
     tx_type := "IMPORT"
 } else = tx_type {
-    input.invoice.direction == "PURCHASE"
-    delivery_country := object.get(input.delivery, "country", "PL")
+    inp.invoice.direction == "PURCHASE"
+    delivery_country := object.get(inp.delivery, "country", "PL")
     delivery_country != "PL"
     tx_type := "IMPORT"
 } else = tx_type {
-    input.invoice.direction == "PURCHASE"
+    inp.invoice.direction == "PURCHASE"
     tx_type := "DOMESTIC_PURCHASE"
 } else = "UNKNOWN" {
     true
 }
 
-build_entity_status(input) = status {
-    object.get(input.jdg_entrepreneur, "business_status", "") == "SUSPENDED"
+build_entity_status(inp) = status {
+    object.get(inp.jdg_entrepreneur, "business_status", "") == "SUSPENDED"
     status := "SUSPENDED"
 } else = status {
-    object.get(input.jdg_entrepreneur, "in_succession", false) == true
+    object.get(inp.jdg_entrepreneur, "in_succession", false) == true
     status := "IN_SUCCESSIO"
 } else = status {
-    object.get(input.jdg_entrepreneur, "is_unregistered_activity", false) == true
+    object.get(inp.jdg_entrepreneur, "is_unregistered_activity", false) == true
     status := "UNREGISTERED"
 } else = "ACTIVE" {
     true
 }
 
-build_evaluation_quarter(input) = quarter {
+# P03 GLM52 FIX: else-chain zamiast nielegalnych inline-guards (quarter = 1 { cond })
+build_evaluation_quarter(inp) = 1 {
     eval_date := object.get(input, "evaluation_datetime", "2026-01-01")
     month := to_number(substring(eval_date, 5, 2))
-    quarter = 1 { month <= 3 }
-    quarter = 2 { month > 3; month <= 6 }
-    quarter = 3 { month > 6; month <= 9 }
-    quarter = 4 { month > 9 }
+    month <= 3
+} else = 2 {
+    eval_date := object.get(input, "evaluation_datetime", "2026-01-01")
+    month := to_number(substring(eval_date, 5, 2))
+    month > 3
+    month <= 6
+} else = 3 {
+    eval_date := object.get(input, "evaluation_datetime", "2026-01-01")
+    month := to_number(substring(eval_date, 5, 2))
+    month > 6
+    month <= 9
+} else = 4 {
+    eval_date := object.get(input, "evaluation_datetime", "2026-01-01")
+    month := to_number(substring(eval_date, 5, 2))
+    month > 9
 }
 
-is_cross_border_transaction(input) = true {
-    object.get(input.vendor, "country", "PL") != "PL"
+is_cross_border_transaction(inp) = true {
+    object.get(inp.vendor, "country", "PL") != "PL"
 } else = true {
-    object.get(input.delivery, "country", "PL") != "PL"
+    object.get(inp.delivery, "country", "PL") != "PL"
 } else = true {
-    object.get(input.invoice, "service_performed_country", "PL") != "PL"
+    object.get(inp.invoice, "service_performed_country", "PL") != "PL"
 } else = true {
-    object.get(input.invoice, "vat_place_of_supply", "PL") != "PL"
+    object.get(inp.invoice, "vat_place_of_supply", "PL") != "PL"
 } else = true {
-    input.invoice.procedure == "EXPORT"
+    inp.invoice.procedure == "EXPORT"
 } else = false {
     true
 }
 
-is_vat_payer_check(input) = true {
-    input.jdg_entrepreneur.vat_status == "ACTIVE"
+is_vat_payer_check(inp) = true {
+    inp.jdg_entrepreneur.vat_status == "ACTIVE"
 } else = false {
     true
 }
 
-requires_ksef_check(input) = true {
+requires_ksef_check(inp) = true {
     object.get(input, "evaluation_datetime", "2026-01-01") >= "2026-02-01"
-    input.invoice.direction == "SALE"
-    input.invoice.document_type == "INVOICE"
+    inp.invoice.direction == "SALE"
+    inp.invoice.document_type == "INVOICE"
 } else = false {
     true
 }
@@ -726,7 +746,7 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    )))))))))))))))))))))))))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 
 # Shard dla DOMESTIC_PURCHASE z ACTIVE JDG (KRYTYCZNE-3 FIX)
@@ -803,7 +823,7 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 
 full_final_verdict = safe_merge(risk.decide,
@@ -914,7 +934,7 @@ full_final_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -966,7 +986,7 @@ gated_abort_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    )))))))))))))))))))))))))))) {
+    ))))))))))))))))))))))))))))))))) {
     risk.decide._routing == "BLOCK_AND_ALERT"
 }
 
@@ -1005,7 +1025,7 @@ gated_abort_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))) {
+    )))))))))))))))))))))))))))))))) {
     routing.decide._routing == "BLOCK_AND_ALERT"
 }
 
@@ -1145,7 +1165,7 @@ final_verdict_enriched = safe_merge(final_verdict_with_conflicts,
     safe_merge(p23_innovations.decide,
     safe_merge(p24_innovations.decide,
         form_optimizer.decide
-    )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # KRYTYCZNE-2 FIX: Provenance + ADR-006 Immutable Audit Trail
@@ -1316,6 +1336,11 @@ _package_decisions := {
     "jdg.vat_mpp_split_payment": vat_mpp_split_payment.decide,
     "jdg.vat_fraud_detection": vat_fraud_detection.decide,
     "jdg.p03_vat_macro_innovations": p03_vat_macro_innovations.decide,
+    "jdg.p04_vat_macro_enterprise": p04_vat_macro_enterprise.decide,
+    "jdg.p05_vat_micro_atomic": p05_vat_micro_atomic.decide,
+    "jdg.p06_pit_macro_enterprise": p06_pit_macro_enterprise.decide,
+    "jdg.p07_pit_micro_atomic": p07_pit_micro_atomic.decide,
+    "jdg.p08_zus_macro_enterprise": p08_zus_macro_enterprise.decide,
     "jdg.p04_vat_micro_innovations": p04_vat_micro_innovations.decide,
     "jdg.p05_pit_macro_innovations": p05_pit_macro_innovations.decide,
     "jdg.p06_pit_micro_innovations": p06_pit_micro_innovations.decide,
@@ -1337,6 +1362,9 @@ _package_decisions := {
     "jdg.p22_validation_tools_innovations": p22_validation_tools_innovations.decide,
     "jdg.p23_test_rego_ci_innovations": p23_test_rego_ci_innovations.decide,
     "jdg.p24_audyt_kompletny_innovations": p24_audyt_kompletny_innovations.decide,
+    # ── PAS 18m: P03 GLM52 Orkiestrator + Infra (2026-08-08) ──
+    "jdg.p03_orchestrator_innovations": p03_orchestrator_innovations.decide,
+    "jdg.runtime_invariants": runtime_invariants.report,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
     "jdg.p23_innovations": p23_innovations.decide,
@@ -1419,8 +1447,13 @@ final_verdict_p03 = safe_merge(final_verdict_p02,
     safe_merge(vat_mpp_split_payment.decide,
     safe_merge(vat_fraud_detection.decide,
     safe_merge(p03_vat_macro_innovations.decide,
+    safe_merge(p04_vat_macro_enterprise.decide,
+    safe_merge(p05_vat_micro_atomic.decide,
+    safe_merge(p06_pit_macro_enterprise.decide,
+    safe_merge(p07_pit_micro_atomic.decide,
+    safe_merge(p08_zus_macro_enterprise.decide,
         fallback.decide
-    ))))))
+    )))))))))))
 
 # final_verdict_p03 = kompletny werdykt P01 + P02 + P03 (VAT Macro). Pakiety
 # można też odpytować indywidualnie: data.jdg.vat_rates_audit.decide,
@@ -1647,6 +1680,38 @@ final_verdict_p24 = safe_merge(final_verdict_p23,
     safe_merge(p24_audyt_kompletny_innovations.decide,
         fallback.decide
     ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18m: P03 GLM52 ORKIESTRATOR ENTERPRISE v9.0 — Post-Provenance Merge
+# Orkiestrator + infrastruktura reguł: decyzyjny cache z Merkle-proof (INN-01),
+# shadow twin (INN-02), dowód niezmienników SMT/Z3 (INN-03), mikro-benchmarki
+# per PASS (INN-04), cold-start profiling (INN-05), WASM+fallback (INN-06),
+# _degraded_context (INN-07), kill-switch + feature-flagi (INN-08), graf
+# zależności (INN-09), certyfikat (INN-10), propagacja pewności (INN-11),
+# Merkle-proof cache verify (INN-12), hot-path profiler (INN-13),
+# rejestr cyklu życia (INN-14). Pakiet REPORT-owy — aktywowany flagą
+# input.jdg_entrepreneur.p03_orchestrator_check (w normalnym ruchu no_match).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p25 = safe_merge(final_verdict_p24,
+    safe_merge(p03_orchestrator_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
+# Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
+#   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
+#   • certainty_class    — CERTAIN / CONDITIONAL / NEEDS_ADVICE (F4 V2 §5.2),
+#   • _certainty_guard   — CERTAINTY_BLOCKED / MANUAL_REVIEW / AUTO_POST_ALLOWED,
+#   • _decision_certificate — certyfikat F4 z decision_hash (F3 V2) i wersjami
+#                             bundle/rule/threshold (V1 §9.3),
+#   • _routing_context   — kontekst routingu O(1) (INV-020/INV-036, ADR-009).
+# Host NIGDY nie wykonuje AUTO_POST dla werdyktu z _certainty_guard =
+# CERTAINTY_BLOCKED (INV-006/INV-035) — gwarancja „nigdy zła decyzja".
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_enforced = object.union(final_verdict_p25,
+    object.union(runtime_invariants.enforce(final_verdict_p25),
+        {"_routing_context": routing_context}))
 
 # final_verdict_p20 = kompletny werdykt P01 + ... + P19 + P20 (Neural Mesh + Innowacje v8).
 # final_verdict_p19 = kompletny werdykt P01 + ... + P18 + P19 (HR i Świadczenia).

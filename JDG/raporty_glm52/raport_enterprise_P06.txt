@@ -1,0 +1,203 @@
+═══════════════════════════════════════════════════════════════════════════════
+ RAPORT ANALITYCZNY ENTERPRISE — JDG P06: PIT MACRO (ULGI + OPTYMALIZACJA + FORMY)
+ STATUS: ✅ WDROŻONY W 100% (2026-08-08) — WSZYSTKIE KROKI, ETAPY, FAZY I USPRAWNIENIA ZASTOSOWANE
+ Plik: raport_enterprise_P06.txt · Raport źródłowy: 06_PROMT_PIT_MACRO.txt
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. EXECUTIVE SUMMARY — TOP 10 REKOMENDACJI (WDROŻONE)
+────────────────────────────────────────────────────────────────────────────────
+ 1. B+R DEFINITION CHECKER (P06-INN-14) — 4 kryteria działalności B+R
+    (Art. 26e ust. 2 + Art. 5a pkt 38-40): twórczość, systematyczność,
+    zwiększenie zasobów wiedzy, niepewny wynik — najczęściej błędnie
+    implementowana ulga; odliczenie 100% kosztów kwalifikowanych.
+ 2. FORM OPTIMIZER (P06-INN-09) — symulator co-if-jak: skala 12%/32% vs
+    liniowy 19% vs ryczałt (stawki PKWiU) przy prognozie przychodów/kosztów;
+    rekomendacja najniższej daniny + blokada liniowego przy świadczeniach
+    dla byłego pracodawcy (Art. 30c ust. 2).
+ 3. LOSS-OF-LINEAR DETECTOR (P06-INN-02) — auto-wykrywanie utraty prawa do
+    liniowego 19% (Art. 30c ust. 2) → BLOCK_AND_ALERT + rekomendacja
+    skali/ryczałtu.
+ 4. RELIEF RECOMMENDER (P06-INN-03) — rekomendacja ulgi wg profilu wydatków:
+    B+R (26e), prototyp (26eb, 30%), robotyzacja (26gb, 50%), ekspansja
+    (26ec, cap 1 000 000 zł), termo (26h, limit 53 000 zł/budynek, 3 lata),
+    IP Box (30ca, 5%).
+ 5. RELIEF STACKING ANALYZER (P06-INN-06/12) — wspólny limit 85 528 zł:
+    łączne odliczenia ulg vs limit — wykrywanie przekroczenia i nadmiaru.
+ 6. B+R vs IP BOX COMPARATOR (P06-INN-07) — porównanie efektywności
+    (odliczenie kosztów vs 5% od dochodu IP) — wybór optymalnej ulgi.
+ 7. REKONCYLACJA PIT↔VAT↔ZUS↔PKPiR (P06-INN-04) — zero rozjazdów: przychody
+    PKPiR vs VAT, KUP vs zakupy VAT, podstawa ZUS vs dochód → TRIAGE_QUEUE.
+ 8. KUP/NKUP AUDITOR (P06-INN-13) — auto 75% (limit 150 000 zł, EV
+    225 000 zł), NKUP Art. 23 (reprezentacja pkt 23, leasing pkt 47),
+    moment potrącenia Art. 22 ust. 5-5c.
+ 9. ADVANCE FORECAST (P06-INN-10) + PIT CALENDAR (P06-INN-11) — zaliczki
+    (20. dzień, uproszczone ≤ 300 000 zł), zeznanie 30.04 (Art. 45),
+    countdown.
+10. PIT-36 AUTO-GEN (P06-INN-05) — auto-fill PIT-36/36L/28 z JPK/PKPiR/
+    zaliczek/ulg + certyfikat F4 + rozliczenie z małżonkiem (skala).
+
+ 2. MAPA POKRYCIA USTAWY O PIT — ARTYKUŁ × REGUŁA × STATUS
+────────────────────────────────────────────────────────────────────────────────
+ (warstwa macro PIT: 17 plików, ~560 KB — reguły istniejące + nowe P06)
+
+ | Zakres (artykuły)          | REGUŁA (próbka rule_id)                     | STATUS      |
+ |----------------------------|----------------------------------------------|-------------|
+ | Art. 9a (wybór formy)      | jdg.pit.forms.* (linear/lump_sum/karta)       | COMPLETE    |
+ | Art. 10 (źródła)           | pit/forms + annual_declaration                | COMPLETE    |
+ | Art. 14 (przychody)        | pit/forms (lump_sum_exclusions)               | COMPLETE    |
+ | Art. 21 (zwolnienia)       | jdg.pit.exemptions.* + art21_exemptions_ent.  | COMPLETE    |
+ | Art. 21 pkt 148/152/153/154| jdg.pit.exemptions.young/senior/family_4plus  | COMPLETE    |
+ | Art. 22 (KUP)              | jdg.pit.kup.* (car/leasing/bad_debt)          | COMPLETE    |
+ | Art. 22 ust. 5-5c (moment) | jdg.pit.kup.direct_vs_indirect + P06 kup      | COMPLETE    |
+ | Art. 22a-22o (amortyzacja) | plan26_detailed (częściowo)                   | PARTIAL     |
+ | Art. 23 (NKUP 57 pkt)      | jdg.pit.kup.no_match + P06 (23/46/47)         | COMPLETE    |
+ | Art. 24 (straty)           | jdg.allowances.loss_carry_forward             | COMPLETE    |
+ | Art. 26-26h (ulgi)         | jdg.allowances.* + P06 (B+R/prototyp/termo)   | COMPLETE    |
+ | Art. 26e (B+R)             | P06 br_definition_checker (4 kryteria)        | COMPLETE    |
+ | Art. 26eb (prototyp)       | P06 relief_recommender (30%)                  | COMPLETE    |
+ | Art. 26gb (robotyzacja)    | P06 relief_recommender (50%)                  | COMPLETE    |
+ | Art. 26ec (ekspansja)      | P06 relief_recommender (cap 1 mln)            | COMPLETE    |
+ | Art. 26h (termo 53k)       | P06 termo_calculator                          | COMPLETE    |
+ | Art. 27 (skala 12/32)      | jdg.pit.forms.linear + P06 scale_tax_pln      | COMPLETE    |
+ | Art. 30c (liniowy 19%)     | jdg.pit.forms.linear + P06 30c ust. 2 blokada | COMPLETE    |
+ | Art. 30ca (IP Box 5%)      | jdg.allowances.* + P06 ip_box (0.05)          | COMPLETE    |
+ | Art. 30da (exit tax)       | plan26_detailed                               | PARTIAL     |
+ | Art. 30f (CFC)             | plan26_detailed                               | PARTIAL     |
+ | Art. 44 (zaliczki)         | jdg.pit.advances.* (monthly/quarterly/simpl.) | COMPLETE    |
+ | Art. 45 (zeznania)         | jdg.annual_decl.* (pit36/36l/28 autofill)     | COMPLETE    |
+ | Art. 21 pkt 152-154        | jdg.pit.exemptions.*                          | COMPLETE    |
+
+ LUKI (do P07 PIT MICRO / P09 PKPiR): amortyzacja 22a-22o szczegóły (Klasa B),
+ exit tax 30da / CFC 30f szczegóły (Klasa C) — P12 cross-border.
+
+ 3. AUDYT ULG (GŁÓWNY PRIORYTET) — WDROŻONY
+────────────────────────────────────────────────────────────────────────────────
+ | Ulga                  | Art. | Kluczowe parametry (thresholds)          | Status  |
+ |-----------------------|------|------------------------------------------|---------|
+ | B+R                   | 26e  | 4 kryteria definicji; odliczenie 100%     | ✅      |
+ | Prototyp              | 26eb | 30% kosztów (prototype_relief_rate 0.30)  | ✅      |
+ | Robotyzacja           | 26gb | 50% kosztów (robotization_relief_rate)    | ✅      |
+ | Ekspansja             | 26ec | cap 1 000 000 zł (expansion_max_costs)    | ✅      |
+ | Termomodernizacja     | 26h  | limit 53 000 zł/budynek, 3 lata           | ✅      |
+ | IP Box                | 30ca | 5% od dochodu IP (ip_box_rate 0.05)       | ✅      |
+ | Młodzi <26 (pkt 148)  | 21   | zwolnienie 0% (jdg.pit.exemptions.young)  | ✅      |
+ | Seniorzy (pkt 152)    | 21   | jdg.pit.exemptions.working_senior         | ✅      |
+ | Powrót (pkt 153)      | 21   | jdg.pit.exemptions.return                 | ✅      |
+ | Rodzina 4+ (pkt 154)  | 21   | jdg.pit.exemptions.family_4plus           | ✅      |
+ | Wspólny limit         | —    | 85 528 zł (shared_relief_limit) — guard   | ✅      |
+
+ WNIOSEK: wszystkie priorytetowe ulgi pokryte; progi z data.jdg.thresholds
+ (ADR-002); B+R z pełną definicją 4 kryteriów (najczęstszy błąd wdrożeń).
+
+ 4. AUDYT FORM OPODATKOWANIA
+────────────────────────────────────────────────────────────────────────────────
+ - SKALA 12%/32%: próg 120 000 zł, kwota wolna 30 000 zł (scale_threshold,
+   tax_free_amount z thresholds) — scale_tax_pln w P06 + jdg.pit.forms.
+ - LINIOWY 19%: linear_rate 0.19; WYŁĄCZENIE Art. 30c ust. 2 (były
+   pracodawca, ten sam zakres) — loss_of_linear_detector (NOWY w P06).
+ - RYCZAŁT: stawki PKWiU, limit 2 mln EUR, wyłączenia — jdg.pit.forms.
+   lump_sum_* (lump_sum_exclusions, limit_exceeded, loss_of_right).
+ - KARTA PODATKOWA: jdg.pit.forms (karta) + transitions.tax_card_loss_to_scale.
+ - SYMULATOR FORMY: form_transition_simulator_enterprise (istniejący) +
+   P06 form_optimizer (co-if-jak z prognozą) — spójne, wzajemnie uzupełniające.
+ - TRANSITIONS: scale_to_linear (tylko od 1.01), mid_year_block, dual_return.
+
+ 5. AUDYT KUP I NKUP
+────────────────────────────────────────────────────────────────────────────────
+ - Art. 22 (KUP): jdg.pit.kup.full_deductible, direct_vs_indirect, car_*,
+   leasing_*, bad_debt_debtor, health_linear_deduction — pokrycie COMPLETE.
+ - Art. 23 (NKUP — 57 pkt): reprezentacja (pkt 23) — P06 kup_auditor;
+   auto osobowe 75% (pkt 46) — jdg.pit.kup.car_operating_75pct; limit
+   leasingu (pkt 47) — jdg.pit.kup.leasing_*.
+ - Moment potrącenia Art. 22 ust. 5-5c: koszty pośrednie/bezpośrednie
+   (direct_vs_indirect) + cost_paid_this_year (P06 kup_auditor).
+ - Spójność z P09 (PKPiR) i P07 (micro): koszty wg ewidencji PKPiR —
+   rekoncyliacja PIT↔PKPiR (P06 pit_reconciliation).
+
+ 6. AUDYT ZALICZEK I ZEZNAŃ
+────────────────────────────────────────────────────────────────────────────────
+ - Art. 44: terminy 20. dzień (deadline_holiday_shift), miesięczne/
+   kwartalne/uproszczone (simplified ≤ 300 000 zł dochodu poprz. roku),
+   odliczenia (zus_social_deduction) — jdg.pit.advances.* COMPLETE.
+ - Art. 45: PIT-36/36L/28 auto-fill (annual_declaration_enterprise +
+   P06 pit36_autogen F4), rozliczenie z małżonkiem (joint_filing_optimizer),
+   korekta zaliczek (advance_reconciliation), cross-validation ulg.
+ - Wzory MF (rozp. 30.12.2025): zgodność pól deklaracji — kompletność
+   autofill (JPK_V7/PKPiR/zaliczki/ulgi) w P06 pit36_autogen.
+
+ 7. POTĘŻNE ROZWIĄZANIA SYSTEMOWE
+────────────────────────────────────────────────────────────────────────────────
+ - OPTYMALIZATOR FORMY (P06-INN-09): co-if-jak skala vs liniowy vs ryczałt
+   z prognozą przychodów/kosztów — rekomendacja najniższej daniny.
+ - KALKULATOR ULG (P06-INN-03): B+R vs prototyp vs robotyzacja vs ekspansja
+   vs termo vs IP Box — łączna kwota + rekomendacja wg profilu wydatków.
+ - STACKING ANALYZER (P06-INN-06/12): wspólny limit 85 528 zł — przekroczenia.
+ - PREDYKCJA ZALICZEK (P06-INN-10): szacunkowa zaliczka miesięczna (liniowy)
+   + uproszczona (1/12 podatku poprzedniego roku).
+ - KALENDARZ PIT (P06-INN-11): 20. dzień (zaliczki) + 30.04 (zeznanie)
+   z countdownem.
+ - PIT-36 AUTO-GEN (P06-INN-05): deklaracja z certyfikatem F4.
+
+ 8. GENIALNE POMYSŁY ENTERPRISE — 14/14 WDROŻONYCH
+────────────────────────────────────────────────────────────────────────────────
+ INN-01 PIT DIGITAL TWIN        — symulacja całego roku przed końcem roku.
+ INN-02 LOSS-OF-LINEAR DETECTOR — utrata liniowego 19% (Art. 30c ust. 2).
+ INN-03 RELIEF RECOMMENDER      — ulga wg profilu wydatków.
+ INN-04 REKONCYLACJA PIT↔VAT↔ZUS↔PKPiR — zero rozjazdów.
+ INN-05 PIT-36 AUTO-GEN (F4)    — deklaracja auto-generowana z certyfikatem.
+ INN-06 RELIEF STACKING         — łączne ulgi vs limit 85 528 zł.
+ INN-07 B+R vs IP BOX           — porównanie efektywności ulg.
+ INN-08 TERMO CALCULATOR        — Art. 26h, limit 53 000 zł, 3 lata.
+ INN-09 FORM OPTIMIZER          — co-if-jak skala/liniowy/ryczałt.
+ INN-10 ADVANCE FORECAST        — predykcja zaliczek (Art. 44).
+ INN-11 PIT CALENDAR            — countdown 20. dzień / 30.04.
+ INN-12 SHARED LIMIT GUARD      — wspólny limit 85 528 zł.
+ INN-13 KUP AUDITOR             — auto 75%, NKUP 23/46/47.
+ INN-14 B+R DEFINITION CHECKER  — 4 kryteria działalności B+R.
+
+ 9. REKOMENDACJE PRIORYTETOWE — MAPA DROGOWA
+────────────────────────────────────────────────────────────────────────────────
+ | Priorytet | Zakres               | Stan        | Ryzyko | Zależności        |
+ |-----------|----------------------|-------------|--------|-------------------|
+ | P1        | Ulgi (B+R/prototyp/  | ✅ WDROŻONE | NISKIE | P07 micro         |
+ |           | robotyzacja/eksp./   |             |        |                   |
+ |           | termo/IP Box)        |             |        |                   |
+ | P2        | Formy (optymalizator,| ✅ WDROŻONE | NISKIE | P13 ryczałt       |
+ |           | 30c ust. 2 blokada)  |             |        |                   |
+ | P3        | KUP/NKUP (auto 75%,  | ✅ WDROŻONE | NISKIE | P09 PKPiR         |
+ |           | leasing, moment)     |             |        |                   |
+ | P4        | Zaliczki/zeznania    | ✅ WDROŻONE | NISKIE | P07/P08           |
+ | P5        | Amortyzacja 22a-22o  | częściowo   | ŚREDNIE| P07/P09           |
+ | P6        | Exit tax/CFC (30da/  | częściowo   | ŚREDNIE| P12 cross-border  |
+ |           | 30f)                 |             |        |                   |
+
+ ZALEŻNOŚCI MIĘDZYCZĘŚCIOWE:
+   PIT Macro ↔ P07 (PIT micro) · ↔ P09 (PKPiR — KUP) · ↔ P13 (ryczałt —
+   wybór formy) · ↔ P08 (składka zdrowotna wg formy: 4,9% vs 9%) ·
+   ↔ P12 (CFC Art. 30f, exit tax Art. 30da).
+
+═══════════════════════════════════════════════════════════════════════════════
+ IMPLEMENTACJA — PLIKI
+═══════════════════════════════════════════════════════════════════════════════
+ [NOWY] rules/p06_pit_macro_enterprise_v9.rego   — pakiet ENTERPRISE (Sekcje 7-9,
+                                                     14 innowacji, safe accessors)
+ [EDYT] rules/main_jdg.rego                      — import + _package_decisions +
+                                                     safe_merge (najgłębiej, po P05)
+ [NOWY] tests/rego/test_p06_pit_macro_enterprise.rego — 16 natywnych testów Rego
+ [NOWY] tests/test_p06_pit_macro_enterprise.py   — 23 testy Python (analiza
+                                                     statyczna + wiring + ADR-002)
+
+ WALIDACJA KOŃCOWA:
+   ✅ 16/16 natywnych testów Rego (OPA v1.19, --v0-compatible)
+   ✅ 23/23 testów Python
+   ✅ 0 błędów p06_pit_macro_enterprise + main_jdg w pełnym bundle'u
+   ✅ Regresja: P05 12/12, P04 24/24, P03 17/17 (testy natywne)
+   ✅ ADR-002: progi z data.jdg.thresholds.pit (guardy {data.jdg.thresholds})
+   ✅ Składnia: brak `and`/`or` (helpery), brak `if-else` w wartościach
+     obiektów (stacking_status), totalne wynikowe reguły (linear/lump)
+   ✅ Próg 120 000 zł, kwota wolna 30 000 zł, 12%/32%/19%/5%, termo 53 000 zł,
+     limit wspólny 85 528 zł — wszystkie z thresholds
+   ✅ [REVIEW] kwota zmniejszająca podatek (Art. 27 ust. 1a): 3 600 zł do
+     120k, fazowanie 0.06×(dochód−120k) do 180k, 0 powyżej — odjęta od
+     skali (testy: 100k→8 400 zł, 150k→22 200 zł, 200k→40 000 zł)
+═══════════════════════════════════════════════════════════════════════════════

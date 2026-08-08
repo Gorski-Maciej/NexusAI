@@ -2,32 +2,22 @@
 # NexusAI JDG — Verdict Provenance Graph (A1 Strategic Initiative)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
-# title: Verdict Provenance Graph — Full Decision Path Tracing
-# description: |
-#   A1 z NexusAI_JDG_STRATEGIC_IMPROVEMENTS_7000.txt.
-#   Każdy werdykt JDG jest wzbogacany o `_provenance_tree` — graf JSON
-#   pokazujący PEŁNĄ ścieżkę decyzyjną: od main_jdg przez Macro do Micro
-#   z referencjami do threshold_ref i hashów podstaw prawnych.
+# DANE DOKUMENTACYJNE (komentarz zwykły — nie parsowany przez OPA):
+#   title: Verdict Provenance Graph — Full Decision Path Tracing
+#   architecture: Post-Merge Enrichment (Sovos Merkle Tree pattern)
+#   legal_basis: N/A (audit infrastructure) · package: jdg.provenance · deprecated: false
+#   description: A1 — kazdy werdykt JDG wzbogacany o _provenance_tree (graf JSON
+#   pelnej sciezki decyzyjnej: main_jdg -> Macro -> Micro z threshold_ref i hashami
+#   podstaw prawnych). Post-merge enrichment: side-effect-free, Sovos Merkle Tree
+#   standard. Struktura: path, root_hash, evaluation_ms, evaluated_at,
+#   bundle_version, rule_version, threshold_version, decision_hash, verdict_summary.
 #
-#   Architektura: Post-merge enrichment — działa PO zakończeniu main_jdg.
-#   Side-effect-free — nie zmienia logiki reguł, tylko rozszerza output.
-#   Zgodność z Sovos Merkle Tree audit standard.
-#
-#   Struktura _provenance_tree:
-#     - path: lista kroków decyzyjnych [step, package, rule_id, basis, value]
-#     - root_hash: SHA-256 całego kontekstu (do non-repudiation)
-#     - evaluation_ms: czas ewaluacji
-#     - evaluated_at: timestamp ISO 8601
-# architecture: Post-Merge Enrichment (Sovos Merkle Tree pattern)
-# legal_basis: N/A (audit infrastructure)
-# package: jdg.provenance
-# deprecated: false
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.provenance
 
 import data.jdg.metadata
+import future.keywords.in
 
 # ── Build provenance tree for a verdict ─────────────────────────────────────
 
@@ -48,6 +38,8 @@ build_provenance(final_verdict, input_context) = tree {
     root_hash := sprintf("sha256:%s", [root_hash_concat])
 
     # Krok 4: Złóż pełne drzewo
+    # P03 GLM52 §7 (V1 §9.3): drzewo niesie wersje bundle/rule/threshold —
+    # INV-030 (wersje w proweniencji) + decision_hash do ewaluacji różnicowej F3.
     tree := {
         "path": decision_path,
         "root_hash": root_hash,
@@ -55,6 +47,15 @@ build_provenance(final_verdict, input_context) = tree {
         "evaluated_at": sprintf("%s", [time.now_ns()]),
         "active_packages": count(active_packages),
         "total_packages": count(object.keys(input_context._package_decisions)),
+        "bundle_version": object.get(input, "bundle_version", "unknown"),
+        "rule_version": object.get(final_verdict, "rule_version", object.get(input, "rule_version", "unknown")),
+        "threshold_version": object.get(input, "threshold_version", "unknown"),
+        "decision_hash": sprintf("sha256:%s", [concat("|", [
+            object.get(final_verdict, "rule_id", "unknown"),
+            object.get(final_verdict, "_routing", ""),
+            sprintf("%v", [object.get(final_verdict, "vat_rate", "")]),
+            sprintf("%v", [object.get(input, "bundle_version", "")]),
+        ])]),
         "verdict_summary": {
             "matched": object.get(final_verdict, "matched", false),
             "rule_id": object.get(final_verdict, "rule_id", "unknown"),

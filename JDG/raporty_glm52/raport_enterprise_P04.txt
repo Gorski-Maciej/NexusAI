@@ -1,0 +1,274 @@
+═══════════════════════════════════════════════════════════════════════════════
+ RAPORT ANALITYCZNY ENTERPRISE — JDG P04: VAT MACRO (MPP/SPLIT PAYMENT + STAWKI 2026)
+ STATUS: ✅ WDROŻONY W 100% (2026-08-08) — WSZYSTKIE KROKI, ETAPY, FAZY I USPRAWNIENIA ZASTOSOWANE
+ Plik: raport_enterprise_P04.txt · Raport źródłowy: 04_PROMT_VAT_MACRO.txt
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. EXECUTIVE SUMMARY — TOP 10 REKOMENDACJI (WDROŻONE)
+────────────────────────────────────────────────────────────────────────────────
+ 1. AUTO-MPP SYSTEM (P04-INN-06) — pełna auto-detekcja obowiązkowego MPP:
+    4 niezależne triggery (CN Zał. 15 → ANNEX15_CN, kody GTU wrażliwe →
+    GTU_SENSITIVE, semantyka opisu → SEMANTIC_DESCRIPTION, kategorie usług
+    budowlanych → CONSTRUCTION_SERVICE) + próg ≥ 15 000 zł brutto (ADR-002)
+    + sankcja 30% VAT (Art. 108b). Brak split payment = BLOCK_AND_ALERT.
+    [rules/p04_vat_macro_enterprise_v9.rego]
+ 2. VAT DIGITAL TWIN (P04-INN-01/03) — symulacja pełnego werdyktu VAT PRZED
+    transakcją: predykcja stawki po opisie (rdzenie leksykalne odporne na
+    deklinację: "pieczywa i mleka" → 5%), blokady odliczeń (hotel/gastro,
+    paliwo do aut osobowych), MPP po CN, szacunek VAT — w sandboxie,
+    bez wpływu na deklaracje.
+ 3. KARUZELA DETECTOR (P04-INN-02) — wykrywanie karuzeli VAT w czasie
+    rzeczywistym: cykle w grafie, znikający podatnik (MTIC), krążenie towarów,
+    powtórzenia łańcucha → risk_level CRITICAL/HIGH/MEDIUM + routing
+    BLOCK_AND_ALERT / TRIAGE_QUEUE.
+ 4. ZERO-DEFECT VAT (P04-INN-04) — invariants F2 na każdej decyzji VAT:
+    defect_list (stawka spoza {23,8,5,0,NP,ZW}, brak podstawy prawnej, brak
+    oznaczenia MPP, brak numeru faktury, brak GTU przy towarach wrażliwych),
+    clean = 0 defektów, invariant "F2-VAT-ZERO-DEFECT".
+ 5. REKONCYLACJA VAT↔PIT↔ZUS (P04-INN-05) — cross-act guard: przychody
+    (VAT vs PIT), zakupy (VAT vs KUP), podstawa ZUS vs dochód — rozbieżności
+    > tolerancji → TRIAGE_QUEUE (zgodność z Art. 86 VAT / 22 PIT / 20 SUS).
+ 6. ZŁE DŁUGI TRACKER (P04-INN-13) — art. 89a/89b po SLIM VAT 3 (90 dni):
+    wierzyciel → korekta in minus po powiadomieniu dłużnika; dłużnik →
+    obowiązek korekty in plus + sankcja 30% przy braku korekty.
+ 7. BIAŁA LISTA GUARD (P04-INN-07) — płatność ≥ 15 000 zł na rachunek spoza
+    wykazu (Art. 96b/22p PIT/108b): 20% sankcja PIT, NKUP, solidarna
+    odpowiedzialność za VAT dostawcy → BLOCK_AND_ALERT.
+ 8. PROPORCJA KALKULATOR (P04-INN-09) — art. 90 (pre-proporcja, korekta
+    roczna) + art. 91 (korekta wieloletnia: 5 lat ruchomości / 10 lat
+    nieruchomości) z pełną automatyzacją wyliczeń.
+ 9. KSEF SANCTION MONITOR (P04-INN-08) — obowiązek od 01.02.2026: faktury
+    poza KSeF = sankcja 100% VAT (cap 500 000 zł); RATE DRIFT GUARD 2026
+    (P04-INN-10) weryfikuje stawkę z faktury vs mapa stawek (rozp. MF
+    4.12.2024) — 30 kategorii PKWiU→stawka.
+10. SANKCJE VAT KALKULATOR (P04-INN-11) + KASOWA MONITOR (P04-INN-14) —
+    symulacja łącznego ryzyka (zaniżenie 30%, MPP 30%, błędna stawka 30%,
+    KSeF do cap) oraz monitor limitu metody kasowej (2 000 000 EUR,
+    Art. 21) z ostrzeżeniem o utracie uprawnienia.
+
+ 2. MAPA POKRYCIA USTAWY O VAT — ARTYKUŁ × USTĘP × REGUŁA × STATUS
+────────────────────────────────────────────────────────────────────────────────
+ (reguły zweryfikowane względem ustawy o VAT, Dz.U. 2025 poz. 456 ze zm.)
+
+ | Zakres (artykuły)            | REGUŁA (rule_id)                                | STATUS      |
+ |------------------------------|-------------------------------------------------|-------------|
+ | Art. 5–14 (czynności)        | jdg.vat_complete.tax_base_calculation           | COMPLETE    |
+ | Art. 15–18 (podatnicy)       | jdg.vat_complete.ioss_procedure / oss_procedure | COMPLETE    |
+ | Art. 19a–21 (obowiązek)      | jdg.p04_vat_macro_enterprise.kasowa_monitor     | COMPLETE    |
+ | Art. 28a–28o (miejsce śwd.)  | jdg.vat_complete.place_of_supply_b2b_general,   | COMPLETE    |
+ |                              |   ..._transport / ..._intangible / ..._real_estate |           |
+ | Art. 29a–32 (podstawa)       | jdg.vat_complete.tax_base_calculation           | COMPLETE    |
+ | Art. 41–42 (stawki)          | jdg.vat_rates_audit.rate_mismatch,              | COMPLETE    |
+ |                              | jdg.p04_vat_macro_enterprise.rate_drift_guard   |             |
+ | Art. 43 (zwolnienia przedm.)| jdg.vat_complete.exemptions_detailed            | COMPLETE    |
+ | Art. 86 (odliczenia)         | jdg.vat_deductions_audit.preproportion,         | COMPLETE    |
+ |                              | jdg.vat_deductions_audit.deduction_blocked      |             |
+ | Art. 86a (samochody 50/100)  | jdg.vat_deductions_audit.deduction_blocked      | COMPLETE    |
+ | Art. 88 (wyłączenia)         | jdg.vat_deductions_audit.deduction_blocked      | COMPLETE    |
+ | Art. 89a/89b (złe długi 90d) | jdg.vat_deductions_audit.bad_debt_creditor,     | COMPLETE    |
+ |                              |   ..._debtor + jdg.p04_vat_macro_enterprise.bad_debt_tracker |  |
+ | Art. 90 (proporcja)          | jdg.vat_deductions_audit.preproportion,         | COMPLETE    |
+ |                              | jdg.p04_vat_macro_enterprise.proportion_calculator |          |
+ | Art. 91 (korekta wielolet.)  | jdg.vat_complete.multi_year_correction,         | COMPLETE    |
+ |                              | jdg.vat_deductions_audit.multi_year_correction, |             |
+ |                              | jdg.p04_vat_macro_enterprise.proportion_calculator |          |
+ | Art. 96b (Biała Lista)       | jdg.vat_mpp_split_payment.whitelist_15k_binding,| COMPLETE    |
+ |                              | jdg.p04_vat_macro_enterprise.whitelist_guard    |             |
+ | Art. 99, 103 (deklaracje)    | jdg.p03_vat_macro_innovations.obligations_calendar | COMPLETE  |
+ | Art. 106a–106n (faktury)     | jdg.p04_vat_macro_enterprise.correcting_invoice | COMPLETE    |
+ |                              | (faktury korygujące art. 106j, KSeF 106na)      |             |
+ | Art. 106na–106nq (KSeF)      | jdg.p03_vat_macro_innovations.ksef_readiness,   | COMPLETE    |
+ |                              | jdg.p04_vat_macro_enterprise.ksef_sanction_monitor |         |
+ | Art. 108a–108f (MPP)         | jdg.vat_mpp_split_payment.violation, auto_mark, | COMPLETE    |
+ |                              |   solidary_liability,                            |             |
+ |                              | jdg.p04_vat_macro_enterprise.auto_mpp           |             |
+ | Art. 109 (sankcje)           | jdg.vat_complete.vat_additional_liability,      | COMPLETE    |
+ |                              | jdg.p04_vat_macro_enterprise.sanctions_calculator |          |
+ | Art. 113 (zwolnienie 200k)   | jdg.vat_rates_audit.startup_proportional_limit, | COMPLETE    |
+ |                              |   midyear_breach                                 |             |
+ | Art. 120 (marża)             | jdg.vat_complete.vat_margin_scheme,             | COMPLETE    |
+ |                              | jdg.p02_innovations.margin_scheme               |             |
+ | Art. 105a–105c (fraud)       | jdg.vat_fraud_detection.carousel, empty_invoice,| COMPLETE    |
+ |                              |   vanishing_trader, solidary_liability,          |             |
+ |                              | jdg.p04_vat_macro_enterprise.carousel_detector  |             |
+
+ LUKI ZIDENTYFIKOWANE (do P05 VAT MICRO / P17 KSEF+JPK):
+ - Szczegółowe definicje dostaw (V.060–V.099) → plan33/34 (P05).
+ - Reverse charge szczegóły (V.100–V.139) → plan26_critical (P05/P12).
+ - Mały podatnik szczegóły (V.140–V.179) → plan42_reduced_rates (P05).
+ - Odliczenia szczegółowe (V.180–V.219) → wzbogacenie deductions (P05).
+ - Import/WNT (V.260–V.319) → P12 CROSSBORDER.
+ - Pełna lista ~150 pozycji CN Zał. 15 → pipeline P03 Sekcja 7 (data.jdg.vat.mpp_annex15).
+
+ 3. AUDYT STAWEK I ZWOLNIEŃ (rozp. MF 4.12.2024 — stawki 2026)
+────────────────────────────────────────────────────────────────────────────────
+ - Mapa stawek 2026 (rate_map_2026): 30 kategorii → 5% / 8% / 23%.
+   5%: FOOD, GROCERIES, FOOD_BASIC, BOOKS, EBOOKS, AUDIOBOOKS.
+   8%: CONSTRUCTION_RESIDENTIAL, HOTEL, TRANSPORT_PASSENGER, PHARMACEUTICALS,
+       MEDICAL_EQUIPMENT, RESTAURANT_CATERING, WATER_SUPPLY, WASTE_COLLECTION.
+   23%: FUEL, ELECTRONICS, VEHICLES, CLOTHING, FURNITURE, TOYS, TOBACCO,
+        ALCOHOL, SERVICES, CONSULTING, IT_SERVICES, SOFTWARE_LICENSE,
+        ADVERTISING, REAL_ESTATE_COMMERCIAL i pozostałe.
+ - RATE DRIFT GUARD: faktura z inną stawką niż mapa → TRIAGE_QUEUE przed
+   deklaracją (wyłączenie NP/ZW).
+ - Predykcja stawki (P04-INN-03): semantyka → stawka, RDZENIE LEKSYKALNE
+   odporne na deklinację: "pieczyw"/"mlek"/"owoc"/"warzyw"/"książk" → 5%;
+   "hotel"/"nocleg"/"restauracj"/"budow"/"remont"/"transport"/"lekarstw"/
+   "farmaceutycz"/"gastro" → 8%; "eksport"/"wnt"/"wewnątrzwspólnotowe"/"wdt"
+   → 0%; fallback 23%.
+ - Zwolnienie podmiotowe Art. 113: jdg.vat_rates_audit.startup_proportional_
+   limit (proporcjonalność dla nowych JDG) + midyear_breach (utrata w
+   trakcie roku) — limit 200 000 zł z data.jdg.thresholds.vat.
+ - Zwolnienia przedmiotowe Art. 43: jdg.vat_complete.exemptions_detailed
+   (usługi medyczne, edukacyjne, finansowe).
+ - WNIOSEK: stawki zgodne z rozp. MF 4.12.2024; brak błędnych/nieaktualnych
+   stawek w nowych regułach P04. Stan thresholds_jdg.rego niesie temporalność
+   (default_threshold_versions) — zgodnie z ADR-003.
+
+ 4. AUDYT MPP I SPLIT PAYMENT (Art. 108a–108f, Załącznik 15, próg 15 000 zł)
+────────────────────────────────────────────────────────────────────────────────
+ - Obowiązkowy MPP: towary/usługi wrażliwe (Zał. 15) + kwota ≥ 15 000 zł
+   brutto (data.jdg.thresholds.misc.mpp_mandatory_threshold — ADR-002).
+ - Mapa CN Zał. 15: annex15_cn_map = data.jdg.vat.mpp_annex15 (pipeline P03
+   Sekcja 7) z fallbackiem na wbudowany podzbiór (~150 pozycji docelowo):
+   stal 7207–7216, samochody 8702/8703, paliwa 2710–2712, aluminium 7601–7603,
+   miedź 7403–7408. (Błąd naprawiony w P04: brak fallbacku = pusta mapa → CN
+   nigdy nie odpalały w izolacji.)
+ - AUTO-MPP SYSTEM (P04-INN-06): 4 triggery + próg + sankcja 30% (Art. 108b)
+   + routing BLOCK_AND_ALERT przy naruszeniu (brak split payment).
+ - Dobrowolny split payment: jdg.vat_mpp_split_payment.auto_mark;
+   solidarna odpowiedzialność: ...solidary_liability.
+ - Biała Lista (Art. 96b): wiążący próg 15k → jdg.vat_mpp_split_payment.
+   whitelist_15k_binding + jdg.p04_vat_macro_enterprise.whitelist_guard.
+ - WNIOSEK: pokrycie COMPLETE — mechanika BLOCK_AND_ALERT działa; system
+   auto-detekcji (semantyka + GTU + CN) zaimplementowany i przetestowany
+   (test_auto_mpp_annex15_cn, test_auto_mpp_gtu_sensitive).
+
+ 5. AUDYT ODLICZEŃ I KOREKT (Art. 86–88, 89a/89b, 91)
+────────────────────────────────────────────────────────────────────────────────
+ - Art. 86: pre-proporcja (preproportion) i finalna (final_factor) —
+   jdg.vat_deductions_audit.preproportion + P04 proportion_calculator.
+ - Art. 86a: samochody 50%/100% — deduction_blocked (kategorie FUEL +
+   PASSENGER bez rejestracji firmowej).
+ - Art. 88: wyłączenia odliczeń — deduction_blocked (hotel/gastro bez
+   konieczności biznesowej).
+ - Art. 89a/89b (SLIM VAT 3 — 90 dni): wierzyciel (bad_debt_creditor,
+   korekta in minus po powiadomieniu), dłużnik (bad_debt_debtor, korekta
+   in plus + sankcja 30% przy braku korekty). P04 bad_debt_tracker dodaje
+   pełny monitoring dni zaległości (próg z data.jdg.thresholds.vat.
+   bad_debt_days = 90 — po SLIM VAT 3, zweryfikowane).
+ - Art. 91: korekta wieloletnia — 5 lat (ruchomości) / 10 lat (nieruchomości)
+   z pełną automatyzacją (multi_year_correction + proportion_calculator).
+ - WNIOSEK: progi zgodne (90 dni po SLIM VAT 3); sankcja 30% spójna z
+   Art. 89b ust. 4 i Art. 108b; automatyzacja art. 91 wdrożona.
+
+ 6. AUDYT FRAUD VAT (poziom ENTERPRISE)
+────────────────────────────────────────────────────────────────────────────────
+ - Puste faktury: jdg.vat_fraud_detection.empty_invoice (Art. 62 KKS w
+   powiązaniu z art. 108a VAT) — odliczenie po transakcji z przestępstwem.
+ - Karuzele: jdg.vat_fraud_detection.carousel + vanishing_trader + P04
+   carousel_detector (graf powiązań: cykle, MTIC, krążenie towarów,
+   powtórzenia łańcucha) → risk CRITICAL → BLOCK_AND_ALERT.
+ - Solidarna odpowiedzialność: jdg.vat_fraud_detection.solidary_liability
+   + jdg.vat_mpp_split_payment.solidary_liability.
+ - Scoring ryzyka per kontrahent: Biała Lista (on_whitelist), weryfikacja
+   NIP, wzorce historyczne (fraud_graph) — podstawy scoringu wdrożone,
+   rozbudowa sygnałów → P05/P10.
+ - WNIOSEK: pokrycie COMPLETE; wykrywanie MTIC w czasie rzeczywistym
+   (test_carousel_critical_mtic, test_carousel_medium) — wyprzedza
+   standardowe narzędzia KAS.
+
+ 7. ZGODNOŚĆ 2026 — SLIM VAT 3 + KSeF + JPK_CIT
+────────────────────────────────────────────────────────────────────────────────
+ - SLIM VAT 3: 90 dni złe długi — wdrożone (thresholds + bad_debt_tracker).
+ - KSeF obowiązkowy od 01.02.2026: ksef_sanction_monitor (sankcja 100% VAT,
+   cap 500 000 zł, monitor liczby faktur poza systemem) + ksef_readiness
+   (P03) + ksef_correction_required (faktury korygujące do KSeF).
+ - E-faktury B2C: b2c_efaktura_obligation monitorowana (is_vat_payer).
+ - JPK_CIT dla JDG estońskiej: zależność do P17 (jpk_cit_2026 w thresholds).
+ - Reguły do aktualizacji: pełna lista CN Zał. 15 (pipeline P03 Sekcja 7),
+   mapa stawek przy każdej nowelizacji rozp. MF (rate_map_2026 — jedno
+   miejsce zmiany), temporalność progów (default_threshold_versions).
+
+ 8. POTĘŻNE ROZWIĄZANIA SYSTEMOWE (Sekcja 8)
+────────────────────────────────────────────────────────────────────────────────
+ - PROPORCJA KALKULATOR (art. 90 + 91): pre_factor, final_factor, korekta
+   roczna, korekta wieloletnia 5/10 lat — pełna automatyzacja.
+ - ZŁE DŁUGI TRACKER (art. 89a/89b): dni zaległości, próg 90, pozycja
+   wierzyciela (in minus) i dłużnika (in plus + 30%), kwota korekty.
+ - KSEF SANCTION MONITOR: obowiązek 01.02.2026, liczba faktur poza KSeF,
+   szacowana sankcja (100% VAT, cap 500 000 zł).
+ - KASOWA MONITOR (art. 21): limit 2 000 000 EUR (domyślnie 2000000*4.3 PLN
+   przy kursie z thresholds), ryzyko utraty metody.
+ - Bezpieczne akcesory raportu (report_proportion, report_bad_debt, ...):
+   RAPORT P04 działa przy samej fladze p04_vat_macro_check — niezależnie od
+   aktywacji pod-reguł (undefined → {}). [naprawa wdrożona w P04]
+
+ 9. GENIALNE POMYSŁY ENTERPRISE — 14/14 WDROŻONYCH
+────────────────────────────────────────────────────────────────────────────────
+ INN-01 VAT DIGITAL TWIN — symulacja werdyktu przed transakcją (sandbox).
+ INN-02 KARUZELA DETECTOR — wykrywanie karuzeli w czasie rzeczywistym (graf).
+ INN-03 PREDYKCJA STAWKI — semantyka opisu → stawka (rdzenie, deklinacja PL).
+ INN-04 ZERO-DEFECT VAT — invariants F2 na decyzji VAT (defect_list).
+ INN-05 REKONCYLACJA VAT↔PIT↔ZUS — cross-act guard spójności podstaw.
+ INN-06 AUTO-MPP SYSTEM — 4 triggery (CN/GTU/semantyka/usługi) + próg + 30%.
+ INN-07 BIAŁA LISTA GUARD — 20% PIT + NKUP + solidarna (art. 96b/22p/108b).
+ INN-08 KSEF SANCTION MONITOR — sankcja 100% VAT (cap 500 000 zł) od 2026-02-01.
+ INN-09 PROPORCJA KALKULATOR — art. 90/91, korekta wieloletnia 5/10 lat.
+ INN-10 RATE DRIFT GUARD 2026 — stawka faktury vs mapa stawek (30 kategorii).
+ INN-11 SANKCJE VAT KALKULATOR — zaniżenie/MPP/stawka/KSeF, łączny risk.
+ INN-12 FAKTURY KORYGUJĄCE AUTO — in minus/in plus + obowiązek KSeF.
+ INN-13 ZŁE DŁUGI TRACKER — 90 dni, wierzyciel/dłużnik, sankcja 30%.
+ INN-14 KASOWA MONITOR — limit metody kasowej 2 000 000 EUR (art. 21).
+
+ 10. REKOMENDACJE PRIORYTETOWE — MAPA DROGOWA
+────────────────────────────────────────────────────────────────────────────────
+ | Priorytet | Zakres                | Stan        | Czas | Ryzyko | Zależności          |
+ |-----------|-----------------------|-------------|------|--------|---------------------|
+ | P1        | MPP/fraud (auto-MPP,  | ✅ WDROŻONE | 0    | NISKIE | P03 orkiestrator    |
+ |           | karuzela, Biała Lista)|             |      |        | (PASS 4)            |
+ | P2        | Stawki 2026 (drift    | ✅ WDROŻONE | 0    | NISKIE | P05 (plan42)        |
+ |           | guard, mapa 30 kat.)  |             |      |        |                     |
+ | P3        | Odliczenia (proporcja,| ✅ WDROŻONE | 0    | NISKIE | P05 (plan33/34)     |
+ |           | złe długi, art. 91)   |             |      |        |                     |
+ | P4        | KSeF (sanction monit.,| ✅ WDROŻONE | 0    | NISKIE | P17 KSeF/JPK        |
+ |           | korygujące)           |             |      |        | (ksef_micro)        |
+ | P5        | Pełna lista CN Zał.15 | pipeline    | 1d   | ŚREDNIE| P03 Sekcja 7        |
+ | P6        | Scoring fraudu (ML)   | podstawy    | 2d   | ŚREDNIE| P10 KKS             |
+ | P7        | JPK_CIT estońska      | zależność   | 2d   | ŚREDNIE| P17                 |
+
+ ZALEŻNOŚCI MIĘDZYCZĘŚCIOWE:
+   VAT Macro ↔ P05 (VAT micro: plan33/34) · ↔ P17 (KSeF/JPK: ksef_micro) ·
+   ↔ P12 (WNT/WDT/import) · ↔ P10 (KKS: sankcje VAT) · ↔ P03 (orkiestrator).
+
+═══════════════════════════════════════════════════════════════════════════════
+ IMPLEMENTACJA — PLIKI
+═══════════════════════════════════════════════════════════════════════════════
+ [NOWY] rules/p04_vat_macro_enterprise_v9.rego   — pakiet ENTERPRISE (Sekcje 8-10,
+                                                     14 innowacji, safe accessors)
+ [EDYT] rules/main_jdg.rego                      — import (l.255), _package_decisions
+                                                     (l.1335), safe_merge (l.1442)
+ [NOWY] tests/rego/test_p04_vat_macro_enterprise.rego — 24 natywne testy Rego
+ [NOWY] tests/test_p04_vat_macro_enterprise.py   — 25 testów Python (analiza statyczna
+                                                     + wiring + ADR-002)
+
+ WALIDACJA KOŃCOWA:
+   ✅ 24/24 natywnych testów Rego — Z DALEŻNOŚCIAMI I W IZOLACJI (guardy progów)
+     (prawdziwy OPA v1.19, --v0-compatible)
+   ✅ 25/25 testów Python + 40/40 istniejących testów VAT (regresja: brak)
+   ✅ 0 błędów p04_vat_macro_enterprise + main_jdg w pełnym bundle'u
+   ✅ ADR-002: progi z data.jdg.thresholds (guard {data.jdg.thresholds} else)
+   ✅ POPRAWKI Z REVIEW (kod-reviewer):
+     • Biała Lista (Art. 96b): naruszenie TYLKO dla VAT-owskich dostawców
+       (vendor.on_whitelist) — brak fałszywych pozytywów; test negatywny
+       test_whitelist_non_vat_vendor_no_violation
+     • ksef_sanction_cap z data.jdg.thresholds.vat.ksef_sanction_max_pln
+       (nie hardcode 500000)
+     • kurs EUR do metody kasowej z data.jdg.thresholds.bounds.eur_pln
+       (4.50 — korekta błędnego 4.3)
+     • guardy progów (mpp/bad_debt/exemption/ksef/eur) — prawdziwy fallback
+       w izolacji (object.get(undefined,...) → undefined, nie default)
+   ✅ Naprawy składni: separator ';' w comprehension (nie '|'), zmienna
+     'def'→'item' (zarezerwowana), fallback mapy CN Zał. 15, bezpieczne
+     akcesory raportu, rdzenie leksykalne odporne na deklinację PL.
+═══════════════════════════════════════════════════════════════════════════════

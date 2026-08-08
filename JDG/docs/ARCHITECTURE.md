@@ -301,7 +301,27 @@ temporal_validity := {
 
 ---
 
-*Wygenerowano przez NexusAI ADR Engine v8.2 — 2026-08-08 (P01 Fundament Święty)*
+## ADR-022: Orkiestrator Forteca — POST-MERGE Invariants + Decision Certificate — [NOWY, v8.3 / P03 GLM52]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P03 GLM52 Orkiestrator)
+
+**Decyzja:** Na **końcu POST-MERGE** (`main_jdg.rego` → `final_verdict_enforced`) każdy werdykt przechodzi przez egzekucję runtime invariants (F2 V2) i otrzymuje:
+- `_invariant_report` — wynik czystej funkcji `evaluate(v)` (INV-001..042, poziomy RUNTIME/BUILD/STATISTICAL),
+- `certainty_class` (F4 V2 §5.2): `CERTAIN` / `CONDITIONAL` / `NEEDS_ADVICE`,
+- `_certainty_guard` — `AUTO_POST_ALLOWED` / `MANUAL_REVIEW` / `CERTAINTY_BLOCKED`; **host NIGDY nie wykonuje AUTO_POST dla CERTAINTY_BLOCKED** (INV-006/INV-035),
+- `_decision_certificate` — certyfikat F4: `decision_hash` (F3 V2, ewaluacja różnicowa) + wersje `bundle_version` / `rule_version` / `threshold_version` (V1 §9.3) + `legal_basis_refs` (F1),
+- `_routing_context` — kontekst routingu O(1) (INV-020/INV-036, ADR-009).
+
+**Katalog:** INV-001..042 w `rules/audit/runtime_invariants_enterprise.rego` — rozszerzony o determinizm (INV-010/040), certyfikat (INV-031/032/034), degradację (INV-038), graf (INV-041), allowlist (INV-042). `evaluate(v)` jest jednoźródłową funkcją czystą — używana przez runtime, host i CI (invariant_checker.py).
+
+**Innowacje P03:** `rules/p03_orchestrator_innovations_v9.rego` — 14 INN (cache Merkle INN-01/12, shadow twin INN-02, dowody SMT/Z3 INN-03, benchmarki INN-04, cold-start INN-05, WASM+fallback INN-06, degraded context INN-07, kill-switch INN-08, graf zależności INN-09, certyfikat INN-10, propagacja pewności INN-11, hot-path INN-13, lifecycle INN-14). Temporalność: `temporal.rego` P1627–P1632 (algebra interwałów, pinning progów, law radar lead ≥ 30, retroaktywność, dryft, dowód wersji). Bramka zero-hardcode: `tools/hardcoded_audit_gate.py` (HARDCODED_AUDIT, cel 0 → data.thresholds/DuckDB, hot-reload < 1 min).
+
+**Artefakty:** `rules/audit/runtime_invariants_enterprise.rego`, `rules/p03_orchestrator_innovations_v9.rego`, `rules/temporal.rego` (P1627–P1632), `rules/provenance.rego` (wersje V1 §9.3), `tools/hardcoded_audit_gate.py`, `final_verdict_enforced` w `main_jdg.rego`.
+
+---
+
+*Wygenerowano przez NexusAI ADR Engine v8.3 — 2026-08-08 (P03 GLM52 Orkiestrator)*
+*ADR-022 dodany na podstawie raport_enterprise_P03.txt (Orkiestrator + Infrastruktura Reguł)*
 *ADR-016..021 dodane na podstawie WIZJA_OPA_ENTERPRISE_V2.md §1.1 (V2 filary F1–F6)*
 *ADR-009..014 dodane na podstawie RAPORT_P25_JDG_DOCS_FINAL_AUDIT_v7.0 (R7)*
 *ADR-015 dodany na podstawie RAPORT_P26_JDG_MISSING_REGO_FILES_v7.0 (R12)*
