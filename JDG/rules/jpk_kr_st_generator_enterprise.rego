@@ -2,7 +2,7 @@
 # NexusAI JDG — ENTERPRISE JPK_KR/ST GENERATOR (Innovation 8.20 / LUKA-C2, P18 v7.0)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
+# Metadata documentation (kept as ordinary comments; no executable annotation).
 # title: JDG Enterprise JPK_KR/ST Generator — Księgi Rachunkowe i Środki Trwałe
 # description: |
 #   ENTERPRISE v7.0 — Generator JPK_KR (Księgi Rachunkowe) i JPK_ST (Środki Trwałe)
@@ -31,6 +31,44 @@ package jdg.jpk_kr_st
 
 import data.jdg.helpers
 import data.jdg.thresholds
+import future.keywords.if
+import future.keywords.in
+
+consistency_marker_value(consistent) = "✅" {
+    consistent
+} else = "⚠️" {
+    not consistent
+}
+
+kr_applicable_value(full_accounting, revenue_eur, threshold_eur) = true {
+    full_accounting
+} else = true {
+    revenue_eur > threshold_eur
+} else = false {
+    not full_accounting
+    revenue_eur <= threshold_eur
+}
+
+eligibility_routing_value(applicable) = "TRIAGE_QUEUE" if { applicable } else = ""
+eligibility_reason_value(applicable, revenue_eur) = reason if {
+    applicable
+    reason := sprintf("JPK_KR: JDG na pełnej księgowości (%.0f EUR przychodu) — JPK_KR/ST na żądanie US.", [revenue_eur])
+} else = "JDG na PKPiR — JPK_KR/ST nie dotyczy (wystarczy JPK_PKPIR)."
+
+kr_routing_value(balanced, journal_count) = "BLOCK_AND_ALERT" if { not balanced } else = "TRIAGE_QUEUE" if { balanced; journal_count == 0 } else = ""
+kr_reason_value(balanced) = "JPK_KR NIEZBILANSOWANY! Sprawdź obroty i salda — suma debet != kredyt." if { not balanced } else = ""
+
+st_routing_value(assets_count) = "TRIAGE_QUEUE" if { assets_count > 0 } else = ""
+st_reason_value(assets_count, net_book_value) = reason if {
+    assets_count > 0
+    reason := sprintf("JPK_ST: %d środków trwałych — wartość netto %.0f PLN.", [assets_count, net_book_value])
+} else = ""
+
+cross_routing_value(consistent, discrepancy) = "BLOCK_AND_ALERT" if { not consistent; discrepancy > 10000 } else = "TRIAGE_QUEUE" if { not consistent; discrepancy <= 10000 } else = ""
+cross_reason_value(consistent, discrepancy) = reason if {
+    not consistent
+    reason := sprintf("ROZBIEŻNOŚĆ JPK_KR vs JPK_V7: %.0f PLN — uzgodnij księgi z deklaracjami VAT!", [discrepancy])
+} else = ""
 
 default decide := {
     "matched": false, "rule_id": "jdg.jpk_kr_st.no_match",
@@ -59,17 +97,14 @@ decide := {
     "_routing_reason": elig_reason,
     "_legal_basis": "Art. 193a OrdPU; Art. 2 ust. 2 UoR (pełna księgowość >2M EUR)",
     "_warnings": build_eligibility_warnings(kr_applicable, full_accounting, revenue_eur, threshold_eur)
-} {
+} if {
     input.jpk_kr_eligibility_check == true
     full_accounting := object.get(input.jdg_entrepreneur, "uses_full_accounting", false)
     revenue_eur := object.get(input.jdg_entrepreneur, "annual_revenue_eur", 0)
     threshold_eur := 2000000
-    kr_applicable := full_accounting or revenue_eur > threshold_eur
-
-    elig_routing := "TRIAGE_QUEUE" { kr_applicable }
-    elig_routing := "" { true }
-    elig_reason := sprintf("JPK_KR: JDG na pełnej księgowości (%.0f EUR przychodu) — JPK_KR/ST na żądanie US.", [revenue_eur]) { kr_applicable }
-    elig_reason := "JDG na PKPiR — JPK_KR/ST nie dotyczy (wystarczy JPK_PKPIR)." { not kr_applicable }
+    kr_applicable := kr_applicable_value(full_accounting, revenue_eur, threshold_eur)
+    elig_routing := eligibility_routing_value(kr_applicable)
+    elig_reason := eligibility_reason_value(kr_applicable, revenue_eur)
 }
 
 build_eligibility_warnings(applicable, full, eur, threshold) = warnings {
@@ -89,7 +124,7 @@ build_eligibility_warnings(applicable, full, eur, threshold) = warnings {
 # JKR-2215: JPK_KR STRUCTURE GENERATOR — Generowanie struktury JPK_KR
 # ═══════════════════════════════════════════════════════════════════════════════
 
-else := {
+decide := {
     "matched": true,
     "rule_id": "jdg.jpk_kr_st.kr_structure_generator",
     "package": "jdg.jpk_kr_st",
@@ -111,7 +146,7 @@ else := {
     "_routing_reason": kr_reason,
     "_legal_basis": "Art. 193a OrdPU; Art. 13-24 UoR; Rozporządzenie MF JPK_KR",
     "_warnings": build_kr_warnings(period, journal_count, accounts_count, opening_balance, closing_balance, turnover_debit, turnover_credit, is_balanced)
-} {
+} if {
     input.jpk_kr_generate == true
     period := object.get(input, "jpk_kr_period", "2026-07")
     journal_count := object.get(input, "jpk_kr_journal_entries", 0)
@@ -122,12 +157,11 @@ else := {
     turnover_credit := object.get(input, "jpk_kr_turnover_credit_total", 0)
     is_balanced := abs(opening_balance + turnover_debit - turnover_credit - closing_balance) < 1
 
-    kr_routing := "BLOCK_AND_ALERT" { not is_balanced }
-    kr_routing := "TRIAGE_QUEUE" { is_balanced; journal_count == 0 }
-    kr_routing := "" { true }
-    kr_reason := "JPK_KR NIEZBILANSOWANY! Sprawdź obroty i salda — suma debet != kredyt." { not is_balanced }
-    kr_reason := "" { true }
+    kr_routing := kr_routing_value(is_balanced, journal_count)
+    kr_reason := kr_reason_value(is_balanced)
 }
+
+balance_line_value(balanced) = ["   ✅ BILANS ZGODNY"] if { balanced } else = ["   🚨 BILANS NIEZGODNY — sprawdź księgowania!"]
 
 build_kr_warnings(period, journal, accounts, ob, cb, dt, ct, balanced) = warnings {
     lines := [
@@ -136,8 +170,7 @@ build_kr_warnings(period, journal, accounts, ob, cb, dt, ct, balanced) = warning
         sprintf("   Bilans otwarcia: %.0f PLN | Zamknięcia: %.0f PLN", [ob, cb]),
         sprintf("   Obroty DT: %.0f PLN | CT: %.0f PLN", [dt, ct]),
     ]
-    balance_line := ["   ✅ BILANS ZGODNY"] { balanced }
-    balance_line := ["   🚨 BILANS NIEZGODNY — sprawdź księgowania!"] { not balanced }
+    balance_line := balance_line_value(balanced)
     warnings := array.concat(lines, balance_line)
 }
 
@@ -145,7 +178,7 @@ build_kr_warnings(period, journal, accounts, ob, cb, dt, ct, balanced) = warning
 # JKR-2220: JPK_ST STRUCTURE GENERATOR — Generowanie struktury JPK_ST
 # ═══════════════════════════════════════════════════════════════════════════════
 
-else := {
+decide := {
     "matched": true,
     "rule_id": "jdg.jpk_kr_st.st_structure_generator",
     "package": "jdg.jpk_kr_st",
@@ -167,7 +200,7 @@ else := {
     "_routing_reason": st_reason,
     "_legal_basis": "Art. 193a OrdPU; Art. 22d-22n PIT; Rozporządzenie MF JPK_ST",
     "_warnings": build_st_warnings(period, assets_count, initial_value, depreciation_total, improvements_total, net_book_value, new_assets, disposals)
-} {
+} if {
     input.jpk_st_generate == true
     period := object.get(input, "jpk_st_period", "2026-07")
     assets_count := object.get(input, "jpk_st_assets_count", 0)
@@ -178,10 +211,8 @@ else := {
     new_assets := object.get(input, "jpk_st_new_assets_period", 0)
     disposals := object.get(input, "jpk_st_disposals_period", 0)
 
-    st_routing := "TRIAGE_QUEUE" { assets_count > 0 }
-    st_routing := "" { true }
-    st_reason := sprintf("JPK_ST: %d środków trwałych — wartość netto %.0f PLN.", [assets_count, net_book_value]) { assets_count > 0 }
-    st_reason := "" { true }
+    st_routing := st_routing_value(assets_count)
+    st_reason := st_reason_value(assets_count, net_book_value)
 }
 
 build_st_warnings(period, count, init, depr, impr, nbv, new_ast, disp) = warnings {
@@ -198,7 +229,7 @@ build_st_warnings(period, count, init, depr, impr, nbv, new_ast, disp) = warning
 # JKR-2225: JPK_KR vs JPK_V7 CROSS-VALIDATION — Spójność ksiąg z JPK_VAT
 # ═══════════════════════════════════════════════════════════════════════════════
 
-else := {
+decide := {
     "matched": true,
     "rule_id": "jdg.jpk_kr_st.kr_vs_v7_cross_validation",
     "package": "jdg.jpk_kr_st",
@@ -219,9 +250,9 @@ else := {
         sprintf("🔗 JPK_KR ↔ JPK_V7 CROSS-VALIDATION", []),
         sprintf("   JPK_KR przychody: %.0f PLN", [kr_revenue]),
         sprintf("   JPK_V7 sprzedaż netto: %.0f PLN", [v7_sales]),
-        sprintf("   Rozbieżność: %.0f PLN %s", [discrepancy, "⚠️" { not is_consistent } else "✅"]),
+        sprintf("   Rozbieżność: %.0f PLN %s", [discrepancy, consistency_marker_value(is_consistent)]),
     ]
-} {
+} if {
     input.jpk_kr_v7_cross_validate == true
     kr_revenue := object.get(input, "jpk_kr_revenue_total", 0)
     v7_sales := object.get(input, "jpk_v7_sales_net_total", 0)
@@ -230,9 +261,6 @@ else := {
     tolerance := max([kr_revenue, v7_sales, 1]) * 0.01
     is_consistent := discrepancy <= tolerance
 
-    cross_routing := "BLOCK_AND_ALERT" { not is_consistent; discrepancy > 10000 }
-    cross_routing := "TRIAGE_QUEUE" { not is_consistent; discrepancy <= 10000 }
-    cross_routing := "" { true }
-    cross_reason := sprintf("ROZBIEŻNOŚĆ JPK_KR vs JPK_V7: %.0f PLN — uzgodnij księgi z deklaracjami VAT!", [discrepancy]) { not is_consistent }
-    cross_reason := "" { true }
+    cross_routing := cross_routing_value(is_consistent, discrepancy)
+    cross_reason := cross_reason_value(is_consistent, discrepancy)
 }

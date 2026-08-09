@@ -17,19 +17,19 @@ import data.jdg.metadata
 # ── Threshold Helpers ─────────────────────────────────────────────────────────
 
 # Bezpieczny odczyt progu z data.jdg.thresholds.limits
-get_jdg_limit(key, fallback) = value  if {
+get_jdg_limit(key, fallback) = value {
     value := object.get(data.jdg.thresholds.limits, key, fallback)
 }
 
 # Bezpieczny odczyt stawki z data.jdg.thresholds.rates
-get_jdg_rate(key, fallback) = rate  if {
+get_jdg_rate(key, fallback) = rate {
     rate := object.get(data.jdg.thresholds.rates, key, fallback)
 }
 
 # ── Tax Form Detection ────────────────────────────────────────────────────────
 
 # Zwraca formę opodatkowania JDG (PIT_SCALE / LINEAR / LUMP_SUM / TAX_CARD)
-jdg_tax_form = form  if {
+jdg_tax_form = form {
     form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
 }
 
@@ -56,14 +56,14 @@ is_tax_card = true if {
 # ── Field Confidence Helpers ───────────────────────────────────────────────────
 
 # Sprawdza czy confidence pola jest poniżej progu JDG
-jdg_fc_below_threshold(fc_field, threshold_key)  if {
+jdg_fc_below_threshold(fc_field, threshold_key) {
     object.get(input.confidence, fc_field, 1.0) < object.get(data.jdg.thresholds.fc_thresholds, threshold_key, 0.0)
     object.get(input.confidence, fc_field, 1.0) > 0
 }
 
 # ── Building Routing Reason ────────────────────────────────────────────────────
 
-build_jdg_routing_reason(tax_form, field_name, confidence, threshold) = reason  if {
+build_jdg_routing_reason(tax_form, field_name, confidence, threshold) = reason {
     reason := concat("", [
         "[JDG] ", tax_form, ": ", field_name, " confidence ",
         sprintf("%.2f", [confidence]),
@@ -75,7 +75,7 @@ build_jdg_routing_reason(tax_form, field_name, confidence, threshold) = reason  
 # ── Amount / Currency Helpers ──────────────────────────────────────────────────
 
 # Konwertuje kwotę brutto na EUR używając kursu z thresholds
-jdg_amount_eur = eur  if {
+jdg_amount_eur = eur {
     eur := input.invoice.amount_gross / object.get(data.jdg.thresholds.bounds, "eur_pln", 4.5)
 }
 
@@ -84,19 +84,19 @@ jdg_amount_eur = eur  if {
 # Oblicza liczbę dni między dwiema datami ISO (date2 - date1)
 # Używa time.parse_ns do konwersji na nanosekundy, potem dzieli na dni
 # Przykład: days_between("2026-01-01", "2026-01-15") → 14
-days_between(date1, date2) = days  if {
+days_between(date1, date2) = days {
     t1 := time.parse_ns("2006-01-02", date1)
     t2 := time.parse_ns("2006-01-02", date2)
     days := (t2 - t1) / 86400000000000
 }
 
 # Sprawdza czy data transakcji mieści się w okresie obowiązywania reguły JDG
-jdg_is_valid_period(date_str)  if {
+jdg_is_valid_period(date_str) {
     date_str >= object.get(data.jdg.thresholds, "valid_from", "2000-01-01")
     not object.get(data.jdg.thresholds, "valid_to", null)
 }
 
-jdg_is_valid_period(date_str)  if {
+jdg_is_valid_period(date_str) {
     date_str >= object.get(data.jdg.thresholds, "valid_from", "2000-01-01")
     date_str <= object.get(data.jdg.thresholds, "valid_to", "2099-12-31")
 }
@@ -121,11 +121,11 @@ jdg_is_valid_period(date_str)  if {
 #     is_active("jdg.zus.health_scale", "2021-12-31")  # FALSE (przed Polskim Ładem)
 #     is_active("jdg.business.ceidg_registration_check", "2026-03-15")  # TRUE (brak wpisu)
 #   }
-is_active(rule_id, date_str)  if {
+is_active(rule_id, date_str) {
     not metadata.is_temporal_rule(rule_id)
 }
 
-is_active(rule_id, date_str)  if {
+is_active(rule_id, date_str) {
     validity := metadata.get_rule_validity(rule_id)
     valid_from := object.get(validity, "valid_from", "0000-01-01")
     valid_to := validity.valid_to
@@ -133,7 +133,7 @@ is_active(rule_id, date_str)  if {
     date_str >= valid_from
 }
 
-is_active(rule_id, date_str)  if {
+is_active(rule_id, date_str) {
     validity := metadata.get_rule_validity(rule_id)
     valid_from := object.get(validity, "valid_from", "0000-01-01")
     valid_to := validity.valid_to
@@ -145,20 +145,20 @@ is_active(rule_id, date_str)  if {
 # Wygodny wrapper — czy reguła jest aktywna TERAZ (używa daty z input)
 # Szuka daty w kolejności: input.evaluation_date → input.invoice.transaction_date
 # → input.invoice.issue_date → input.jdg_entrepreneur.tax_period_start
-is_active_now(rule_id)  if {
+is_active_now(rule_id) {
     eval_date := object.get(input, "evaluation_date", "")
     eval_date != ""
     is_active(rule_id, eval_date)
 }
 
-is_active_now(rule_id)  if {
+is_active_now(rule_id) {
     not object.get(input, "evaluation_date", "")
     inv_date := object.get(input.invoice, "transaction_date", "")
     inv_date != ""
     is_active(rule_id, inv_date)
 }
 
-is_active_now(rule_id)  if {
+is_active_now(rule_id) {
     not object.get(input, "evaluation_date", "")
     not object.get(input.invoice, "transaction_date", "")
     inv_date := object.get(input.invoice, "issue_date", "")
@@ -288,11 +288,10 @@ jdg_is_mpp_sensitive_by_cn(cn_code) {
 # ── Warning Builders ───────────────────────────────────────────────────────────
 
 # Buduje array ostrzeżeń z opcjonalnym warningiem
-build_warnings(info_msg, warning_msg, condition) = warnings  if {
+build_warnings(info_msg, warning_msg, condition) = [info_msg, warning_msg] {
     condition
-    warnings := [info_msg, warning_msg]
-} else = [info_msg]  if {
-    warnings := [info_msg]
+} else = [info_msg] {
+    not condition
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -310,10 +309,10 @@ build_warnings(info_msg, warning_msg, condition) = warnings  if {
 # Sprawdza czy pakiet jest zdrowy (health status z Python bridge)
 # Używa defensywnego dostępu do data.jdg.health (może nie istnieć w testach)
 is_package_healthy(package_name) = true {
-    health_data := object.get(object.get(data, "jdg", {}), "health", {})
+    health_data := object.get(object.get(input, "jdg", {}), "health", {})
     not health_data[package_name]
 } else = true {
-    health_data := object.get(object.get(data, "jdg", {}), "health", {})
+    health_data := object.get(object.get(input, "jdg", {}), "health", {})
     health := health_data[package_name]
     object.get(health, "error_rate", 0) < object.get(health, "max_error_rate", 0.20)
 } else = false {
@@ -338,7 +337,7 @@ healthy_or_fallback(package_name, package_result, fallback_result) = result {
 
 # Oblicza efektywny priorytet dynamiczny dla reguły
 get_adaptive_priority(rule_id, base_priority) = effective {
-    weights := object.get(object.get(data, "jdg", {}), "priority_weights", {})
+    weights := object.get(object.get(input, "jdg", {}), "priority_weights", {})
     risk_weight := object.get(weights, sprintf("%s.risk", [rule_id]), 0)
     history_weight := object.get(weights, sprintf("%s.history", [rule_id]), 0)
     temporal_weight := object.get(weights, sprintf("%s.temporal", [rule_id]), 0)

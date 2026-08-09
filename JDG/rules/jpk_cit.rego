@@ -24,6 +24,33 @@
 package jdg.jpk_cit
 
 import data.jdg.helpers
+import future.keywords.in
+
+# Deterministic value helpers keep conditional routing outside rule bodies.
+cit_routing_value(to_pay, advances) = "BLOCK_AND_ALERT" {
+    to_pay > 10000
+    advances == 0
+} else = "TRIAGE_QUEUE" {
+    to_pay > 5000
+} else = "" {
+    to_pay <= 5000
+}
+
+cit_routing_reason_value(to_pay, advances) = "CIT do zapłaty >10k bez zaliczek" {
+    to_pay > 10000
+    advances == 0
+} else = reason {
+    to_pay > 5000
+    reason := sprintf("CIT do zapłaty: %.2f PLN", [to_pay])
+} else = "" {
+    to_pay <= 5000
+}
+
+threshold_ok_value(revenue_eur) = true {
+    revenue_eur < 2000000
+} else = false {
+    revenue_eur >= 2000000
+}
 
 default decide := {
     "matched": false,
@@ -60,8 +87,8 @@ decide := {
     cit_revenue := object.get(input.jdg_entrepreneur, "annual_revenue", 0)
     cit_costs := object.get(input.jdg_entrepreneur, "annual_costs_deductible", 0)
     nkup_total := object.get(input.jdg_entrepreneur, "nkup_total", 0)
-    cit_income := cit_revenue - cit_costs + nkup_total
-    cit_income := max([cit_income, 0])
+    cit_income_raw := cit_revenue - cit_costs + nkup_total
+    cit_income := max([cit_income_raw, 0])
 
     donations := object.get(input.jdg_entrepreneur, "donations_total", 0)
     max_donation := cit_income * 0.10
@@ -74,19 +101,15 @@ decide := {
     max_loss := cit_income * 0.50
     loss_deduction := min([past_losses, max_loss])
 
-    taxable_base := cit_income - donation_deduction - ip_box_deduction - loss_deduction
-    taxable_base := max([taxable_base, 0])
+    taxable_base_raw := cit_income - donation_deduction - ip_box_deduction - loss_deduction
+    taxable_base := max([taxable_base_raw, 0])
 
     cit_tax_due := taxable_base * 0.19
     cit_advances_paid := object.get(input.jdg_entrepreneur, "cit_advances_paid", 0)
     cit_to_pay := max([cit_tax_due - cit_advances_paid, 0])
 
-    cit_routing = "BLOCK_AND_ALERT" { cit_to_pay > 10000; cit_advances_paid == 0 }
-    cit_routing = "TRIAGE_QUEUE" { cit_to_pay > 5000 }
-    cit_routing = "" { cit_to_pay <= 5000 }
-    cit_routing_reason = "CIT do zapłaty >10k bez zaliczek" { cit_to_pay > 10000; cit_advances_paid == 0 }
-    cit_routing_reason = sprintf("CIT do zapłaty: %.2f PLN", [cit_to_pay]) { cit_to_pay > 5000 }
-    cit_routing_reason = "" { cit_to_pay <= 5000 }
+    cit_routing := cit_routing_value(cit_to_pay, cit_advances_paid)
+    cit_routing_reason := cit_routing_reason_value(cit_to_pay, cit_advances_paid)
 }
 
 # ══════ JC-020: cit_calculation_estonian — Estoński CIT 20% od wypłaconego zysku ══════
@@ -137,8 +160,7 @@ else := {
     input.jdg_entrepreneur.tax_form == "CIT_SMALL"
     cit_income := object.get(input.jdg_entrepreneur, "cit_taxable_income", 0)
     revenue_eur := object.get(input.jdg_entrepreneur, "annual_revenue_eur", 0)
-    threshold_ok = true { revenue_eur < 2000000 }
-    threshold_ok = false { revenue_eur >= 2000000 }
+    threshold_ok := threshold_ok_value(revenue_eur)
     cit_tax_due := cit_income * 0.09
 }
 
@@ -157,7 +179,7 @@ else := {
     "_routing": routing,
     "_routing_reason": routing_reason,
     "_legal_basis": "Art. 27 CIT, Art. 193a OrdPU",
-    "_warnings": [sprintf("JPK_CIT deadline: JPK_KR do 10. dnia miesiąca, CIT-8 rocznie do 31.03. Zaliczki do 20. dnia miesiąca.")]
+    "_warnings": ["JPK_CIT deadline: JPK_KR do 10. dnia miesiąca, CIT-8 rocznie do 31.03. Zaliczki do 20. dnia miesiąca."]
 } {
     tax_form := object.get(input.jdg_entrepreneur, "tax_form", "")
     tax_form in {"CIT", "CIT_LINEAR", "ESTONIAN_CIT", "CIT_SMALL"}
@@ -168,6 +190,6 @@ else := {
         {"name": "CIT_ADVANCE", "date": "M+20", "desc": "Zaliczka CIT do 20. dnia"},
     ]
 
-    routing = "" { true }
-    routing_reason = "" { true }
+    routing := ""
+    routing_reason := ""
 }

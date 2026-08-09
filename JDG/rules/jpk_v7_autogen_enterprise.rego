@@ -2,6 +2,8 @@
 
 package jdg.jpk_v7_autogen
 
+import future.keywords.if
+import future.keywords.in
 import data.jdg.helpers
 import data.jdg.thresholds
 
@@ -32,6 +34,8 @@ else = "" { disc_count == 0 }
 
 ksef_extract_routing_flag(errors) = "BLOCK_AND_ALERT" { errors > 0 }
 else = "" { errors == 0 }
+
+flag_value(condition) = 1 if { condition } else = 0
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # JV7-1925: JPK_V7M SALES REGISTER AUTO-FILL
@@ -196,18 +200,23 @@ else := {
     # v7.0 FIX (P18): Real VAT-7 refund/carry forward logic.
     # If adjusted_vat < 0 → refund or carry forward to next period (Art. 87 VAT)
     net_vat_to_pay := max([adjusted_vat, 0])
-    net_vat_to_refund := max([-adjusted_vat, 0])
-    carry_to_next := 0
-    # If refund requested as carry forward (not direct refund), set carry_to_next
+    refund_amount := max([0 - adjusted_vat, 0])
+    # If refund is requested as carry forward, use the full refund amount as carry.
     carry_requested := object.get(input, "vat_carry_forward_requested", false)
-    carry_to_next := net_vat_to_refund { carry_requested }
-    net_vat_to_refund := 0 { carry_requested }
+    carry_to_next := carry_value(refund_amount, carry_requested)
+    net_vat_to_refund := refund_value(refund_amount, carry_requested)
 
     period_year := object.get(input, "jpk_period_year", "2026")
     deadline := sprintf("25.%s.%s", [period_month, period_year])
     vat7_routing := ""
     vat7_routing_reason := ""
 }
+
+carry_value(amount, requested) = amount if { requested } else = 0
+refund_value(amount, requested) = 0 if { requested } else = amount
+
+v7k_routing_value(eligible, status) = "TRIAGE_QUEUE" if { eligible; status != "ACTIVE" } else = ""
+v7k_reason_value(eligible, status) = "Zarejestruj sie jako podatnik VAT kwartalny (VAT-R) aby zmniejszyc liczbe deklaracji z 12 do 4" if { eligible; status != "ACTIVE" } else = ""
 
 build_vat7_warnings(pd, sales, purchases, to_pay, to_refund, carry, deadline) = warnings {
     lines := [
@@ -329,14 +338,11 @@ else := {
     # Now computes: net sales difference abs(jpk-pkpir) + vat difference abs(jpk_vat-pkpir_vat) + count diff abs(jpk-ksef)
     net_discrepancy := abs(jpk_net_sales - pkpir_revenue)
     # Only flag if difference > tolerance (1 PLN rounding)
-    net_flag := 0
-    net_flag := 1 { net_discrepancy > 1 }
+    net_flag := flag_value(net_discrepancy > 1)
     vat_discrepancy := abs(jpk_vat_due - pkpir_vat)
-    vat_flag := 0
-    vat_flag := 1 { vat_discrepancy > 1 }
+    vat_flag := flag_value(vat_discrepancy > 1)
     count_discrepancy := abs(jpk_count - ksef_count)
-    count_flag := 0
-    count_flag := 1 { count_discrepancy > 0 }
+    count_flag := flag_value(count_discrepancy > 0)
     total_discrepancies := net_flag + vat_flag + count_flag
 
     check_status := check_status_label(total_discrepancies)
@@ -414,10 +420,8 @@ else := {
     eur_rate := object.get(object.get(data.thresholds, "rates", {}), "eur_pln", 4.5)
     eligibility_ok := annual_revenue < object.get(object.get(data.thresholds, "vat", {}), "small_taxpayer_threshold_eur", 2000000) * eur_rate
     
-    v7k_routing := "TRIAGE_QUEUE" { eligibility_ok; vat_status != "ACTIVE" }
-    v7k_routing := "" { true }
-    v7k_reason := "Zarejestruj sie jako podatnik VAT kwartalny (VAT-R) aby zmniejszyc liczbe deklaracji z 12 do 4" { eligibility_ok; vat_status != "ACTIVE" }
-    v7k_reason := "" { true }
+    v7k_routing := v7k_routing_value(eligibility_ok, vat_status)
+    v7k_reason := v7k_reason_value(eligibility_ok, vat_status)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

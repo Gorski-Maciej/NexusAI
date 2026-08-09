@@ -2,7 +2,7 @@
 # NexusAI JDG — ENTERPRISE JPK_V7 CORRECTIONS WORKFLOW (Innovation 8.14, P18 v7.0)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
+# Metadata documentation (kept as ordinary comments; no executable annotation).
 # title: JDG Enterprise JPK_V7 Corrections Workflow — Korygowanie deklaracji JPK
 # description: |
 #   ENTERPRISE v7.0 — Moduł obsługi korekt JPK_V7 (V7M/V7K).
@@ -26,6 +26,83 @@
 package jdg.jpk_corrections
 
 import data.jdg.helpers
+import future.keywords.if
+import future.keywords.in
+
+correction_reason_code_value(has_errors, has_gtu_errors, has_counterparty_errors, has_correction_invoice, has_tax_decision) = 1 {
+    has_errors
+} else = 2 {
+    not has_errors
+    has_counterparty_errors
+} else = 3 {
+    not has_errors
+    not has_counterparty_errors
+    has_gtu_errors
+} else = 4 {
+    not has_errors
+    not has_counterparty_errors
+    not has_gtu_errors
+    has_correction_invoice
+} else = 5 {
+    not has_errors
+    not has_counterparty_errors
+    not has_gtu_errors
+    not has_correction_invoice
+    has_tax_decision
+} else = 0 {
+    not has_errors
+    not has_counterparty_errors
+    not has_gtu_errors
+    not has_correction_invoice
+    not has_tax_decision
+}
+
+correction_needed_value(has_errors, has_gtu_errors, has_counterparty_errors, has_correction_invoice, has_tax_decision) = true {
+    has_errors
+} else = true {
+    not has_errors
+    has_gtu_errors
+} else = true {
+    not has_errors
+    not has_gtu_errors
+    has_counterparty_errors
+} else = true {
+    not has_errors
+    not has_gtu_errors
+    not has_counterparty_errors
+    has_correction_invoice
+} else = true {
+    not has_errors
+    not has_gtu_errors
+    not has_counterparty_errors
+    not has_correction_invoice
+    has_tax_decision
+} else = false {
+    not has_errors
+    not has_gtu_errors
+    not has_counterparty_errors
+    not has_correction_invoice
+    not has_tax_decision
+}
+
+corr_routing_value(needed) = "TRIAGE_QUEUE" if { needed } else = ""
+corr_reason_value(needed, desc, code) = reason if {
+    needed
+    reason := sprintf("KOREKTA JPK_V7 wymagana — %s (kod %d). Termin: 14 dni.", [desc, code])
+} else = ""
+
+autogen_routing_value(vat_diff) = "BLOCK_AND_ALERT" if { vat_diff > 0 } else = "TRIAGE_QUEUE" if { vat_diff != 0 } else = ""
+autogen_reason_value(vat_diff) = reason if {
+    vat_diff > 0
+    reason := sprintf("KOREKTA: VAT do dopłaty %.0f PLN — ureguluj przed wysyłką korekty!", [vat_diff])
+} else = ""
+
+chain_valid_value(seq, current_date, previous_date) = current_date >= previous_date if { seq > 1 } else = true
+chain_routing_value(valid) = "BLOCK_AND_ALERT" if { not valid } else = ""
+chain_reason_value(seq, previous_date, valid) = reason if {
+    not valid
+    reason := sprintf("ŁAŃCUCH KOREKT: korekta #%d nie może być wcześniejsza niż korekta #%d z %s!", [seq, seq - 1, previous_date])
+} else = ""
 
 default decide := {
     "matched": false, "rule_id": "jdg.jpk_corrections.no_match",
@@ -72,22 +149,16 @@ decide := {
     has_correction_invoice := object.get(input, "jpk_correction_invoice_pending", false)
     has_tax_decision := object.get(input, "jpk_tax_authority_decision", false)
 
-    correction_needed := has_errors or has_gtu_errors or has_counterparty_errors or has_correction_invoice or has_tax_decision
+    correction_needed := correction_needed_value(has_errors, has_gtu_errors, has_counterparty_errors, has_correction_invoice, has_tax_decision)
 
     # Priorytet przyczyn (niższy kod = wyższy priorytet)
-    reason_code := 1 { has_errors }
-    reason_code := 2 { has_counterparty_errors; not has_errors }
-    reason_code := 3 { has_gtu_errors; not has_errors; not has_counterparty_errors }
-    reason_code := 4 { has_correction_invoice; not has_errors; not has_counterparty_errors; not has_gtu_errors }
-    reason_code := 5 { has_tax_decision; not has_errors; not has_counterparty_errors; not has_gtu_errors; not has_correction_invoice }
+    reason_code := correction_reason_code_value(has_errors, has_gtu_errors, has_counterparty_errors, has_correction_invoice, has_tax_decision)
 
     reason_desc := object.get(correction_reasons, reason_code, "Nieznana przyczyna korekty")
     period := object.get(input, "jpk_correction_period", "")
 
-    corr_routing := "TRIAGE_QUEUE" { correction_needed }
-    corr_routing := "" { true }
-    corr_reason := sprintf("KOREKTA JPK_V7 wymagana — %s (kod %d). Termin: 14 dni.", [reason_desc, reason_code]) { correction_needed }
-    corr_reason := "" { true }
+    corr_routing := corr_routing_value(correction_needed)
+    corr_reason := corr_reason_value(correction_needed, reason_desc, reason_code)
 }
 
 build_correction_need_warnings(period, code, desc) = warnings {
@@ -133,7 +204,6 @@ else := {
     ]
 } {
     input.jpk_correction_generate == true
-    period := object.get(input, "jpk_correction_period", "")
     jpk_version := object.get(input, "jpk_version", "JPK_V7M(1)")
 
     # Różnice między pierwotną deklaracją a stanem po korekcie
@@ -153,11 +223,8 @@ else := {
     purchase_vat_diff := purchase_vat_corrected - purchase_vat_original
     vat_to_pay_diff := sales_vat_diff - purchase_vat_diff
 
-    autogen_routing := "BLOCK_AND_ALERT" { vat_to_pay_diff > 0 }
-    autogen_routing := "TRIAGE_QUEUE" { vat_to_pay_diff != 0 }
-    autogen_routing := "" { true }
-    autogen_reason := sprintf("KOREKTA: VAT do dopłaty %.0f PLN — ureguluj przed wysyłką korekty!", [vat_to_pay_diff]) { vat_to_pay_diff > 0 }
-    autogen_reason := "" { true }
+    autogen_routing := autogen_routing_value(vat_to_pay_diff)
+    autogen_reason := autogen_reason_value(vat_to_pay_diff)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -189,13 +256,9 @@ else := {
     current_correction_date := object.get(input, "jpk_correction_current_date", "")
 
     # Korekta nie może być wcześniejsza niż poprzednia
-    chain_valid := current_correction_date >= previous_correction_date { correction_seq > 1 }
-    chain_valid := true { correction_seq == 1 }
-
-    chain_routing := "BLOCK_AND_ALERT" { not chain_valid }
-    chain_routing := "" { true }
-    chain_reason := sprintf("ŁAŃCUCH KOREKT: korekta #%d nie może być wcześniejsza niż korekta #%d z %s!", [correction_seq, correction_seq - 1, previous_correction_date]) { not chain_valid }
-    chain_reason := "" { true }
+    chain_valid := chain_valid_value(correction_seq, current_correction_date, previous_correction_date)
+    chain_routing := chain_routing_value(chain_valid)
+    chain_reason := chain_reason_value(correction_seq, previous_correction_date, chain_valid)
 }
 
 build_chain_warnings(seq, valid, prev_ref) = warnings {

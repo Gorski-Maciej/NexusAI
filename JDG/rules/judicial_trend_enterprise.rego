@@ -8,6 +8,17 @@
 package jdg.enterprise.judicial_trend
 
 import data.jdg.helpers
+import future.keywords.if
+import future.keywords.in
+
+trend_articles_warnings(article_map, profile_articles) = warnings if {
+    warnings := [sprintf("   Art. %s: %d orzeczeń, trend: %s (confidence: %s)", [a, object.get(object.get(article_map, a, {"trends": {"total_rulings": 0}}), "trends", {"total_rulings": 0}).total_rulings, object.get(object.get(article_map, a, {"trends": {"direction": "UNKNOWN"}}), "trends", {"direction": "UNKNOWN"}).direction, object.get(jtr_precedence_scorer(a, []), "confidence", "LOW")]) | a := profile_articles[_]]
+}
+
+trend_outcome_value(outcome) = "TAXPAYER_FAVORABLE" if { contains(outcome, "uchylono") } else = "TAXPAYER_FAVORABLE" if { contains(outcome, "korzystna") } else = "TAXPAYER_UNFAVORABLE" if { contains(outcome, "oddalono") } else = "TAXPAYER_UNFAVORABLE" if { contains(outcome, "niekorzystna") } else = "NEUTRAL"
+trend_direction_value(favorable_pct, unfavorable_pct) = "UNFAVORABLE" if { unfavorable_pct >= 60 } else = "FAVORABLE" if { favorable_pct >= 60 } else = "MIXED"
+precedence_direction_value(count) = "NEUTRAL" if { count == 0 } else = "ESTABLISHED"
+confidence_value(count) = "HIGH" if { count >= 15 } else = "MEDIUM" if { count >= 5 } else = "LOW"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # JTR-2900: Ruling importer — import i normalizacja orzeczeń
@@ -20,9 +31,7 @@ jtr_import_ruling(raw_ruling) = normalized {
     outcome := object.get(raw_ruling, "outcome", "UNKNOWN")
 
     # Normalizacja outcome — osobne zmienne zamiast inline guard
-    norm_outcome := "TAXPAYER_FAVORABLE" { contains(outcome, "uchylono") or contains(outcome, "korzystna") }
-    norm_outcome := "TAXPAYER_UNFAVORABLE" { contains(outcome, "oddalono") or contains(outcome, "niekorzystna") }
-    norm_outcome := "NEUTRAL" { true }
+    norm_outcome := trend_outcome_value(outcome)
 
     normalized := {
         "court": court,
@@ -65,9 +74,7 @@ jtr_trend_detector(rulings) = trend {
     favorable_pct := favorable_count * 100 / max([total, 1])
     unfavorable_pct := unfavorable_count * 100 / max([total, 1])
 
-    trend_direction := "UNFAVORABLE" { unfavorable_pct >= 60 }
-    trend_direction := "FAVORABLE" { favorable_pct >= 60 }
-    trend_direction := "MIXED" { true }
+    trend_direction := trend_direction_value(favorable_pct, unfavorable_pct)
 
     trend := {
         "total_rulings": total,
@@ -127,12 +134,8 @@ jtr_precedence_scorer(article, rulings) = score {
     relevant := [r | r := rulings[_]; object.get(r, "articles", [])[_] == article]
     rel_count := count(relevant)
 
-    prec_direction := "NEUTRAL" { rel_count == 0 }
-    prec_direction := "ESTABLISHED" { rel_count > 0 }
-
-    confidence := "HIGH" { rel_count >= 15 }
-    confidence := "MEDIUM" { rel_count >= 5; rel_count < 15 }
-    confidence := "LOW" { rel_count < 5 }
+    prec_direction := precedence_direction_value(rel_count)
+    confidence := confidence_value(rel_count)
 
     score := {
         "article": article,
@@ -150,19 +153,7 @@ build_jtr_warnings(article_map, alerts, profile_articles) = warnings {
 
     trend_lines := base
 
-    art_warn := array.concat(trend_lines, [
-        sprintf("   Art. %s: %d orzeczeń, trend: %s (confidence: %s)",
-            [a,
-             object.get(object.get(article_map, a, {"trends": {"total_rulings": 0}}), "trends", {"total_rulings": 0}).total_rulings,
-             object.get(object.get(article_map, a, {"trends": {"direction": "UNKNOWN"}}), "trends", {"direction": "UNKNOWN"}).direction,
-             object.get(jtr_precedence_scorer(a, []), "confidence", "LOW"),
-            ]),
-    ]) { count(profile_articles) > 0; a := profile_articles[_] }
-
-    art_warn := trend_lines { count(profile_articles) == 0 }
-
-    alert_warn := array.concat(art_warn, alerts) { count(alerts) > 0 }
-    alert_warn := art_warn { count(alerts) == 0 }
-
+    art_warn := array.concat(trend_lines, trend_articles_warnings(article_map, profile_articles))
+    alert_warn := array.concat(art_warn, alerts)
     warnings := alert_warn
 }

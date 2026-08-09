@@ -9,6 +9,10 @@
 package jdg.kks.rates
 
 import future.keywords.in
+import future.keywords.if
+
+recidivism_multiplier_value(is_recidivist) = 1.5 if { is_recidivist } else = 1.0
+rehabilitation_period_value(offense_type) = 5 if { offense_type in {"TAX_EVASION", "EMPTY_INVOICE", "FAKE_INVOICE", "UNRELIABLE_BOOKS", "VAT_CAROUSEL"} } else = 3 if { offense_type in {"DECLARATION_NOT_FILED", "INCORRECT_DATA", "TAX_UNPAID"} } else = 5
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # CORRECTED THRESHOLDS (2026)
@@ -138,26 +142,9 @@ kks_is_recidivist := true {
     incidents >= 3
 }
 
-kks_recidivism_multiplier := multiplier {
-    multiplier := 1.5 {
-        kks_is_recidivist
-    }
-    multiplier := 1.0 {
-        not kks_is_recidivist
-    }
-}
+kks_recidivism_multiplier := recidivism_multiplier_value(kks_is_recidivist)
 
-kks_rehabilitation_period_years := period {
-    period := 5 {
-        offense_type := object.get(input.invoice, "kks_offense_type", "")
-        offense_type in {"TAX_EVASION", "EMPTY_INVOICE", "FAKE_INVOICE", "UNRELIABLE_BOOKS", "VAT_CAROUSEL"}
-    }
-    period := 3 {
-        offense_type := object.get(input.invoice, "kks_offense_type", "")
-        offense_type in {"DECLARATION_NOT_FILED", "INCORRECT_DATA", "TAX_UNPAID"}
-    }
-    period := 5  # default
-}
+kks_rehabilitation_period_years := rehabilitation_period_value(object.get(input.invoice, "kks_offense_type", ""))
 
 kks_recidivism_assessment := result {
     kks_is_recidivist
@@ -180,17 +167,13 @@ kks_recidivism_assessment := result {
 # CORRECTED CRIME vs MISDEMEANOR CLASSIFICATION
 # ═══════════════════════════════════════════════════════════════════════════════
 
-kks_classify_offense(amount, severity) := classification {
-    classification := "PRZESTĘPSTWO" {
-        amount > kks_crime_threshold_correct
-    }
-    classification := "PRZESTĘPSTWO" {
-        severity in {"HIGH", "CRITICAL"}
-    }
-    classification := "WYKROCZENIE" {
-        amount <= kks_crime_threshold_correct
-        severity in {"LOW", "MEDIUM"}
-    }
+kks_classify_offense(amount, severity) = "PRZESTĘPSTWO" if {
+    amount > kks_crime_threshold_correct
+} else = "PRZESTĘPSTWO" if {
+    severity in {"HIGH", "CRITICAL"}
+} else = "WYKROCZENIE" if {
+    amount <= kks_crime_threshold_correct
+    severity in {"LOW", "MEDIUM"}
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -213,25 +196,19 @@ kks_calculate_fine(daily_rate, rates_count) := result {
 # PW RISK CALCULATOR
 # ═══════════════════════════════════════════════════════════════════════════════
 
-kks_pw_risk(amount_pln, offense_type) := risk {
-    risk := {"level": "OBLIGATORYJNE", "years": 15} {
-        amount_pln > kks_mandatory_prison_threshold
-    }
-    risk := {"level": "BARDZO WYSOKIE", "years": 10} {
-        amount_pln > 1000000
-        amount_pln <= kks_mandatory_prison_threshold
-    }
-    risk := {"level": "WYSOKIE", "years": 5} {
-        amount_pln > 500000
-        amount_pln <= 1000000
-    }
-    risk := {"level": "ŚREDNIE", "years": 3} {
-        amount_pln > 200000
-        amount_pln <= 500000
-    }
-    risk := {"level": "NISKIE", "years": 0} {
-        amount_pln <= 200000
-    }
+kks_pw_risk(amount_pln, offense_type) = {"level": "OBLIGATORYJNE", "years": 15} if {
+    amount_pln > kks_mandatory_prison_threshold
+} else = {"level": "BARDZO WYSOKIE", "years": 10} if {
+    amount_pln > 1000000
+    amount_pln <= kks_mandatory_prison_threshold
+} else = {"level": "WYSOKIE", "years": 5} if {
+    amount_pln > 500000
+    amount_pln <= 1000000
+} else = {"level": "ŚREDNIE", "years": 3} if {
+    amount_pln > 200000
+    amount_pln <= 500000
+} else = {"level": "NISKIE", "years": 0} if {
+    amount_pln <= 200000
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

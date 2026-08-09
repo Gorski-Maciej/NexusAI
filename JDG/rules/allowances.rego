@@ -316,11 +316,9 @@ else := {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # ── r1: IKZE eligibility — account must exist + scale or linear tax form ──────
-ikze_eligible {
-    object.get(input.jdg_entrepreneur, "has_ikze_account", false) == true
-    tax_form := object.get(input.jdg_entrepreneur, "tax_form", "")
-    tax_form in {"PIT_SCALE", "LINEAR"}
-}
+# Kept inline in the two ordered decision branches below. Defining this helper
+# as a rule inside package jdg.allowances makes OPA 0.68 treat its self-reference
+# as recursion when it is called from the same package.
 
 # ── P605: IKZE with contribution > 0 ──────────────────────────────────────────
 else := {
@@ -346,7 +344,8 @@ else := {
     "_legal_basis": "Art. 26 ust. 1 pkt 2b PIT",
     "_warnings": ikze_warnings
 } {
-    ikze_eligible
+    object.get(input.jdg_entrepreneur, "has_ikze_account", false) == true
+    object.get(input.jdg_entrepreneur, "tax_form", "") in {"PIT_SCALE", "LINEAR"}
     ikze_contribution := object.get(input.jdg_entrepreneur, "ikze_annual_contribution", 0)
     ikze_contribution > 0
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
@@ -382,7 +381,8 @@ else := {
     "_legal_basis": "Art. 26 ust. 1 pkt 2b PIT",
     "_warnings": ["IKZE: konto aktywne, brak wplat w tym roku — odliczenie 0 PLN"]
 } {
-    ikze_eligible
+    object.get(input.jdg_entrepreneur, "has_ikze_account", false) == true
+    object.get(input.jdg_entrepreneur, "tax_form", "") in {"PIT_SCALE", "LINEAR"}
     ikze_contribution := object.get(input.jdg_entrepreneur, "ikze_annual_contribution", -1)
     ikze_contribution == 0
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
@@ -619,8 +619,8 @@ else := {
 } {
     abolition_eligible
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
-    abolition_warnings := [sprintf("Ulga abolicyjna: limit %.0f PLN (od podatku). %s", [abolition_limit, abolition_maritime_note])]
     abolition_maritime_note := abolition_maritime_note_for(abolition_is_maritime)
+    abolition_warnings := [sprintf("Ulga abolicyjna: limit %.0f PLN (od podatku). %s", [abolition_limit, abolition_maritime_note])]
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
