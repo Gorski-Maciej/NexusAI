@@ -32,11 +32,12 @@
 package jdg.p17_ksef_jpk_edeklaracje_innovations
 
 import future.keywords.in
+import future.keywords.if
 
 default decide := {"matched": false, "rule_id": "jdg.p17_ksef_jpk_edeklaracje_innovations.no_match", "package": "jdg.p17_ksef_jpk_edeklaracje_innovations", "priority": 999999}
 
 # ── Źródła danych: progi z data.jdg.thresholds (ADR-002 — zero hardcode) ──────
-thresholds := object.get(data.jdg, "thresholds", {})
+thresholds := data.jdg.thresholds
 ksef_limits := object.get(thresholds, "ksef_jpk_edeklaracje", {
     "ksef_mandatory_from": "2026-02-01",  # KSeF obowiązkowy (B2B) — art. 106na-106nb VAT
     "ksef_offline_grace_days": 7,         # off-line do 7 dni — tryb awaryjny
@@ -124,7 +125,8 @@ jpk_cit_2026 := object.get(ksef_limits, "jpk_cit_2026", {
 })
 
 # ── Funkcje pomocnicze Mapy drogowej ──
-ksef_api_routing(configured, ksef_number) = "TRIAGE_QUEUE" { configured == false or ksef_number == "" }
+ksef_api_routing(configured, ksef_number) = "TRIAGE_QUEUE" { configured == false }
+else = "TRIAGE_QUEUE" { ksef_number == "" }
 else = "" { true }
 
 ksef_api_status(configured, ksef_number) = "API KSeF NIESKONFIGUROWANE — pobierz token i wygeneruj numer KSeF" { configured == false }
@@ -155,19 +157,39 @@ else = "BRAK POTWIERDZEŃ DORĘCZEŃ — zweryfikuj status wiadomości" { confir
 else = "SKRZYNKA e-DORĘCZEŃ AKTYWNA + POTWIERDZENIA OK (B2B/B2G)" { true }
 
 dashboard_routing(upo_missing, kara_pln, corrections_pending) = "BLOCK_AND_ALERT" { kara_pln >= ksef_sanction_max_pln }
-else = "TRIAGE_QUEUE" { upo_missing > 0 or corrections_pending > 0 or kara_pln > 0 }
+else = "TRIAGE_QUEUE" { upo_missing > 0 }
+else = "TRIAGE_QUEUE" { corrections_pending > 0 }
+else = "TRIAGE_QUEUE" { kara_pln > 0 }
 else = "" { true }
 
 jpk_cit_routing(automation_ready) = "" { automation_ready == true }
 else = "TRIAGE_QUEUE" { true }
+
+xsd_routing(missing_count) = "TRIAGE_QUEUE" { missing_count > 0 }
+else = "" { true }
+
+anomaly_routing(anomaly_count) = "BLOCK_AND_ALERT" { anomaly_count > 0 }
+else = "" { true }
+
+cross_validation_routing(consistent) = "TRIAGE_QUEUE" { consistent == false }
+else = "" { true }
+
+address_routing(address_set) = "TRIAGE_QUEUE" { address_set == false }
+else = "" { true }
+
+jpk_type_valid(jpk_type) { jpk_type == "JPK_V7M" }
+jpk_type_valid(jpk_type) { jpk_type == "JPK_V7K" }
+
+esig_type_valid(esig_type) { esig_type == "QUALIFIED" }
+esig_type_valid(esig_type) { esig_type == "TRUSTED" }
 
 round2(x) = r {
     r := round(x * 100) / 100
 }
 
 # ── Funkcje pomocnicze (else-chain — deterministyczne, zero konfliktów) ────────
-ksef_status(eval_date) = "OBOWIĄZKOWY — KSeF od " + ksef_mandatory_from { eval_date >= ksef_mandatory_from }
-else = "FAKULTATYWNY — KSeF od " + ksef_mandatory_from { true }
+ksef_status(eval_date) = sprintf("OBOWIĄZKOWY — KSeF od %s", [ksef_mandatory_from]) { eval_date >= ksef_mandatory_from }
+else = sprintf("FAKULTATYWNY — KSeF od %s", [ksef_mandatory_from]) { true }
 
 offline_ok(offline_days) = "OK — w terminie (≤7 dni awaryjnego off-line)" { offline_days <= ksef_offline_grace_days }
 else = "PRZEKROCZONO — off-line >7 dni bez uprawnienia!" { true }
@@ -185,8 +207,8 @@ esig_status(qualified, trusted) = "PODPIS KWALIFIKOWANY (eIDAS)" { qualified == 
 else = "PODPIS ZAUFANY (mObywatel)" { trusted == true }
 else = "BRAK e-PODPISU — wymagany dla e-Doręczeń i KSeF!" { true }
 
-jpk_due(day_of_month) = "TERMIN — złóż JPK do " + sprintf("%d. dnia", [jpk_v7_deadline_day]) { day_of_month > jpk_v7_deadline_day }
-else = "W TERMINIE — JPK do " + sprintf("%d. dnia miesiąca", [jpk_v7_deadline_day]) { true }
+jpk_due(day_of_month) = sprintf("TERMIN — złóż JPK do %d. dnia", [jpk_v7_deadline_day]) { day_of_month > jpk_v7_deadline_day }
+else = sprintf("W TERMINIE — JPK do %d. dnia miesiąca", [jpk_v7_deadline_day]) { true }
 
 sanction_for_invoices(count_invoices, ksef_violation) = ksef_sanction_max_pln { ksef_violation == true; count_invoices >= 5 }
 else = round2(to_number(count_invoices) * to_number(object.get(ksef_limits, "jpk_ksef_penalty_per_invoice", 1000))) { ksef_violation == true }
@@ -226,7 +248,7 @@ else = "BRAK ADRESU DO DORĘCZEŃ" { true }
 # Status COMPLETE/PARTIAL/MISSING z data.jdg.p17_audit (ksef_jpk_edeklaracje_auditor.py).
 p17_priority_modules := ["ksef_core", "ksef_enterprise", "jpk", "gtu", "edelivery", "esig", "wis"]
 
-p17_audit_data := object.get(data.jdg, "p17_audit", {})
+p17_audit_data := data.jdg.p17_audit
 p17_coverage_modules := object.get(p17_audit_data, "modules", {})
 
 ksef_jpk_coverage_report := {
@@ -312,7 +334,7 @@ jpk_v7_auto_generator := {
     "vat_purchase": to_number(object.get(input.jpk, "vat_purchase", 0)),
     "vat_due": round2(to_number(object.get(input.jpk, "vat_sales", 0)) - to_number(object.get(input.jpk, "vat_purchase", 0))),
     "generated": true,
-    "deadline": "do " + sprintf("%d. dnia miesiąca", [jpk_v7_deadline_day]),
+    "deadline": sprintf("do %d. dnia miesiąca", [jpk_v7_deadline_day]),
     "note": "auto-generator JPK_V7M/V7K z rejestrów VAT — sprzedaż, zakupy, VAT należny/naliczony",
     "_routing": "",
     "_routing_reason": "Auto-generator JPK_V7 (INN-01) — rejestry VAT → JPK_V7M/V7K",
@@ -320,7 +342,7 @@ jpk_v7_auto_generator := {
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p17_ksef_check", false) == true
-    object.get(input.jpk, "type", "JPK_V7M") in {"JPK_V7M", "JPK_V7K"}
+    jpk_type_valid(object.get(input.jpk, "type", "JPK_V7M"))
 }
 
 # INN-02: TRACKER UPO — potwierdzenia KSeF.
@@ -395,7 +417,7 @@ jpk_audit := {
     "priority": 3130,
     "matched": true,
     "jpk_v7": {
-        "obowiązek": "JPK_V7M/V7K — miesięczne, do " + sprintf("%d. dnia", [jpk_v7_deadline_day]) + " (art. 82 ust. 1b VAT)",
+        "obowiązek": sprintf("JPK_V7M/V7K — miesięczne, do %d. dnia (art. 82 ust. 1b VAT)", [jpk_v7_deadline_day]),
         "struktura": "sprzedaż + zakupy + VAT należny + VAT naliczony + GTU + KSeF",
         "legal_basis": "Art. 82 ust. 1b VAT",
     },
@@ -458,7 +480,7 @@ ksef_xsd_validator := {
     "xsd_valid": xsd_valid,
     "invalid_fields": missing,
     "note": "walidator XSD — sprawdzenie wymaganych pól faktury ustrukturyzowanej (P_1..P_8)",
-    "_routing": "TRIAGE_QUEUE" if count(missing) > 0 else "",
+    "_routing": xsd_routing(count(missing)),
     "_routing_reason": sprintf("Walidacja XSD: schema %s, brakujące pola %d", [object.get(input.ksef, "schema_version", "FA(2)"), count(missing)]),
     "_legal_basis": "Rozporządzenie MF ws. KSeF (schemat FA)",
     "_warnings": [],
@@ -479,13 +501,13 @@ ksef_firewall_guard := {
     "anomalies": anomalies,
     "blocked": count(anomalies) > 0,
     "note": "firewall KSeF — blokada faktur z anomaliami (błędny NIP, kwota, duplikat) przed wysyłką",
-    "_routing": "BLOCK_AND_ALERT" if count(anomalies) > 0 else "",
+    "_routing": anomaly_routing(count(anomalies)),
     "_routing_reason": sprintf("Firewall KSeF: %d anomalii wykrytych", [count(anomalies)]),
     "_legal_basis": "P34 Red Team; KSeF",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p17_ksef_check", false) == true
-    anomalies := [a | a := ["NIP invalid", "kwota brutto != netto+VAT", "duplikat faktury"][_]; object.get(input.ksef, "anomaly_" + a, false) == true]
+    anomalies := [a | a := ["NIP invalid", "kwota brutto != netto+VAT", "duplikat faktury"][_]; object.get(input.ksef, sprintf("anomaly_%s", [a]), false) == true]
     count(anomalies) >= 0
 }
 
@@ -503,14 +525,14 @@ jpk_cross_validation := {
     "purchase_match": to_number(object.get(input.jpk, "purchase_register", 0)) == to_number(object.get(input.jpk, "vat_7_purchase", 0)),
     "consistent": consistent,
     "note": "walidacja krzyżowa JPK — spójność rejestrów sprzedaży/zakupów z deklaracją VAT-7",
-    "_routing": "TRIAGE_QUEUE" if consistent == false else "",
-    "_routing_reason": sprintf("Walidacja krzyżowa JPK: sprzedaż %v, zakupy %v", [to_number(object.get(input.jpk, "sales_register", 0)) == to_number(object.get(input.jpk, "vat_7_sales", 0)), to_number(object.get(input.jpk, "purchase_register", 0)) == to_number(object.get(input.jpk, "vat_7_purchase", 0))]),
+    "_routing": cross_validation_routing(consistent),
+    "_routing_reason": sprintf("Walidacja krzyżowa JPK: sprzedaż %v, zakupy %v", [consistent, consistent]),
     "_legal_basis": "Art. 82 VAT + Szablon JPK_VAT",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p17_ksef_check", false) == true
     consistent := to_number(object.get(input.jpk, "sales_register", 0)) == to_number(object.get(input.jpk, "vat_7_sales", 0))
-        and to_number(object.get(input.jpk, "purchase_register", 0)) == to_number(object.get(input.jpk, "vat_7_purchase", 0))
+    to_number(object.get(input.jpk, "purchase_register", 0)) == to_number(object.get(input.jpk, "vat_7_purchase", 0))
 }
 
 # ── SEKCJA 3: AUDYT e-DORĘCZEŃ I e-PODPISU (POZIOM ENTERPRISE) ────────────────
@@ -520,7 +542,7 @@ edelivery_esig_audit := {
     "priority": 3140,
     "matched": true,
     "edoręczenia": {
-        "obowiązek": "adres do doręczeń + skrzynka e-Doręczeń (od " + object.get(ksef_limits, "edelivery_mandatory_from", "2026-01-01") + ")",
+        "obowiązek": sprintf("adres do doręczeń + skrzynka e-Doręczeń (od %s)", [object.get(ksef_limits, "edelivery_mandatory_from", "2026-01-01")]),
         "legal_basis": "Ustawa o doręczeniach elektronicznych",
     },
     "e_podpis": {
@@ -558,7 +580,7 @@ esig_auto_applier := {
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p17_ksef_check", false) == true
-    object.get(input.jdg_entrepreneur, "esig_type", "QUALIFIED") in {"QUALIFIED", "TRUSTED"}
+    esig_type_valid(object.get(input.jdg_entrepreneur, "esig_type", "QUALIFIED"))
 }
 
 # INN-10: MENEDŻER ADRESU DO DORĘCZEŃ.
@@ -571,7 +593,7 @@ edelivery_address_manager := {
     "mailbox_active": object.get(input.jdg_entrepreneur, "edelivery_mailbox_active", false),
     "status": edelivery_status(object.get(input.jdg_entrepreneur, "edelivery_address_set", false), object.get(input.jdg_entrepreneur, "edelivery_mailbox_active", false)),
     "note": "menedżer adresu do doręczeń — ustawienie adresu + aktywacja skrzynki e-Doręczeń",
-    "_routing": "TRIAGE_QUEUE" if object.get(input.jdg_entrepreneur, "edelivery_address_set", false) == false else "",
+    "_routing": address_routing(object.get(input.jdg_entrepreneur, "edelivery_address_set", false)),
     "_routing_reason": "Menedżer adresu do doręczeń (INN-10)",
     "_legal_basis": "Ustawa o doręczeniach elektronicznych",
     "_warnings": [],
@@ -676,7 +698,7 @@ jpk_deadline_calendar := {
     "package": "jdg.p17_ksef_jpk_edeklaracje_innovations",
     "priority": 3154,
     "matched": true,
-    "deadlines": ["JPK_V7M/V7K — do " + sprintf("%d.", [jpk_v7_deadline_day]) + " dnia miesiąca", "VAT-7 — do 25. dnia miesiąca", "VAT-UE — do 25. dnia miesiąca", "JPK_PKPIR/KR/CIT — na żądanie US (art. 193a OrdPU)", "KSeF — faktury wystawiane od 2026-02-01"],
+    "deadlines": [sprintf("JPK_V7M/V7K — do %d. dnia miesiąca", [jpk_v7_deadline_day]), "VAT-7 — do 25. dnia miesiąca", "VAT-UE — do 25. dnia miesiąca", "JPK_PKPIR/KR/CIT — na żądanie US (art. 193a OrdPU)", "KSeF — faktury wystawiane od 2026-02-01"],
     "note": "kalendarz terminów JPK i KSeF — JPK_V7 do 25., VAT-7 do 25., e-deklaracje",
     "_routing": "",
     "_routing_reason": "Kalendarz terminów JPK/KSeF (INN-14)",
@@ -702,7 +724,7 @@ ksef_pipeline_snapshot := {
         "obowiązek": "KSeF 2.0 — nowe schematy XSD, rozszerzone przepływy (w planach MF)",
         "pipeline_auto_update": "auto-aktualizacja schematów i reguł przy nowych wersjach XSD",
     },
-    "hot_reload": pipeline_hot_reload(),
+    "hot_reload": true,
     "note": "pipeline auto-aktualizacji schematów KSeF/XSD i reguł JPK — ADR-002, hot-reload",
     "_routing": "",
     "_routing_reason": "Pipeline auto-aktualizacji schematów KSeF 2.0 / XSD (ADR-002)",

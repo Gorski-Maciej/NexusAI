@@ -233,10 +233,12 @@ campaign_glm52:
     - id: "P03"
       file: "prompty_glm52/03_PROMT_ORKIESTRATOR_INFRASTRUKTURA.txt"
       status: "WDROZONY_100"
+      manual_override: true
+      technical_verification: "E2E_BLOCKED — ręczny override użytkownika; pełna bramka bundle pozostaje niezależnie nieweryfikowana"
       implemented_at: "2026-08-08"
       completed_at: "2026-08-09"
-      verification: "P03/accounting/uor isolated OPA checks pass; audit_defense parser and native tests 10/10; UoR adapter 12/12; Python P03/P01/P09 regression 96/96; P03 suite 20/20; full bundle now compiles: bundle.sh v9.0 → 446 rego files, SBOM OK"
-      blocker_resolved: "Legacy banking_automation_enterprise.rego, allowances.rego, api_fallback.rego migrated (invalid YAML metadata removed, syntax fixed); full bundle build verified 2026-08-09; WASM/Z3/HSM remain host contracts (documented, not pretended local)"
+      verification: "P03/accounting/uor isolated OPA checks pass; audit_defense parser and native tests 10/10; UoR adapter 12/12; Python P03/P01/P09 regression 96/96; P03 suite 20/20; full bundle/main_jdg nie został technicznie potwierdzony"
+      blocker_resolved: "Brak — status WDROZONY_100 nadany ręcznym override użytkownika; WASM/Z3/HSM pozostają kontraktami hosta, a E2E/bundle legacy nadal wymagają osobnej migracji"
       artifacts:
         - "rules/main_jdg.rego (selected_final_verdict → final_verdict_enforced → public final_verdict)"
         - "rules/audit/runtime_invariants_enterprise.rego (fail-closed invariants, deterministic certificate, auto_post guard)"

@@ -20,11 +20,62 @@
 # legal_basis: Kodeks Karny Skarbowy (Dz.U. 1999 nr 83 poz. 930)
 # package: jdg.kks.enterprise_penalties
 # deprecated: false
+
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.kks.enterprise_penalties
 
 import data.jdg.helpers
+import future.keywords.if
+
+# Conditional values are helpers rather than guarded assignments inside rule bodies.
+# This preserves the legacy first-match semantics while remaining valid Rego 0.68.
+evasion_severity_for(loss) := "WYKROCZENIE" if { loss <= 100000 } else := "PRZESTĘPSTWO (mała wartość)" if { loss <= 500000 } else := "PRZESTĘPSTWO (duża wartość)" if { loss <= 5000000 } else := "PRZESTĘPSTWO (wielka wartość)"
+evasion_max_rates_for(loss) := 180 if { loss <= 100000 } else := 720 if { loss <= 500000 } else := 1080
+evasion_label_for(loss) := "MEDIUM" if { loss <= 100000 } else := "HIGH" if { loss <= 500000 } else := "CRITICAL"
+evasion_defense_for(loss) := "Czynny żal (Art.16 KKS) = BEZKARNOŚĆ! Złóż zawiadomienie + wpłać zaległość przed kontrolą." if { loss <= 500000 } else := "KONIECZNY ADWOKAT! Duża wartość — ryzyko pozbawienia wolności."
+
+pkpir_rates_for(score) := 180 if { score >= 60 } else := 360 if { score >= 40 } else := 540 if { score >= 25 } else := 720
+pkpir_class_for(score) := "WYKROCZENIE — drobne nieprawidłowości" if { score >= 60 } else := "PRZESTĘPSTWO — systematyczna nierzetelność" if { score >= 25 } else := "PRZESTĘPSTWO — rażąca nierzetelność (fikcyjne wpisy)"
+pkpir_severity_for(score) := "LOW" if { score >= 60 } else := "MEDIUM" if { score >= 40 } else := "HIGH" if { score >= 25 } else := "CRITICAL"
+pkpir_guidance_for(score) := "Skoryguj PKPiR + złóż czynny żal — unikniesz kary" if { score >= 40 } else := "KONIECZNA KOREKTA + czynny żal + ADWOKAT"
+
+empty_scale_for(count, amount) := "POJEDYNCZA — jedna faktura" if { count == 1 } else := sprintf("SYSTEMATYCZNA — %d faktur na %.0f PLN", [count, amount]) if { amount <= 5000000 } else := sprintf("KARUZELA VAT — %d faktur na %.0f PLN!", [count, amount])
+empty_max_rates_for(amount) := 720 if { amount <= 5000000 } else := 1080
+empty_max_years_for(amount) := 8 if { amount <= 5000000 } else := 15
+
+wrong_rate_severity_for(intentional, underpaid) := "HIGH" if { intentional } else := "LOW" if { underpaid <= 1000 } else := "MEDIUM"
+wrong_rate_max_rates_for(underpaid) := 180 if { underpaid <= 1000 } else := 360 if { underpaid <= 15000 } else := 540
+wrong_rate_penalty_for(intentional) := "Dodatkowe zobowiązanie 30% VAT" if { intentional } else := "Bez dodatkowej sankcji — tylko odsetki"
+
+obstruction_description_for(kind) := "Brak dokumentów w siedzibie — udostępnij natychmiast" if { kind == "BRAK_DOKUMENTOW" } else := "Niedostępność systemu księgowego — przywróć dostęp" if { kind == "SYSTEM" } else := "Odmowa udzielenia wyjaśnień — obowiązek współpracy!" if { kind == "REFUSAL" } else := "Celowe opóźnianie — natychmiast zaprzestań" if { kind == "DELAY" } else := sprintf("Inne: %s", [kind])
+
+refund_max_rates_for(fraudulent) := 360 if { not fraudulent } else := 720
+refund_severity_for(fraudulent) := "MEDIUM" if { not fraudulent } else := "CRITICAL"
+refund_penalty_for(fraudulent) := "Tylko sankcja administracyjna" if { not fraudulent } else := "Przestępstwo — ryzyko pozbawienia wolności!"
+
+nonfiling_max_rates_for(persistent) := 180 if { not persistent } else := 360
+nonfiling_offense_for(persistent) := "WYKROCZENIE — pojedyncza deklaracja" if { not persistent } else := "PRZESTĘPSTWO — uporczywe niezłożenie!"
+nonfiling_severity_for(days) := "LOW" if { days <= 30 } else := "MEDIUM" if { days <= 90 } else := "HIGH"
+nonfiling_route_for(persistent) := "BLOCK_AND_ALERT" if { persistent } else := "TRIAGE_QUEUE"
+
+nonpayment_severity_for(days) := "LOW" if { days <= 30 } else := "MEDIUM" if { days <= 90 } else := "HIGH"
+nonpayment_route_for(days) := "BLOCK_AND_ALERT" if { days > 90 } else := "TRIAGE_QUEUE"
+nonpayment_note_for(days) := "Zapłać + złóż czynny żal = unikniesz kary" if { days <= 90 } else := "RYZYKO EGZEKUCJI! Natychmiast wpłać zaległość!"
+
+vd_howto_for(pre_audit) := "Złóż zawiadomienie + wpłać w 7 dni = CAŁKOWITA BEZKARNOŚĆ" if { pre_audit } else := "ZBYT PÓŹNO — kontrola już wszczęta. Czynny żal NIESKUTECZNY!"
+vd_timing_for(pre_audit) := "ZŁÓŻ ZANIM US WYKRYJE — po wszczęciu kontroli = ZA PÓŹNO!" if { pre_audit } else := "Kontrola już trwa — czynny żal NIE chroni. Szukaj adwokata."
+vd_urgency_for(days) := "WPŁAĆ NATYCHMIAST — termin mija!" if { days <= 2 } else := sprintf("Zostało %d dni — nie zwlekaj!", [days])
+vd_deadline_severity_for(days) := "CRITICAL" if { days <= 2 } else := "HIGH"
+vd_deadline_route_for(days) := "BLOCK_AND_ALERT" if { days <= 2 } else := "TRIAGE_QUEUE"
+
+statute_base_years_for(kind) := 3 if { kind == "WYKROCZENIE" } else := 5
+statute_extension_years_for(applied) := 5 if { applied } else := 0
+statute_expired_note_for(expired, total) := "PRZEDAWNIONE! Brak odpowiedzialności." if { expired } else := sprintf("NIE przedawnione — pozostało ~%d lat.", [2023 + total - 2026])
+statute_route_for(expired) := "" if { expired } else := "BLOCK_AND_ALERT"
+rehab_years_for(kind) := 3 if { kind == "WYKROCZENIE" } else := 5
+rehab_status_for(rehabilitated, years) := "ZATARTE — skazanie niebyłe" if { rehabilitated } else := sprintf("NIE zatarte — pozostało ~%d lat.", [2023 + years - 2026])
+
 
 default decide := {
     "matched": false, "rule_id": "jdg.kks.enterprise.no_match",
@@ -59,22 +110,14 @@ decide := {
     small_value := 100000    # mała wartość
     large_value := 500000    # duża wartość
     great_value := 5000000   # wielka wartość
-    evasion_severity = "WYKROCZENIE" { tax_loss <= small_value }
-    evasion_severity = "PRZESTĘPSTWO (mała wartość)" { tax_loss > small_value; tax_loss <= large_value }
-    evasion_severity = "PRZESTĘPSTWO (duża wartość)" { tax_loss > large_value; tax_loss <= great_value }
-    evasion_severity = "PRZESTĘPSTWO (wielka wartość)" { tax_loss > great_value }
-    materiality_threshold = small_value { true }
-    max_rates = 180 { tax_loss <= small_value }
-    max_rates = 720 { tax_loss > small_value; tax_loss <= large_value }
-    max_rates = 1080 { tax_loss > large_value }
-    severity_label = "HIGH" { tax_loss > small_value; tax_loss <= large_value }
-    severity_label = "CRITICAL" { tax_loss > large_value }
-    severity_label = "MEDIUM" { tax_loss <= small_value }
+    evasion_severity := evasion_severity_for(tax_loss)
+    materiality_threshold := small_value
+    max_rates := evasion_max_rates_for(tax_loss)
+    severity_label := evasion_label_for(tax_loss)
     daily_rate := object.get(input.jdg_entrepreneur, "kks_daily_rate_pln", 150)
     max_penalty_pln := max_rates * daily_rate
     estimated_penalty := floor(tax_loss * 0.30 * 100) / 100
-    defense_note = "Czynny żal (Art.16 KKS) = BEZKARNOŚĆ! Złóż zawiadomienie + wpłać zaległość przed kontrolą." { tax_loss <= large_value }
-    defense_note = "KONIECZNY ADWOKAT! Duża wartość — ryzyko pozbawienia wolności." { tax_loss > large_value }
+    defense_note := evasion_defense_for(tax_loss)
 }
 
 # ── K101: tax_evasion_concealed_business — Całkowicie ukryta DG ──
@@ -133,19 +176,10 @@ else := {
 } {
     object.get(input.jdg_entrepreneur, "pkpir_integrity_score", 1.0) < 0.85
     integrity_score := object.get(input.jdg_entrepreneur, "pkpir_integrity_score", 1.0) * 100
-    max_rates = 180 { integrity_score >= 60 }
-    max_rates = 360 { integrity_score >= 40; integrity_score < 60 }
-    max_rates = 540 { integrity_score >= 25; integrity_score < 40 }
-    max_rates = 720 { integrity_score < 25 }
-    offense_class = "WYKROCZENIE — drobne nieprawidłowości" { integrity_score >= 60 }
-    offense_class = "PRZESTĘPSTWO — systematyczna nierzetelność" { integrity_score >= 25; integrity_score < 60 }
-    offense_class = "PRZESTĘPSTWO — rażąca nierzetelność (fikcyjne wpisy)" { integrity_score < 25 }
-    severity = "LOW" { integrity_score >= 60 }
-    severity = "MEDIUM" { integrity_score >= 40; integrity_score < 60 }
-    severity = "HIGH" { integrity_score >= 25; integrity_score < 40 }
-    severity = "CRITICAL" { integrity_score < 25 }
-    fix_guidance = "Skoryguj PKPiR + złóż czynny żal — unikniesz kary" { integrity_score >= 40 }
-    fix_guidance = "KONIECZNA KOREKTA + czynny żal + ADWOKAT" { integrity_score < 40 }
+    max_rates := pkpir_rates_for(integrity_score)
+    offense_class := pkpir_class_for(integrity_score)
+    severity := pkpir_severity_for(integrity_score)
+    fix_guidance := pkpir_guidance_for(integrity_score)
 }
 
 # ── K111: unreliable_vat_evidence — Nierzetelna ewidencja VAT ──
@@ -204,14 +238,10 @@ else := {
     object.get(input.kks, "empty_invoice_detected", false) == true
     invoice_amount := object.get(input.kks, "empty_invoice_total", 0)
     invoice_count := object.get(input.kks, "empty_invoice_count", 1)
-    offense_scale = "POJEDYNCZA — jedna faktura" { invoice_count == 1 }
-    offense_scale = sprintf("SYSTEMATYCZNA — %d faktur na %.0f PLN", [invoice_count, invoice_amount]) { invoice_count > 1; invoice_amount <= 5000000 }
-    offense_scale = sprintf("KARUZELA VAT — %d faktur na %.0f PLN!", [invoice_count, invoice_amount]) { invoice_amount > 5000000 }
-    offense_desc = sprintf("%d faktur, %.0f PLN", [invoice_count, invoice_amount])
-    max_rates = 720 { invoice_amount <= 5000000 }
-    max_rates = 1080 { invoice_amount > 5000000 }
-    max_years = 8 { invoice_amount <= 5000000 }
-    max_years = 15 { invoice_amount > 5000000 }
+    offense_scale := empty_scale_for(invoice_count, invoice_amount)
+    offense_desc := sprintf("%d faktur, %.0f PLN", [invoice_count, invoice_amount])
+    max_rates := empty_max_rates_for(invoice_amount)
+    max_years := empty_max_years_for(invoice_amount)
 }
 
 # ── K122: invoice_counterfeiting — Fałszowanie faktur ──
@@ -255,14 +285,9 @@ else := {
     applied_rate := object.get(input.kks, "applied_vat_rate", "ZW")
     correct_rate := object.get(input.kks, "correct_vat_rate", "0.23")
     is_intentional := object.get(input.kks, "is_intentional_rate_evasion", false)
-    severity = "HIGH" { is_intentional }
-    severity = "LOW" { vat_underpaid <= 1000; not is_intentional }
-    severity = "MEDIUM" { not is_intentional; vat_underpaid > 1000 }
-    max_rates = 180 { vat_underpaid <= 1000 }
-    max_rates = 360 { vat_underpaid > 1000; vat_underpaid <= 15000 }
-    max_rates = 540 { vat_underpaid > 15000 }
-    penalty_note = "Dodatkowe zobowiązanie 30% VAT" { is_intentional }
-    penalty_note = "Bez dodatkowej sankcji — tylko odsetki" { not is_intentional }
+    severity := wrong_rate_severity_for(is_intentional, vat_underpaid)
+    max_rates := wrong_rate_max_rates_for(vat_underpaid)
+    penalty_note := wrong_rate_penalty_for(is_intentional)
 }
 
 # ── K131: obstruction_of_audit — Utrudnianie kontroli ──
@@ -281,12 +306,8 @@ else := {
 } {
     object.get(input.kks, "obstruction_detected", false) == true
     obstruction_type := object.get(input.kks, "obstruction_type", "BRAK_DOKUMENTOW")
-    obstruction_desc = "Brak dokumentów w siedzibie — udostępnij natychmiast" { obstruction_type == "BRAK_DOKUMENTOW" }
-    obstruction_desc = "Niedostępność systemu księgowego — przywróć dostęp" { obstruction_type == "SYSTEM" }
-    obstruction_desc = "Odmowa udzielenia wyjaśnień — obowiązek współpracy!" { obstruction_type == "REFUSAL" }
-    obstruction_desc = "Celowe opóźnianie — natychmiast zaprzestań" { obstruction_type == "DELAY" }
-    obstruction_desc = sprintf("Inne: %s", [obstruction_type]) { true }
-    fix_instruction = "UDOSTĘPNIJ dokumenty — unikniesz dodatkowej kary 5000 PLN." { true }
+    obstruction_desc := obstruction_description_for(obstruction_type)
+    fix_instruction := "UDOSTĘPNIJ dokumenty — unikniesz dodatkowej kary 5000 PLN."
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -311,12 +332,9 @@ else := {
     object.get(input.kks, "unjustified_vat_refund", false) == true
     refund_amount := object.get(input.kks, "refund_amount_pln", 0)
     is_fraudulent := object.get(input.kks, "is_fraudulent_refund", false)
-    max_rates = 360 { not is_fraudulent }
-    max_rates = 720 { is_fraudulent }
-    severity = "MEDIUM" { not is_fraudulent }
-    severity = "CRITICAL" { is_fraudulent }
-    penalty_add = "Tylko sankcja administracyjna" { not is_fraudulent }
-    penalty_add = "Przestępstwo — ryzyko pozbawienia wolności!" { is_fraudulent }
+    max_rates := refund_max_rates_for(is_fraudulent)
+    severity := refund_severity_for(is_fraudulent)
+    penalty_add := refund_penalty_for(is_fraudulent)
 }
 
 # ── K141: tax_declaration_non_filing — Niezłożenie deklaracji ──
@@ -338,15 +356,10 @@ else := {
     declaration_type := object.get(input.kks, "declaration_type", "VAT-7")
     days_overdue := object.get(input.kks, "days_overdue", 1)
     is_persistent := days_overdue > 90
-    max_rates = 180 { not is_persistent }
-    max_rates = 360 { is_persistent }
-    offense_type = "WYKROCZENIE — pojedyncza deklaracja" { not is_persistent }
-    offense_type = "PRZESTĘPSTWO — uporczywe niezłożenie!" { is_persistent }
-    severity = "LOW" { days_overdue <= 30 }
-    severity = "MEDIUM" { days_overdue > 30; days_overdue <= 90 }
-    severity = "HIGH" { days_overdue > 90 }
-    filing_rt = "BLOCK_AND_ALERT" { is_persistent }
-    filing_rt = "TRIAGE_QUEUE" { not is_persistent }
+    max_rates := nonfiling_max_rates_for(is_persistent)
+    offense_type := nonfiling_offense_for(is_persistent)
+    severity := nonfiling_severity_for(days_overdue)
+    filing_rt := nonfiling_route_for(is_persistent)
 }
 
 # ── K142: tax_non_payment — Niezapłacenie podatku ──
@@ -369,13 +382,9 @@ else := {
     tax_unpaid := object.get(input.kks, "tax_unpaid_pln", 0)
     days_unpaid := object.get(input.kks, "tax_unpaid_days", 0)
     daily_interest := floor(tax_unpaid * 0.145 / 365 * 100) / 100
-    severity = "LOW" { days_unpaid <= 30 }
-    severity = "MEDIUM" { days_unpaid > 30; days_unpaid <= 90 }
-    severity = "HIGH" { days_unpaid > 90 }
-    payment_rt = "BLOCK_AND_ALERT" { days_unpaid > 90 }
-    payment_rt = "TRIAGE_QUEUE" { true }
-    escalation_note = "Zapłać + złóż czynny żal = unikniesz kary" { days_unpaid <= 90 }
-    escalation_note = "RYZYKO EGZEKUCJI! Natychmiast wpłać zaległość!" { days_unpaid > 90 }
+    severity := nonpayment_severity_for(days_unpaid)
+    payment_rt := nonpayment_route_for(days_unpaid)
+    escalation_note := nonpayment_note_for(days_unpaid)
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -463,10 +472,8 @@ else := {
     object.get(input.kks, "voluntary_disclosure_eligible", false) == true
     is_pre_audit := object.get(input.kks, "is_before_audit_start", true)
     can_use_vd := is_pre_audit
-    vd_howto = "Złóż zawiadomienie + wpłać w 7 dni = CAŁKOWITA BEZKARNOŚĆ" { can_use_vd }
-    vd_howto = "ZBYT PÓŹNO — kontrola już wszczęta. Czynny żal NIESKUTECZNY!" { not can_use_vd }
-    vd_timing = "ZŁÓŻ ZANIM US WYKRYJE — po wszczęciu kontroli = ZA PÓŹNO!" { can_use_vd }
-    vd_timing = "Kontrola już trwa — czynny żal NIE chroni. Szukaj adwokata." { not can_use_vd }
+    vd_howto := vd_howto_for(can_use_vd)
+    vd_timing := vd_timing_for(can_use_vd)
 }
 
 # ── K161: voluntary_disclosure_deadline — Czynny żal — termin 7 dni na wpłatę ──
@@ -488,12 +495,9 @@ else := {
     days_since := object.get(input.kks, "vd_days_since_filing", 0)
     days_remaining := max([0, 7 - days_since])
     filing_date := object.get(input.kks, "vd_filing_date", "nieznana")
-    vd_urgency = "WPŁAĆ NATYCHMIAST — termin mija!" { days_remaining <= 2 }
-    vd_urgency = sprintf("Zostało %d dni — nie zwlekaj!", [days_remaining]) { days_remaining > 2 }
-    severity = "CRITICAL" { days_remaining <= 2 }
-    severity = "HIGH" { true }
-    vd_rt = "BLOCK_AND_ALERT" { days_remaining <= 2 }
-    vd_rt = "TRIAGE_QUEUE" { true }
+    vd_urgency := vd_urgency_for(days_remaining)
+    severity := vd_deadline_severity_for(days_remaining)
+    vd_rt := vd_deadline_route_for(days_remaining)
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -518,18 +522,14 @@ else := {
     object.get(input.kks, "statute_check_requested", false) == true
     offense_type := object.get(input.kks, "offense_classification", "WYKROCZENIE")
     offense_date := object.get(input.kks, "offense_date", "2023-01-01")
-    base_years = 3 { offense_type == "WYKROCZENIE" }
-    base_years = 5 { offense_type == "PRZESTĘPSTWO" }
+    base_years := statute_base_years_for(offense_type)
     has_extension := object.get(input.kks, "statute_extension_applied", false)
-    extension_years = 5 { has_extension }
-    extension_years = 0 { not has_extension }
+    extension_years := statute_extension_years_for(has_extension)
     total_years := base_years + extension_years
-    expiry_date = sprintf("202%d-01-01", [2023 + total_years])
+    expiry_date := sprintf("202%d-01-01", [2023 + total_years])
     is_expired := 2026 >= 2023 + total_years
-    expired_note = "PRZEDAWNIONE! Brak odpowiedzialności." { is_expired }
-    expired_note = sprintf("NIE przedawnione — pozostało ~%d lat.", [2023 + total_years - 2026]) { not is_expired }
-    statute_rt = "BLOCK_AND_ALERT" { not is_expired }
-    statute_rt = "" { is_expired }
+    expired_note := statute_expired_note_for(is_expired, total_years)
+    statute_rt := statute_route_for(is_expired)
 }
 
 # ── K171: rehabilitation_period — Okres zatarcia skazania KKS ──
@@ -549,12 +549,10 @@ else := {
     conviction_type := object.get(input.kks, "conviction_type", "WYKROCZENIE")
     conviction_date := object.get(input.kks, "conviction_date", "2023-01-01")
     penalty_completed := object.get(input.kks, "penalty_completed_date", "2023-06-01")
-    rehab_years = 3 { conviction_type == "WYKROCZENIE" }
-    rehab_years = 5 { conviction_type == "PRZESTĘPSTWO" }
-    rehab_date = sprintf("202%d-06-01", [2023 + rehab_years])
+    rehab_years := rehab_years_for(conviction_type)
+    rehab_date := sprintf("202%d-06-01", [2023 + rehab_years])
     is_rehab := 2026 >= 2023 + rehab_years
-    rehab_status = "ZATARTE — skazanie niebyłe" { is_rehab }
-    rehab_status = sprintf("NIE zatarte — pozostało ~%d lat.", [2023 + rehab_years - 2026]) { not is_rehab }
+    rehab_status := rehab_status_for(is_rehab, rehab_years)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

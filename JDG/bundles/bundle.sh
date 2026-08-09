@@ -58,6 +58,29 @@ if [ "$BUNDLE_COUNT" -ne "$SOURCE_COUNT" ]; then
     exit 1
 fi
 
+# Walidacja składni i referencji (bramka 2 — nie pakuj niekompilowalnych reguł).
+# W CI OPA jest na PATH; lokalnie wspieramy repozytoryjną binarkę ./bin/opa.
+PROJECT_ROOT="$(dirname "$JDG_ROOT")"
+OPA_BIN="${OPA_BIN:-}"
+if [ -z "$OPA_BIN" ] && command -v opa >/dev/null 2>&1; then
+    OPA_BIN="$(command -v opa)"
+fi
+if [ -z "$OPA_BIN" ] && [ -x "$PROJECT_ROOT/bin/opa" ]; then
+    OPA_BIN="$PROJECT_ROOT/bin/opa"
+fi
+if [ -z "$OPA_BIN" ]; then
+    echo "❌ BRAMKA: brak OPA — ustaw OPA_BIN albo zainstaluj opa; bundle ABORT"
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
+if ! "$OPA_BIN" check "$TEMP_DIR/jdg" -b; then
+    echo "❌ BRAMKA: opa check -b nie przeszedł — bundle ABORT"
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
+
+echo "✅ Bramka składni: opa check -b OK ($BUNDLE_COUNT plików Rego)"
+
 # SBOM — checksum każdego pliku (V1 §11 supply chain)
 {
     echo "{"

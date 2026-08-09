@@ -198,3 +198,13 @@ class TestHardcodedAuditGate:
             assert "total_hardcoded" in data
             assert "migration_target" in data
             assert "hot-reload" in data["migration_target"]
+
+
+# ═══════════════════ BUNDLE GATE (P03 — fail closed) ═════════════════════════
+
+class TestBundleSyntaxGate:
+    def test_bundle_runs_opa_check_before_packaging(self):
+        bundle = (JDG_ROOT / "bundles" / "bundle.sh").read_text(encoding="utf-8")
+        assert '"$OPA_BIN" check "$TEMP_DIR/jdg" -b' in bundle
+        assert "BRAMKA: opa check -b nie przeszedł" in bundle
+        assert 'BUNDLE_COUNT=$(find "$TEMP_DIR/jdg" -name "*.rego" | wc -l)' in bundle
