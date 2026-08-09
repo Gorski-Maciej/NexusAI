@@ -18,12 +18,152 @@
 # legal_basis: Art. 30da, 30f PIT; Art. 86a-86o OrdPU (MDR); Dyrektywa DAC6
 # package: jdg.exit_tax_mdr
 # deprecated: false
-# ═══════════════════════════════════════════════════════════════════════════════
+#
 
 package jdg.exit_tax_mdr
 
-import data.jdg.helpers
-import data.jdg.thresholds
+import future.keywords.in
+
+# Conditional values are expressed as deterministic functions so the module
+# remains compatible with the repository's strict OPA parser.
+exit_tax_amount_for(gain) = amount {
+    gain > 0
+    amount := gain * 0.19
+} else = 0 {
+    gain <= 0
+}
+
+deferral_message_for(available) = message {
+    available
+    message := "✅ ODLICZENIE RATALNE: Transfer do UE/EOG → podatek w 5 ratach rocznych."
+} else = message {
+    not available
+    message := "⚠️ BRAK odroczenia: transfer poza UE/EOG → podatek płatny jednorazowo."
+}
+
+tp_method_for(value) = "CUP (porównywalnej ceny niekontrolowanej)" {
+    value < 100000
+} else = "TNMM (marży transakcyjnej netto)" {
+    value >= 100000
+}
+
+tp_routing_for(required, value) = "BLOCK_AND_ALERT" {
+    required
+} else = "TRIAGE_QUEUE" {
+    value > 500000
+    not required
+} else = "" {
+    value <= 500000
+    not required
+}
+
+tp_reason_for(required, value) = sprintf("TP: transakcja %.0f PLN z podmiotem powiązanym — dokumentacja wymagana", [value]) {
+    required
+} else = sprintf("TP: transakcja %.0f PLN — rozważ dokumentację uproszczoną", [value]) {
+    value > 500000
+    not required
+} else = "" {
+    value <= 500000
+    not required
+}
+
+tp_doc_message_for(required, value) = "DOKUMENTACJA TP WYMAGANA — lokalna + grupowa (master file) jeśli > 20M PLN." {
+    required
+} else = "Dokumentacja uproszczona zalecana (transakcja < 2M PLN)." {
+    not required
+    value > 500000
+} else = "Transakcja poniżej progu — dokumentacja nieobowiązkowa." {
+    value <= 500000
+}
+
+pit_tax_for(profit, form) = tax {
+    form == "LINEAR"
+    tax := profit * 0.19
+} else = tax {
+    form == "PIT_SCALE"
+    profit <= 120000
+    tax := profit * 0.12
+} else = tax {
+    form == "PIT_SCALE"
+    profit > 120000
+    tax := 14400 + (profit - 120000) * 0.32
+}
+
+estonian_rate_for(small_taxpayer) = 0.09 {
+    small_taxpayer
+} else = 0.15 {
+    not small_taxpayer
+}
+
+estonian_tax_for(profit, rate, reinvested) = tax {
+    not reinvested
+    tax := profit * rate
+} else = 0 {
+    reinvested
+}
+
+estonian_recommendation_for(savings) = "✅ PRZEJDŹ NA CIT ESTOŃSKI — znacząca oszczędność i odroczenie podatku." {
+    savings > 20000
+} else = "⚠️ ROZWAŻ CIT ESTOŃSKI — wymaga analizy kosztów administracyjnych (ZUS, księgowość)." {
+    savings > 5000
+    savings <= 20000
+} else = "❌ POZOSTAŃ NA JDG — zmiana nieopłacalna przy obecnych dochodach." {
+    savings <= 5000
+}
+
+polish_tax_rate_for(form) = 0.19 {
+    form == "LINEAR"
+} else = 0.12 {
+    form == "PIT_SCALE"
+}
+
+cross_border_flags_for(entity) = flags {
+    candidates := [
+        {"name": "EXIT_TAX", "active": object.get(entity, "exit_tax_active", false)},
+        {"name": "CFC", "active": object.get(entity, "cfc_active", false)},
+        {"name": "MDR", "active": object.get(entity, "mdr_active", false)},
+        {"name": "TP", "active": object.get(entity, "tp_active", false)},
+        {"name": "UPO", "active": object.get(entity, "tax_treaty_applies", false)},
+    ]
+    flags := [candidate.name | some candidate in candidates; candidate.active]
+}
+
+next_deadline_for(flags) = "Sprawdź indywidualne terminy" {
+    count(flags) > 0
+} else = "Brak" {
+    count(flags) == 0
+}
+
+cross_border_routing_for(flags) = "BLOCK_AND_ALERT" {
+    count(flags) >= 3
+} else = "TRIAGE_QUEUE" {
+    count(flags) > 0
+    count(flags) < 3
+} else = "" {
+    count(flags) == 0
+}
+
+cross_border_reason_for(flags) = sprintf("%d aktywnych obowiązków transgranicznych", [count(flags)]) {
+    count(flags) > 0
+} else = "" {
+    count(flags) == 0
+}
+
+estonian_cit_available_for(small_taxpayer, employees, reinvested) = true {
+    small_taxpayer
+    employees
+} else = true {
+    small_taxpayer
+    reinvested
+} else = false {
+    not small_taxpayer
+} else = false {
+    small_taxpayer
+    not employees
+    not reinvested
+}
+
+# End deterministic helper functions.
 
 default decide := {
     "matched": false, "rule_id": "jdg.exit_tax_mdr.no_match",
@@ -60,7 +200,7 @@ decide := {
         sprintf("🚨 EXIT TAX (Art. 30da PIT): Przenosisz %s (FMV: %.0f PLN) do %s.", [asset_name, asset_fmv, destination]),
         sprintf("💰 Niezrealizowany zysk: %.0f PLN. Podatek 19%%: %.0f PLN (lub 3%% od FMV jeśli < 4M PLN).",
             [unrealized_gain, exit_tax_amount]),
-        sprintf("⏰ Termin: do 7. dnia miesiąca po miesiącu przeniesienia. Deklaracja: PIT-NZ."),
+        "⏰ Termin: do 7. dnia miesiąca po miesiącu przeniesienia. Deklaracja: PIT-NZ.",
         deferral_msg
     ]
 } {
@@ -76,16 +216,14 @@ decide := {
     asset_fmv > 0
     
     unrealized_gain := asset_fmv - asset_tax_basis
-    exit_tax_amount := unrealized_gain * 0.19 { unrealized_gain > 0 }
-    exit_tax_amount := 0 { unrealized_gain <= 0 }
+    exit_tax_amount := exit_tax_amount_for(unrealized_gain)
     
     # Deferral: possible if transfer to EU/EEA country
     eu_eea_countries := {"AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IS","IE","IT","LV",
                          "LI","LT","LU","MT","NL","NO","PL","PT","RO","SK","SI","ES","SE","CH"}
     deferral_available := destination in eu_eea_countries
     
-    deferral_msg := "✅ ODLICZENIE RATALNE: Transfer do UE/EOG → podatek w 5 ratach rocznych." { deferral_available }
-    deferral_msg := "⚠️ BRAK odroczenia: transfer poza UE/EOG → podatek płatny jednorazowo." { not deferral_available }
+    deferral_msg := deferral_message_for(deferral_available)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -118,7 +256,7 @@ else := {
         sprintf("📊 Udział: %.0f%%, dochód pasywny: %.0f%% (próg: 33%%).", [control_pct * 100, passive_pct * 100]),
         sprintf("💰 Dochód CFC do opodatkowania w PL: %.0f PLN (19%% ≡ %.0f PLN podatku).",
             [cfc_income_attributed, cfc_income_attributed * 0.19]),
-        sprintf("📋 OBOWIĄZEK: PIT-CFC + zapłać 19%% podatku od dochodu CFC. Termin: 30 września."),
+        "📋 OBOWIĄZEK: PIT-CFC + zapłać 19%% podatku od dochodu CFC. Termin: 30 września.",
         "⚠️ Kara za niezgłoszenie CFC: do 720 stawek dziennych KKS!"
     ]
 } {
@@ -163,8 +301,8 @@ else := {
     "_warnings": [
         sprintf("🚨 MDR/DAC6 (Art. 86a OrdPU): Wykryto schemat podatkowy kategorii '%s'!", [hallmark]),
         sprintf("📋 %s", [scheme_desc]),
-        sprintf("⏰ TERMIN: Zgłoś MDR-1 w ciągu 30 dni od udostępnienia schematu!"),
-        sprintf("💰 Kara za brak zgłoszenia: DO 21 000 000 PLN (Art. 86o § 1 OrdPU)!"),
+        "⏰ TERMIN: Zgłoś MDR-1 w ciągu 30 dni od udostępnienia schematu!",
+        "💰 Kara za brak zgłoszenia: DO 21 000 000 PLN (Art. 86o § 1 OrdPU)!",
         "📝 Formularz: MDR-1 (promotor) / MDR-3 (korzystający) przez e-US."
     ]
 } {
@@ -212,16 +350,10 @@ else := {
     tp_doc_threshold := object.get(object.get(data.thresholds, "tp", {}), "documentation_threshold_pln", 2000000)
     tp_doc_required := tx_value > tp_doc_threshold
     
-    recommended_method := "CUP (porównywalnej ceny niekontrolowanej)" { tx_value < 100000 }
-    recommended_method := "TNMM (marży transakcyjnej netto)" { tx_value >= 100000 }
-    
-    tp_routing := "BLOCK_AND_ALERT" { tp_doc_required }
-    tp_routing := "TRIAGE_QUEUE" { tx_value > 500000; not tp_doc_required }
-    tp_routing := "" { tx_value <= 500000; not tp_doc_required }
-    
-    tp_reason := sprintf("TP: transakcja %.0f PLN z podmiotem powiązanym — dokumentacja wymagana", [tx_value]) { tp_doc_required }
-    tp_reason := sprintf("TP: transakcja %.0f PLN — rozważ dokumentację uproszczoną", [tx_value]) { tx_value > 500000; not tp_doc_required }
-    tp_reason := "" { tx_value <= 500000; not tp_doc_required }
+    recommended_method := tp_method_for(tx_value)
+    tp_routing := tp_routing_for(tp_doc_required, tx_value)
+    tp_reason := tp_reason_for(tp_doc_required, tx_value)
+    tp_doc_msg := tp_doc_message_for(tp_doc_required, tx_value)
     
     tp_warnings := [
         sprintf("🔗 CENY TRANSFEROWE: Transakcja %.0f PLN z '%s' (podmiot powiązany).", [tx_value, related_party]),
@@ -229,10 +361,6 @@ else := {
         sprintf("💡 Rekomendowana metoda: %s.", [recommended_method]),
         "📝 Formularz: TP-R do 31 grudnia następnego roku."
     ]
-    
-    tp_doc_msg := "DOKUMENTACJA TP WYMAGANA — lokalna + grupowa (master file) jeśli > 20M PLN." { tp_doc_required }
-    tp_doc_msg := "Dokumentacja uproszczona zalecana (transakcja < 2M PLN)." { not tp_doc_required; tx_value > 500000 }
-    tp_doc_msg := "Transakcja poniżej progu — dokumentacja nieobowiązkowa." { tx_value <= 500000 }
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -257,7 +385,7 @@ else := {
     "_routing_reason": sprintf("Estoński CIT: oszczędność %.0f PLN/rok vs obecna forma JDG", [annual_savings]),
     "_legal_basis": "Art. 28c-28t CIT (estoński CIT); Art. 30c PIT (liniowy 19%)",
     "_warnings": [
-        sprintf("🏢 ESTOŃSKI CIT: Analiza opłacalności przejścia z JDG na Sp. z o.o. z CIT estońskim."),
+        "🏢 ESTOŃSKI CIT: Analiza opłacalności przejścia z JDG na Sp. z o.o. z CIT estońskim.",
         sprintf("💰 JDG (PIT %s): %.0f PLN podatku. Estoński CIT 9%%: %.0f PLN (przy reinwestycji: 0 PLN!).",
             [pit_form, pit_tax, est_tax]),
         sprintf("📊 Roczna oszczędność: %.0f PLN (%.0f%%).", [annual_savings, savings_pct]),
@@ -277,25 +405,18 @@ else := {
     small_taxpayer_limit_pln := small_taxpayer_limit_eur * eur_pln_rate
     is_small_taxpayer := annual_revenue < small_taxpayer_limit_pln
     
-    est_available := is_small_taxpayer and (has_3_employees or reinvests_profits)
+    est_available := estonian_cit_available_for(is_small_taxpayer, has_3_employees, reinvests_profits)
     
     # PIT tax calculation
-    pit_tax := annual_profit * 0.19 { pit_form == "LINEAR" }
-    pit_tax := annual_profit * 0.12 { pit_form == "PIT_SCALE"; annual_profit <= 120000 }
-    pit_tax := 14400 + (annual_profit - 120000) * 0.32 { pit_form == "PIT_SCALE"; annual_profit > 120000 }
+    pit_tax := pit_tax_for(annual_profit, pit_form)
     
     # Estoński CIT: 9% of distributed profit (0% if reinvested)
-    est_tax_rate := 0.09 { is_small_taxpayer }
-    est_tax_rate := 0.15 { not is_small_taxpayer }
-    est_tax := annual_profit * est_tax_rate { not reinvests_profits }
-    est_tax := 0 { reinvests_profits }
+    est_tax_rate := estonian_rate_for(is_small_taxpayer)
+    est_tax := estonian_tax_for(annual_profit, est_tax_rate, reinvests_profits)
     
     annual_savings := pit_tax - est_tax
     savings_pct := annual_savings / max([pit_tax, 1]) * 100
-    
-    recommendation := "✅ PRZEJDŹ NA CIT ESTOŃSKI — znacząca oszczędność i odroczenie podatku." { annual_savings > 20000 }
-    recommendation := "⚠️ ROZWAŻ CIT ESTOŃSKI — wymaga analizy kosztów administracyjnych (ZUS, księgowość)." { annual_savings > 5000; annual_savings <= 20000 }
-    recommendation := "❌ POZOSTAŃ NA JDG — zmiana nieopłacalna przy obecnych dochodach." { annual_savings <= 5000 }
+    recommendation := estonian_recommendation_for(annual_savings)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -341,8 +462,7 @@ else := {
     
     # Polish tax before relief
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
-    pl_tax_rate := 0.19 { pit_form == "LINEAR" }
-    pl_tax_rate := 0.12 { pit_form == "PIT_SCALE" }
+    pl_tax_rate := polish_tax_rate_for(pit_form)
     pl_tax_before := foreign_income * pl_tax_rate
     
     # Relief: lower of foreign tax paid and Polish tax on foreign income
@@ -375,23 +495,11 @@ else := {
     input.cross_border_risk_summary == true
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
     
-    active_flags := []
-    active_flags := array.concat(active_flags, ["EXIT_TAX"]) { object.get(input.jdg_entrepreneur, "exit_tax_active", false) }
-    active_flags := array.concat(active_flags, ["CFC"]) { object.get(input.jdg_entrepreneur, "cfc_active", false) }
-    active_flags := array.concat(active_flags, ["MDR"]) { object.get(input.jdg_entrepreneur, "mdr_active", false) }
-    active_flags := array.concat(active_flags, ["TP"]) { object.get(input.jdg_entrepreneur, "tp_active", false) }
-    active_flags := array.concat(active_flags, ["UPO"]) { object.get(input.jdg_entrepreneur, "tax_treaty_applies", false) }
-    
+    active_flags := cross_border_flags_for(input.jdg_entrepreneur)
     total_risk := count(active_flags) * 20
-    next_deadline := "Sprawdź indywidualne terminy" { count(active_flags) > 0 }
-    next_deadline := "Brak" { count(active_flags) == 0 }
-    
-    cb_routing := "BLOCK_AND_ALERT" { count(active_flags) >= 3 }
-    cb_routing := "TRIAGE_QUEUE" { count(active_flags) > 0; count(active_flags) < 3 }
-    cb_routing := "" { count(active_flags) == 0 }
-    
-    cb_reason := sprintf("%d aktywnych obowiązków transgranicznych", [count(active_flags)]) { count(active_flags) > 0 }
-    cb_reason := "" { count(active_flags) == 0 }
+    next_deadline := next_deadline_for(active_flags)
+    cb_routing := cross_border_routing_for(active_flags)
+    cb_reason := cross_border_reason_for(active_flags)
     
     cb_warnings := [sprintf("🌍 CROSS-BORDER RISK: %d aktywnych flag: %s. Łączne ryzyko: %d/100.",
         [count(active_flags), concat(", ", active_flags), total_risk])]

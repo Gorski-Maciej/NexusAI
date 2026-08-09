@@ -97,19 +97,13 @@ rules_metadata := {
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 # Pobiera metadane dla konkretnej reguły
-get_rule_metadata(rule_id) = metadata if {
-    metadata := object.get(rules_metadata, rule_id, {})
-}
+get_rule_metadata(rule_id) := object.get(rules_metadata, rule_id, {})
 
 # Pobiera severity reguły
-get_rule_severity(rule_id) = severity if {
-    severity := object.get(object.get(rules_metadata, rule_id, {}), "severity", "UNKNOWN")
-}
+get_rule_severity(rule_id) := object.get(object.get(rules_metadata, rule_id, {}), "severity", "UNKNOWN")
 
 # Lista wszystkich zarejestrowanych rule_id
-all_registered_rules = keys if {
-    keys := object.keys(rules_metadata)
-}
+all_registered_rules := object.keys(rules_metadata)
 
 # ════════════════════════════════════════════════════════════════════════════════
 # TEMPORAL VALIDITY REGISTRY
@@ -371,20 +365,11 @@ is_temporal_rule(rule_id)  if {
 }
 
 # Lista wszystkich temporalnych rule_id
-all_temporal_rules = keys  if {
-    keys := object.keys(temporal_validity)
-}
+all_temporal_rules := object.keys(temporal_validity)
 
 # Pobiera okres obowiązywania reguły ({} jeśli brak wpisu)
-get_rule_validity(rule_id) = v  if {
-    not is_temporal_rule(rule_id)
-    v := {}
-}
-
-get_rule_validity(rule_id) = v  if {
-    is_temporal_rule(rule_id)
-    v := temporal_validity[rule_id]
-}
+# object.get zachowuje wariant A: brak wpisu = ALWAYS ACTIVE.
+get_rule_validity(rule_id) := object.get(temporal_validity, rule_id, {})
 
 # ════════════════════════════════════════════════════════════════════════════════
 # A2: TEMPORAL CAUSALITY CHAIN — Time-Travel Compliance (Strategic Initiative)

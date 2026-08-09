@@ -1,38 +1,18 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — ENTERPRISE GTU COMPLETENESS CHECKER (Innovation 8.13, P18 v7.0)
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# METADATA
-# title: JDG Enterprise GTU Completeness Checker — Full 13-code GTU Validation
-# description: |
-#   ENTERPRISE v7.0 — Rozszerzony walidator kompletności kodów GTU dla JPK_V7.
-#   Sprawdza czy wszystkie wymagane kody GTU (GTU_01..GTU_13) są poprawnie
-#   przypisane dla towarów/usług wrażliwych wg Załącznika nr 15 do ustawy VAT.
-#
-#   KLUCZOWE FUNKCJE:
-#   - Pełna mapa 13 kodów GTU z kategoriami towarów/usług
-#   - Wykrywanie brakujących kodów GTU w ewidencji sprzedaży
-#   - Walidacja poprawności przypisania GTU (czy towar X ma kod Y)
-#   - Raport kompletności GTU dla okresu JPK_V7
-#   - Automatyczne proponowanie korekty przy błędnym GTU
-#
-# architecture: Enterprise v7.0 First-Match-Wins
-# legal_basis: Art. 106e ust. 1 pkt 18a VAT; Załącznik nr 15 do ustawy VAT
-# package: jdg.gtu_checker
-# deprecated: false
-# priority_range: 2120-2149
-# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI JDG — Enterprise GTU completeness checker.
+# Package: jdg.gtu_checker. Legacy metadata retained as ordinary comments.
 
 package jdg.gtu_checker
 
-import data.jdg.helpers
+import future.keywords.if
+import future.keywords.in
 
 default decide := {
-    "matched": false, "rule_id": "jdg.gtu_checker.no_match",
-    "package": "jdg.gtu_checker", "priority": 9999
+    "matched": false,
+    "rule_id": "jdg.gtu_checker.no_match",
+    "package": "jdg.gtu_checker",
+    "priority": 9999,
 }
 
-# Pełna mapa 13 kodów GTU (Załącznik nr 15 do ustawy VAT)
 gtu_full_map := {
     "GTU_01": {"description": "Napoje alkoholowe (>1.2% alkoholu)", "categories": ["ALCOHOL", "SPIRITS", "BEER", "WINE"]},
     "GTU_02": {"description": "Towary energetyczne (paliwa, oleje)", "categories": ["FUEL", "PETROL", "DIESEL", "OIL"]},
@@ -44,15 +24,43 @@ gtu_full_map := {
     "GTU_08": {"description": "Metale szlachetne i nieszlachetne", "categories": ["PRECIOUS_METALS", "GOLD", "SILVER", "STEEL"]},
     "GTU_09": {"description": "Leki i wyroby medyczne", "categories": ["PHARMA_MEDICAL", "MEDICAL_DEVICES", "DRUGS"]},
     "GTU_10": {"description": "Budynki, budowle, grunty", "categories": ["BUILDINGS_REAL_ESTATE", "CONSTRUCTION", "LAND"]},
-    "GTU_11": {"description": "Usługi o charakterze niematerialnym (doradcze, księgowe, prawne, zarządzanie)", "categories": ["CONSULTING_ADVISORY", "ACCOUNTING", "MANAGEMENT"]},
+    "GTU_11": {"description": "Usługi niematerialne doradcze, księgowe, prawne", "categories": ["CONSULTING_ADVISORY", "ACCOUNTING", "MANAGEMENT"]},
     "GTU_12": {"description": "Usługi niematerialne IT, prawne, reklamowe", "categories": ["CONSULTING", "LEGAL", "IT_SERVICES", "INTANGIBLE_SERVICES", "ADVERTISING", "MARKETING"]},
-    "GTU_13": {"description": "Usługi transportowe i magazynowe", "categories": ["TRANSPORT_LOGISTICS", "WAREHOUSING", "FREIGHT", "SHIPPING"]}
+    "GTU_13": {"description": "Usługi transportowe i magazynowe", "categories": ["TRANSPORT_LOGISTICS", "WAREHOUSING", "FREIGHT", "SHIPPING"]},
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# GTC-2120: GTU COMPLETENESS AUDIT — Audyt kompletności GTU dla okresu JPK
-# ═══════════════════════════════════════════════════════════════════════════════
+bool_text(value) := sprintf("%v", [value])
+bool_not(value) := object.get({"true": false, "false": true}, bool_text(value), false)
+both_true(a, b) := object.get({"true|true": true}, sprintf("%v|%v", [a, b]), false)
+percentage(value, denominator) := value * 100 / denominator if {
+    denominator > 0
+} else := 0 if {
+    denominator == 0
+}
 
+build_gtu_audit_warnings(period, total, missing, incorrect, pct, missing_codes) := [
+    sprintf("🔍 GTU COMPLETENESS AUDIT — OKRES %s", [period]),
+    sprintf("   Pozycji wymagających GTU: %d", [total]),
+    sprintf("   Kompletność: %.0f%% | Brakujące: %d | Błędne: %d", [pct, missing, incorrect]),
+    sprintf("   Brakujące kody GTU: %s", [concat(", ", missing_codes)]),
+    "   📋 13 kodów GTU (GTU_01..GTU_13) — Załącznik nr 15 do ustawy VAT",
+]
+
+expected_codes_for(category) := [code |
+    some code
+    details := gtu_full_map[code]
+    category in object.get(details, "categories", [])
+]
+
+invoice_warning(category, expected, current, correct) := [sprintf("✅ GTU OK: kategoria '%s' → kod '%s' — zgodne z Zał. nr 15.", [category, current])] if {
+    correct
+} else := [sprintf("⚠️ GTU BŁĄD: kategoria '%s' → kod '%s'. Oczekiwano: %s.", [category, current, concat(" lub ", expected)])] if {
+    count(expected) > 0
+} else := [sprintf("⚠️ GTU: kategoria '%s' nie wymaga GTU, ale przypisano kod '%s'.", [category, current])] if {
+    current != ""
+} else := ["✅ GTU: kategoria nie wymaga oznaczenia GTU."]
+
+# GTC-2120: GTU completeness audit.
 decide := {
     "matched": true,
     "rule_id": "jdg.gtu_checker.completeness_audit",
@@ -72,8 +80,8 @@ decide := {
     "_routing": gtu_routing,
     "_routing_reason": gtu_reason,
     "_legal_basis": "§ 10 rozporządzenia JPK_VAT; Załącznik nr 15 do ustawy VAT",
-    "_warnings": build_gtu_audit_warnings(period, total_gtu_items, missing_gtu_count, incorrect_gtu_count, completeness_pct, missing_codes_list)
-} {
+    "_warnings": build_gtu_audit_warnings(period, total_gtu_items, missing_gtu_count, incorrect_gtu_count, completeness_pct, missing_codes_list),
+} if {
     input.gtu_completeness_audit == true
     period := object.get(input, "gtu_audit_period", "2026-07")
     total_gtu_items := object.get(input, "gtu_total_taxable_items", 0)
@@ -81,32 +89,13 @@ decide := {
     missing_gtu_count := object.get(input, "gtu_missing_count", 0)
     incorrect_gtu_count := object.get(input, "gtu_incorrect_count", 0)
     missing_codes_list := object.get(input, "gtu_missing_codes", [])
-
-    completeness_pct := gtu_assigned * 100 / max([total_gtu_items, 1])
-
-    gtu_routing := "BLOCK_AND_ALERT" { missing_gtu_count + incorrect_gtu_count > 0; total_gtu_items > 0 }
-    gtu_routing := "" { true }
-    gtu_reason := sprintf("GTU AUDIT: %d brakujących / %d błędnych kodów — popraw przed wysyłką JPK_V7!", [missing_gtu_count, incorrect_gtu_count]) { missing_gtu_count + incorrect_gtu_count > 0 }
-    gtu_reason := "" { true }
-}
-
-build_gtu_audit_warnings(period, total, missing, incorrect, pct, missing_codes) = warnings {
-    base := [
-        sprintf("🔍 GTU COMPLETENESS AUDIT — OKRES %s", [period]),
-        sprintf("   Pozycji wymagających GTU: %d", [total]),
-        sprintf("   Kompletność: %.0f%% | Brakujące: %d | Błędne: %d", [pct, missing, incorrect]),
-    ]
-    with_missing := array.concat(base, [sprintf("   ⚠️ Brakujące kody GTU: %s", [concat(", ", missing_codes)])]) { count(missing_codes) > 0 }
-    with_missing := base { count(missing_codes) == 0 }
-    final := array.concat(with_missing, ["   📋 13 kodów GTU (GTU_01..GTU_13) — Załącznik nr 15 do ustawy VAT"])
-    warnings := final
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# GTC-2125: GTU VALIDATION PER INVOICE — Walidacja GTU dla pojedynczej faktury
-# ═══════════════════════════════════════════════════════════════════════════════
-
-else := {
+    completeness_pct := percentage(gtu_assigned, max([total_gtu_items, 1]))
+    issue_count := missing_gtu_count + incorrect_gtu_count
+    has_issue := issue_count > 0
+    has_items := total_gtu_items > 0
+    gtu_routing := object.get({"true": "BLOCK_AND_ALERT", "false": ""}, bool_text(both_true(has_issue, has_items)), "")
+    gtu_reason := object.get({"true": sprintf("GTU AUDIT: %d brakujących / %d błędnych kodów — popraw przed wysyłką JPK_V7!", [missing_gtu_count, incorrect_gtu_count]), "false": ""}, bool_text(has_issue), "")
+} else := {
     "matched": true,
     "rule_id": "jdg.gtu_checker.per_invoice_validation",
     "package": "jdg.gtu_checker",
@@ -123,48 +112,17 @@ else := {
     "_routing": invoice_gtu_routing,
     "_routing_reason": invoice_gtu_reason,
     "_legal_basis": "Art. 106e ust. 1 pkt 18a VAT; Załącznik nr 15",
-    "_warnings": build_invoice_gtu_warnings(product_category, expected_codes, current_gtu, gtu_correct)
-} {
+    "_warnings": invoice_warning(product_category, expected_codes, current_gtu, gtu_correct),
+} if {
     input.gtu_validate_invoice == true
     product_category := object.get(input, "product_category", "GENERAL")
     current_gtu := object.get(input.invoice, "gtu_code", "")
-
-    # Określ oczekiwane kody GTU dla tej kategorii produktu
-    # Iteruj przez gtu_full_map, znajdź kody gdzie categories zawierają product_category
-    expected_codes := [code |
-        code := gtu_full_map[_];
-        some cat;
-        cat := object.get(gtu_full_map[code], "categories", [])[_];
-        cat == product_category
-    ]
-
+    expected_codes := expected_codes_for(product_category)
     requires_gtu := count(expected_codes) > 0
-    gtu_correct := current_gtu in expected_codes { requires_gtu }
-    gtu_correct := true { not requires_gtu; current_gtu == "" }
-    gtu_correct := false { not requires_gtu; current_gtu != "" }
-
-    invoice_gtu_routing := "BLOCK_AND_ALERT" { not gtu_correct; requires_gtu }
-    invoice_gtu_routing := "" { true }
-    invoice_gtu_reason := sprintf("GTU MISMATCH: kategoria '%s' oczekuje %s, otrzymano '%s'", [product_category, concat(" lub ", expected_codes), current_gtu]) { not gtu_correct; requires_gtu }
-    invoice_gtu_reason := "" { true }
-}
-
-build_invoice_gtu_warnings(cat, expected, current, correct) = warnings {
-    correct
-    warnings := [sprintf("✅ GTU OK: kategoria '%s' → kod '%s' — zgodne z Zał. nr 15.", [cat, current])]
-} else = warnings {
-    count(expected) > 0
-    warnings := [sprintf("⚠️ GTU BŁĄD: kategoria '%s' → kod '%s'. Oczekiwano: %s.", [cat, current, concat(" lub ", expected)])]
-} else = warnings {
-    current != ""
-    warnings := [sprintf("⚠️ GTU: kategoria '%s' nie wymaga GTU, ale przypisano kod '%s'.", [cat, current])]
-} else = ["✅ GTU: kategoria nie wymaga oznaczenia GTU."]
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# GTC-2130: GTU CORRECTION PROPOSAL — Propozycja korekty błędnego GTU
-# ═══════════════════════════════════════════════════════════════════════════════
-
-else := {
+    gtu_correct := object.get({"true": current_gtu in expected_codes, "false": current_gtu == ""}, bool_text(requires_gtu), false)
+    invoice_gtu_routing := object.get({"true": "BLOCK_AND_ALERT", "false": ""}, bool_text(bool_not(gtu_correct)), "")
+    invoice_gtu_reason := object.get({"true": sprintf("GTU MISMATCH: kategoria '%s' oczekuje %s, otrzymano '%s'", [product_category, concat(" lub ", expected_codes), current_gtu]), "false": ""}, bool_text(bool_not(gtu_correct)), "")
+} else := {
     "matched": true,
     "rule_id": "jdg.gtu_checker.correction_proposal",
     "package": "jdg.gtu_checker",
@@ -181,23 +139,15 @@ else := {
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": sprintf("KOREKTA GTU: faktura %s — zmień '%s' → '%s'. Powód: %s", [invoice_ref, current_gtu, proposed_gtu, correction_reason]),
     "_legal_basis": "Art. 106j VAT (faktura korygująca); Załącznik nr 15 do ustawy VAT",
-    "_warnings": [
-        sprintf("📝 KOREKTA GTU — faktura %s:", [invoice_ref]),
-        sprintf("   Obecny kod: %s → Proponowany: %s", [current_gtu, proposed_gtu]),
-        sprintf("   Powód: %s", [correction_reason]),
-        "📋 Wystaw fakturę korygującą przez KSeF z poprawnym kodem GTU."
-    ]
-} {
+    "_warnings": [sprintf("📝 KOREKTA GTU — faktura %s: %s → %s", [invoice_ref, current_gtu, proposed_gtu])],
+} if {
     input.gtu_propose_correction == true
     product_category := object.get(input, "product_category", "")
     current_gtu := object.get(input.invoice, "gtu_code", "")
     invoice_ref := object.get(input.invoice, "invoice_number", "")
-
-    # Znajdź poprawny kod GTU dla kategorii
-    expected := [code | code := gtu_full_map[_]; some cat; cat := object.get(gtu_full_map[code], "categories", [])[_]; cat == product_category]
+    expected := expected_codes_for(product_category)
     count(expected) > 0
-    current_gtu not in expected
-
+    bool_not(current_gtu in expected)
     proposed_gtu := expected[0]
     correction_reason := sprintf("Kategoria '%s' wymaga kodu %s (Zał. nr 15 VAT)", [product_category, proposed_gtu])
 }

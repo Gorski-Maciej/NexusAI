@@ -6,21 +6,123 @@
 # title: BDO Enterprise — Advanced Waste Management Compliance for JDG
 # description: |
 #   Rozbudowany pakiet Enterprise dla BDO i gospodarki odpadami w JDG.
-#   Pokrycie: rejestracja BDO (progi mikro/mały/średni), kody EWC,
-#   kwartalna ewidencja odpadów, KPO elektroniczne, transport odpadów,
-#   transgraniczne przemieszczanie, zezwolenia (DGO, BAT), sankcje administracyjne
-#   i karno-skarbowe. Uzupełnia podstawowy pakiet jdg.environmental (P1400-P1407).
-# architecture: Multi-Pass Enterprise (ADR-001), sub-package of jdg.environmental
-# legal_basis: Ustawa o odpadach (Dz.U. 2023 poz. 1587), Rozp. ws. BDO,
-#   Ustawa o międzynarodowym przemieszczaniu odpadów, Dyrektywa 2008/98/WE,
-#   Rozp. REACH, Ustawa o zużytym sprzęcie elektrycznym i elektronicznym
+#   Pokrycie: rejestracja BDO, kody EWC, ewidencja kwartalna, KPO,
+#   transport, transgraniczne przemieszczanie, zezwolenia, sankcje i EPR.
+# architecture: Multi-Pass Enterprise (ADR-001)
+# legal_basis: Ustawa o odpadach, Rozporządzenie ws. BDO, Dyrektywa 2008/98/WE
 # package: jdg.environmental.bdo
 # deprecated: false
-# ═══════════════════════════════════════════════════════════════════════════════
+#
 
 package jdg.environmental.bdo
 
-import data.jdg.helpers
+
+bdo_validation_msg(is_valid) = "OK — format poprawny" {
+    is_valid == true
+}
+
+bdo_validation_msg(is_valid) = "BŁĘDNY FORMAT — użyj formatu XX XX XX (z gwiazdką dla niebezpiecznych!)" {
+    is_valid == false
+}
+
+bdo_packaging_status(achieved_pct) = "CEL OSIĄGNIĘTY" {
+    achieved_pct >= 60
+}
+
+bdo_packaging_status(achieved_pct) = "CEL NIEOSIĄGNIĘTY — opłata produktowa!" {
+    achieved_pct < 60
+}
+
+bdo_quarter(month) = 1 {
+    month <= 3
+}
+
+bdo_quarter(month) = 2 {
+    month > 3
+    month <= 6
+}
+
+bdo_quarter(month) = 3 {
+    month > 6
+    month <= 9
+}
+
+bdo_quarter(month) = 4 {
+    month > 9
+}
+
+bdo_quarter_deadline(quarter) = "30 kwietnia" {
+    quarter == 1
+}
+
+bdo_quarter_deadline(quarter) = "31 lipca" {
+    quarter == 2
+}
+
+bdo_quarter_deadline(quarter) = "31 października" {
+    quarter == 3
+}
+
+bdo_quarter_deadline(quarter) = "31 stycznia następnego roku" {
+    quarter == 4
+}
+
+bdo_registration_status(is_registered) = "ZAREJESTROWANY — OK" {
+    is_registered == true
+}
+
+bdo_registration_status(is_registered) = "NIEZAREJESTROWANY — zarejestruj w BDO!" {
+    is_registered == false
+}
+
+bdo_transport_type(is_hazardous) = "Odpady inne niż niebezpieczne — wpis w BDO" {
+    is_hazardous == false
+}
+
+bdo_transport_type(is_hazardous) = "Odpady NIEBEZPIECZNE — zezwolenie + ADR + ubezpieczenie OC!" {
+    is_hazardous == true
+}
+
+bdo_cross_border_procedure(is_hazardous, _) = "NOTYFIKACJA (zgoda przed transportem)" {
+    is_hazardous == true
+}
+
+bdo_cross_border_procedure(is_hazardous, is_green_list) = "ZIELONA LISTA (uproszczona, zał. VII)" {
+    is_green_list == true
+    is_hazardous == false
+}
+
+bdo_cross_border_procedure(is_hazardous, is_green_list) = "AMBERSKA LISTA (notyfikacja uproszczona)" {
+    is_green_list == false
+    is_hazardous == false
+}
+
+bdo_sanction_amounts := {
+    "NO_REGISTRATION": 5000,
+    "NO_LEDGER": 10000,
+    "NO_KPO": 20000,
+    "NO_DGO": 50000,
+    "ILLEGAL_STORAGE": 100000,
+    "ILLEGAL_TRANSPORT": 1000000,
+}
+
+bdo_sanction_types := {
+    "NO_REGISTRATION": "Brak rejestracji w BDO",
+    "NO_LEDGER": "Brak ewidencji odpadów",
+    "NO_KPO": "Brak KPO",
+    "NO_DGO": "Brak DGO",
+    "ILLEGAL_STORAGE": "Nielegalne magazynowanie",
+    "ILLEGAL_TRANSPORT": "Nielegalny transport",
+}
+
+bdo_sanction_details := {
+    "NO_REGISTRATION": "Zarejestruj się w BDO i ureguluj opłatę",
+    "NO_LEDGER": "Uzupełnij ewidencję kwartalną",
+    "NO_KPO": "Wystaw elektroniczną KPO w BDO",
+    "NO_DGO": "Wystąp o DGO do właściwego organu",
+    "ILLEGAL_STORAGE": "Przekaż odpady w ciągu 14 dni",
+    "ILLEGAL_TRANSPORT": "Wystąp o zezwolenie na transport",
+}
 
 default decide := {
     "matched": false,
@@ -142,8 +244,7 @@ else := {
     ewc_code := object.get(input.invoice, "bdo_ewc_code", "")
     ewc_code != ""
     is_valid = regex.match("\\d{2} \\d{2} \\d{2}\\*?", ewc_code)
-    validation_msg = "OK — format poprawny" { is_valid == true }
-    validation_msg = "BŁĘDNY FORMAT — użyj formatu XX XX XX (z gwiazdką dla niebezpiecznych!)" { is_valid == false }
+    validation_msg := bdo_validation_msg(is_valid)
 }
 
 # P1905: ewc_hazardous_waste — Odpady niebezpieczne (*) — zaostrzone wymogi
@@ -222,8 +323,7 @@ else := {
     ewc_code := object.get(input.invoice, "bdo_ewc_code", "")
     startswith(ewc_code, "15 01") == true
     achieved_pct := object.get(input.business, "packaging_recycling_achieved_pct", 0)
-    status = "CEL OSIĄGNIĘTY" { achieved_pct >= 60 }
-    status = "CEL NIEOSIĄGNIĘTY — opłata produktowa!" { achieved_pct < 60 }
+    status := bdo_packaging_status(achieved_pct)
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -251,14 +351,8 @@ else := {
     tonnage > 0
     kpo_count := object.get(input.business, "kpo_count_this_quarter", 0)
     month := object.get(input, "evaluation_month", 4)
-    quarter = 1 { month <= 3 }
-    quarter = 2 { month <= 6; month > 3 }
-    quarter = 3 { month <= 9; month > 6 }
-    quarter = 4 { month > 9 }
-    deadline = "30 kwietnia" { quarter == 1 }
-    deadline = "31 lipca" { quarter == 2 }
-    deadline = "31 października" { quarter == 3 }
-    deadline = "31 stycznia następnego roku" { quarter == 4 }
+    quarter := bdo_quarter(month)
+    deadline := bdo_quarter_deadline(quarter)
 }
 
 # P1910: bdo_annual_report — Roczne sprawozdanie BDO
@@ -322,8 +416,7 @@ else := {
     input.business.transports_waste == true
     object.get(input.business, "bdo_transport_permit_valid", false) == false
     is_hazardous := object.get(input.business, "transports_hazardous_waste", false)
-    transport_type = "Odpady inne niż niebezpieczne — wpis w BDO" { is_hazardous == false }
-    transport_type = "Odpady NIEBEZPIECZNE — zezwolenie + ADR + ubezpieczenie OC!" { is_hazardous == true }
+    transport_type := bdo_transport_type(is_hazardous)
 }
 
 # P1913: bdo_storage_limit — Limit magazynowania odpadów (3 lata)
@@ -374,9 +467,7 @@ else := {
     ewc_code := object.get(input.invoice, "bdo_ewc_code", "")
     is_green_list := object.get(input.invoice, "waste_green_list", false)
     is_hazardous := contains(ewc_code, "*")
-    procedure = "NOTYFIKACJA (zgoda przed transportem)" { is_hazardous == true }
-    procedure = "ZIELONA LISTA (uproszczona, zał. VII)" { is_green_list == true; is_hazardous == false }
-    procedure = "AMBERSKA LISTA (notyfikacja uproszczona)" { is_green_list == false; is_hazardous == false }
+    procedure := bdo_cross_border_procedure(is_hazardous, is_green_list)
 }
 
 # P1915: bdo_dgo_permit — Decyzja o gospodarowaniu odpadami (DGO)
@@ -443,26 +534,10 @@ else := {
     violation_code := object.get(input.business, "bdo_violation_code", "")
     violation_code != ""
 
-    sanction_amount = 5000 { violation_code == "NO_REGISTRATION" }
-    sanction_amount = 10000 { violation_code == "NO_LEDGER" }
-    sanction_amount = 20000 { violation_code == "NO_KPO" }
-    sanction_amount = 50000 { violation_code == "NO_DGO" }
-    sanction_amount = 100000 { violation_code == "ILLEGAL_STORAGE" }
-    sanction_amount = 1000000 { violation_code == "ILLEGAL_TRANSPORT" }
-
-    sanction_type = "Brak rejestracji w BDO" { violation_code == "NO_REGISTRATION" }
-    sanction_type = "Brak ewidencji odpadów" { violation_code == "NO_LEDGER" }
-    sanction_type = "Brak KPO" { violation_code == "NO_KPO" }
-    sanction_type = "Brak DGO" { violation_code == "NO_DGO" }
-    sanction_type = "Nielegalne magazynowanie" { violation_code == "ILLEGAL_STORAGE" }
-    sanction_type = "Nielegalny transport" { violation_code == "ILLEGAL_TRANSPORT" }
-
-    sanction_detail = "Zarejestruj się w BDO i ureguluj opłatę" { violation_code == "NO_REGISTRATION" }
-    sanction_detail = "Uzupełnij ewidencję kwartalną" { violation_code == "NO_LEDGER" }
-    sanction_detail = "Wystaw elektroniczną KPO w BDO" { violation_code == "NO_KPO" }
-    sanction_detail = "Wystąp o DGO do właściwego organu" { violation_code == "NO_DGO" }
-    sanction_detail = "Przekaż odpady w ciągu 14 dni" { violation_code == "ILLEGAL_STORAGE" }
-    sanction_detail = "Wystąp o zezwolenie na transport" { violation_code == "ILLEGAL_TRANSPORT" }
+    sanction_amount := object.get(bdo_sanction_amounts, violation_code, 0)
+    sanction_amount > 0
+    sanction_type := object.get(bdo_sanction_types, violation_code, "")
+    sanction_detail := object.get(bdo_sanction_details, violation_code, "")
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -489,8 +564,7 @@ else := {
     weight_kg := object.get(input.business, "weee_sold_kg", 0)
     weight_kg > 0
     is_registered := object.get(input.business, "weee_registered_in_bdo", false)
-    registered_status = "ZAREJESTROWANY — OK" { is_registered == true }
-    registered_status = "NIEZAREJESTROWANY — zarejestruj w BDO!" { is_registered == false }
+    registered_status := bdo_registration_status(is_registered)
     collection_pct := object.get(input.business, "weee_collection_pct", 0)
 }
 

@@ -2,7 +2,7 @@
 # NexusAI JDG — ePUAP/e-DORECZENIA INTEGRATION MODULE (FAZA 3)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
+# Enterprise metadata is documented in comments below.
 # title: JDG Enterprise ePUAP/e-Doreczenia Integration
 # description: |
 #   ENTERPRISE v7.0 — Moduł automatycznych doręczeń przez ePUAP/e-Doręczenia.
@@ -24,7 +24,87 @@
 
 package jdg.epuap
 
-import data.jdg.helpers
+upo_label(received) = "TAK" {
+    received == true
+} else = "NIE" {
+    received == false
+}
+
+pending_days_for(precomputed, pending_count, oldest_date, current_eval_date) = precomputed {
+    precomputed >= 0
+    pending_count > 0
+} else = calculate_pending_days(oldest_date, current_eval_date) {
+    precomputed < 0
+    pending_count > 0
+    oldest_date != ""
+} else = 0 {
+    pending_count == 0
+}
+
+response_for(pending_count) = "W ciagu 14 dni" {
+    pending_count > 0
+} else = "Brak oczekujacych" {
+    pending_count == 0
+}
+
+routing_for(oldest_pending) = "TRIAGE_QUEUE" {
+    oldest_pending > 30
+} else = "" {
+    oldest_pending <= 30
+}
+
+reason_for(oldest_pending) = reason {
+    oldest_pending > 30
+    reason := sprintf("Doreczenie sprzed %d dni bez UPO — sprawdz status!", [oldest_pending])
+} else = "" {
+    oldest_pending <= 30
+}
+
+ready_label(ready, label) = label {
+    ready == true
+} else = "—" {
+    ready == false
+}
+
+letter_count(vd_ready, appeal_ready, wip_ready) = 3 {
+    vd_ready == true
+    appeal_ready == true
+    wip_ready == true
+} else = 2 {
+    [vd_ready, appeal_ready, wip_ready][0] == true
+    [vd_ready, appeal_ready, wip_ready][1] == true
+    [vd_ready, appeal_ready, wip_ready][2] == false
+} else = 2 {
+    [vd_ready, appeal_ready, wip_ready][0] == true
+    [vd_ready, appeal_ready, wip_ready][1] == false
+    [vd_ready, appeal_ready, wip_ready][2] == true
+} else = 2 {
+    [vd_ready, appeal_ready, wip_ready][0] == false
+    [vd_ready, appeal_ready, wip_ready][1] == true
+    [vd_ready, appeal_ready, wip_ready][2] == true
+} else = 1 {
+    count([x | x := [vd_ready, appeal_ready, wip_ready][_]; x == true]) == 1
+} else = 0 {
+    vd_ready == false
+    appeal_ready == false
+    wip_ready == false
+}
+
+integration_routing(total_letters) = "BLOCK_AND_ALERT" {
+    total_letters >= 3
+} else = "TRIAGE_QUEUE" {
+    total_letters > 0
+    total_letters < 3
+} else = "" {
+    total_letters == 0
+}
+
+integration_reason(total_letters) = reason {
+    total_letters > 0
+    reason := sprintf("%d pism do natychmiastowej wysylki przez ePUAP!", [total_letters])
+} else = "" {
+    total_letters == 0
+}
 
 default decide := {
     "matched": false, "rule_id": "jdg.epuap.no_match",
@@ -32,17 +112,12 @@ default decide := {
 }
 
 # v7.0 (P18 LUKA-D5): Helper to calculate pending days from sent date to eval date
-calculate_pending_days(sent_date, eval_date) = days {
-    sent_year := to_number(substring(sent_date, 0, 4))
-    eval_year := to_number(substring(eval_date, 0, 4))
-    sent_month := to_number(substring(sent_date, 5, 7))
-    eval_month := to_number(substring(eval_date, 5, 7))
-    sent_day := to_number(substring(sent_date, 8, 10))
-    eval_day := to_number(substring(eval_date, 8, 10))
-    # Simplified day calculation (assumes months ~30 days each)
-    days := (eval_year - sent_year) * 365 + (eval_month - sent_month) * 30 + (eval_day - sent_day)
-    days := max([days, 1])
-}
+calculate_pending_days(sent_date, eval_date) = max([
+    (to_number(substring(eval_date, 0, 4)) - to_number(substring(sent_date, 0, 4))) * 365
+        + (to_number(substring(eval_date, 5, 7)) - to_number(substring(sent_date, 5, 7))) * 30
+        + to_number(substring(eval_date, 8, 10)) - to_number(substring(sent_date, 8, 10)),
+    1,
+])
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # EPU-100: ePUAP DELIVERY STATUS CHECK — Status doręczeń elektronicznych
@@ -68,7 +143,7 @@ decide := {
     "_warnings": [
         sprintf("📬 ePUAP/e-DORECZENIA — STATUS", []),
         sprintf("   Oczekujace doreczenia: %d", [pending_count]),
-        sprintf("   UPO otrzymane: %s", ["TAK" { upo_received } else "NIE"]),
+        sprintf("   UPO otrzymane: %s", [upo_label(upo_received)]),
         sprintf("   Najstarsze oczekujace: %d dni", [oldest_pending]),
         sprintf("   Nastepna oczekiwana odpowiedz: %s", [next_response])
     ]
@@ -83,17 +158,10 @@ decide := {
     # v7.0 FIX (P18 LUKA-D5): Dynamic oldest_pending from input or calculated from sent_date
     precomputed_oldest := object.get(input, "epuap_oldest_pending_days", -1)
     current_eval_date := object.get(input, "evaluation_date", "2026-07-01")
-    oldest_pending := precomputed_oldest { precomputed_oldest >= 0; pending_count > 0 }
-    oldest_pending := calculate_pending_days(oldest_date, current_eval_date) { precomputed_oldest < 0; pending_count > 0; oldest_date != "" }
-    oldest_pending := 0 { pending_count == 0 }
-    
-    next_response := "W ciagu 14 dni" { pending_count > 0 }
-    next_response := "Brak oczekujacych" { pending_count == 0 }
-    
-    epuap_routing := "TRIAGE_QUEUE" { oldest_pending > 30 }
-    epuap_routing := "" { true }
-    epuap_reason := sprintf("Doreczenie sprzed %d dni bez UPO — sprawdz status!", [oldest_pending]) { oldest_pending > 30 }
-    epuap_reason := "" { true }
+    oldest_pending := pending_days_for(precomputed_oldest, pending_count, oldest_date, current_eval_date)
+    next_response := response_for(pending_count)
+    epuap_routing := routing_for(oldest_pending)
+    epuap_reason := reason_for(oldest_pending)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -142,8 +210,8 @@ else := {
     recipient_box := sprintf("/US%s/SkrytkaESP", [target_office])
     signature_type := "Profil Zaufany / e-Dowod / Podpis Kwalifikowany"
     
-    send_routing := "TRIAGE_QUEUE" { true }
-    send_reason := "Wyslij dokument przez ePUAP — zachowaj UPO!" { true }
+    send_routing := "TRIAGE_QUEUE"
+    send_reason := "Wyslij dokument przez ePUAP — zachowaj UPO!"
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -169,9 +237,9 @@ else := {
     "_legal_basis": "Art. 16 KKS; Art. 220 OrdPU; Art. 14b OrdPU; ePUAP API",
     "_warnings": [
         sprintf("🔗 ePUAP × S22 × S4 — INTEGRACJA", []),
-        sprintf("   Czynny zal (S22): %s", ["GOTOWY" { vd_ready } else "—"]),
-        sprintf("   Odwolanie (S4): %s", ["GOTOWE" { appeal_ready } else "—"]),
-        sprintf("   Interpretacja (S22): %s", ["GOTOWA" { wip_ready } else "—"]),
+        sprintf("   Czynny zal (S22): %s", [ready_label(vd_ready, "GOTOWY")]),
+        sprintf("   Odwolanie (S4): %s", [ready_label(appeal_ready, "GOTOWE")]),
+        sprintf("   Interpretacja (S22): %s", [ready_label(wip_ready, "GOTOWA")]),
         sprintf("   Lacznie pism do wyslania: %d", [total_letters])
     ]
 } {
@@ -184,14 +252,7 @@ else := {
     appeal_ready := has_appeal
     wip_ready := needs_interpretation
     
-    total_letters := 0
-    total_letters := total_letters + 1 { vd_ready }
-    total_letters := total_letters + 1 { appeal_ready }
-    total_letters := total_letters + 1 { wip_ready }
-    
-    int_routing := "BLOCK_AND_ALERT" { total_letters >= 3 }
-    int_routing := "TRIAGE_QUEUE" { total_letters > 0 }
-    int_routing := "" { true }
-    int_reason := sprintf("%d pism do natychmiastowej wysylki przez ePUAP!", [total_letters]) { total_letters > 0 }
-    int_reason := "" { true }
+    total_letters := letter_count(vd_ready, appeal_ready, wip_ready)
+    int_routing := integration_routing(total_letters)
+    int_reason := integration_reason(total_letters)
 }

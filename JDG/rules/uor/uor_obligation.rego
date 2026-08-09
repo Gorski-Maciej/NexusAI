@@ -39,7 +39,7 @@ decide := {
     annual_revenue_pln := object.get(input.jdg_entrepreneur, "annual_revenue_actual", 0)
     eur_rate := object.get(input.jdg_entrepreneur, "eur_pln_rate", 4.5)
     annual_revenue_eur := annual_revenue_pln / eur_rate
-    currently_uses_pkpir := not object.get(input.jdg_entrepreneur, "uses_uor", false)
+    currently_uses_pkpir := object.get(input.jdg_entrepreneur, "uses_uor", false) == false
     annual_revenue_eur >= 2000000
     currently_uses_pkpir
 }
@@ -203,10 +203,10 @@ else := {
     annual_revenue := object.get(input.jdg_entrepreneur, "annual_revenue_actual", 0)
     avg_employees := object.get(input.jdg_entrepreneur, "avg_employees_year", 0)
     eur_rate := object.get(input.jdg_entrepreneur, "eur_pln_rate", 4.5)
-    t1 := 1 if { total_assets / eur_rate >= 2500000 } else := 0
-    t2 := 1 if { annual_revenue / eur_rate >= 5000000 } else := 0
-    t3 := 1 if { avg_employees >= 50 } else := 0
-    thresholds_exceeded := t1 + t2 + t3
+    thresholds_exceeded :=
+        count({"assets" | total_assets / eur_rate >= 2500000}) +
+        count({"revenue" | annual_revenue / eur_rate >= 5000000}) +
+        count({"employees" | avg_employees >= 50})
     uses_uor
     thresholds_exceeded >= 2
 }

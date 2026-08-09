@@ -2,22 +2,7 @@
 # NexusAI JDG Policies — Tax Allowances (P600-P635)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
-# title: Tax Allowances — Reliefs, IP Box, Crypto, Bad Debt PIT
-# description: |
-#   PAS 6 Multi-Pass. First-Match-Wins else-chain. Ulgi: B+R (P600),
-#   IKZE (P605), IP Box 5% (P610), CSR/sponsoring 150% (P612),
-#   terminal płatniczy 200% (P614), złe długi PIT wierzyciel (P618),
-#   abolicyjna (P620), związki zawodowe 840 PLN (P622), krypto 19% (P630).
-# architecture: Multi-Pass PAS 6 (ADR-001)
-# legal_basis: Art. 26-30ca PIT, ustawa o IKZE, ustawa o ryczałcie
-# edge_cases:
-#   - P600: Centrum B+R → 200%, standard → 100%
-#   - P605: IKZE limit roczny 14 083-16 956 PLN, tylko skala/liniowy
-#   - P618: >90 dni + !is_paid + receivable_not_sold
-#   - P622: związki NIE dla liniowego! (tylko skala i ryczałt)
-# package: jdg.allowances
-# deprecated: false
+# Legacy metadata retained as ordinary comments; invalid YAML annotation removed.
 # ═══════════════════════════════════════════════════════════════════════════════
 #
 # Reguły ulg podatkowych dla JDG (jednoosobowa działalność gospodarcza):
@@ -38,6 +23,140 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.allowances
+
+import future.keywords.in
+
+# Helpers kept outside the public decide/else chain.
+
+abolition_maritime_note_for(is_maritime) = "Limit NIE obowiazuje — praca na morzu/platformie." {
+    is_maritime == true
+} else = "" {
+    not is_maritime
+}
+
+senior_age_for(is_female) = 60 {
+    is_female == true
+} else = 65 {
+    not is_female
+}
+
+# ── r2-r4: IKZE annual limit per tax year ─────────────────────────────────────
+ikze_limit = limit {
+    tax_year := object.get(input.invoice, "tax_year", 2025)
+    tax_year == 2024
+    limit := 14083.20
+} else = limit {
+    tax_year := object.get(input.invoice, "tax_year", 2025)
+    tax_year == 2025
+    limit := 15611.40
+} else = limit {
+    tax_year := object.get(input.invoice, "tax_year", 2025)
+    tax_year == 2026
+    limit := 16956.00
+} else = limit {
+    limit := 16956.00
+}
+
+
+# ── Helper: over-limit warning (empty array when within limit) ─────────────────
+ikze_over_limit_warning(contribution, limit) = [msg] {
+    contribution > limit
+    msg := sprintf("IKZE: wplata %.2f PLN przekracza limit %.2f PLN — nadwyzka %.2f PLN przepada", [contribution, limit, contribution - limit])
+} else = [] {
+    contribution <= limit
+}
+
+
+# ── r1: eligibility check ─────────────────────────────────────────────────────
+innovative_employee_eligible {
+    input.jdg_entrepreneur.has_rd_status == true
+    rd_emps := object.get(input.jdg_entrepreneur, "rd_employees", [])
+    is_array(rd_emps)
+    count(rd_emps) > 0
+    tax_form := object.get(input.jdg_entrepreneur, "tax_form", "")
+    tax_form in {"PIT_SCALE", "LINEAR"}
+}
+
+
+# ── r3-r4: terminal limit per taxpayer type ────────────────────────────────────
+terminal_limit = limit {
+    object.get(input.jdg_entrepreneur, "cash_register_exempt", false) == true
+    limit := 2500
+} else = limit {
+    limit := 1000
+}
+
+
+# ── r1: 90 days past due ──────────────────────────────────────────────────────
+bad_debt_pit_eligible {
+    input.invoice.days_overdue >= 90
+    input.invoice.is_paid == false
+}
+
+# ── r2-r4: additional conditions ──────────────────────────────────────────────
+bad_debt_pit_recourse {
+    input.invoice.receivable_in_revenue == true
+    input.invoice.receivable_not_sold == true
+    input.invoice.debtor_not_restructuring == true
+}
+
+
+# ── r1-r5: eligibility ────────────────────────────────────────────────────────
+abolition_eligible {
+    object.get(input.jdg_entrepreneur, "has_foreign_income_credit_method", false) == true
+    tax_form := object.get(input.jdg_entrepreneur, "tax_form", "")
+    tax_form in {"PIT_SCALE", "LINEAR"}
+}
+
+# ── r3: maritime exception — no limit ─────────────────────────────────────────
+abolition_is_maritime {
+    object.get(input.jdg_entrepreneur, "foreign_income_maritime", false) == true
+}
+
+# ── r2: standard limit ────────────────────────────────────────────────────────
+abolition_limit = 1360 { not abolition_is_maritime }
+
+
+# ── r1, r5: eligibility — union member + scale or lump sum (NOT linear!) ──────
+union_dues_eligible {
+    object.get(input.jdg_entrepreneur, "is_union_member", false) == true
+    tax_form := object.get(input.jdg_entrepreneur, "tax_form", "")
+    tax_form in {"PIT_SCALE", "LUMP_SUM"}
+}
+
+
+# ── P655: Relief priority order informational helper ────────────────────────────
+relief_application_order := [
+    "LOSS_CARRY_FORWARD",
+    "PIT_0_EXEMPTIONS",
+    "IP_BOX_5PCT",
+    "RD_100_200PCT",
+    "PROTOTYPE_30PCT",
+    "ROBOTIZATION_50PCT",
+    "EXPANSION_1M",
+    "THERMOMODERNIZATION_53K",
+    "REHABILITATION",
+    "INTERNET_760",
+    "DONATIONS_OPP_BLOOD_CHURCH",
+    "ABOLITION_1360"
+]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── P660: Loss carry-forward conditions informational helper ────────────────────
+loss_carry_forward_info := {
+    "rule_id": "jdg.allowances.loss_carry_forward",
+    "package": "jdg.allowances",
+    "priority": 660,
+    "relief_type": "LOSS_CARRY_FORWARD",
+    "relief_max_years": 5,
+    "relief_max_percent_per_year": 50,
+    "relief_separate_per_loss_year": true,
+    "_legal_basis": "Art. 9 ust. 3 PIT",
+    "_info": "Strata podatkowa rozliczana max 50% rocznie przez 5 lat. Każdy rok strat osobno."
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 
 # ── Default: no matching allowance rule ──────────────────────────────────────
 default decide := {
@@ -203,23 +322,6 @@ ikze_eligible {
     tax_form in {"PIT_SCALE", "LINEAR"}
 }
 
-# ── r2-r4: IKZE annual limit per tax year ─────────────────────────────────────
-ikze_limit = limit {
-    tax_year := object.get(input.invoice, "tax_year", 2025)
-    tax_year == 2024
-    limit := 14083.20
-} else = limit {
-    tax_year := object.get(input.invoice, "tax_year", 2025)
-    tax_year == 2025
-    limit := 15611.40
-} else = limit {
-    tax_year := object.get(input.invoice, "tax_year", 2025)
-    tax_year == 2026
-    limit := 16956.00
-} else = limit {
-    limit := 16956.00
-}
-
 # ── P605: IKZE with contribution > 0 ──────────────────────────────────────────
 else := {
     "matched": true,
@@ -254,14 +356,6 @@ else := {
         [sprintf("IKZE: limit %.2f PLN, wplacono %.2f PLN, odliczono %.2f PLN", [ikze_limit, ikze_contribution, min([ikze_contribution, ikze_limit])])],
         ikze_over_limit_warning(ikze_contribution, ikze_limit)
     )
-}
-
-# ── Helper: over-limit warning (empty array when within limit) ─────────────────
-ikze_over_limit_warning(contribution, limit) = [msg] {
-    contribution > limit
-    msg := sprintf("IKZE: wplata %.2f PLN przekracza limit %.2f PLN — nadwyzka %.2f PLN przepada", [contribution, limit, contribution - limit])
-} else = [] {
-    contribution <= limit
 }
 
 # ── P605_b: IKZE — eligible but no contribution this year ─────────────────────
@@ -340,16 +434,6 @@ else := {
 #
 # Mikro-reguły: jdg.pit.a26eb.r1-r7
 # ═══════════════════════════════════════════════════════════════════════════════
-
-# ── r1: eligibility check ─────────────────────────────────────────────────────
-innovative_employee_eligible {
-    input.jdg_entrepreneur.has_rd_status == true
-    rd_emps := object.get(input.jdg_entrepreneur, "rd_employees", [])
-    is_array(rd_emps)
-    count(rd_emps) > 0
-    tax_form := object.get(input.jdg_entrepreneur, "tax_form", "")
-    tax_form in {"PIT_SCALE", "LINEAR"}
-}
 
 # ── P608: main decision ───────────────────────────────────────────────────────
 else := {
@@ -430,14 +514,6 @@ else := {
 # Mikro-reguły: jdg.pit.a26hd.r1-r6
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# ── r3-r4: terminal limit per taxpayer type ────────────────────────────────────
-terminal_limit = limit {
-    object.get(input.jdg_entrepreneur, "cash_register_exempt", false) == true
-    limit := 2500
-} else = limit {
-    limit := 1000
-}
-
 # ── P614: main decision ───────────────────────────────────────────────────────
 else := {
     "matched": true,
@@ -475,19 +551,6 @@ else := {
 #
 # Mikro-reguły: jdg.pit.a26i.r1-r7
 # ═══════════════════════════════════════════════════════════════════════════════
-
-# ── r1: 90 days past due ──────────────────────────────────────────────────────
-bad_debt_pit_eligible {
-    input.invoice.days_overdue >= 90
-    input.invoice.is_paid == false
-}
-
-# ── r2-r4: additional conditions ──────────────────────────────────────────────
-bad_debt_pit_recourse {
-    input.invoice.receivable_in_revenue == true
-    input.invoice.receivable_not_sold == true
-    input.invoice.debtor_not_restructuring == true
-}
 
 # ── P618: main decision ───────────────────────────────────────────────────────
 else := {
@@ -531,21 +594,6 @@ else := {
 # Mikro-reguły: jdg.pit.a27g.r1-r6
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# ── r1-r5: eligibility ────────────────────────────────────────────────────────
-abolition_eligible {
-    object.get(input.jdg_entrepreneur, "has_foreign_income_credit_method", false) == true
-    tax_form := object.get(input.jdg_entrepreneur, "tax_form", "")
-    tax_form in {"PIT_SCALE", "LINEAR"}
-}
-
-# ── r3: maritime exception — no limit ─────────────────────────────────────────
-abolition_is_maritime {
-    object.get(input.jdg_entrepreneur, "foreign_income_maritime", false) == true
-}
-
-# ── r2: standard limit ────────────────────────────────────────────────────────
-abolition_limit = 1360 { not abolition_is_maritime }
-
 # ── P620: main decision ───────────────────────────────────────────────────────
 else := {
     "matched": true,
@@ -572,11 +620,7 @@ else := {
     abolition_eligible
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "")
     abolition_warnings := [sprintf("Ulga abolicyjna: limit %.0f PLN (od podatku). %s", [abolition_limit, abolition_maritime_note])]
-    abolition_maritime_note = "Limit NIE obowiazuje — praca na morzu/platformie." {
-        abolition_is_maritime
-    } else = "" {
-        not abolition_is_maritime
-    }
+    abolition_maritime_note := abolition_maritime_note_for(abolition_is_maritime)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -589,13 +633,6 @@ else := {
 #
 # Mikro-reguły: jdg.pit.a26u1p2c.r1-r5
 # ═══════════════════════════════════════════════════════════════════════════════
-
-# ── r1, r5: eligibility — union member + scale or lump sum (NOT linear!) ──────
-union_dues_eligible {
-    object.get(input.jdg_entrepreneur, "is_union_member", false) == true
-    tax_form := object.get(input.jdg_entrepreneur, "tax_form", "")
-    tax_form in {"PIT_SCALE", "LUMP_SUM"}
-}
 
 # ── P622: main decision ───────────────────────────────────────────────────────
 else := {
@@ -638,43 +675,12 @@ else := {
 # Podstawa prawna: Art. 26 ust. 1 PIT
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# ── P655: Relief priority order informational helper ────────────────────────────
-relief_application_order := [
-    "LOSS_CARRY_FORWARD",
-    "PIT_0_EXEMPTIONS",
-    "IP_BOX_5PCT",
-    "RD_100_200PCT",
-    "PROTOTYPE_30PCT",
-    "ROBOTIZATION_50PCT",
-    "EXPANSION_1M",
-    "THERMOMODERNIZATION_53K",
-    "REHABILITATION",
-    "INTERNET_760",
-    "DONATIONS_OPP_BLOOD_CHURCH",
-    "ABOLITION_1360"
-]
-
-# ═══════════════════════════════════════════════════════════════════════════════
 # P660: relief_loss_carry_forward_conditions_jdg — Rozliczenie straty 5 lat
 # ═══════════════════════════════════════════════════════════════════════════════
 # Cel: Strata z lat ubiegłych: max 5 lat, max 50% straty w jednym roku
 # Podstawa prawna: Art. 9 ust. 3 PIT
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# ── P660: Loss carry-forward conditions informational helper ────────────────────
-loss_carry_forward_info := {
-    "rule_id": "jdg.allowances.loss_carry_forward",
-    "package": "jdg.allowances",
-    "priority": 660,
-    "relief_type": "LOSS_CARRY_FORWARD",
-    "relief_max_years": 5,
-    "relief_max_percent_per_year": 50,
-    "relief_separate_per_loss_year": true,
-    "_legal_basis": "Art. 9 ust. 3 PIT",
-    "_info": "Strata podatkowa rozliczana max 50% rocznie przez 5 lat. Każdy rok strat osobno."
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
 # P650: pit_exemption_young_detailed_jdg — Ulga dla młodych (do 26 r.ż.)
 # ═══════════════════════════════════════════════════════════════════════════════
 # Cel: PIT-0 do 85 528 PLN rocznie dla osób ≤26 lat, TYLKO na skali podatkowej
@@ -774,16 +780,11 @@ else := {
     input.jdg_entrepreneur.tax_form == "PIT_SCALE"
     age := object.get(input.jdg_entrepreneur, "age", 99)
     is_female := object.get(input.jdg_entrepreneur, "is_female", false)
-    senior_age := 60 { is_female == true }
-    else := 65 { is_female == false }
-    eligible_count := count({e |
-        (age <= 26)
-        or (object.get(input.jdg_entrepreneur, "return_from_emigration", false) == true
-            and object.get(input.jdg_entrepreneur, "years_abroad", 0) >= 3)
-        or (object.get(input.jdg_entrepreneur, "children_count", 0) >= 4)
-        or (age >= senior_age
-            and object.get(input.jdg_entrepreneur, "receives_pension", true) == false)
-    })
+    senior_age := senior_age_for(is_female)
+    eligible_count := count({x | x := 1; age <= 26})
+        + count({x | x := 1; object.get(input.jdg_entrepreneur, "return_from_emigration", false) == true; object.get(input.jdg_entrepreneur, "years_abroad", 0) >= 3})
+        + count({x | x := 1; object.get(input.jdg_entrepreneur, "children_count", 0) >= 4})
+        + count({x | x := 1; age >= senior_age; object.get(input.jdg_entrepreneur, "receives_pension", true) == false})
     eligible_count > 1
 }
 

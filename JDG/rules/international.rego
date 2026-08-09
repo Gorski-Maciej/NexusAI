@@ -2,8 +2,10 @@
 # NexusAI JDG Policies — International: WHT, zakład (PE), ceny transferowe (P100-P117)
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.international
+
+import future.keywords.in
 #
-# METADATA
+# Documentation metadata (ordinary comments; legacy text is not OPA annotation YAML).
 # title: JDG Package — international
 # description: Supporting package for JDG Multi-Pass evaluation (ADR-001).
 # architecture: Multi-Pass (ADR-001)
@@ -27,7 +29,7 @@ decide := {
     "_warnings":["WHT — obowiązek poboru podatku u źródła 20% (lub stawka z UPO)"]
 } {
     input.invoice.direction == "PURCHASE"
-    input.vendor.country not in {"PL"}
+    not input.vendor.country in {"PL"}
     input.invoice.expense_type in {"ROYALTIES","INTEREST","DIVIDENDS","SERVICES","LICENSES"}
 }
 

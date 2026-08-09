@@ -162,6 +162,34 @@ test_invariants_evaluate_violation {
     ev.certainty_class == "NEEDS_ADVICE"
 }
 
+test_invariants_enforce_blocks_auto_post_and_is_deterministic {
+    verdict := {
+        "matched": true,
+        "rule_id": "jdg.risk.fraud",
+        "_routing": "BLOCK_AND_ALERT",
+        "vat_rate": "0.99",
+        "auto_post": true,
+        "_legal_basis": "Art. 86 VAT",
+        "_routing_context": {"tax_form": "SCALE", "transaction_type": "SALE", "entity_status": "ACTIVE", "evaluation_date": "2026-08-08"},
+    }
+    out1 := data.jdg.runtime_invariants.enforce(verdict) with input as {"evaluated_at": "2026-08-08T00:00:00Z"}
+    out2 := data.jdg.runtime_invariants.enforce(verdict) with input as {"evaluated_at": "2026-08-08T00:00:00Z"}
+    out1._certainty_guard == "CERTAINTY_BLOCKED"
+    out1.auto_post == false
+    out1._decision_certificate.evaluated_at == out2._decision_certificate.evaluated_at
+    out1._decision_certificate.decision_hash == out2._decision_certificate.decision_hash
+}
+
+test_decision_hash_includes_all_versions {
+    base := {"matched": true, "rule_id": "r1", "_routing": "", "_legal_basis": "Art. 1", "_versions": {"bundle_version": "b1", "rule_version": "r1", "threshold_version": "t1"}}
+    h1 := data.jdg.runtime_invariants.enforce(base) with input as {"evaluated_at": "2026-08-08"}
+    h2 := data.jdg.runtime_invariants.enforce(base) with input as {"evaluated_at": "2026-08-08"}
+    h1._decision_certificate.decision_hash == h2._decision_certificate.decision_hash
+    changed := object.union(base, {"_versions": {"bundle_version": "b1", "rule_version": "r2", "threshold_version": "t1"}})
+    h3 := data.jdg.runtime_invariants.enforce(changed) with input as {"evaluated_at": "2026-08-08"}
+    h1._decision_certificate.decision_hash != h3._decision_certificate.decision_hash
+}
+
 test_invariants_enforce_adds_certificate {
     verdict := {
         "matched": true,

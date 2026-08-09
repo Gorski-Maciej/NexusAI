@@ -2,7 +2,7 @@
 # NexusAI JDG Policies — Business: CEIDG, zawieszenie, sukcesja (P900-P939)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
+# Documentation metadata (kept as ordinary comments; not parsed by OPA)
 # title: Business Lifecycle Package — CEIDG, Suspension, Succession
 # description: |
 #   Reguły cyklu życia JDG. Kolejność: P900 (CEIDG) → P902 (aktualizacja) →
@@ -20,8 +20,125 @@
 # deprecated: false
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.business
-import data.jdg.helpers
 default decide := {"matched":false,"rule_id":"jdg.business.no_match","package":"jdg.business","priority":950}
+
+suspension_warning(emp_count, _) = "Zawieszenie zablokowane — zatrudniasz pracowników!" {
+    emp_count > 0
+}
+
+suspension_warning(_, susp_months) = "Przekroczono max 6 mies. zawieszenia — automatyczne wznowienie" {
+    susp_months >= 6
+}
+
+suspension_triggered(emp_count, susp_months) {
+    emp_count > 0
+}
+
+suspension_triggered(emp_count, susp_months) {
+    susp_months >= 6
+}
+
+successor_requirements_met(has_appointed, has_consent, in_ceidg) = true {
+    has_appointed
+    has_consent
+    in_ceidg
+} else = false
+
+suspension_risk_for(susp_months, emp_count) = true {
+    susp_months >= 6
+    emp_count == 0
+} else = false
+
+suspension_date_in_period(eval_date, start_date, end_date) = true {
+    eval_date >= start_date
+    eval_date <= end_date
+} else = false
+
+bool_not(value) = false {
+    value == true
+} else = true
+
+suspension_allowed_expense(expense_type) {
+    expense_type == "RENT"
+}
+
+suspension_allowed_expense(expense_type) {
+    expense_type == "UTILITIES"
+}
+
+suspension_allowed_expense(expense_type) {
+    expense_type == "SECURITY"
+}
+
+suspension_allowed_expense(expense_type) {
+    expense_type == "LEASE_EXISTING"
+}
+
+suspension_allowed_expense(expense_type) {
+    expense_type == "INSURANCE"
+}
+
+suspension_allowed_expense(expense_type) {
+    expense_type == "ACCOUNTING"
+}
+
+form_change_allowed(new_form) {
+    new_form == "SCALE"
+}
+
+form_change_allowed(new_form) {
+    new_form == "LINEAR"
+}
+
+successor_routing_for(all_ok) = "" {
+    all_ok == true
+} else = "BLOCK_AND_ALERT"
+
+successor_routing_reason_for(all_ok) = "" {
+    all_ok == true
+} else = "Zarządca sukcesyjny NIE spełnia wymogów — wymagane: powołanie + zgoda + wpis w CEIDG"
+
+successor_warning_for(all_ok) = "Zarządca sukcesyjny prawidłowo ustanowiony" {
+    all_ok == true
+} else = "Zarządca sukcesyjny musi być powołany, wyrazić zgodę i być wpisany do CEIDG!"
+
+suspension_risk_warning_for(is_at_risk) = "Ryzyko wykreślenia z CEIDG (>6 mies. bez pracowników)!" {
+    is_at_risk == true
+} else = "Zawieszenie w normie"
+
+unregistered_routing_for(exceeded) = "BLOCK_AND_ALERT" {
+    exceeded == true
+} else = ""
+
+unregistered_routing_reason_for(exceeded) = "Przekroczony limit działalności nieewidencjonowanej — obowiązkowa rejestracja CEIDG w 7 dni!" {
+    exceeded == true
+} else = "Działalność nieewidencjonowana w limicie"
+
+unregistered_limit_label_for(within) = "W LIMICIE" {
+    within == true
+} else = "PRZEKROCZONY — REJESTRACJA CEIDG WYMAGANA!"
+
+suspension_status_for(in_period, resumed, eval_date, start_date) = "SUSPENDED" {
+    in_period == true
+} else = "ACTIVE" {
+    resumed == true
+} else = "PRE_SUSPENSION" {
+    eval_date < start_date
+}
+
+suspension_period_warning_for(in_period, resumed, start_date, end_date, eval_date) = sprintf("Zawieszenie: okres [%s, %s], data ewaluacji %s — w okresie zawieszenia", [start_date, end_date, eval_date]) {
+    in_period == true
+} else = sprintf("Zawieszenie: okres [%s, %s] zakończony %s — działalność WZNOWIONA (dzień po końcu okresu)", [start_date, end_date, eval_date]) {
+    resumed == true
+} else = sprintf("Zawieszenie: okres [%s, %s] — data %s PRZED rozpoczęciem zawieszenia", [start_date, end_date, eval_date])
+
+succession_limit_for(has_extension) = 60 {
+    has_extension == true
+} else = 24
+
+succession_expiry_info_for(months_since, succession_limit) = sprintf("już wygasł (przekroczono %d mies.)", [succession_limit]) {
+    months_since >= succession_limit
+} else = sprintf("za %d mies.", [succession_limit - months_since])
 
 # ══════ P916: business_resumption_procedure — Wznowienie po zawieszeniu ══════
 # Cel: Wznowienie JDG z CEIDG — od daty złożenia wniosku (nie data przyszła)
@@ -65,10 +182,8 @@ else := {
     input.jdg_entrepreneur.business_status == "SUSPENDED"
     susp_months := object.get(input.jdg_entrepreneur,"suspension_months_continuous",0)
     emp_count := object.get(input.jdg_entrepreneur,"employee_count",0)
-    warn_msg = "Zawieszenie zablokowane — zatrudniasz pracowników!" { emp_count > 0 }
-    else = "Przekroczono max 6 mies. zawieszenia — automatyczne wznowienie" { susp_months >= 6 }
-    susp_months >= 6
-    or emp_count > 0
+    warn_msg := suspension_warning(emp_count, susp_months)
+    suspension_triggered(emp_count, susp_months)
 }
 
 # ══════ P921a: succession_no_manager_grace — 2-mies. okno na powołanie zarządcy (R02 P1) ══════
@@ -151,13 +266,10 @@ else := {
     has_appointed := object.get(input.jdg_entrepreneur, "succession_manager_appointed", false)
     has_consent := object.get(input.jdg_entrepreneur, "succession_manager_consent", false)
     in_ceidg := object.get(input.jdg_entrepreneur, "succession_manager_in_ceidg", false)
-    all_ok := has_appointed and has_consent and in_ceidg
-    routing_flag = "" { all_ok == true }
-    routing_flag = "BLOCK_AND_ALERT" { all_ok == false }
-    routing_reason = "" { all_ok == true }
-    routing_reason = "Zarządca sukcesyjny NIE spełnia wymogów — wymagane: powołanie + zgoda + wpis w CEIDG" { all_ok == false }
-    warn_msg = "Zarządca sukcesyjny prawidłowo ustanowiony" { all_ok == true }
-    warn_msg = "Zarządca sukcesyjny musi być powołany, wyrazić zgodę i być wpisany do CEIDG!" { all_ok == false }
+    all_ok := successor_requirements_met(has_appointed, has_consent, in_ceidg)
+    routing_flag := successor_routing_for(all_ok)
+    routing_reason := successor_routing_reason_for(all_ok)
+    warn_msg := successor_warning_for(all_ok)
 }
 
 # ══════ P929d: succession_time_limits — Zarząd max 2 lata (5 lat z sądem) ══════
@@ -187,10 +299,8 @@ else := {
     input.jdg_entrepreneur.in_succession == true
     months_since := object.get(input.jdg_entrepreneur, "months_since_date_of_death", 0)
     has_extension := object.get(input.jdg_entrepreneur, "succession_court_extended", false)
-    succession_limit = 24 { has_extension == false }
-    succession_limit = 60 { has_extension == true }
-    expiry_info = sprintf("już wygasł (przekroczono %d mies.)", [succession_limit]) { months_since >= succession_limit }
-    expiry_info = sprintf("za %d mies.", [succession_limit - months_since]) { months_since < succession_limit }
+    succession_limit := succession_limit_for(has_extension)
+    expiry_info := succession_expiry_info_for(months_since, succession_limit)
 }
 
 # ══════ P900: ceidg_registration_check — Obowiązek rejestracji CEIDG ══════
@@ -262,7 +372,7 @@ else := {
     "_warnings":["Zawieszenie — dozwolone TYLKO stałe koszty utrzymania (czynsz, media, monitoring)"]
 } {
     input.jdg_entrepreneur.business_status == "SUSPENDED"
-    input.invoice.expense_type not in {"RENT","UTILITIES","SECURITY","LEASE_EXISTING","INSURANCE","ACCOUNTING"}
+    not suspension_allowed_expense(input.invoice.expense_type)
     input.invoice.direction == "PURCHASE"
 }
 
@@ -457,7 +567,7 @@ else := {
     old_form!=""
     old_form!=new_form
     old_form=="LUMP_SUM"
-    new_form in {"SCALE","LINEAR"}
+    form_change_allowed(new_form)
 }
 
 # ══════ P918: suspension_time_limit — Zawieszenie >6 mies. bez pracowników (Doc 36) ══════
@@ -477,9 +587,8 @@ else := {
     input.jdg_entrepreneur.business_status == "SUSPENDED"
     susp_months := object.get(input.jdg_entrepreneur,"suspension_months_continuous",0)
     emp_count := object.get(input.jdg_entrepreneur,"employee_count",0)
-    is_at_risk := (susp_months >= 6 and emp_count == 0)
-    warn_msg := "Ryzyko wykreślenia z CEIDG (>6 mies. bez pracowników)!" { is_at_risk == true }
-    warn_msg := "Zawieszenie w normie" { is_at_risk == false }
+    is_at_risk := suspension_risk_for(susp_months, emp_count)
+    warn_msg := suspension_risk_warning_for(is_at_risk)
 }
 
 # ══════ P832: tax_form_change_kup_correction — Korekta KUP przy zmianie formy (Doc 35) ══════
@@ -555,18 +664,15 @@ else := {
     limit_monthly := floor(min_wage * unreg_pct * 100) / 100
     limit_quarterly := floor(min_wage * qm * 100) / 100
     quarterly_mode := qm > 0
-    monthly_rev := to_number(object.get(input.jdg_entrepreneur,"monthly_revenue_current",0))
-    q_rev := to_number(object.get(input.jdg_entrepreneur,"quarterly_revenue",0))
-    eff_limit := r02_eff_limit(quarterly_mode, q_rev, limit_quarterly, limit_monthly)
-    eff_rev := r02_eff_rev(quarterly_mode, q_rev, monthly_rev)
+    monthly_revenue_value := to_number(object.get(input.jdg_entrepreneur,"monthly_revenue_current",0))
+    quarterly_revenue_value := to_number(object.get(input.jdg_entrepreneur,"quarterly_revenue",0))
+    eff_limit := r02_eff_limit(quarterly_mode, quarterly_revenue_value, limit_quarterly, limit_monthly)
+    eff_rev := r02_eff_rev(quarterly_mode, quarterly_revenue_value, monthly_revenue_value)
     exceeded := eff_rev > eff_limit
-    within := not exceeded
-    routing_flag = "BLOCK_AND_ALERT" { exceeded == true }
-    routing_flag = "" { exceeded == false }
-    routing_reason = "Przekroczony limit działalności nieewidencjonowanej — obowiązkowa rejestracja CEIDG w 7 dni!" { exceeded == true }
-    routing_reason = "Działalność nieewidencjonowana w limicie" { exceeded == false }
-    within_label := "W LIMICIE" { within == true }
-    within_label := "PRZEKROCZONY — REJESTRACJA CEIDG WYMAGANA!" { within == false }
+    within := bool_not(exceeded)
+    routing_flag := unregistered_routing_for(exceeded)
+    routing_reason := unregistered_routing_reason_for(exceeded)
+    within_label := unregistered_limit_label_for(within)
     warn_msg := sprintf("Działalność nieewidencjonowana: limit %.2f PLN/mies. (%.0f%% płacy min. %.0f PLN; kwartalnie %.2f PLN od 2026). Przychód ewaluowany: %.2f PLN — %s", [limit_monthly, unreg_pct * 100, min_wage, limit_quarterly, eff_rev, within_label])
 }
 
@@ -597,12 +703,8 @@ else := {
     start_date != ""
     end_date != ""
     eval_date != ""
-    in_period := (eval_date >= start_date) and (eval_date <= end_date)
+    in_period := suspension_date_in_period(eval_date, start_date, end_date)
     resumed := eval_date > end_date
-    status_flag = "SUSPENDED" { in_period == true }
-    status_flag = "ACTIVE" { resumed == true }
-    status_flag = "PRE_SUSPENSION" { eval_date < start_date }
-    warn_msg = sprintf("Zawieszenie: okres [%s, %s], data ewaluacji %s — w okresie zawieszenia", [start_date, end_date, eval_date]) { in_period == true }
-    warn_msg = sprintf("Zawieszenie: okres [%s, %s] zakończony %s — działalność WZNOWIONA (dzień po końcu okresu)", [start_date, end_date, eval_date]) { resumed == true }
-    warn_msg = sprintf("Zawieszenie: okres [%s, %s] — data %s PRZED rozpoczęciem zawieszenia", [start_date, end_date, eval_date]) { eval_date < start_date }
+    status_flag := suspension_status_for(in_period, resumed, eval_date, start_date)
+    warn_msg := suspension_period_warning_for(in_period, resumed, start_date, end_date, eval_date)
 }

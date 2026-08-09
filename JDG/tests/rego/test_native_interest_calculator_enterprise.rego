@@ -1,59 +1,62 @@
-# ═══════════════════════════════════════════════════════════════
-# NexusAI JDG — Native Rego Tests for: interest_calculator_enterprise
-# Source: interest_calculator_enterprise.rego
-# Generated: 2026-08-02T09:14:32.189365
-# Package: jdg.interest_calculator
-# Rules tested: 4
-# Report: P27 R4 — Enterprise files coverage
-# ═══════════════════════════════════════════════════════════════
+# Native Rego contract tests for jdg.interest_calculator.
 
 package test_jdg_interest_calculator
-import data.jdg.interest_calculator
 
-# 1. jdg.interest_calculator.no_match
-test_positive_no_match {
+
+test_no_match_for_empty_input {
     result := data.jdg.interest_calculator.decide with input as {}
-    result.matched == true
+    result.matched == false
     result.rule_id == "jdg.interest_calculator.no_match"
 }
 
-test_negative_no_match {
-    result := data.jdg.interest_calculator.decide with input as {}
-    result.rule_id != "jdg.interest_calculator.no_match"
-}
-
-# 2. jdg.interest_calculator.rate_calculator
-test_positive_rate_calculator {
-    result := data.jdg.interest_calculator.decide with input as {}
-    result.matched == true
+test_rate_calculator {
+    result := data.jdg.interest_calculator.decide with input as {"interest_calculator_check": true}
     result.rule_id == "jdg.interest_calculator.rate_calculator"
+    result.priority == 3060
+    result.int_base_rate_200pct > 0
 }
 
-test_negative_rate_calculator {
-    result := data.jdg.interest_calculator.decide with input as {}
-    result.rule_id != "jdg.interest_calculator.rate_calculator"
-}
-
-# 3. jdg.interest_calculator.amount_calculator
-test_positive_amount_calculator {
-    result := data.jdg.interest_calculator.decide with input as {}
-    result.matched == true
+test_amount_calculator_standard {
+    result := data.jdg.interest_calculator.decide with input as {
+        "interest_amount_calculate": true,
+        "int_principal_pln": 10000,
+        "int_days_late": 30,
+        "int_violation_type": "STANDARD",
+    }
     result.rule_id == "jdg.interest_calculator.amount_calculator"
+    result.int_interest_accrued > 0
+    result.int_total_to_pay > result.int_principal_amount
 }
 
-test_negative_amount_calculator {
-    result := data.jdg.interest_calculator.decide with input as {}
-    result.rule_id != "jdg.interest_calculator.amount_calculator"
+test_amount_calculator_correction {
+    result := data.jdg.interest_calculator.decide with input as {
+        "interest_amount_calculate": true,
+        "int_principal_pln": 10000,
+        "int_days_late": 30,
+        "int_violation_type": "CORRECTION_7DAYS",
+    }
+    result.rule_id == "jdg.interest_calculator.amount_calculator"
+    result.int_applicable_rate < 0.3
 }
 
-# 4. jdg.interest_calculator.cashflow_optimizer
-test_positive_cashflow_optimizer {
-    result := data.jdg.interest_calculator.decide with input as {}
-    result.matched == true
+test_cashflow_optimizer {
+    result := data.jdg.interest_calculator.decide with input as {
+        "interest_cashflow_optimize": true,
+        "int_principal_pln": 10000,
+        "int_days_to_deadline": 25,
+        "int_current_day": 5,
+    }
     result.rule_id == "jdg.interest_calculator.cashflow_optimizer"
+    result.int_optimize_pay_later_cost >= result.int_optimize_pay_now_cost
+    result.int_optimize_savings >= 0
 }
 
-test_negative_cashflow_optimizer {
-    result := data.jdg.interest_calculator.decide with input as {}
-    result.rule_id != "jdg.interest_calculator.cashflow_optimizer"
+test_first_match_prefers_rate_calculator {
+    result := data.jdg.interest_calculator.decide with input as {
+        "interest_calculator_check": true,
+        "interest_amount_calculate": true,
+        "interest_cashflow_optimize": true,
+    }
+    result.rule_id == "jdg.interest_calculator.rate_calculator"
+    result.priority == 3060
 }

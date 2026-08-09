@@ -1,199 +1,212 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — ENTERPRISE e-DELIVERY INTEGRATION GATEWAY (Innovation 8.5, P18 v7.0)
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# METADATA
-# title: JDG Enterprise e-Delivery Gateway — Automated BAE & e-US Integration
-# description: |
-#   ENTERPRISE v7.0 — Bramka automatycznych e-Doręczeń. Integruje BAE (Baza
-#   Adresów Elektronicznych), e-US (e-Urząd Skarbowy), e-PUAP i profil zaufany.
-#
-#   KLUCZOWE FUNKCJE:
-#   - Automatyczna rejestracja adresu BAE dla JDG
-#   - Monitorowanie fikcji doręczenia (14 dni) z alertami 7/3/1 dzień
-#   - Integracja e-US: automatyczne pobieranie korespondencji z US
-#   - eIDAS/DAC/CRS/FATCA — walidacja transgraniczna
-#   - v7.0 FIX (LUKA-D2): Rozróżnienie dobrowolność JDG vs obowiązek KRS
-#
-# architecture: Enterprise v7.0 First-Match-Wins
-# legal_basis: Ustawa o doręczeniach elektronicznych (Dz.U. 2020 poz. 2320)
-# package: jdg.edelivery_gateway
-# deprecated: false
-# priority_range: 2330-2359
-# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI JDG — Enterprise e-Delivery integration gateway.
+# Legal basis: electronic delivery act and Art. 144-144c OrdPU.
 
 package jdg.edelivery_gateway
 
-import data.jdg.helpers
+import future.keywords.in
 
 default decide := {
-    "matched": false, "rule_id": "jdg.edelivery_gateway.no_match",
-    "package": "jdg.edelivery_gateway", "priority": 9999
+    "matched": false,
+    "rule_id": "jdg.edelivery_gateway.no_match",
+    "package": "jdg.edelivery_gateway",
+    "priority": 9999
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# EDG-2330: e-DELIVERY STATUS — Status e-Doręczeń dla JDG
-# ═══════════════════════════════════════════════════════════════════════════════
+base_fields := {
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false
+}
 
-decide := {
+business_type := object.get(input.jdg_entrepreneur, "business_type", "JDG")
+is_jdg := business_type == "JDG"
+is_mandatory := not_jdg(is_jdg)
+
+bae_registered := object.get(input.jdg_entrepreneur, "bae_registered", false)
+bae_address := object.get(input.jdg_entrepreneur, "bae_address", "")
+pending_delivery_count := object.get(input, "edelivery_pending_count", 0)
+fiction_days_remaining := object.get(input, "edelivery_fiction_days_remaining", 999)
+next_fiction_date := object.get(input, "edelivery_next_fiction_date", "")
+
+delivery_routing(days_remaining, pending) = "BLOCK_AND_ALERT" if {
+    days_remaining <= 1
+    pending > 0
+} else = "TRIAGE_QUEUE" if {
+    days_remaining <= 7
+    pending > 0
+} else = "" if {
+    true
+}
+
+delivery_reason(days_remaining, pending) = sprintf("FIKCJA DORĘCZENIA ZA %d DNI! %d dokumentów — odbierz NATYCHMIAST!", [days_remaining, pending]) if {
+    days_remaining <= 1
+} else = "" if {
+    true
+}
+
+not_jdg(value) = false if {
+    value == true
+} else = true if {
+    true
+}
+
+obligation_label(mandatory) = "OBOWIĄZKOWY" if {
+    mandatory == true
+} else = "DOBROWOLNY (JDG)" if {
+    true
+}
+
+bae_label(registered) = "zarejestrowany" if {
+    registered == true
+} else = "NIEZAREJESTROWANY" if {
+    true
+}
+
+fiction_warning_lines(mandatory, registered, pending, days_remaining, next_date) = warnings if {
+    base := [
+        "📬 e-DORĘCZENIA — STATUS JDG",
+        sprintf("   Obowiązek: %s", [obligation_label(mandatory)]),
+        sprintf("   Adres BAE: %s", [bae_label(registered)]),
+        sprintf("   Oczekujące doręczenia: %d", [pending])
+    ]
+    pending > 0
+    days_remaining <= 14
+    warnings := array.concat(base, [sprintf("   ⚠️ Fikcja doręczenia za %d dni (%s)!", [days_remaining, next_date])])
+} else = warnings if {
+    warnings := [
+        "📬 e-DORĘCZENIA — STATUS JDG",
+        sprintf("   Obowiązek: %s", [obligation_label(mandatory)]),
+        sprintf("   Adres BAE: %s", [bae_label(registered)]),
+        sprintf("   Oczekujące doręczenia: %d", [pending])
+    ]
+}
+
+# EDG-2330: delivery status.
+decide := object.union(base_fields, {
     "matched": true,
     "rule_id": "jdg.edelivery_gateway.delivery_status",
     "package": "jdg.edelivery_gateway",
     "priority": 2330,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
     "edelivery_jdg_mandatory": is_mandatory,
     "edelivery_bae_registered": bae_registered,
     "edelivery_bae_address": bae_address,
-    "edelivery_pending_deliveries": pending_count,
-    "edelivery_fiction_days_remaining": fiction_days,
-    "edelivery_next_fiction_date": next_fiction,
-    "_routing": edel_routing,
-    "_routing_reason": edel_reason,
-    "_legal_basis": "Ustawa o doręczeniach elektronicznych (Dz.U. 2020 poz. 2320); Art. 144-144c OrdPU",
-    "_warnings": build_edelivery_warnings(is_mandatory, bae_registered, pending_count, fiction_days, next_fiction)
-} {
-    input.edelivery_status_check == true
-    business_type := object.get(input.jdg_entrepreneur, "business_type", "JDG")
-
-    # v7.0 FIX (P18 LUKA-D2): e-Doręczenia dla JDG (osób fizycznych) są DOBROWOLNE.
-    # Obowiązkowe tylko dla podmiotów publicznych, zawodów zaufania i spółek KRS.
-    is_jdg := business_type == "JDG"
-    is_mandatory := not is_jdg
-
-    bae_registered := object.get(input.jdg_entrepreneur, "bae_registered", false)
-    bae_address := object.get(input.jdg_entrepreneur, "bae_address", "")
-    pending_count := object.get(input, "edelivery_pending_count", 0)
-    fiction_days := object.get(input, "edelivery_fiction_days_remaining", 999)
-    next_fiction := object.get(input, "edelivery_next_fiction_date", "")
-
-    edel_routing := "BLOCK_AND_ALERT" { fiction_days <= 1; pending_count > 0 }
-    edel_routing := "TRIAGE_QUEUE" { fiction_days <= 7; pending_count > 0 }
-    edel_routing := "" { true }
-    edel_reason := sprintf("FIKCJA DORĘCZENIA ZA %d DNI! %d dokumentów — odbierz NATYCHMIAST!", [fiction_days, pending_count]) { fiction_days <= 1 }
-    edel_reason := "" { true }
-}
-
-build_edelivery_warnings(mandatory, bae_ok, pending, fiction, next) = warnings {
-    obowiazek_text := "DOBROWOLNY (JDG)" { not mandatory }
-    obowiazek_text := "OBOWIĄZKOWY" { mandatory }
-    bae_text := "zarejestrowany" { bae_ok }
-    bae_text := "NIEZAREJESTROWANY" { not bae_ok }
-    base := [
-        sprintf("📬 e-DORĘCZENIA — STATUS JDG", []),
-        sprintf("   Obowiązek: %s", [obowiazek_text]),
-        sprintf("   Adres BAE: %s", [bae_text]),
-        sprintf("   Oczekujące doręczenia: %d", [pending]),
-    ]
-    with_fiction := array.concat(base, [sprintf("   ⚠️ Fikcja doręczenia za %d dni (%s)!", [fiction, next])]) { fiction <= 14; pending > 0 }
-    with_fiction := base { fiction > 14 or pending == 0 }
-    warnings := with_fiction
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# EDG-2340: e-US SCANNER — Automatyczne skanowanie e-US
-# ═══════════════════════════════════════════════════════════════════════════════
-
-else := {
+    "edelivery_pending_deliveries": pending_delivery_count,
+    "edelivery_fiction_days_remaining": fiction_days_remaining,
+    "edelivery_next_fiction_date": next_fiction_date,
+    "_routing": delivery_routing(fiction_days_remaining, pending_delivery_count),
+    "_routing_reason": delivery_reason(fiction_days_remaining, pending_delivery_count),
+    "_legal_basis": "Ustawa o doręczeniach elektronicznych; Art. 144-144c OrdPU",
+    "_warnings": fiction_warning_lines(is_mandatory, bae_registered, pending_delivery_count, fiction_days_remaining, next_fiction_date)
+}) if {
+    object.get(input, "edelivery_status_check", false) == true
+} else := object.union(base_fields, {
     "matched": true,
     "rule_id": "jdg.edelivery_gateway.eus_scanner",
     "package": "jdg.edelivery_gateway",
     "priority": 2340,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "eus_new_messages": new_msgs,
+    "eus_new_messages": new_messages,
     "eus_unread_total": unread_total,
-    "eus_latest_message_date": latest_date,
-    "eus_latest_message_type": latest_type,
+    "eus_latest_message_date": latest_message_date,
+    "eus_latest_message_type": latest_message_type,
     "eus_requires_action": requires_action,
     "_routing": eus_routing,
     "_routing_reason": eus_reason,
     "_legal_basis": "Art. 144-144c OrdPU; e-Urząd Skarbowy API",
     "_warnings": [
-        sprintf("🏛️ e-US SCANNER — %d nowych wiadomości (%d nieprzeczytanych)", [new_msgs, unread_total]),
-        sprintf("   Ostatnia: %s — %s", [latest_date, latest_type]),
-        sprintf("   %s", [action_text]),
+        sprintf("🏛️ e-US SCANNER — %d nowych wiadomości (%d nieprzeczytanych)", [new_messages, unread_total]),
+        sprintf("   Ostatnia: %s — %s", [latest_message_date, latest_message_type]),
+        sprintf("   %s", [eus_action_label(requires_action)])
     ]
-} {
-    input.edelivery_eus_scan == true
-    new_msgs := object.get(input, "eus_new_messages_count", 0)
-    unread_total := object.get(input, "eus_unread_total", 0)
-    latest_date := object.get(input, "eus_latest_message_date", "")
-    latest_type := object.get(input, "eus_latest_message_type", "INFORMACYJNE")
-
-    action_types := {"WEZWANIE", "DECYZJA", "POSTANOWIENIE", "ZAWIADOMIENIE", "KONTROLA"}
-    requires_action := latest_type in action_types
-
-    action_text := "⚠️ WYMAGA DZIAŁANIA!" { requires_action }
-    action_text := "✅ Tylko informacyjne." { not requires_action }
-
-    eus_routing := "BLOCK_AND_ALERT" { requires_action; new_msgs > 0 }
-    eus_routing := "TRIAGE_QUEUE" { unread_total > 3 }
-    eus_routing := "" { true }
-    eus_reason := sprintf("e-US ALERT: '%s' — wymaga natychmiastowej odpowiedzi!", [latest_type]) { requires_action }
-    eus_reason := sprintf("%d nieprzeczytanych wiadomości w e-US.", [unread_total]) { unread_total > 3 }
-    eus_reason := "" { true }
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# EDG-2350: FICTION DELIVERY ALERT — System alertów przed fikcją doręczenia
-# ═══════════════════════════════════════════════════════════════════════════════
-
-else := {
+}) if {
+    object.get(input, "edelivery_eus_scan", false) == true
+} else := object.union(base_fields, {
     "matched": true,
     "rule_id": "jdg.edelivery_gateway.fiction_delivery_alert",
     "package": "jdg.edelivery_gateway",
     "priority": 2350,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "edelivery_fiction_document_ref": doc_ref,
-    "edelivery_fiction_days_remaining": remaining,
+    "edelivery_fiction_document_ref": document_ref,
+    "edelivery_fiction_days_remaining": fiction_remaining,
     "edelivery_fiction_date": fiction_date,
     "edelivery_fiction_consequences": consequences,
     "_routing": fiction_routing,
     "_routing_reason": fiction_reason,
-    "_legal_basis": "Art. 16-19 ustawy o e-Doręczeniach (fikcja doręczenia po 14 dniach)",
-    "_warnings": build_fiction_warnings(doc_ref, remaining, fiction_date, consequences)
-} {
-    input.edelivery_fiction_alert == true
-    doc_ref := object.get(input, "edelivery_document_ref", "")
-    remaining := object.get(input, "edelivery_fiction_days_remaining", 14)
-    fiction_date := object.get(input, "edelivery_fiction_date", "")
-    sender := object.get(input, "edelivery_sender", "US/KAS/ZUS")
-
-    consequences := sprintf("Dokument od %s uznany za DORĘCZONY — bieg terminów procesowych rozpoczęty!", [sender])
-
-    fiction_routing := "BLOCK_AND_ALERT" { remaining <= 3 }
-    fiction_routing := "TRIAGE_QUEUE" { remaining <= 7 }
-    fiction_routing := "" { true }
-    fiction_reason := sprintf("FIKCJA DORĘCZENIA: '%s' za %d dni! Odbiór NATYCHMIAST!", [doc_ref, remaining]) { remaining <= 3 }
-    fiction_reason := "" { true }
+    "_legal_basis": "Art. 16-19 ustawy o e-Doręczeniach (fikcja po 14 dniach)",
+    "_warnings": fiction_alert_warnings(document_ref, fiction_remaining, fiction_date, consequences)
+}) if {
+    object.get(input, "edelivery_fiction_alert", false) == true
 }
 
-build_fiction_warnings(ref, remaining, date, consequences) = warnings {
+# EDG-2340: e-US scanner.
+new_messages := object.get(input, "eus_new_messages_count", 0)
+unread_total := object.get(input, "eus_unread_total", 0)
+latest_message_date := object.get(input, "eus_latest_message_date", "")
+latest_message_type := object.get(input, "eus_latest_message_type", "INFORMACYJNE")
+requires_action := latest_message_type in {"WEZWANIE", "DECYZJA", "POSTANOWIENIE", "ZAWIADOMIENIE", "KONTROLA"}
+eus_routing = "BLOCK_AND_ALERT" if {
+    requires_action
+    new_messages > 0
+} else = "TRIAGE_QUEUE" if {
+    unread_total > 3
+} else = "" if {
+    true
+}
+eus_reason = sprintf("e-US ALERT: '%s' — wymaga natychmiastowej odpowiedzi!", [latest_message_type]) if {
+    requires_action
+} else = sprintf("%d nieprzeczytanych wiadomości w e-US.", [unread_total]) if {
+    unread_total > 3
+} else = "" if {
+    true
+}
+eus_action_label(action_required) = "⚠️ WYMAGA DZIAŁANIA!" if {
+    action_required == true
+} else = "✅ Tylko informacyjne." if {
+    true
+}
+
+# EDG-2350: fiction delivery alert.
+document_ref := object.get(input, "edelivery_document_ref", "")
+fiction_remaining := object.get(input, "edelivery_fiction_days_remaining", 14)
+fiction_date := object.get(input, "edelivery_fiction_date", "")
+sender := object.get(input, "edelivery_sender", "US/KAS/ZUS")
+consequences := sprintf("Dokument od %s uznany za DORĘCZONY — bieg terminów procesowych rozpoczęty!", [sender])
+fiction_routing = "BLOCK_AND_ALERT" if {
+    fiction_remaining <= 3
+} else = "TRIAGE_QUEUE" if {
+    fiction_remaining <= 7
+} else = "" if {
+    true
+}
+fiction_reason = sprintf("FIKCJA DORĘCZENIA: '%s' za %d dni! Odbiór NATYCHMIAST!", [document_ref, fiction_remaining]) if {
+    fiction_remaining <= 3
+} else = "" if {
+    true
+}
+
+fiction_alert_warnings(ref, remaining, date, consequence) = warnings if {
     remaining <= 3
     warnings := [
         sprintf("🚨 FIKCJA DORĘCZENIA — %d DNI!", [remaining]),
         sprintf("   Dokument: %s", [ref]),
         sprintf("   Data fikcji: %s", [date]),
-        sprintf("   ⚠️ %s", [consequences]),
-        "📋 NATYCHMIAST zaloguj się na ePUAP / e-US i ODBIERZ dokument!",
+        sprintf("   ⚠️ %s", [consequence]),
+        "📋 NATYCHMIAST zaloguj się na ePUAP / e-US i ODBIERZ dokument!"
     ]
-} else = warnings {
+} else = warnings if {
     remaining <= 7
     warnings := [
         sprintf("⚠️ FIKCJA DORĘCZENIA ZA %d DNI — %s", [remaining, ref]),
-        sprintf("   Odbierz przed %s aby uniknąć fikcji doręczenia.", [date]),
+        sprintf("   Odbierz przed %s aby uniknąć fikcji doręczenia.", [date])
     ]
-} else = [
-    sprintf("📬 e-Doręczenie '%s' — pozostało %d dni do fikcji doręczenia.", [ref, remaining]),
-]
+} else = [sprintf("📬 e-Doręczenie '%s' — pozostało %d dni do fikcji doręczenia.", [ref, remaining])] if {
+    true
+}

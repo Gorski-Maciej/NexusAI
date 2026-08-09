@@ -98,6 +98,36 @@ _candidates[V] { V := _candidates_for(input.verdict)[_] }
 _has(v, k) { v[k] != null }
 _is_num(x) { is_number(x) }
 
+# Brak podstawy prawnej jest fail-closed: puste stringi i tablice nie są
+# traktowane jako dowód zgodności. Nie używamy trim_space, aby zachować
+# kompatybilność z minimalnym profilem built-inów OPA/WASM.
+_basis_missing(v) {
+    object.get(v, "_legal_basis_refs", null) == null
+    object.get(v, "_legal_basis", null) == null
+}
+
+_basis_missing(v) {
+    refs := object.get(v, "_legal_basis_refs", null)
+    refs == ""
+}
+
+_basis_missing(v) {
+    refs := object.get(v, "_legal_basis_refs", null)
+    is_array(refs)
+    count(refs) == 0
+}
+
+_basis_missing(v) {
+    basis := object.get(v, "_legal_basis", null)
+    basis == ""
+}
+
+_basis_missing(v) {
+    basis := object.get(v, "_legal_basis", null)
+    is_array(basis)
+    count(basis) == 0
+}
+
 _epsilon := 0.01  # epsilon groszowy (INV-003/INV-022) — zaokrąglenie do 2 miejsc
 
 # Dozwolone stawki VAT — obsługa BOTH stringów ("0.23") i liczb (0.23)
@@ -221,14 +251,7 @@ _inv_violated("INV-009", v) {
     some c in _candidates_for(v)
     is_object(c)
     c.matched == true
-    not _has(c, "_legal_basis")
-}
-
-_inv_violated("INV-009", v) {
-    some c in _candidates_for(v)
-    is_object(c)
-    c.matched == true
-    count(c._legal_basis) == 0
+    _basis_missing(c)
 }
 
 
@@ -336,6 +359,22 @@ _inv_violated("INV-036", v) {
     not _has(ctx, "transaction_type")
 }
 
+_inv_violated("INV-036", v) {
+    some c in _candidates_for(v)
+    is_object(c)
+    c._routing_context != null
+    ctx := c._routing_context
+    not _has(ctx, "entity_status")
+}
+
+_inv_violated("INV-036", v) {
+    some c in _candidates_for(v)
+    is_object(c)
+    c._routing_context != null
+    ctx := c._routing_context
+    not _has(ctx, "evaluation_date")
+}
+
 _inv_violated("INV-038", v) {
     some c in _candidates_for(v)
     is_object(c)
@@ -397,21 +436,23 @@ report := {
 # _certainty_guard oraz _decision_certificate (F4) z decision_hash (F3).
 # Naruszenie invariantu → _certainty_guard = "CERTAINTY_BLOCKED" — host NIGDY
 # nie wykonuje AUTO_POST dla werdyktu zablokowanego (INV-006/INV-035).
+# Jedna reguła funkcji ogranicza ryzyko wieloznaczności: evaluate(v) jest
+# deterministyczne, a auto_post jest zawsze wymuszone na false przy naruszeniu.
 enforce(v) = result {
     ev := evaluate(v)
-    result := {
+    base := {
         "certainty_class": ev.certainty_class,
         "_invariant_report": ev,
         "_certainty_guard": _guard(ev.certainty_class),
         "_decision_certificate": _certificate(v, ev),
     }
-} else := {
-    "certainty_class": "NEEDS_ADVICE",
-    "_invariant_report": {"invariant_failed": true, "failed": ["ENFORCE_DEGRADED"]},
-    "_certainty_guard": "CERTAINTY_BLOCKED",
-    "_decision_certificate": {"decision_certificate": "UNAVAILABLE"},
-} {
-    true
+    result := object.union(base, _auto_post_guard(ev))
+}
+
+_auto_post_guard(ev) = {"auto_post": false} {
+    ev.invariant_failed
+} else = {} {
+    not ev.invariant_failed
 }
 
 _guard(c) := "AUTO_POST_ALLOWED" { c == "CERTAIN" }
@@ -437,7 +478,10 @@ _certificate(v, ev) = cert {
         "versions": versions,
         "legal_basis_refs": object.get(verdict, "_legal_basis_refs", [object.get(verdict, "_legal_basis", "")]),
         "invariant_checksum": sprintf("%d/%d", [count([f | f := ev.failed[_]]), count(catalog)]),
-        "evaluated_at": sprintf("%s", [time.now_ns()]),
+        # Czysta ewaluacja: czas systemowy nie może zmieniać certyfikatu.
+        # Host może przekazać jawny evaluated_at, a brak wartości oznacza
+        # stabilny sentinel dla replay/golden tests.
+        "evaluated_at": object.get(input, "evaluated_at", object.get(v, "evaluated_at", "runtime")),
         "signature": "hsm:placeholder-sha256",  # podpis HSM wykonywany przez host (P20 control plane)
     }
 } else := {
@@ -468,5 +512,7 @@ _decision_hash(v) = sprintf("sha256:%s", [concat("|", [
     sprintf("%v", [object.get(v, "gross_amount", "")]),
     sprintf("%v", [object.get(v, "pit_rate", "")]),
     sprintf("%v", [object.get(v, "zus_health_rate", "")]),
-    sprintf("%v", [object.get(v, "bundle_version", object.get(input, "bundle_version", ""))]),
+    sprintf("%v", [object.get(v, "bundle_version", object.get(object.get(v, "_versions", {}), "bundle_version", object.get(input, "bundle_version", "")))]),
+    sprintf("%v", [object.get(v, "rule_version", object.get(object.get(v, "_versions", {}), "rule_version", object.get(input, "rule_version", "")))]),
+    sprintf("%v", [object.get(v, "threshold_version", object.get(object.get(v, "_versions", {}), "threshold_version", object.get(input, "threshold_version", "")))]),
 ])])

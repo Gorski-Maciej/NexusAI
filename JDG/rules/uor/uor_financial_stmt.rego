@@ -184,7 +184,7 @@ else := {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
     zus_overpaid := object.get(input.jdg_entrepreneur, "zus_overpaid", 0)
     zus_underpaid := object.get(input.jdg_entrepreneur, "zus_underpaid", 0)
-    zus_overpaid > 0 or zus_underpaid > 0
+    [zus_overpaid > 0, zus_underpaid > 0] != [false, false]
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

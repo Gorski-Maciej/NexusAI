@@ -173,8 +173,16 @@ car_limits := {
     "elektryczny": {"limit_pln": 225000, "kup_pct": 75, "vat_pct": 50},
 }
 
-car_limit_calc(value, is_electric) := result {
-    limit := 225000 if { is_electric } else := 150000
+car_limit(is_electric) = 225000 {
+    is_electric
+}
+
+car_limit(is_electric) = 150000 {
+    not is_electric
+}
+
+car_limit_calc(value, is_electric) = result {
+    limit := car_limit(is_electric)
     depreciable_base := min([value, limit])
     excess_nkup := max([0, value - limit])
     result := {
@@ -236,7 +244,7 @@ nkup_missing_points := [
     {"point": 45, "description": "Zakup paliw bez ewidencji przebiegu", "severity": "HIGH"},
     {"point": 46, "description": "Samochód osobowy — 75% KUP", "severity": "MEDIUM"},
     {"point": 47, "description": "Składki AC/OC auto > 150k/225k", "severity": "MEDIUM"},
-    {"point": 47a,"description": "Leasing operacyjny auta > 150k/225k limit", "severity": "HIGH"},
+    {"point": "47a", "description": "Leasing operacyjny auta > 150k/225k limit", "severity": "HIGH"},
     {"point": 48, "description": "Składki członkowskie", "severity": "LOW"},
     {"point": 49, "description": "Wydatki na radę nadzorczą", "severity": "LOW"},
     {"point": 50, "description": "Kult religijny ponad limit 6% dochodu", "severity": "LOW"},

@@ -3,14 +3,25 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.environmental
 #
-# METADATA
-# title: JDG Package — environmental
-# description: Supporting package for JDG Multi-Pass evaluation (ADR-001).
-# architecture: Multi-Pass (ADR-001)
-# package: jdg.environmental
-# deprecated: false
+# JDG environmental package — Multi-Pass architecture (ADR-001).
+# Covers BDO, KOBiZE, environmental fees, ESG and related obligations.
 #
-import data.jdg.helpers
+
+csrd_threshold_met(emp, assets, rev) = true {
+    emp > 250
+    assets > 20
+}
+
+csrd_threshold_met(emp, assets, rev) = true {
+    emp > 250
+    rev > 40
+}
+
+csrd_threshold_met(emp, assets, rev) = true {
+    assets > 20
+    rev > 40
+}
+
 default decide := {"matched":false,"rule_id":"jdg.environmental.no_match","package":"jdg.environmental","priority":1775}
 
 # ══════ P1770: environment_sup_plastic_fee — Opłata SUP od plastikowych opakowań ══════
@@ -34,7 +45,7 @@ decide := {
 } {
     pkd := object.get(input.jdg_entrepreneur, "pkd_main", "")
     sup_pkd := {"56.10.A", "56.30.Z", "47.11.Z", "47.81.Z"}
-    pkd in sup_pkd
+    sup_pkd[pkd]
     items := object.get(input.invoice, "sup_plastic_items_sold", 0)
     items > 0
     sup_rate := object.get(object.get(object.get(data.thresholds, "jdg", {}), "environmental", {}), "sup_fee_rate", 0.25)
@@ -193,7 +204,7 @@ else := {
     emp:=object.get(input.employment,"employee_count",0)
     assets:=object.get(input.jdg_entrepreneur,"total_assets_eur_m",0)
     rev:=object.get(input.jdg_entrepreneur,"annual_revenue_eur_m",0)
-    (emp>250 and assets>20) or (emp>250 and rev>40) or (assets>20 and rev>40)
+    csrd_threshold_met(emp, assets, rev)
 }
 
 # P541: esg_carbon_footprint — Ślad węglowy

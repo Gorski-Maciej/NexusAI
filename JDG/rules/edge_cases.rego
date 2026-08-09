@@ -2,31 +2,109 @@
 # NexusAI JDG Policies — Edge Cases: VAT, PIT, ZUS, Sankcje, Terminy
 # Doc 28a: R0546-R0680 — Grupy A-I (114 reguł)
 # ═══════════════════════════════════════════════════════════════════════════════
-#
-# METADATA
-# title: Edge Cases Package — VAT, PIT, ZUS Edge Cases + Sanctions + Deadlines
-# description: |
-#   Implementacja Doc 28a ENTERPRISE v1.0 edge cases. First-Match-Wins else-chain.
-#   Grupa A: VAT Edge Cases (R0546-R0559, 14 reguł)
-#   Grupa B: PIT Edge Cases (R0560-R0573, 14 reguł)
-#   Grupa C: ZUS Edge Cases (R0574-R0585, 12 reguł)
-#   Grupa D: VAT Zwolnienie 200k (R0586-R0594, 9 reguł)
-#   Grupa E: PIT Edge Extended (R0595-R0601, 7 reguł)
-#   Grupa G: Sankcje (R0646-R0655, 10 reguł)
-#   Grupa H: Terminy / Deadlines (R0656-R0672, 17 reguł)
-#   Grupa I: Cross-border/TP/CFC (R0673-R0680, 8 reguł)
-# legal_basis: Art. 113, 19a, 31a, 86a, 106d, 106e VAT; Art. 9, 23, 24, 26e,
-#              27g, 30ca PIT; Art. 18a, 18c, 36a SUS; Art. 44, 45, 47, 48-52,
-#              54, 56, 60, 62, 76, 77-79, 83 KKS; Art. 96b, 108a, 109, 106na,
-#              106nq VAT; Art. 22p, 26h, 26eb, 26ec PIT; Art. 70, 78, 81 OrdPU
-# package: jdg.edge_cases
-# deprecated: false
-# ═══════════════════════════════════════════════════════════════════════════════
+# Scope: VAT, PIT, ZUS, sanctions and deadline edge cases (Doc 28a).
+# Legal basis references are retained in each individual verdict below.
 
 package jdg.edge_cases
 
 import data.jdg.helpers
 import data.jdg.thresholds
+import future.keywords.if
+import future.keywords.in
+
+eu_edge_countries := {
+    "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
+    "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
+    "PL", "PT", "RO", "SK", "SI", "ES", "SE"
+}
+
+wht_rate_for(country) = 0 if {
+    country in eu_edge_countries
+} else = 20 if {
+    true
+}
+
+wnt_triangulation_label(is_triangulation) = "TRANSAKCJA TRÓJSTRONNA" if {
+    is_triangulation == true
+} else = "WNT standardowe" if {
+    true
+}
+
+wnt_triangulation_info(is_triangulation) = "Transakcja trójstronna — uproszczona procedura" if {
+    is_triangulation == true
+} else = "WNT standardowe — rozlicz VAT-23 + VAT-UE" if {
+    true
+}
+
+mpp_benefit_for(is_voluntary) = "DOBROWOLNY — zwrot VAT w 25 dni zamiast 60" if {
+    is_voluntary == true
+} else = "OBOWIĄZKOWY — brak = sankcja 30% VAT" if {
+    true
+}
+
+forecast_date_for(bridge_date, current_date, days_remaining) = bridge_date if {
+    bridge_date != ""
+} else = current_date if {
+    days_remaining >= 0
+}
+
+health_amount_for(annual_revenue) = 419.46 if {
+    annual_revenue <= 60000
+} else = 699.11 if {
+    annual_revenue > 60000
+    annual_revenue <= 300000
+} else = 1258.39 if {
+    annual_revenue > 300000
+}
+
+health_tier_for(annual_revenue) = 60000 if {
+    annual_revenue <= 60000
+} else = 300000 if {
+    annual_revenue > 60000
+    annual_revenue <= 300000
+} else = 0 if {
+    annual_revenue > 300000
+}
+
+car_kup_limit_for(is_ev) = 225000 if {
+    is_ev == true
+} else = 150000 if {
+    true
+}
+
+cash_buffer_routing(buffer_pct) = "TRIAGE_QUEUE" if {
+    buffer_pct < 80
+} else = "BLOCK_AND_ALERT" if {
+    true
+}
+
+cash_buffer_reason(buffer_pct) = "Metoda kasowa — bufor >50%: ryzyko płynności" if {
+    buffer_pct < 80
+} else = "Metoda kasowa — bufor >80%: KRYTYCZNE ryzyko bankructwa!" if {
+    true
+}
+
+regon_checksum_invalid(regon) if {
+    count(regon) == 9
+    d1 := to_number(substring(regon, 0, 1))
+    d2 := to_number(substring(regon, 1, 1))
+    d3 := to_number(substring(regon, 2, 1))
+    d4 := to_number(substring(regon, 3, 1))
+    d5 := to_number(substring(regon, 4, 1))
+    d6 := to_number(substring(regon, 5, 1))
+    d7 := to_number(substring(regon, 6, 1))
+    d8 := to_number(substring(regon, 7, 1))
+    d9 := to_number(substring(regon, 8, 1))
+    checksum := (8*d1 + 9*d2 + 2*d3 + 3*d4 + 4*d5 + 5*d6 + 6*d7 + 7*d8) % 11
+    expected := regon_expected_digit(checksum)
+    expected != d9
+}
+
+regon_expected_digit(checksum) = 0 if {
+    checksum == 10
+} else = checksum if {
+    checksum != 10
+}
 
 default decide := {
     "matched": false, "rule_id": "jdg.edge_cases.no_match",
@@ -96,15 +174,7 @@ else := {
     # Jeśli bridge nie dostarczył daty, oblicz przybliżenie w Rego
     current_date := object.get(input.invoice, "transaction_date", "2026-07-01")
     forecast_from_bridge := object.get(input.jdg_entrepreneur, "vat_breach_forecast_date", "")
-    forecast_date := forecast_from_bridge { forecast_from_bridge != "" }
-    forecast_date := concat("", [substring(current_date, 0, 4), "-", format_month(month_forecast), "-", format_day(day_forecast)]) { forecast_from_bridge == "" }
-    month_num := to_number(substring(current_date, 5, 2))
-    months_to_add := floor(days_remaining / 30)
-    month_forecast := month_num + months_to_add { month_num + months_to_add <= 12 }
-    month_forecast := month_num + months_to_add - 12 { month_num + months_to_add > 12 }
-    day_forecast := 15  # mid-month approximation
-    format_month(m) = sprintf("%02d", [m])
-    format_day(d) = sprintf("%02d", [d])
+    forecast_date := forecast_date_for(forecast_from_bridge, current_date, days_remaining)
 }
 
 # R0547: vat_breach_proportion_new_jdg — Limit proporcjonalny dla nowej JDG
@@ -386,7 +456,37 @@ else := { "matched": true, "rule_id": "jdg.edge_cases.pit_ip_box_loss", "package
 
 else := { "matched": true, "rule_id": "jdg.edge_cases.pit_foreign_tax_credit_limit", "package": "jdg.edge_cases", "priority": 600, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "foreign_tax_credit_capped": true, "ftc_limit": ftc_limit, "foreign_tax_paid": ft_paid, "_routing": "", "_routing_reason": "", "_legal_basis": "Art. 27 ust. 8-9 PIT", "_warnings": [sprintf("ULGA ZAGRANICZNA — limit %.2f PLN. Zapłacony podatek za granicą: %.2f PLN. Odliczenie max do limitu. Nadwyżka NIE przechodzi na kolejne lata.", [ftc_limit, ft_paid])] } { ft_paid := object.get(input.jdg_entrepreneur, "foreign_tax_paid_pln", 0); ft_paid > 0; pl_income := object.get(input.jdg_entrepreneur, "annual_taxable_income", 0); foreign_income := object.get(input.jdg_entrepreneur, "foreign_income", 0); total_income := pl_income + foreign_income; total_income > 0; ftc_limit := floor(pl_income * ft_paid / total_income * 100) / 100 }
 
-else := { "matched": true, "rule_id": "jdg.edge_cases.pit_health_lump_sum_tier", "package": "jdg.edge_cases", "priority": 601, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "LUMP_SUM", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "health_tier_calculated": true, "health_monthly_amount": health_amount, "_routing": "", "_routing_reason": "", "_legal_basis": "Art. 81 ust. 2e ustawy o świadczeniach", "_warnings": [sprintf("RYCZAŁT — składka zdrowotna: %.2f PLN/mies. Przychód %.2f PLN = próg %.0f PLN. Roczne rozliczenie do 22 maja.", [health_amount, annual_rev, health_tier])] } { input.jdg_entrepreneur.tax_form == "LUMP_SUM"; annual_rev := object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0); annual_rev > 0; health_amount = 419.46 { annual_rev <= 60000 }; health_amount = 699.11 { annual_rev > 60000; annual_rev <= 300000 }; health_amount = 1258.39 { annual_rev > 300000 }; health_tier = 60000 { annual_rev <= 60000 }; health_tier = 300000 { annual_rev > 60000; annual_rev <= 300000 }; health_tier = 0 { annual_rev > 300000 } }
+else := {
+    "matched": true,
+    "rule_id": "jdg.edge_cases.pit_health_lump_sum_tier",
+    "package": "jdg.edge_cases",
+    "priority": 601,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "LUMP_SUM",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "health_tier_calculated": true,
+    "health_monthly_amount": health_amount,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Art. 81 ust. 2e ustawy o świadczeniach",
+    "_warnings": [sprintf("RYCZAŁT — składka zdrowotna: %.2f PLN/mies. Przychód %.2f PLN = próg %.0f PLN. Roczne rozliczenie do 22 maja.", [health_amount, annual_rev, health_tier])]
+} {
+    input.jdg_entrepreneur.tax_form == "LUMP_SUM"
+    annual_rev := object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)
+    annual_rev > 0
+    health_amount := health_amount_for(annual_rev)
+    health_tier := health_tier_for(annual_rev)
+}
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  GRUPA D2: R0602-R0612 — KONFLIKTY & INTERAKCJE (11 reguł)                ║
@@ -409,7 +509,39 @@ else := { "matched": true, "rule_id": "jdg.edge_cases.zus_start_vs_preferential"
 else := { "matched": true, "rule_id": "jdg.edge_cases.zus_maly_plus_vs_preferential", "package": "jdg.edge_cases", "priority": 606, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "dual_relief_blocked": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Mały ZUS+ + preferencyjny — NIE jednocześnie", "_legal_basis": "Art. 18a i 18c SUS", "_warnings": ["Mały ZUS+ dopiero PO preferencyjnym. Nie można łączyć! Max 60 mies. obniżonych składek: 24 prefer. + 36 mały+."] } { object.get(input.jdg_entrepreneur, "zus_maly_plus_active", false) == true; object.get(input.jdg_entrepreneur, "zus_preferential_active", false) == true }
 
 # R0607: car_leasing_vs_buy_kup_limit — Limit 150k dla auta (leasing = zakup)
-else := { "matched": true, "rule_id": "jdg.edge_cases.car_leasing_vs_buy_kup_limit", "package": "jdg.edge_cases", "priority": 607, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "car_kup_limit_applies": true, "car_value": car_value, "car_kup_limit": car_limit, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Auto >150k — nadwyżka NKUP (leasing = zakup)", "_legal_basis": "Art. 23 ust. 1 pkt 47a i 47b PIT", "_warnings": [sprintf("AUTO %.0f PLN > limit KUP %.0f PLN — nadwyżka NKUP. Dotyczy zarówno zakupu jak i leasingu!", [car_value, car_limit]) ] } { car_value := object.get(input.jdg_entrepreneur, "car_acquisition_value", 0); car_value > 0; is_ev := object.get(input.jdg_entrepreneur, "car_is_electric", false); car_limit = 225000 { is_ev == true }; car_limit = 150000 { is_ev == false }; car_value > car_limit; input.invoice.expense_type in {"CAR_LEASE", "CAR_DEPRECIATION"} }
+else := {
+    "matched": true,
+    "rule_id": "jdg.edge_cases.car_leasing_vs_buy_kup_limit",
+    "package": "jdg.edge_cases",
+    "priority": 607,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "car_kup_limit_applies": true,
+    "car_value": car_value,
+    "car_kup_limit": car_limit,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "Auto >150k — nadwyżka NKUP (leasing = zakup)",
+    "_legal_basis": "Art. 23 ust. 1 pkt 47a i 47b PIT",
+    "_warnings": [sprintf("AUTO %.0f PLN > limit KUP %.0f PLN — nadwyżka NKUP. Dotyczy zarówno zakupu jak i leasingu!", [car_value, car_limit])]
+} {
+    car_value := object.get(input.jdg_entrepreneur, "car_acquisition_value", 0)
+    car_value > 0
+    is_ev := object.get(input.jdg_entrepreneur, "car_is_electric", false)
+    car_limit := car_kup_limit_for(is_ev)
+    car_value > car_limit
+    input.invoice.expense_type in {"CAR_LEASE", "CAR_DEPRECIATION"}
+}
 
 # R0608: home_office_vs_exclusive_business — Home office ≠ 100% KUP
 else := { "matched": true, "rule_id": "jdg.edge_cases.home_office_vs_exclusive_business", "package": "jdg.edge_cases", "priority": 608, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "PROPORTIONAL", "kus_percent": kup_pct, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "home_office_proportional": true, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Home office mieszane — KUP proporcjonalny", "_legal_basis": "Art. 22 ust. 1 PIT", "_warnings": [sprintf("HOME OFFICE MIESZANE — KUP %.0f%% (powierzchnia biurowa / całkowita). Nie 100%%!", [kup_pct]) ] } { input.invoice.expense_type == "HOME_OFFICE"; office_sqm := object.get(input.jdg_entrepreneur, "home_office_sqm", 0); total_sqm := object.get(input.jdg_entrepreneur, "home_total_sqm", 1); total_sqm > 0; kup_pct := floor(office_sqm * 100 / total_sqm); kup_pct < 100; object.get(input.jdg_entrepreneur, "home_office_exclusive", false) == false }
@@ -449,10 +581,8 @@ else := {
     annual_revenue > 0
     buffer_pct := floor(unpaid_total * 100 / annual_revenue)
     buffer_pct >= 50
-    routing_flag = "TRIAGE_QUEUE" { buffer_pct < 80 }
-    routing_flag = "BLOCK_AND_ALERT" { buffer_pct >= 80 }
-    routing_reason = "Metoda kasowa — bufor >50%: ryzyko płynności" { buffer_pct < 80 }
-    routing_reason = "Metoda kasowa — bufor >80%: KRYTYCZNE ryzyko bankructwa!" { buffer_pct >= 80 }
+    routing_flag := cash_buffer_routing(buffer_pct)
+    routing_reason := cash_buffer_reason(buffer_pct)
 }
 
 # R0610: fx_method_podatkowa_vs_bilansowa — Mieszanie metod FX
@@ -470,13 +600,108 @@ else := { "matched": true, "rule_id": "jdg.edge_cases.donation_limit_6pct_aggreg
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # R0613: nip_checksum_pl — Suma kontrolna NIP
-else := { "matched": true, "rule_id": "jdg.edge_cases.nip_checksum_pl", "package": "jdg.edge_cases", "priority": 613, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "nip_invalid_checksum": true, "nip_entered": nip_raw, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "NIP — błędna suma kontrolna", "_legal_basis": "Art. 96b VAT, Rozp. MF ws. NIP", "_warnings": [sprintf("NIP %s — BŁĘDNA suma kontrolna! Wagi 6,5,7,2,3,4,5,6,7, mod 11. Jeśli wynik=10 → NIP NIEWAŻNY.", [nip_raw]) ] } { nip_raw := object.get(input.vendor, "nip", ""); nip_raw != ""; nip_len := count(nip_raw); nip_len == 10; nip_num := to_number(nip_raw); nip_num > 0; d1 := to_number(substring(nip_raw, 0, 1)); d2 := to_number(substring(nip_raw, 1, 1)); d3 := to_number(substring(nip_raw, 2, 1)); d4 := to_number(substring(nip_raw, 3, 1)); d5 := to_number(substring(nip_raw, 4, 1)); d6 := to_number(substring(nip_raw, 5, 1)); d7 := to_number(substring(nip_raw, 6, 1)); d8 := to_number(substring(nip_raw, 7, 1)); d9 := to_number(substring(nip_raw, 8, 1)); d10 := to_number(substring(nip_raw, 9, 1)); checksum := (6*d1 + 5*d2 + 7*d3 + 2*d4 + 3*d5 + 4*d6 + 5*d7 + 6*d8 + 7*d9) % 11; checksum != d10 }
+else := {
+    "matched": true,
+    "rule_id": "jdg.edge_cases.nip_checksum_pl",
+    "package": "jdg.edge_cases",
+    "priority": 613,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "nip_invalid_checksum": true,
+    "nip_entered": nip_raw,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "NIP — błędna suma kontrolna",
+    "_legal_basis": "Art. 96b VAT, Rozp. MF ws. NIP",
+    "_warnings": [sprintf("NIP %s — BŁĘDNA suma kontrolna! Wagi 6,5,7,2,3,4,5,6,7, mod 11. Jeśli wynik=10 → NIP NIEWAŻNY.", [nip_raw])]
+} {
+    nip_raw := object.get(input.vendor, "nip", "")
+    nip_raw != ""
+    count(nip_raw) == 10
+    to_number(nip_raw) > 0
+    d1 := to_number(substring(nip_raw, 0, 1))
+    d2 := to_number(substring(nip_raw, 1, 1))
+    d3 := to_number(substring(nip_raw, 2, 1))
+    d4 := to_number(substring(nip_raw, 3, 1))
+    d5 := to_number(substring(nip_raw, 4, 1))
+    d6 := to_number(substring(nip_raw, 5, 1))
+    d7 := to_number(substring(nip_raw, 6, 1))
+    d8 := to_number(substring(nip_raw, 7, 1))
+    d9 := to_number(substring(nip_raw, 8, 1))
+    d10 := to_number(substring(nip_raw, 9, 1))
+    checksum := (6*d1 + 5*d2 + 7*d3 + 2*d4 + 3*d5 + 4*d6 + 5*d7 + 6*d8 + 7*d9) % 11
+    checksum != d10
+}
 
 # R0614: iban_checksum_pl — Walidacja IBAN PL
-else := { "matched": true, "rule_id": "jdg.edge_cases.iban_checksum_pl", "package": "jdg.edge_cases", "priority": 614, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "iban_invalid": true, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "IBAN — nieprawidłowy format lub suma kontrolna", "_legal_basis": "Regulacja UE 260/2012 (SEPA)", "_warnings": ["IBAN — nieprawidłowy format. IBAN PL musi mieć 28 znaków: PL + 26 cyfr. Suma kontrolna mod 97 = 1."] } { iban := object.get(input.vendor, "iban", ""); iban != ""; not startswith(iban, "PL"); count(iban) != 28  # uproszczona walidacja: prefix PL + 28 znaków (pełny mod 97 wymaga big-int) }
+else := {
+    "matched": true,
+    "rule_id": "jdg.edge_cases.iban_checksum_pl",
+    "package": "jdg.edge_cases",
+    "priority": 614,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "iban_invalid": true,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "IBAN — nieprawidłowy format lub suma kontrolna",
+    "_legal_basis": "Regulacja UE 260/2012 (SEPA)",
+    "_warnings": ["IBAN — nieprawidłowy format. IBAN PL musi mieć 28 znaków: PL + 26 cyfr. Suma kontrolna mod 97 = 1."]
+} {
+    iban := object.get(input.vendor, "iban", "")
+    iban != ""
+    not startswith(iban, "PL")
+    count(iban) != 28
+}
 
 # R0615: regon_9digit — Walidacja REGON
-else := { "matched": true, "rule_id": "jdg.edge_cases.regon_9digit", "package": "jdg.edge_cases", "priority": 615, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "regon_invalid": true, "_routing": "TRIAGE_QUEUE", "_routing_reason": "REGON — błędna suma kontrolna", "_legal_basis": "Rozp. GUS ws. REGON", "_warnings": ["REGON — błędna suma kontrolna. Wagi: 8,9,2,3,4,5,6,7, mod 11."] } { regon := object.get(input.vendor, "regon", ""); count(regon) == 9; regon_num := to_number(regon); d1 := to_number(substring(regon, 0, 1)); d2 := to_number(substring(regon, 1, 1)); d3 := to_number(substring(regon, 2, 1)); d4 := to_number(substring(regon, 3, 1)); d5 := to_number(substring(regon, 4, 1)); d6 := to_number(substring(regon, 5, 1)); d7 := to_number(substring(regon, 6, 1)); d8 := to_number(substring(regon, 7, 1)); d9 := to_number(substring(regon, 8, 1)); cs := (8*d1 + 9*d2 + 2*d3 + 3*d4 + 4*d5 + 5*d6 + 6*d7 + 7*d8) % 11; expected_d9 = 0 { cs == 10 }; expected_d9 = cs { cs != 10 }; expected_d9 != d9 }
+else := {
+    "matched": true,
+    "rule_id": "jdg.edge_cases.regon_9digit",
+    "package": "jdg.edge_cases",
+    "priority": 615,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "regon_invalid": true,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "REGON — błędna suma kontrolna",
+    "_legal_basis": "Rozp. GUS ws. REGON",
+    "_warnings": ["REGON — błędna suma kontrolna. Wagi: 8,9,2,3,4,5,6,7, mod 11."]
+} {
+    regon := object.get(input.vendor, "regon", "")
+    regon_checksum_invalid(regon)
+}
 
 # R0616: invoice_date_consistency — Data faktury ≥ data sprzedaży
 else := { "matched": true, "rule_id": "jdg.edge_cases.invoice_date_consistency", "package": "jdg.edge_cases", "priority": 616, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "date_inconsistent": true, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Data faktury wcześniejsza niż data sprzedaży", "_legal_basis": "Art. 106e VAT", "_warnings": ["DATA NIESPÓJNA — data wystawienia faktury przed datą sprzedaży. Chyba że faktura zaliczkowa."] } { issue_date := object.get(input.invoice, "issue_date", ""); sale_date := object.get(input.invoice, "sale_date", ""); issue_date != ""; sale_date != ""; issue_date < sale_date; object.get(input.invoice, "prepayment_received", false) == false }
@@ -579,12 +804,45 @@ else := { "matched": true, "rule_id": "jdg.edge_cases.cfc_foreign_company", "pac
 else := { "matched": true, "rule_id": "jdg.edge_cases.cfc_passive_income_test", "package": "jdg.edge_cases", "priority": 676, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "cfc_passive_test_passed": true, "cfc_passive_pct": passive_pct, "_routing": "TRIAGE_QUEUE", "_routing_reason": "CFC — test dochodu pasywnego", "_legal_basis": "Art. 30f ust. 3 PIT", "_warnings": [sprintf("CFC TEST PASYWNY — %.1f%% dochodów pasywnych. >33%% + CIT<14.25%% za granicą = CFC. Dochód pasywny: odsetki, należności licencyjne, dywidendy, najem", [passive_pct])] } { passive_pct := object.get(input.jdg_entrepreneur, "cfc_passive_income_pct", 0); passive_pct > 33; object.get(input.jdg_entrepreneur, "cfc_foreign_tax_rate", 25) < 14.25 }
 
 # R0677: wht_jdg_foreign_service — Podatek u źródła od usług zagranicznych
-else := { "matched": true, "rule_id": "jdg.edge_cases.wht_foreign_service", "package": "jdg.edge_cases", "priority": 677, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false,    "wht_required": true, "wht_rate": wht_rate_pct,
-    "_routing": "TRIAGE_QUEUE", "_routing_reason": "Podatek u źródła (WHT) od usług zagranicznych",
+else := {
+    "matched": true,
+    "rule_id": "jdg.edge_cases.wht_foreign_service",
+    "package": "jdg.edge_cases",
+    "priority": 677,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "wht_required": true,
+    "wht_rate": wht_rate_pct,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "Podatek u źródła (WHT) od usług zagranicznych",
     "_legal_basis": "Art. 29 PIT w zw. z UPO",
-    "_warnings": [sprintf("WHT — podatek u źródła %.0f%% od płatności %.2f PLN do %s. Obowiązek: IFT-2R + wpłata do US do 7. dnia następnego miesiąca. Sprawdź UPO — może być zwolnienie lub obniżona stawka", [wht_rate_pct, amount_net, vendor_country])]
+    "_warnings": [sprintf("WHT — podatek u źródła %.0f%% od płatności %.2f PLN do %s. Obowiązek: IFT-2R + wpłata do US do 7. dnia następnego miesiąca.", [wht_rate_pct, amount_net, vendor_country])]
 } {
-    input.invoice.direction == "PURCHASE"; vendor_country := object.get(input.vendor, "country", "PL"); vendor_country != "PL"; input.invoice.expense_type in {"SERVICE", "CONSULTING", "ROYALTY", "LICENSE_FEE"}; amount_net := object.get(input.invoice, "amount_net", 0); amount_net > 0; wht_rate_pct = 20 { vendor_country == "NON_EU" }; wht_rate_pct = 0 { vendor_country in eu_edge_countries } }
+    input.invoice.direction == "PURCHASE"
+    vendor_country := object.get(input.vendor, "country", "PL")
+    vendor_country != "PL"
+    input.invoice.expense_type in {"SERVICE", "CONSULTING", "ROYALTY", "LICENSE_FEE"}
+    amount_net := object.get(input.invoice, "amount_net", 0)
+    amount_net > 0
+    wht_rate_pct := wht_rate_for(vendor_country)
+}
+
+wht_rate_for(country) = 0 if {
+    country in eu_edge_countries
+} else = 20 if {
+    true
+}
 
 # R0678: wht_foreign_dividend_interest — WHT od dywidend i odsetek
 else := { "matched": true, "rule_id": "jdg.edge_cases.wht_dividend_interest", "package": "jdg.edge_cases", "priority": 678, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "wht_required": true, "wht_rate": 19, "_routing": "TRIAGE_QUEUE", "_routing_reason": "WHT 19% od dywidend/odsetek z zagranicy", "_legal_basis": "Art. 30a PIT", "_warnings": ["WHT — dochody kapitałowe z zagranicy (dywidendy, odsetki, należności licencyjne). Stawka 19%% w PL. Odliczenie podatku zapłaconego za granicą wg UPO"] } { object.get(input.jdg_entrepreneur, "foreign_capital_income", 0) > 0 }
@@ -601,7 +859,36 @@ else := { "matched": true, "rule_id": "jdg.edge_cases.cross_border_posted_worker
 else := { "matched": true, "rule_id": "jdg.edge_cases.vat_reverse_charge_construction_ext", "package": "jdg.edge_cases", "priority": 682, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "reverse_charge_construction": true, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Odwrotne obciążenie — usługi budowlane Art. 17 ust. 1 pkt 8", "_legal_basis": "Art. 17 ust. 1 pkt 8 VAT, Załącznik nr 14", "_warnings": ["ODWROTNE OBCIĄŻENIE BUDOWLANE — nabywca rozlicza VAT. Sprzedawca: faktura bez VAT z adnotacją 'odwrotne obciążenie'. Dotyczy usług z Załącznika nr 14!"] } { input.invoice.service_type == "CONSTRUCTION"; input.vendor.is_company == true; input.invoice.reverse_charge_applies == true }
 
 # R0683: vat_wnt_intracommunity_acquisition_detailed — WNT szczegółowa walidacja
-else := { "matched": true, "rule_id": "jdg.edge_cases.vat_wnt_acquisition_detailed", "package": "jdg.edge_cases", "priority": 683, "vat_rate": "0.23", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "wnt_acquisition": true, "wnt_triangulation": triangulation, "_routing": "TRIAGE_QUEUE", "_routing_reason": "WNT — wewnątrzwspólnotowe nabycie towarów", "_legal_basis": "Art. 9-12 VAT", "_warnings": [sprintf("WNT — nabycie towarów z UE. %s. VAT należny i naliczony w tej samej deklaracji (Netto=0). Obowiązek VAT-UE do 15. dnia następnego miesiąca.", [triangulation_info])] } { input.invoice.procedure == "WNT"; has_triangulation := object.get(input.invoice, "wnt_is_triangulation", false); triangulation = "TRANSAKCJA TRÓJSTRONNA" { has_triangulation == true }; triangulation = "WNT standardowe" { has_triangulation == false }; triangulation_info = "Transakcja trójstronna — uproszczona procedura" { has_triangulation == true }; triangulation_info = "WNT standardowe — rozlicz VAT-23 + VAT-UE" { has_triangulation == false } }
+else := {
+    "matched": true,
+    "rule_id": "jdg.edge_cases.vat_wnt_acquisition_detailed",
+    "package": "jdg.edge_cases",
+    "priority": 683,
+    "vat_rate": "0.23",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "wnt_acquisition": true,
+    "wnt_triangulation": triangulation,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "WNT — wewnątrzwspólnotowe nabycie towarów",
+    "_legal_basis": "Art. 9-12 VAT",
+    "_warnings": [sprintf("WNT — nabycie towarów z UE. %s. VAT należny i naliczony w tej samej deklaracji (Netto=0). Obowiązek VAT-UE do 15. dnia następnego miesiąca.", [triangulation_info])]
+} {
+    input.invoice.procedure == "WNT"
+    has_triangulation := object.get(input.invoice, "wnt_is_triangulation", false)
+    triangulation := wnt_triangulation_label(has_triangulation)
+    triangulation_info := wnt_triangulation_info(has_triangulation)
+}
 
 # R0684: vat_export_0pct_documentation — Dokumentacja eksportu 0% VAT
 else := { "matched": true, "rule_id": "jdg.edge_cases.vat_export_0pct_documentation", "package": "jdg.edge_cases", "priority": 684, "vat_rate": "0.00", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "export_vat_0pct": true, "export_proof_required": true, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Eksport 0% VAT — wymagany dowód wywozu", "_legal_basis": "Art. 41 ust. 4-11 VAT", "_warnings": ["EKSPORT 0% VAT — wymagany dokument celny (IE-599 / komunikat IE-529) potwierdzający wywóz poza UE. Bez dokumentu: stawka krajowa 23%! Termin na uzyskanie: do upływu terminu złożenia deklaracji."] } { input.invoice.procedure == "EXPORT"; input.invoice.direction == "SALE"; input.vendor.country != "PL" }
@@ -622,7 +909,35 @@ else := { "matched": true, "rule_id": "jdg.edge_cases.vat_chain_transaction", "p
 else := { "matched": true, "rule_id": "jdg.edge_cases.vat_correction_invoice_mandatory", "package": "jdg.edge_cases", "priority": 689, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "correction_mandatory": true, "correction_reason": correction_reason_required, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Faktura korygująca — brak przyczyny korekty", "_legal_basis": "Art. 106j ust. 1 pkt 5 VAT", "_warnings": ["FAKTURA KORYGUJĄCA — OBOWIĄZKOWA przyczyna korekty! Art. 106j ust. 1 pkt 5: każda faktura korygująca musi zawierać przyczynę. Brak = faktura wadliwa."] } { input.invoice.document_type == "CORRECTION_INVOICE"; correction_reason := object.get(input.invoice, "correction_reason", ""); correction_reason == "" }
 
 # R0690: vat_split_payment_mpp_nuances — Split payment — niuanse
-else := { "matched": true, "rule_id": "jdg.edge_cases.vat_split_payment_nuances", "package": "jdg.edge_cases", "priority": 690, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "mpp_nuances": true, "mpp_voluntary_benefit": voluntary_benefit, "_routing": "", "_routing_reason": "", "_legal_basis": "Art. 108a-108f VAT", "_warnings": [sprintf("SPLIT PAYMENT — %s. Uwaga: MPP obowiązkowy tylko przy B2B >15k PLN brutto + towary z Załącznika 15. Dobrowolny MPP: brak sankcji, szybszy zwrot VAT (25 dni).", [voluntary_benefit])] } { input.invoice.payment_method == "SPLIT_PAYMENT"; is_voluntary := object.get(input.invoice, "mpp_is_voluntary", false); voluntary_benefit = "DOBROWOLNY — zwrot VAT w 25 dni zamiast 60" { is_voluntary == true }; voluntary_benefit = "OBOWIĄZKOWY — brak = sankcja 30% VAT" { is_voluntary == false } }
+else := {
+    "matched": true,
+    "rule_id": "jdg.edge_cases.vat_split_payment_nuances",
+    "package": "jdg.edge_cases",
+    "priority": 690,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "ceidg_registration_required": false,
+    "mpp_nuances": true,
+    "mpp_voluntary_benefit": voluntary_benefit,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Art. 108a-108f VAT",
+    "_warnings": [sprintf("SPLIT PAYMENT — %s. MPP obowiązkowy tylko przy B2B >15k PLN brutto + towary z Załącznika 15.", [voluntary_benefit])]
+} {
+    input.invoice.payment_method == "SPLIT_PAYMENT"
+    is_voluntary := object.get(input.invoice, "mpp_is_voluntary", false)
+    voluntary_benefit := mpp_benefit_for(is_voluntary)
+}
 
 # R0691: vat_bad_debt_creditor_90d_winddown — Złe długi — wygaszanie po 90 dniach
 else := { "matched": true, "rule_id": "jdg.edge_cases.vat_bad_debt_creditor_90d", "package": "jdg.edge_cases", "priority": 691, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "bad_debt_creditor": true, "bad_debt_deadline_days": 90, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Ulga na złe długi — wierzyciel, 90 dni (SLIM VAT 3)", "_legal_basis": "Art. 89a VAT (SLIM VAT 3)", "_warnings": [sprintf("ULGA NA ZŁE DŁUGI WIERZYCIELA — %d dni po terminie. SLIM VAT 3 skrócił z 150 do 90 dni! Warunki: (1) dłużnik nie w trakcie restrukturyzacji/upadłości, (2) min. 90 dni, (3) wierzytelność nie została zbyta.", [days_overdue])] } { input.invoice.direction == "SALE"; input.invoice.is_paid == false; days_overdue := object.get(input.invoice, "days_overdue", 0); days_overdue >= 90; days_overdue < 150; object.get(input.invoice, "bad_debt_documented", false) == true }
@@ -638,13 +953,6 @@ else := { "matched": true, "rule_id": "jdg.edge_cases.vat_incorrect_rate_correct
 
 # R0695: vat_group_consolidation — Grupa VAT — konsolidacja rozliczeń
 else := { "matched": true, "rule_id": "jdg.edge_cases.vat_group_consolidation", "package": "jdg.edge_cases", "priority": 695, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "vat_group_member": true, "vat_group_representative": group_rep, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Grupa VAT — wspólne rozliczenia od 2025", "_legal_basis": "Art. 15a VAT, Rozdział 1a (Grupy VAT od 2025)", "_warnings": [sprintf("GRUPA VAT — członek grupy VAT. Reprezentant: %s. Transakcje wewnątrz grupy = poza VAT. Jeden JPK_V7 dla całej grupy. Odpowiedzialność solidarna!", [group_rep])] } { object.get(input.jdg_entrepreneur, "vat_group_member", false) == true; group_rep := object.get(input.jdg_entrepreneur, "vat_group_representative", "") }
-
-# ── EU countries list (for cross-border WHT rules) ──────────────────────────
-eu_edge_countries := {
-    "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
-    "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
-    "PL", "PT", "RO", "SK", "SI", "ES", "SE"
-}
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  GRUPA F: R0623-R0645 — LIMITY I PROGI KWOTOWE (23 reguły)                ║
@@ -864,8 +1172,7 @@ else := {
     input.jdg_entrepreneur.tax_form == "LINEAR"
     health_paid := object.get(input.jdg_entrepreneur, "zus_health_paid_ytd", 0)
     health_paid > 10000
-    deduct = health_paid { health_paid <= data.jdg.thresholds.limits.health_linear_deduction_limit }
-    deduct = data.jdg.thresholds.limits.health_linear_deduction_limit { health_paid > data.jdg.thresholds.limits.health_linear_deduction_limit }
+    deduct := min([health_paid, data.jdg.thresholds.limits.health_linear_deduction_limit])
 }
 
 # R0634: limit_rd_relief_capped — Ulga B+R max 100% dochodu

@@ -2,25 +2,137 @@
 # NexusAI JDG Policies — Accounting: PKPiR, amortyzacja, leasing (P800-P870)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
-# title: Accounting Package — PKPiR Columns, Depreciation, Leasing, Mixed-Use
-# description: |
-#   PAS 7 Multi-Pass. First-Match-Wins else-chain. Obsługuje księgowość JDG:
-#   mapowanie na kolumny PKPiR (P800-P802), amortyzację liniową (P840) i
-#   jednorazową dla małych podatników (P842), wydatki mieszane: home office
-#   proporcjonalnie (P850), samochód 75%/50% bez ewidencji (P852), leasing
-#   operacyjny (P860), różnice kursowe (P870).
-# architecture: Multi-Pass PAS 7 (ADR-001)
-# legal_basis: Rozp. MF PKPiR, Art. 22a-22o PIT, Art. 86a VAT
-# edge_cases:
-#   - P842: tylko dla małych podatników + kwota ≤ 100k PLN
-#   - P850: home_office_area_percent musi być > 0
-#   - P852: private_use_percent > 0 AND has_mileage_log = false → 75% KUP/50% VAT
-# package: jdg.accounting
-# deprecated: false
+# Accounting Package — PKPiR, amortyzacja, leasing (P800-P870).
+# Metadata is kept as ordinary comments because the legacy edge_cases text is
+# not valid OPA annotation YAML.
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.accounting
+
+import future.keywords.if
+import future.keywords.in
 import data.jdg.helpers
+
+fx_table_for(invoice) := "C" if {
+    object.get(invoice, "is_customs_transaction", false) == true
+} else := "A" if {
+    object.get(invoice, "currency", "PLN") != "PLN"
+}
+
+fx_rate_for(currency, eur_pln, usd_pln, gbp_pln, chf_pln) := object.get({
+    "EUR": eur_pln,
+    "USD": usd_pln,
+    "GBP": gbp_pln,
+    "CHF": chf_pln,
+}, currency, 0)
+
+fx_amount_for(amount_foreign, rate) := floor(amount_foreign * rate * 100) / 100 if {
+    rate > 0
+} else := 0 if {
+    rate == 0
+}
+
+fx_routing_for(rate) := "" if {
+    rate > 0
+} else := "BLOCK_AND_ALERT" if {
+    rate == 0
+}
+
+fx_routing_reason_for(currency, rate) := "" if {
+    rate > 0
+} else := sprintf("Nieobsługiwana waluta: %s — brak kursu NBP", [currency]) if {
+    rate == 0
+}
+
+fx_warnings_for(currency, table, rate, amount_pln) := [sprintf("Transakcja %s: kurs z Tabeli %s NBP = %.4f PLN/%s. Kwota w PLN: %.2f", [currency, table, rate, currency, amount_pln])] if {
+    rate > 0
+} else := [sprintf("BLOKADA: waluta %s nieobsługiwana — dodaj kurs w data.thresholds lub użyj Tabeli C NBP", [currency])] if {
+    rate == 0
+}
+
+valuation_method_for(asset_type) := object.get({
+    "TANGIBLE": "PURCHASE_PRICE",
+    "FINANCIAL_INSTRUMENT": "FAIR_VALUE",
+    "SELF_MANUFACTURED": "PRODUCTION_COST",
+}, asset_type, "PURCHASE_PRICE")
+
+rmk_type_for(accrual_type) := object.get({
+    "PREPAID": "czynne",
+    "ACCRUED": "bierne",
+}, accrual_type, "")
+
+kst_classification_for(asset_category) := object.get({
+    "LAND": {"g": 0, "sg": 0},
+    "LAND_RIGHT": {"g": 0, "sg": 0},
+    "BUILDING": {"g": 1, "sg": 1},
+    "PREMISES": {"g": 1, "sg": 1},
+    "APARTMENT": {"g": 1, "sg": 1},
+    "CIVIL_STRUCTURE": {"g": 2, "sg": 1},
+    "BRIDGE": {"g": 2, "sg": 1},
+    "ROAD": {"g": 2, "sg": 1},
+    "MACHINERY": {"g": 4, "sg": 1},
+    "PRODUCTION_EQUIPMENT": {"g": 4, "sg": 1},
+    "COMPUTER": {"g": 4, "sg": 5},
+    "OFFICE_EQUIPMENT": {"g": 4, "sg": 4},
+    "CAR": {"g": 7, "sg": 1},
+    "TRUCK": {"g": 7, "sg": 2},
+    "MOTORCYCLE": {"g": 7, "sg": 3},
+    "TOOLS": {"g": 8, "sg": 2},
+    "FURNITURE": {"g": 8, "sg": 2},
+    "FIXTURES": {"g": 8, "sg": 2},
+    "SOFTWARE": {"g": 10, "sg": 1},
+    "PATENT": {"g": 10, "sg": 2},
+    "LICENSE": {"g": 10, "sg": 2},
+    "KNOW_HOW": {"g": 10, "sg": 3},
+}, asset_category, {"g": 0, "sg": 0})
+
+wnip_details_for(asset_category) := object.get({
+    "SOFTWARE": {"type": "software", "months": 24},
+    "PATENT": {"type": "patent", "months": 60},
+    "LICENSE": {"type": "license", "months": 60},
+    "KNOW_HOW": {"type": "know_how", "months": 60},
+    "GOODWILL": {"type": "goodwill", "months": 60},
+}, asset_category, {"type": "", "months": 0})
+
+remnant_valuation_for(method) := object.get({
+    "PURCHASE_PRICE": "cena nabycia",
+    "LOWER_OF_COST_OR_MARKET": "cena rynkowa (niższa od nabycia)",
+    "PRODUCTION_COST": "koszt wytworzenia",
+}, method, "")
+
+sample_route_for(amount) := {
+    "routing": "TRIAGE_QUEUE",
+    "reason": "Próbka > 200 PLN — może wymagać opodatkowania VAT",
+} if {
+    amount > 200
+} else := {"routing": "", "reason": ""} if {
+    amount <= 200
+}
+
+warehouse_route_for(reconciled) := {"routing": "", "reason": ""} if {
+    reconciled == true
+} else := {"routing": "TRIAGE_QUEUE", "reason": "Remanent — niezgodność między magazynami"} if {
+    reconciled == false
+}
+
+damage_route_for(amount) := {"routing": "TRIAGE_QUEUE", "reason": "Szkoda transportowa > 5000 PLN — wymagany protokół przewoźnika"} if {
+    amount > 5000
+} else := {"routing": "", "reason": ""} if {
+    amount <= 5000
+}
+
+change_pct_for(change, start) := 0 if {
+    start == 0
+} else := change / start * 100 if {
+    start > 0
+}
+
+dep_rate_for_group(group) := object.get({
+    "1": 2.5,
+    "7": 20.0,
+    "4": 30.0,
+    "3": 14.0,
+    "5": 20.0,
+}, sprintf("%d", [group]), 14.0)
 default decide := {"matched":true,"rule_id":"jdg.accounting.no_match","package":"jdg.accounting","priority":899,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","ceidg_registration_required":false,"_routing":"","_routing_reason":"","_legal_basis":"N/A — no accounting rule matched","_warnings":["Brak dopasowania reguły księgowej — transakcja nie wymaga specjalnego traktowania PKPiR/KŚT/UoR"]}
 
 # ── CORRECTED pkpir_map per Rozporządzenie MF PKPiR (17 columns) ──
@@ -62,7 +174,7 @@ decide := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Rozporządzenie MF w sprawie PKPiR",
     "_warnings":[]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     expense_type := object.get(input.invoice,"expense_type","OTHER_EXPENSES")
     col_num := object.get(pkpir_map,expense_type,15)
@@ -80,7 +192,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 20-21 rozporządzenia PKPiR",
     "_warnings":[]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.direction == "SALE"
     revenue_date := object.get(input.invoice,"issue_date","")
@@ -103,7 +215,7 @@ else := {
     "_routing":"BLOCK_AND_ALERT","_routing_reason":"Kolumna 1 PKPiR — brak ciągłości numeracji",
     "_legal_basis":"§ 10 ust. 1 rozporządzenia PKPiR",
     "_warnings":[sprintf("Kolumna 1 PKPiR: luka w numeracji — oczekiwano %d, otrzymano %d", [expected_lp, actual_lp])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     expected_lp := object.get(input.invoice,"pkpir_expected_lp",0)
     actual_lp := object.get(input.invoice,"pkpir_lp",0)
@@ -124,7 +236,7 @@ else := {
     "_routing":"BLOCK_AND_ALERT","_routing_reason":"Kolumna 2 PKPiR — niepoprawna data",
     "_legal_basis":"§ 10 ust. 1 pkt 2 rozporządzenia PKPiR",
     "_warnings":["Kolumna 2 PKPiR: data zdarzenia gospodarczego nie może być późniejsza niż data bieżąca"]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.transaction_date > input.invoice.current_date
 }
@@ -142,7 +254,7 @@ else := {
     "_routing":"TRIAGE_QUEUE","_routing_reason":"Kolumny 6/7 PKPiR — niespójność KUP",
     "_legal_basis":"§ 10 ust. 1 pkt 6-7, Art. 22 PIT",
     "_warnings":["Kolumny 6/7 PKPiR: wydatek zaklasyfikowany jako KUP pośredni mimo że dotyczy przychodów bieżących"]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     kup_type := object.get(input.invoice,"kus_qualification","")
     # KUP bezpośredni (kol. 6) tylko dla wydatków ściśle związanych z konkretnym przychodem
@@ -163,7 +275,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 10 ust. 1 pkt 10 rozporządzenia PKPiR",
     "_warnings":["Kol. 10 PKPiR: zakup towarów handlowych i materiałów — ujęto w kolumnie zakupów"]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type in {"GOODS_PURCHASE","MATERIALS","RAW_MATERIALS"}
     input.invoice.direction == "PURCHASE"
@@ -182,7 +294,7 @@ else := {
     "_routing":"TRIAGE_QUEUE","_routing_reason":"Kolumna 17 PKPiR — brak wymaganych uwag",
     "_legal_basis":"§ 10 ust. 1 pkt 17 rozporządzenia PKPiR",
     "_warnings":["Kol. 17 PKPiR: uwagi — wpisz opis nietypowej transakcji"]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.transaction_date >= "2025-01-01"
     input.invoice.expense_type in {"NON_KUP","PRIVATE_MIXED","FIXED_ASSET"}
@@ -204,7 +316,7 @@ else := {
     "_routing":"TRIAGE_QUEUE","_routing_reason":"Remanent śródroczny — rozbieżność wymaga wyjaśnienia",
     "_legal_basis":"§ 27-29 rozporządzenia PKPiR",
     "_warnings":[sprintf("REMANENT ŚRÓDROCZNY: pocz. %.2f PLN ≠ końc. poprzedniego okresu %.2f PLN (różnica %.2f PLN). Wyjaśnij rozbieżność.", [remnant_start, remnant_prev_end, remnant_diff])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     # P816 uruchamia się tylko dla kontroli śródrocznych (NIE na początek roku — to R0472)
     input.invoice.is_year_start == false
@@ -228,7 +340,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 86 § 1 OrdPU, art. 74 UoR",
     "_warnings":[sprintf("ARCHIWIZACJA PKPiR za %s — termin przechowywania upływa %s. Nie niszcz przed tym terminem!", [tax_year, retention_deadline])]
-} {
+} if {
     # P817 uruchamia się TYLKO przy zdarzeniu archiwizacji, nie przy każdej transakcji
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_archive_event == true
@@ -250,7 +362,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 24 PIT, § 20-21 rozporządzenia PKPiR",
     "_warnings":[]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     is_period_end := object.get(input.invoice,"is_period_end",false)
     is_period_end == true
@@ -278,7 +390,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 20 rozporządzenia PKPiR",
     "_warnings":[]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.direction == "PURCHASE"
     expense_date := object.get(input.invoice,"issue_date","")
@@ -302,7 +414,7 @@ else := {
     "_routing":"TRIAGE_QUEUE","_routing_reason":"Kol. 7 PKPiR — przychód spoza JDG",
     "_legal_basis":"§ 10 ust. 1 pkt 7 rozporządzenia PKPiR",
     "_warnings":["Kol. 7 PKPiR: sprzedaż towarów i usług — ujmij tylko przychody z działalności JDG. Nie uwzględniaj: najmu prywatnego, sprzedaży majątku osobistego, odsetek bankowych."]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.pkpi_col7_entry > 0
     input.invoice.transaction_type in {"PRIVATE_RENTAL","PERSONAL_ASSET_SALE","BANK_INTEREST"}
@@ -320,7 +432,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 10 ust. 1 pkt 8 rozporządzenia PKPiR",
     "_warnings":[sprintf("Kol. 8 PKPiR: pozostałe przychody — %.2f PLN. Obejmuje: dotacje, refundacje, odszkodowania związane z działalnością, różnice kursowe dodatnie.",[col8_value])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     col8_value := object.get(input.invoice,"pkpir_col8_total",0)
     col8_value > 0
@@ -338,7 +450,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 10 ust. 1 pkt 10 rozporządzenia PKPiR",
     "_warnings":["Kol. 10 PKPiR: zakup towarów i materiałów wg cen nabycia. NIE wrzucaj tu ŚT >10k PLN — to kol. 15!"]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type in {"GOODS_PURCHASE","MATERIALS","RAW_MATERIALS"}
     input.invoice.direction == "PURCHASE"
@@ -358,7 +470,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 10 ust. 1 pkt 11 rozporządzenia PKPiR",
     "_warnings":["Kol. 11 PKPiR: koszty uboczne zakupu — transport, załadunek, ubezpieczenie w drodze, cło, opakowania."]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type in {"TRANSPORT_IN","INSURANCE_TRANSIT","CUSTOMS_DUTY","PACKAGING"}
 }
@@ -375,7 +487,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 10 ust. 1 pkt 12 rozporządzenia PKPiR",
     "_warnings":["Kol. 12 PKPiR: wynagrodzenia BRUTTO + składki ZUS pracodawcy. NIE obejmuje: wynagrodzenia własnego JDG (to NIE jest KUP)."]
-} {
+} if {
     input.employment.has_employees == true
     input.invoice.expense_type == "SALARIES"
     input.invoice.is_own_wage == true
@@ -393,7 +505,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 10 ust. 1 pkt 13 rozporządzenia PKPiR",
     "_warnings":[sprintf("Kol. 13 PKPiR: pozostałe wydatki — %.2f PLN. Kategoria: %s. Uwzględniaj TYLKO wydatki firmowe.",[expense_amount,expense_cat])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type in {"RENT","UTILITIES","OFFICE_SUPPLIES","SOFTWARE","TELECOMMUNICATIONS","MARKETING","LEGAL_SERVICES","ACCOUNTING_SERVICES","CONSULTING","TRAINING"}
     expense_amount := object.get(input.invoice,"amount_net",0)
@@ -413,7 +525,7 @@ else := {
     "_routing":"TRIAGE_QUEUE","_routing_reason":"Koszt NKUP — nie obniża dochodu",
     "_legal_basis":"Art. 23 PIT",
     "_warnings":[sprintf("NKUP: %.2f PLN (%s). Nie obniża dochodu. Przykłady: reprezentacja, kary, odsetki budżetowe, darowizny.",[nkup_amount,nkup_reason])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.kus_qualification == "NKUP"
     nkup_amount := object.get(input.invoice,"amount_net",0)
@@ -433,7 +545,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 10 ust. 1 pkt 15 rozporządzenia PKPiR",
     "_warnings":[sprintf("Kol. 15 PKPiR / Wartość początkowa ŚT: %.2f PLN. Amortyzacja w kol. 16.",[depreciation_amount])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "FIXED_ASSET"
     input.invoice.is_depreciation_entry == true
@@ -455,7 +567,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 27 rozporządzenia PKPiR",
     "_warnings":[sprintf("REMANENT PKPiR: pocz. %.2f PLN, końc. %.2f PLN. Wpływ na dochód: %.2f PLN. Remanent końcowy WIĘKSZY od początkowego → ZWIĘKSZA dochód.",[remnant_start,remnant_end,remnant_end-remnant_start])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_period_end == true
     remnant_start := object.get(input.invoice,"remnant_start_value",0)
@@ -475,7 +587,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 10 ust. 1 pkt 17 rozporządzenia PKPiR",
     "_warnings":["Kol. 17 PKPiR: UWAGI — opisz nietypowe transakcje: eksport, odwrotne obciążenie, korekty, transakcje walutowe."]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     has_notes := object.get(input.invoice,"pkpir_has_unusual_transaction",false)
     has_notes == true
@@ -496,7 +608,7 @@ else := {
     "_routing":"TRIAGE_QUEUE","_routing_reason":"PKPiR — niespójność suma przychodów ≠ suma kosztów + remanent",
     "_legal_basis":"§ 10-21 rozporządzenia PKPiR, Art. 24 PIT",
     "_warnings":[sprintf("SPÓJNOŚĆ PKPiR: przychody (kol.7+8)=%.2f PLN, koszty (kol.10+11+12+13)=%.2f PLN, remanent Δ=%.2f PLN. Dochód=%.2f PLN. Sprawdź czy remanent poprawnie ujęty.",[total_revenue,total_costs,remnant_delta,total_revenue-total_costs+remnant_delta])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_period_end == true
     col7 := object.get(input.invoice,"pkpir_col7_total",0)   # sprzedaż
@@ -528,7 +640,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 22a-22o PIT, Rozporządzenie RM KŚT",
     "_warnings":[sprintf("Amortyzacja liniowa — KŚT grupa %d, stawka %.1f%%", [kst_group, depreciation_rate * 100])]
-} {
+} if {
     input.invoice.expense_type == "FIXED_ASSET"
     kst_group := object.get(input.invoice,"kst_group",0)
     kst_subgroup := object.get(input.invoice,"kst_subgroup",0)
@@ -595,7 +707,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 22k ust. 7 PIT",
     "_warnings":["Jednorazowa amortyzacja — limit 50 000 EUR rocznie dla małych podatników"]
-} {
+} if {
     input.jdg_entrepreneur.is_small_taxpayer == true
     input.invoice.expense_type == "FIXED_ASSET"
     input.invoice.amount_net <= 100000
@@ -614,7 +726,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 22 ust. 1 PIT, Art. 86 ust. 1 VAT",
     "_warnings":["Home office — KUP i VAT proporcjonalnie do powierzchni firmowej"]
-} {
+} if {
     input.invoice.is_home_office == true
     ho_pct := object.get(input.invoice,"home_office_area_percent",0)
     ho_pct > 0
@@ -634,7 +746,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 23 ust. 1 pkt 46 PIT, Art. 86a VAT",
     "_warnings":["Samochód bez ewidencji przebiegu — KUP 75%, VAT 50%"]
-} {
+} if {
     input.invoice.category_code == "CAR"
     input.invoice.private_use_percent > 0
     input.invoice.has_mileage_log == false
@@ -652,7 +764,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 22 ust. 1 PIT",
     "_warnings":[]
-} {
+} if {
     input.invoice.expense_type == "LEASE"
     input.invoice.lease_type == "OPERATING"
 }
@@ -673,7 +785,7 @@ else := {
     "_routing":fx_routing,"_routing_reason":fx_routing_reason,
     "_legal_basis":"Art. 14c, art. 24 ust. 2 PIT",
     "_warnings":fx_warnings
-} {
+} if {
     input.invoice.currency != "PLN"
     invoice_currency := input.invoice.currency
     amount_foreign := input.invoice.amount_gross
@@ -682,39 +794,20 @@ else := {
     # Tabela A: kursy średnie (domyślnie dla PIT/VAT)
     # Tabela B: kursy średnie walut UE (statystyczne)
     # Tabela C: kursy celne (import/eksport, SAD)
-    fx_table = "A" {
-        input.invoice.currency != "PLN"
-    }
-    fx_table = "C" {
-        input.invoice.is_customs_transaction == true
-    }
+    fx_table := fx_table_for(input.invoice)
 
     # Pobierz kurs z data.thresholds (dzień roboczy poprzedzający)
-    fx_rate := object.get(object.get(object.get(data.thresholds,"jdg",{}),"rates",{}),"forex",{})
-    eur_pln := object.get(fx_rate,"eur_pln",4.5000)
-    usd_pln := object.get(fx_rate,"usd_pln",3.8500)
-    gbp_pln := object.get(fx_rate,"gbp_pln",5.2500)
-    chf_pln := object.get(fx_rate,"chf_pln",4.6500)
+    forex_rates := object.get(object.get(object.get(data.thresholds,"jdg",{}),"rates",{}),"forex",{})
 
-    rate = eur_pln { invoice_currency == "EUR" }
-    rate = usd_pln { invoice_currency == "USD" }
-    rate = gbp_pln { invoice_currency == "GBP" }
-    rate = chf_pln { invoice_currency == "CHF" }
-    # Fallback: nieobsługiwana waluta — zablokuj transakcję
-    rate = 0 { not invoice_currency in {"EUR","USD","GBP","CHF"} }
-
-    fx_rate = rate
-    # Jeśli rate=0 (nieobsługiwana waluta), ustaw BLOCK
-    amount_pln = floor(amount_foreign * fx_rate * 100) / 100 { fx_rate > 0 }
-    amount_pln = 0 { fx_rate == 0 }
-
-    # Routing i ostrzeżenia zależne od tego czy waluta jest obsługiwana
-    fx_routing = "" { fx_rate > 0 }
-    fx_routing = "BLOCK_AND_ALERT" { fx_rate == 0 }
-    fx_routing_reason = "" { fx_rate > 0 }
-    fx_routing_reason = sprintf("Nieobsługiwana waluta: %s — brak kursu NBP", [invoice_currency]) { fx_rate == 0 }
-    fx_warnings = [sprintf("Transakcja %s: kurs z Tabeli %s NBP = %.4f PLN/%s. Kwota w PLN: %.2f", [invoice_currency, fx_table, fx_rate, invoice_currency, amount_pln])] { fx_rate > 0 }
-    fx_warnings = [sprintf("BLOKADA: waluta %s nieobsługiwana — dodaj kurs w data.thresholds lub użyj Tabeli C NBP", [invoice_currency])] { fx_rate == 0 }
+    eur_pln := object.get(forex_rates,"eur_pln",4.5000)
+    usd_pln := object.get(forex_rates,"usd_pln",3.8500)
+    gbp_pln := object.get(forex_rates,"gbp_pln",5.2500)
+    chf_pln := object.get(forex_rates,"chf_pln",4.6500)
+    fx_rate := fx_rate_for(invoice_currency, eur_pln, usd_pln, gbp_pln, chf_pln)
+    amount_pln := fx_amount_for(amount_foreign, fx_rate)
+    fx_routing := fx_routing_for(fx_rate)
+    fx_routing_reason := fx_routing_reason_for(invoice_currency, fx_rate)
+    fx_warnings := fx_warnings_for(invoice_currency, fx_table, fx_rate, amount_pln)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -734,7 +827,7 @@ else := {
     "_routing":"TRIAGE_QUEUE","_routing_reason":"Inwentaryzacja roczna wymagana — Art. 26 UoR",
     "_legal_basis":"Art. 26-27 Ustawy o rachunkowości",
     "_warnings":[sprintf("INWENTARYZACJA ROCZNA — termin: %s. Spis z natury, potwierdzenie sald, weryfikacja dokumentów.", [deadline])]
-} {
+} if {
     is_year_end := object.get(input.invoice,"is_year_end",false)
     is_year_end == true
     tax_year := object.get(input.invoice,"tax_year","")
@@ -754,13 +847,12 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 28-34 Ustawy o rachunkowości",
     "_warnings":[sprintf("Wycena aktywów — metoda: %s (cena nabycia / koszt wytworzenia / wartość godziwa)", [valuation_method])]
-} {
+} if {
     input.jdg_entrepreneur.uses_uor == true
     input.invoice.expense_type == "FIXED_ASSET"
     asset_type := object.get(input.invoice,"asset_type","TANGIBLE")
-    valuation_method = "PURCHASE_PRICE" { asset_type == "TANGIBLE" }
-    valuation_method = "FAIR_VALUE" { asset_type == "FINANCIAL_INSTRUMENT" }
-    valuation_method = "PRODUCTION_COST" { asset_type == "SELF_MANUFACTURED" }
+    asset_type in {"TANGIBLE", "FINANCIAL_INSTRUMENT", "SELF_MANUFACTURED"}
+    valuation_method := valuation_method_for(asset_type)
 }
 
 # P877: uor_accruals_deferrals — Rozliczenia międzyokresowe RMK (Art. 39 UoR)
@@ -776,11 +868,11 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 39 Ustawy o rachunkowości",
     "_warnings":[sprintf("RMK %s: %.2f PLN — rozliczenie międzyokresowe", [rmk_type, rmk_amount])]
-} {
+} if {
     input.jdg_entrepreneur.uses_uor == true
     input.invoice.is_accrual == true
-    rmk_type = "czynne" { input.invoice.accrual_type == "PREPAID" }
-    rmk_type = "bierne" { input.invoice.accrual_type == "ACCRUED" }
+    input.invoice.accrual_type in {"PREPAID", "ACCRUED"}
+    rmk_type := rmk_type_for(input.invoice.accrual_type)
     rmk_amount := object.get(input.invoice,"accrual_amount",0)
 }
 
@@ -797,7 +889,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 45-52 Ustawy o rachunkowości",
     "_warnings":[sprintf("Sprawozdanie finansowe za %s — termin: %s. Bilans + RZiS + informacja dodatkowa.", [tax_year, deadline])]
-} {
+} if {
     input.jdg_entrepreneur.annual_revenue_eur > 2000000
     is_year_end := object.get(input.invoice,"is_year_end",false)
     is_year_end == true
@@ -818,7 +910,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 74 Ustawy o rachunkowości",
     "_warnings":["Dokumenty księgowe — 5 lat od końca roku + 5 lat po zakończeniu działalności"]
-} {
+} if {
     input.jdg_entrepreneur.uses_uor == true
     input.invoice.is_year_end == true
 }
@@ -840,33 +932,15 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Rozporządzenie RM z 30.12.1999 w sprawie KŚT",
     "_warnings":[sprintf("KŚT: grupa %d, podgrupa %d", [kst_g, kst_sg])]
-} {
+} if {
     input.invoice.expense_type == "FIXED_ASSET"
     asset_category := object.get(input.invoice,"asset_category","")
+    asset_category in {"LAND", "LAND_RIGHT", "BUILDING", "PREMISES", "APARTMENT", "CIVIL_STRUCTURE", "BRIDGE", "ROAD", "MACHINERY", "PRODUCTION_EQUIPMENT", "COMPUTER", "OFFICE_EQUIPMENT", "CAR", "TRUCK", "MOTORCYCLE", "TOOLS", "FURNITURE", "FIXTURES", "SOFTWARE", "PATENT", "LICENSE", "KNOW_HOW"}
 
     # Automatyczna klasyfikacja KŚT na podstawie kategorii środka trwałego
-    kst_g = 0 { asset_category in {"LAND","LAND_RIGHT"} }
-    kst_sg = 0 { asset_category in {"LAND","LAND_RIGHT"} }
-    kst_g = 1 { asset_category in {"BUILDING","PREMISES","APARTMENT"} }
-    kst_sg = 1 { asset_category in {"BUILDING","PREMISES","APARTMENT"} }
-    kst_g = 2 { asset_category in {"CIVIL_STRUCTURE","BRIDGE","ROAD"} }
-    kst_sg = 1 { asset_category in {"CIVIL_STRUCTURE","BRIDGE","ROAD"} }
-    kst_g = 4 { asset_category in {"MACHINERY","PRODUCTION_EQUIPMENT"} }
-    kst_sg = 1 { asset_category in {"MACHINERY","PRODUCTION_EQUIPMENT"} }
-    kst_g = 4 { asset_category == "COMPUTER" }
-    kst_sg = 5 { asset_category == "COMPUTER" }
-    kst_g = 4 { asset_category == "OFFICE_EQUIPMENT" }
-    kst_sg = 4 { asset_category == "OFFICE_EQUIPMENT" }
-    kst_g = 7 { asset_category in {"CAR","TRUCK","MOTORCYCLE"} }
-    kst_sg = 1 { asset_category == "CAR" }
-    kst_sg = 2 { asset_category == "TRUCK" }
-    kst_sg = 3 { asset_category == "MOTORCYCLE" }
-    kst_g = 8 { asset_category in {"TOOLS","FURNITURE","FIXTURES"} }
-    kst_sg = 2 { asset_category in {"TOOLS","FURNITURE","FIXTURES"} }
-    kst_g = 10 { asset_category in {"SOFTWARE","PATENT","LICENSE","KNOW_HOW"} }
-    kst_sg = 1 { asset_category == "SOFTWARE" }
-    kst_sg = 2 { asset_category in {"PATENT","LICENSE"} }
-    kst_sg = 3 { asset_category == "KNOW_HOW" }
+    kst_classification := kst_classification_for(asset_category)
+    kst_g := object.get(kst_classification, "g", 0)
+    kst_sg := object.get(kst_classification, "sg", 0)
 }
 
 # P881: depreciation_rate_assignment — Przypisanie stawki z walidacją KŚT
@@ -882,7 +956,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 22i PIT, Załącznik nr 1 do ustawy PIT",
     "_warnings":[sprintf("Stawka amortyzacji: %.1f%% rocznie (okres: %.0f lat)", [rate*100, years])]
-} {
+} if {
     input.invoice.expense_type == "FIXED_ASSET"
     rate := object.get(input.invoice,"depreciation_rate",0.20)
     rate > 0
@@ -902,20 +976,14 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 22b, art. 22m PIT",
     "_warnings":[sprintf("WNiP: %s — amortyzacja przez %d miesięcy", [wnip_type, months])]
-} {
+} if {
     input.invoice.expense_type == "INTANGIBLE_ASSET"
     asset_category := object.get(input.invoice,"asset_category","")
+    asset_category in {"SOFTWARE", "PATENT", "LICENSE", "KNOW_HOW", "GOODWILL"}
 
-    wnip_type = "software" { asset_category == "SOFTWARE" }
-    months = 24 { asset_category == "SOFTWARE" }
-    wnip_type = "patent" { asset_category == "PATENT" }
-    months = 60 { asset_category == "PATENT" }
-    wnip_type = "license" { asset_category == "LICENSE" }
-    months = 60 { asset_category == "LICENSE" }
-    wnip_type = "know_how" { asset_category == "KNOW_HOW" }
-    months = 60 { asset_category == "KNOW_HOW" }
-    wnip_type = "goodwill" { asset_category == "GOODWILL" }
-    months = 60 { asset_category == "GOODWILL" }
+    wnip_details := wnip_details_for(asset_category)
+    wnip_type := object.get(wnip_details, "type", "")
+    months := object.get(wnip_details, "months", 0)
 }
 
 # P883: one_time_depreciation_eligibility — Jednorazowa amortyzacja dla ≤10k PLN
@@ -931,7 +999,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 22d ust. 1 PIT",
     "_warnings":[sprintf("Jednorazowa amortyzacja — wartość %.2f PLN ≤ 10 000 PLN", [asset_value])]
-} {
+} if {
     input.invoice.expense_type == "FIXED_ASSET"
     asset_value := object.get(input.invoice,"amount_net",0)
     asset_value <= 10000
@@ -952,7 +1020,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 22g ust. 17 PIT",
     "_warnings":[sprintf("ULEPSZENIE %.2f PLN > 10 000 PLN — podwyższa wartość początkową środka trwałego!", [improvement_cost])]
-} {
+} if {
     input.invoice.expense_type == "FIXED_ASSET_IMPROVEMENT"
     improvement_cost := object.get(input.invoice,"amount_net",0)
     improvement_cost > 10000
@@ -975,7 +1043,7 @@ else := {
     "_routing":"BLOCK_AND_ALERT","_routing_reason":"Remanent — brak ciągłości między latami",
     "_legal_basis":"§ 27-29 rozporządzenia PKPiR",
     "_warnings":[sprintf("REMANENT ROCZNY: pocz. %.2f ≠ końc. poprzedniego %.2f (różnica %.2f PLN). Korekta wymagana!", [rem_start_year, rem_end_prev_year, diff])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     is_year_start := object.get(input.invoice,"is_year_start",false)
     is_year_start == true
@@ -999,13 +1067,12 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 29 rozporządzenia PKPiR, Art. 24 ust. 2 PIT",
     "_warnings":[sprintf("Wycena remanentu: %s", [valuation])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_period_end == true
     remnant_v := object.get(input.invoice,"remnant_valuation_method","")
-    valuation = "cena nabycia" { remnant_v == "PURCHASE_PRICE" }
-    valuation = "cena rynkowa (niższa od nabycia)" { remnant_v == "LOWER_OF_COST_OR_MARKET" }
-    valuation = "koszt wytworzenia" { remnant_v == "PRODUCTION_COST" }
+    remnant_v in {"PURCHASE_PRICE", "LOWER_OF_COST_OR_MARKET", "PRODUCTION_COST"}
+    valuation := remnant_valuation_for(remnant_v)
 }
 
 # R0474: remnant_liquidation_inventory — Remanent likwidacyjny
@@ -1021,7 +1088,7 @@ else := {
     "_routing":"BLOCK_AND_ALERT","_routing_reason":"Remanent likwidacyjny — koniec działalności",
     "_legal_basis":"Art. 24 ust. 3 PIT, § 27-29 PKPiR",
     "_warnings":[sprintf("REMANENT LIKWIDACYJNY — przychód z likwidacji: %.2f PLN. Obowiązek sporządzenia w dniu zakończenia działalności!", [liquidation_income])]
-} {
+} if {
     input.jdg_entrepreneur.business_closing == true
     remnant_value := object.get(input.invoice,"remnant_end_value",0)
     remnant_value > 0
@@ -1041,7 +1108,7 @@ else := {
     "_routing":"TRIAGE_QUEUE","_routing_reason":"Ubytki remanentowe — wymagane udokumentowanie",
     "_legal_basis":"§ 28 rozporządzenia PKPiR",
     "_warnings":[sprintf("UBYTKI REMANENTOWE: %.2f PLN — udokumentuj przyczynę (zniszczenie, kradzież, przeterminowanie)", [loss_amount])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "INVENTORY_LOSS"
     loss_amount := object.get(input.invoice,"amount_net",0)
@@ -1061,7 +1128,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 14 ust. 2 PIT, § 29 ust. 2 rozporządzenia PKPiR",
     "_warnings":[sprintf("KOREKTA REMANENTU — wycena rynkowa %.2f PLN vs księgowa %.2f PLN (różnica: %.2f PLN)", [market_val, book_val, adjustment])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_period_end == true
     book_val := object.get(input.invoice,"remnant_book_value",0)
@@ -1084,7 +1151,7 @@ else := {
     "_routing":"BLOCK_AND_ALERT","_routing_reason":"Brak protokołu zniszczenia/likwidacji towarów",
     "_legal_basis":"§ 28 ust. 4 rozporządzenia PKPiR, Art. 24 ust. 2 PIT",
     "_warnings":["PROTOKÓŁ ZNISZCZENIA WYMAGANY — towary uszkodzone/przeterminowane muszą być udokumentowane komisyjnym protokołem likwidacji"]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "INVENTORY_DISPOSAL"
     input.invoice.has_disposal_protocol == false
@@ -1103,7 +1170,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 24 ust. 2 PIT, § 27 rozporządzenia PKPiR",
     "_warnings":[sprintf("KOREKTA PIT O REMANENT: %.2f PLN (końcowy=%.2f, początkowy=%.2f)", [correction, rem_end, rem_start])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_period_end == true
     # Oblicz korektę dochodu o różnicę remanentową
@@ -1127,7 +1194,7 @@ else := {
     "_routing":"TRIAGE_QUEUE","_routing_reason":"Spis z natury — obowiązek na koniec roku",
     "_legal_basis":"§ 27 ust. 1 rozporządzenia PKPiR",
     "_warnings":[sprintf("SPIS Z NATURY — termin: %s. Obejmuje: towary handlowe, materiały, półprodukty, wyroby gotowe, braki.", [deadline])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_year_end == true
     tax_year := object.get(input.invoice,"tax_year","")
@@ -1147,7 +1214,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 27 ust. 3 rozporządzenia PKPiR",
     "_warnings":[sprintf("TOWARY W DRODZE: %.2f PLN — ujęte w remanencie na podstawie dokumentów dostawy", [transit_value])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     transit_value := object.get(input.invoice,"goods_in_transit_value",0)
     transit_value > 0
@@ -1166,7 +1233,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 27 ust. 4 rozporządzenia PKPiR",
     "_warnings":[sprintf("TOWARY OBCE — %.2f PLN (komis/konsygnacja) NIE są ujmowane w remanencie własnym", [third_party_val])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     third_party_val := object.get(input.invoice,"third_party_goods_value",0)
     third_party_val > 0
@@ -1185,7 +1252,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 27 ust. 2 rozporządzenia PKPiR",
     "_warnings":[sprintf("TOWARY WŁASNE W OBECYM POSIADANIU: %.2f PLN — ujęte w remanencie mimo że fizycznie u kontrahenta", [consignment_val])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     consignment_val := object.get(input.invoice,"own_goods_at_third_party",0)
     consignment_val > 0
@@ -1204,7 +1271,7 @@ else := {
     "_routing":"TRIAGE_QUEUE","_routing_reason":"Odpis przeterminowanych zapasów — wymagane zatwierdzenie",
     "_legal_basis":"Art. 24 ust. 2 PIT w zw. z Art. 22 ust. 1 PIT",
     "_warnings":[sprintf("ODPIS ZAPASÓW: %.2f PLN — towary przeterminowane > %d dni. Wymagane zatwierdzenie przez właściciela.", [write_off, expiry_days])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "INVENTORY_WRITE_OFF"
     write_off := object.get(input.invoice,"amount_net",0)
@@ -1226,7 +1293,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 23 ust. 1 pkt 11 PIT, Art. 7 ust. 2 VAT",
     "_warnings":[sprintf("DAROWIZNA TOWARÓW: %.2f PLN — NIE stanowi KUP. Udokumentuj protokołem przekazania + umową darowizny.", [donation_val])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "INVENTORY_DONATION"
     donation_val := object.get(input.invoice,"amount_net",0)
@@ -1246,7 +1313,7 @@ else := {
     "_routing":"BLOCK_AND_ALERT","_routing_reason":"Kradzież towarów — brak zgłoszenia policyjnego",
     "_legal_basis":"Art. 23 ust. 1 pkt 5 PIT, § 28 rozporządzenia PKPiR",
     "_warnings":[sprintf("KRADZIEŻ TOWARÓW: %.2f PLN — wymagane zgłoszenie na policję + protokół szkody. Bez dokumentu NIE stanowi KUP.", [theft_val])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "INVENTORY_THEFT"
     theft_val := object.get(input.invoice,"amount_net",0)
@@ -1267,7 +1334,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 28 ust. 2 rozporządzenia PKPiR",
     "_warnings":[sprintf("UBYTKI NATURALNE: %.1f%% (%.2f PLN) — mieszczą się w normie. KUP zachowany.", [decay_pct, decay_val])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "INVENTORY_NATURAL_DECAY"
     decay_val := object.get(input.invoice,"amount_net",0)
@@ -1291,7 +1358,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 28 rozporządzenia PKPiR",
     "_warnings":[sprintf("ODPADY PRODUKCYJNE: %.2f PLN — ewidencjonowane jako KUP. Technologicznie uzasadnione.", [waste_val])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "PRODUCTION_WASTE"
     waste_val := object.get(input.invoice,"amount_net",0)
@@ -1312,18 +1379,16 @@ else := {
     "_routing_reason":routing_reason,
     "_legal_basis":"Art. 7 ust. 1-2 VAT, Art. 23 ust. 1 pkt 11 PIT",
     "_warnings":[sprintf("PRÓBKI/UPOMINKI: %d szt. × %.2f PLN = %.2f PLN. Limit zwolnienia z VAT: 200 PLN/szt. (bez limitu ilości dla próbek).", [qty, unit_val, total_val])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "INVENTORY_SAMPLE"
     unit_val := object.get(input.invoice,"amount_net",0)
     qty := object.get(input.invoice,"quantity",1)
     total_val := unit_val * qty
     total_val > 0
-    # Rego: inkrementalne definicje zamiast ternary ?:
-    routing_val = "TRIAGE_QUEUE" { unit_val > 200 }
-    routing_val = "" { unit_val <= 200 }
-    routing_reason = "Próbka > 200 PLN — może wymagać opodatkowania VAT" { unit_val > 200 }
-    routing_reason = "" { unit_val <= 200 }
+    sample_route := sample_route_for(unit_val)
+    routing_val := object.get(sample_route, "routing", "")
+    routing_reason := object.get(sample_route, "reason", "")
 }
 
 # R0489: remnant_consignment_return — Zwrot towarów z komisu
@@ -1339,7 +1404,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 27 rozporządzenia PKPiR",
     "_warnings":[sprintf("ZWROT Z KOMISU: %.2f PLN — towary wracają do remanentu własnego. Aktualizuj stan magazynowy.", [ret_val])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "CONSIGNMENT_RETURN"
     ret_val := object.get(input.invoice,"amount_net",0)
@@ -1359,7 +1424,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 29 rozporządzenia PKPiR, Art. 86 § 1 OrdPU",
     "_warnings":[sprintf("ARCHIWIZACJA REMANENTU: ID=%s — przechowuj przez 5 lat od końca roku", [archive_id])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_period_end == true
     tax_year := object.get(input.invoice,"tax_year","")
@@ -1380,7 +1445,7 @@ else := {
     "_routing":"TRIAGE_QUEUE","_routing_reason":"Anomalia remanentowa — zmiana YoY > 50%",
     "_legal_basis":"§ 27-29 rozporządzenia PKPiR",
     "_warnings":[sprintf("REMANENT YoY: zmiana o %.1f%% (%.2f → %.2f PLN). Zweryfikuj poprawność spisu!", [yoy_pct, prev_year_val, current_year_val])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_year_end == true
     current_year_val := object.get(input.invoice,"remnant_end_value",0)
@@ -1404,7 +1469,7 @@ else := {
     "_routing_reason":routing_reason,
     "_legal_basis":"§ 27 rozporządzenia PKPiR",
     "_warnings":[sprintf("UZGODNIENIE MAGAZYNÓW: %d magazynów, suma=%.2f PLN, niezgodność=%.2f PLN", [wh_count, total_sum, discrepancy])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_period_end == true
     wh_count := object.get(input.invoice,"warehouse_count",0)
@@ -1412,11 +1477,9 @@ else := {
     total_sum := object.get(input.invoice,"remnant_end_value",0)
     wh_count > 1
     all_reconciled = (discrepancy == 0)
-    # Rego: inkrementalne definicje zamiast ternary ?:
-    routing_val = "" { all_reconciled == true }
-    routing_val = "TRIAGE_QUEUE" { all_reconciled == false }
-    routing_reason = "" { all_reconciled == true }
-    routing_reason = "Remanent — niezgodność między magazynami" { all_reconciled == false }
+    warehouse_route := warehouse_route_for(all_reconciled)
+    routing_val := object.get(warehouse_route, "routing", "")
+    routing_reason := object.get(warehouse_route, "reason", "")
 }
 
 # R0493: remnant_fx_foreign_goods — Wycena towarów z importu w PLN
@@ -1432,7 +1495,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 24 ust. 2 PIT, § 29 rozporządzenia PKPiR",
     "_warnings":[sprintf("TOWARY Z IMPORTU: %.2f %s × kurs %.4f = %.2f PLN (Tabela A NBP z dnia poprzedzającego spis)", [value_fx, currency, fx_rate, value_pln])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_period_end == true
     currency := object.get(input.invoice,"remnant_fx_currency","")
@@ -1457,7 +1520,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 29 ust. 2 rozporządzenia PKPiR",
     "_warnings":[sprintf("PRZECENA SEZONOWA: -%.0f%% (%.2f PLN). Wycena wg niższej wartości rynkowej.", [markdown, markdown_val])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "INVENTORY_MARKDOWN"
     original_val := object.get(input.invoice,"amount_net",0)
@@ -1482,7 +1545,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 193a OrdPU, § 11 rozporządzenia PKPiR",
     "_warnings":["REMAMENT ELEKTRONICZNY — od 2025 obowiązek prowadzenia w formie elektronicznej. Zgodność z JPK_PKPIR."]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_year_end == true
     input.invoice.transaction_date >= "2025-01-01"
@@ -1502,7 +1565,7 @@ else := {
     "_routing":"TRIAGE_QUEUE","_routing_reason":"Brak kompletnej ścieżki audytu remanentu",
     "_legal_basis":"Art. 193 OrdPU, § 11 rozporządzenia PKPiR",
     "_warnings":[sprintf("ŚCIEŻKA AUDYTU REMANENTU: brakuje %d elementów. Wymagane: arkusze spisowe, protokoły różnic, wycena, zatwierdzenie.", [missing])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_period_end == true
     has_sheets := object.get(input.invoice,"remnant_has_count_sheets",false)
@@ -1528,16 +1591,15 @@ else := {
     "_routing_reason":routing_reason,
     "_legal_basis":"§ 28 rozporządzenia PKPiR",
     "_warnings":[sprintf("SZKODA TRANSPORTOWA: %.2f PLN — udokumentuj protokołem szkody + reklamacją do przewoźnika.", [damage_val])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "TRANSPORT_DAMAGE"
     damage_val := object.get(input.invoice,"amount_net",0)
     damage_val > 0
     # Rego: inkrementalne definicje zamiast ternary ?:
-    routing_val = "TRIAGE_QUEUE" { damage_val > 5000 }
-    routing_val = "" { damage_val <= 5000 }
-    routing_reason = "Szkoda transportowa > 5000 PLN — wymagany protokół przewoźnika" { damage_val > 5000 }
-    routing_reason = "" { damage_val <= 5000 }
+    damage_route := damage_route_for(damage_val)
+    routing_val := object.get(damage_route, "routing", "")
+    routing_reason := object.get(damage_route, "reason", "")
 }
 
 # R0498: remnant_warranty_replacement — Towary z wymiany gwarancyjnej
@@ -1553,7 +1615,7 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 27 rozporządzenia PKPiR, Kodeks Cywilny art. 577",
     "_warnings":[sprintf("WYMIANA GWARANCYJNA: %.2f PLN — towary wymienione nie wchodzą do remanentu (własność gwaranta).", [rep_val])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type == "WARRANTY_REPLACEMENT"
     rep_val := object.get(input.invoice,"amount_net",0)
@@ -1574,35 +1636,55 @@ else := {
     "_routing":"","_routing_reason":"",
     "_legal_basis":"§ 27-29 rozporządzenia PKPiR",
     "_warnings":[sprintf("RAPORT ROCZNY REMANENTU: pocz. %.2f PLN → końc. %.2f PLN (Δ=%.2f PLN, %.1f%%). Załącznik do PIT-36.", [rem_start_val, rem_end_val, change_val, change_pct])]
-} {
+} if {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.is_year_end == true
     rem_start_val := object.get(input.invoice,"remnant_start_value",0)
     rem_end_val := object.get(input.invoice,"remnant_end_value",0)
     change_val := rem_end_val - rem_start_val
-    change_pct = 0 { rem_start_val == 0 }
-    change_pct = change_val / rem_start_val * 100 { rem_start_val > 0 }
+    change_pct := change_pct_for(change_val, rem_start_val)
 }
 
 # ══════ P480-P486: ŚRODKI TRWAŁE SZCZEGÓŁY — Doc 36 §17 (7 reguł) ══════
 
 # P480: fixed_asset_kst_group — Klasyfikacja KŚT
-else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_kst_group","package":"jdg.accounting","priority":480,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","kst_group":kst_grp,"depreciation_rate_pct":dep_rate,"_routing":"","_routing_reason":"","_legal_basis":"KŚT załącznik nr 1","_warnings":[sprintf("KŚT Grupa %d — stawka amortyzacji %.1f%% rocznie.",[kst_grp,dep_rate])]} {kst_grp:=object.get(input.invoice,"kst_group",1);    dep_rate=2.5{kst_grp==1};dep_rate=20.0{kst_grp==7};dep_rate=30.0{kst_grp==4};dep_rate=14.0{kst_grp==3};dep_rate=20.0{kst_grp==5};dep_rate=14.0{not dep_rate}}
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_kst_group","package":"jdg.accounting","priority":480,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","kst_group":kst_grp,"depreciation_rate_pct":dep_rate,"_routing":"","_routing_reason":"","_legal_basis":"KŚT załącznik nr 1","_warnings":[sprintf("KŚT Grupa %d — stawka amortyzacji %.1f%% rocznie.",[kst_grp,dep_rate])]} if {
+    kst_grp := object.get(input.invoice, "kst_group", 1)
+    kst_grp in {1, 3, 4, 5, 7}
+    dep_rate := dep_rate_for_group(kst_grp)
+}
 
 # P481: fixed_asset_low_value_10k — Jednorazowa amortyzacja ≤10k
-else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_low_value_10k","package":"jdg.accounting","priority":481,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","depreciation_method":"ONE_OFF","depreciation_pln":asset_value,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22d ust. 1 PIT","_warnings":[sprintf("Środek trwały ≤10 000 PLN — jednorazowa amortyzacja w miesiącu oddania do użytku. Wartość: %.2f PLN.",[asset_value])]} {asset_value:=object.get(input.invoice,"asset_value",0);asset_value>0;asset_value<=10000}
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_low_value_10k","package":"jdg.accounting","priority":481,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","depreciation_method":"ONE_OFF","depreciation_pln":asset_value,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22d ust. 1 PIT","_warnings":[sprintf("Środek trwały ≤10 000 PLN — jednorazowa amortyzacja w miesiącu oddania do użytku. Wartość: %.2f PLN.",[asset_value])]} if {
+    asset_value := object.get(input.invoice, "asset_value", 0)
+    asset_value > 0
+    asset_value <= 10000
+}# P482: fixed_asset_de_minimis_100k — Amortyzacja de minimis do 100k
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_de_minimis_100k","package":"jdg.accounting","priority":482,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","depreciation_method":"DE_MINIMIS","de_minimis_limit":100000,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22k ust. 7 PIT","_warnings":["Amortyzacja de minimis — jednorazowo do 100 000 PLN rocznie (mały podatnik + pierwszy rok)."]} if {
+    object.get(input.jdg_entrepreneur,"is_small_taxpayer",false) == true
+    object.get(input.jdg_entrepreneur,"de_minimis_available",false) == true
+}
 
-# P482: fixed_asset_de_minimis_100k — Amortyzacja de minimis do 100k
-else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_de_minimis_100k","package":"jdg.accounting","priority":482,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","depreciation_method":"DE_MINIMIS","de_minimis_limit":100000,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22k ust. 7 PIT","_warnings":["Amortyzacja de minimis — jednorazowo do 100 000 PLN rocznie (mały podatnik + pierwszy rok)."]} {object.get(input.jdg_entrepreneur,"is_small_taxpayer",false)==true;object.get(input.jdg_entrepreneur,"de_minimis_available",false)==true}
 
 # P483: fixed_asset_improvement_10k — Ulepszenie >10k
-else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_improvement_10k","package":"jdg.accounting","priority":483,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","improvement_increases_value":true,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22g ust. 17 PIT","_warnings":[sprintf("Ulepszenie %.2f PLN > 10 000 PLN — zwiększa wartość początkową środka trwałego. Nie jest kosztem bieżącym!",[improvement_amount])]} {improvement_amount:=object.get(input.invoice,"improvement_amount",0);improvement_amount>10000}
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_improvement_10k","package":"jdg.accounting","priority":483,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","improvement_increases_value":true,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22g ust. 17 PIT","_warnings":[sprintf("Ulepszenie %.2f PLN > 10 000 PLN — zwiększa wartość początkową środka trwałego. Nie jest kosztem bieżącym!",[improvement_amount])]} if {
+    improvement_amount := object.get(input.invoice, "improvement_amount", 0)
+    improvement_amount > 10000
+}
 
 # P484: fixed_asset_used_first_time — Używany ŚT — skrócona amortyzacja
-else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_used_shortened","package":"jdg.accounting","priority":484,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","shortened_depreciation":true,"max_months":30,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22j PIT","_warnings":["Używany środek trwały — możliwość skróconej amortyzacji (max 30 miesięcy dla ruchomości)."]} {object.get(input.invoice,"asset_is_used",false)==true}
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_used_shortened","package":"jdg.accounting","priority":484,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","shortened_depreciation":true,"max_months":30,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22j PIT","_warnings":["Używany środek trwały — możliwość skróconej amortyzacji (max 30 miesięcy dla ruchomości)."]} if {
+    object.get(input.invoice,"asset_is_used",false) == true
+}
 
 # P485: fixed_asset_sale_income — Sprzedaż ŚT = przychód
-else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_sale_income","package":"jdg.accounting","priority":485,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","sale_income_taxable":true,"_routing":"","_routing_reason":"","_legal_basis":"Art. 14 ust. 2 PIT","_warnings":["Sprzedaż środka trwałego — przychód podatkowy. Dochód = cena sprzedaży - wartość netto (początkowa - dotychczasowe umorzenie)."]} {input.invoice.direction=="SALE";input.invoice.category=="FIXED_ASSET_SALE"}
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_sale_income","package":"jdg.accounting","priority":485,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","sale_income_taxable":true,"_routing":"","_routing_reason":"","_legal_basis":"Art. 14 ust. 2 PIT","_warnings":["Sprzedaż środka trwałego — przychód podatkowy. Dochód = cena sprzedaży - wartość netto (początkowa - dotychczasowe umorzenie)."]} if {
+    input.invoice.direction == "SALE"
+    input.invoice.category == "FIXED_ASSET_SALE"
+}
 
 # P486: fixed_asset_financial_lease — Leasing finansowy
-else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_financial_lease","package":"jdg.accounting","priority":486,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","lease_type":"FINANCIAL","kup_components":"DEPRECIATION_AND_INTEREST","_routing":"","_routing_reason":"","_legal_basis":"Art. 23f PIT","_warnings":["Leasing finansowy — KUP = amortyzacja + część odsetkowa raty. NIE cała rata leasingowa!"]} {input.invoice.expense_type=="LEASE";object.get(input.invoice,"lease_type","")=="FINANCIAL"}
+else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_financial_lease","package":"jdg.accounting","priority":486,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","lease_type":"FINANCIAL","kup_components":"DEPRECIATION_AND_INTEREST","_routing":"","_routing_reason":"","_legal_basis":"Art. 23f PIT","_warnings":["Leasing finansowy — KUP = amortyzacja + część odsetkowa raty. NIE cała rata leasingowa!"]} if {
+    input.invoice.expense_type == "LEASE"
+    object.get(input.invoice,"lease_type","") == "FINANCIAL"
+}

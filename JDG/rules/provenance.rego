@@ -24,7 +24,7 @@ import future.keywords.in
 # Główna funkcja: buduje _provenance_tree dla werdyktu
 build_provenance(final_verdict, input_context) = tree {
     # Krok 1: Zbierz pakiety, które zwróciły matched:true
-    active_packages := [pkg |
+    active_packages := [pkg_name |
         some pkg_name in object.keys(input_context._package_decisions)
         input_context._package_decisions[pkg_name].matched == true
     ]

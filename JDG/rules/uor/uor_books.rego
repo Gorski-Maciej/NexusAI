@@ -483,7 +483,7 @@ else := {
     has_vat_rate := object.get(input.invoice, "vat_rate", "") != ""
     has_payment := object.get(input.invoice, "payment_method", "") != ""
     has_currency := object.get(input.invoice, "currency", "PLN") != ""
-    not (has_vat_rate and has_payment and has_currency)
+    [has_vat_rate, has_payment, has_currency] != [true, true, true]
 }
 
 else := {

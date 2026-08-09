@@ -59,11 +59,18 @@ def check_verdict(v: dict) -> list[str]:
     if isinstance(net, (int, float)) and isinstance(gross, (int, float)):
         if gross < net - EPS:
             issues.append("INV-021: brutto < netto")
-    if v.get("matched") is True and not v.get("_legal_basis"):
-        issues.append("INV-009: matched=true bez _legal_basis")
+    if v.get("matched") is True:
+        refs = v.get("_legal_basis_refs")
+        basis = v.get("_legal_basis")
+        if not refs and not basis:
+            issues.append("INV-009: matched=true bez _legal_basis/_legal_basis_refs")
     if isinstance(v.get("vat_amount"), (int, float)):
         if abs(v["vat_amount"] - round(v["vat_amount"] * 100) / 100) > EPS:
             issues.append("INV-012: kwota niezaokrąglona do groszy")
+    if v.get("_routing") == "BLOCK_AND_ALERT" and v.get("auto_post") is True:
+        issues.append("INV-035: BLOCK_AND_ALERT z auto_post=true")
+    if v.get("_degraded_context") is True and v.get("certainty_class") == "CERTAIN":
+        issues.append("INV-038: degraded context nie może być CERTAIN")
     prov = v.get("_provenance_tree") or {}
     if v.get("_provenance_tree") is not None and not prov.get("bundle_version"):
         issues.append("INV-030: brak bundle_version w proweniencji")

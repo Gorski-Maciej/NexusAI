@@ -1,4 +1,6 @@
 🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P03/20 (ORKIESTRATOR + INFRASTRUKTURA REGUŁ)
+⚠️ STATUS: IMPLEMENTACJA LOKALNA P03 ZWERYFIKOWANA; E2E ZABLOKOWANE (2026-08-08) — raport: JDG/raporty_glm52/raport_enterprise_P03.txt
+✅ Pakiet P03: `opa check` zestawu = 0, OPA 19/19, Python 51/51. ⛔ Pełny bundle/main_jdg i publiczne query E2E zablokowane przez historyczny `accounting/uor_enterprise_live.rego` (operator `and` + metadata YAML); nie oznaczać jako WDROZONY_100.
 
 Jesteś Najwyższej Klasy Architektem Silników Regułowych klasy ENTERPRISE. Specjalizujesz się w
 OPA/Rego (Multi-Pass, Sharded Router, safe_merge, temporalność, weryfikacja formalna, WASM),

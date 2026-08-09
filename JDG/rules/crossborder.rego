@@ -2,7 +2,7 @@
 # NexusAI JDG Policies — Crossborder: WNT, WDT, import, eksport, trójstronne (P40-P49)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
+# DOCUMENTATION METADATA (kept as comments; not an OPA metadata annotation)
 # title: Crossborder Package — Intra-EU & Non-EU Transactions (P40-P49 — AKTYWNE, NIE deprecated)
 # description: |
 #   PAS 3 Multi-Pass. First-Match-Wins else-chain. Obsługuje transakcje zagraniczne:
@@ -20,7 +20,91 @@
 # deprecated: false
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.crossborder
+
+import future.keywords.in
 import data.jdg.helpers
+
+platform_label(platform) = "App Store/Google Play" {
+    platform in {"APP_STORE", "GOOGLE_PLAY"}
+}
+
+platform_label(platform) = "Microsoft Store" {
+    platform == "MICROSOFT_STORE"
+}
+
+platform_label(platform) = "Steam/Epic Games" {
+    platform in {"STEAM", "EPIC_GAMES"}
+}
+
+platform_label(platform) = "Platforma freelancerska" {
+    not platform in {"APP_STORE", "GOOGLE_PLAY", "MICROSOFT_STORE", "STEAM", "EPIC_GAMES"}
+}
+
+platform_info_for(is_platform) = "TAK" {
+    is_platform == true
+}
+
+platform_info_for(is_platform) = "NIE" {
+    is_platform == false
+}
+
+threshold_info_for(exceeded) = "PRÓG PRZEKROCZONY — dokumentacja TP obligatoryjna!" {
+    exceeded == true
+}
+
+threshold_info_for(exceeded) = "Poniżej progu 500k PLN — dokumentacja uproszczona" {
+    exceeded == false
+}
+
+wht_rate_for(has_dtt) = "0.05" {
+    has_dtt == true
+}
+
+wht_rate_for(has_dtt) = "0.20" {
+    has_dtt == false
+}
+
+wht_rate_pct_for(has_dtt) = 5 {
+    has_dtt == true
+}
+
+wht_rate_pct_for(has_dtt) = 20 {
+    has_dtt == false
+}
+
+dac8_threshold_reached(total_eur, total_tx) {
+    total_eur >= 2000
+}
+
+dac8_threshold_reached(total_eur, total_tx) {
+    total_tx >= 30
+}
+
+dac8_reporting_status(total_eur, total_tx) = "WYMAGANE (przekroczony próg)" {
+    dac8_threshold_reached(total_eur, total_tx)
+}
+
+dac8_reporting_status(total_eur, total_tx) = "NIE WYMAGANE (poniżej progu)" {
+    total_eur < 2000
+    total_tx < 30
+}
+
+platform_display_name(platform) = "Upwork" { platform == "UPWORK" }
+platform_display_name(platform) = "Fiverr" { platform == "FIVERR" }
+platform_display_name(platform) = "Freelancer" { platform == "FREELANCER" }
+platform_display_name(platform) = "Toptal" { platform == "TOPTAL" }
+platform_display_name(platform) = "Guru" { platform == "GURU" }
+platform_display_name(platform) = "Platforma freelancerska" {
+    not platform in {"UPWORK", "FIVERR", "FREELANCER", "TOPTAL", "GURU"}
+}
+
+country_is_eu(country) {
+    country in eu_countries
+}
+
+country_is_non_eu(country) {
+    not country in eu_countries
+}
 default decide := {"matched":false,"rule_id":"jdg.crossborder.no_match","package":"jdg.crossborder","priority":59}
 
 eu_countries := {"AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE"}
@@ -115,9 +199,7 @@ else := {
     input.vendor.country != "PL"
     platform := object.get(input.invoice, "distribution_platform", "")
     platform in {"APP_STORE", "GOOGLE_PLAY", "MICROSOFT_STORE", "STEAM", "EPIC_GAMES"}
-    platform_type = "App Store/Google Play" { platform in {"APP_STORE", "GOOGLE_PLAY"} }
-    platform_type = "Microsoft Store" { platform == "MICROSOFT_STORE" }
-    platform_type = "Steam/Epic Games" { platform in {"STEAM", "EPIC_GAMES"} }
+    platform_type := platform_label(platform)
 }
 
 # ══════ P42: wdt_intracommunity_supply — WDT 0% VAT ══════
@@ -199,12 +281,7 @@ else := {
     input.invoice.direction == "PURCHASE"
     platform := object.get(input.invoice, "vendor_platform", "")
     platform in {"UPWORK", "FIVERR", "FREELANCER", "TOPTAL", "GURU"}
-    platform_name = "Upwork" { platform == "UPWORK" }
-    platform_name = "Fiverr" { platform == "FIVERR" }
-    platform_name = "Freelancer" { platform == "FREELANCER" }
-    platform_name = "Toptal" { platform == "TOPTAL" }
-    platform_name = "Guru" { platform == "GURU" }
-    platform_name = "Platforma freelancerska"
+    platform_name := platform_display_name(platform)
 }
 
 # ══════ P41: eu_import_services — Import usług z UE ══════
@@ -288,8 +365,7 @@ else := {
     input.vendor.country in eu_countries
     input.vendor.country != "PL"
     is_platform := object.get(input.invoice, "via_digital_platform", false)
-    platform_info = "TAK" { is_platform == true }
-    platform_info = "NIE" { is_platform == false }
+    platform_info := platform_info_for(is_platform)
 }
 
 # ══════ P47: icow_import_control — ICOW — Import Control System ══════
@@ -351,8 +427,7 @@ else := {
     object.get(input.invoice, "amount_net", 0) > 0
     tp_annual := object.get(input.jdg_entrepreneur, "tp_annual_total", 0)
     threshold_exceeded := tp_annual > 500000
-    threshold_info = "PRÓG PRZEKROCZONY — dokumentacja TP obligatoryjna!" { threshold_exceeded == true }
-    threshold_info = "Poniżej progu 500k PLN — dokumentacja uproszczona" { threshold_exceeded == false }
+    threshold_info := threshold_info_for(threshold_exceeded)
 }
 
 # ══════ P50: cfc_jdg_controlled — CFC — zagraniczna spółka kontrolowana ══════
@@ -399,10 +474,8 @@ else := {
     amount_net := object.get(input.invoice, "amount_net", 0)
     amount_net > 0
     has_dtt := object.get(input.vendor, "double_tax_treaty", false)
-    wht_rate = "0.05" { has_dtt == true }
-    wht_rate = "0.20" { has_dtt == false }
-    wht_rate_pct = 5 { has_dtt == true }
-    wht_rate_pct = 20 { has_dtt == false }
+    wht_rate := wht_rate_for(has_dtt)
+    wht_rate_pct := wht_rate_pct_for(has_dtt)
     wht_amount := amount_net * to_number(wht_rate)
 }
 
@@ -461,7 +534,7 @@ decide := {
     platform_type := object.get(input.jdg_entrepreneur, "dac8_platform_type", "DIGITAL_PLATFORM")
     threshold_amount := 2000
     threshold_tx := 30
-    exceeds := total_eur >= threshold_amount or total_tx >= threshold_tx
+    exceeds := dac8_threshold_reached(total_eur, total_tx)
     exceeds == true
     action = "WYMAGANE RAPORTOWANIE DAC8 do 31 stycznia!"
 }
@@ -489,9 +562,7 @@ decide := {
     total_eur := object.get(input.jdg_entrepreneur, "dac8_total_amount_eur", 0)
     total_tx := object.get(input.jdg_entrepreneur, "dac8_total_transactions", 0)
     drivers := object.get(input.jdg_entrepreneur, "dac8_seller_count", 0)
-    exceeds := total_eur >= 2000 or total_tx >= 30
-    reporting_status = "WYMAGANE (przekroczony próg)" { exceeds == true }
-    reporting_status = "NIE WYMAGANE (poniżej progu)" { exceeds == false }
+    reporting_status := dac8_reporting_status(total_eur, total_tx)
 }
 
 # P582: dac8_accommodation_threshold — Accommodation: Airbnb/Booking
@@ -660,7 +731,7 @@ else := {
     "_legal_basis":"Art. 17 ust. 1 pkt 4 VAT",
     "_warnings":["IMPORT USŁUG NON-EU B2B — reverse charge. JDG rozlicza VAT należny i naliczony. NP na fakturze."]
 } {
-    input.vendor.country not in EU_COUNTRIES
+    country_is_non_eu(input.vendor.country)
     input.vendor.country!="PL"
     input.invoice.direction=="PURCHASE"
     input.invoice.category in {"SERVICES","IT","CONSULTING","MARKETING"}
@@ -681,7 +752,7 @@ else := {
     "_legal_basis":"Art. 28k-28l VAT",
     "_warnings":["Import usług B2C spoza UE — VAT należny w PL (23%). Sprawdź czy nie dotyczy Cię OSS/IOSS."]
 } {
-    input.vendor.country not in EU_COUNTRIES
+    country_is_non_eu(input.vendor.country)
     input.vendor.country!="PL"
     input.invoice.direction=="PURCHASE"
     object.get(input.vendor,"is_taxable_person",true)==false

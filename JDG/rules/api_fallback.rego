@@ -2,24 +2,7 @@
 # NexusAI JDG Policies — API Graceful Degradation & Fallback (P1850-P1855)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
-# title: API Graceful Degradation — Fallback dla Białej Listy, CEIDG, KSeF, GUS, NBP
-# description: |
-#   Reguły graceful degradation dla awarii zewnętrznych API:
-#   P1850: Biała Lista MF offline → TRIAGE (nie blokuj automatycznie)
-#   P1851: CEIDG API offline → warning (nie blokuj, chyba że fraud_flag)
-#   P1852: KSeF offline → tryb awaryjny (7 dni na wysyłkę)
-#   P1853: GUS BIR offline → pending verification
-#   P1854: NBP API offline → użyj kursu z cache
-#   P1855: Multi-API degradation → eskalacja do TRIAGE
-# architecture: Multi-Pass PAS 2 (ADR-001) — operuje na poziomie compliance
-# legal_basis: Art. 106ne VAT (KSeF offline), Art. 96b VAT (Biała Lista)
-# edge_cases:
-#   - Cache valid 30 dni dla Białej Listy (zgodnie z wymogami MF)
-#   - NBP: użyj ostatniego kursu z cache z ostrzeżeniem
-#   - KSeF offline: 7 dni na wysyłkę po przywróceniu (Art. 106ne VAT)
-# package: jdg.api_fallback
-# deprecated: false
+# Legacy metadata retained as ordinary comments; invalid YAML annotation removed.
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.api_fallback
 

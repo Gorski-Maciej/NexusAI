@@ -1,71 +1,90 @@
 # ═══════════════════════════════════════════════════════════════
 # NexusAI JDG — Native Rego Tests for: audit_defense_enterprise
-# Source: audit_defense_enterprise.rego
-# Generated: 2026-08-02T09:14:32.120004
-# Package: jdg.audit_defense
-# Rules tested: 5
-# Report: P27 R4 — Enterprise files coverage
+# ═══════════════════════════════════════════════════════════════
+# Public contract: data.jdg.audit_defense.decide
 # ═══════════════════════════════════════════════════════════════
 
 package test_jdg_audit_defense
+
 import data.jdg.audit_defense
 
-# 1. jdg.audit_defense.no_match
-test_positive_no_match {
+# Default is fail-closed for an empty context.
+test_no_match_empty_input {
     result := data.jdg.audit_defense.decide with input as {}
-    result.matched == true
+    result.matched == false
     result.rule_id == "jdg.audit_defense.no_match"
 }
 
-test_negative_no_match {
-    result := data.jdg.audit_defense.decide with input as {}
+test_no_match_is_not_positive_rule {
+    result := data.jdg.audit_defense.decide with input as {"audit_risk_check": true, "jdg_entrepreneur": {}}
     result.rule_id != "jdg.audit_defense.no_match"
 }
 
-# 2. jdg.audit_defense.risk_scoring
 test_positive_risk_scoring {
-    result := data.jdg.audit_defense.decide with input as {}
+    result := data.jdg.audit_defense.decide with input as {
+        "audit_risk_check": true,
+        "jdg_entrepreneur": {
+            "vat_correction_pct_annual": 0.31,
+            "tax_form": "PIT_SCALE"
+        }
+    }
     result.matched == true
     result.rule_id == "jdg.audit_defense.risk_scoring"
+    result.audit_risk_score == 25
 }
 
-test_negative_risk_scoring {
+test_negative_risk_scoring_without_flag {
     result := data.jdg.audit_defense.decide with input as {}
     result.rule_id != "jdg.audit_defense.risk_scoring"
 }
 
-# 3. jdg.audit_defense.voluntary_disclosure_strategy
 test_positive_voluntary_disclosure_strategy {
-    result := data.jdg.audit_defense.decide with input as {}
+    result := data.jdg.audit_defense.decide with input as {
+        "audit_voluntary_disclosure_check": true,
+        "jdg_entrepreneur": {
+            "has_unreported_income": true,
+            "tax_authority_initiated_proceedings": false,
+            "unreported_tax_amount": 10000
+        }
+    }
     result.matched == true
     result.rule_id == "jdg.audit_defense.voluntary_disclosure_strategy"
+    result.audit_voluntary_disclosure_recommended == true
 }
 
-test_negative_voluntary_disclosure_strategy {
+test_negative_voluntary_disclosure_without_flag {
     result := data.jdg.audit_defense.decide with input as {}
     result.rule_id != "jdg.audit_defense.voluntary_disclosure_strategy"
 }
 
-# 4. jdg.audit_defense.appeal_procedure
 test_positive_appeal_procedure {
-    result := data.jdg.audit_defense.decide with input as {}
+    result := data.jdg.audit_defense.decide with input as {
+        "audit_appeal_needed": true,
+        "jdg_entrepreneur": {"tax_decision_amount": 20000}
+    }
     result.matched == true
     result.rule_id == "jdg.audit_defense.appeal_procedure"
 }
 
-test_negative_appeal_procedure {
+test_negative_appeal_without_flag {
     result := data.jdg.audit_defense.decide with input as {}
     result.rule_id != "jdg.audit_defense.appeal_procedure"
 }
 
-# 5. jdg.audit_defense.statute_of_limitations
 test_positive_statute_of_limitations {
-    result := data.jdg.audit_defense.decide with input as {}
+    result := data.jdg.audit_defense.decide with input as {
+        "audit_statute_check": true,
+        "jdg_entrepreneur": {
+            "tax_years_active": [2020, 2024],
+            "tax_events": [{"type": "AUDIT_INITIATED"}]
+        }
+    }
     result.matched == true
     result.rule_id == "jdg.audit_defense.statute_of_limitations"
+    result.audit_tax_year_expiring == [2020]
 }
 
-test_negative_statute_of_limitations {
+test_negative_statute_without_flag {
     result := data.jdg.audit_defense.decide with input as {}
     result.rule_id != "jdg.audit_defense.statute_of_limitations"
 }

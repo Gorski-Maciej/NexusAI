@@ -6,7 +6,96 @@
 
 package jdg.enterprise.conviction_checker
 
+import future.keywords.in
 import data.jdg.helpers
+
+fee_for_request(request_type) = fee {
+    fees := {"INDIVIDUAL": 20, "COMPANY": 30}
+    fee := object.get(fees, request_type, 0)
+}
+
+period_years_for_offense(offense_type) = years {
+    periods := {"MISDEMEANOR": 2, "FISCAL_CRIME": 5}
+    years := object.get(periods, offense_type, 2)
+}
+
+expungement_action(is_expunged, days_until_expungement) = action {
+    is_expunged
+    action := "WNIOSEK O ZATARCIE SKAZANIA — upłynął okres"
+}
+
+expungement_action(is_expunged, days_until_expungement) = action {
+    not is_expunged
+    action := sprintf("Pozostało %d dni do zatarcia", [days_until_expungement])
+}
+
+pzp_exclusion(has_conviction, is_expunged) = excluded {
+    has_conviction
+    not is_expunged
+    excluded := true
+}
+
+pzp_exclusion(has_conviction, is_expunged) = excluded {
+    not has_conviction
+    excluded := false
+}
+
+pzp_exclusion(has_conviction, is_expunged) = excluded {
+    has_conviction
+    is_expunged
+    excluded := false
+}
+
+pzp_decision_action(pzp_excluded, is_expunged) = action {
+    pzp_excluded
+    action := "NIE SKŁADAJ OFERTY — wykluczenie z PZP (Art. 108 ust. 1 pkt 2 PZP)"
+}
+
+pzp_decision_action(pzp_excluded, is_expunged) = action {
+    not pzp_excluded
+    is_expunged
+    action := "Możesz składać oferty — skazanie zatarte"
+}
+
+pzp_decision_action(pzp_excluded, is_expunged) = action {
+    not pzp_excluded
+    not is_expunged
+    action := "Brak ograniczeń PZP"
+}
+
+impact_severity(total_blocks) = "CRITICAL" {
+    total_blocks >= 4
+}
+
+impact_severity(total_blocks) = "HIGH" {
+    total_blocks == 3
+}
+
+impact_severity(total_blocks) = "MEDIUM" {
+    total_blocks >= 1
+    total_blocks <= 2
+}
+
+impact_severity(total_blocks) = "NONE" {
+    total_blocks == 0
+}
+
+expungement_warning(is_expunged, days_left, block_count, severity) = warnings {
+    is_expunged
+    warnings := [
+        "🔍 CONVICTION REGISTRY AUTO-CHECKER",
+        "   ✅ SKAZANIE ZATARTE — pełnia praw przywrócona!",
+    ]
+}
+
+expungement_warning(is_expunged, days_left, block_count, severity) = warnings {
+    not is_expunged
+    warnings := [
+        "🔍 CONVICTION REGISTRY AUTO-CHECKER",
+        sprintf("   ⏳ Do zatarcia: %d dni (Art. 19 KKS)", [days_left]),
+        sprintf("   🚫 Aktywne blokady: %d — %s", [block_count, severity]),
+    ]
+}
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CRC-3200: KRK check wrapper (online certificate request)
@@ -16,9 +105,7 @@ crc_request_krk_check(input) = krk {
     request_type := object.get(input, "request_type", "INDIVIDUAL")
     purpose := object.get(input, "purpose", "SELF_CHECK")
 
-    fee_pln := 20 { request_type == "INDIVIDUAL" }
-    fee_pln := 30 { request_type == "COMPANY" }
-    fee_pln := 0 { true }
+    fee_pln := fee_for_request(request_type)
 
     krk := {
         "nip": nip,
@@ -41,15 +128,13 @@ crc_expungement_monitor(input) = monitor {
 
     # Art. 19 § 1 KKS: fiscal misdemeanor = 2 years
     # Art. 19 § 2 KKS: fiscal crime = 5 years
-    expungement_period_years := 2 { offense_type == "MISDEMEANOR" }
-    expungement_period_years := 5 { offense_type == "FISCAL_CRIME" }
+    expungement_period_years := period_years_for_offense(offense_type)
     expungement_days := expungement_period_years * 365
 
     days_until_expungement := max([expungement_days - conviction_date, 0])
     is_expunged := days_until_expungement <= 0
 
-    exp_action := "WNIOSEK O ZATARCIE SKAZANIA — upłynął okres" { is_expunged }
-    exp_action := sprintf("Pozostało %d dni do zatarcia", [days_until_expungement]) { not is_expunged }
+    exp_action := expungement_action(is_expunged, days_until_expungement)
 
     monitor := {
         "offense_type": offense_type,
@@ -71,12 +156,10 @@ crc_pzp_tender_check(input) = pzp {
     is_expunged := object.get(input, "expunged", false)
     tender_value := object.get(input, "tender_value_pln", 0)
 
-    pzp_excluded := has_conviction and not is_expunged
+    pzp_excluded := pzp_exclusion(has_conviction, is_expunged)
     eu_threshold := tender_value > 130000  # ~130k PLN dla dostaw/usług
 
-    pzp_action := "NIE SKŁADAJ OFERTY — wykluczenie z PZP (Art. 108 ust. 1 pkt 2 PZP)" { pzp_excluded }
-    pzp_action := "Możesz składać oferty — skazanie zatarte" { is_expunged }
-    pzp_action := "Brak ograniczeń PZP" { true }
+    pzp_action := pzp_decision_action(pzp_excluded, is_expunged)
 
     pzp := {
         "has_conviction": has_conviction,
@@ -100,13 +183,10 @@ crc_business_impact(conviction_data) = impact {
         "vat_solidarity": object.get(conviction_data, "vat_solidarity_art105a", false),
     }
 
-    active_blocks := [k | k, v := blocks; v == true]
+    active_blocks := [k | blocks[k] == true]
     total_blocks := count(active_blocks)
 
-    severity := "CRITICAL" { total_blocks >= 4 }
-    severity := "HIGH" { total_blocks == 3 }
-    severity := "MEDIUM" { total_blocks >= 1; total_blocks <= 2 }
-    severity := "NONE" { total_blocks == 0 }
+    severity := impact_severity(total_blocks)
 
     impact := {
         "blocks": blocks,
@@ -127,14 +207,5 @@ build_crc_warnings(krk, expungement, pzp, impact) = warnings {
 
     base := ["🔍 CONVICTION REGISTRY AUTO-CHECKER"]
 
-    exp_warn := array.concat(base, [
-        "   ✅ SKAZANIE ZATARTE — pełnia praw przywrócona!",
-    ]) { is_expunged }
-
-    exp_warn := array.concat(base, [
-        sprintf("   ⏳ Do zatarcia: %d dni (Art. 19 KKS)", [days_left]),
-        sprintf("   🚫 Aktywne blokady: %d — %s", [block_count, severity]),
-    ]) { not is_expunged }
-
-    warnings := exp_warn
+    warnings := expungement_warning(is_expunged, days_left, block_count, severity)
 }

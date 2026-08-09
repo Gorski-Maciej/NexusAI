@@ -1,9 +1,10 @@
 ═══════════════════════════════════════════════════════════════════════════════
  RAPORT ANALITYCZNY ENTERPRISE — JDG P03: ORKIESTRATOR I INFRASTRUKTURA REGUŁ
- STATUS: ✅ WDROŻONY W 100% (2026-08-08) — WSZYSTKIE KROKI, ETAPY, FAZY I USPRAWNIENIA ZASTOSOWANE
+ STATUS: ⚠️ IMPLEMENTACJA LOKALNA P03; E2E ZABLOKOWANE (2026-08-08) — NIE OZNACZAĆ WDROŻONY_100
+ WERYFIKACJA: ✅ runtime fail-closed; moduły accounting/UoR przechodzą check; adapter UoR 12/12; audit_defense parser + testy natywne 10/10; regresja Python P03/P01/P09 96/96. ⛔ Pełny main_jdg/bundle i publiczne query E2E pozostają niewykonalne: legacy `banking_automation_enterprise.rego` ma wadliwy blok metadata YAML i inline assignments wymagające osobnej migracji bez zmiany first-match semantics. `allowances.rego` i `api_fallback.rego` otrzymały ograniczone poprawki parserowe, a audit defense został zmigrowany lokalnie; integracje (WASM/Z3/HSM) pozostają kontraktami hosta i nie są udawane jako lokalnie dostępne implementacje.
 ═══════════════════════════════════════════════════════════════════════════════
 
- 1. EXECUTIVE SUMMARY — TOP 10 REKOMENDACJI (WDROŻONE)
+ 1. EXECUTIVE SUMMARY — TOP 10 REKOMENDACJI (LOKALNIE ZAIMPLEMENTOWANE; E2E ZABLOKOWANE)
 ────────────────────────────────────────────────────────────────────────────────
  1. POST-MERGE RUNTIME INVARIANTS (F2 V2) — KATALOG INV-001..042 z czystą
     funkcją evaluate(v) i hakiem enforce(v) na KOŃCU POST-MERGE w main_jdg.rego
@@ -48,14 +49,14 @@
     hot-reload < 1 min; golden path: PASS 0 gate → shard → POST-MERGE →
     invariants → certyfikat → (host) AUTO_POST tylko CERTAIN.
 10. ADR-022 (Orkiestrator Forteca) zapisany w docs/ARCHITECTURE.md; P03
-    oznaczony ✅ WDROŻONY 100% w unified_plan_progress.yaml; testy
+    oznaczony ⚠️ PARTIAL_E2E_BLOCKED w unified_plan_progress.yaml; testy
     Python (test_p03_orchestrator_enterprise.py) + natywne Rego
     (tests/rego/test_p03_orchestrator_enterprise.rego) — 51/51 zielonych
     w suicie P03+P01.
 
  2. AUDYT ORKIESTRATORA (safe_merge, łańcuchy, determinizm, koszt)
 ────────────────────────────────────────────────────────────────────────────────
- 2.1 SAFE_MERGE — WDROŻONE WZMACNIENIE
+ 2.1 SAFE_MERGE — WZMOCNIENIE ZAIMPLEMENTOWANE LOKALNIE (E2E ZABLOKOWANE)
    • Allowlist niemutowalna: immutable_verdict_allowlist = {jdg.zus,
      jdg.zus.sickness_benefits, jdg.zus.enterprise_benefits,
      jdg.zus.health_contribution, jdg.business, jdg.security.fortress}.
@@ -70,7 +71,7 @@
    • Ryzyko 2: klucze „wspólne" (np. vat_rate) nadpisywane przez ostatni
      pakiet w łańcuchu — jest to ZAMIERZONE (zewnętrzny pakiet wygrywa),
      ale rejestrowane w _package_decisions → provenance path (pełny audyt).
- 2.2 ŁAŃCUCHY SHARDED/full/gated — WDROŻONE
+ 2.2 ŁAŃCUCHY SHARDED/full/gated — ZAIMPLEMENTOWANE LOKALNIE (E2E ZABLOKOWANE)
    • gated_abort_verdict (risk BLOCK_AND_ALERT) i gated_abort_verdict
      (routing BLOCK_AND_ALERT) — PASS-0 gate aborcja przed resztą łańcucha
      (redukcja latency ~40-60% dla fraud).
@@ -80,12 +81,12 @@
    • full_final_verdict — fallback bezpieczeństwa dla cross-border/non-ACTIVE.
    • final_verdict: gated → sharded → full (deterministyczna selekcja wg
      routing_context: is_cross_border, entity_status, transaction_type).
- 2.3 DETERMINIZM FIRST-MATCH-WINS — WDROŻONE
+ 2.3 DETERMINIZM FIRST-MATCH-WINS — ZWERYFIKOWANY IZOLACYJNIE (E2E ZABLOKOWANE)
    • Każdy pakiet to else-chain z unikalnym default no_match; werdykt końcowy
      deterministyczny (ten sam input + wersje = ten sam final_verdict).
    • Dowód determinizmu: decision_hash (INN-01 input_hash + INV-010) — ewaluacja
      różnicowa F3: shadow twin (INN-02) i golden replay (P01) porównują hashe.
- 2.4 KOSZT EWALUACJI — WDROŻONE
+ 2.4 KOSZT EWALUACJI — KONTRAKT I TESTY ZAIMPLEMENTOWANE (E2E ZABLOKOWANE)
    • Target: p95 < 5 ms krajowa, < 25 ms cross-border (pass_benchmark_contract).
    • Mikro-benchmarki per PASS w CI (INN-04): regresja > 20% = FAIL.
    • Cold-start profiling (INN-05): pierwsza ewaluacja ≤ 500 ms + warm-up probe.
@@ -94,7 +95,7 @@
      PASS 7-8 (accounting/zus/business) ~8, POST-MERGE (conflicts+enterprise
      enrichment+provenance+invariany) ~45 — dominujący koszt to enrichment.
 
- 3. AUDYT TEMPORALNOŚCI — WDROŻONY (detektory P1627–P1632)
+ 3. AUDYT TEMPORALNOŚCI — DETEKTORY ZAIMPLEMENTOWANE; E2E ZABLOKOWANE (P1627–P1632)
 ────────────────────────────────────────────────────────────────────────────────
  3.1 STAN PO P01/P02: P1619–P1624 (overlap, pin, calendar, shadow, rollback,
      gap) już istnieją; 29+ plików z valid_from (VAT micro 260 reguł,
@@ -116,7 +117,7 @@
    • P1632 temporal_version_proof — dowód deterministycznego wyboru wersji:
      DOKŁADNIE jedna aktywna wersja na datę dla każdej reguły
      (ambiguity = 0; selekcja max(valid_from) — sortowalna i deterministyczna).
- 3.3 PINNING I WERSJE — WDROŻONE
+ 3.3 PINNING I WERSJE — ZAIMPLEMENTOWANE LOKALNIE; E2E ZABLOKOWANE
    • rule_versions z migracji 001 + rule_lifecycle (P01) + P1620 (pin) +
      P1632 (proof) — rekonstrukcja prawa w dowolnym dniu (Art. 3 OrdPU).
    • Interval algebra egzekwowana jako INV-037 (BUILD — blokada merge).
@@ -138,7 +139,7 @@
  3.4 WPŁYW NA P04–P17: każdy pakiet domenowy dostaje time-travel za darmo —
      temporal.decide w łańcuchu + detektory P1627–P1632 do testów CI.
 
- 4. AUDYT ZERO-HARDCODE — WDROŻONY (bramka HARDCODED_AUDIT)
+ 4. AUDYT ZERO-HARDCODE — BRAMKA ZAIMPLEMENTOWANA; E2E ZABLOKOWANE (HARDCODED_AUDIT)
 ────────────────────────────────────────────────────────────────────────────────
  4.1 BASELINE (stan 2026-08-08, tools/hardcoded_audit_gate.py — konserwatywne
      wzorce: duże liczby, stawki dziesiętne, okresy; bez priorytetów/dat/wersji):
@@ -148,7 +149,7 @@
      micro/ord/ord.rego 431. (Zakres liczbowy z promptu ~265/32 dotyczy plików
      makro — weryfikacja semantyczna w narzędziu per plik.)
  4.2 PLAN MIGRACJI 100% (etapy):
-   • Etap A (P03): bramka + baseline + katalog kategorii (WDROŻONE).
+   • Etap A (P03): bramka + baseline + katalog kategorii (ZAIMPLEMENTOWANE LOKALNIE; E2E ZABLOKOWANE).
    • Etap B (P04–P17): każda część migruje swoje stawki/progi do
      data.thresholds (thresholds_jdg.rego — już 113 KB progów temporalnych
      z valid_from/previous_valid_from) — reguła używa wyłącznie data.thresholds.
@@ -156,11 +157,11 @@
      < 1 min bez rekompilacji bundla; threshold_version śledzi wersję danych.
    • Etap D: HARDCODED_AUDIT gate w CI: nowe reguły = 0 hardcoded; legacy
      micro z limitami per plik (exception list), cel końcowy 0.
- 4.3 BRAMKA — WDROŻONA: hardcoded_audit_gate.py scan --gate <N> (FAIL > N);
+ 4.3 BRAMKA — ZAIMPLEMENTOWANA LOKALNIE (E2E ZABLOKOWANE): hardcoded_audit_gate.py scan --gate <N> (FAIL > N);
      raport JSON bundles/hardcoded_audit.json (top_files, categories, baseline);
      zintegrowana z testami (test_p03_orchestrator_enterprise.py).
 
- 5. RUNTIME INVARIANTS (F2 V2) — WDROŻONE (INV-001..042)
+ 5. RUNTIME INVARIANTS (F2 V2) — ZAIMPLEMENTOWANE I ZWERYFIKOWANE IZOLACYJNIE; E2E ZABLOKOWANE (INV-001..042)
 ────────────────────────────────────────────────────────────────────────────────
  5.1 KATALOG: 42 niezmienniki (poziomy RUNTIME/BUILD/STATISTICAL).
      Nowe INV-031..042: determinizm (INV-010/040), decision_hash (INV-031),
@@ -181,7 +182,7 @@
      STATISTICAL (INV-010/025/040) → auto-rollback bundle przy naruszeniu
      > 0.01% (monitor).
 
- 6. SHARDED ROUTER — WDROŻONE WZMACNIENIE
+ 6. SHARDED ROUTER — WZMOCNIENIE ZAIMPLEMENTOWANE LOKALNIE; E2E ZABLOKOWANE
 ────────────────────────────────────────────────────────────────────────────────
  6.1 ROUTER O(1): routing_context (tax_form, transaction_type, entity_status,
      evaluation_quarter, is_cross_border, has_employees, is_vat_payer,
@@ -200,13 +201,13 @@
  6.5 HOT-PATH PROFILER (INN-13): matched_packages + matched_count +
      cost_model (sum priority) — podstawa optymalizacji p95 < 5 ms.
 
- 7. WERDYKT 25-POLOWY + PROVENANCE — WDROŻONE ROZSZERZENIE
+ 7. WERDYKT 25-POLOWY + PROVENANCE — ROZSZERZENIE ZAIMPLEMENTOWANE; E2E ZABLOKOWANE
 ────────────────────────────────────────────────────────────────────────────────
  7.1 WERDYKT KOŃCOWY (final_verdict_enforced) — ADR-004 + P03:
      • 25 pól bazowych (ADR-004) + certainty_class (F4) + _certainty_guard
        + _decision_certificate (F4) + _invariant_report (F2) + _routing_context
        (ADR-009) + _legal_basis_refs (F1) + _provenance_tree (A1).
- 7.2 PROVENANCE (rules/provenance.rego — WDROŻONE): _provenance_tree niesie
+ 7.2 PROVENANCE (rules/provenance.rego — KONTRAKT ZAIMPLEMENTOWANY): _provenance_tree niesie
      path (kroki decyzyjne z rule_id, priority, legal_basis, routing,
      threshold_refs, temporal_valid_from/to) + root_hash (Merkle) +
      bundle_version + rule_version + threshold_version (V1 §9.3) +
@@ -215,7 +216,7 @@
      net|gross|pit_rate|zus_health_rate|bundle_version); rzeczywiste SHA-256
      wykonuje Python wrapper (tools/decision_certificate.py — P01).
 
- 8. POTĘŻNE ROZWIĄZANIA SYSTEMOWE (control plane — P20) — WDROŻONE
+ 8. POTĘŻNE ROZWIĄZANIA SYSTEMOWE (control plane — P20) — HOOKI ZAIMPLEMENTOWANE; E2E ZABLOKOWANE
 ────────────────────────────────────────────────────────────────────────────────
    • rule_registry (data.jdg) + hot-reload < 1 min (zero restartu) — P01 + INN-14.
    • Kill-switch + feature-flagi (data.jdg.feature_flags) — INN-08: wyłączenie
@@ -229,7 +230,7 @@
    • Podpis HSM + bundle server + kanary + auto-rollback ≤ 5 min — P01/P20
      (bundle.sh v9.0, healthy_versions.json).
 
- 9. SUPER-INTELIGENTNA SIEĆ ZALEŻNOŚCI — WDROŻONA
+ 9. SUPER-INTELIGENTNA SIEĆ ZALEŻNOŚCI — ZAIMPLEMENTOWANA LOKALNIE (E2E ZABLOKOWANE)
 ────────────────────────────────────────────────────────────────────────────────
    • build_dependency_graph(pkgs) (INN-09): nodes (reguły matched) + edges
      (reguła→threshold_refs) + legal_edges (reguła→_legal_basis) + acyclic
@@ -242,7 +243,7 @@
      (pewność pakietów); BLOCK_AND_ALERT propaguje natychmiast (PASS 0);
      warstwa Neural Mesh (P20) jako docelowa propagacja w poprzek domen.
 
- 10. GENIALNE POMYSŁY ENTERPRISE (14 — WDROŻONE)
+ 10. GENIALNE POMYSŁY ENTERPRISE (14 — KONTRAKTY/HOOKI ZAIMPLEMENTOWANE; E2E ZABLOKOWANE)
 ────────────────────────────────────────────────────────────────────────────────
    INN-01 Decyzyjny cache z Merkle-proof — input_hash deterministyczny (F3).
    INN-02 „Shadow twin" orkiestratora — drugi węzeł liczy ten sam werdykt.
@@ -262,7 +263,7 @@
    (Pakiet aktywowany flagą input.jdg_entrepreneur.p03_orchestrator_check —
    w normalnym ruchu no_match; funkcje czyste używane przez main_jdg.)
 
- 11. REKOMENDACJE PRIORYTETOWE — MAPA WDROŻENIA (WDROŻONA)
+ 11. REKOMENDACJE PRIORYTETOWE — MAPA IMPLEMENTACJI LOKALNEJ (E2E ZABLOKOWANE)
 ────────────────────────────────────────────────────────────────────────────────
    Kolejność wdrożona: 1) invariants (INV-001..042 + enforce) → 2) temporalność
    (P1627–P1632) → 3) zero-hardcode (bramka + baseline) → 4) provenance/
@@ -298,11 +299,11 @@
  7. Router O(1): _routing_context w werdykcie (INV-020/036) + hot-path profiler
     + target p95 < 5 ms + degradacja zamiast błędu.
  8. Control plane hooks: feature_flags, kill_switch, rule_registry lifecycle,
-    golden path AUTO_POST-only-CERTAIN — pod P20.
- 9. ADR-022 (Orkiestrator Forteca) + unified_plan_progress.yaml: P03
-    → ✅ WDROZONY_100 (8 artefaktów).
+    golden path AUTO_POST-only-CERTAIN — pod P20. 9. ADR-022 (Orkiestrator Forteca) + unified_plan_progress.yaml: P03
+   → ⚠️ PARTIAL_E2E_BLOCKED (lokalne artefakty zweryfikowane; pełny bundle niekompilowalny przez legacy allowances.rego).
+
 10. Testy: test_p03_orchestrator_enterprise.py (Python) + natywne Rego —
-    51/51 zielonych (P03+P01); P03 gotowy — następna część: P04 VAT MACRO.
+    51/51 zielonych (P03+P01); P03 lokalnie gotowy, lecz E2E zablokowane — nie przechodzić do P04.
 ────────────────────────────────────────────────────────────────────────────────
-*Raport P03 wdrożony: 2026-08-08 · Kampania GLM 5.2 Enterprise · Moduł JDG (NexusAI)*
+*Raport P03: implementacja lokalna zweryfikowana, E2E zablokowane przez legacy allowances.rego — 2026-08-08 · Kampania GLM 5.2 Enterprise · Moduł JDG (NexusAI)*
 ═══════════════════════════════════════════════════════════════════════════════

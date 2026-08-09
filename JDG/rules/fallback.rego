@@ -1,8 +1,6 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 # NexusAI JDG Policies — Fallback: Domyślna stawka 23% + NO_MATCH (P1000-P1099)
 # ═══════════════════════════════════════════════════════════════════════════════
-package jdg.fallback
-#
 # METADATA
 # title: JDG Package — fallback
 # description: Supporting package for JDG Multi-Pass evaluation (ADR-001).
@@ -10,7 +8,8 @@ package jdg.fallback
 # package: jdg.fallback
 # deprecated: false
 #
-import data.jdg.helpers
+package jdg.fallback
+
 default decide := {"matched":false,"rule_id":"jdg.fallback.no_match","package":"jdg.fallback","priority":1099}
 
 # ══════ P1000: domestic_fallback_jdg — Domyślna stawka 23% VAT PL ══════

@@ -2,7 +2,7 @@
 # NexusAI JDG Policies — Cross-Domain Conflict Detection (R0586-R0612)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
+# DOCUMENTATION METADATA (kept as comments; not an OPA metadata annotation)
 # title: Cross-Domain Conflict Detection — IP Box vs B+R, Reprezentacja vs
 #        Marketing, Auto VAT vs KUP, Bad Debt Timing, Depreciation FX conflicts
 # description: |
@@ -28,6 +28,8 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.conflicts
+
+import future.keywords.in
 import data.jdg.helpers
 
 default decide := {
@@ -198,7 +200,7 @@ else := {
     input.invoice.ip_box_claimed == true
     qualified_types := {"SOFTWARE", "PATENT", "UTILITY_MODEL", "INDUSTRIAL_DESIGN", "INTEGRATED_CIRCUIT"}
     ip_type := object.get(input.invoice, "ip_asset_type", "")
-    not ip_type in qualified_types
+    not qualified_types[ip_type]
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -614,6 +616,18 @@ else := {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # P904: allowances_vs_loss — Strata blokuje ulgi osobiste (poza B+R carry-forward)
+allowance_claimed(profile) {
+    object.get(profile, "relief_donation_total", 0) > 0
+}
+
+allowance_claimed(profile) {
+    object.get(profile, "relief_rehabilitation_total", 0) > 0
+}
+
+allowance_claimed(profile) {
+    object.get(profile, "relief_internet_total", 0) > 0
+}
+
 else := {
     "matched": true,
     "rule_id": "jdg.conflicts.allowances_vs_loss",
@@ -625,20 +639,18 @@ else := {
     "conflict_resolution": "BLOCK_NON_RD_ALLOWANCES",
     "conflict_message": "JDG wykazuje stratę — ulgi osobiste nie mogą być odliczane (wyjątek: B+R carry-forward 6 lat)",
     "annual_income": annual_income,
-    "non_rd_allowances_claimed": allowances_claimed,
+    "non_rd_allowances_claimed": true,
     "rd_carry_forward_allowed": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Strata JDG — ulgi osobiste zablokowane",
     "_legal_basis": "Art. 26 ust. 1 PIT, Art. 26e ust. 8 PIT",
     "_warnings": [sprintf("STRATA %.2f PLN — ulgi osobiste NIE mogą być odliczane! Wyjątek: ulga B+R (carry-forward 6 lat).", [annual_loss])]
 } {
-    annual_income := object.get(input.jdg_entrepreneur, "annual_income", 0)
+    profile := object.get(input, "jdg_entrepreneur", {})
+    annual_income := object.get(profile, "annual_income", 0)
     annual_income <= 0
-    annual_loss := -annual_income
-    allowances_claimed := object.get(input.jdg_entrepreneur, "relief_donation_total", 0) > 0
-        or object.get(input.jdg_entrepreneur, "relief_rehabilitation_total", 0) > 0
-        or object.get(input.jdg_entrepreneur, "relief_internet_total", 0) > 0
-    allowances_claimed == true
+    annual_loss := 0 - annual_income
+    allowance_claimed(profile)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

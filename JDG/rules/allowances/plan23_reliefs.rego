@@ -5,6 +5,7 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.allowances
 import data.jdg.helpers
+import future.keywords.in
 
 default decide := {"matched":false,"rule_id":"jdg.allowances.no_match","package":"jdg.allowances","priority":99999}
 

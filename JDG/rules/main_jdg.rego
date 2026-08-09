@@ -76,7 +76,7 @@ import data.jdg.zus
 import data.jdg.zus.sickness_benefits
 import data.jdg.zus.health_contribution
 import data.jdg.mdr
-import data.jdg.mdr.enterprise
+import data.jdg.mdr.enterprise as mdr_enterprise
 import data.jdg.tp
 import data.jdg.solidarity
 import data.jdg.edelivery
@@ -111,7 +111,6 @@ import data.jdg.rodo_extended
 import data.jdg.validation
 import data.jdg.edge_cases
 import data.jdg.fallback
-import data.jdg.metadata
 import data.jdg.tax_optimization
 import data.jdg.cross_domain_hub
 import data.jdg.judicial_rulings
@@ -150,20 +149,20 @@ import data.jdg.p21_innovations
 import data.jdg.p22_innovations
 import data.jdg.p23_innovations
 import data.jdg.p24_innovations
-import data.jdg.hyper.general
-import data.jdg.hyper.deadlines
-import data.jdg.hyper.limits
-import data.jdg.hyper.mdr
-import data.jdg.hyper.misc
-import data.jdg.hyper.sanctions
-import data.jdg.hyper.audit
-import data.jdg.hyper.family
-import data.jdg.hyper.force_majeure
-import data.jdg.hyper.fx
-import data.jdg.hyper.edelivery
-import data.jdg.hyper.procurement
-import data.jdg.hyper.solidarity
-import data.jdg.hyper.wis
+import data.jdg.hyper.general as hyper_general
+import data.jdg.hyper.deadlines as hyper_deadlines
+import data.jdg.hyper.limits as hyper_limits
+import data.jdg.hyper.mdr as hyper_mdr
+import data.jdg.hyper.misc as hyper_misc
+import data.jdg.hyper.sanctions as hyper_sanctions
+import data.jdg.hyper.audit as hyper_audit
+import data.jdg.hyper.family as hyper_family
+import data.jdg.hyper.force_majeure as hyper_force_majeure
+import data.jdg.hyper.fx as hyper_fx
+import data.jdg.hyper.edelivery as hyper_edelivery
+import data.jdg.hyper.procurement as hyper_procurement
+import data.jdg.hyper.solidarity as hyper_solidarity
+import data.jdg.hyper.wis as hyper_wis
 import data.jdg.p33_uor_supplement
 import data.jdg.p33_pcc_complete
 import data.jdg.p33_excise_supplement
@@ -382,6 +381,9 @@ routing_context := {
     "transaction_type": build_transaction_type(input),
     "entity_status": build_entity_status(input),
     "evaluation_quarter": build_evaluation_quarter(input),
+    # Jawna data ewaluacji jest częścią kontraktu routingu (INV-036),
+    # niezależnie od pomocniczego numeru kwartału.
+    "evaluation_date": object.get(input, "evaluation_datetime", "2026-01-01"),
     "is_cross_border": is_cross_border_transaction(input),
     "has_employees": object.get(input.jdg_entrepreneur, "has_employees", false),
     "is_vat_payer": is_vat_payer_check(input),
@@ -396,15 +398,11 @@ build_transaction_type(inp) = tx_type {
 } else = tx_type {
     inp.invoice.direction == "SALE"
     vendor_country := object.get(inp.vendor, "country", "PL")
-    delivery_country := object.get(inp.delivery, "country", vendor_country)
-    service_country := object.get(inp.invoice, "service_performed_country", delivery_country)
-    supply_country := object.get(inp.invoice, "vat_place_of_supply", "PL")
     vendor_country != "PL"
     tx_type := "CROSS_BORDER_SALE"
 } else = tx_type {
     inp.invoice.direction == "SALE"
-    delivery_country := object.get(inp.delivery, "country", "PL")
-    delivery_country != "PL"
+    object.get(inp.delivery, "country", "PL") != "PL"
     tx_type := "CROSS_BORDER_SALE"
 } else = tx_type {
     inp.invoice.direction == "SALE"
@@ -422,7 +420,6 @@ build_transaction_type(inp) = tx_type {
 } else = tx_type {
     inp.invoice.direction == "PURCHASE"
     vendor_country := object.get(inp.vendor, "country", "PL")
-    delivery_country := object.get(inp.delivery, "country", vendor_country)
     vendor_country != "PL"
     tx_type := "IMPORT"
 } else = tx_type {
@@ -452,21 +449,21 @@ build_entity_status(inp) = status {
 
 # P03 GLM52 FIX: else-chain zamiast nielegalnych inline-guards (quarter = 1 { cond })
 build_evaluation_quarter(inp) = 1 {
-    eval_date := object.get(input, "evaluation_datetime", "2026-01-01")
+    eval_date := object.get(inp, "evaluation_datetime", "2026-01-01")
     month := to_number(substring(eval_date, 5, 2))
     month <= 3
 } else = 2 {
-    eval_date := object.get(input, "evaluation_datetime", "2026-01-01")
+    eval_date := object.get(inp, "evaluation_datetime", "2026-01-01")
     month := to_number(substring(eval_date, 5, 2))
     month > 3
     month <= 6
 } else = 3 {
-    eval_date := object.get(input, "evaluation_datetime", "2026-01-01")
+    eval_date := object.get(inp, "evaluation_datetime", "2026-01-01")
     month := to_number(substring(eval_date, 5, 2))
     month > 6
     month <= 9
 } else = 4 {
-    eval_date := object.get(input, "evaluation_datetime", "2026-01-01")
+    eval_date := object.get(inp, "evaluation_datetime", "2026-01-01")
     month := to_number(substring(eval_date, 5, 2))
     month > 9
 }
@@ -592,7 +589,7 @@ has_immutable_flag(v) {
 # jego wartości wygrywają nawet z risk.decide. To zamierzone — ZUS jest
 # prawnie niemutowalny. W praktyce risk BLOCK_AND_ALERT zachodzi PRZED
 # mergem (PASS 0), więc nie ma konfliktu z routingiem.
-safe_merge(a, b) = a {
+safe_merge(a, _) = a {
     has_immutable_flag(a)
 }
 
@@ -1037,7 +1034,7 @@ gated_abort_verdict = safe_merge(risk.decide,
 # DOMESTIC_PURCHASE → sharded_purchase_verdict (VAT deductions+corrections+KUP+bezpieczenstwo)
 # cross-border / non-ACTIVE → full_final_verdict (wszystkie pakiety dla bezpieczenstwa)
 # ═══════════════════════════════════════════════════════════════════════════════
-final_verdict = gated_abort_verdict {
+selected_final_verdict = gated_abort_verdict {
     risk.decide._routing == "BLOCK_AND_ALERT"
 } else = gated_abort_verdict {
     routing.decide._routing == "BLOCK_AND_ALERT"
@@ -1061,7 +1058,7 @@ final_verdict = gated_abort_verdict {
 # PIT, ZUS) ma priorytet nad conflicts dla pól _routing/rule_id — conflicts
 # NIE może nadpisać BLOCK_AND_ALERT z risk. Pole _cross_domain_conflicts
 # jest tylko do odczytu, nie zmienia decyzji.
-final_verdict_with_conflicts = safe_merge(final_verdict, conflicts.decide)
+final_verdict_with_conflicts = safe_merge(selected_final_verdict, conflicts.decide)
 
 # Enterprise Enrichment: dodaj analizy strategiczne do finalnego werdyktu
 # v7.0 FIX (Rekomendacja 6): object.union → safe_merge. Pakiety advisory
@@ -1709,9 +1706,18 @@ final_verdict_p25 = safe_merge(final_verdict_p24,
 # Host NIGDY nie wykonuje AUTO_POST dla werdyktu z _certainty_guard =
 # CERTAINTY_BLOCKED (INV-006/INV-035) — gwarancja „nigdy zła decyzja".
 # ═══════════════════════════════════════════════════════════════════════════════
-final_verdict_enforced = object.union(final_verdict_p25,
-    object.union(runtime_invariants.enforce(final_verdict_p25),
-        {"_routing_context": routing_context}))
+# Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
+# rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
+final_verdict_post_merge = object.union(final_verdict_p25,
+    {"_routing_context": routing_context})
+
+final_verdict_enforced = object.union(final_verdict_post_merge,
+    runtime_invariants.enforce(final_verdict_post_merge))
+
+# Publiczny kontrakt OPA/API: każde odwołanie do data.jdg.main.final_verdict
+# musi zwracać wynik po POST-MERGE invariants i certyfikacie, nigdy surowy
+# selected_final_verdict.
+final_verdict = final_verdict_enforced
 
 # final_verdict_p20 = kompletny werdykt P01 + ... + P19 + P20 (Neural Mesh + Innowacje v8).
 # final_verdict_p19 = kompletny werdykt P01 + ... + P18 + P19 (HR i Świadczenia).

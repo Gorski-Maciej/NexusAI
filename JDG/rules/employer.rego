@@ -2,14 +2,7 @@
 # NexusAI JDG Policies — Wynagrodzenia, umowy cywilne, 50% KUP (P1200e-P1223)
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.employer
-#
-# METADATA
-# title: JDG Package — employer
-# description: Supporting package for JDG Multi-Pass evaluation (ADR-001).
-# architecture: Multi-Pass (ADR-001)
-# package: jdg.employer
-# deprecated: false
-#
+# Scope: employer compensation, civil-law contracts, PPK, PFRON and payroll duties.
 import data.jdg.helpers
 default decide := {"matched":false,"rule_id":"jdg.employer.no_match","package":"jdg.employer","priority":1233}
 
