@@ -1,0 +1,180 @@
+==============================================================================
+🚨 INSTRUKCJA DLA MODELU GLM 5.2
+PROMPT 18/25 — NARZĘDZIA SYSTEMOWE (walidacja, lint, pokrycie prawne, legal twin, golden replay, CI)
+==============================================================================
+
+Jesteś Najwyższej Klasy Ekspertem — Ekspertem ENTERPRISE od narzędzi deweloperskich dla Policy-as-Code: walidatorów, linterów, audytów legalnych, golden replay, chaos engineeringu i CI/CD dla OPA.
+
+## ⚠️ KRYTYCZNE ZASADY (przeczytaj, zrozum i ZAPAMIĘTAJ):
+1. **NIE GENERUJ KODU** — Twoim zadaniem jest wyłącznie analiza i wygenerowanie **OGROMNEGO, ROZBUDOWANEGO RAPORTU ANALITYCZNEGO** w formacie plain text (.txt).
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz istniejący kod/dokumentację, nie tworzysz nowego.
+3. Raport zapisz jako plik: `JDG/raporty_glm52/RAPORT_18_NARZEDZIA_SYSTEM.txt` (plain text .txt, kodowanie UTF-8).
+4. **BUDŻET KONTEKSTU (WAŻNE):** Twoje okno kontekstowe ma 1 000 000 tokenów. Dane i informacje, które przeczytasz i zapamiętasz z plików, mogą zająć **maksymalnie 50% okna (~500 000 tokenów)**. Pozostałą część okna ZAREZERWUJ na: głębokie myślenie, głęboką analizę, wyprowadzanie wniosków, projektowanie rozwiązań i generowanie raportu. Jeśli zestaw plików jest duży — czytaj selektywnie (nagłówki, kluczowe reguły, statystyki), zachowując budżet 50%.
+5. Pracuj WYŁĄCZNIE na plikach wskazanych poniżej — linki są podane wprost, nie szukaj plików po omacku. Jeśli brakuje kontekstu, odwołaj się do PLIKÓW ŚWIĘTYCH.
+6. Cel Twojej pracy: osiągnąć **zaawansowany poziom Enterprise** w każdym wymiarze. Pracuj na **zaawansowanym poziomie Enterprise**, a każda rekomendacja ma reprezentować **poziom ENTERPRISE**, którego nie powstydziłby się najlepszy ekspert branżowy.
+
+## 🏛️ PLIKI ŚWIĘTE (czytaj ZAWSZE — to fundament, ostateczna struktura docelowa modułu JDG):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+> „ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md" (cel V1: Control Plane + Data Plane, cykl życia reguły, pipeline adaptacji do zmian prawa) oraz „WIZJA_OPA_ENTERPRISE_V2.md" (V2: Legal Twin / LKG, runtime invariants, weryfikacja formalna, Decision Certificate, Law Radar, Declarative Change) to **dwa NAJWAŻNIEJSZE pliki** — moduł JDG ma się rozwijać zgodnie z nimi (ADR-016…ADR-021). „docs/Bbb" zawiera akty prawne (rok 2026), z którymi reguły OPA MUSZĄ być zgodne. Każdą rekomendację odnieś do tych plików. Rozwijaj moduł na **zaawansowanym poziomie Enterprise**, osiągając **poziom ENTERPRISE** w każdym aspekcie: regułach, systemie, testach i dokumentacji.
+
+## 📜 ŹRÓDŁA PRAWA — AKTY, KTÓRYM MUSZĄ ODPOWIADAĆ REGUŁY (szczegóły w docs/Bbb):
+1) Prawo przedsiębiorców (Dz.U. 2025 poz. 123) + CEIDG (Dz.U. 2025 poz. 456) + zarząd sukcesyjny (Dz.U. 2025 poz. 1234)
+2) Ustawa o VAT (Dz.U. 2025 poz. 456) + rozporządzenie MF o obniżonych stawkach VAT (2024-12-04)
+3) Ustawa o PIT (Dz.U. 2025 poz. 789) + rozporządzenie MF w sprawie wzorów zeznań PIT (2025-12-30)
+4) Ustawa o zryczałtowanym podatku dochodowym (Dz.U. 2025 poz. 234) — ryczałt + karta podatkowa
+5) Ordynacja podatkowa (Dz.U. 2025 poz. 234)
+6) Ustawa o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345) + rozporządzenie MPiPS ws. podstawy wymiaru składek (2025-12-30)
+7) Ustawa o świadczeniach opieki zdrowotnej (Dz.U. 2025 poz. 890) — składka zdrowotna
+8) Ustawa o rachunkowości (Dz.U. 2025 poz. 567) + rozporządzenie MF ws. PKPiR (2025-11-15)
+9) JPK_VAT z deklaracją (rozporządzenie MF 2025-07-15) + ustawa KSeF (Dz.U. 2023 poz. 1598) + wzór faktury ustrukturyzowanej (2025-10-05)
+10) Akty pomocnicze: interpretacje KIS, interpretacje ogólne MF, projekty RCL, ISAP
+11) Dodatkowo w module: KKS (Kodeks karny skarbowy), ustawa o PCC, ustawa o podatku akcyzowym,
+    ustawa o podatkach i opłatach lokalnych, RODO, AML/CBDD, BDO, Prawo budowlane, ustawa o rehabilitacji zawodowej
+
+Dla każdej reguły w swojej części sprawdź: (a) czy istnieje węzeł prawa dla podstawy `_legal_basis`, (b) czy wartości liczbowe (stawki, progi, limity, terminy) są zgodne z aktami powyżej i z `bundles/legal_reference_canon.json`, (c) czy temporalność `valid_from`/`valid_to` pokrywa nowelizacje.
+
+## 🎯 CEL ANALIZY TEJ CZĘŚCI:
+Przeprowadź głębokie myślenie i przeprowadź głęboką analizę NARZĘDZI SYSTEMOWYCH na zaawansowanym poziomie Enterprise. Te narzędzia realizują wymóg „OPA jako SYSTEM" — szybką i prostą adaptację do zmian prawa. Oceń: validate_rules.py (9 walidacji), lint_rego_rules.py (6-check), generate_manifest.py, generate_coverage_report.py, validate_legal_basis.py (+v2, p24), hardcoded_audit.py + hardcoded_audit_gate.py (ADR-002), dead_rule_detector.py, tautology_guard.py, else_chain_dead_code_detector.py, cross_ref_validator.py, doc_consistency_validator.py, traceability_matrix.py, legal_coverage_heatmap.py, legal_basis_audit.py, legal_coverage_gap_report.py, legal_change_calendar.py, law_radar.py, law_impact_matrix.py, legal_twin.py, golden_replay.py, declarative_change.py, invariant_checker.py, decision_certificate.py, confidence_dashboard.py, policies_sync_gate.py, zero_defect_certification.py, rule_provenance_dna.py, self_healing_engine.py, chaos_engineering.py, predictive_audit_shield.py, adaptive_trust_score.py, cross_package_conflict_detector.py, rule_impact_simulator.py, temporal_drift_detector.py, isap_drift_alarm.py, isap_crawler.py, isap_rule_update_pipeline.py, rule_lifecycle_manager.py, decision_quality_monitor.py, enterprise_dashboard.py, migration_impact_analyzer.py, initiative_numbering_auditor.py, adr_auto_proposer.py, policy_registry_api.py, data_service.py, deployment_orchestrator.py, manifest_v2.py, api_doc_generator.py, doc_coverage_map.py, verify_prompt_coverage.py, sc_legal_graph.py, regulatory_radar.py, sc_verdict_streaming.py, sc_context_enricher.py, live_architecture_diagrams.py. Oceń każdy plik: poprawność, kompletność, integrację z CI, pokrycie wymogów V1/V2 (Legal Twin, Declarative Change, Decision Certificate, Law Radar). Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+## 📂 PLIKI DO PRZECZYTANIA I PRZEANALIZOWANIA (linki — nie szukaj innych):
+
+### WALIDACJA I JAKOŚĆ (JDG/tools/ + katalog główny JDG)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/lint_rego_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_manifest.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_coverage_report.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/generate_missing_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_coverage_report.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/hardcoded_audit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/hardcoded_audit_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/dead_rule_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/tautology_guard.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/else_chain_dead_code_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/cross_ref_validator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/doc_consistency_validator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zero_defect_certification.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_provenance_dna.py
+
+### LEGAL I POKRYCIE (JDG/tools/)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_legal_basis.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_legal_basis_v2.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_p24_legal_basis.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_basis_audit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_coverage_heatmap.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_coverage_gap_report.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_change_calendar.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/law_radar.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/law_impact_matrix.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_twin.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/golden_replay.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/declarative_change.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/traceability_matrix.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tools/doc_coverage_map.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tools/sc_legal_graph.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tools/regulatory_radar.py
+
+### SYSTEM I CI (JDG/tools/)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_lifecycle_manager.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/decision_quality_monitor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_crawler.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_rule_update_pipeline.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_drift_alarm.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/self_healing_engine.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/chaos_engineering.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/predictive_audit_shield.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/adaptive_trust_score.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/cross_package_conflict_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_impact_simulator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/temporal_drift_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/invariant_checker.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/decision_certificate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/confidence_dashboard.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/policies_sync_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/enterprise_dashboard.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/migration_impact_analyzer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/initiative_numbering_auditor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/adr_auto_proposer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/policy_registry_api.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/data_service.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/deployment_orchestrator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/manifest_v2.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/api_doc_generator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tools/verify_prompt_coverage.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tools/sc_verdict_streaming.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tools/sc_context_enricher.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/tools/live_architecture_diagrams.py
+
+## 🔀 KOMBINACJE PRZEKROJOWE — ANALIZUJ Z KAŻDEJ STRONY OPA (WYMÓG):
+Nie analizuj reguł w izolacji. Dla KAŻDEGO pliku reguł z tej części wykonaj **przeprowadź głęboką analizę** z każdej z następujących stron, tworząc pełną sieć zależności (transparentność i niezawodność):
+1. **Strona PRAWA** — zgodność z aktami z docs/Bbb (artykuł/ustęp), kanoniczna podstawa `_legal_basis`.
+2. **Strona REGUŁY** — logika, else-chain, priorytety, First-Match-Wins, safe_merge, brak duplikatów rule_id.
+3. **Strona TESTÓW** — czy istnieją testy (pytest i natywne Rego) dowodzące zachowania; które przypadki brakują.
+4. **Strona SYSTEMU** — cykl życia reguły (SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK), kanary, auto-rollback.
+5. **Strona DANYCH** — czy wartości (stawki, progi, limity, terminy) pochodzą z bundles (legal_reference_canon).
+6. **Strona WERDYKTU** — determinizm, czas wykonania, pełny dowód (Decision Certificate), provenance.
+Każdą lukę zgłoś łącznie: artykuł ustawy → brakująca reguła → brakujący test → wpływ na werdykt. To jest **zaawansowany poziom Enterprise**: super-inteligentna sieć zależności już od jednej reguły.
+
+### 🧪 TESTY DOMENOWE — PRZECZYTAJ JE RÓWNIEŻ (kombinacja reguły ↔ testy):
+- „Dowód działania" to nie tylko reguła, ale i test, który ją potwierdza. Przeanalizuj, czy testy pokrywają wszystkie przypadki z reguł; wskaż brakujące testy dla każdej luki.
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_payment_priority_service.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_priority_engine.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_risk_guard.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_risk_guard_integration.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_semantic_guard.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_tax_pipeline.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_tax_rules.py
+
+## 🔗 CZĘŚCI POWIĄZANE (SPÓJNOŚĆ MIĘDZY CZĘŚCIAMI — BARDZO WAŻNE):
+- ZANIM zaczniesz: przeczytaj raport master **00_FUNDAMENT** oraz raporty części wskazanych poniżej z katalogu `JDG/raporty_glm52/` (jeśli istnieją). Twoje rekomendacje MUSZĄ być spójne z nimi: wspólne `rule_id` (`jdg.<domena>.<kategoria>`), wspólne nazwy pakietów Rego, wspólny słownik (werdykt 25-polowy, First-Match-Wins, safe_merge), zero konfliktów nazw i zero duplikatów.
+- Części powiązane (numery promptów): 00, 16, 19, 21, 22.
+- W raporcie umieść sekcję **„KONTRAKTY Z INNYMI CZĘŚCIAMI"**: lista rule_id/pakietów, które Twój raport tworzy, zmienia lub na których polega — aby inne części (następne prompty) mogły bez konfliktów wdrożyć swoje zmiany. **Zmiany z jednego raportu muszą być spójnie połączone z innymi częściami** — to łańcuch, nie zbiór niezależnych analiz.
+
+## ⚙️ OPA MUSI BYĆ ROZBUDOWANYM SYSTEMEM (wymóg nadrzędny — włącz do swojej analizy):
+Prawo jest bardzo zmienne: zmiana reguł OPA oraz dodawanie i usuwanie reguł musi być **sprawne, niezawodne i proste**. Silnik reguł podatkowych OPA musi się **szybko i profesjonalnie adaptować do zmian** prawa. Dlatego OPA to nie zbiór reguł, lecz SYSTEM: control plane (tworzenie, weryfikacja, testowanie, wersjonowanie, podpisywanie, dystrybucja, wdrażanie kanarkowe, monitorowanie, wycofywanie reguł), data plane (ewaluacja), deklaratywne manifesty reguł, hot-reload parametrów, cykl życia SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK, kill-switch, auto-rollback, Law Radar (projekty ustaw, nie tylko publikacje), Declarative Change („człowiek opisuje zmianę, maszyna ją wykonuje"). W Twoim raporcie znajdź miejsce, gdzie Twoja część wzmacnia tę „systemowość" — a nie tylko dokłada reguły.
+**Przeprowadź głębokie myślenie** nad tym, jak Twoja część wzmacnia systemowość OPA, oraz **przeprowadź głęboką analizę** cyklu życia reguł (dodanie→zmiana→usunięcie) w swojej domenie. Docelowy stan to **poziom ENTERPRISE** i **zaawansowany poziom Enterprise** w całym łańcuchu: prawo → reguła → test → bundle → werdykt. Wskaż też **innowacyjne ulepszenia wyprzedzające profesjonalistów**, które upraszczają obsługę zmiany prawa dla operatora i prawnika.
+
+## 🧠 JAK ANALIZOWAĆ (metodologia obowiązkowa):
+1. **Przeprowadź głębokie myślenie** nad architekturą części — zanim cokolwiek ocenisz.
+2. **przeprowadź głęboką analizę** każdego pliku: role, rule_id, warunki, podstawy prawne, progi.
+3. Oceń wszystko na **zaawansowanym poziomie Enterprise** — to ma być system klasy **poziom ENTERPRISE**.
+4. Dla każdej luki podaj: konkretny artykuł/ustęp aktu prawnego, brakującą regułę (opis, nie kod), proponowany `rule_id`, priorytet (P0/P1/P2), wpływ na decyzje, ryzyko błędu i czas naprawy.
+5. **Przeprowadź głębokie myślenie** nad konsekwencjami każdej zmiany dla pozostałych części (łańcuch spójności raportów) — zero konfliktów rule_id, zero duplikatów.
+6. **przeprowadź głęboką analizę** temporalności (`valid_from`/`valid_to`) i podstaw prawnych `_legal_basis` względem aktów z docs/Bbb (zgodność z prawem = fundament pewności).
+7. Wymyśl **innowacyjne ulepszenia wyprzedzające profesjonalistów** — rozwiązania, których nie ma nawet w najlepszych biurach rachunkowych i produktach konkurencji.
+8. **Przeprowadź głębokie myślenie** o scenariuszach awaryjnych (zmiana prawa w trakcie roku, masowe korekty, niedostępność KSeF, atak na dane) — jak reaguje Twoja część?
+9. **przeprowadź głęboką analizę** odporności i niezawodności — zero crashy, zero nieokreśloności, deterministyczne werdykty, szybkie odzyskiwanie.
+10. Każdą rekomendację odnieś do filarów V1/V2 (Control Plane, Data Plane, Legal Twin, runtime invariants, Decision Certificate, Law Radar, Declarative Change, zero-hardcode, temporalność, golden replay, kanary i auto-rollback).
+## 🧠 FRAZY OBOWIĄZKOWE W TWOJEJ PRACY (każda użyj MINIMUM 4 razy w trakcie analizy):
+- „Przeprowadź głębokie myślenie" — 4+ razy (np. przed każdą sekcją analityczną)
+- „przeprowadź głęboką analizę" — 4+ razy (przed każdym audytem)
+- „zaawansowany poziom Enterprise" — 4+ razy
+- „poziom ENTERPRISE" — 4+ razy
+- „innowacyjne ulepszenia wyprzedzające profesjonalistów" — 4+ razy
+
+## 📐 FORMAT RAPORTU (obowiązkowy):
+- Tytuł: „RAPORT ANALITYCZNY ENTERPRISE — NARZĘDZIA SYSTEMOWE (walidacja, lint, pokrycie prawne, legal twin, golden replay, CI)"
+- Dokument musi reprezentować **zaawansowany poziom Enterprise** i **poziom ENTERPRISE** — precyzja, zero nieporozumień, zero wątpliwości co do reguł i ich podstaw prawnych.
+- Executive Summary (1 strona) z TOP 10 rekomendacji (priorytety P0/P1/P2)
+- Diagramy Mermaid (przepływy decyzyjne, architektura, zależności między regułami)
+- Tabele pokrycia: artykuł ustawy → reguły istniejące → luki → status (A/B/C)
+- Sekcja „OPA JAKO SYSTEM" — wzmocnienie control plane / adaptacji do zmian prawa
+- Sekcja „KONTRAKTY Z INNYMI CZĘŚCIAMI" — spójność łańcucha raportów
+- Sekcja „GENIALNE POMYSŁY ENTERPRISE" — **innowacyjne ulepszenia wyprzedzające profesjonalistów** (min. 12 pomysłów, każdy z opisem działania i korzyści)
+- Mapa drogowa: uszeregowane wg krytyczności, szacowany czas naprawy, wpływ, ryzyko błędnej decyzji
+- Minimalna długość: 25–40 stron tekstu (bardzo rozbudowany raport; im więcej precyzyjnych, działających na wyobraźnię rozwiązań klasy **poziom ENTERPRISE**, tym lepiej)
+- Język: polski (terminologia techniczna może być angielska)
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Generujesz WYŁĄCZNIE OGROMNY RAPORT ANALITYCZNY .txt klasy ENTERPRISE. **Przeprowadź głębokie myślenie** i **przeprowadź głęboką analizę** na **zaawansowanym poziomie Enterprise** — ten raport ma reprezentować najwyższy **poziom ENTERPRISE**.
+
+## 🧹 NA ZAKOŃCZENIE PRACY (WYKONAJ DOKŁADNIE):
+1. Zapisz kompletny raport jako plik `.txt` w `JDG/raporty_glm52/` (nazwa podana w ZASADACH).
+2. **WYCZYŚĆ OKNO KONTEKSTOWE** — zakończ pracę, zapomnij o tej analizie (nowa, czysta sesja). Dzięki temu GLM 5.2 płynnie przejdzie do następnego Promptu z pełną pojemnością okna.
+3. Następny Prompt do wklejenia: `JDG/prompty_glm52/19_NARZĘDZIA_DOMENOWE_generatory_reguł_audytory.txt`
+4. Powtórz procedurę dla każdego kolejnego Promptu, aż do ostatniego (24_POLICIES).
+

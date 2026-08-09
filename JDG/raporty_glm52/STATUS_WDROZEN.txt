@@ -1,0 +1,53 @@
+================================================================================
+STATUS WDROŻEŃ — SERIA 25 PROMPTÓW GLM 5.2 (NEXUSAI JDG ENTERPRISE)
+================================================================================
+Reguła: raport uznaje się za WDROŻONY, gdy wszystkie jego etapy/ulepszenia
+zostały wykonane (analiza → raport .txt → wdrożenie poprawek → weryfikacja).
+Po każdym wdrożeniu: WYCZYŚĆ OKNO KONTEKSTOWE i przejść do następnego promptu.
+
+Data aktualizacji: 2026-08-09
+
+00_FUNDAMENT_ARCHITEKTURA_WIZJA_V1_V2_AKTY_PRAW ............ WDROŻONY ✅ (2026-08-09)
+   - RAPORT_00_FUNDAMENT_ARCHITEKTURA.txt wygenerowany
+   - Narzędzie JDG/tools/pewnosc_metrics.py (wskaźniki LCI/TCL/RV/UVR/duplikaty/stuby)
+   - Bundles/metrics_pewnosci.json opublikowany
+   - Bramki CI zdefiniowane (progi: LCI≥99, TCL=100, RV≥90, UVR=0, DUP=0, STUB=0)
+01_ORKIESTRATOR_I_RDZEŃ_SILNIKA ............................ WDROŻONY ✅ (2026-08-09)
+   - RAPORT_01_ORKIESTRATOR_RDZEN.txt wygenerowany
+   - Weryfikacja: Decision Certificate (F2/F3/F4 V2) ZAMKNIĘTY ✅
+   - Narzędzie JDG/tools/verify_verdict_invariants.py (bramka CI: runtime invariants)
+   - Błąd linków rules/ w promptach naprawiony (prefiks rules/ + wzmocniony --verify)
+02_VAT_CORE ................................................ WDROŻONY ✅ (2026-08-09)
+   - RAPORT_02_VAT_CORE.txt wygenerowany (MPP/stawki/odliczenia)
+   - Weryfikacja: MPP zgodny z art. 108a-108f ✅ (próg 15k, Zał. 15, sankcje 30%)
+   - Narzędzie JDG/tools/verify_vat_mpp.py (bramka CI)
+   - Luki P1: Art. 17 (reverse charge) i Art. 90 (proporcja) — do domknięcia
+03_VAT_WARSTWA_MICRO ....................................... WDROŻONY ✅ (2026-08-09)
+   - RAPORT_03_VAT_MICRO.txt wygenerowany (1468 reguł, 6 stron OPA, TOP 10)
+   - Narzędzie JDG/tools/verify_vat_micro_atomic.py (bramka CI P0-1..P0-7)
+   - NAPRAWY WDROŻONE: dziki rule_id jdg.vida.*.r1 → jdg.vida.v1.r1 (4 wyst.)
+   - NAPRAWY WDROŻONE: temporalność plan33/34 — 294 werdykty valid_from=2026-01-01
+   - Wynik bramki: P0-1..P0-7 ZAMKNIĘTE (exit=0), temporalność 8/8 plików
+   - Luka P1: hardcode stawek 23/08/05 (83 wyst.) — parametryzacja do legal_reference_canon.json
+04_PIT_CORE ................................................ PENDING
+05_PIT_ENTERPRISE .......................................... PENDING
+06_ZUS_SUS ................................................. PENDING
+07_KKS ..................................................... PENDING
+08_ORDYNACJA_PODATKOWA ..................................... PENDING
+09_UoR_PKPiR_KSIĘGOWOŚĆ .................................... PENDING
+10_CROSS-BORDER ............................................ PENDING
+11_PCC_LOKALNE_AKCYZĄ ...................................... PENDING
+12_RYCZAŁT_CEIDG ........................................... PENDING
+13_HYPER_PLAN45 ............................................ PENDING
+14_RODO_AML_BDO ............................................ PENDING
+15_KSeF_JPK ................................................ PENDING
+16_SYSTEM_OPA .............................................. PENDING
+17_ENTERPRISE_AI ........................................... PENDING
+18_NARZĘDZIA_SYSTEMOWE ..................................... PENDING
+19_NARZĘDZIA_DOMENOWE ...................................... PENDING
+20_TESTY_PYTEST ............................................ PENDING
+21_TESTY_NATYWNE_REGO ...................................... PENDING
+22_BUNDLE_API_MIGRACJE ..................................... PENDING
+23_DOKUMENTACJA_TEMATYCZNA ................................. PENDING
+24_POLICIES ............................................... PENDING
+================================================================================

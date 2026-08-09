@@ -28691,10 +28691,10 @@ else := {
 } {
     object.get(input.jdg_entrepreneur, "vat_rr_r15_check", false) == true
 }
-# jdg.vida.*.r1 — `vida_*_r1`: przepis szczegółowy → Punkt kontrolny
+# jdg.vida.v1.r1 — `vida_*_r1`: przepis szczegółowy → Punkt kontrolny
 else := {
     "matched": true,
-    "rule_id": "jdg.vida.*.r1",
+    "rule_id": "jdg.vida.v1.r1",
     "package": "jdg.micro.general",
     "priority": 50519,
     "vat_rate": "",
@@ -28710,9 +28710,9 @@ else := {
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "",
-    "_routing_reason": "[MICRO] jdg.vida.*.r1 — punkt kontrolny OPA dla JDG",
+    "_routing_reason": "[MICRO] jdg.vida.v1.r1 — punkt kontrolny OPA dla JDG",
     "_legal_basis": "Przepisy prawa polskiego",
-    "_warnings": ["[MICRO] jdg.vida.*.r1: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
+    "_warnings": ["[MICRO] jdg.vida.v1.r1: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "vida_*_r1_check", false) == true
 }

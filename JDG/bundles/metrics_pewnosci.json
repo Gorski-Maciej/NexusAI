@@ -1,0 +1,215 @@
+{
+  "generated_at": null,
+  "lci": 55.56,
+  "tcl": 5.33,
+  "rv": 5.88,
+  "uvr": 1138,
+  "duplikaty": 396,
+  "stuby": 428,
+  "szczegoly": {
+    "lci": {
+      "lci": 55.56,
+      "punkty_prawne_calosc": 1935,
+      "punkty_pokryte_szac": 1075,
+      "proba_art": 27
+    },
+    "legal_basis": {
+      "rv": 5.88,
+      "tcl": 5.33,
+      "ok": 655,
+      "non_canonical": 10493,
+      "missing": 268,
+      "unknown_act": 870,
+      "rules_total": 12286
+    },
+    "duplikaty_szczegoly": [
+      [
+        "jdg.accounting.no_match",
+        [
+          "rules/accounting.rego",
+          "rules/accounting/plan42_pkpir.rego",
+          "rules/accounting/plan23_leasing.rego"
+        ]
+      ],
+      [
+        "jdg.accounting.pkpir_col1_sequential",
+        [
+          "rules/accounting.rego",
+          "rules/accounting/pkpir_enterprise_validation.rego"
+        ]
+      ],
+      [
+        "jdg.accounting.pkpir_col8_other_revenue",
+        [
+          "rules/accounting.rego",
+          "rules/accounting/pkpir_enterprise_validation.rego"
+        ]
+      ],
+      [
+        "jdg.allowances.no_match",
+        [
+          "rules/allowances.rego",
+          "rules/allowances/plan23_reliefs.rego"
+        ]
+      ],
+      [
+        "jdg.crossborder.no_match",
+        [
+          "rules/crossborder.rego",
+          "rules/crossborder/plan23_ue.rego"
+        ]
+      ],
+      [
+        "jdg.employer.ppk_auto_enrollment",
+        [
+          "rules/employer.rego",
+          "rules/employer.rego"
+        ]
+      ],
+      [
+        "jdg.employer.peron_contribution",
+        [
+          "rules/employer.rego",
+          "rules/employer.rego"
+        ]
+      ],
+      [
+        "jdg.international.no_match",
+        [
+          "rules/international.rego",
+          "rules/international_expanded.rego"
+        ]
+      ],
+      [
+        "jdg.kks.no_match",
+        [
+          "rules/kks.rego",
+          "rules/kks/plan42_detailed.rego",
+          "rules/kks/plan44_kks_conviction.rego",
+          "rules/kks/plan43_decomposition.rego"
+        ]
+      ],
+      [
+        "jdg.kks.unreliable_pkpir_art56",
+        [
+          "rules/kks.rego",
+          "rules/kks/plan42_detailed.rego"
+        ]
+      ]
+    ],
+    "stuby_szczegoly": [
+      [
+        "rules/allowances.rego",
+        1
+      ],
+      [
+        "rules/business.rego",
+        1
+      ],
+      [
+        "rules/compliance.rego",
+        1
+      ],
+      [
+        "rules/conflicts.rego",
+        1
+      ],
+      [
+        "rules/corrections.rego",
+        1
+      ],
+      [
+        "rules/crossborder.rego",
+        1
+      ],
+      [
+        "rules/digital.rego",
+        1
+      ],
+      [
+        "rules/edge_cases.rego",
+        1
+      ],
+      [
+        "rules/employer.rego",
+        1
+      ],
+      [
+        "rules/environmental.rego",
+        1
+      ],
+      [
+        "rules/fallback.rego",
+        3
+      ],
+      [
+        "rules/international.rego",
+        1
+      ],
+      [
+        "rules/kks.rego",
+        1
+      ],
+      [
+        "rules/ksef_jpk.rego",
+        1
+      ],
+      [
+        "rules/liability.rego",
+        1
+      ],
+      [
+        "rules/local_taxes.rego",
+        1
+      ],
+      [
+        "rules/mpips.rego",
+        1
+      ],
+      [
+        "rules/representation.rego",
+        1
+      ],
+      [
+        "rules/restructuring.rego",
+        1
+      ],
+      [
+        "rules/retention.rego",
+        1
+      ]
+    ]
+  },
+  "bramki_ci": [
+    {
+      "wskaźnik": "LCI ≥ 99%",
+      "ok": false,
+      "prog": "NIESPEŁNIONY"
+    },
+    {
+      "wskaźnik": "TCL = 100%",
+      "ok": false,
+      "prog": "NIESPEŁNIONY"
+    },
+    {
+      "wskaźnik": "RV ≥ 90%",
+      "ok": false,
+      "prog": "NIESPEŁNIONY"
+    },
+    {
+      "wskaźnik": "UVR = 0",
+      "ok": false,
+      "prog": "NIESPEŁNIONY"
+    },
+    {
+      "wskaźnik": "duplikaty = 0",
+      "ok": false,
+      "prog": "NIESPEŁNIONY"
+    },
+    {
+      "wskaźnik": "stuby = 0",
+      "ok": false,
+      "prog": "NIESPEŁNIONY"
+    }
+  ]
+}

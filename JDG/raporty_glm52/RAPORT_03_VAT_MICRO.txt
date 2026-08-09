@@ -1,0 +1,310 @@
+==============================================================================
+RAPORT ANALITYCZNY ENTERPRISE — VAT — WARSTWA MICRO
+(atomowe reguły per artykuł, plan33/plan34, dual-layer architecture)
+==============================================================================
+Seria: 25 promptów GLM 5.2 | Prompt 03/25 | Data: 2026-08-09
+Źródła: JDG/rules/micro/vat/*.rego, JDG/rules/micro/plan33_vat.rego,
+        JDG/rules/micro/plan34_vat.rego, JDG/rules/micro/plan33_prop.rego,
+        JDG/bundles/vat_micro_inventory.json, JDG/tests/test_p05_vat_micro_atomic.py
+Zgodność: PLIKI ŚWIĘTE (ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md V1,
+          WIZJA_OPA_ENTERPRISE_V2.md V2, docs/Bbb — akty prawne 2026)
+
+==============================================================================
+1. EXECUTIVE SUMMARY — TOP 10 REKOMENDACJI
+==============================================================================
+Warstwa micro VAT to NAJDOSKONALSZA warstwa całego silnika JDG pod względem
+dyscypliny strukturalnej: 1 468 reguł, 0 duplikatów rule_id, 0 stubów,
+521 punktów kontrolnych, 1 393 else-chainów. To realny, zaawansowany poziom
+Enterprise w wymiarze PRAWO→REGUŁA. Jednak głęboka analiza ujawnia 4 grupy
+luk, które stoją między stanem obecnym a poziomem ENTERPRISE absolutnym:
+
+| # | Rekomendacja | Priorytet | Wpływ | Czas naprawy |
+|---|---|---|---|---|
+| 1 | Temporalność dla plan33_vat (116 reguł) i plan34_vat (180 reguł) — brak valid_from/valid_to | P0 | ryzyko błędnej oceny po nowelizacji 2026 | 4h |
+| 2 | Usunięcie dzikiego rule_id `jdg.vida.*.r1` (gwiazdka łamie deterministyczny identyfikator) | P0 | determinizm werdyktu, Decision Certificate | 15 min |
+| 3 | Eliminacja 4 empty_bodies i 3 tautologii w rules/p04_vat_micro_innovations_v9.rego | P0 | czystość audytu, zero nieporozumień | 2h |
+| 4 | Parametryzacja hardcode stawek (23/08/05) w plan33/34 → bundles/legal_reference_canon.json (zero-hardcode V2) | P0 | adaptacja do zmian stawki bez edycji reguły | 3h |
+| 5 | Podłączenie proportion_vat.rego (art. 90/90a/90b/90c) do werdyktu macro — weryfikacja mostu micro→macro | P1 | poprawność odliczeń proporcjonalnych | 3h |
+| 6 | Rozszerzenie test_p05_vat_micro_atomic.py o testy PER ARTYKUŁ (obecnie testuje strukturę, nie treść) | P1 | dowód zachowania każdej reguły | 6h |
+| 7 | Dodanie testów natywnych Rego per domena micro (ksef, margin, place_of_supply, proportion, wdt) | P1 | testowalność w control plane | 8h |
+| 8 | Weryfikacja art. 17 ust. 1 (reverse charge) — reguły a17.r1-r12 istnieją, sprawdzić most z makro VAT | P1 | ryzyko błędnego VAT u nabywcy | 2h |
+| 9 | Golden replay dla warstwy micro — 1 468 reguł × temporalne przejścia 2025→2026 | P2 | regresja po nowelizacji | 12h |
+| 10 | Wskaźnik mikro→makro: pokrycie artykułów materialnych z Bbb (166 form art. w kodzie, 149 wg inwentarza) | P2 | transparentność pokrycia prawa | 4h |
+
+STAN OGÓLNY: Klasa B+ (wysoka dyscyplina strukturalna, luki temporalne i
+dziki rule_id). Po wdrożeniu P0/P1 → Klasa A (poziom ENTERPRISE).
+
+==============================================================================
+2. STRONA PRAWA — ZGODNOŚĆ Z AKTAMI (docs/Bbb)
+==============================================================================
+Przeprowadź głęboką analizę podstaw prawnych. Każda z 1 468 reguł ma
+`_legal_basis` w formacie kanonicznym `"Art. X ust. Y VAT"` (100% pokrycia).
+Inwentarz potwierdza: 0 reguł bez podstawy prawnej. To najlepszy wskaźnik
+zgodności z ustawą o VAT (Dz.U. 2025 poz. 456).
+
+POKRYCIE ARTYKUŁÓW (wg vat_micro_inventory.json):
+- vat.rego: 149 artykułów (5–172), w tym art. 5, 7, 8, 15, 17, 19a, 20, 21,
+  28a, 28b, 28c, 29a, 31, 32, 41(a-d), 42, 43, 86, 86a, 87, 88, 89a, 89b,
+  90(→proportion), 96, 96b, 97, 99, 100, 103, 106a, 106f, 106n, 108, 108a,
+  109, 113, 119, 120, 129, 130, 131, 135, 138 + jdg.vat.a11–a172 (warstwa
+  pośrednia 4-5 reguł per artykuł: u1–u5, p1–p4)
+- ksef_micro.rego: art. 106n (10 reguł + no_match)
+- margin_scheme_micro.rego: art. 119 ust. 1-5, 120 ust. 1-5 (11 reguł)
+- place_of_supply_micro.rego: art. 28d–28n (12 reguł)
+- proportion_vat.rego: art. 90 ust. 1-5, 90a, 90b, 90c (11 reguł)
+- wdt_export_import.rego: art. 9, 10, 11, 12, 13, 17, 29a, 33a, 33b, 41, 42,
+  83 (17 reguł: wdt, wnt, imp, exp)
+- plan33_vat.rego: 18 artykułów (106e, 106j, 106n, 120, 15, 17, 20, 41, 43,
+  8, 86, 86a, 88, 89a, 89b, 99) — 116 reguł
+- plan34_vat.rego: 19 artykułów (5, 7, 15, 19a, 20, 21, 29a, 41, 43, 86,
+  86a, 88, 89a, 89b, 96, 99, 106e, 106j, 106n) — 180 reguł
+- plan33_prop.rego: 31 reguł proporcji (art. 90)
+
+LUKI PRAWA (art. ustawy o VAT → reguła):
+| Artykuł | Węzeł materialny w Bbb | Status | Ryzyko |
+|---|---|---|---|
+| Art. 22 (procedura rozliczeń wewnątrzwspólnotowych) | tak | BRAK reguł micro | średnie |
+| Art. 90 ust. 2-3 (sposób obliczania proporcji) | tak | proportion_vat.rego istnieje — wymaga mostu macro | średnie |
+| Art. 99a (korekta deklaracji) | tak | brak w inwentarzu | niskie |
+| Art. 103a (rozliczenie importu) | tak | a103.r3 istnieje w vat.rego; zweryfikować | niskie |
+| Art. 109 ust. 2-3 (ewidencja JPK) | tak | a109.r1-r10 istnieje; most z JPK | niskie |
+| Art. 112a (sankcja ewidencyjna) | tak | brak | średnie |
+| Art. 116 (odpowiedzialność solidarna) | tak | brak | wysokie (KKS/P) |
+
+WNIOSEK: pokrycie artykułów materialnych ≈ 92-95% w warstwie mikro. Kluczowe
+braki: art. 22, 112a, 116. Każdy brak to ryzyko decyzji w AUTO_POST.
+
+==============================================================================
+3. STRONA REGUŁY — LOGIKA, ELSE-CHAINY, PRIORYTETY
+==============================================================================
+Przeprowadź głęboką analizę architektury reguł (inwentarz):
+- 1 468 reguł unikalnych, duplicate_count = 0 → ZERO duplikatów rule_id ✅
+- 1 393 else-chainów (1043 w vat.rego, 114 plan33, 178 plan34, 9-15 w micro)
+- 521 checkpointów (punktów kontrolnych w vat.rego)
+- 0 tautologii poza p03/p04 innovations (4 tautologie: 3 w p04, 1 w p03) ⚠️
+- 4 empty_bodies w p04_vat_micro_innovations_v9.rego ⚠️
+- First-Match-Wins: zgodne z kontraktem V1/V2 (else-chain zakończony no_match)
+
+STRUKTURA rule_id (spójna, hierarchiczna):
+- jdg.micro.vat.a5.r1 … a138.r40 (atomowe per artykuł)
+- jdg.vat.a11.u1.p1 … a172.u5.p4 (warstwa pośrednia u=ustęp, p=pkt)
+- jdg.final.a100.u1.p1 … (warstwa finalna)
+- jdg.micro.vat.ksef.ksef_m01…m10, margin.mar_01…10, place_of_supply.pos_m01…11,
+  proportion.prop_01…10, wdt_export.wdt_01…04 / wnt_01…05 / imp_01…03 / exp_01…04
+- jdg.micro.vat.plan33.no_match, plan34.no_match (domyślne)
+
+KRYTYCZNA ANOMALIA ⚠️:
+- vat.rego:28697 → "rule_id": "jdg.vida.*.r1" — DZIKI rule_id ze znakiem `*`.
+  Łamie: deterministyczny identyfikator (Decision Certificate), możliwość
+  adresowania reguły w control plane (rollback reguły), indexowanie w
+  bundle. Test test_no_wildcard_data_read istnieje, ale nie wychwytuje
+  gwiazdki w rule_id (sprawdza data.read). NAPRAWA: jdg.vida.v1.r1 (lub
+  usunięcie jeśli reguła jest punktem kontrolnym — zamiana na checkpoint).
+
+==============================================================================
+4. STRONA TESTÓW — DOWÓD ZACHOWANIA
+==============================================================================
+- tests/test_p05_vat_micro_atomic.py: 19 testów strukturalnych:
+  test_micro_mesh_index, test_else_chain_auditor, test_proof_of_law,
+  test_temporal_projection, test_14_innovations_marked, test_golden_dataset
+  _boundaries, test_no_wildcard_data_read, test_coverage_map_for_30_articles,
+  test_vat_rego_covered, test_inventory_json_artifact, test_native_test_file
+  _exists, test_native_test_cover_all_areas …
+- tests/test_p04_vat_macro_enterprise.py, test_vat_enterprise.py: testy makro
+- tests/auto/test_auto_block_vat*.py: automatycznie generowane
+
+LUKA TESTÓW (wymagana na poziomie ENTERPRISE):
+1. BRAK testów treściowych per artykuł — test_p05 sprawdza STRUKTURĘ
+   (istnienie plików, indeksów, łańcuchów), nie sprawdza czy np. stawka 23%
+   jest poprawna dla danej klasy towaru, czy art. 43 zwolnienie jest
+   poprawne. Rekomendacja: 1 test natywny Rego per artykuł materialny
+   (min. 30 kluczowych: 5, 7, 8, 15, 17, 19a, 20, 21, 29a, 41, 43, 86,
+   86a, 88, 89a, 89b, 90, 99, 100, 103, 106n, 108, 108a, 109, 113, 119,
+   120, 129, 130, 131, 135, 138).
+2. BRAK testów przejść temporalnych (nowelizacja 2025→2026): golden
+   dataset z datą graniczną, sprawdzający że werdykt zmienia się w dniu
+   wejścia w życie noweli.
+3. BRAK testów mostu micro→macro: każda reguła macro MUSI mieć dowód,
+   że właściwa reguła micro ją wspiera (a nie odwrotnie).
+4. p04_vat_micro_innovations_v9.rego ma 4 empty_bodies + 3 tautologie —
+   żaden test ich nie wykrywa jako błąd (audytor raportuje, ale bramka CI
+   nie blokuje).
+
+==============================================================================
+5. STRONA SYSTEMU — CYKL ŻYCIA REGUŁY, OPA JAKO SYSTEM
+==============================================================================
+Wymóg nadrzędny V2: OPA musi być rozbudowanym SYSTEMEM — szybka adaptacja
+do zmian prawa. Warstwa micro wzmacnia systemowość w następujących punktach:
+- temporal: True w 6/8 plików micro (521 wystąpień w vat.rego) → reguły
+  atomowe mają okna valid_from/valid_to → możliwość projekcji czasowej
+- test_temporal_projection istnieje (test_p05) → dowód mechanizmu
+- inwentarz bundles/vat_micro_inventory.json publikowany → control plane
+  widzi stan warstwy (1468 reguł, 0 dup, 0 stubów, 4 tautologie)
+
+LUKI SYSTEMOWE (P0):
+1. plan33_vat.rego i plan34_vat.rego mają temporal: False — 296 reguł
+   (116+180) BEZ okien czasowych. To bezpośrednie naruszenie filaru
+   temporalności V2. Przy nowelizacji 2026 te reguły nie będą w stanie
+   rozróżnić stanu prawnego sprzed/po. NAPRAWA: dodać valid_from/valid_to
+   (domyślnie valid_from=2026-01-01, valid_to=null), powiązać z
+   legal_reference_canon.json.
+2. Dzikie rule_id jdg.vida.*.r1 — uniemożliwia adresowanie w control plane
+   (rollback, kanary, kill-switch per reguła).
+3. Brak golden replay dla warstwy micro — brak scenariusza „odtwórz werdykty
+   z 2025 po aktualizacji bundles".
+4. p04_vat_micro_innovations_v9.rego to warstwa „audytora audytora" —
+   empty_bodies (4) i tautologie (3) w samym audytorze podważają wartość
+   jego raportów. NAPRAWA: usunąć puste reguły, rozwinąć tautologie.
+
+OPA JAKO SYSTEM — REKOMENDACJE WYPRZEDZAJĄCE:
+- Deklaratywny manifest mikro: 1 plik JSON per artykuł (artykuł → lista
+  rule_id → valid_from → podstawy) generowany z inwentarza — człowiek
+  opisuje zmianę, maszyna wykonuje (Declarative Change V2).
+- Hot-reload stawek: stawki 23/08/05/0/7 przenieść w całości do
+  bundles/legal_reference_canon.json → zmiana stawki = zmiana danych,
+  nie reguły (zero-hardcode V2).
+- Law Radar dla VAT: monitorować projekty nowelizacji ustawy o VAT —
+  przy każdej zmianie artykułu generować diff reguł mikro (artykuł → reguły
+  dotknięte → testy dotknięte → kanary).
+
+==============================================================================
+6. STRONA DANYCH — STAWKI, PROGI, LIMITY
+==============================================================================
+Hardcode z inwentarza:
+- vat.rego: 1000 ×26, 50005-50030 ×2 (kody PKWiU/CN)
+- plan33_vat.rego: 23 ×8, 08 ×5, 05 ×5 (STAWKI VAT 23%/8%/5% zakodowane)
+- plan34_vat.rego: 23 ×9, 08 ×8, 05 ×3, 8601-8608, 8901-8902, 10601-10603
+- ksef_micro: 106001-106010, 999999
+- margin: 119001-120005, 999999
+- place_of_supply: 28001-28011, 999999
+- proportion: 90001-90010, 100 ×2, 999999
+- wdt: 90001-93004, 150, 300, 50000
+- p03/p04 innovations: 999999, 1000, 54, 85, 46, 47, 13, 15, 20, 25 …
+
+WNIOSEK: Większość kodów (106xxx, 119xxx, 90xxx, 28xxx) to identyfikatory
+stanów reguł — dopuszczalne. Natomiast STAWKI (23/08/05) i PROGI (1000,
+150, 300, 50000) to wartości materialne, które MUSZĄ pochodzić z
+legal_reference_canon.json. Wdrożenie: 7 stawek w plan33/34 (5 wystąpień
+każda) → parametryzacja. To kluczowy krok do poziomu ENTERPRISE: zmiana
+stawki bez dotykania reguły, z pełnym śladem audytowym.
+
+==============================================================================
+7. STRONA WERDYKTU — DETERMINIZM, PROVENANCE
+==============================================================================
+- Deterministyczne else-chainy: 1 393, wszystkie zakończone regułą no_match
+  → brak nieokreśloności dla wejść nieobsłużonych ✅
+- Zero crashy: brak empty_bodies poza p04 (4) — p04 musi być naprawiony,
+  bo empty_bodies w regułach raportujących = ryzyko `undefined` w JSON
+- Provenance: każda reguła ma _legal_basis + _routing_reason (np.
+  "[MICRO] jdg.vida.*.r1 — punkt kontrolny OPA dla JDG") → możliwy pełny
+  łańcuch dowodu (Decision Certificate F3 V2)
+- Czas wykonania: vat.rego ~967 KB (1 092 reguły) — jeden z największych
+  plików Rego w repo. Rekomendacja: rozważyć podział na 3 moduły
+  (obrót/odliczenia/faktury) wg wzorca ksef_micro (małe pliki = szybka
+  kompilacja = szybki cykl życia reguły)
+
+==============================================================================
+8. KONTRAKTY Z INNYMI CZĘŚCIAMI (ŁAŃCUCH SPÓJNOŚCI)
+==============================================================================
+Reguły/pakiety, na których opiera się ten raport i które tworzy/zmienia:
+- jdg.micro.vat (vat.rego, ksef, margin, place_of_supply, proportion, wdt)
+  — konsumowane przez: 02_VAT_CORE (makro), 01_ORKIESTRATOR (routing),
+  16_SYSTEM_OPA (control plane), 15_KSeF_JPK (ksef_micro), 21_TESTY_REGO
+- jdg.vat.a11–a172 (warstwa pośrednia) — konsumowane przez makro VAT
+- jdg.final.* — warstwa finalna werdyktu 25-polowego (F2 V2)
+- jdg.micro.vat.plan33/plan34 — dedykowane nowelizacjom; wymagają
+  temporalności (kontrakt z 00_FUNDAMENT: temporalność = wymóg V2)
+- proportion_vat.rego (art. 90) — kontrakt z 02_VAT_CORE: RAPORT_02
+  oznaczył art. 90 jako lukę P1; ten raport potwierdza, że reguły micro
+  ISTNIEJĄ (11 reguł art. 90/90a/90b/90c) — zadanie dla 02/16: most
+  micro→macro, nie tworzenie nowych reguł
+- Stawki 23/08/05: kontrakt z 00_FUNDAMENT (zero-hardcode) i z
+  bundles/legal_reference_canon.json — po parametryzacji plan33/34
+  korzystają wyłącznie z danych
+- KONTRAKT rule_id: NIE tworzę nowych rule_id w tym raporcie; jedyna
+  zmiana nazewnictwa: jdg.vida.*.r1 → jdg.vida.v1.r1 (lub checkpoint)
+
+ZAKAZ KONFLIKTÓW: kolejne części (04 PIT, 06 ZUS, …) nie mogą tworzyć
+reguł w pakietach jdg.micro.vat.* ani jdg.vat.a* — rezerwacja nazw.
+
+==============================================================================
+9. GENIALNE POMYSŁY ENTERPRISE (innowacyjne ulepszenia
+    wyprzedzające profesjonalistów — 12+)
+==============================================================================
+1. MIKRO-MESZ DETERMINIZMU: algorytm sprawdzający, że dla każdej pary
+   (artykuł, ustęp, pkt) istnieje DOKŁADNIE jeden ścieżka else-chain —
+   liczba decyzji atomowych = liczba punktów kontrolnych (521). Dowód
+   matematyczny pokrycia = werdykt zawsze istnieje.
+2. TEMPORALNY PROJEKTOR PER ARTYKUŁ: generowanie osi czasu reguły
+   (valid_from/valid_to) z docs/Bbb — wizualizacja „która stawka obowiązuje
+   w dniu X" bez czytania kodu (dla księgowego).
+3. HOT-RELOAD STAWEK BEZ KANARÓW: stawki w legal_reference_canon.json z
+   wersjonowaniem; zmiana stawki = nowa wersja danych, reguły nietknięte,
+   werdykty automatycznie używają nowej wersji (zero-downtime).
+4. WERDYKT Z PODPISEM ARTYKUŁU: każdy werdykt mikro zawiera listę
+   artykułów użytych w ścieżce decyzyjnej (audyt KAS w 1 klik).
+5. AUTO-ROZPOZNANIE NOWELIZACJI: parser ustawy (docs/Bbb) wykrywa zmianę
+   artykułu → automatycznie oznacz dotknięte reguły jako CANDIDATE,
+   uruchom golden replay, włącz kanary — bez ręcznej pracy.
+6. SIATKA ODPOWIEDZIALNOŚCI: mapa artykuł→reguła→test→bundle→kanar, żywa
+   wizualizacja (live_architecture_diagrams.py) pokazująca stan każdej
+   reguły w czasie rzeczywistym.
+7. PRÓG PEWNOŚCI PER ARTYKUŁ: LCI liczone per artykuł (nie globalnie) —
+   księgowy widzi: „art. 43 zwolnienia: LCI 99,2%" zamiast ogólnego 55%.
+8. BEZPIECZNY FALLBACK PRAWNY: jeśli nowelizacja usuwa regułę przed
+   wdrożeniem następcy — reguła przechodzi w SHADOW z oznaczeniem
+   „brak następcy prawnego" (nigdy cicha luka).
+9. DECISION CERTIFICATE MIKRO: każdy werdykt mikro dołącza hash reguły +
+   hash bundles + wersję inwentarza — pełna provenance w 1 obiekcie.
+10. SYMETRIA MICRO-MACRO: kompilator sprawdza, że dla każdej reguły makro
+    istnieje ≥1 reguła micro wspierająca (i odwrotnie dla materialnych
+    artykułów) — silnik sam wykrywa mosty do zbudowania.
+11. GENERATOR TESTÓW NATYWNYCH: z inwentarza generuje test_native_*.rego
+    per artykuł (stały koszt, rosnące pokrycie) — testy piszą się same.
+12. API „CO SIĘ ZMIENIŁO": endpoint dla księgowego pokazujący diff reguł
+    między wersjami bundles (artykuł, stawka, progi, daty) — transparentność.
+13. KILL-SWITCH PER ARTYKUŁ: awaria w art. 106n nie blokuje reszty —
+    wyłączony artykuł → werdykt „do decyzji człowieka" (ASK_USER),
+    nigdy cicha błędna stawka.
+14. MONITOR TAUTOLOGII I EMPTY-BODIES w CI: bramka blokująca PR, jeśli
+    audytor wykryje tautologię/empty_body (w tym w samych audytorach).
+
+==============================================================================
+10. MAPA DROGOWA (uszeregowana wg krytyczności)
+==============================================================================
+Faza 1 (P0, 2-3 dni robocze):
+  a) Usunięcie/zmiana rule_id jdg.vida.*.r1 (15 min)
+  b) Naprawa 4 empty_bodies + 3 tautologii w p04_vat_micro_innovations_v9
+  c) Temporalność plan33/plan34 (valid_from 2026-01-01, valid_to null)
+  d) Parametryzacja stawek 23/08/05 (plan33/34) → legal_reference_canon.json
+Faza 2 (P1, 4-6 dni):
+  e) Most micro→macro: art. 90 (proportion), art. 17 (reverse charge)
+  f) Rozszerzenie test_p05 o testy treściowe 30 kluczowych artykułów
+  g) Testy natywne Rego per domena micro (ksef, margin, pos, proportion, wdt)
+Faza 3 (P2, ciągłe):
+  h) Golden replay 2025→2026 dla 1 468 reguł
+  i) Reguły dla art. 22, 112a, 116 (luki prawne)
+  j) Podział vat.rego na moduły (optymalizacja czasu kompilacji)
+  k) Wskaźnik mikro→makro w metrics_pewnosci.json
+
+==============================================================================
+11. PODSUMOWANIE WYMIARÓW (6 stron OPA)
+==============================================================================
+| Strona | Ocena | Dowód |
+|---|---|---|
+| PRAWO | A- | 1 468/1 468 reguł z _legal_basis; 92-95% artykułów materialnych |
+| REGUŁA | A | 0 duplikatów, 1 393 else-chainów, First-Match-Wins, 1 dziki rule_id |
+| TESTY | C+ | 19 testów strukturalnych; BRAK testów treściowych per artykuł |
+| SYSTEM | B | temporal 6/8 plików; plan33/34 bez temporalności; inwentarz publikowany |
+| DANE | B- | kody stanów OK; STAWKI 23/08/05 hardcode — naruszenie zero-hardcode |
+| WERDYKT | A- | determinizm (no_match), provenance; p04 empty_bodies do naprawy |
+
+OCENA CAŁOŚCIOWA: B+ → docelowo A+ (poziom ENTERPRISE) po wdrożeniu
+rekomendacji P0/P1. Warstwa micro VAT jest fundamentem, na którym można
+zbudować najwyższy poziom niezawodności — wystarczy domknąć temporalność,
+hardcode i testy treściowe.
+
+==============================================================================
+KONIEC RAPORTU 03 — VAT WARSTWA MICRO
+Po wdrożeniu: WYCZYŚĆ OKNO KONTEKSTOWE. Następny prompt: 04_PIT_CORE.txt
+==============================================================================

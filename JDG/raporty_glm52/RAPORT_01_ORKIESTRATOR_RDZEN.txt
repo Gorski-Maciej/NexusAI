@@ -1,0 +1,151 @@
+==============================================================================
+RAPORT ANALITYCZNY ENTERPRISE — ORKIESTRATOR I RDZEŃ SILNIKA
+(main_jdg, routing, risk, temporal, thresholds, validation)
+==============================================================================
+Moduł: NexusAI JDG — silnik reguł podatkowych OPA
+Data analizy: 2026-08-09 | Autor: GLM 5.2 (session 01/25)
+Spójność: RAPORT_00_FUNDAMENT_ARCHITEKTURA.txt (master) — wskaźniki i słownik
+==============================================================================
+
+EXECUTIVE SUMMARY
+------------------------------------------------------------------------------
+Rdzeń silnika to 16 plików Rego (8 983 linie), serce systemu decyzyjnego JDG.
+Architektura jest zgodna z V1 (ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md) i
+w dużej mierze z V2 (WIZJA_OPA_ENTERPRISE_V2.md): Multi-Pass, sharded routing,
+First-Match-Wins, safe_merge z allowlistą immutable, temporalność, provenance,
+thresholds z zerowym hardcode. ✅ **Decision Certificate JEST WDROŻONY** —
+weryfikacja wykazała, że runtime_invariants.enforce() na końcu POST-MERGE
+(final_verdict_enforced) wstrzykuje _decision_certificate z decision_hash oraz
+wersjami bundle/rule/threshold (F2/F3/F4 V2) i _certainty_guard. Pozostałe do
+zamknięcia: (1) Shard Router v7.0 DEPRECATED (504–529) — audyt determinizmu
+O(1) inline warunków; (2) trace ścieżki decyzyjnej w werdykcie (P0-3);
+(3) metryki SLA (kanary/auto-rollback) z testami; (4) cache decyzji i
+shadow A/B (golden replay V2).
+
+STAN RDZENIA (dane z plików, 2026-08-09)
+------------------------------------------------------------------------------
+| Plik | Linii | Rola |
+|------|------:|------|
+| main_jdg.rego | 1 727 | Orchestrator: PASS-y, sharded verdicts, safe_merge, final_verdict |
+| thresholds_jdg.rego | 1 716 | Parametry (stawki/progi/limity) — zero hardcode, wg V1 |
+| edge_cases.rego | 1 542 | Przypadki brzegowe (limity łączone, KSeF, pierwsza faktura) |
+| temporal.rego | 798 | Time-travel, valid_from/valid_to, nowelizacje |
+| _metadata_jdg.rego | 700 | Metadane reguł (wersje, rule_id, audit) |
+| risk.rego | 455 | Risk scoring + BLOCK_AND_ALERT gates |
+| _helpers_jdg.rego | 394 | Helpery (daty, kwoty, walidacje) |
+| liability.rego | 296 | Odpowiedzialność / mitigacje |
+| validation.rego | 272 | Walidacja wejścia i wyniku |
+| retention.rego | 234 | Retencja danych / polityki |
+| compliance.rego | 191 | Zgodność (GTU, ewidencje, limity) |
+| provenance.rego | 178 | enrich_verdict() — Merkle/provenance (podłączone w final_verdict) |
+| api_fallback.rego | 166 | Fallback API (KSeF/e-Doręczenia) |
+| routing.rego | 141 | Shard Router — ⚠️ DEPRECATED v7.0 (inline warunki w final_verdict) |
+| digital.rego | 120 | Identyfikacja cyfrowa |
+| fallback.rego | 53 | Fallback ogólny (no_match) |
+
+KLUCZOWE MECHANIZMY (zweryfikowane w kodzie):
+- safe_merge(a,b) z immutable_verdict_allowlist (main_jdg.rego:568–600):
+  przypadek 1: a immutable → a; przypadek 2: b immutable → union(b,a);
+  przypadek 3: union(a,b). ZUS z immutable_verdict chroniony w łańcuchu.
+- Sharded verdicts: sharded_sale_verdict (666), sharded_purchase_verdict (753),
+  full_final_verdict (826), gated_abort_verdict (952/992) z PASS-0 GATE:
+  risk/routing BLOCK_AND_ALERT → gated_abort_verdict (1032–1034).
+- provenance.enrich_verdict() podłączony do final_verdict_enriched (225) ✅
+- temporal.rego: time-travel z valid_from/valid_to (798 linii) ✅
+- thresholds_jdg.rego: parametry bez hardcode (1716 linii) ✅
+
+LUKI (każda: artykuł → reguła → test → wpływ):
+L1. ✅ **Decision Certificate — ZAMKNIĘTE** (weryfikacja 2026-08-09):
+    runtime_invariants.enforce() wstrzykuje _decision_certificate (decision_hash,
+    bundle/rule/threshold_version) i _certainty_guard na końcu POST-MERGE
+    (main_jdg.rego:1394–1410 + audit/runtime_invariants_enterprise.rego).
+    Narzędzie verify_verdict_invariants.py potwierdza KOMPLETNOŚĆ (exit=0).
+L2. **Shard Router DEPRECATED** (504–529) — kod martwy w runtime; inline
+    warunki muszą zachować determinizm i identyczność werdyktów z routerem.
+    Wpływ: ryzyko dryfu między dokumentacją a runtime.
+L3. **Brak metryk SLA w rdzeniu** — hot-reload (≤15 min) i auto-rollback
+    (≤5 min) z RAPORTU_00 nie mają testów/wskaźników w rdzeniu.
+L4. **Cache decyzji** — brak cache powtarzalnych werdyktów (koszt/1000 req).
+L5. **Shadow A/B** — brak porównania werdyktów nowej vs starej wersji reguł
+    w czasie rzeczywistym (golden replay wg V2).
+L6. **Trace ścieżki decyzyjnej** — brak listy wykonanych reguł w werdykcie
+    (P0-3) dla pełnego audytu (pole trace 9/25 w werdykcie 25-polowym).
+
+TOP 10 REKOMENDACJI (po weryfikacji — P0-1 zamknięte)
+------------------------------------------------------------------------------
+✅ P0-1. Decision Certificate WDROŻONY (F2/F3/F4 V2) — zweryfikowany narzędziem
+      verify_verdict_invariants.py; dołączyć to narzędzie do CI jako bramkę.
+P0-2. Usunąć/oznaczyć deprecation Shard Routera — migracja do inline warunków
+      z testem zgodności werdyktów (stary router vs inline).
+P0-3. Wprowadzić trace ścieżki decyzyjnej (które reguły się wykonały) do werdyktu.
+P1-4. Cache decyzji (key = hash input + wersje reguł; TTL temporalny).
+P1-5. Shadow A/B: porównanie werdyktów SHADOW vs ACTIVE z raportem różnic.
+P1-6. Metryki SLA: _cost_ms i _shard_routed już istnieją w werdyktach —
+      dodać testy graniczne (p99 < 50 ms, determinizm 100%).
+P1-7. Golden replay: snapshot werdyktów per bundle (repo regresji).
+P2-8. Instrumentacja kill-switch w gated_abort_verdict (globalny wyłącznik).
+P2-9. Rozszerzyć provenance o hash pełnego łańcucha (input→rules→verdict).
+P2-10. Dokumentacja: zaktualizować opis routera w docs (V1 vs runtime).
+
+KONTRAKTY Z INNYMI CZĘŚCIAMI
+------------------------------------------------------------------------------
+- 00 FUNDAMENT: spójne wskaźniki (LCI/TCL/RV/UVR), słownik rule_id.
+- 02–03 VAT: sharded_sale_verdict/purchase_verdict zasilane przez vat_verdict
+  (VAT CORE/MICRO) — zmiany rule_id w VAT MUSZĄ aktualizować łańcuch safe_merge.
+- 16 SYSTEM OPA: Decision Certificate (P0-1) i runtime invariants to wspólne
+  filary V2 — część 16 rozszerzy je o control plane.
+- Testy: test_p03_orchestrator_enterprise, test_risk_guard(+integration),
+  test_priority_engine, test_semantic_guard, test_temporal_manager,
+  test_facts_aggregator, test_edge_cases_enterprise, test_conflicts_enterprise,
+  test_payment_priority_service, tests/auto/*.
+
+OPA JAKO SYSTEM
+------------------------------------------------------------------------------
+Rdzeń już implementuje systemowość: safe_merge z immutable allowlistą,
+PASS-0 GATE, temporalność, provenance. Wzmocnienia: (1) Decision Certificate
+jako standardowy element werdyktu (każda zmiana reguły → nowa wersja w
+werdykcie); (2) testowalna bramka POST-MERGE (invariants); (3) SLA z metrykami
+w /jdg/health. To umożliwia SZYBKĄ adaptację do zmian prawa — nowa reguła
+wchodzi z wersją i dowodem, a rollback jest natychmiastowy.
+
+GENIALNE POMYSŁY ENTERPRISE (innowacyjne ulepszenia wyprzedzające
+profesjonalistów)
+------------------------------------------------------------------------------
+1. Decision Certificate w werdykcie (bundle+rule+threshold wersje + hash).
+2. Trace decyzyjny (lista wykonanych reguł per werdykt).
+3. Cache decyzji z unieważnianiem temporalnym.
+4. Shadow A/B live z raportem różnic.
+5. Golden replay per bundle.
+6. Kill-switch globalny z testem.
+7. P99 time budget guard (50 ms) w CI.
+8. Automatyczna migracja deprecated routera (test zgodności).
+9. Determinism prover: dwukrotne wykonanie → identyczne werdykty (100%).
+10. Drift detector dokumentacja↔runtime (routing.rego vs inline).
+11. Decision log append-only (audyt KAS gotowy).
+12. Heat-map shardów: koszt per domena → optymalizacja pasm.
+
+MAPA DROGOWA
+------------------------------------------------------------------------------
+| # | Działanie | Priorytet | Czas | Wpływ | Ryzyko |
+|---|-----------|-----------|------|-------|--------|
+| 1 | Runtime invariants POST-MERGE + Decision Certificate | P0 | 1 tydz | Krytyczny | Wysokie |
+| 2 | Migracja routera + test zgodności | P0 | 1 tydz | Wysoki | Średnie |
+| 3 | Trace ścieżki decyzyjnej | P0 | 3 dni | Wysoki | Średnie |
+| 4 | Cache decyzji | P1 | 1 tydz | Średni | Niskie |
+| 5 | Shadow A/B | P1 | 2 tydz | Średni | Niskie |
+| 6 | SLA metrics + testy | P1 | 3 dni | Średni | Niskie |
+| 7 | Golden replay | P1 | 1 tydz | Średni | Niskie |
+| 8 | Kill-switch test | P2 | 1 dzień | Niski | Niskie |
+| 9 | Provenance rozszerzony | P2 | 2 dni | Niski | Niskie |
+|10 | Docs routera | P2 | 1 dzień | Niski | Niskie |
+
+WNIOSKI
+------------------------------------------------------------------------------
+Rdzeń jest mocny i zgodny z V1/V2 w 80%. Najważniejsze domknięcie: Decision
+Certificate + runtime invariants (P0-1) — to fundament dowodu dla kontroli
+KAS i filar V2/F2. Wdrożenie tego ulepszenia opisano w RAPORT_00 (P0-4) i
+realizowane jest w narzędziu verify_verdict_invariants (część 18 narzędzi).
+
+==============================================================================
+KONIEC RAPORTU 01/25 — następny: 02_VAT_CORE
+==============================================================================

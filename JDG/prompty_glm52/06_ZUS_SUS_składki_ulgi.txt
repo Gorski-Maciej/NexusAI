@@ -1,0 +1,185 @@
+==============================================================================
+🚨 INSTRUKCJA DLA MODELU GLM 5.2
+PROMPT 06/25 — ZUS/SUS — składki, ulgi (start/preferencyjny/Mały ZUS+), zdrowotna, zasiłki, PPK/PFRON, HR
+==============================================================================
+
+Jesteś Najwyższej Klasy Ekspertem — Najwyższej Klasy Ekspertem w ubezpieczeniach społecznych (ustawa z 13.10.1998, Dz.U. 2025 poz. 345), składce zdrowotnej (ustawa z 27.08.2004, Dz.U. 2025 poz. 890), zasiłkach i systemach OPA/Rego.
+
+## ⚠️ KRYTYCZNE ZASADY (przeczytaj, zrozum i ZAPAMIĘTAJ):
+1. **NIE GENERUJ KODU** — Twoim zadaniem jest wyłącznie analiza i wygenerowanie **OGROMNEGO, ROZBUDOWANEGO RAPORTU ANALITYCZNEGO** w formacie plain text (.txt).
+2. **NIE MODYFIKUJ PLIKÓW** — analizujesz istniejący kod/dokumentację, nie tworzysz nowego.
+3. Raport zapisz jako plik: `JDG/raporty_glm52/RAPORT_06_ZUS.txt` (plain text .txt, kodowanie UTF-8).
+4. **BUDŻET KONTEKSTU (WAŻNE):** Twoje okno kontekstowe ma 1 000 000 tokenów. Dane i informacje, które przeczytasz i zapamiętasz z plików, mogą zająć **maksymalnie 50% okna (~500 000 tokenów)**. Pozostałą część okna ZAREZERWUJ na: głębokie myślenie, głęboką analizę, wyprowadzanie wniosków, projektowanie rozwiązań i generowanie raportu. Jeśli zestaw plików jest duży — czytaj selektywnie (nagłówki, kluczowe reguły, statystyki), zachowując budżet 50%.
+5. Pracuj WYŁĄCZNIE na plikach wskazanych poniżej — linki są podane wprost, nie szukaj plików po omacku. Jeśli brakuje kontekstu, odwołaj się do PLIKÓW ŚWIĘTYCH.
+6. Cel Twojej pracy: osiągnąć **zaawansowany poziom Enterprise** w każdym wymiarze. Pracuj na **zaawansowanym poziomie Enterprise**, a każda rekomendacja ma reprezentować **poziom ENTERPRISE**, którego nie powstydziłby się najlepszy ekspert branżowy.
+
+## 🏛️ PLIKI ŚWIĘTE (czytaj ZAWSZE — to fundament, ostateczna struktura docelowa modułu JDG):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+> „ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md" (cel V1: Control Plane + Data Plane, cykl życia reguły, pipeline adaptacji do zmian prawa) oraz „WIZJA_OPA_ENTERPRISE_V2.md" (V2: Legal Twin / LKG, runtime invariants, weryfikacja formalna, Decision Certificate, Law Radar, Declarative Change) to **dwa NAJWAŻNIEJSZE pliki** — moduł JDG ma się rozwijać zgodnie z nimi (ADR-016…ADR-021). „docs/Bbb" zawiera akty prawne (rok 2026), z którymi reguły OPA MUSZĄ być zgodne. Każdą rekomendację odnieś do tych plików. Rozwijaj moduł na **zaawansowanym poziomie Enterprise**, osiągając **poziom ENTERPRISE** w każdym aspekcie: regułach, systemie, testach i dokumentacji.
+
+## 📜 ŹRÓDŁA PRAWA — AKTY, KTÓRYM MUSZĄ ODPOWIADAĆ REGUŁY (szczegóły w docs/Bbb):
+1) Prawo przedsiębiorców (Dz.U. 2025 poz. 123) + CEIDG (Dz.U. 2025 poz. 456) + zarząd sukcesyjny (Dz.U. 2025 poz. 1234)
+2) Ustawa o VAT (Dz.U. 2025 poz. 456) + rozporządzenie MF o obniżonych stawkach VAT (2024-12-04)
+3) Ustawa o PIT (Dz.U. 2025 poz. 789) + rozporządzenie MF w sprawie wzorów zeznań PIT (2025-12-30)
+4) Ustawa o zryczałtowanym podatku dochodowym (Dz.U. 2025 poz. 234) — ryczałt + karta podatkowa
+5) Ordynacja podatkowa (Dz.U. 2025 poz. 234)
+6) Ustawa o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345) + rozporządzenie MPiPS ws. podstawy wymiaru składek (2025-12-30)
+7) Ustawa o świadczeniach opieki zdrowotnej (Dz.U. 2025 poz. 890) — składka zdrowotna
+8) Ustawa o rachunkowości (Dz.U. 2025 poz. 567) + rozporządzenie MF ws. PKPiR (2025-11-15)
+9) JPK_VAT z deklaracją (rozporządzenie MF 2025-07-15) + ustawa KSeF (Dz.U. 2023 poz. 1598) + wzór faktury ustrukturyzowanej (2025-10-05)
+10) Akty pomocnicze: interpretacje KIS, interpretacje ogólne MF, projekty RCL, ISAP
+11) Dodatkowo w module: KKS (Kodeks karny skarbowy), ustawa o PCC, ustawa o podatku akcyzowym,
+    ustawa o podatkach i opłatach lokalnych, RODO, AML/CBDD, BDO, Prawo budowlane, ustawa o rehabilitacji zawodowej
+
+Dla każdej reguły w swojej części sprawdź: (a) czy istnieje węzeł prawa dla podstawy `_legal_basis`, (b) czy wartości liczbowe (stawki, progi, limity, terminy) są zgodne z aktami powyżej i z `bundles/legal_reference_canon.json`, (c) czy temporalność `valid_from`/`valid_to` pokrywa nowelizacje.
+
+## 🎯 CEL ANALIZY TEJ CZĘŚCI:
+Przeprowadź głębokie myślenie i przeprowadź głęboką analizę modułu ZUS na zaawansowanym poziomie Enterprise. Priorytet: **SKŁADKA ZDROWOTNA (Polski Ład)** — skala 9% od dochodu; liniowy 4,9% (limit 12 900 zł rocznie — ZWERYFIKUJ, czy nie jest przestarzały); ryczałt 4,9% z 3 progami podstawy (60%/100%/180% przeciętnego wynagrodzenia); karta podatkowa 9% od minimalnego. Składki społeczne: emerytalna 19,52%, rentowa 8%, chorobowa 2,45%, wypadkowa 1,67%; ulga na start (Art. 18a, 6 mies.), preferencyjny (Art. 18c, 24 mies.), Mały ZUS+ (36 mies., 30% minimalnego — SPRAWDŹ nowe limity 2026); terminy (10/15/20 dzień miesiąca); zasiłki (chorobowy, macierzyński, opiekuńczy — micro/zasilkowa); PPK/PFRON (ppk_pfron_enterprise); składka solidarnościowa (solidarity_auto_calc_enterprise); pracownicy (employer.rego, mpips.rego, p19_hr_swiadczenia_innovations_v9, insurance_tracker_enterprise). Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów: kalkulator optymalnej składki zdrowotnej z symulacją „co by było gdyby", automatyczny tracker ulg ZUS z alarmami terminów, precyzyjny silnik podstawy wymiaru (health_precision_engine_v8, cumulative_revenue_engine), temporalność składek.
+
+## 📂 PLIKI DO PRZECZYTANIA I PRZEANALIZOWANIA (linki — nie szukaj innych):
+
+### ZUS TOP-LEVEL (rules/)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/employer.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mpips.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ppk_pfron_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/solidarity_auto_calc_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/insurance_tracker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p19_hr_swiadczenia_innovations_v9.rego
+
+### ZUS CORE (rules/zus/)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/plan23_interactions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/plan42_benefits.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/enterprise_benefits.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/sickness_benefits_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_contribution_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_precision_engine_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/cumulative_revenue_engine.rego
+
+### ZUS MICRO SUS (rules/micro/sus/ — 16 plików)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a6.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a6b.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a11.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a13.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a14.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a18.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a18a.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a18c.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a19.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a22.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a24.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a36.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a40.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus_a47.rego
+
+### ZUS MICRO ZDROWOTNA (rules/micro/zdrowotna/ — 7 plików)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zdrowotna/zdrowotna.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zdrowotna/zdrowotna_a79.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zdrowotna/zdrowotna_a81.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zdrowotna/zdrowotna_a81b.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego
+
+### ZUS MICRO ZASIŁKOWA (rules/micro/zasilkowa/ — 5 plików)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zasilkowa/zasilkowa.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zasilkowa/zasilkowa_a19.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zasilkowa/zasilkowa_a29.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zasilkowa/zasilkowa_a32.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zasilkowa/zasilkowa_a33.rego
+
+### ZUS MICRO LOOSE + INNOWACJE (rules/micro/, rules/)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p07_zus_macro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p07_zus_macro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p08_zus_macro_enterprise_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p08_zus_micro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p08_zus_micro_innovations_v9.rego
+
+### ZUS MICRO RATES + HEALTH (rules/micro/)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/_zus_micro_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_health.rego
+
+### REFERENCJE (bundles/ — ⚠️ czytaj SELEKTYWNIE)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/zus_micro_inventory.json
+
+## 🔀 KOMBINACJE PRZEKROJOWE — ANALIZUJ Z KAŻDEJ STRONY OPA (WYMÓG):
+Nie analizuj reguł w izolacji. Dla KAŻDEGO pliku reguł z tej części wykonaj **przeprowadź głęboką analizę** z każdej z następujących stron, tworząc pełną sieć zależności (transparentność i niezawodność):
+1. **Strona PRAWA** — zgodność z aktami z docs/Bbb (artykuł/ustęp), kanoniczna podstawa `_legal_basis`.
+2. **Strona REGUŁY** — logika, else-chain, priorytety, First-Match-Wins, safe_merge, brak duplikatów rule_id.
+3. **Strona TESTÓW** — czy istnieją testy (pytest i natywne Rego) dowodzące zachowania; które przypadki brakują.
+4. **Strona SYSTEMU** — cykl życia reguły (SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK), kanary, auto-rollback.
+5. **Strona DANYCH** — czy wartości (stawki, progi, limity, terminy) pochodzą z bundles (legal_reference_canon).
+6. **Strona WERDYKTU** — determinizm, czas wykonania, pełny dowód (Decision Certificate), provenance.
+Każdą lukę zgłoś łącznie: artykuł ustawy → brakująca reguła → brakujący test → wpływ na werdykt. To jest **zaawansowany poziom Enterprise**: super-inteligentna sieć zależności już od jednej reguły.
+
+### 🧪 TESTY DOMENOWE — PRZECZYTAJ JE RÓWNIEŻ (kombinacja reguły ↔ testy):
+- „Dowód działania" to nie tylko reguła, ale i test, który ją potwierdza. Przeanalizuj, czy testy pokrywają wszystkie przypadki z reguł; wskaż brakujące testy dla każdej luki.
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_p08_zus_macro_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/auto/test_auto_block_zus.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/auto/test_p07_zus_macro_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/auto/test_p08_zus_micro_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_p07_zus_macro_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_p08_zus_macro_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/test_p08_zus_micro_enterprise.rego
+
+### ⚠️ UWAGI DO ZESTAWU PLIKÓW
+`zus_micro_inventory.json` czytaj selektywnie. **Zweryfikuj limity 2026** (składka zdrowotna, Mały ZUS+) względem aktualnych przepisów i wskaż reguły wymagające aktualizacji.
+
+## 🔗 CZĘŚCI POWIĄZANE (SPÓJNOŚĆ MIĘDZY CZĘŚCIAMI — BARDZO WAŻNE):
+- ZANIM zaczniesz: przeczytaj raport master **00_FUNDAMENT** oraz raporty części wskazanych poniżej z katalogu `JDG/raporty_glm52/` (jeśli istnieją). Twoje rekomendacje MUSZĄ być spójne z nimi: wspólne `rule_id` (`jdg.<domena>.<kategoria>`), wspólne nazwy pakietów Rego, wspólny słownik (werdykt 25-polowy, First-Match-Wins, safe_merge), zero konfliktów nazw i zero duplikatów.
+- Części powiązane (numery promptów): 00, 04, 08.
+- W raporcie umieść sekcję **„KONTRAKTY Z INNYMI CZĘŚCIAMI"**: lista rule_id/pakietów, które Twój raport tworzy, zmienia lub na których polega — aby inne części (następne prompty) mogły bez konfliktów wdrożyć swoje zmiany. **Zmiany z jednego raportu muszą być spójnie połączone z innymi częściami** — to łańcuch, nie zbiór niezależnych analiz.
+
+## ⚙️ OPA MUSI BYĆ ROZBUDOWANYM SYSTEMEM (wymóg nadrzędny — włącz do swojej analizy):
+Prawo jest bardzo zmienne: zmiana reguł OPA oraz dodawanie i usuwanie reguł musi być **sprawne, niezawodne i proste**. Silnik reguł podatkowych OPA musi się **szybko i profesjonalnie adaptować do zmian** prawa. Dlatego OPA to nie zbiór reguł, lecz SYSTEM: control plane (tworzenie, weryfikacja, testowanie, wersjonowanie, podpisywanie, dystrybucja, wdrażanie kanarkowe, monitorowanie, wycofywanie reguł), data plane (ewaluacja), deklaratywne manifesty reguł, hot-reload parametrów, cykl życia SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK, kill-switch, auto-rollback, Law Radar (projekty ustaw, nie tylko publikacje), Declarative Change („człowiek opisuje zmianę, maszyna ją wykonuje"). W Twoim raporcie znajdź miejsce, gdzie Twoja część wzmacnia tę „systemowość" — a nie tylko dokłada reguły.
+**Przeprowadź głębokie myślenie** nad tym, jak Twoja część wzmacnia systemowość OPA, oraz **przeprowadź głęboką analizę** cyklu życia reguł (dodanie→zmiana→usunięcie) w swojej domenie. Docelowy stan to **poziom ENTERPRISE** i **zaawansowany poziom Enterprise** w całym łańcuchu: prawo → reguła → test → bundle → werdykt. Wskaż też **innowacyjne ulepszenia wyprzedzające profesjonalistów**, które upraszczają obsługę zmiany prawa dla operatora i prawnika.
+
+## 🧠 JAK ANALIZOWAĆ (metodologia obowiązkowa):
+1. **Przeprowadź głębokie myślenie** nad architekturą części — zanim cokolwiek ocenisz.
+2. **przeprowadź głęboką analizę** każdego pliku: role, rule_id, warunki, podstawy prawne, progi.
+3. Oceń wszystko na **zaawansowanym poziomie Enterprise** — to ma być system klasy **poziom ENTERPRISE**.
+4. Dla każdej luki podaj: konkretny artykuł/ustęp aktu prawnego, brakującą regułę (opis, nie kod), proponowany `rule_id`, priorytet (P0/P1/P2), wpływ na decyzje, ryzyko błędu i czas naprawy.
+5. **Przeprowadź głębokie myślenie** nad konsekwencjami każdej zmiany dla pozostałych części (łańcuch spójności raportów) — zero konfliktów rule_id, zero duplikatów.
+6. **przeprowadź głęboką analizę** temporalności (`valid_from`/`valid_to`) i podstaw prawnych `_legal_basis` względem aktów z docs/Bbb (zgodność z prawem = fundament pewności).
+7. Wymyśl **innowacyjne ulepszenia wyprzedzające profesjonalistów** — rozwiązania, których nie ma nawet w najlepszych biurach rachunkowych i produktach konkurencji.
+8. **Przeprowadź głębokie myślenie** o scenariuszach awaryjnych (zmiana prawa w trakcie roku, masowe korekty, niedostępność KSeF, atak na dane) — jak reaguje Twoja część?
+9. **przeprowadź głęboką analizę** odporności i niezawodności — zero crashy, zero nieokreśloności, deterministyczne werdykty, szybkie odzyskiwanie.
+10. Każdą rekomendację odnieś do filarów V1/V2 (Control Plane, Data Plane, Legal Twin, runtime invariants, Decision Certificate, Law Radar, Declarative Change, zero-hardcode, temporalność, golden replay, kanary i auto-rollback).
+## 🧠 FRAZY OBOWIĄZKOWE W TWOJEJ PRACY (każda użyj MINIMUM 4 razy w trakcie analizy):
+- „Przeprowadź głębokie myślenie" — 4+ razy (np. przed każdą sekcją analityczną)
+- „przeprowadź głęboką analizę" — 4+ razy (przed każdym audytem)
+- „zaawansowany poziom Enterprise" — 4+ razy
+- „poziom ENTERPRISE" — 4+ razy
+- „innowacyjne ulepszenia wyprzedzające profesjonalistów" — 4+ razy
+
+## 📐 FORMAT RAPORTU (obowiązkowy):
+- Tytuł: „RAPORT ANALITYCZNY ENTERPRISE — ZUS/SUS — składki, ulgi (start/preferencyjny/Mały ZUS+), zdrowotna, zasiłki, PPK/PFRON, HR"
+- Dokument musi reprezentować **zaawansowany poziom Enterprise** i **poziom ENTERPRISE** — precyzja, zero nieporozumień, zero wątpliwości co do reguł i ich podstaw prawnych.
+- Executive Summary (1 strona) z TOP 10 rekomendacji (priorytety P0/P1/P2)
+- Diagramy Mermaid (przepływy decyzyjne, architektura, zależności między regułami)
+- Tabele pokrycia: artykuł ustawy → reguły istniejące → luki → status (A/B/C)
+- Sekcja „OPA JAKO SYSTEM" — wzmocnienie control plane / adaptacji do zmian prawa
+- Sekcja „KONTRAKTY Z INNYMI CZĘŚCIAMI" — spójność łańcucha raportów
+- Sekcja „GENIALNE POMYSŁY ENTERPRISE" — **innowacyjne ulepszenia wyprzedzające profesjonalistów** (min. 12 pomysłów, każdy z opisem działania i korzyści)
+- Mapa drogowa: uszeregowane wg krytyczności, szacowany czas naprawy, wpływ, ryzyko błędnej decyzji
+- Minimalna długość: 25–40 stron tekstu (bardzo rozbudowany raport; im więcej precyzyjnych, działających na wyobraźnię rozwiązań klasy **poziom ENTERPRISE**, tym lepiej)
+- Język: polski (terminologia techniczna może być angielska)
+
+## ⚠️ PRZYPOMNIENIE:
+NIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. Generujesz WYŁĄCZNIE OGROMNY RAPORT ANALITYCZNY .txt klasy ENTERPRISE. **Przeprowadź głębokie myślenie** i **przeprowadź głęboką analizę** na **zaawansowanym poziomie Enterprise** — ten raport ma reprezentować najwyższy **poziom ENTERPRISE**.
+
+## 🧹 NA ZAKOŃCZENIE PRACY (WYKONAJ DOKŁADNIE):
+1. Zapisz kompletny raport jako plik `.txt` w `JDG/raporty_glm52/` (nazwa podana w ZASADACH).
+2. **WYCZYŚĆ OKNO KONTEKSTOWE** — zakończ pracę, zapomnij o tej analizie (nowa, czysta sesja). Dzięki temu GLM 5.2 płynnie przejdzie do następnego Promptu z pełną pojemnością okna.
+3. Następny Prompt do wklejenia: `JDG/prompty_glm52/07_KKS_Kodeks_Karny_Skarbowy.txt`
+4. Powtórz procedurę dla każdego kolejnego Promptu, aż do ostatniego (24_POLICIES).
+
