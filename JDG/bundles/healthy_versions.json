@@ -1,5 +1,20 @@
 {
-  "built": [],
+  "built": [
+    "jdg-bundle-test-build-1786272296",
+    "jdg-bundle-v9.1.0-p09-1786273127",
+    "jdg-bundle-v9.2.0-p10-1786273779",
+    "jdg-bundle-v9.3.0-p11-1786274287",
+    "jdg-bundle-v9.1.0-p12-1786275374",
+    "jdg-bundle-v9.1.0-p12-1786275725",
+    "jdg-bundle-v9.4.0-p13-1786276485",
+    "jdg-bundle-v9.4.0-p13-1786276974",
+    "jdg-bundle-v9.5.0-p14-1786277597",
+    "jdg-bundle-v9.5.0-p14-1786277878",
+    "jdg-bundle-v9.6.0-p15-1786278520",
+    "jdg-bundle-v9.6.0-p15-1786278955",
+    "jdg-bundle-v9.7.0-p16-1786279714",
+    "jdg-bundle-v9.7.0-p16-1786279961"
+  ],
   "healthy": [
     "jdg-bundle-test-v9.0.0"
   ]

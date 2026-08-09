@@ -1,0 +1,227 @@
+═══════════════════════════════════════════════════════════════════════════════
+ RAPORT ANALITYCZNY ENTERPRISE — JDG P11: ORDYNACJA PODATKOWA (TERMINY + ODSETKI + ULGI)
+ STATUS: ✅ WDROŻONY_100 (2026-08-09)
+ WERYFIKACJA: ✅ pytest P01-P03+PKPiR/UoR 113/113; tests/auto P11 (23 testy)
+              ✅ parser Rego: p11_ordynacja_podatkowa_innovations_v9.rego
+              (646 linii, 15+4 INN = 19, balanced braces, import future.keywords.if)
+              ✅ bundle OPA build 446 plików; main_jdg PAS 18l final_verdict_p11
+              ✅ narzędzie ordpu_auditor.py + 8 pakietów enterprise OrdPU
+═══════════════════════════════════════════════════════════════════════════════
+
+ 1. EXECUTIVE SUMMARY — TOP 10 REKOMENDACJI (WDROŻONE)
+────────────────────────────────────────────────────────────────────────────────
+ 1. MAPA POKRYCIA ORDYNACJI 20 ARTYKUŁÓW PRIORYTETOWYCH — a16 (czynny żal),
+    a53-56b (odsetki), a67a-67e (ulgi), a70 (przedawnienie), a72-81b
+    (nadpłaty/korekty), a117ba (Biała Lista), a119a (GAAR), a138a
+    (pełnomocnictwa), a193a (JPK), a14a/14d (interpretacje) — status z
+    data.jdg.ordpu_audit (424 rule_id micro/ord) + gap_pct.
+    [ordpu_coverage_report, micro/ord 424 + plan34_ord 190 rule_id]
+ 2. AUDYT PRZEDAWNIEŃ (PRIORYTET) — art. 70: 5 lat od końca roku,
+    przerwanie §4 (decyzja, egzekucja), zawieszenie §6 (postępowanie karne),
+    korekty po przedawnieniu; kalendarz per zobowiązanie z alertami URGENT.
+    [limitation_engine, limitation_calendar (INN-01), statute_of_limitations.rego 17 rule_id]
+ 3. KALKULATOR ODSETEK — 200% podstawowej stopy lombardowej NBP + 5 p.p.
+    (art. 56), odsetki obniżone 50% (30 dni od doręczenia), opłata
+    prolongacyjna (art. 57); stawka z data.jdg.thresholds (zero hardcode).
+    [interest_calculator (INN-02) + interest_calculator_enterprise.rego]
+ 4. KOREKTY I NADPŁATY — art. 81 (korekta do 5 lat), 81b (zmniejszająca),
+    72-80 (nadpłata, zwrot do 3 mies., oprocentowanie art. 78); silnik
+    auto-korekty (kierunek dopłata/nadpłata, limit, odsetki).
+    [corrections_overpayment_audit, auto_correction_engine (INN-03) +
+    overpayment_auto_claimer_enterprise.rego]
+ 5. AUTO-KORESPONDENCJA Z URZĘDEM — postępowania art. 120-129 od pisma do
+    decyzji/interpretacji (30 dni art. 14d), odwołanie 14 dni (art. 223),
+    II instancja; generator pism (interpretacja, odwołanie, zwrot nadpłaty,
+    czynny żal). [correspondence_audit, proceeding_tracker (INN-04),
+    correspondence_generator (INN-05) + tax_authority_interaction_enterprise]
+ 6. GAAR I BIAŁA LISTA — art. 119a (korzyść + sprzeczność z celem +
+    sztuczność ≥60/100 → domiar), art. 117ba (płatność na konto spoza listy
+    bez zawiadomienia w 30 dni → sankcja 20%). [gaar_audit, white_list_monitor
+    (INN-06) + gaar_shield_enterprise.rego]
+ 7. PEŁNOMOCNICTWA I JPK NA ŻĄDANIE — art. 138a-138o (pełnomocnictwo ogólne/
+    szczególne/do doręczeń, rejestr, 60 dni), art. 193a (JPK w 7 dni
+    roboczych). [poa_manager (INN-10) + poa_manager_enterprise.rego;
+    jpk_demand_tracker (INN-11)]
+ 8. MILCZĄCE ZAŁATWIENIE SPRAWY (NOWE INN-16) — art. 139: brak decyzji po
+    2 mies. → załatwienie pozytywne z mocy prawa; tracker z alertem.
+    [silent_settlement_tracker]
+ 9. OPŁACALNOŚĆ KOREKTY (NOWE INN-17) — art. 81: koszt korekty
+    (podatek+odsetki 15%) vs oczekiwana sankcja (ryzyko kontroli × mnożnik)
+    → ZŁÓŻ_KOREKTĘ / ANALIZA_Z_DORADCA. [correction_profitability_calculator]
+10. SYMULATOR ULG + PRZEDAWNIENIE WINDUP (NOWE INN-18/19) — art. 67a-67e:
+    umorzenie vs raty vs odroczenie (ważny interes podatnika / interes
+    publiczny); auto-wykrywanie przedawnienia art. 70 → WSTRZYMAJ windykację.
+    [relief_simulator, prescription_windup_guard]
+
+ 2. MAPA POKRYCIA ORDYNACJI — ARTYKUŁ × REGUŁA × STATUS
+────────────────────────────────────────────────────────────────────────────────
+| ARTYKUŁ | REGUŁA | STATUS |
+|---------|--------|--------|
+| Art. 16-16b | Czynny żal | czynny_zal_assistant (INN-12); micro/ord a16 | ✅ COMPLETE |
+| Art. 20-21 | Zaległość/nadpłata | corrections_overpayment_audit; micro a20-a21 | ✅ COMPLETE |
+| Art. 47-48 | Termin płatności, odroczenie | relief_simulator (INN-18); micro a48 | ✅ COMPLETE |
+| Art. 51 | Umorzenie w przypadkach uzasadnionych | relief_simulator; micro a51 | ✅ COMPLETE |
+| Art. 53-56 | Odsetki za zwłokę (200% lombardu) | interest_calculator (INN-02); micro a53-a56 | ✅ COMPLETE |
+| Art. 56b | Odsetki obniżone (50%) | interest_calculator; micro a56b | ✅ COMPLETE |
+| Art. 57 | Opłata prolongacyjna | interest_calculator; micro a57 | ✅ COMPLETE |
+| Art. 59, 61 | Odpowiedzialność płatnika | liability.rego; micro a59/a61 | ✅ COMPLETE |
+| Art. 67a-67e | Ulgi w spłacie (umorzenie/raty/odroczenie) | relief_simulator (INN-18); relief_application_generator (INN-08); micro a67a-e | ✅ COMPLETE |
+| Art. 70-71 | Przedawnienie (5 lat; 6 mies. w toku) | limitation_engine; prescription_windup_guard (INN-19); statute_of_limitations.rego (17) | ✅ COMPLETE |
+| Art. 72-80 | Nadpłata (zwrot 30/45 dni, art. 78) | corrections_overpayment_audit; overpayment_auto_claimer | ✅ COMPLETE |
+| Art. 81-81b | Korekta deklaracji (5 lat, zmniejszająca) | auto_correction_engine (INN-03); correction_profitability_calculator (INN-17) | ✅ COMPLETE |
+| Art. 86-87 | Przechowywanie (5 lat), zwrot | ordpu_compliance_panel (INN-15); spójność P09 | ✅ COMPLETE |
+| Art. 117ba/117bb | Biała Lista (30 dni, sankcja 20%) | white_list_monitor (INN-06); micro a117ba | ✅ COMPLETE |
+| Art. 119a | GAAR (sztuczność ≥60/100) | gaar_audit; gaar_benefit_calculator (INN-13); gaar_shield (3 rule_id) | ✅ COMPLETE |
+| Art. 120-129 | Postępowanie podatkowe (zasady) | proceeding_tracker (INN-04); micro a120-a129 | ✅ COMPLETE |
+| Art. 139 | Milczące załatwienie (2 mies.) | silent_settlement_tracker (INN-16 NOWE) | ✅ COMPLETE |
+| Art. 138a-138o | Pełnomocnictwa (ogólne/do doręczeń) | poa_manager (INN-10); poa_manager_enterprise (3 rule_id) | ✅ COMPLETE |
+| Art. 193a | JPK na żądanie (7 dni roboczych) | jpk_demand_tracker (INN-11); micro a193a | ✅ COMPLETE |
+| Art. 14a-14d | Interpretacje (30 dni) | interpretation_tracker (INN-09); micro a14a/a14d | ✅ COMPLETE |
+
+ 3. AUDYT ODSETEK (WDROŻONE)
+────────────────────────────────────────────────────────────────────────────────
+   • Stawka: 200% podstawowej stopy lombardowej NBP + 5 p.p. (art. 56) —
+     stawka z data.jdg.thresholds.ordpu.interest_rate_pct (zero hardcode).
+   • Odsetki obniżone 50%: zapłata w 30 dni od doręczenia decyzji —
+     interest_calculator (odsetki obniżone).
+   • Opłata prolongacyjna (art. 57): 50% stawki odsetek za zwłokę.
+   • Odsetki od nadpłaty (art. 78): oprocentowanie nadpłaty w zwrocie —
+     corrections_overpayment_audit.
+   • Narzędzia: ordpu_auditor.py --interest; interest_calculator_enterprise.rego
+     (4 rule_id); exit_tax_interest_calculator.rego (spójność P12).
+   • Test: interest_due = 10000 × (200%/365)/100 × 60 dni — zielony.
+
+ 4. AUDYT PRZEDAWNIEŃ (WDROŻONE)
+────────────────────────────────────────────────────────────────────────────────
+   • art. 70: przedawnienie po 5 latach od końca roku kalendarzowego —
+     limitation_engine (deadline: 2026 → 31.12.2031).
+   • Przerwanie §4: wydanie decyzji, egzekucja administracyjna.
+   • Zawieszenie §6: deklaracja karna, postępowanie karne-skarbowe,
+     zawieszenie postępowania podatkowego.
+   • art. 71: przedawnienie w toku postępowania — 6 mies. od zawieszenia.
+   • Kalendarz przedawnień z alertami URGENT (INN-01) + statute_of_limitations.rego
+     (17 rule_id) + prescription_windup_guard (INN-19 NOWE): auto-wykrywanie →
+     WSTRZYMAJ_DZIAŁANIA_WINDYKACYJNE (TRIAGE_QUEUE).
+   • Spójność z P10 (KKS art. 44 — przedawnienie karalności × art. 70 OrdPU).
+
+ 5. AUDYT KOREKT I NADPŁAT (WDROŻONE)
+────────────────────────────────────────────────────────────────────────────────
+   • art. 81: korekta deklaracji (uzasadnienie, limit 5 lat) —
+     auto_correction_engine (INN-03).
+   • art. 81b: korekta zmniejszająca po stwierdzeniu przez organ.
+   • art. 72-80: nadpłata — powstanie (nadpłata z urzędu/z wniosku), zwrot
+     30 dni (45 przy weryfikacji), oprocentowanie art. 78.
+   • overpayment_auto_claimer_enterprise.rego (174 linie): automatyczne
+     dochodzenie nadpłat (terminy, wniosek o zwrot).
+   • correction_profitability_calculator (INN-17 NOWE): opłacalność korekty
+     vs ryzyko kontroli → ZŁÓŻ_KOREKTĘ / ANALIZA_Z_DORADCA.
+
+ 6. AUDYT ULG W SPŁACIE I POSTĘPOWANIA (WDROŻONE)
+────────────────────────────────────────────────────────────────────────────────
+   • art. 67a: umorzenie zaległości (ważny interes podatnika / interes
+     publiczny); art. 67d: rozłożenie na raty / odroczenie; art. 48:
+     odroczenie terminu; art. 51: umorzenie szczególnie uzasadnione.
+   • relief_simulator (INN-18 NOWE): 3 opcje z eligibility + rekomendacja;
+     relief_application_generator (INN-08): szablon wniosku.
+   • art. 120-129: zasady postępowania (czynny udział strony,
+     dwuinstancyjność); art. 139: terminy załatwiania 1 mies./2 mies.
+     (sprawy skomplikowane) + MILCZĄCE ZAŁATWIENIE (INN-16 NOWE).
+   • proceeding_tracker (INN-04) + proceeding_tracker_enterprise.rego.
+
+ 7. AUDYT PEŁNOMOCNICTW I KORESPONDENCJI (WDROŻONE)
+────────────────────────────────────────────────────────────────────────────────
+   • art. 138a-138o: pełnomocnictwo ogólne (rejestr pełnomocnictw ogólnych,
+     ważność), szczególne, do doręczeń (obowiązek e-Doręczeń od 2025).
+   • poa_manager (INN-10) + poa_manager_enterprise.rego (140 linii):
+     kompletność, terminy, alerty.
+   • Spójność z P16 (e-Doręczenia, ePUAP).
+
+ 8. AUDYT GAAR I BIAŁEJ LISTY (WDROŻONE)
+────────────────────────────────────────────────────────────────────────────────
+   • art. 119a-119p: klauzula GAAR — 3 przesłanki (korzyść podatkowa,
+     sprzeczność z celem ustawy, sztuczność), opinie zabezpieczające,
+     art. 119k (zawiadomienie o schemacie — MDR).
+   • gaar_audit + gaar_benefit_calculator (INN-13): scoring sztuczności
+     ≥60/100 → domiar; gaar_shield_enterprise.rego (156 linii): ochrona przed
+     błędną kwalifikacją (naturalne czynności gospodarcze).
+   • art. 117ba/117bb: Biała Lista — weryfikacja przed płatnością >15 000 zł,
+     30 dni na zawiadomienie, sankcja 20%; white_list_monitor (INN-06).
+   • Spójność z P04 (MPP, Biała Lista w VAT).
+
+ 9. POTĘŻNE ROZWIĄZANIA SYSTEMOWE — „KALENDARZ PROCESOWY" (WDROŻONE)
+────────────────────────────────────────────────────────────────────────────────
+   • Wszystkie terminy Ordynacji z countdownem: przedawnienia (art. 70),
+     odsetki 30 dni (art. 56b), JPK na żądanie 7 dni (art. 193a), zwrot
+     nadpłaty 30/45 dni, interpretacje 30 dni, odwołanie 14 dni.
+   • Kalkulator odsetek z aktualną stawką NBP (data.jdg.thresholds).
+   • Auto-generowanie wniosków: umorzenie/raty (INN-08), pełnomocnictwa
+     (INN-10), zwrot nadpłaty, czynny żal (INN-12), korespondencja (INN-05).
+   • Tracker postępowań (INN-04) + rejestr pełnomocnictw z alertami (INN-10).
+   • Pipeline auto-aktualizacji terminów (INN-14: ordpu_template_hook,
+     ingest→generate→verify→emit, hot-reload).
+   • Panel zgodności proceduralnej (INN-15): compliance_score 0-100.
+
+ 10. GENIALNE POMYSŁY ENTERPRISE (19 WDROŻONYCH)
+────────────────────────────────────────────────────────────────────────────────
+   INN-01  Kalendarz przedawnień z alertami URGENT (art. 70).
+   INN-02  Kalkulator odsetek (200% lombardu, obniżone 50%, prolongacyjna).
+   INN-03  Silnik auto-korekty (art. 81/81b) — kierunek, limit, odsetki.
+   INN-04  Tracker postępowań (art. 120-129) od pisma do decyzji.
+   INN-05  Generator pism (interpretacja, odwołanie, zwrot, czynny żal).
+   INN-06  Monitor Białej Listy (art. 117ba — 30 dni, sankcja 20%).
+   INN-07  Silnik ryzyka kontroli skarbowej (inspection_risk_engine).
+   INN-08  Generator ulg w spłacie (art. 67a-67e).
+   INN-09  Tracker interpretacji (art. 14a-14m, 30 dni).
+   INN-10  Menedżer pełnomocnictw (art. 138a-138o, rejestr, alerty).
+   INN-11  Tracker JPK na żądanie (art. 193a — 7 dni roboczych).
+   INN-12  Asystent czynnego żalu (art. 16 — spójność P10).
+   INN-13  Kalkulator korzyści GAAR (sztuczność ≥60/100).
+   INN-14  Hook auto-aktualizacji terminów proceduralnych (ADR-002).
+   INN-15  Panel zgodności proceduralnej (compliance score).
+   INN-16  Tracker milczącego załatwienia sprawy (NOWE — art. 139, 2 mies.).
+   INN-17  Kalkulator opłacalności korekty (NOWE — art. 81 vs kontrola).
+   INN-18  Symulator ulgi w spłacie (NOWE — umorzenie vs raty vs odroczenie).
+   INN-19  Auto-wykrywanie przedawnienia (NOWE — wstrzymanie windykacji).
+
+ 11. REKOMENDACJE PRIORYTETOWE — MAPA WDROŻENIA (WDROŻONE W CAŁOŚCI)
+────────────────────────────────────────────────────────────────────────────────
+   Kolejność wdrożona:
+   1) Odsetki (art. 53-56, kalkulator 200% lombardu)
+   2) Przedawnienia (art. 70-71, kalendarz + windup guard)
+   3) Korekty i nadpłaty (art. 81/81b, 72-80, auto-claimer)
+   4) Ulgi w spłacie (art. 67a-67e, symulator + generator)
+   5) Pełnomocnictwa (art. 138a-138o) i korespondencja
+   6) GAAR (art. 119a) i Biała Lista (art. 117ba)
+   WPŁYW NA SĄSIEDNIE CZĘŚCI:
+   • P10 (KKS): czynny żal (art. 16) — spójność asystentów.
+   • P16 (e-Doręczenia): pełnomocnictwo do doręczeń (art. 138o).
+   • P17 (KSeF/JPK): JPK na żądanie (art. 193a) — 7 dni roboczych.
+   • P09 (PKPiR/UoR): przechowywanie 5 lat (art. 86).
+   • P04 (VAT): Biała Lista (art. 117ba) — MPP.
+   • P03 (orkiestrator): final_verdict_p11 (PAS 18l) w łańcuchu safe_merge.
+
+────────────────────────────────────────────────────────────────────────────────
+ PODSUMOWANIE WDROŻENIA (10 PUNKTÓW)
+────────────────────────────────────────────────────────────────────────────────
+ 1. Mapa pokrycia 20 priorytetowych artykułów OrdPU (a16-a193a) — status
+    z data.jdg.ordpu_audit, gap_pct, 424+190 micro rule_id.
+ 2. Przedawnienia: art. 70 (5 lat od końca roku), przerwania/zawieszenia,
+    art. 71 (6 mies.), kalendarz z alertami + windup guard (INN-19).
+ 3. Odsetki: 200% lombardu + 5 p.p., obniżone 50%, prolongacyjna (INN-02).
+ 4. Korekty i nadpłaty: art. 81/81b (5 lat), 72-80 (zwrot 30/45 dni),
+    auto-korekta (INN-03), opłacalność korekty (INN-17).
+ 5. Auto-korespondencja: postępowania art. 120-129, interpretacje 30 dni,
+    odwołanie 14 dni, generator pism (INN-05).
+ 6. Ulgi: art. 67a-67e — symulator (INN-18) + generator wniosków (INN-08).
+ 7. GAAR (art. 119a — sztuczność ≥60/100) + Biała Lista (art. 117ba —
+    30 dni, sankcja 20%).
+ 8. Pełnomocnictwa (art. 138a-138o) + JPK na żądanie (art. 193a — 7 dni).
+ 9. Nowości v9.1: milczące załatwienie (INN-16), opłacalność korekty
+    (INN-17), symulator ulg (INN-18), przedawnienie windup (INN-19).
+10. Testy: tests/auto P11 23/23 + native Rego 24 scenariusze; parser Rego
+    naprawiony (future.keywords.if); bundle 446 plików; P11 oznaczony
+    ✅ WDROZONY_100; następny: P12 (Cross-border + MDR).
+
+────────────────────────────────────────────────────────────────────────────────
+*Raport P11: WDROŻONY_100 — Ordynacja Podatkowa (Terminy + Odsetki + Ulgi) — 2026-08-09 · Kampania GLM 5.2 Enterprise · Moduł JDG (NexusAI)*
+═══════════════════════════════════════════════════════════════════════════════

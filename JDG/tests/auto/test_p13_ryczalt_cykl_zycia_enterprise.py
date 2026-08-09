@@ -14,14 +14,19 @@ sys.path.insert(0, str(BASE_DIR / "tools"))
 from ryczalt_lifecycle_auditor import (  # noqa: E402
     RYC,
     audit_rego_files,
+    company_setup_assistant,
     karta_podatkowa_audit,
     lifecycle_assistant,
     lifecycle_phase,
     pit_form_comparator,
+    pkwiu_rate_recommender,
     pkwiu_section,
     ryczalt_limit_tracker,
+    ryczalt_loss_detector,
     ryczalt_rate_calculator,
+    succession_step_guide,
     succession_tracker,
+    suspend_or_close_simulator,
     suspension_audit,
     unregistered_business_audit,
 )
@@ -249,3 +254,89 @@ def test_p13_constants_match():
     assert RYC["succession_standard_months"] == 24
     assert RYC["succession_extended_months"] == 60
     assert RYC["zawieszenie_max_months"] == 24
+
+
+# ── Nowe innowacje v9.1 (INN-13..17) ──────────────────────────────────────────
+def test_company_setup_assistant():
+    """INN-13: onboarding CEIDG+ZUS — komplet 2/2 = setup_complete."""
+    res = company_setup_assistant(setup_ceidg_done=True, setup_zus_done=True)
+    assert res["setup_complete"] is True
+    assert res["onboarding_pct"] == 100.0
+    assert res["routing"] == ""
+    res2 = company_setup_assistant(setup_ceidg_done=True, setup_zus_done=False)
+    assert res2["setup_complete"] is False
+    assert res2["routing"] == "TRIAGE_QUEUE"
+    assert len(res2["steps"]) == 6
+
+
+def test_ryczalt_loss_detector():
+    """INN-14: projekcja 10M → utrata ryczałtu (limit 9M); YTD 5M → brak utraty."""
+    res = ryczalt_loss_detector(5000000, 10000000)
+    assert res["limit_pln"] == 9000000.0
+    assert res["projected_loss_risk"] is True
+    assert res["routing"] == "TRIAGE_QUEUE"
+    res2 = ryczalt_loss_detector(5000000, 6000000)
+    assert res2["projected_loss_risk"] is False
+    assert res2["warning_at_75pct"] is False  # 5M < 6.75M (75% z 9M)
+
+
+def test_ryczalt_loss_detector_warning():
+    """INN-14: 7M YTD → ostrzeżenie 75% limitu, brak utraty."""
+    res = ryczalt_loss_detector(7000000, 7000000)
+    assert res["warning_at_75pct"] is True
+    assert res["loss_triggered"] is False
+
+
+def test_suspend_or_close_simulator():
+    """INN-15: plan powrotu + ≤24 mies. → ZAWIESZENIE; brak powrotu → LIKWIDACJA."""
+    res = suspend_or_close_simulator(planned_months=6, will_resume=True)
+    assert res["recommendation"] == "ZAWIESZENIE"
+    assert res["routing"] == "TRIAGE_QUEUE"
+    res2 = suspend_or_close_simulator(planned_months=6, will_resume=False)
+    assert res2["recommendation"] == "LIKWIDACJA"
+    res3 = suspend_or_close_simulator(planned_months=36, will_resume=True)
+    assert res3["recommendation"] == "LIKWIDACJA"  # ponad 24 mies.
+
+
+def test_succession_step_guide():
+    """INN-16: 30 mies. → extension_needed (przedłużenie do 5 lat)."""
+    res = succession_step_guide(months_elapsed=30)
+    assert res["extension_needed"] is True
+    assert res["routing"] == "TRIAGE_QUEUE"
+    assert len(res["checklist"]) == 6
+    assert len(res["forms"]) == 3
+    res2 = succession_step_guide(months_elapsed=10)
+    assert res2["extension_needed"] is False
+    assert res2["months_remaining"] == 14
+
+
+def test_pkwiu_rate_recommender():
+    """INN-17: opis 'sprzedaż w sklepie' → 3%; 'programowanie aplikacji' → 12%."""
+    res = pkwiu_rate_recommender("sprzedaż w sklepie internetowym")
+    assert res["recommended_rate"] == "3%"
+    assert res["matched_keywords"]
+    res2 = pkwiu_rate_recommender("programowanie aplikacji mobilnych")
+    assert res2["recommended_rate"] == "12%"
+    res3 = pkwiu_rate_recommender("usługi poradnicze")
+    assert res3["recommended_rate"] == "8,5%"  # domyślna stawka usługowa
+
+
+def test_p13_parser_future_keywords_if():
+    """Parser: plik innowacji musi importować future.keywords.in i .if."""
+    text = (BASE_DIR / "rules" / "p13_ryczalt_cykl_zycia_innovations_v9.rego").read_text(encoding="utf-8")
+    assert "import future.keywords.in" in text, "Brak import future.keywords.in — parser bug"
+    assert "import future.keywords.if" in text, "Brak import future.keywords.if — parser bug"
+    assert text.count("{") == text.count("}"), "Niezbalansowane nawiasy {}"
+    assert text.count("(") == text.count(")"), "Niezbalansowane nawiasy ()"
+
+
+def test_p13_new_innovations_present():
+    """INN-13..17 zaimplementowane w pakiecie i podpięte w decide."""
+    text = (BASE_DIR / "rules" / "p13_ryczalt_cykl_zycia_innovations_v9.rego").read_text(encoding="utf-8")
+    for marker in ["company_setup_assistant", "ryczalt_loss_detector", "suspend_or_close_simulator",
+                   "succession_step_guide", "pkwiu_rate_recommender"]:
+        assert marker in text, f"Brak reguły {marker}"
+    for inn in ["INN-13", "INN-14", "INN-15", "INN-16", "INN-17"]:
+        assert inn in text, f"Brak oznaczenia {inn}"
+    assert '"loss_detector": ryczalt_loss_detector' in text
+    assert '"rate_recommender": pkwiu_rate_recommender' in text

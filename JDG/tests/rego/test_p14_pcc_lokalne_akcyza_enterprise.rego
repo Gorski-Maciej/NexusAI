@@ -186,6 +186,79 @@ test_p14_main_decide {
     result.local_taxes.real_estate.rates_2026.building_business == 33.10
 }
 
+# ── 9b. NOWE INNOWACJE v9.1 (INN-13..INN-17) ────────────────────────────────
+test_pcc_obligation_detector {
+    result := data.jdg.p14_pcc_lokalne_akcyza_innovations.pcc_obligation_detector with
+        input as {"jdg_entrepreneur": {"p14_pcc_check": true},
+                  "transaction": {"type": "kupno_pojazdu", "from_private_party": true,
+                                   "vat_applicable": false, "amount": 50000}}
+    result.pcc_obligation == true
+    result.tax_due == 1000.0
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_pcc_obligation_detector_vat_excluded {
+    result := data.jdg.p14_pcc_lokalne_akcyza_innovations.pcc_obligation_detector with
+        input as {"jdg_entrepreneur": {"p14_pcc_check": true},
+                  "transaction": {"type": "kupno_pojazdu", "from_private_party": true,
+                                   "vat_applicable": true, "amount": 50000}}
+    result.pcc_obligation == false
+    result._routing == ""
+}
+
+test_pcc3_zero_click {
+    result := data.jdg.p14_pcc_lokalne_akcyza_innovations.pcc3_zero_click with
+        input as {"jdg_entrepreneur": {"p14_pcc_check": true},
+                  "transaction": {"type": "SALE_MOVABLE", "amount": 100000, "days_elapsed": 12}}
+    result.tax_due == 2000.0
+    result.days_remaining == 2
+    result.urgency_alert == true
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_gmina_rates_map {
+    result := data.jdg.p14_pcc_lokalne_akcyza_innovations.gmina_rates_map with
+        input as {"jdg_entrepreneur": {"p14_pcc_check": true, "gmina": "Warszawa"}}
+    result.rates_current_year.building_business == 33.10
+    result.rates_changed_ytd == true
+    "Law Radar" in result.versioning
+}
+
+test_vat_vs_pcc_optimizer {
+    result := data.jdg.p14_pcc_lokalne_akcyza_innovations.vat_vs_pcc_optimizer with
+        input as {"jdg_entrepreneur": {"p14_pcc_check": true},
+                  "transaction": {"type": "kupno_pojazdu", "amount": 50000,
+                                   "buyer_vat_deductible": false, "from_private_party": true}}
+    result.recommendation == "OD_OSOBY_PRYWATNEJ_PCC_2"
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_excise_import_detector {
+    result := data.jdg.p14_pcc_lokalne_akcyza_innovations.excise_import_detector with
+        input as {"jdg_entrepreneur": {"p14_pcc_check": true},
+                  "import_goods": {"goods": "olej napędowy"}}
+    result.excise_goods == true
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_excise_import_detector_clean {
+    result := data.jdg.p14_pcc_lokalne_akcyza_innovations.excise_import_detector with
+        input as {"jdg_entrepreneur": {"p14_pcc_check": true},
+                  "import_goods": {"goods": "stal nierdzewna"}}
+    result.excise_goods == false
+    result._routing == ""
+}
+
+test_p14_main_decide_new_sections {
+    result := data.jdg.p14_pcc_lokalne_akcyza_innovations.decide with
+        input as {"jdg_entrepreneur": {"p14_pcc_check": true}}
+    result.pcc_detector.rule_id == "jdg.p14_pcc_lokalne_akcyza_innovations.pcc_obligation_detector"
+    result.pcc3_click.days_remaining == 14
+    result.gmina_map.rates_changed_ytd == true
+    result.vat_pcc.recommendation == "ANALIZA"
+    result.excise_import.excise_goods == false
+}
+
 test_p14_default_no_match {
     result := data.jdg.p14_pcc_lokalne_akcyza_innovations.decide with input as {"jdg_entrepreneur": {"tax_year": 2026}}
     result.matched == false

@@ -135,6 +135,102 @@ test_accounting_pipeline_snapshot {
     result.pipeline.step_4_emit == "hot-reload pakietów jdg.accounting / jdg.uor"
 }
 
+# ── 13. Walidator spójności międzyksięgowej PKPiR↔VAT↔PIT↔ZUS (INN-16) ───────
+test_pkpir_cross_domain_validator_ok {
+    result := data.jdg.p09_ksiegowosc_pkpir_uor_innovations.pkpir_cross_domain_validator with
+        input as {"jdg_entrepreneur": {"p09_ksiegowosc_check": true}, "ledger": {
+            "pkpir_col7_sales_net": 10000, "vat_sales_base": 10000,
+            "pkpir_income": 80000, "pit_advance_base": 80000,
+            "pkpir_col12_wages": 12000, "zus_contribution_base": 12000,
+        }}
+    result.cross_consistent == true
+    count(result.violations) == 0
+    result._routing == ""
+}
+
+test_pkpir_cross_domain_validator_violation {
+    result := data.jdg.p09_ksiegowosc_pkpir_uor_innovations.pkpir_cross_domain_validator with
+        input as {"jdg_entrepreneur": {"p09_ksiegowosc_check": true}, "ledger": {
+            "pkpir_col7_sales_net": 10000, "vat_sales_base": 12000,
+            "pkpir_income": 80000, "pit_advance_base": 80000,
+            "pkpir_col12_wages": 12000, "zus_contribution_base": 12000,
+        }}
+    result.cross_consistent == false
+    count(result.violations) == 1
+    result._routing == "TRIAGE_QUEUE"
+}
+
+# ── 14. Zamknięcie roku z checklistą prawną (INN-17) ──────────────────────────
+test_year_closing_checklist_incomplete {
+    result := data.jdg.p09_ksiegowosc_pkpir_uor_innovations.year_closing_checklist with
+        input as {"jdg_entrepreneur": {"p09_ksiegowosc_check": true,
+            "year_closing_remanent_done": false, "year_closing_return_filed": false,
+            "year_closing_archive_ready": false}}
+    result.closing_complete == false
+    count(result.checklist) == 6
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_year_closing_checklist_complete {
+    result := data.jdg.p09_ksiegowosc_pkpir_uor_innovations.year_closing_checklist with
+        input as {"jdg_entrepreneur": {"p09_ksiegowosc_check": true,
+            "year_closing_remanent_done": true, "year_closing_return_filed": true,
+            "year_closing_archive_ready": true}}
+    result.closing_complete == true
+    result._routing == ""
+}
+
+# ── 15. JPK_PKPIR readiness (INN-18) ──────────────────────────────────────────
+test_jpk_pkpir_readiness_ready {
+    result := data.jdg.p09_ksiegowosc_pkpir_uor_innovations.jpk_pkpir_readiness with
+        input as {"jdg_entrepreneur": {"p09_ksiegowosc_check": true, "pkpir_electronic_form": true}}
+    result.ready == true
+    result.jpk_schema_columns == 16
+    result._routing == ""
+}
+
+test_jpk_pkpir_readiness_paper_form {
+    result := data.jdg.p09_ksiegowosc_pkpir_uor_innovations.jpk_pkpir_readiness with
+        input as {"jdg_entrepreneur": {"p09_ksiegowosc_check": true, "pkpir_electronic_form": false}}
+    result.ready == false
+    result._routing == "TRIAGE_QUEUE"
+}
+
+# ── 16. Ciągłość bilansu otwarcia UoR (INN-19) ────────────────────────────────
+test_uor_opening_balance_continuity_ok {
+    result := data.jdg.p09_ksiegowosc_pkpir_uor_innovations.uor_opening_balance_continuity with
+        input as {"jdg_entrepreneur": {"p09_ksiegowosc_check": true}, "uor_books": {
+            "opening_total_assets": 500000, "opening_total_liabilities": 500000,
+            "closing_total_assets_prev_year": 500000, "closing_total_liabilities_prev_year": 500000,
+        }}
+    result.continuity_ok == true
+    result.balance_ok == true
+    result._routing == ""
+}
+
+test_uor_opening_balance_continuity_break {
+    result := data.jdg.p09_ksiegowosc_pkpir_uor_innovations.uor_opening_balance_continuity with
+        input as {"jdg_entrepreneur": {"p09_ksiegowosc_check": true}, "uor_books": {
+            "opening_total_assets": 500000, "opening_total_liabilities": 500000,
+            "closing_total_assets_prev_year": 450000, "closing_total_liabilities_prev_year": 500000,
+        }}
+    result.continuity_ok == false
+    result._routing == "TRIAGE_QUEUE"
+}
+
+# ── 17. Inteligentny klasyfikator kolumn PKPiR (INN-20) ───────────────────────
+test_pkpir_intelligent_classifier_sale {
+    result := data.jdg.p09_ksiegowosc_pkpir_uor_innovations.pkpir_intelligent_classifier with
+        input as {"jdg_entrepreneur": {"p09_ksiegowosc_check": true}, "document": {"description": "Faktura za sprzedaż usług IT"}}
+    result.classified_column == "7"
+}
+
+test_pkpir_intelligent_classifier_purchase {
+    result := data.jdg.p09_ksiegowosc_pkpir_uor_innovations.pkpir_intelligent_classifier with
+        input as {"jdg_entrepreneur": {"p09_ksiegowosc_check": true}, "document": {"description": "Zakup materiałów biurowych"}}
+    result.classified_column == "10"
+}
+
 # ── 12. Główny decide (P09) + no_match ────────────────────────────────────────
 test_p09_main_decide {
     result := data.jdg.p09_ksiegowosc_pkpir_uor_innovations.decide with

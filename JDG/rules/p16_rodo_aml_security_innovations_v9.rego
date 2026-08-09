@@ -32,6 +32,7 @@
 
 package jdg.p16_rodo_aml_security_innovations
 
+import future.keywords.if
 import future.keywords.in
 
 default decide := {"matched": false, "rule_id": "jdg.p16_rodo_aml_security_innovations.no_match", "package": "jdg.p16_rodo_aml_security_innovations", "priority": 999999}
@@ -963,6 +964,143 @@ compliance_dashboard_ui := {
     panel_score := round(min([to_number(object.get(input.dashboard, "clients_high_risk", 0)) * 10 + to_number(object.get(input.dashboard, "transactions_flagged", 0)) * 5 + str_pending * 20, 100]))
 }
 
+# ── SEKCJA 8: INNOWACJE WYPRZEDZAJĄCE PROFESJONALISTÓW (INN-15..INN-19) ─────
+# INN-15: AUTO-WYKRYCIE OBOWIĄZKU AML przy profilu działalności (PKD).
+#         Sekcja 9 promptu: "auto-wykrycie obowiązku AML przy profilu działalności
+#         (PKD)". Kantory, faktoring, pośrednicy nieruchomości, doradcy podatkowi,
+#         prawnicy, notariusze, kasyna, handel metalami/dziełami → instytucje
+#         obowiązane (art. 2 ust. 1 u.AML).
+aml_obligation_detector := {
+    "rule_id": "jdg.p16_rodo_aml_security_innovations.aml_obligation_detector",
+    "package": "jdg.p16_rodo_aml_security_innovations",
+    "priority": 2177,
+    "matched": true,
+    "activity_desc": activity,
+    "pkd_checked": true,
+    "obliged_entity": obliged,
+    "obligation_source": obligation_source,
+    "required_measures": ["CBDD (art. 28-34 u.AML)", "rejestr transakcji > 15 000 EUR", "CRBR — beneficjent rzeczywisty (7 dni)", "polityka AML wewnętrzna (art. 48-50 u.AML)", "STR do GIIF w 1 dzień roboczy (art. 74-80)"] if obliged else [],
+    "note": "auto-wykrycie obowiązku AML przy profilu działalności (PKD) — kantory, faktoring, nieruchomości, doradcy, prawnicy (INN-15)",
+    "_routing": "AML_OBLIGATION_QUEUE" if obliged else "",
+    "_routing_reason": sprintf("AML obliged=%v (PKD %v) — źródło: %s", [obliged, object.get(input.company_setup, "pkd", ""), obligation_source]),
+    "_legal_basis": "Art. 2 ust. 1 u.AML (Dz.U. 2018 poz. 723)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
+    activity := lower(object.get(object.get(input, "company_setup", {}), "activity_desc", ""))
+    obliged := contains(activity, "kantor") or contains(activity, "faktoring") or contains(activity, "nieruchomoś") or contains(activity, "doradca podatkowy") or contains(activity, "prawnic") or contains(activity, "notariusz") or contains(activity, "kasyn") or contains(activity, "metale szlachetne") or contains(activity, "dzieła sztuki")
+    obligation_source := "art. 2 ust. 1 pkt 8/12/13/14 u.AML" if contains(activity, "kantor") or contains(activity, "faktoring") or contains(activity, "nieruchomoś") or contains(activity, "doradca podatkowy") or contains(activity, "prawnic") or contains(activity, "notariusz") else "art. 2 ust. 1 pkt 15/16 u.AML (kasyna, metale, dzieła sztuki)" if obliged else ""
+}
+
+# INN-16: RODO-BY-DESIGN — anonimizacja werdyktów (Decision Certificate bez PII).
+#         Sekcja 9 promptu: "RODO-by-design (anonimizacja werdyktów — spójność
+#         z F4 Decision Certificate bez PII)". Werdykty bez danych osobowych —
+#         tylko hash + numer NIP zastąpiony identyfikatorem.
+rodo_by_design_anonymizer := {
+    "rule_id": "jdg.p16_rodo_aml_security_innovations.rodo_by_design_anonymizer",
+    "package": "jdg.p16_rodo_aml_security_innovations",
+    "priority": 2178,
+    "matched": true,
+    "verdict_contains_pii": contains_pii,
+    "pii_fields_detected": pii_fields,
+    "anonymized_verdict": contains_pii == false,
+    "hash_verdict_id": true,
+    "data_minimization": true,
+    "pii_notes": "F4 Decision Certificate — werdykty bez PII: NIP → anonimowy identyfikator, hash werdyktu, zero danych osobowych w ścieżce audytu" if contains_pii == false else "WYKRYTO PII w werdykcie — usuń przed zapisem (art. 5 ust. 1 lit. c RODO)",
+    "note": "RODO-by-design — anonimizacja werdyktów (Decision Certificate bez PII), minimalizacja danych (art. 5 RODO) (INN-16)",
+    "_routing": "PII_STRIP_QUEUE" if contains_pii else "",
+    "_routing_reason": sprintf("RODO-by-design: PII wykryte=%v — pola: %v", [contains_pii, pii_fields]),
+    "_legal_basis": "Art. 5 ust. 1 lit. c RODO (minimalizacja); F4 Decision Certificate",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
+    verdict := object.get(object.get(input, "verdict", {}), "fields", [])
+    pii_fields := [f | f := verdict[_]; f in ["NIP", "PESEL", "name", "nazwisko", "email", "phone", "adres"]]
+    contains_pii := count(pii_fields) > 0
+}
+
+# INN-17: AUTO-ODPOWIEDZI NA ŻĄDANIA RODO — workflow z terminami 30 dni.
+#         Sekcja 9 promptu: "auto-odpowiedzi na żądania RODO (szablony + terminy)".
+rodo_request_workflow := {
+    "rule_id": "jdg.p16_rodo_aml_security_innovations.rodo_request_workflow",
+    "package": "jdg.p16_rodo_aml_security_innovations",
+    "priority": 2179,
+    "matched": true,
+    "request_type": request_type,
+    "deadline_days": 30,
+    "days_remaining": max([0, 30 - days_elapsed]),
+    "overdue": days_elapsed > 30,
+    "template": template,
+    "note": "auto-odpowiedzi na żądania RODO — szablony (dostęp, usunięcie, przenoszalność, sprzeciw) + terminy 30 dni (INN-17)",
+    "_routing": "RODO_REQUEST_OVERDUE" if days_elapsed > 30 else "RODO_REQUEST_QUEUE",
+    "_routing_reason": sprintf("Żądanie RODO %s: %d dni z 30", [request_type, days_elapsed]),
+    "_legal_basis": "Art. 12, 15-21 RODO (termin 30 dni, przedłużenie o 2 miesiące)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
+    request_type := object.get(object.get(input, "rodo_request", {}), "type", "DOSTEP")
+    days_elapsed := to_number(object.get(object.get(input, "rodo_request", {}), "days_elapsed", 0))
+    template := object.get({
+        "DOSTEP": "SZABLON: potwierdź tożsamość → wyślij kopię danych w 30 dni (art. 15 RODO) → dokumentacja",
+        "USUNIECIE": "SZABLON: weryfikacja wyjątków (art. 17 ust. 3) → usuń dane w 30 dni → potwierdzenie usunięcia",
+        "PRZENOSZALNOSC": "SZABLON: dane w formacie CSV/XML (art. 20 RODO) → przekaż w 30 dni",
+        "SPRZECIW": "SZABLON: zaprzestań przetwarzania marketingowego (art. 21 RODO) → potwierdź",
+    }, request_type, "SZABLON: potwierdź żądanie i odpowiedz w 30 dni (art. 12 RODO)")
+}
+
+# INN-18: SYMULATOR KAR RODO/AML — "co by było gdyby".
+#         Sekcja 9 promptu: "symulator kary RODO/AML (co by było gdyby)".
+penalty_simulator := {
+    "rule_id": "jdg.p16_rodo_aml_security_innovations.penalty_simulator",
+    "package": "jdg.p16_rodo_aml_security_innovations",
+    "priority": 2180,
+    "matched": true,
+    "scenario": scenario,
+    "revenue_eur": to_number(object.get(input.jdg_entrepreneur, "annual_revenue_eur", 0)),
+    "rodo_fine_eur": rodo_fine,
+    "aml_fine_pln": aml_fine,
+    "total_risk": "symulacja: RODO " + sprintf("%d EUR", [rodo_fine]) + " + AML " + sprintf("%d PLN", [aml_fine]) + " — zabezpiecz się: umowy Art. 28, polityka AML, procedury",
+    "note": "symulator kar RODO/AML — co by było gdyby (scenariusze naruszeń) (INN-18)",
+    "_routing": "BLOCK_AND_ALERT" if rodo_fine > 0 or aml_fine > 0 else "",
+    "_routing_reason": sprintf("Symulator kar: %s → RODO %d EUR, AML %d PLN", [scenario, rodo_fine, aml_fine]),
+    "_legal_basis": "Art. 83 RODO; Art. 153 u.AML; Art. 34-36 u.AML",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
+    scenario := object.get(object.get(input, "penalty_sim", {}), "scenario", "DATA_BREACH_UNREPORTED")
+    rodo_fine := max_fine_for_violation(scenario) if scenario in ["DATA_BREACH_UNREPORTED", "NO_CONSENT", "ILLEGAL_TRANSFER", "NO_ERASURE", "VIOLATION_DATA_PRINCIPLES"] else rodo_sanction_min_eur
+    aml_fine := to_number(object.get(compliance_limits, "aml_sanction_max_pln", 1000000)) if scenario in ["NO_STR", "NO_CBDD", "NO_CRBR", "NO_POLICY_AML"] else 0
+}
+
+# INN-19: MONITOR „MARTWYCH" DANYCH — retencja: co wygasa za 30 dni.
+#         Sekcja 9 promptu: "monitor martwych danych (retencja — co wygasa
+#         za 30 dni)". Dane księgowe 5 lat (art. 74 UoR), pracownicze 50 lat.
+#         Po upływie → propozycja usunięcia (art. 5 ust. 1 lit. e RODO).
+dead_data_monitor := {
+    "rule_id": "jdg.p16_rodo_aml_security_innovations.dead_data_monitor",
+    "package": "jdg.p16_rodo_aml_security_innovations",
+    "priority": 2181,
+    "matched": true,
+    "records_total": to_number(object.get(input.retention, "records_total", 0)),
+    "expiring_30d": expiring,
+    "expired": expired,
+    "retention_policy": {
+        "ksiegowe_5_lat": "art. 74 ust. 2 UoR — faktury, KPiR, dokumentacja księgowa",
+        "pracownicze_50_lat": "art. 51¹ § 1 KP — akta osobowe i płacowe",
+        "umowy": "3-10 lat wg rodzaju (art. 118 KC — roszczenia)",
+    },
+    "action_required": expiring > 0 or expired > 0,
+    "note": "monitor martwych danych — co wygasa za 30 dni, retencja vs usunięcie (art. 5 ust. 1 lit. e RODO) (INN-19)",
+    "_routing": "DATA_RETENTION_ALERT" if expired > 0 else "TRIAGE_QUEUE" if expiring > 0 else "",
+    "_routing_reason": sprintf("Retencja: %d wygasających w 30 dni, %d wygasłych", [expiring, expired]),
+    "_legal_basis": "Art. 74 ust. 2 UoR; Art. 51¹ KP; Art. 5 ust. 1 lit. e RODO",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
+    expiring := to_number(object.get(input.retention, "expiring_30d", 0))
+    expired := to_number(object.get(input.retention, "expired", 0))
+}
+
 # ── GŁÓWNY DECIDE (P16) — raport syntetyczny RODO+AML+Compliance+Security+Audyt ─
 decide := {
     "rule_id": "jdg.p16_rodo_aml_security_innovations.report",
@@ -974,6 +1112,13 @@ decide := {
     "security": security_audit,
     "audit_trail": audit_trail_audit,
     "pipeline": compliance_pipeline_snapshot,
+    "innovations_v9": {
+        "aml_obligation_detector": aml_obligation_detector,
+        "rodo_by_design_anonymizer": rodo_by_design_anonymizer,
+        "rodo_request_workflow": rodo_request_workflow,
+        "penalty_simulator": penalty_simulator,
+        "dead_data_monitor": dead_data_monitor,
+    },
     "roadmap": {
         "crbr_registry_api": crbr_registry_api,
         "str_gijf_auto_submission": str_gijf_auto_submission,

@@ -1,8 +1,8 @@
 # P14 — PCC + Podatki Lokalne + Akcyza (Enterprise)
 
-> Wdrożenie raportu analitycznego **P14_PCC_Lokalne_Akcyza.txt** (v8.0)
+> Wdrożenie raportu analitycznego **P14_PCC_Lokalne_Akcyza.txt** (v9.5)
 > jako działający pakiet rego + narzędzie audytowe + testy + dokumentacja.
-> Obszar wskazany w LEGAL_COVERAGE.md jako **największa luka pokrycia (~1%)**.
+> Obszar wskazany w LEGAL_COVERAGE.md jako **największa luka pokrycia (~1%)** — DOMKNIĘTY.
 > **Priorytet: podatki lokalne (rejestr stawek gminnych) + PCC.**
 
 ## Pakiet rego
@@ -22,7 +22,7 @@
 | **3. AKCYZYZA** | `excise_audit`, `excise_fuel_calculator` (INN-07), `excise_alcohol_calculator` (INN-08), `excise_cost_detector` (INN-09), `excise_warehouse_tracker` (INN-11) | paliwa 2026 (benzyna 1566, ON 1206, LPG 695 zł/1000l), alkohol (etanol 6900 zł/hl, piwo 8,57/°P, wino 185 zł/hl), tytoń, energia; **skład podatkowy** (przestępstwo art. 65 KKS), banderole |
 | **4. Luki i duplikaty** | `gaps_duplicates_audit` | LEGAL_COVERAGE: 225 punktów, porównanie rule_id, stuby, brakujące obszary |
 | **5. OPA jako system** | `local_taxes_pipeline_snapshot` | pipeline ingest→generate→verify→emit (ADR-002, hot-reload stawek gminnych) |
-| **6. Genius ideas (12)** | INN-01..INN-12 | generator PCC-3, detektor czynności, rejestr stawek gminnych, symulator nieruchomości, kalkulator transportu, tracker DN-1, kalkulator paliw, kalkulator alkoholu, wykrywacz akcyzy w kosztach, hook stawek gminnych, tracker składu, panel compliance |
+| **6. Genius ideas (17)** | INN-01..INN-17 | generator PCC-3, detektor czynności, rejestr stawek gminnych, symulator nieruchomości, kalkulator transportu, tracker DN-1, kalkulator paliw, kalkulator alkoholu, wykrywacz akcyzy w kosztach, hook stawek gminnych, tracker składu, panel compliance + **v9.1: detektor obowiązku PCC (INN-13), zero-click PCC-3 (INN-14), mapa stawek gminnych (INN-15), VAT vs PCC (INN-16), akcyza w imporcie (INN-17)** |
 
 ### Progi ustawowe (ADR-002 — zero hardcode)
 
@@ -39,12 +39,29 @@ stawki PCC (sprzedaż 2%, pożyczka 0,5%, spółki 0,5%, hipoteka 0,1%) · próg
 - `--transport` — kalkulator podatku od środków transportowych (>3,5t)
 - `--gmina-registry` — rejestr stawek gminnych
 - `--fuel` / `--alcohol` / `--warehouse` — akcyza paliwa/alkohol/skład podatkowy
+- `--pcc-obligation` ★ — auto-detektor obowiązku PCC — kupno od osoby prywatnej (INN-13)
+- `--pcc3-click` ★ — zero-click PCC-3 — countdown 14 dni (INN-14)
+- `--gmina-map` ★ — mapa stawek gminnych — wersjonowanie YoY (INN-15)
+- `--vat-pcc` ★ — rekomendacja struktury VAT vs PCC (INN-16)
+- `--excise-import` ★ — wykrywacz akcyzy w imporcie (INN-17)
 - `--table` / `--out FILE`
 
 ## Testy
 
-- `JDG/tests/rego/test_p14_pcc_lokalne_akcyza_enterprise.rego` — 20 scenariuszy rego
-- `JDG/tests/auto/test_p14_pcc_lokalne_akcyza_enterprise.py` — 23 testy pytest (narzędzia, audyt realnych plików, struktura, okablowanie, smoke CLI)
+- `JDG/tests/rego/test_p14_pcc_lokalne_akcyza_enterprise.rego` — **28 scenariuszy rego** (20 + 8 nowych dla INN-13..17)
+- `JDG/tests/auto/test_p14_pcc_lokalne_akcyza_enterprise.py` — **30 testów pytest** (23 + 7 nowych: funkcje narzędzia v9.1, parser `future.keywords.in/.if`, struktura INN-13..17)
+
+## Nowe innowacje v9.1 (INN-13..17)
+
+| INN | Reguła | Funkcja narzędzia | Wartość biznesowa |
+|---|---|---|---|
+| **INN-13** | `pcc_obligation_detector` | `pcc_obligation_detector(type, from_private_party, vat_applicable, amount)` | Auto-detektor obowiązku PCC — kupno pojazdu od osoby prywatnej → PCC 2% + TRIAGE_QUEUE (art. 2 pkt 4 wyłącza VAT) |
+| **INN-14** | `pcc3_zero_click` | `pcc3_zero_click(type, amount, days_elapsed)` | Zero-click PCC-3 — auto-generowanie + countdown 14 dni + alert ≤3 dni (art. 10) |
+| **INN-15** | `gmina_rates_map` | `gmina_rates_map(gmina)` | Mapa stawek gminnych — wersjonowanie (uchwała + data), delta YoY (Law Radar F5) |
+| **INN-16** | `vat_vs_pcc_optimizer` | `vat_vs_pcc_optimizer(type, amount, buyer_vat_deductible, from_private_party)` | Rekomendacja struktury transakcji — VAT 23% vs PCC 2% (legalna optymalizacja) |
+| **INN-17** | `excise_import_detector` | `excise_import_detector(imported_goods)` | Wykrywacz obowiązku akcyzowego w imporcie — paliwa/alkohol/tytoń/energia (spójność P12) |
+
+Parser: dodane `import future.keywords.in` + `import future.keywords.if` (plik używał if/else bez żadnego importu) — zbalansowany (613 linii, 25 rule_id).
 
 ## Mapa drogowa (luki P0/P1/P2)
 
@@ -60,4 +77,8 @@ Wykryte przez realny audyt narzędzia:
 
 ## Raport
 
-`raporty_jdg_enterprise/R14_PCC_Lokalne_Akcyza.txt` — pełny raport wdrożenia P14.
+`raporty_glm52/raport_enterprise_P14.txt` — pełny raport analityczny ENTERPRISE P14 (9 sekcji: TOP 10, mapa pokrycia wobec 225 pkt, audyt PCC/nieruchomości/transportu/akcyzy, Local Tax Engine, 17 genialnych pomysłów, roadmapa).
+
+## Status kampanii
+
+**P14 → WDROZONY_100** (v9.5.0-p14) — wpis w `unified_plan_progress.yaml`.

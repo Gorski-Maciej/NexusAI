@@ -16,12 +16,17 @@ from pcc_local_excise_auditor import (  # noqa: E402
     audit_rego_files,
     excise_alcohol_calculator,
     excise_fuel_calculator,
+    excise_import_detector,
     excise_warehouse_tracker,
+    gmina_rates_map,
     gmina_rates_registry,
     pcc3_generator,
+    pcc3_zero_click,
     pcc_calculator,
+    pcc_obligation_detector,
     real_estate_tax_calculator,
     transport_tax_calculator,
+    vat_vs_pcc_optimizer,
 )
 
 
@@ -220,3 +225,78 @@ def test_p14_constants_match():
     assert PCC["excise_fuel"]["benzyna"] == 1566.0
     assert PCC["excise_alcohol"]["alkohol_etylowy_pln_hl"] == 6900.0
     assert PCC["transport_heavy_threshold_t"] == 3.5
+
+
+# ── Nowe innowacje v9.1 (INN-13..17) ──────────────────────────────────────────
+def test_pcc_obligation_detector():
+    """INN-13: kupno auta od osoby prywatnej → obowiązek PCC 2% + TRIAGE_QUEUE."""
+    res = pcc_obligation_detector("kupno_pojazdu", True, False, 50000)
+    assert res["pcc_obligation"] is True
+    assert res["tax_due"] == 1000.0
+    assert res["routing"] == "TRIAGE_QUEUE"
+    res2 = pcc_obligation_detector("kupno_pojazdu", True, True, 50000)
+    assert res2["pcc_obligation"] is False  # transakcja VAT wyłączona
+
+
+def test_pcc3_zero_click():
+    """INN-14: countdown 14 dni — 12 dni → 2 pozostałe + alert."""
+    res = pcc3_zero_click("SALE_MOVABLE", 100000, 12)
+    assert res["days_remaining"] == 2
+    assert res["urgency_alert"] is True
+    assert res["routing"] == "TRIAGE_QUEUE"
+    res2 = pcc3_zero_click("SALE_MOVABLE", 100000, 2)
+    assert res2["days_remaining"] == 12
+    assert res2["routing"] == ""
+    assert res2["form_auto_generated"] is True
+
+
+def test_gmina_rates_map():
+    """INN-15: stawki gminne 2026 vs 2025 → zmiana YoY wykryta."""
+    res = gmina_rates_map("Warszawa")
+    assert res["gmina"] == "Warszawa"
+    assert res["rates_changed_ytd"] is True  # 1,43 vs 1,34
+    assert res["land_rate_delta_pct"] > 0
+    assert "Law Radar" in res["versioning"]
+
+
+def test_vat_vs_pcc_optimizer():
+    """INN-16: brak odliczenia + osoba prywatna → PCC 2% lepsza niż VAT 23%."""
+    res = vat_vs_pcc_optimizer("kupno_pojazdu", 50000, False, True)
+    assert res["recommendation"] == "OD_OSOBY_PRYWATNEJ_PCC_2"
+    assert res["vat_cost"] == 11500.0
+    assert res["pcc_cost"] == 1000.0
+    assert res["routing"] == "TRIAGE_QUEUE"
+    res2 = vat_vs_pcc_optimizer("kupno_pojazdu", 50000, True, False)
+    assert res2["recommendation"] == "OD_FIRMY_VAT_ODLICZENIE"
+
+
+def test_excise_import_detector():
+    """INN-17: import oleju napędowego → obowiązek akcyzowy + TRIAGE_QUEUE."""
+    res = excise_import_detector("olej napędowy")
+    assert res["excise_goods"] is True
+    assert "olej napędowy" in res["matched_keywords"]
+    assert res["routing"] == "TRIAGE_QUEUE"
+    res2 = excise_import_detector("stal nierdzewna")
+    assert res2["excise_goods"] is False
+    assert res2["routing"] == ""
+
+
+def test_p14_parser_future_keywords_if():
+    """Parser: plik innowacji musi importować future.keywords.in i .if."""
+    text = (BASE_DIR / "rules" / "p14_pcc_lokalne_akcyza_innovations_v9.rego").read_text(encoding="utf-8")
+    assert "import future.keywords.in" in text, "Brak import future.keywords.in — parser bug"
+    assert "import future.keywords.if" in text, "Brak import future.keywords.if — parser bug"
+    assert text.count("{") == text.count("}"), "Niezbalansowane nawiasy {}"
+    assert text.count("(") == text.count(")"), "Niezbalansowane nawiasy ()"
+
+
+def test_p14_new_innovations_present():
+    """INN-13..17 zaimplementowane w pakiecie i podpięte w decide."""
+    text = (BASE_DIR / "rules" / "p14_pcc_lokalne_akcyza_innovations_v9.rego").read_text(encoding="utf-8")
+    for marker in ["pcc_obligation_detector", "pcc3_zero_click", "gmina_rates_map",
+                   "vat_vs_pcc_optimizer", "excise_import_detector"]:
+        assert marker in text, f"Brak reguły {marker}"
+    for inn in ["INN-13", "INN-14", "INN-15", "INN-16", "INN-17"]:
+        assert inn in text, f"Brak oznaczenia {inn}"
+    assert '"pcc_detector": pcc_obligation_detector' in text
+    assert '"excise_import": excise_import_detector' in text

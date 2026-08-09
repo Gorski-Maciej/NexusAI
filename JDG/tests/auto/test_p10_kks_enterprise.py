@@ -186,6 +186,47 @@ def test_p10_wiring_in_main():
     assert "final_verdict_p10" in main
 
 
+def test_p10_future_keywords_if_import():
+    """Parser Rego: pakiet używa if/else → musi importować future.keywords.if."""
+    text = (BASE_DIR / "rules" / "p10_kks_innovations_v9.rego").read_text(encoding="utf-8")
+    assert "import future.keywords.in" in text
+    assert "import future.keywords.if" in text
+
+
+def test_p10_new_innovations_13_16():
+    """INN-13..16 (v9.1) — co-jeśli, gotowość na kontrolę, odpowiedzialność powiązana, przewidywacz wyroków."""
+    text = (BASE_DIR / "rules" / "p10_kks_innovations_v9.rego").read_text(encoding="utf-8")
+    for marker in [
+        "penalty_what_if_simulator",
+        "tax_audit_readiness",
+        "related_liability_audit",
+        "judgment_trend_predictor",
+    ]:
+        assert marker in text, f"Brak innowacji: {marker}"
+
+
+def test_p10_new_rule_ids():
+    """Nowe reguły mają unikalne rule_id w pakiecie P10."""
+    text = (BASE_DIR / "rules" / "p10_kks_innovations_v9.rego").read_text(encoding="utf-8")
+    for rid in [
+        "jdg.p10_kks_innovations.penalty_what_if_simulator",
+        "jdg.p10_kks_innovations.tax_audit_readiness",
+        "jdg.p10_kks_innovations.related_liability_audit",
+        "jdg.p10_kks_innovations.judgment_trend_predictor",
+    ]:
+        assert rid in text, f"Brak rule_id: {rid}"
+
+
+def test_p10_report_exists():
+    """Raport kampanii raport_enterprise_P10.txt musi istnieć i być oznaczony WDROŻONY_100."""
+    r = BASE_DIR / "raporty_glm52" / "raport_enterprise_P10.txt"
+    assert r.exists(), "Brak raportu raport_enterprise_P10.txt"
+    text = r.read_text(encoding="utf-8")
+    assert "WDROŻONY_100" in text
+    assert "INN-16" in text
+    assert "P11" in text
+
+
 def test_p10_tool_smoke():
     """Narzędzie CLI działa end-to-end."""
     proc = subprocess.run(

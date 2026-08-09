@@ -179,6 +179,50 @@ def test_p09_wiring_in_main():
     assert "final_verdict_p09" in main
 
 
+def test_p09_future_keywords_if_import():
+    """Parser Rego: pakiet używa if/else → musi importować future.keywords.if."""
+    text = (BASE_DIR / "rules" / "p09_ksiegowosc_pkpir_uor_innovations_v9.rego").read_text(encoding="utf-8")
+    assert "import future.keywords.in" in text
+    assert "import future.keywords.if" in text
+
+
+def test_p09_new_innovations_16_20():
+    """INN-16..20 (v9.1) — walidator międzyksięgowy, zamknięcie roku, JPK readiness, ciągłość bilansu, klasyfikator."""
+    text = (BASE_DIR / "rules" / "p09_ksiegowosc_pkpir_uor_innovations_v9.rego").read_text(encoding="utf-8")
+    for marker in [
+        "pkpir_cross_domain_validator",
+        "year_closing_checklist",
+        "jpk_pkpir_readiness",
+        "uor_opening_balance_continuity",
+        "pkpir_intelligent_classifier",
+    ]:
+        assert marker in text, f"Brak innowacji: {marker}"
+    assert "import future.keywords.if" in text
+
+
+def test_p09_cross_domain_rule_ids():
+    """Nowe reguły mają unikalne rule_id w pakiecie P09."""
+    text = (BASE_DIR / "rules" / "p09_ksiegowosc_pkpir_uor_innovations_v9.rego").read_text(encoding="utf-8")
+    for rid in [
+        "jdg.p09_ksiegowosc_pkpir_uor_innovations.pkpir_cross_domain_validator",
+        "jdg.p09_ksiegowosc_pkpir_uor_innovations.year_closing_checklist",
+        "jdg.p09_ksiegowosc_pkpir_uor_innovations.jpk_pkpir_readiness",
+        "jdg.p09_ksiegowosc_pkpir_uor_innovations.uor_opening_balance_continuity",
+        "jdg.p09_ksiegowosc_pkpir_uor_innovations.pkpir_intelligent_classifier",
+    ]:
+        assert rid in text, f"Brak rule_id: {rid}"
+
+
+def test_p09_report_exists():
+    """Raport kampanii raport_enterprise_P09.txt musi istnieć i być oznaczony WDROŻONY_100."""
+    r = BASE_DIR / "raporty_glm52" / "raport_enterprise_P09.txt"
+    assert r.exists(), "Brak raportu raport_enterprise_P09.txt"
+    text = r.read_text(encoding="utf-8")
+    assert "WDROŻONY_100" in text
+    assert "INN-20" in text
+    assert "P10" in text
+
+
 def test_p09_tool_smoke():
     """Narzędzie CLI działa end-to-end."""
     proc = subprocess.run(

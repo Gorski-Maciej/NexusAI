@@ -176,6 +176,47 @@ def test_p11_wiring_in_main():
     assert "final_verdict_p11" in main
 
 
+def test_p11_future_keywords_if_import():
+    """Parser Rego: pakiet używa if/else → musi importować future.keywords.if."""
+    text = (BASE_DIR / "rules" / "p11_ordynacja_podatkowa_innovations_v9.rego").read_text(encoding="utf-8")
+    assert "import future.keywords.in" in text
+    assert "import future.keywords.if" in text
+
+
+def test_p11_new_innovations_16_19():
+    """INN-16..19 (v9.1) — milczące załatwienie, opłacalność korekty, symulator ulgi, przedawnienie."""
+    text = (BASE_DIR / "rules" / "p11_ordynacja_podatkowa_innovations_v9.rego").read_text(encoding="utf-8")
+    for marker in [
+        "silent_settlement_tracker",
+        "correction_profitability_calculator",
+        "relief_simulator",
+        "prescription_windup_guard",
+    ]:
+        assert marker in text, f"Brak innowacji: {marker}"
+
+
+def test_p11_new_rule_ids():
+    """Nowe reguły mają unikalne rule_id w pakiecie P11."""
+    text = (BASE_DIR / "rules" / "p11_ordynacja_podatkowa_innovations_v9.rego").read_text(encoding="utf-8")
+    for rid in [
+        "jdg.p11_ordynacja_podatkowa_innovations.silent_settlement_tracker",
+        "jdg.p11_ordynacja_podatkowa_innovations.correction_profitability_calculator",
+        "jdg.p11_ordynacja_podatkowa_innovations.relief_simulator",
+        "jdg.p11_ordynacja_podatkowa_innovations.prescription_windup_guard",
+    ]:
+        assert rid in text, f"Brak rule_id: {rid}"
+
+
+def test_p11_report_exists():
+    """Raport kampanii raport_enterprise_P11.txt musi istnieć i być oznaczony WDROŻONY_100."""
+    r = BASE_DIR / "raporty_glm52" / "raport_enterprise_P11.txt"
+    assert r.exists(), "Brak raportu raport_enterprise_P11.txt"
+    text = r.read_text(encoding="utf-8")
+    assert "WDROŻONY_100" in text
+    assert "INN-19" in text
+    assert "P12" in text
+
+
 def test_p11_tool_smoke():
     """Narzędzie CLI działa end-to-end."""
     proc = subprocess.run(

@@ -33,6 +33,9 @@
 
 package jdg.p13_ryczalt_cykl_zycia_innovations
 
+import future.keywords.in
+import future.keywords.if
+
 default decide := {"matched": false, "rule_id": "jdg.p13_ryczalt_cykl_zycia_innovations.no_match", "package": "jdg.p13_ryczalt_cykl_zycia_innovations", "priority": 999999}
 
 # ── Źródła danych: progi z data.jdg.thresholds (ADR-002 — zero hardcode) ──────
@@ -554,6 +557,141 @@ ryczalt_compliance_panel := {
     object.get(input.jdg_entrepreneur, "p13_ryczalt_check", false) == true
 }
 
+# ── SEKCJA 7b: NOWE INNOWACJE P13 v9.1 (INN-13..INN-17) ───────────────────────
+# INN-13: ASYSTENT ZAKŁADANIA FIRMY — pełny onboarding CEIDG+NIP+ZUS+wybór formy.
+company_setup_assistant := {
+    "rule_id": "jdg.p13_ryczalt_cykl_zycia_innovations.company_setup_assistant",
+    "package": "jdg.p13_ryczalt_cykl_zycia_innovations",
+    "priority": 1173,
+    "matched": true,
+    "steps": [
+        "1. Wniosek CEIDG-1 — rejestracja działalności (wpis w 7 dni, art. 5-7 CEIDG)",
+        "2. NIP i REGON — nadawane automatycznie przez CEIDG",
+        "3. ZUS ZUA — zgłoszenie do ubezpieczeń w 7 dni od rejestracji",
+        "4. Wybór formy opodatkowania — skala/liniowy/ryczałt (deklaracja do 20. dnia miesiąca następnego)",
+        "5. Rachunek firmowy — otwarcie i zgłoszenie",
+        "6. Rozliczenia VAT — zwolnienie do 200k PLN / rejestracja VAT-R",
+    ],
+    "setup_ceidg_done": object.get(input.jdg_entrepreneur, "setup_ceidg_done", false) == true,
+    "setup_zus_done": object.get(input.jdg_entrepreneur, "setup_zus_done", false) == true,
+    "steps_completed": steps_completed,
+    "setup_complete": steps_completed == 2,
+    "onboarding_pct": round2(steps_completed / 2 * 100),
+    "_routing": "TRIAGE_QUEUE" if steps_completed < 2 else "",
+    "_routing_reason": "Asystent zakładania firmy — pełny onboarding CEIDG+NIP+ZUS+wybór formy (INN-13)",
+    "_legal_basis": "Ustawa o CEIDG art. 5-7; SUS art. 36; ustawa o ryczałcie art. 9; PP",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p13_ryczalt_check", false) == true
+    steps_completed := (1 if object.get(input.jdg_entrepreneur, "setup_ceidg_done", false) == true else 0) + (1 if object.get(input.jdg_entrepreneur, "setup_zus_done", false) == true else 0)
+}
+
+# INN-14: AUTO-WYKRYCIE UTRATY PRAWA DO RYCZAŁTU — licznik limitu 2M EUR real-time.
+ryczalt_loss_detector := {
+    "rule_id": "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_loss_detector",
+    "package": "jdg.p13_ryczalt_cykl_zycia_innovations",
+    "priority": 1174,
+    "matched": true,
+    "revenue_ytd": revenue_ytd,
+    "projected_annual_revenue": projected_annual_revenue,
+    "limit_pln": limit_pln,
+    "usage_pct_ytd": round2(revenue_ytd / limit_pln * 100),
+    "projection_pct": round2(projected_annual_revenue / limit_pln * 100),
+    "warning_at_75pct": revenue_ytd >= round2(limit_pln * 75 / 100),
+    "projected_loss_risk": projected_annual_revenue >= limit_pln,
+    "loss_triggered": revenue_ytd > limit_pln,
+    "note": "przekroczenie limitu 2M EUR → utrata prawa do ryczałtu od następnego dnia (art. 6 ust. 4) — licznik real-time",
+    "_routing": "TRIAGE_QUEUE" if revenue_ytd > limit_pln or projected_annual_revenue >= limit_pln else "",
+    "_routing_reason": "Auto-wykrycie utraty prawa do ryczałtu — licznik limitu 2M EUR (art. 6 ust. 4)",
+    "_legal_basis": "Ustawa o ryczałcie art. 6 ust. 4",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p13_ryczalt_check", false) == true
+    revenue_ytd := to_number(object.get(input.jdg_entrepreneur, "revenue_ytd", 0))
+    projected_annual_revenue := to_number(object.get(input.jdg_entrepreneur, "projected_annual_revenue", 0))
+}
+
+# INN-15: SYMULATOR „ZAWIESIĆ CZY ZAMKNĄĆ" — rekomendacja decyzji exit.
+suspend_or_close_simulator := {
+    "rule_id": "jdg.p13_ryczalt_cykl_zycia_innovations.suspend_or_close_simulator",
+    "package": "jdg.p13_ryczalt_cykl_zycia_innovations",
+    "priority": 1175,
+    "matched": true,
+    "planned_months": planned_months,
+    "will_resume": object.get(input.jdg_entrepreneur, "will_resume", true) == true,
+    "within_max_suspension": planned_months <= zawieszenie_max_months,
+    "recommendation": "ZAWIESZENIE" if object.get(input.jdg_entrepreneur, "will_resume", true) == true and planned_months <= zawieszenie_max_months else "LIKWIDACJA",
+    "suspension_effects": {
+        "zus_social": "składki społeczne 0 zł w okresie zawieszenia",
+        "zus_health": "składka zdrowotna nadal (art. 36a SUS)",
+        "vat": "możliwość zawieszenia rozliczeń VAT",
+        "pit": "brak obowiązku składania PIT-28 za okres zawieszenia (ryczałt)",
+    },
+    "liquidation_effects": {
+        "remanent": "remanent likwidacyjny — spójność z P07/P09",
+        "vat_remanent": "VAT od remanentu (P04)",
+        "ceidg": "wykreślenie z CEIDG",
+        "accounts": "zamknięcie rachunków, rozliczenie z kontrahentami",
+    },
+    "_routing": "TRIAGE_QUEUE" if object.get(input.jdg_entrepreneur, "will_resume", true) == true and planned_months <= zawieszenie_max_months else "",
+    "_routing_reason": "Symulator zawiesić vs zamknąć — rekomendacja decyzji (art. 22-25 PP)",
+    "_legal_basis": "Prawo Przedsiębiorców art. 22-25; SUS art. 36a",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p13_ryczalt_check", false) == true
+    planned_months := to_number(object.get(input.jdg_entrepreneur, "planned_suspension_months", 0))
+}
+
+# INN-16: SUKCESJA KROK PO KROKU — checklista prawna + formularze.
+succession_step_guide := {
+    "rule_id": "jdg.p13_ryczalt_cykl_zycia_innovations.succession_step_guide",
+    "package": "jdg.p13_ryczalt_cykl_zycia_innovations",
+    "priority": 1176,
+    "matched": true,
+    "checklist": [
+        "1. Powołanie zarządcy sukcesyjnego (akt notarialny za życia lub wniosek do 2 mies. po śmierci — art. 3-7 z.s.)",
+        "2. Wpis zarządcy do CEIDG w 14 dni",
+        "3. Zgłoszenie sukcesji do US i ZUS",
+        "4. Kontynuacja umów, zezwoleń i koncesji na NIP zmarłego (dopisek 'w spadku')",
+        "5. Rozliczenia podatkowe (ryczałt/PIT) w imieniu firmy",
+        "6. Monitorowanie terminu 2 lat / przedłużenie do 5 lat (art. 12-13)",
+    ],
+    "forms": ["CEIDG-1 (wpis zarządcy)", "Zgłoszenie sukcesji do US", "ZUS ZUA/ZWUA"],
+    "standard_months": succession_months_standard,
+    "extended_months": succession_months_extended,
+    "months_elapsed": months_elapsed,
+    "months_remaining": succession_months_standard - months_elapsed if months_elapsed < succession_months_standard else 0,
+    "extension_needed": months_elapsed >= succession_months_standard,
+    "_routing": "TRIAGE_QUEUE" if months_elapsed >= succession_months_standard else "",
+    "_routing_reason": "Sukcesja krok po kroku — checklista prawna + formularze, terminy 2/5 lat (INN-16)",
+    "_legal_basis": "Ustawa o zarządzie sukcesyjnym art. 3-15",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p13_ryczalt_check", false) == true
+    months_elapsed := to_number(object.get(input.jdg_entrepreneur, "succession_months_elapsed", 0))
+}
+
+# INN-17: INTELIGENTNA REKOMENDACJA STAWKI PKWiU po opisie działalności (reguły+ML).
+pkwiu_rate_recommender := {
+    "rule_id": "jdg.p13_ryczalt_cykl_zycia_innovations.pkwiu_rate_recommender",
+    "package": "jdg.p13_ryczalt_cykl_zycia_innovations",
+    "priority": 1177,
+    "matched": true,
+    "activity_description": desc,
+    "recommended_rate": "3%" if contains(desc, "handel") or contains(desc, "sprzedaż") or contains(desc, "sklep") else "5,5%" if contains(desc, "produkcja") or contains(desc, "wytwarz") or contains(desc, "budow") or contains(desc, "montaż") else "12,5%" if contains(desc, "transport") or contains(desc, "magazyn") or contains(desc, "kurier") or contains(desc, "taksówk") else "15%" if contains(desc, "gastronom") or contains(desc, "restauracj") or contains(desc, "hotel") or contains(desc, "zakwaterowanie") else "12%" if contains(desc, "programow") or contains(desc, "informaty") or contains(desc, "software") or contains(desc, "oprogram") or contains(desc, "systemy") else "14%" if contains(desc, "architekt") or contains(desc, "inżynier") or contains(desc, "projektow") else "8,5%",
+    "matched_keywords": matched_keywords,
+    "confidence_pct": round2(count(matched_keywords) / 17 * 100) if count(matched_keywords) > 0 else 0,
+    "note": "inteligentna rekomendacja stawki ryczałtu po opisie działalności — reguły słownikowe (słowa kluczowe PKWiU)",
+    "_routing": "",
+    "_routing_reason": "Inteligentna rekomendacja stawki PKWiU po opisie działalności (INN-17)",
+    "_legal_basis": "Ustawa o ryczałcie art. 12 ust. 1",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p13_ryczalt_check", false) == true
+    desc := lower(object.get(input.activity, "description", ""))
+    matched_keywords := [kw | kw := ["handel", "sprzedaż", "sklep", "produkcja", "wytwarz", "budow", "transport", "magazyn", "gastronom", "restauracj", "programow", "informaty", "software", "oprogram", "systemy", "architekt", "inżynier", "usług", "doradztwo"][_]; contains(desc, kw)]
+}
+
 # ── GŁÓWNY DECIDE (P13) — raport syntetyczny Ryczałt + Cykl Życia ─────────────
 decide := {
     "rule_id": "jdg.p13_ryczalt_cykl_zycia_innovations.report",
@@ -565,6 +703,11 @@ decide := {
     "succession": succession_audit,
     "suspension": suspension_audit,
     "pipeline": ryczalt_pipeline_snapshot,
+    "setup": company_setup_assistant,
+    "loss_detector": ryczalt_loss_detector,
+    "exit_simulator": suspend_or_close_simulator,
+    "succession_guide": succession_step_guide,
+    "rate_recommender": pkwiu_rate_recommender,
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny Ryczałt + Cykl Życia JDG (P13) — stawki PKWiU, karta podatkowa, cykl życia, sukcesja, zawieszenia",
     "_legal_basis": "Ustawa o ryczałcie; Prawo Przedsiębiorców; CEIDG; ustawa o zarządzie sukcesyjnym",

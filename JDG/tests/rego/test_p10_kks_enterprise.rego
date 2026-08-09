@@ -1,10 +1,79 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 # NexusAI JDG — P10 KKS — Kodeks Karny Skarbowy Enterprise — testy rego
-# (RAPORT P10 v8.0)
+# (RAPORT P10 v8.0 + v9.1 INN-13..16)
 # ═══════════════════════════════════════════════════════════════════════════════
 package jdg.tests.p10_kks
 
 import future.keywords.in
+
+# ── 17. SYMULATOR "CO JEŚLI" (INN-13) ─────────────────────────────────────────
+test_penalty_what_if_correction_cheaper {
+    result := data.jdg.p10_kks_innovations.penalty_what_if_simulator with
+        input as {"jdg_entrepreneur": {"p10_kks_check": true, "tax_arrears": 10000},
+            "offense": {"daily_rates": 10}}
+    result.matched == true
+    result.correction_cost == round(10000 * 0.15 * 100) / 100
+    result.penalty_estimate == round(160.0 * 10 * 100) / 100
+    result.correction_cheaper == true
+    result.recommendation == "KOREKTA_DEKLARACJI"
+}
+
+test_penalty_what_if_penalty_cheaper {
+    result := data.jdg.p10_kks_innovations.penalty_what_if_simulator with
+        input as {"jdg_entrepreneur": {"p10_kks_check": true, "tax_arrears": 500000},
+            "offense": {"daily_rates": 10}}
+    result.correction_cheaper == false
+    result.recommendation == "DORADCA_PODATKOWY"
+}
+
+# ── 18. GOTOWOŚĆ NA KONTROLĘ SKARBOWĄ (INN-14) ────────────────────────────────
+test_tax_audit_readiness_ready {
+    result := data.jdg.p10_kks_innovations.tax_audit_readiness with
+        input as {"jdg_entrepreneur": {"p10_kks_check": true}}
+    result.readiness_score == 100
+    result.audit_ready == true
+    result._routing == ""
+}
+
+test_tax_audit_readiness_gaps {
+    result := data.jdg.p10_kks_innovations.tax_audit_readiness with
+        input as {"jdg_entrepreneur": {"p10_kks_check": true, "documents_incomplete": true, "jpk_not_ready": true}}
+    result.readiness_score == 60
+    result.audit_ready == false
+    result._routing == "TRIAGE_QUEUE"
+}
+
+# ── 19. ODPOWIEDZIALNOŚĆ POWIĄZANA (INN-15) ───────────────────────────────────
+test_related_liability_audit_succession {
+    result := data.jdg.p10_kks_innovations.related_liability_audit with
+        input as {"jdg_entrepreneur": {"p10_kks_check": true, "succession_active": true}}
+    result.succession_active == true
+    result._routing == "TRIAGE_QUEUE"
+}
+
+# ── 20. PRZEWIDYWACZ WYROKÓW (INN-16) ─────────────────────────────────────────
+test_judgment_trend_predictor_favorable {
+    result := data.jdg.p10_kks_innovations.judgment_trend_predictor with
+        input as {"jdg_entrepreneur": {"p10_kks_check": true, "favorable_jurisprudence_trend": true},
+            "offense": {"type": "art54"}}
+    result.prediction == "WYSOKIE_SZANSE_OBRONY"
+}
+
+test_judgment_trend_predictor_neutral {
+    result := data.jdg.p10_kks_innovations.judgment_trend_predictor with
+        input as {"jdg_entrepreneur": {"p10_kks_check": true}, "offense": {"type": "art54"}}
+    result.prediction == "NEUTRALNE"
+}
+
+# ── 21. Główny decide (P10) — nowe sekcje agregowane ───────────────────────────
+test_p10_main_decide_new_sections {
+    result := data.jdg.p10_kks_innovations.decide with
+        input as {"jdg_entrepreneur": {"p10_kks_check": true}}
+    result.matched == true
+    result.what_if.recommendation == "KOREKTA_DEKLARACJI"
+    result.audit_readiness.audit_ready == true
+    result.judgment_trend.prediction == "NEUTRALNE"
+}
 
 # ── 1. Mapa pokrycia artykułów KKS ────────────────────────────────────────────
 test_kks_coverage_report {

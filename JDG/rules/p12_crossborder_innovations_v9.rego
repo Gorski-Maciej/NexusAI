@@ -34,6 +34,7 @@
 package jdg.p12_crossborder_innovations
 
 import future.keywords.in
+import future.keywords.if
 
 default decide := {"matched": false, "rule_id": "jdg.p12_crossborder_innovations.no_match", "package": "jdg.p12_crossborder_innovations", "priority": 999999}
 
@@ -124,6 +125,25 @@ wnt_wdt_audit := {
     "_routing": "",
     "_routing_reason": "Audyt WNT/WDT/eksport/import — warunki, dokumenty, terminy, stawka 0%",
     "_legal_basis": "Ustawa o VAT art. 9-13, art. 2 pkt 8",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
+}
+
+# ── SEKCJA 1b: IMPORT USŁUG + WNT USŁUG (odwrotne obciążenie — art. 17 ust. 1 pkt 4-5 VAT) ─
+import_services_reverse_charge := {
+    "rule_id": "jdg.p12_crossborder_innovations.import_services_reverse_charge",
+    "package": "jdg.p12_crossborder_innovations",
+    "priority": 1108,
+    "matched": true,
+    "service_provider_country": object.get(input.service, "provider_country", "DE"),
+    "buyer_vat_registered": object.get(input.service, "buyer_vat_registered", true),
+    "reverse_charge_applies": object.get(input.service, "provider_country", "DE") != "PL" and object.get(input.service, "buyer_vat_registered", true) == true,
+    "vat_settlement": "25. dzień miesiąca następującego po miesiącu otrzymania usługi (import usług)",
+    "wnt_services": "WNT usług — odwrotne obciążenie analogicznie (art. 17 ust. 1 pkt 5 + art. 28b)",
+    "_routing": "TRIAGE_QUEUE" if object.get(input.service, "provider_country", "DE") != "PL" else "",
+    "_routing_reason": "Import usług / WNT usług — odwrotne obciążenie (art. 17 ust. 1 pkt 4-5 VAT)",
+    "_legal_basis": "Ustawa o VAT art. 17 ust. 1 pkt 4-5",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
@@ -495,6 +515,116 @@ crossborder_compliance_panel := {
     object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
 }
 
+# ── SEKCJA 7b: NOWE INNOWACJE P12 v9.1 (INN-13..INN-17) ────────────────────────
+# INN-13: AUTO-WERYFIKACJA NUMERÓW VAT-UE (VIES) przed transakcją B2B.
+vies_validator := {
+    "rule_id": "jdg.p12_crossborder_innovations.vies_validator",
+    "package": "jdg.p12_crossborder_innovations",
+    "priority": 1179,
+    "matched": true,
+    "counterparty_vat_ue": object.get(input.counterparty, "vat_ue", ""),
+    "vies_valid": object.get(input.counterparty, "vies_valid", false) == true,
+    "transaction_blocked": object.get(input.counterparty, "vies_valid", false) == false and object.get(input.invoice, "is_cross_border", false) == true,
+    "note": "WDT 0% wymaga ważnego numeru VAT-UE kontrahenta (VIES) — weryfikacja przed transakcją",
+    "_routing": "TRIAGE_QUEUE" if object.get(input.counterparty, "vies_valid", false) == false and object.get(input.invoice, "is_cross_border", false) == true else "",
+    "_routing_reason": "Auto-weryfikacja numeru VAT-UE w VIES przed transakcją B2B (WDT 0%)",
+    "_legal_basis": "Ustawa o VAT art. 42 ust. 1 (WDT); rozporządzenie UE 282/2011 (VIES)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
+}
+
+# INN-14: WIRTUALNY EKSPERT WDT — kwalifikacja dostawy 0% z checklistą dokumentów.
+wdt_zero_rate_expert := {
+    "rule_id": "jdg.p12_crossborder_innovations.wdt_zero_rate_expert",
+    "package": "jdg.p12_crossborder_innovations",
+    "priority": 1180,
+    "matched": true,
+    "checklist": [
+        "towar wywieziony z PL do innego państwa UE w terminie (co do zasady 30 dni)",
+        "nabywca podatnikiem VAT-UE (ważny numer VIES)",
+        "dostawca posiada dokumenty potwierdzające wywóz",
+        "dostawa udokumentowana fakturą z numerem VAT-UE nabywcy",
+    ],
+    "documentation_complete": object.get(input.jdg_entrepreneur, "wdt_documentation_complete", false) == true,
+    "zero_rate_applicable": object.get(input.jdg_entrepreneur, "wdt_documentation_complete", false) == true and object.get(input.counterparty, "vies_valid", false) == true,
+    "rate_without_docs": "23% — WDT bez dokumentów w terminie = opodatkowanie stawką krajową",
+    "_routing": "TRIAGE_QUEUE" if object.get(input.jdg_entrepreneur, "wdt_documentation_complete", false) != true else "",
+    "_routing_reason": "Wirtualny ekspert WDT — kwalifikacja dostawy 0% (checklista dokumentów, terminy)",
+    "_legal_basis": "Ustawa o VAT art. 41-42 (WDT 0%); art. 42 ust. 1a (dokumentacja)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
+}
+
+# INN-15: PREDYKCJA RYZYKA CFC (art. 30f PIT) — testy 50%/33%/14,25%.
+# Uwaga: klucz wejściowy effective_tax_rate — spójny z cfc_calculator (INN-08).
+cfc_risk_predictor := {
+    "rule_id": "jdg.p12_crossborder_innovations.cfc_risk_predictor",
+    "package": "jdg.p12_crossborder_innovations",
+    "priority": 1181,
+    "matched": true,
+    "ownership_pct": to_number(object.get(input.cfc, "ownership_pct", 0)),
+    "passive_income_pct": to_number(object.get(input.cfc, "passive_income_pct", 0)),
+    "effective_tax_rate": to_number(object.get(input.cfc, "effective_tax_rate", 0)),
+    "ownership_test": to_number(object.get(input.cfc, "ownership_pct", 0)) >= cfc_ownership_min,
+    "passive_test": to_number(object.get(input.cfc, "passive_income_pct", 0)) >= cfc_passive_income,
+    "tax_test": to_number(object.get(input.cfc, "effective_tax_rate", 0)) < cfc_tax_rate_threshold,
+    "cfc_risk": to_number(object.get(input.cfc, "ownership_pct", 0)) >= cfc_ownership_min and to_number(object.get(input.cfc, "passive_income_pct", 0)) >= cfc_passive_income and to_number(object.get(input.cfc, "effective_tax_rate", 0)) < cfc_tax_rate_threshold,
+    "risk_level": "WYSOKIE_CFC" if to_number(object.get(input.cfc, "ownership_pct", 0)) >= cfc_ownership_min and to_number(object.get(input.cfc, "passive_income_pct", 0)) >= cfc_passive_income and to_number(object.get(input.cfc, "effective_tax_rate", 0)) < cfc_tax_rate_threshold else "SREDNIE" if to_number(object.get(input.cfc, "ownership_pct", 0)) >= cfc_ownership_min and to_number(object.get(input.cfc, "passive_income_pct", 0)) >= cfc_passive_income else "NISKIE",
+    "_routing": "TRIAGE_QUEUE" if to_number(object.get(input.cfc, "ownership_pct", 0)) >= cfc_ownership_min and to_number(object.get(input.cfc, "passive_income_pct", 0)) >= cfc_passive_income and to_number(object.get(input.cfc, "effective_tax_rate", 0)) < cfc_tax_rate_threshold else "",
+    "_routing_reason": "Predykcja ryzyka CFC (art. 30f PIT) — testy 50% udziału / 33% dochodu pasywnego / opodatkowanie <14,25%",
+    "_legal_basis": "Art. 30f PIT",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
+}
+
+# INN-16: SYMULATOR EXIT TAX (art. 30da PIT) — estymacja przed przeniesieniem składników.
+exit_tax_simulator := {
+    "rule_id": "jdg.p12_crossborder_innovations.exit_tax_simulator",
+    "package": "jdg.p12_crossborder_innovations",
+    "priority": 1182,
+    "matched": true,
+    "unrealized_gain": to_number(object.get(input.asset, "unrealized_gain", 0)),
+    "threshold_pln": exit_tax_threshold,
+    "rate_pct": exit_tax_rate_pct,
+    "subject_to_exit_tax": to_number(object.get(input.asset, "unrealized_gain", 0)) >= exit_tax_threshold,
+    "estimated_tax": round2(to_number(object.get(input.asset, "unrealized_gain", 0)) * exit_tax_rate_pct / 100),
+    "installments": "możliwość rozłożenia na 5 rat",
+    "_routing": "TRIAGE_QUEUE" if to_number(object.get(input.asset, "unrealized_gain", 0)) >= exit_tax_threshold else "",
+    "_routing_reason": "Symulator exit tax (art. 30da) — estymacja podatku przed przeniesieniem składników majątku",
+    "_legal_basis": "Art. 30da-30db PIT",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
+}
+
+# INN-17: MATRYCA MDR SYGNAŁY × TRANSAKCJA (art. 86b OrdPU) z rekomendacją.
+mdr_signal_matrix := {
+    "rule_id": "jdg.p12_crossborder_innovations.mdr_signal_matrix",
+    "package": "jdg.p12_crossborder_innovations",
+    "priority": 1183,
+    "matched": true,
+    "signals": {
+        "A_ogolne_korzysc": object.get(input.jdg_entrepreneur, "mdr_general_benefit", false) == true,
+        "B_platnosci_transgraniczne": object.get(input.jdg_entrepreneur, "mdr_cross_border_payment", false) == true,
+        "C_amortyzacja_wartosci": object.get(input.jdg_entrepreneur, "mdr_value_amortization", false) == true,
+        "D_przeniesienie_dochodu": object.get(input.jdg_entrepreneur, "mdr_income_shift", false) == true,
+        "E_oplaty_okresowe": object.get(input.jdg_entrepreneur, "mdr_recurring_fees", false) == true,
+    },
+    "active_signals_count": active_signals_count,
+    "mdr_obligation": active_signals_count >= 1,
+    "recommendation": "RAPORT_MDR_30_DNI" if active_signals_count >= 1 else "BRAK_OBOWIAZKU_MDR",
+    "_routing": "TRIAGE_QUEUE" if active_signals_count >= 1 else "",
+    "_routing_reason": "Matryca MDR sygnały × transakcja (art. 86b OrdPU) — hallmarks A-E, termin 30 dni",
+    "_legal_basis": "OrdPU art. 86a-86o (MDR/DAC6); KKS art. 80f",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
+    active_signals_count := (1 if object.get(input.jdg_entrepreneur, "mdr_general_benefit", false) == true else 0) + (1 if object.get(input.jdg_entrepreneur, "mdr_cross_border_payment", false) == true else 0) + (1 if object.get(input.jdg_entrepreneur, "mdr_value_amortization", false) == true else 0) + (1 if object.get(input.jdg_entrepreneur, "mdr_income_shift", false) == true else 0) + (1 if object.get(input.jdg_entrepreneur, "mdr_recurring_fees", false) == true else 0)
+}
+
 # ── GŁÓWNY DECIDE (P12) — raport syntetyczny Cross-Border ─────────────────────
 decide := {
     "rule_id": "jdg.p12_crossborder_innovations.report",
@@ -502,11 +632,17 @@ decide := {
     "priority": 1157,
     "matched": true,
     "wnt_wdt": wnt_wdt_audit,
+    "import_services": import_services_reverse_charge,
     "place_of_supply": place_of_supply_audit,
     "mdr": mdr_audit,
     "tp_cfc_residency": tp_cfc_residency_audit,
     "vida_dac8_exit_tax": vida_dac8_exit_tax_audit,
     "pipeline": crossborder_pipeline_snapshot,
+    "vies": vies_validator,
+    "wdt_expert": wdt_zero_rate_expert,
+    "cfc_risk": cfc_risk_predictor,
+    "exit_tax_sim": exit_tax_simulator,
+    "mdr_matrix": mdr_signal_matrix,
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny Cross-Border (P12) — WNT/WDT, miejsce świadczenia, MDR, TP/CFC, rezydencja, exit tax",
     "_legal_basis": "Ustawa o VAT (art. 9-13, 28a-28o); PIT (art. 3, 23zf, 24c, 30da-30db, 30f); MDR/DAC6; ViDA; DAC8",

@@ -15,14 +15,20 @@ from crossborder_auditor import (  # noqa: E402
     CB,
     audit_rego_files,
     cfc_calculator,
+    cfc_risk_predictor,
     crossborder_compliance_panel,
     exit_tax_calculator,
+    exit_tax_simulator,
     fx_difference_calculator,
+    import_services_reverse_charge,
     mdr_auto_detector,
+    mdr_signal_matrix,
     place_of_supply_calculator,
     residency_decision_engine,
     tp_documentation_calculator,
+    vies_validator,
     wdt_documentation_tracker,
+    wdt_zero_rate_expert,
 )
 
 
@@ -228,3 +234,102 @@ def test_p12_constants_match():
     assert CB["exit_tax_threshold_pln"] == 4000000
     assert CB["cfc_ownership_min_pct"] == 50
     assert CB["residency_days"] == 183
+
+
+# ── Import usług / WNT usług — odwrotne obciążenie (art. 17) ─────────────────
+def test_import_services_reverse_charge():
+    """Usługodawca zagraniczny → rozlicza nabywca (art. 17 ust. 1 pkt 4 VAT)."""
+    res = import_services_reverse_charge(provider_country="DE", buyer_vat_registered=True)
+    assert res["reverse_charge_applies"] is True
+    assert res["routing"] == "TRIAGE_QUEUE"
+    assert "25. dzień" in res["vat_settlement"]
+    res2 = import_services_reverse_charge(provider_country="PL")
+    assert res2["reverse_charge_applies"] is False
+    assert res2["routing"] == ""
+
+
+# ── Nowe innowacje v9.1 (INN-13..17) ──────────────────────────────────────────
+def test_vies_validator_blocked():
+    """INN-13: niepoprawny numer VAT-UE + transakcja transgraniczna → blokada + TRIAGE_QUEUE."""
+    res = vies_validator(vies_valid=False, is_cross_border=True)
+    assert res["transaction_blocked"] is True
+    assert res["routing"] == "TRIAGE_QUEUE"
+
+
+def test_vies_validator_ok():
+    """INN-13: poprawny numer VAT-UE → brak blokady."""
+    res = vies_validator(vies_valid=True, is_cross_border=True)
+    assert res["transaction_blocked"] is False
+    assert res["routing"] == ""
+
+
+def test_wdt_zero_rate_expert():
+    """INN-14: pełna dokumentacja + ważny VIES → stawka 0%."""
+    res = wdt_zero_rate_expert(documentation_complete=True, vies_valid=True)
+    assert res["zero_rate_applicable"] is True
+    assert len(res["checklist"]) == 4
+    res2 = wdt_zero_rate_expert(documentation_complete=False, vies_valid=True)
+    assert res2["zero_rate_applicable"] is False
+    assert res2["routing"] == "TRIAGE_QUEUE"
+
+
+def test_cfc_risk_predictor():
+    """INN-15: 60%/40%/10% → WYSOKIE_CFC; niski udział → NISKIE."""
+    res = cfc_risk_predictor(60, 40, 10)
+    assert res["risk_level"] == "WYSOKIE_CFC"
+    assert res["cfc_risk"] is True
+    assert res["routing"] == "TRIAGE_QUEUE"
+    res2 = cfc_risk_predictor(30, 40, 10)
+    assert res2["risk_level"] == "NISKIE"
+    assert res2["cfc_risk"] is False
+
+
+def test_exit_tax_simulator():
+    """INN-16: 5M niezrealizowanego zysku → estymacja 950k PLN."""
+    res = exit_tax_simulator(5000000)
+    assert res["subject_to_exit_tax"] is True
+    assert res["estimated_tax"] == 950000.0
+    assert res["routing"] == "TRIAGE_QUEUE"
+    res2 = exit_tax_simulator(1000000)
+    assert res2["subject_to_exit_tax"] is False
+    assert res2["routing"] == ""
+
+
+def test_mdr_signal_matrix():
+    """INN-17: 1 sygnał (korzyść) → obowiązek raportu MDR 30 dni."""
+    res = mdr_signal_matrix(general_benefit=True)
+    assert res["active_signals_count"] == 1
+    assert res["mdr_obligation"] is True
+    assert res["recommendation"] == "RAPORT_MDR_30_DNI"
+    assert res["deadline_days"] == 30
+    res2 = mdr_signal_matrix()
+    assert res2["active_signals_count"] == 0
+    assert res2["recommendation"] == "BRAK_OBOWIAZKU_MDR"
+
+
+def test_p12_parser_future_keywords_if():
+    """Parser: plik innowacji musi importować future.keywords.if (używa if/else)."""
+    text = (BASE_DIR / "rules" / "p12_crossborder_innovations_v9.rego").read_text(encoding="utf-8")
+    assert "import future.keywords.if" in text, "Brak import future.keywords.if — parser bug"
+    assert text.count("{") == text.count("}"), "Niezbalansowane nawiasy {}"
+    assert text.count("(") == text.count(")"), "Niezbalansowane nawiasy ()"
+
+
+def test_p12_new_innovations_present():
+    """INN-13..17 + import usług zaimplementowane w pakiecie i podpięte w decide."""
+    text = (BASE_DIR / "rules" / "p12_crossborder_innovations_v9.rego").read_text(encoding="utf-8")
+    for marker in ["import_services_reverse_charge", "vies_validator", "wdt_zero_rate_expert",
+                   "cfc_risk_predictor", "exit_tax_simulator", "mdr_signal_matrix"]:
+        assert marker in text, f"Brak reguły {marker}"
+    for inn in ["INN-13", "INN-14", "INN-15", "INN-16", "INN-17"]:
+        assert inn in text, f"Brak oznaczenia {inn}"
+    assert "\"vies\": vies_validator" in text
+    assert "\"import_services\": import_services_reverse_charge" in text
+    assert "\"mdr_matrix\": mdr_signal_matrix" in text
+
+
+def test_cfc_risk_key_alignment():
+    """Spójność klucza: cfc_risk_predictor i cfc_calculator używają effective_tax_rate."""
+    text = (BASE_DIR / "rules" / "p12_crossborder_innovations_v9.rego").read_text(encoding="utf-8")
+    assert '"effective_tax_rate"' in text
+    assert 'effective_tax_pct' not in text, "Niespójny klucz effective_tax_pct — użyj effective_tax_rate"

@@ -29,6 +29,9 @@
 
 package jdg.p14_pcc_lokalne_akcyza_innovations
 
+import future.keywords.in
+import future.keywords.if
+
 default decide := {"matched": false, "rule_id": "jdg.p14_pcc_lokalne_akcyza_innovations.no_match", "package": "jdg.p14_pcc_lokalne_akcyza_innovations", "priority": 999999}
 
 # ── Źródła danych: progi z data.jdg.thresholds (ADR-002 — zero hardcode) ──────
@@ -466,6 +469,125 @@ pcc_local_excise_compliance_panel := {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
 }
 
+# ── SEKCJA 6b: NOWE INNOWACJE P14 v9.1 (INN-13..INN-17) ───────────────────────
+# INN-13: AUTO-DETEKTOR OBOWIĄZKU PCC — analiza transakcji (kupno auta od osoby prywatnej!).
+pcc_obligation_detector := {
+    "rule_id": "jdg.p14_pcc_lokalne_akcyza_innovations.pcc_obligation_detector",
+    "package": "jdg.p14_pcc_lokalne_akcyza_innovations",
+    "priority": 1173,
+    "matched": true,
+    "transaction_type": object.get(input.transaction, "type", ""),
+    "from_private_party": object.get(input.transaction, "from_private_party", false) == true,
+    "vat_applicable": object.get(input.transaction, "vat_applicable", false) == true,
+    "amount": to_number(object.get(input.transaction, "amount", 0)),
+    "pcc_rate_pct": object.get(pcc_rates, "SALE_VEHICLE_PRIVATE", 2.0) if object.get(input.transaction, "type", "") == "kupno_pojazdu" else object.get(pcc_rates, "SALE_MOVABLE", 2.0) if object.get(input.transaction, "type", "") == "sprzedaz_rzeczy" else 0,
+    "pcc_obligation": obligation,
+    "tax_due": round2(to_number(object.get(input.transaction, "amount", 0)) * object.get(pcc_rates, "SALE_VEHICLE_PRIVATE", 2.0) / 100) if object.get(input.transaction, "type", "") == "kupno_pojazdu" and obligation else round2(to_number(object.get(input.transaction, "amount", 0)) * object.get(pcc_rates, "SALE_MOVABLE", 2.0) / 100) if object.get(input.transaction, "type", "") == "sprzedaz_rzeczy" and obligation else 0,
+    "note": "kupno pojazdu od osoby prywatnej = obowiązek PCC 2% + PCC-3 w 14 dni (transakcje VAT wyłączone — art. 2 pkt 4)",
+    "_routing": "TRIAGE_QUEUE" if obligation else "",
+    "_routing_reason": "Auto-detektor obowiązku PCC — analiza transakcji, kupno od osoby prywatnej (INN-13)",
+    "_legal_basis": "Ustawa o PCC art. 1, 4, 7; art. 2 pkt 4 (wyłączenie VAT)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
+    obligation := object.get(input.transaction, "from_private_party", false) == true and object.get(input.transaction, "vat_applicable", false) != true and (object.get(input.transaction, "type", "") == "kupno_pojazdu" or object.get(input.transaction, "type", "") == "sprzedaz_rzeczy")
+}
+
+# INN-14: ZERO-CLICK PCC-3 — generowanie deklaracji + countdown 14 dni.
+pcc3_zero_click := {
+    "rule_id": "jdg.p14_pcc_lokalne_akcyza_innovations.pcc3_zero_click",
+    "package": "jdg.p14_pcc_lokalne_akcyza_innovations",
+    "priority": 1174,
+    "matched": true,
+    "transaction_type": object.get(input.transaction, "type", "SALE_MOVABLE"),
+    "amount": to_number(object.get(input.transaction, "amount", 0)),
+    "rate_pct": object.get(pcc_rates, object.get(input.transaction, "type", "SALE_MOVABLE"), 2.0),
+    "tax_due": round2(to_number(object.get(input.transaction, "amount", 0)) * object.get(pcc_rates, object.get(input.transaction, "type", "SALE_MOVABLE"), 2.0) / 100),
+    "days_elapsed": days_elapsed,
+    "days_remaining": pcc3_deadline_days - days_elapsed if days_elapsed < pcc3_deadline_days else 0,
+    "countdown": sprintf("PCC-3 w %v dni (termin: 14 dni od powstania obowiązku)", [pcc3_deadline_days - days_elapsed if days_elapsed < pcc3_deadline_days else 0]),
+    "form_auto_generated": true,
+    "submission_required": days_elapsed < pcc3_deadline_days,
+    "urgency_alert": days_elapsed >= pcc3_deadline_days - 3,
+    "note": "zero-click PCC-3 — kwota podatku, countdown 14 dni, formularz PCC-3/PCC-3/A",
+    "_routing": "TRIAGE_QUEUE" if days_elapsed >= pcc3_deadline_days - 3 else "",
+    "_routing_reason": "Zero-click PCC-3 — countdown 14 dni z alertem (INN-14)",
+    "_legal_basis": "Ustawa o PCC art. 10",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
+    days_elapsed := to_number(object.get(input.transaction, "days_elapsed", 0))
+}
+
+# INN-15: MAPA STAWEK GMINNYCH — rejestr per gmina z wersjonowaniem (temporalność).
+gmina_rates_map := {
+    "rule_id": "jdg.p14_pcc_lokalne_akcyza_innovations.gmina_rates_map",
+    "package": "jdg.p14_pcc_lokalne_akcyza_innovations",
+    "priority": 1175,
+    "matched": true,
+    "gmina": object.get(input.jdg_entrepreneur, "gmina", "domyślna"),
+    "rates_current_year": real_estate_rates,
+    "rates_previous_year": object.get(pcc_local_limits, "real_estate_rates_2025", {
+        "land_business": 1.34, "building_business": 31.00, "construction_pct_value": 2.0,
+    }),
+    "land_rate_delta_pct": round2((object.get(real_estate_rates, "land_business", 1.43) - object.get(prev_2025, "land_business", 1.34)) / object.get(prev_2025, "land_business", 1.34) * 100) if object.get(prev_2025, "land_business", 1.34) != 0 else 0,
+    "building_rate_delta_pct": round2((object.get(real_estate_rates, "building_business", 33.10) - object.get(prev_2025, "building_business", 31.00)) / object.get(prev_2025, "building_business", 31.00) * 100) if object.get(prev_2025, "building_business", 31.00) != 0 else 0,
+    "rates_changed_ytd": object.get(real_estate_rates, "land_business", 1.43) != object.get(prev_2025, "land_business", 1.34) or object.get(real_estate_rates, "building_business", 33.10) != object.get(prev_2025, "building_business", 31.00),
+    "versioning": "wersjonowanie stawek gminnych — uchwała + data obowiązywania (Law Radar F5)",
+    "note": "mapa stawek gminnych — rejestr per gmina z porównaniem rok do roku",
+    "_routing": "",
+    "_routing_reason": "Mapa stawek gminnych — rejestr z wersjonowaniem i deltą YoY (INN-15)",
+    "_legal_basis": "Ustawa o podatkach i opłatach lokalnych; obwieszczenia MF",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
+    prev_2025 := object.get(pcc_local_limits, "real_estate_rates_2025", {"land_business": 1.34, "building_business": 31.00, "construction_pct_value": 2.0})
+}
+
+# INN-16: REKOMENDACJA STRUKTURY TRANSAKCJI — VAT vs PCC (optymalizacja legalna).
+vat_vs_pcc_optimizer := {
+    "rule_id": "jdg.p14_pcc_lokalne_akcyza_innovations.vat_vs_pcc_optimizer",
+    "package": "jdg.p14_pcc_lokalne_akcyza_innovations",
+    "priority": 1176,
+    "matched": true,
+    "transaction_type": object.get(input.transaction, "type", "kupno_pojazdu"),
+    "amount": to_number(object.get(input.transaction, "amount", 0)),
+    "buyer_vat_deductible": object.get(input.transaction, "buyer_vat_deductible", false) == true,
+    "vat_cost": round2(to_number(object.get(input.transaction, "amount", 0)) * 0.23) if object.get(input.transaction, "buyer_vat_deductible", false) != true else 0,
+    "pcc_cost": round2(to_number(object.get(input.transaction, "amount", 0)) * object.get(pcc_rates, "SALE_VEHICLE_PRIVATE", 2.0) / 100) if object.get(input.transaction, "from_private_party", false) == true else 0,
+    "recommendation": "OD_OSOBY_PRYWATNEJ_PCC_2" if object.get(input.transaction, "buyer_vat_deductible", false) != true and object.get(input.transaction, "from_private_party", false) == true else "OD_FIRMY_VAT_ODLICZENIE" if object.get(input.transaction, "buyer_vat_deductible", false) == true else "ANALIZA",
+    "note": "legalna optymalizacja struktury transakcji — VAT 23% vs PCC 2% (kupno od osoby prywatnej gdy brak odliczenia)",
+    "_routing": "TRIAGE_QUEUE" if object.get(input.transaction, "from_private_party", false) == true and object.get(input.transaction, "buyer_vat_deductible", false) != true else "",
+    "_routing_reason": "Rekomendacja struktury transakcji — VAT vs PCC (optymalizacja legalna, INN-16)",
+    "_legal_basis": "Ustawa o PCC art. 2 pkt 4; VAT art. 86 (odliczenie)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
+}
+
+# INN-17: WYKRYWACZ OBOWIĄZKU AKCYZOWEGO W IMPORCIE (spójność z P12).
+excise_import_detector := {
+    "rule_id": "jdg.p14_pcc_lokalne_akcyza_innovations.excise_import_detector",
+    "package": "jdg.p14_pcc_lokalne_akcyza_innovations",
+    "priority": 1177,
+    "matched": true,
+    "imported_goods": object.get(input.import_goods, "goods", ""),
+    "goods_desc": desc,
+    "excise_goods": excise_goods,
+    "obligation": "zgłoszenie akcyzowe + zabezpieczenie akcyzowe przy imporcie wyrobów akcyzowych z państwa trzeciego",
+    "alcohol_import_note": "import alkoholu — obowiązek banderolowania / skład podatkowy",
+    "fuel_import_note": "import paliw — zabezpieczenie akcyzowe przed dopuszczeniem do obrotu",
+    "cross_border_integration": "spójność z P12 (cross-border) — dokumenty celne + akcyza",
+    "_routing": "TRIAGE_QUEUE" if excise_goods else "",
+    "_routing_reason": "Wykrywacz obowiązku akcyzowego w imporcie (INN-17) — spójność P12",
+    "_legal_basis": "Ustawa o podatku akcyzowym art. 39-41 (import); ustawa o PCC",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
+    desc := lower(object.get(input.import_goods, "goods", ""))
+    excise_goods := contains(desc, "benzyna") or contains(desc, "paliwo") or contains(desc, "olej napędowy") or contains(desc, "lpg") or contains(desc, "alkohol") or contains(desc, "wino") or contains(desc, "piwo") or contains(desc, "tytoń") or contains(desc, "papieros") or contains(desc, "węgiel") or contains(desc, "energia")
+}
+
 # ── GŁÓWNY DECIDE (P14) — raport syntetyczny PCC + Lokalne + Akcyza ───────────
 decide := {
     "rule_id": "jdg.p14_pcc_lokalne_akcyza_innovations.report",
@@ -477,6 +599,11 @@ decide := {
     "excise": excise_audit,
     "gaps": gaps_duplicates_audit,
     "pipeline": local_taxes_pipeline_snapshot,
+    "pcc_detector": pcc_obligation_detector,
+    "pcc3_click": pcc3_zero_click,
+    "gmina_map": gmina_rates_map,
+    "vat_pcc": vat_vs_pcc_optimizer,
+    "excise_import": excise_import_detector,
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny PCC + Lokalne + Akcyza (P14) — czynności, stawki, DN-1, transport, akcyza, luki",
     "_legal_basis": "Ustawa o PCC; podatki i opłaty lokalne; ustawa o podatku akcyzowym",

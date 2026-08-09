@@ -14,6 +14,7 @@ sys.path.insert(0, str(BASE_DIR / "tools"))
 from rodo_aml_security_auditor import (  # noqa: E402
     COMPLIANCE,
     SANCTIONS_LISTS,
+    aml_obligation_detector,
     aml_risk_panel,
     aml_risk_scoring_client,
     aml_risk_scoring_transaction,
@@ -26,12 +27,16 @@ from rodo_aml_security_auditor import (  # noqa: E402
     compliance_pipeline,
     compliance_scorecard,
     crbr_registry_check,
+    dead_data_monitor,
     decision_proof_chain,
+    penalty_simulator,
     proof_chain_verifier,
     rodo_audit,
     rodo_breach_assistant,
+    rodo_by_design_anonymizer,
     rodo_deadline_calendar,
     rodo_register_automation,
+    rodo_request_workflow,
     rodo_sanctions_calculator,
     rule_integrity_hmac,
     security_fortress_layers,
@@ -446,3 +451,87 @@ def test_p16_constants_match():
     assert COMPLIANCE["rodo_retention_years"] == 5
     assert COMPLIANCE["aml_threshold_eur"] == 15_000.0
     assert COMPLIANCE["ubo_threshold_pct"] == 25
+
+
+# ── SEKCJA 8: innowacje INN-15..19 ────────────────────────────────────────────
+def test_aml_obligation_detector_by_pkd():
+    """INN-15: auto-wykrycie obowiązku AML wg profilu działalności (PKD)."""
+    assert aml_obligation_detector("doradca podatkowy")["obliged_entity"] is True
+    assert aml_obligation_detector("kantor wymiany walut")["obliged_entity"] is True
+    assert aml_obligation_detector("pośrednik nieruchomości")["obliged_entity"] is True
+    assert aml_obligation_detector("usługi księgowe")["obliged_entity"] is False
+    r = aml_obligation_detector("doradca podatkowy")
+    assert r["_routing"] == "AML_OBLIGATION_QUEUE"
+    assert len(r["required_measures"]) == 5
+    assert "CBDD" in r["required_measures"][0]
+    r0 = aml_obligation_detector("usługi księgowe")
+    assert r0["_routing"] == ""
+    assert r0["required_measures"] == []
+
+
+def test_rodo_by_design_anonymizer():
+    """INN-16: RODO-by-design — werdykty bez PII (Decision Certificate)."""
+    dirty = rodo_by_design_anonymizer(["NIP", "kwota"])
+    assert dirty["verdict_contains_pii"] is True
+    assert dirty["pii_fields_detected"] == ["NIP"]
+    assert dirty["_routing"] == "PII_STRIP_QUEUE"
+    assert "WYKRYTO PII" in dirty["pii_notes"]
+    clean = rodo_by_design_anonymizer(["kwota", "data"])
+    assert clean["anonymized_verdict"] is True
+    assert clean["_routing"] == ""
+    assert clean["hash_verdict_id"] is True
+
+
+def test_rodo_request_workflow_30_days():
+    """INN-17: auto-odpowiedzi na żądania RODO — terminy 30 dni."""
+    r = rodo_request_workflow("USUNIECIE", 5)
+    assert r["days_remaining"] == 25
+    assert r["overdue"] is False
+    assert "art. 17" in r["template"]
+    assert r["_routing"] == "RODO_REQUEST_QUEUE"
+    over = rodo_request_workflow("DOSTEP", 35)
+    assert over["days_remaining"] == 0
+    assert over["overdue"] is True
+    assert over["_routing"] == "RODO_REQUEST_OVERDUE"
+    assert "art. 15" in over["template"]
+
+
+def test_penalty_simulator_rodo_aml():
+    """INN-18: symulator kar RODO/AML — co by było gdyby."""
+    r = penalty_simulator("DATA_BREACH_UNREPORTED", 0)
+    assert r["rodo_fine_eur"] == COMPLIANCE["rodo_sanction_max_eur"] == 20_000_000.0
+    assert r["aml_fine_pln"] == 0
+    a = penalty_simulator("NO_STR", 0)
+    assert a["aml_fine_pln"] == COMPLIANCE["aml_sanction_max_pln"] == 1_000_000.0
+    assert a["_routing"] == "BLOCK_AND_ALERT"
+
+
+def test_dead_data_monitor_retention():
+    """INN-19: monitor martwych danych — retencja i alerty."""
+    ok = dead_data_monitor(0, 0)
+    assert ok["action_required"] is False
+    assert ok["_routing"] == ""
+    soon = dead_data_monitor(3, 0)
+    assert soon["action_required"] is True
+    assert soon["_routing"] == "TRIAGE_QUEUE"
+    expired = dead_data_monitor(0, 2)
+    assert expired["_routing"] == "DATA_RETENTION_ALERT"
+    assert "art. 74" in expired["retention_policy"]["ksiegowe_5_lat"]
+    assert "art. 51" in expired["retention_policy"]["pracownicze_50_lat"]
+
+
+def test_p16_new_innovations_in_rego():
+    """5 nowych reguł INN-15..19 + podpięcie innovations_v9 w decide."""
+    text = (BASE_DIR / "rules" / "p16_rodo_aml_security_innovations_v9.rego").read_text(encoding="utf-8")
+    for rule in ("aml_obligation_detector", "rodo_by_design_anonymizer", "rodo_request_workflow",
+                 "penalty_simulator", "dead_data_monitor"):
+        assert rule in text, f"Brak reguły {rule} (INN-15..19)"
+    assert "innovations_v9" in text, "Brak podpięcia innovations_v9 w decide"
+    assert "INN-15" in text and "INN-19" in text
+
+
+def test_p16_future_keywords_imports():
+    """Import future.keywords.if + in obecne (INN-15..19 używają if/else — naprawa parsera P09-P16)."""
+    text = (BASE_DIR / "rules" / "p16_rodo_aml_security_innovations_v9.rego").read_text(encoding="utf-8")
+    assert "import future.keywords.if" in text, "Brak import future.keywords.if — if/else w INN-15..19 nie sparsuje się"
+    assert "import future.keywords.in" in text, "Brak import future.keywords.in — in-set w pii_fields/penalty_simulator"

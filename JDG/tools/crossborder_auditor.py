@@ -19,6 +19,11 @@
 #   --exit-tax       kalkulator exit tax (art. 30da PIT)
 #   --wdt            tracker dokumentów WDT (art. 13 VAT — 30 dni)
 #   --compliance     panel ryzyka transgranicznego
+#   --vies           auto-weryfikacja numeru VAT-UE (VIES) przed transakcją B2B (INN-13)
+#   --wdt-expert     wirtualny ekspert WDT — kwalifikacja dostawy 0% (INN-14)
+#   --cfc-risk       predykcja ryzyka CFC — testy 50%/33%/14,25% (INN-15)
+#   --exit-tax-sim   symulator exit tax przed przeniesieniem składników (INN-16)
+#   --mdr-matrix     matryca MDR sygnały × transakcja (INN-17)
 #   --table          format tabelaryczny
 #   --out FILE       zapis JSON do pliku
 #
@@ -207,6 +212,125 @@ def crossborder_compliance_panel(cross_penalties: int = 0) -> dict:
     }
 
 
+# ── Sekcja 7b (v9.1): auto-weryfikacja numeru VAT-UE (INN-13) ──────────────────
+def vies_validator(vies_valid: bool = False, is_cross_border: bool = True) -> dict:
+    """WDT 0% wymaga ważnego numeru VAT-UE kontrahenta (VIES) — weryfikacja przed transakcją.
+
+    Art. 42 ust. 1 Ustawy o VAT + rozporządzenie UE 282/2011 (VIES).
+    """
+    blocked = (not vies_valid) and is_cross_border
+    return {
+        "vies_valid": vies_valid,
+        "is_cross_border": is_cross_border,
+        "transaction_blocked": blocked,
+        "routing": "TRIAGE_QUEUE" if blocked else "",
+        "note": "WDT 0% wymaga ważnego numeru VAT-UE kontrahenta (VIES) — weryfikacja przed transakcją (art. 42 ust. 1 VAT)",
+    }
+
+
+# ── Sekcja 7b (v9.1): wirtualny ekspert WDT (INN-14) ──────────────────────────
+def wdt_zero_rate_expert(documentation_complete: bool = False,
+                         vies_valid: bool = False) -> dict:
+    """Kwalifikacja dostawy WDT 0% z checklistą dokumentów (art. 41-42 VAT)."""
+    zero_rate = documentation_complete and vies_valid
+    return {
+        "checklist": [
+            "towar wywieziony z PL do innego państwa UE w terminie (co do zasady 30 dni)",
+            "nabywca podatnikiem VAT-UE (ważny numer VIES)",
+            "dostawca posiada dokumenty potwierdzające wywóz",
+            "dostawa udokumentowana fakturą z numerem VAT-UE nabywcy",
+        ],
+        "documentation_complete": documentation_complete,
+        "vies_valid": vies_valid,
+        "zero_rate_applicable": zero_rate,
+        "rate_without_docs": "23% — WDT bez dokumentów w terminie = opodatkowanie stawką krajową",
+        "routing": "TRIAGE_QUEUE" if not documentation_complete else "",
+        "note": "WDT 0% — checklista dokumentów (art. 41-42 VAT, art. 42 ust. 1a)",
+    }
+
+
+# ── Sekcja 7b (v9.1): predykcja ryzyka CFC (INN-15) ───────────────────────────
+def cfc_risk_predictor(ownership_pct: float = 60.0,
+                       passive_income_pct: float = 40.0,
+                       effective_tax_rate: float = 10.0) -> dict:
+    """Testy 50% udziału / 33% dochodu pasywnego / opodatkowanie <14,25% (art. 30f PIT)."""
+    own = ownership_pct >= CB["cfc_ownership_min_pct"]
+    pas = passive_income_pct >= CB["cfc_passive_income_pct"]
+    tax = effective_tax_rate < CB["cfc_tax_rate_threshold_pct"]
+    high = own and pas and tax
+    level = "WYSOKIE_CFC" if high else ("SREDNIE" if own and pas else "NISKIE")
+    return {
+        "ownership_pct": ownership_pct,
+        "passive_income_pct": passive_income_pct,
+        "effective_tax_rate": effective_tax_rate,
+        "ownership_test": own,
+        "passive_test": pas,
+        "tax_test": tax,
+        "cfc_risk": high,
+        "risk_level": level,
+        "routing": "TRIAGE_QUEUE" if high else "",
+        "note": "CFC (art. 30f PIT): udział ≥50%, przychody pasywne ≥33%, efektywny podatek <14,25%",
+    }
+
+
+# ── Sekcja 1b (v9.1): import usług / WNT usług — odwrotne obciążenie (art. 17) ──
+def import_services_reverse_charge(provider_country: str = "DE",
+                                   buyer_vat_registered: bool = True) -> dict:
+    """Import usług / WNT usług — rozlicza nabywca (art. 17 ust. 1 pkt 4-5 VAT)."""
+    applies = provider_country != "PL" and buyer_vat_registered
+    return {
+        "service_provider_country": provider_country,
+        "buyer_vat_registered": buyer_vat_registered,
+        "reverse_charge_applies": applies,
+        "vat_settlement": "25. dzień miesiąca następującego po miesiącu otrzymania usługi (import usług)",
+        "wnt_services": "WNT usług — odwrotne obciążenie analogicznie (art. 17 ust. 1 pkt 5 + art. 28b)",
+        "routing": "TRIAGE_QUEUE" if applies else "",
+        "note": "Import usług: usługodawca zagraniczny → podatnikiem jest nabywca (art. 17 ust. 1 pkt 4 VAT)",
+    }
+
+
+# ── Sekcja 7b (v9.1): symulator exit tax (INN-16) ─────────────────────────────
+def exit_tax_simulator(unrealized_gain: float = 5000000.0) -> dict:
+    """Estymacja exit tax (art. 30da PIT) przed przeniesieniem składników majątku."""
+    applies = unrealized_gain >= CB["exit_tax_threshold_pln"]
+    return {
+        "unrealized_gain": unrealized_gain,
+        "threshold_pln": CB["exit_tax_threshold_pln"],
+        "rate_pct": CB["exit_tax_rate_pct"],
+        "subject_to_exit_tax": applies,
+        "estimated_tax": round2(unrealized_gain * CB["exit_tax_rate_pct"] / 100),
+        "installments": "możliwość rozłożenia na 5 rat (art. 30db PIT)",
+        "routing": "TRIAGE_QUEUE" if applies else "",
+        "note": "exit tax — niezrealizowane zyski ≥4M PLN, stawka 19% (art. 30da PIT)",
+    }
+
+
+# ── Sekcja 7b (v9.1): matryca MDR sygnały × transakcja (INN-17) ───────────────
+def mdr_signal_matrix(general_benefit: bool = False,
+                      cross_border_payment: bool = False,
+                      value_amortization: bool = False,
+                      income_shift: bool = False,
+                      recurring_fees: bool = False) -> dict:
+    """Matryca MDR (art. 86b OrdPU) — sygnały hallmarks A-E → obowiązek raportu 30 dni."""
+    signals = {
+        "A_ogolne_korzysc": general_benefit,
+        "B_platnosci_transgraniczne": cross_border_payment,
+        "C_amortyzacja_wartosci": value_amortization,
+        "D_przeniesienie_dochodu": income_shift,
+        "E_oplaty_okresowe": recurring_fees,
+    }
+    active = sum(1 for v in signals.values() if v)
+    return {
+        "signals": signals,
+        "active_signals_count": active,
+        "mdr_obligation": active >= 1,
+        "recommendation": "RAPORT_MDR_30_DNI" if active >= 1 else "BRAK_OBOWIAZKU_MDR",
+        "deadline_days": CB["mdr_deadline_days"],
+        "routing": "TRIAGE_QUEUE" if active >= 1 else "",
+        "note": f"raport MDR do Szefa KAS w {CB['mdr_deadline_days']} dni (formularz MDR-1) — art. 86a-86o OrdPU",
+    }
+
+
 # ── Audyt realnych plików rego ────────────────────────────────────────────────
 def audit_rego_files() -> dict:
     rule_ids = []
@@ -293,7 +417,15 @@ def main() -> int:
     parser.add_argument("--exit-tax", action="store_true", help="kalkulator exit tax (art. 30da)")
     parser.add_argument("--wdt", action="store_true", help="tracker dokumentów WDT (art. 13)")
     parser.add_argument("--compliance", action="store_true", help="panel ryzyka transgranicznego")
+    parser.add_argument("--import-services", action="store_true", help="import usług/WNT usług — odwrotne obciążenie (art. 17)")
+    parser.add_argument("--vies", action="store_true", help="auto-weryfikacja numeru VAT-UE (VIES) — INN-13")
+    parser.add_argument("--wdt-expert", action="store_true", help="wirtualny ekspert WDT 0% — INN-14")
+    parser.add_argument("--cfc-risk", action="store_true", help="predykcja ryzyka CFC — INN-15")
+    parser.add_argument("--exit-tax-sim", action="store_true", help="symulator exit tax — INN-16")
+    parser.add_argument("--mdr-matrix", action="store_true", help="matryca MDR sygnały × transakcja — INN-17")
     parser.add_argument("--service-type", type=str, default="b2b", help="typ usługi: b2b/b2c/real_estate/transport/e_services")
+    parser.add_argument("--provider-country", type=str, default="DE", help="kraj usługodawcy (import usług — art. 17)")
+    parser.add_argument("--buyer-not-vat", action="store_true", help="nabywca nie jest podatnikiem VAT (import usług)")
     parser.add_argument("--customer-country", type=str, default="DE", help="kraj nabywcy")
     parser.add_argument("--vendor-country", type=str, default="PL", help="kraj usługodawcy")
     parser.add_argument("--days-in-poland", type=int, default=200, help="dni pobytu w PL")
@@ -306,6 +438,15 @@ def main() -> int:
     parser.add_argument("--rate-due", type=float, default=4.30, help="kurs wymagalności")
     parser.add_argument("--assets-value", type=float, default=5000000.0, help="wartość aktywów (exit tax)")
     parser.add_argument("--cross-penalties", type=int, default=0, help="liczba kar transgranicznych")
+    parser.add_argument("--vies-valid", action="store_true", help="numer VAT-UE kontrahenta ważny w VIES (INN-13)")
+    parser.add_argument("--not-cross-border", action="store_true", help="transakcja krajowa (INN-13)")
+    parser.add_argument("--wdt-docs-complete", action="store_true", help="dokumentacja WDT kompletna (INN-14)")
+    parser.add_argument("--unrealized-gain", type=float, default=5000000.0, help="niezrealizowany zysk (INN-16)")
+    parser.add_argument("--mdr-benefit", action="store_true", help="sygnał MDR A — ogólna korzyść (INN-17)")
+    parser.add_argument("--mdr-payment", action="store_true", help="sygnał MDR B — płatności transgraniczne (INN-17)")
+    parser.add_argument("--mdr-amortization", action="store_true", help="sygnał MDR C — amortyzacja wartości (INN-17)")
+    parser.add_argument("--mdr-income-shift", action="store_true", help="sygnał MDR D — przeniesienie dochodu (INN-17)")
+    parser.add_argument("--mdr-fees", action="store_true", help="sygnał MDR E — opłaty okresowe (INN-17)")
     parser.add_argument("--table", action="store_true", help="format tabelaryczny")
     parser.add_argument("--out", type=str, default="", help="zapis JSON do pliku")
     args = parser.parse_args()
@@ -313,7 +454,9 @@ def main() -> int:
     result = {"tool": "crossborder_auditor", "module": "P12 Cross-Border/MDR/TP/CFC/FX"}
 
     if args.audit or not (args.place_supply or args.mdr or args.residency or args.tp or
-                          args.cfc or args.fx or args.exit_tax or args.wdt or args.compliance):
+                          args.cfc or args.fx or args.exit_tax or args.wdt or args.compliance or
+                          args.vies or args.wdt_expert or args.cfc_risk or args.exit_tax_sim or
+                          args.mdr_matrix or args.import_services):
         result["audit"] = audit_rego_files()
     if args.place_supply:
         result["place_of_supply"] = place_of_supply_calculator(
@@ -340,6 +483,23 @@ def main() -> int:
         ])
     if args.compliance:
         result["compliance"] = crossborder_compliance_panel(args.cross_penalties)
+    if args.import_services:
+        result["import_services"] = import_services_reverse_charge(
+            args.provider_country, not args.buyer_not_vat)
+    if args.vies:
+        result["vies"] = vies_validator(args.vies_valid, not args.not_cross_border)
+    if args.wdt_expert:
+        result["wdt_expert"] = wdt_zero_rate_expert(args.wdt_docs_complete, args.vies_valid)
+    if args.cfc_risk:
+        result["cfc_risk"] = cfc_risk_predictor(args.ownership_pct, args.passive_income_pct,
+                                                args.effective_tax_rate)
+    if args.exit_tax_sim:
+        result["exit_tax_sim"] = exit_tax_simulator(args.unrealized_gain)
+    if args.mdr_matrix:
+        result["mdr_matrix"] = mdr_signal_matrix(
+            general_benefit=args.mdr_benefit, cross_border_payment=args.mdr_payment,
+            value_amortization=args.mdr_amortization, income_shift=args.mdr_income_shift,
+            recurring_fees=args.mdr_fees)
 
     if args.table:
         if "audit" in result:
@@ -376,6 +536,21 @@ def main() -> int:
         if "exit_tax" in result:
             e = result["exit_tax"]
             print(f"\nEXIT TAX: zastosowanie {e['exit_tax_applies']} | podatek {e['tax_due']:,.2f} PLN")
+        if "vies" in result:
+            v = result["vies"]
+            print(f"\nVIES: ważny {v['vies_valid']} | transakcja zablokowana: {v['transaction_blocked']}")
+        if "wdt_expert" in result:
+            w = result["wdt_expert"]
+            print(f"\nWDT EKSPERT: stawka 0% zastosowanie {w['zero_rate_applicable']}")
+        if "cfc_risk" in result:
+            c = result["cfc_risk"]
+            print(f"\nCFC RYZYKO: poziom {c['risk_level']} (testy {c['ownership_test']}/{c['passive_test']}/{c['tax_test']})")
+        if "exit_tax_sim" in result:
+            s = result["exit_tax_sim"]
+            print(f"\nEXIT TAX SYMULATOR: {s['estimated_tax']:,.2f} PLN (próg {s['threshold_pln']:,.0f})")
+        if "mdr_matrix" in result:
+            m = result["mdr_matrix"]
+            print(f"\nMDR MATRYCA: sygnały {m['active_signals_count']} | {m['recommendation']} ({m['deadline_days']} dni)")
         return 0
 
     if args.out:

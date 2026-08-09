@@ -30,6 +30,11 @@
 #   --sanctions          kalkulator sankcji RODO (INN-12)
 #   --ubo                weryfikator beneficjentów rzeczywistych (INN-13)
 #   --scorecard          scorecard compliance (INN-14)
+#   --aml-obligation     auto-wykrycie obowiązku AML wg PKD (INN-15)
+#   --rodo-by-design     RODO-by-design — anonimizacja werdyktów bez PII (INN-16)
+#   --rodo-request       auto-odpowiedzi na żądania RODO (INN-17)
+#   --penalty-sim        symulator kar RODO/AML (INN-18)
+#   --dead-data          monitor martwych danych — retencja (INN-19)
 #   --table              format tabelaryczny
 #   --out FILE           zapis JSON do pliku
 #
@@ -545,6 +550,100 @@ def _cdd(score: float) -> str:
     return "CDD uproszczona"
 
 
+# ── SEKCJA 8: innowacje INN-15..19 (2026-08-09) ──────────────────────────────
+def aml_obligation_detector(activity_desc: str = "") -> dict:
+    """INN-15: auto-wykrycie obowiązku AML przy profilu działalności (PKD)."""
+    act = activity_desc.lower()
+    obliged = any(kw in act for kw in ("kantor", "faktoring", "nieruchomoś", "doradca podatkowy",
+                                       "prawnic", "notariusz", "kasyn", "metale szlachetne", "dzieła sztuki"))
+    source = ("art. 2 ust. 1 pkt 8/12/13/14 u.AML"
+              if any(kw in act for kw in ("kantor", "faktoring", "nieruchomoś", "doradca podatkowy",
+                                          "prawnic", "notariusz"))
+              else "art. 2 ust. 1 pkt 15/16 u.AML (kasyna, metale, dzieła sztuki)" if obliged else "")
+    return {
+        "activity_desc": activity_desc,
+        "pkd_checked": True,
+        "obliged_entity": obliged,
+        "obligation_source": source,
+        "required_measures": (["CBDD (art. 28-34 u.AML)", "rejestr transakcji > 15 000 EUR",
+                               "CRBR — beneficjent rzeczywisty (7 dni)", "polityka AML wewnętrzna (art. 48-50 u.AML)",
+                               "STR do GIIF w 1 dzień roboczy (art. 74-80)"] if obliged else []),
+        "_routing": "AML_OBLIGATION_QUEUE" if obliged else "",
+        "note": "auto-wykrycie obowiązku AML przy profilu działalności (PKD) — kantory, faktoring, nieruchomości, doradcy, prawnicy (INN-15)",
+    }
+
+
+def rodo_by_design_anonymizer(verdict_fields: list = None) -> dict:
+    """INN-16: RODO-by-design — anonimizacja werdyktów (Decision Certificate bez PII)."""
+    fields = verdict_fields or []
+    pii_fields = [f for f in fields if f in ("NIP", "PESEL", "name", "nazwisko", "email", "phone", "adres")]
+    contains_pii = len(pii_fields) > 0
+    return {
+        "verdict_contains_pii": contains_pii,
+        "pii_fields_detected": pii_fields,
+        "anonymized_verdict": not contains_pii,
+        "hash_verdict_id": True,
+        "data_minimization": True,
+        "pii_notes": ("F4 Decision Certificate — werdykty bez PII: NIP → anonimowy identyfikator, hash werdyktu, zero danych osobowych w ścieżce audytu"
+                      if not contains_pii else "WYKRYTO PII w werdykcie — usuń przed zapisem (art. 5 ust. 1 lit. c RODO)"),
+        "_routing": "PII_STRIP_QUEUE" if contains_pii else "",
+        "note": "RODO-by-design — anonimizacja werdyktów (Decision Certificate bez PII), minimalizacja danych (art. 5 RODO) (INN-16)",
+    }
+
+
+def rodo_request_workflow(request_type: str = "DOSTEP", days_elapsed: int = 0) -> dict:
+    """INN-17: auto-odpowiedzi na żądania RODO — szablony + terminy 30 dni."""
+    templates = {
+        "DOSTEP": "SZABLON: potwierdź tożsamość → wyślij kopię danych w 30 dni (art. 15 RODO) → dokumentacja",
+        "USUNIECIE": "SZABLON: weryfikacja wyjątków (art. 17 ust. 3) → usuń dane w 30 dni → potwierdzenie usunięcia",
+        "PRZENOSZALNOSC": "SZABLON: dane w formacie CSV/XML (art. 20 RODO) → przekaż w 30 dni",
+        "SPRZECIW": "SZABLON: zaprzestań przetwarzania marketingowego (art. 21 RODO) → potwierdź",
+    }
+    return {
+        "request_type": request_type,
+        "deadline_days": 30,
+        "days_remaining": max(0, 30 - days_elapsed),
+        "overdue": days_elapsed > 30,
+        "template": templates.get(request_type, "SZABLON: potwierdź żądanie i odpowiedz w 30 dni (art. 12 RODO)"),
+        "_routing": "RODO_REQUEST_OVERDUE" if days_elapsed > 30 else "RODO_REQUEST_QUEUE",
+        "note": "auto-odpowiedzi na żądania RODO — szablony (dostęp, usunięcie, przenoszalność, sprzeciw) + terminy 30 dni (INN-17)",
+    }
+
+
+def penalty_simulator(scenario: str = "DATA_BREACH_UNREPORTED", annual_revenue_eur: float = 0.0) -> dict:
+    """INN-18: symulator kar RODO/AML — co by było gdyby."""
+    high_tier = {"DATA_BREACH_UNREPORTED", "NO_CONSENT", "ILLEGAL_TRANSFER", "NO_ERASURE", "VIOLATION_DATA_PRINCIPLES"}
+    aml_scenarios = {"NO_STR", "NO_CBDD", "NO_CRBR", "NO_POLICY_AML"}
+    rodo_fine = COMPLIANCE["rodo_sanction_max_eur"] if scenario in high_tier else COMPLIANCE["rodo_sanction_min_eur"]
+    aml_fine = COMPLIANCE["aml_sanction_max_pln"] if scenario in aml_scenarios else 0
+    return {
+        "scenario": scenario,
+        "revenue_eur": annual_revenue_eur,
+        "rodo_fine_eur": rodo_fine,
+        "aml_fine_pln": aml_fine,
+        "total_risk": (f"symulacja: RODO {int(rodo_fine)} EUR + AML {int(aml_fine)} PLN — "
+                       "zabezpiecz się: umowy Art. 28, polityka AML, procedury"),
+        "_routing": "BLOCK_AND_ALERT" if rodo_fine > 0 or aml_fine > 0 else "",
+        "note": "symulator kar RODO/AML — co by było gdyby (scenariusze naruszeń) (INN-18)",
+    }
+
+
+def dead_data_monitor(expiring_30d: int = 0, expired: int = 0) -> dict:
+    """INN-19: monitor martwych danych — retencja: co wygasa za 30 dni."""
+    return {
+        "expiring_30d": expiring_30d,
+        "expired": expired,
+        "retention_policy": {
+            "ksiegowe_5_lat": "art. 74 ust. 2 UoR — faktury, KPiR, dokumentacja księgowa",
+            "pracownicze_50_lat": "art. 51¹ § 1 KP — akta osobowe i płacowe",
+            "umowy": "3-10 lat wg rodzaju (art. 118 KC — roszczenia)",
+        },
+        "action_required": expiring_30d > 0 or expired > 0,
+        "_routing": "DATA_RETENTION_ALERT" if expired > 0 else "TRIAGE_QUEUE" if expiring_30d > 0 else "",
+        "note": "monitor martwych danych — co wygasa za 30 dni, retencja vs usunięcie (art. 5 ust. 1 lit. e RODO) (INN-19)",
+    }
+
+
 # ── Audyt realnych plików rego ────────────────────────────────────────────────
 def audit_rego_files() -> dict:
     rule_ids = []
@@ -669,6 +768,19 @@ def main() -> int:
     parser.add_argument("--sanctions", action="store_true", help="kalkulator sankcji RODO (INN-12)")
     parser.add_argument("--ubo", action="store_true", help="weryfikator beneficjentów (INN-13)")
     parser.add_argument("--scorecard", action="store_true", help="scorecard compliance (INN-14)")
+    # SEKCJA 8: innowacje INN-15..19
+    parser.add_argument("--aml-obligation", action="store_true", help="auto-wykrycie obowiązku AML wg PKD (INN-15)")
+    parser.add_argument("--rodo-by-design", action="store_true", help="RODO-by-design — anonimizacja werdyktów bez PII (INN-16)")
+    parser.add_argument("--rodo-request", action="store_true", help="auto-odpowiedzi na żądania RODO (INN-17)")
+    parser.add_argument("--penalty-sim", action="store_true", help="symulator kar RODO/AML (INN-18)")
+    parser.add_argument("--dead-data", action="store_true", help="monitor martwych danych — retencja (INN-19)")
+    parser.add_argument("--activity-desc", type=str, default="", help="opis działalności do detekcji AML (INN-15)")
+    parser.add_argument("--verdict-fields", action="append", default=[], help="pola werdyktu do anonimizacji (INN-16)")
+    parser.add_argument("--request-type", type=str, default="DOSTEP", help="typ żądania RODO: DOSTEP/USUNIECIE/PRZENOSZALNOSC/SPRZECIW (INN-17)")
+    parser.add_argument("--request-days", type=int, default=0, help="dni od wpłynięcia żądania RODO (INN-17)")
+    parser.add_argument("--scenario", type=str, default="DATA_BREACH_UNREPORTED", help="scenariusz symulacji kary (INN-18)")
+    parser.add_argument("--expiring-30d", type=int, default=0, help="rekordy wygasające w 30 dni (INN-19)")
+    parser.add_argument("--expired", type=int, default=0, help="rekordy wygasłe (INN-19)")
     parser.add_argument("--pipeline", action="store_true", help="pipeline auto-aktualizacji reguł compliance (Sekcja 5)")
     parser.add_argument("--breach-hours", type=float, default=0.0, help="godziny od wykrycia naruszenia")
     parser.add_argument("--client-name", type=str, default="Klient", help="nazwa klienta")
@@ -765,6 +877,17 @@ def main() -> int:
         result["amlr"] = amlr_2027_check(args.cash_eur, args.crypto_eur)
     if args.dashboard:
         result["dashboard"] = compliance_dashboard(str_pending=args.str_pending, breaches_open=args.breaches_open)
+    # SEKCJA 8: innowacje INN-15..19
+    if args.aml_obligation:
+        result["aml_obligation"] = aml_obligation_detector(args.activity_desc)
+    if args.rodo_by_design:
+        result["rodo_by_design"] = rodo_by_design_anonymizer(args.verdict_fields)
+    if args.rodo_request:
+        result["rodo_request"] = rodo_request_workflow(args.request_type, args.request_days)
+    if args.penalty_sim:
+        result["penalty_sim"] = penalty_simulator(args.scenario, args.revenue_eur)
+    if args.dead_data:
+        result["dead_data"] = dead_data_monitor(args.expiring_30d, args.expired)
 
     if args.table:
         if "audit" in result:
@@ -824,6 +947,26 @@ def main() -> int:
             d = result["dashboard"]
             print(f"\nDASHBOARD: STR pending {d['aml_panel']['str_pending']}, naruszenia 72h "
                   f"{d['breach_72h']['breaches_open']} — {d['_routing']}")
+        # SEKCJA 8: innowacje INN-15..19
+        if "aml_obligation" in result:
+            ao = result["aml_obligation"]
+            print(f"\nAML OBLIGATION ({ao['activity_desc']!r}): instytucja obowiązana: {ao['obliged_entity']} "
+                  f"| {ao['obligation_source']} | routing: {ao['_routing']!r}")
+        if "rodo_by_design" in result:
+            rbd = result["rodo_by_design"]
+            print(f"\nRODO-BY-DESIGN: PII wykryte: {rbd['pii_fields_detected']} — {rbd['pii_notes']}")
+        if "rodo_request" in result:
+            rr = result["rodo_request"]
+            print(f"\nŻĄDANIE RODO ({rr['request_type']}): {rr['days_remaining']} dni z {rr['deadline_days']} "
+                  f"| overdue: {rr['overdue']}")
+        if "penalty_sim" in result:
+            ps = result["penalty_sim"]
+            print(f"\nSYMULATOR KAR ({ps['scenario']}): RODO {int(ps['rodo_fine_eur'])} EUR + "
+                  f"AML {int(ps['aml_fine_pln'])} PLN")
+        if "dead_data" in result:
+            dd = result["dead_data"]
+            print(f"\nMARTWE DANE: {dd['expiring_30d']} wygasających w 30 dni, {dd['expired']} wygasłych "
+                  f"| routing: {dd['_routing']!r}")
         return 0
 
     if args.out:

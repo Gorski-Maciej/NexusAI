@@ -33,6 +33,7 @@
 package jdg.p11_ordynacja_podatkowa_innovations
 
 import future.keywords.in
+import future.keywords.if
 
 default decide := {"matched": false, "rule_id": "jdg.p11_ordynacja_podatkowa_innovations.no_match", "package": "jdg.p11_ordynacja_podatkowa_innovations", "priority": 999999}
 
@@ -534,6 +535,91 @@ ordpu_compliance_panel := {
     object.get(input.jdg_entrepreneur, "p11_ordynacja_check", false) == true
 }
 
+# ── SEKCJA 7b: NOWE INNOWACJE P11 v9.1 (INN-16..INN-19) ────────────────────────
+# INN-16: TRACKER "MILCZĄCEGO ZAŁATWIENIA SPRAWY" (art. 139 — po 2 mies. decyzja pozytywna z mocy prawa).
+silent_settlement_tracker := {
+    "rule_id": "jdg.p11_ordynacja_podatkowa_innovations.silent_settlement_tracker",
+    "package": "jdg.p11_ordynacja_podatkowa_innovations",
+    "priority": 1079,
+    "matched": true,
+    "proceeding_started": object.get(input.jdg_entrepreneur, "proceeding_started", false) == true,
+    "months_elapsed": to_number(object.get(input.jdg_entrepreneur, "proceeding_months_elapsed", 0)),
+    "default_settlement_deadline_months": 2,
+    "silent_positive_settlement": silent_positive_settlement,
+    "note": "art. 139 — brak decyzji po 2 mies. → załatwienie sprawy z mocy prawa (sprawy szczególnie skomplikowane: dodatkowe 2 mies.)",
+    "_routing": "TRIAGE_QUEUE" if silent_positive_settlement else "",
+    "_routing_reason": "Tracker milczącego załatwienia sprawy (art. 139) — brak decyzji po 2 mies. → pozytywne z mocy prawa",
+    "_legal_basis": "OrdPU art. 139",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p11_ordynacja_check", false) == true
+    silent_positive_settlement := object.get(input.jdg_entrepreneur, "proceeding_started", false) == true and to_number(object.get(input.jdg_entrepreneur, "proceeding_months_elapsed", 0)) >= 2 and object.get(input.jdg_entrepreneur, "proceeding_decision_issued", false) == false
+}
+
+# INN-17: KALKULATOR OPŁACALNOŚCI KOREKTY (art. 81) vs ryzyko kontroli skarbowej.
+correction_profitability_calculator := {
+    "rule_id": "jdg.p11_ordynacja_podatkowa_innovations.correction_profitability_calculator",
+    "package": "jdg.p11_ordynacja_podatkowa_innovations",
+    "priority": 1080,
+    "matched": true,
+    "tax_difference": to_number(object.get(input.jdg_entrepreneur, "tax_difference", 0)),
+    "correction_cost": correction_cost,
+    "inspection_risk_pct": to_number(object.get(input.jdg_entrepreneur, "inspection_risk_pct", 20)),
+    "expected_penalty": expected_penalty,
+    "correction_profitable": correction_profitable,
+    "recommendation": "ZŁÓŻ_KOREKTĘ" if correction_profitable else "ANALIZA_Z_DORADCA",
+    "_routing": "",
+    "_routing_reason": "Kalkulator opłacalności korekty deklaracji (art. 81) vs ryzyko kontroli skarbowej",
+    "_legal_basis": "OrdPU art. 81; KKS art. 54-56",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p11_ordynacja_check", false) == true
+    correction_cost := round2(to_number(object.get(input.jdg_entrepreneur, "tax_difference", 0)) * to_number(object.get(ord_limits, "correction_interest_pct", 0.15)))
+    expected_penalty := round2(to_number(object.get(input.jdg_entrepreneur, "tax_difference", 0)) * to_number(object.get(input.jdg_entrepreneur, "inspection_risk_pct", 20)) / 100 * to_number(object.get(ord_limits, "kks_penalty_multiplier", 1.5)))
+    correction_profitable := correction_cost < expected_penalty
+}
+
+# INN-18: SYMULATOR ULG W SPŁACIE (art. 67a-67e) — umorzenie vs raty vs odroczenie.
+relief_simulator := {
+    "rule_id": "jdg.p11_ordynacja_podatkowa_innovations.relief_simulator",
+    "package": "jdg.p11_ordynacja_podatkowa_innovations",
+    "priority": 1081,
+    "matched": true,
+    "tax_arrears": to_number(object.get(input.jdg_entrepreneur, "tax_arrears", 0)),
+    "relief_options": {
+        "umorzenie": {"art": "67a", "effect": "całkowite/częściowe umorzenie zaległości", "eligibility": object.get(input.jdg_entrepreneur, "important_taxpayer_interest", false) == true or object.get(input.jdg_entrepreneur, "public_interest", false) == true},
+        "raty": {"art": "67d", "effect": "rozłożenie na raty — płatność w czasie", "eligibility": object.get(input.jdg_entrepreneur, "able_to_pay_installments", false) == true},
+        "odroczenie": {"art": "67d", "effect": "odroczenie terminu płatności", "eligibility": object.get(input.jdg_entrepreneur, "temporary_liquidity_issue", false) == true},
+    },
+    "recommendation": "WNIOSEK_O_UMORZENIE" if object.get(input.jdg_entrepreneur, "important_taxpayer_interest", false) == true or object.get(input.jdg_entrepreneur, "public_interest", false) == true else "WNIOSEK_O_RATY" if object.get(input.jdg_entrepreneur, "able_to_pay_installments", false) == true else "WNIOSEK_O_ODROCZENIE" if object.get(input.jdg_entrepreneur, "temporary_liquidity_issue", false) == true else "BRAK_ULGI",
+    "_routing": "",
+    "_routing_reason": "Symulator ulgi w spłacie (art. 67a-67e) — umorzenie vs raty vs odroczenie (ważny interes podatnika / interes publiczny)",
+    "_legal_basis": "OrdPU art. 67a, 67d",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p11_ordynacja_check", false) == true
+}
+
+# INN-19: AUTO-WYKRYWANIE PRZEDAWNIENIA — wstrzymanie działań windykacyjnych (art. 70).
+prescription_windup_guard := {
+    "rule_id": "jdg.p11_ordynacja_podatkowa_innovations.prescription_windup_guard",
+    "package": "jdg.p11_ordynacja_podatkowa_innovations",
+    "priority": 1082,
+    "matched": true,
+    "liability_year": to_number(object.get(input.jdg_entrepreneur, "liability_year", 2020)),
+    "current_year": to_number(object.get(input.jdg_entrepreneur, "current_year", 2026)),
+    "limitation_years": limitation_years,
+    "years_elapsed": to_number(object.get(input.jdg_entrepreneur, "current_year", 2026)) - to_number(object.get(input.jdg_entrepreneur, "liability_year", 2020)),
+    "prescribed": to_number(object.get(input.jdg_entrepreneur, "current_year", 2026)) - to_number(object.get(input.jdg_entrepreneur, "liability_year", 2020)) >= limitation_years,
+    "action": "WSTRZYMAJ_DZIALANIA_WINDYKACYJNE — zobowiązanie przedawnione (art. 70 §1)" if to_number(object.get(input.jdg_entrepreneur, "current_year", 2026)) - to_number(object.get(input.jdg_entrepreneur, "liability_year", 2020)) >= limitation_years else "ZOBOWIAZANIE_AKTYWNE — monitoring do przedawnienia",
+    "_routing": "TRIAGE_QUEUE" if to_number(object.get(input.jdg_entrepreneur, "current_year", 2026)) - to_number(object.get(input.jdg_entrepreneur, "liability_year", 2020)) >= limitation_years else "",
+    "_routing_reason": "Auto-wykrywanie przedawnienia zobowiązania (art. 70) — wstrzymanie windykacji",
+    "_legal_basis": "OrdPU art. 70 §1",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p11_ordynacja_check", false) == true
+}
+
 # ── GŁÓWNY DECIDE (P11) — raport syntetyczny Ordynacja Podatkowa ──────────────
 decide := {
     "rule_id": "jdg.p11_ordynacja_podatkowa_innovations.report",
@@ -547,6 +633,10 @@ decide := {
     "gaar": gaar_audit,
     "white_list": white_list_monitor,
     "pipeline": ordpu_pipeline_snapshot,
+    "silent_settlement": silent_settlement_tracker,
+    "correction_profitability": correction_profitability_calculator,
+    "relief_simulator": relief_simulator,
+    "prescription_guard": prescription_windup_guard,
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny Ordynacja Podatkowa (P11) — przedawnienia, korekty/nadpłaty, auto-korespondencja, GAAR, Biała Lista",
     "_legal_basis": "OrdPU (Dz.U. 2025 poz. 234): art. 14a-14d, 53-56, 67a-67e, 70, 72-81b, 117ba, 119a, 120-129, 138a-138o, 193a",

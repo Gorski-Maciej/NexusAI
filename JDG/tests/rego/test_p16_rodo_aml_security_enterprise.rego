@@ -410,3 +410,100 @@ test_p16_default_no_match {
     result.matched == false
     result.rule_id == "jdg.p16_rodo_aml_security_innovations.no_match"
 }
+
+# ── SEKCJA 8: innowacje INN-15..19 ────────────────────────────────────────────
+test_aml_obligation_detector {
+    result := data.jdg.p16_rodo_aml_security_innovations.aml_obligation_detector with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true}, "company_setup": {"activity_desc": "doradca podatkowy"}}
+    result.obliged_entity == true
+    result._routing == "AML_OBLIGATION_QUEUE"
+    contains(result.obligation_source, "art. 2 ust. 1")
+    count(result.required_measures) == 5
+}
+
+test_aml_obligation_detector_clean {
+    result := data.jdg.p16_rodo_aml_security_innovations.aml_obligation_detector with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true}, "company_setup": {"activity_desc": "usługi księgowe"}}
+    result.obliged_entity == false
+    result._routing == ""
+    count(result.required_measures) == 0
+}
+
+test_rodo_by_design_anonymizer {
+    result := data.jdg.p16_rodo_aml_security_innovations.rodo_by_design_anonymizer with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true}, "verdict": {"fields": ["NIP", "kwota"]}}
+    result.verdict_contains_pii == true
+    result.pii_fields_detected == ["NIP"]
+    result._routing == "PII_STRIP_QUEUE"
+    result.anonymized_verdict == false
+}
+
+test_rodo_by_design_clean {
+    result := data.jdg.p16_rodo_aml_security_innovations.rodo_by_design_anonymizer with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true}, "verdict": {"fields": ["kwota", "data"]}}
+    result.verdict_contains_pii == false
+    result.anonymized_verdict == true
+    result._routing == ""
+    result.hash_verdict_id == true
+}
+
+test_rodo_request_workflow {
+    result := data.jdg.p16_rodo_aml_security_innovations.rodo_request_workflow with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true}, "rodo_request": {"type": "USUNIECIE", "days_elapsed": 5}}
+    result.request_type == "USUNIECIE"
+    result.deadline_days == 30
+    result.days_remaining == 25
+    result.overdue == false
+    contains(result.template, "art. 17")
+    result._routing == "RODO_REQUEST_QUEUE"
+}
+
+test_rodo_request_workflow_overdue {
+    result := data.jdg.p16_rodo_aml_security_innovations.rodo_request_workflow with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true}, "rodo_request": {"type": "DOSTEP", "days_elapsed": 35}}
+    result.days_remaining == 0
+    result.overdue == true
+    result._routing == "RODO_REQUEST_OVERDUE"
+    contains(result.template, "art. 15")
+}
+
+test_penalty_simulator {
+    result := data.jdg.p16_rodo_aml_security_innovations.penalty_simulator with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true, "annual_revenue_eur": 0}, "penalty_sim": {"scenario": "DATA_BREACH_UNREPORTED"}}
+    result.rodo_fine_eur == 20000000
+    result.aml_fine_pln == 0
+    result._routing == "BLOCK_AND_ALERT"
+}
+
+test_penalty_simulator_aml {
+    result := data.jdg.p16_rodo_aml_security_innovations.penalty_simulator with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true}, "penalty_sim": {"scenario": "NO_STR"}}
+    result.aml_fine_pln == 1000000
+    result._routing == "BLOCK_AND_ALERT"
+}
+
+test_dead_data_monitor {
+    result := data.jdg.p16_rodo_aml_security_innovations.dead_data_monitor with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true}, "retention": {"expiring_30d": 3, "expired": 0}}
+    result.expiring_30d == 3
+    result.action_required == true
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_dead_data_monitor_expired {
+    result := data.jdg.p16_rodo_aml_security_innovations.dead_data_monitor with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true}, "retention": {"expired": 2}}
+    result.expired == 2
+    result._routing == "DATA_RETENTION_ALERT"
+    contains(result.retention_policy.ksiegowe_5_lat, "art. 74")
+}
+
+test_p16_decide_includes_innovations_v9 {
+    result := data.jdg.p16_rodo_aml_security_innovations.decide with
+        input as {"jdg_entrepreneur": {"p16_compliance_check": true}}
+    result.innovations_v9.aml_obligation_detector.obliged_entity == false
+    result.innovations_v9.rodo_by_design_anonymizer.anonymized_verdict == true
+    result.innovations_v9.rodo_request_workflow.deadline_days == 30
+    result.innovations_v9.penalty_simulator.aml_fine_pln == 0
+    result.innovations_v9.dead_data_monitor.action_required == false
+}

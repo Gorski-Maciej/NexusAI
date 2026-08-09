@@ -2,8 +2,9 @@
 
 Pakiet: `jdg.p16_rodo_aml_security_innovations`
 Plik: `JDG/rules/p16_rodo_aml_security_innovations_v9.rego`
-Raport: `raporty_jdg_enterprise/R16_RODO_AML_Bezpieczenstwo.txt`
+Raport: `raporty_glm52/raport_enterprise_P16.txt`
 Narzędzie: `JDG/tools/rodo_aml_security_auditor.py`
+Wersja: v9.7 (2026-08-09) — INN-15..19
 
 ## Zakres (7 sekcji promptu wdrożone jako reguły)
 
@@ -21,7 +22,7 @@ Narzędzie: `JDG/tools/rodo_aml_security_auditor.py`
 | 4. AUDYT ŚCIEŻKI DECYZJI | `audit_trail_audit` — pełna odtwarzalność, niezmienialność, merkle tree, provenance (ADR-006) | ✅ |
 | 4. Proof-chain (INN-06) | `proof_chain_verifier` — merkle-like łańcuch: input → reguła → werdykt → hash root | ✅ |
 | 5. OPA jako system | `compliance_pipeline_snapshot` — pipeline ingest→generate→verify→emit (ADR-002, hot-reload); ePrivacy (2002/58/WE), AMLR (UE 2024/1624) | ✅ |
-| 6. Genius ideas (14) | INN-01..14: rejestr auto, breach 72h, scoring klient, scoring transakcja, forteca, proof-chain, self-audit, panel AML, asystent naruszeń, decision chain, HMAC reguł, kalkulator sankcji, UBO, scorecard | ✅ |
+| 6. Genius ideas (19) | INN-01..19: rejestr auto, breach 72h, scoring klient, scoring transakcja, forteca, proof-chain, self-audit, panel AML, asystent naruszeń, decision chain, HMAC reguł, kalkulator sankcji, UBO, scorecard, **aml_obligation_detector (15), rodo_by_design_anonymizer (16), rodo_request_workflow (17), penalty_simulator (18), dead_data_monitor (19)** | ✅ |
 | 7. Mapa drogowa P0/P1/P2 (R16) | `crbr_registry_api`, `str_gijf_auto_submission`, `subprocessor_saas_map`, `rodo_deadline_calendar`, `aml_sanctions_screening`, `amlr_2027_implementation`, `compliance_dashboard_ui` — wszystkie 7 pozycji wdrożone | ✅ |
 
 ## Mapa drogowa P0/P1/P2 — wdrożone (R16, 2026-08-05)
@@ -35,6 +36,16 @@ Narzędzie: `JDG/tools/rodo_aml_security_auditor.py`
 | P1 | scoring AML z danymi rzeczywistymi (listy sankcyjne UE/ONZ) | `aml_sanctions_screening` / `aml_sanctions_screening()` — 5 list (EU/UN/OFAC/UK/PEP), wagi 20-50, BLOCK ≥50 |
 | P2 | implementacja AMLR (UE 2024/1624) — progi CBDD od 2027 | `amlr_2027_implementation` / `amlr_2027_check()` — gotówka >10k EUR / krypto >1k EUR, od 2027-07-10 |
 | P2 | UI panelu ryzyka AML + dashboard naruszeń RODO 72h | `compliance_dashboard_ui` / `compliance_dashboard()` — widgets + export JSON/CSV/PDF |
+
+### Sekcja 8 — innowacje INN-15..19 (2026-08-09)
+
+| Innowacja | Reguła | Efekt |
+|---|---|---|
+| INN-15 auto-wykrycie obowiązku AML wg PKD | `aml_obligation_detector` | kantory/faktoring/nieruchomości/doradcy/prawnicy/notariusze/kasyna/metale/dzieła → instytucja obowiązana (art. 2 ust. 1 u.AML) + 5 środków: CBDD, rejestr >15k EUR, CRBR 7 dni, polityka AML, STR |
+| INN-16 RODO-by-design | `rodo_by_design_anonymizer` | werdykty bez PII (NIP/PESEL/name/email... wykrywane) — Decision Certificate bez danych osobowych, art. 5 ust. 1 lit. c |
+| INN-17 auto-odpowiedzi na żądania RODO | `rodo_request_workflow` | szablony DOSTĘP/USUNIĘCIE/PRZENOSZALNOŚĆ/SPRZECIW + termin 30 dni + countdown + alert overdue |
+| INN-18 symulator kar RODO/AML | `penalty_simulator` | co by było gdyby: RODO 20 mln EUR (art. 83) + AML 1 mln zł (art. 153) wg scenariusza |
+| INN-19 monitor martwych danych | `dead_data_monitor` | retencja: księgowe 5 lat, pracownicze 50 lat, umowy 3-10 lat; alert DATA_RETENTION_ALERT przy wygasłych |
 
 ## Progi (ADR-002 — `data.jdg.thresholds.compliance_aml_rodo`)
 
@@ -66,12 +77,19 @@ python JDG/tools/rodo_aml_security_auditor.py --rodo-calendar --current-month 12
 python JDG/tools/rodo_aml_security_auditor.py --sanctions-screen --entity-name "X" --matched-list eu_consolidated
 python JDG/tools/rodo_aml_security_auditor.py --amlr --cash-eur 12000                 # AMLR 2027 (P2)
 python JDG/tools/rodo_aml_security_auditor.py --dashboard --str-pending 1             # dashboard 72h (P2)
+
+# ── SEKCJA 8: innowacje INN-15..19 ──
+python JDG/tools/rodo_aml_security_auditor.py --aml-obligation --activity-desc "doradca podatkowy"  # INN-15 obowiązek AML wg PKD
+python JDG/tools/rodo_aml_security_auditor.py --rodo-by-design --verdict-fields NIP --verdict-fields kwota  # INN-16 RODO-by-design
+python JDG/tools/rodo_aml_security_auditor.py --rodo-request --request-type USUNIECIE --request-days 5    # INN-17 żądania RODO (30 dni)
+python JDG/tools/rodo_aml_security_auditor.py --penalty-sim --scenario NO_STR                                # INN-18 symulator kar
+python JDG/tools/rodo_aml_security_auditor.py --dead-data --expiring-30d 5 --expired 0                      # INN-19 monitor martwych danych
 ```
 
 ## Testy
 
-- Rego: `JDG/tests/rego/test_p16_rodo_aml_security_enterprise.rego` (28 scenariuszy + 13 nowych dla mapy drogowej P0/P1/P2)
-- Pytest: `JDG/tests/auto/test_p16_rodo_aml_security_enterprise.py` (40 testów: 31 + 9 nowych dla mapy drogowej)
+- Rego: `JDG/tests/rego/test_p16_rodo_aml_security_enterprise.rego` (**54** scenariusze: 43 + 11 INN-15..19)
+- Pytest: `JDG/tests/auto/test_p16_rodo_aml_security_enterprise.py` (**47** testów: 40 + 7 INN-15..19 + parser import check)
 
 ## Okablowanie
 

@@ -30,6 +30,9 @@
 
 package jdg.p15_srodowisko_bdo_innovations
 
+import future.keywords.if
+import future.keywords.in
+
 default decide := {"matched": false, "rule_id": "jdg.p15_srodowisko_bdo_innovations.no_match", "package": "jdg.p15_srodowisko_bdo_innovations", "priority": 999999}
 
 # ── Źródła danych: progi z data.jdg.thresholds (ADR-002 — zero hardcode) ──────
@@ -68,6 +71,12 @@ agricultural_gmina_rates := object.get(bdo_limits, "agricultural_tax_multiplier_
 transport_permits_table := object.get(bdo_limits, "transport_permits", {})
 cbam_certificate_config := object.get(bdo_limits, "cbam_certificates", {"definitive_from": "2026-01-01", "price_eur_t": 80.0, "validity_years": 2, "surrender_deadline": "31.05", "quarterly_report_deadline": "koniec miesiąca po kwartale", "prepayment_pct": 0.8, "penalty_eur_t": 50.0})
 bdo_registration_config := object.get(bdo_limits, "bdo_online_registration", {"endpoint": "https://bdo.mos.gov.pl/rejestracja", "steps": ["konto w BDO", "wniosek elektroniczny", "opłata (100-500 PLN)", "potwierdzenie rejestracji"], "update_deadline_days": 30, "deregistration_deadline_days": 30})
+
+# Stawki opłaty produktowej WEEE per kategoria sprzętu (zł/kg — art. 24 u.WEEE)
+weee_category_rates := object.get(bdo_limits, "weee_category_rates", {"duże_agd": 1.5, "małe_agd": 2.5, "sprzęt_it": 3.0, "sprzęt_rtv": 1.0, "narzędzia": 2.0, "zabawki": 2.0})
+
+# Poziomy odzysku/recyklingu opakowań 2026 (%-y — art. 19 u.g.o., dyrektywa 94/62/WE)
+recycling_levels := object.get(bdo_limits, "recycling_levels_2026", {"tworzywa_sztuczne": 50, "papier": 75, "szklo": 70, "metale": 70, "drewno": 60})
 
 # Rozdział EWC = pierwsze 2 znaki kodu (helper — P1-1)
 ewc_chapter(code) = ch {
@@ -674,6 +683,125 @@ bdo_online_registration := {
     )
 }
 
+# ── SEKCJA 8: INNOWACJE WYPRZEDZAJĄCE PROFESJONALISTÓW (INN-13..INN-17) ──────
+# INN-13: ZERO-CLICK BDO — ewidencja odpadów generowana automatycznie z dokumentów WZ
+#         (sekcja 8 promptu: "zero-click BDO — ewidencja odpadów generowana automatycznie
+#         z dokumentów WZ"). Każde WZ z kodem EWC → wpis ewidencji + KPO auto.
+zero_click_bdo := {
+    "rule_id": "jdg.p15_srodowisko_bdo_innovations.zero_click_bdo",
+    "package": "jdg.p15_srodowisko_bdo_innovations",
+    "priority": 1182,
+    "matched": true,
+    "wz_documents": wz_count,
+    "entries_generated": wz_count,
+    "kpo_auto": wz_count > 0,
+    "ewidencja_kwartalna_auto": true,
+    "auto_source": "dokumenty WZ z kodem EWC → wpis ewidencji odpadów + KPO (art. 66-70 UoO)",
+    "note": "zero-click BDO — ewidencja odpadów generowana automatycznie z dokumentów WZ (INN-13)",
+    "_routing": "",
+    "_routing_reason": "Zero-click BDO (INN-13) — ewidencja z WZ, KPO auto, spójność z P18 (automatyzacja)",
+    "_legal_basis": "Ustawa o odpadach art. 66-70; rozporządzenie ws. BDO",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
+    wz_count := to_number(object.get(object.get(input, "waste_ledger", {}), "wz_documents", 0))
+}
+
+# INN-14: AUTO-DETEKTOR obowiązku rejestracji BDO przy zakładaniu firmy (integracja P13).
+#         Sekcja 8 promptu: "auto-wykrycie obowiązku rejestracji BDO przy zakładaniu
+#         firmy (integracja z P13)". Analizuje opis działalności → ryzyko wytwarzania
+#         odpadów → rejestracja przed startem (art. 49-53 UoO).
+bdo_registration_detector := {
+    "rule_id": "jdg.p15_srodowisko_bdo_innovations.bdo_registration_detector",
+    "package": "jdg.p15_srodowisko_bdo_innovations",
+    "priority": 1183,
+    "matched": true,
+    "activity_desc": activity,
+    "generates_waste": generates_waste,
+    "registration_required": registration_required,
+    "before_start": true,
+    "registration_fee": object.get(bdo_rejestracja_oplaty, object.get(input.jdg_entrepreneur, "company_size", "mikro"), 100),
+    "p13_integration": "spójność z P13 company_setup_assistant — krok rejestracji BDO dodawany do checklisty zakładania firmy",
+    "_routing": "BDO_REGISTRATION_QUEUE" if registration_required else "",
+    "_routing_reason": "Auto-wykrycie obowiązku rejestracji BDO przy zakładaniu firmy (INN-14) — integracja P13, rejestracja przed startem",
+    "_legal_basis": "Ustawa o odpadach art. 49-53 (rejestracja przed rozpoczęciem działalności)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
+    activity := lower(object.get(object.get(input, "company_setup", {}), "activity_desc", ""))
+    generates_waste := contains(activity, "produkcj") or contains(activity, "wytwarz") or contains(activity, "transport") or contains(activity, "zbier") or contains(activity, "przetwarz")
+    registration_required := generates_waste or object.get(object.get(input, "company_setup", {}), "bdo_check", false)
+}
+
+# INN-15: KALKULATOR opłaty produktowej WEEE wg kategorii sprzętu (art. 24 u.WEEE).
+#         Sekcja 8 promptu: "kalkulator opłaty produktowej WEEE wg kategorii sprzętu".
+weee_product_fee_calculator := {
+    "rule_id": "jdg.p15_srodowisko_bdo_innovations.weee_product_fee_calculator",
+    "package": "jdg.p15_srodowisko_bdo_innovations",
+    "priority": 1184,
+    "matched": true,
+    "category": category,
+    "category_rate_pln_kg": object.get(weee_category_rates, category, 1.0),
+    "mass_kg": mass_kg,
+    "fee_due_pln": round2(mass_kg * object.get(weee_category_rates, category, 1.0)),
+    "gioś_registration": "rejestracja w GIOŚ przed wprowadzeniem sprzętu do obrotu (art. 22 u.WEEE)",
+    "reporting": "sprawozdanie roczne o wprowadzonym sprzęcie — do 15.03 (GIOŚ)",
+    "note": "kalkulator opłaty produktowej WEEE wg kategorii sprzętu (INN-15) — stawki zł/kg z thresholds",
+    "_routing": "",
+    "_routing_reason": "Kalkulator opłaty produktowej WEEE wg kategorii (INN-15) — rejestracja GIOŚ + sprawozdanie",
+    "_legal_basis": "Ustawa o zużytym sprzęcie elektrycznym i elektronicznym art. 22-24",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
+    category := object.get(object.get(input, "weee", {}), "category", "duże_agd")
+    mass_kg := to_number(object.get(object.get(input, "weee", {}), "mass_kg", 0))
+}
+
+# INN-16: TRACKER poziomów recyklingu opakowań z alertami (art. 19 u.g.o.).
+#         Sekcja 8 promptu: "tracker poziomów recyklingu z alertami".
+recycling_level_tracker := {
+    "rule_id": "jdg.p15_srodowisko_bdo_innovations.recycling_level_tracker",
+    "package": "jdg.p15_srodowisko_bdo_innovations",
+    "priority": 1185,
+    "matched": true,
+    "material": material,
+    "required_level_pct": object.get(recycling_levels, material, 0),
+    "achieved_level_pct": achieved,
+    "on_track": achieved >= object.get(recycling_levels, material, 0),
+    "alert": alert_text,
+    "note": "tracker poziomów recyklingu z alertami (INN-16) — wymagane % recyklingu vs osiągnięte",
+    "_routing": "RECYCLING_ALERT" if achieved < object.get(recycling_levels, material, 0) else "",
+    "_routing_reason": "Tracker poziomów recyklingu z alertami (INN-16) — alert przy niespełnieniu poziomu",
+    "_legal_basis": "Ustawa o gospodarce opakowaniami i odpadami opakowaniowymi art. 19",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
+    material := object.get(object.get(input, "recycling", {}), "material", "tworzywa_sztuczne")
+    achieved := to_number(object.get(object.get(input, "recycling", {}), "achieved_level_pct", 0))
+    alert_text := "poziom recyklingu " + material + " osiągnięty (" + sprintf("%v%%", [achieved]) + ")" if achieved >= object.get(recycling_levels, material, 0) else "NIESPEŁNIONY poziom recyklingu " + material + " — wymagane min. " + sprintf("%v%%", [object.get(recycling_levels, material, 0)])
+}
+
+# INN-17: ASYSTENT licencji transportowej krok po kroku (art. 5-8 u.t.d.).
+#         Sekcja 8 promptu: "asystent licencji transportowej krok po kroku".
+transport_licence_assistant := {
+    "rule_id": "jdg.p15_srodowisko_bdo_innovations.transport_licence_assistant",
+    "package": "jdg.p15_srodowisko_bdo_innovations",
+    "priority": 1186,
+    "matched": true,
+    "transport_type": transport_type,
+    "licence_required": transport_type != "",
+    "steps": ["wpis do CEIDG — PKD 49.41/49.42", "zaświadczenie o niekaralności", "kwalifikacja zawodowa (certyfikat kompetencji zawodowych)", "ubezpieczenie OC przewoźnika", "wniosek o licencję wspólnotową (art. 5 u.t.d.)", "opłata za licencję + wypisy (do 1000 zł + 50 zł/wypis)"],
+    "fine_for_missing": 5000,
+    "note": "asystent licencji transportowej krok po kroku (INN-17) — ścieżka 6 kroków, kara za brak 5 tys. zł",
+    "_routing": "",
+    "_routing_reason": "Asystent licencji transportowej krok po kroku (INN-17) — spójność z P14 (środki transportowe)",
+    "_legal_basis": "Ustawa o transporcie drogowym art. 5-8",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
+    transport_type := object.get(object.get(input, "transport", {}), "type", "")
+}
+
 # ── GŁÓWNY DECIDE (P15) — raport syntetyczny Środowisko + BDO + Branża ────────
 decide := {
     "rule_id": "jdg.p15_srodowisko_bdo_innovations.report",
@@ -686,6 +814,13 @@ decide := {
     "regulated_taxfree_seasonal": regulated_taxfree_seasonal_audit,
     "cbam": cbam_audit,
     "pipeline": bdo_pipeline_snapshot,
+    "innovations_v8": {
+        "zero_click_bdo": zero_click_bdo,
+        "bdo_registration_detector": bdo_registration_detector,
+        "weee_product_fee_calculator": weee_product_fee_calculator,
+        "recycling_level_tracker": recycling_level_tracker,
+        "transport_licence_assistant": transport_licence_assistant,
+    },
     "roadmap_v2": {
         "product_fee_material_map": product_fee_material_map,
         "bdo_api_integration": bdo_api_integration,

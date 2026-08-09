@@ -20,6 +20,11 @@
 #   --taxfree         kalkulator tax-free VAT-REF (INN-10)
 #   --seasonal        asystent sezonowości (INN-11)
 #   --agricultural    kalkulator podatku rolnego (INN-12)
+#   --zero-click-bdo  zero-click BDO — ewidencja z WZ (INN-13)
+#   --bdo-reg-detector  auto-detecktor rejestracji BDO przy zakładaniu firmy (INN-14)
+#   --weee-fee        kalkulator opłaty produktowej WEEE wg kategorii (INN-15)
+#   --recycling       tracker poziomów recyklingu z alertami (INN-16)
+#   --transport-licence  asystent licencji transportowej krok po kroku (INN-17)
 #   --table           format tabelaryczny
 #   --out FILE        zapis JSON do pliku
 #
@@ -84,6 +89,27 @@ CBAM_CERTIFICATES = {
     "prepayment_pct": 0.8,
     "penalty_eur_t": 50.0,
 }
+
+# INN-15: stawki opłaty produktowej WEEE per kategoria sprzętu (zł/kg — art. 24 u.WEEE)
+WEEE_CATEGORY_RATES = {
+    "duże_agd": 1.5, "małe_agd": 2.5, "sprzęt_it": 3.0, "sprzęt_rtv": 1.0,
+    "narzędzia": 2.0, "zabawki": 2.0,
+}
+
+# INN-16: wymagane poziomy recyklingu opakowań 2026 (%-y — art. 19 u.g.o.)
+RECYCLING_LEVELS = {
+    "tworzywa_sztuczne": 50, "papier": 75, "szklo": 70, "metale": 70, "drewno": 60,
+}
+
+# INN-17: ścieżka licencji transportowej krok po kroku (art. 5-8 u.t.d.)
+TRANSPORT_LICENCE_STEPS = [
+    "wpis do CEIDG — PKD 49.41/49.42",
+    "zaświadczenie o niekaralności",
+    "kwalifikacja zawodowa (certyfikat kompetencji zawodowych)",
+    "ubezpieczenie OC przewoźnika",
+    "wniosek o licencję wspólnotową (art. 5 u.t.d.)",
+    "opłata za licencję + wypisy (do 1000 zł + 50 zł/wypis)",
+]
 
 # Priorytetowe moduły BDO + środowisko + budownictwo (spójne z pakietem rego)
 PRIORITY_MODULES = [
@@ -352,6 +378,78 @@ def bdo_online_registration(registration_status: str = "nie_zarejestrowany", com
     }
 
 
+# ── SEKCJA 8: INNOWACJE WYPRZEDZAJĄCE PROFESJONALISTÓW (INN-13..INN-17) ─────
+def zero_click_bdo(wz_documents: int = 0) -> dict:
+    """Zero-click BDO — ewidencja odpadów generowana automatycznie z dokumentów WZ (INN-13)."""
+    return {
+        "wz_documents": wz_documents,
+        "entries_generated": wz_documents,
+        "kpo_auto": wz_documents > 0,
+        "ewidencja_kwartalna_auto": True,
+        "auto_source": "dokumenty WZ z kodem EWC → wpis ewidencji odpadów + KPO (art. 66-70 UoO)",
+        "note": "zero-click BDO — ewidencja odpadów generowana automatycznie z dokumentów WZ (INN-13)",
+    }
+
+
+def bdo_registration_detector(activity_desc: str = "") -> dict:
+    """Auto-wykrycie obowiązku rejestracji BDO przy zakładaniu firmy (INN-14, integracja P13)."""
+    act = activity_desc.lower()
+    generates_waste = any(kw in act for kw in ("produkcj", "wytwarz", "transport", "zbier", "przetwarz"))
+    registration_required = generates_waste
+    return {
+        "activity_desc": activity_desc,
+        "generates_waste": generates_waste,
+        "registration_required": registration_required,
+        "before_start": True,
+        "registration_fee": BDO["rejestracja_fees"].get("mikro", 100),
+        "p13_integration": "spójność z P13 company_setup_assistant — krok rejestracji BDO w checklisty zakładania firmy",
+        "_routing": "BDO_REGISTRATION_QUEUE" if registration_required else "",
+        "note": "auto-wykrycie obowiązku rejestracji BDO przy zakładaniu firmy (INN-14) — art. 49-53 UoO",
+    }
+
+
+def weee_product_fee_calculator(category: str = "duże_agd", mass_kg: float = 0.0) -> dict:
+    """Kalkulator opłaty produktowej WEEE wg kategorii sprzętu (INN-15)."""
+    rate = WEEE_CATEGORY_RATES.get(category, 1.0)
+    return {
+        "category": category,
+        "category_rate_pln_kg": rate,
+        "mass_kg": mass_kg,
+        "fee_due_pln": round2(mass_kg * rate),
+        "gioś_registration": "rejestracja w GIOŚ przed wprowadzeniem sprzętu do obrotu (art. 22 u.WEEE)",
+        "reporting": "sprawozdanie roczne o wprowadzonym sprzęcie — do 15.03 (GIOŚ)",
+        "note": "kalkulator opłaty produktowej WEEE wg kategorii sprzętu (INN-15)",
+    }
+
+
+def recycling_level_tracker(material: str = "tworzywa_sztuczne", achieved_level_pct: float = 0.0) -> dict:
+    """Tracker poziomów recyklingu opakowań z alertami (INN-16)."""
+    required = RECYCLING_LEVELS.get(material, 0)
+    on_track = achieved_level_pct >= required
+    alert = (f"poziom recyklingu {material} osiągnięty ({achieved_level_pct}%)" if on_track
+             else f"NIESPEŁNIONY poziom recyklingu {material} — wymagane min. {required}%")
+    return {
+        "material": material,
+        "required_level_pct": required,
+        "achieved_level_pct": achieved_level_pct,
+        "on_track": on_track,
+        "alert": alert,
+        "_routing": "" if on_track else "RECYCLING_ALERT",
+        "note": "tracker poziomów recyklingu z alertami (INN-16) — art. 19 u.g.o.",
+    }
+
+
+def transport_licence_assistant(transport_type: str = "") -> dict:
+    """Asystent licencji transportowej krok po kroku (INN-17)."""
+    return {
+        "transport_type": transport_type,
+        "licence_required": transport_type != "",
+        "steps": TRANSPORT_LICENCE_STEPS,
+        "fine_for_missing": 5000,
+        "note": "asystent licencji transportowej krok po kroku (INN-17) — art. 5-8 u.t.d.",
+    }
+
+
 # ── Audyt realnych plików rego ────────────────────────────────────────────────
 def audit_rego_files() -> dict:
     rule_ids = []
@@ -487,6 +585,12 @@ def main() -> int:
     parser.add_argument("--transport", action="store_true", help="tabele zezwoleń transportowych (P1-3)")
     parser.add_argument("--cbam-certificates", action="store_true", help="certyfikaty CBAM 2026 (P2-1)")
     parser.add_argument("--bdo-register-online", action="store_true", help="rejestracja online w BDO (P2-2)")
+    # SEKCJA 8: innowacje INN-13..17
+    parser.add_argument("--zero-click-bdo", action="store_true", help="zero-click BDO — ewidencja z WZ (INN-13)")
+    parser.add_argument("--bdo-reg-detector", action="store_true", help="auto-detecktor rejestracji BDO przy zakładaniu firmy (INN-14)")
+    parser.add_argument("--weee-fee", action="store_true", help="kalkulator opłaty produktowej WEEE wg kategorii (INN-15)")
+    parser.add_argument("--recycling", action="store_true", help="tracker poziomów recyklingu z alertami (INN-16)")
+    parser.add_argument("--transport-licence", action="store_true", help="asystent licencji transportowej krok po kroku (INN-17)")
     parser.add_argument("--registered", action="store_true", help="czy zarejestrowany w BDO")
     parser.add_argument("--company-size", type=str, default="mikro", help="wielkość firmy (mikro/mały/średni)")
     parser.add_argument("--ewc-code", type=str, default="", help="kod EWC odpadu (6 cyfr)")
@@ -498,6 +602,14 @@ def main() -> int:
     parser.add_argument("--route-type", type=str, default="krajowy", help="typ trasy: krajowy/unijny_ue/poza_ue (P1-3)")
     parser.add_argument("--authorized-declarant", action="store_true", help="czy upoważniony deklarant CBAM (P2-1)")
     parser.add_argument("--registration-status", type=str, default="nie_zarejestrowany", help="status rejestracji BDO (P2-2)")
+    # SEKCJA 8: parametry innowacji INN-13..17
+    parser.add_argument("--wz-documents", type=int, default=0, help="liczba dokumentów WZ (INN-13)")
+    parser.add_argument("--activity-desc", type=str, default="", help="opis działalności do auto-detekcji BDO (INN-14)")
+    parser.add_argument("--weee-category", type=str, default="duże_agd", help="kategoria sprzętu WEEE (INN-15)")
+    parser.add_argument("--weee-mass-kg", type=float, default=0.0, help="masa wprowadzonego sprzętu w kg (INN-15)")
+    parser.add_argument("--recycling-material", type=str, default="tworzywa_sztuczne", help="materiał opakowaniowy (INN-16)")
+    parser.add_argument("--achieved-pct", type=float, default=0.0, help="osiągnięty poziom recyklingu %% (INN-16)")
+    parser.add_argument("--transport-type", type=str, default="", help="typ transportu (INN-17)")
     parser.add_argument("--project-type", type=str, default="nowy_budynek", help="typ inwestycji")
     parser.add_argument("--co2-t", type=float, default=0.0, help="wbudowane emisje CO2 (t)")
     parser.add_argument("--import-value", type=float, default=0.0, help="wartość importu (PLN)")
@@ -546,6 +658,17 @@ def main() -> int:
         result["cbam_certificates"] = cbam_certificates_calculator(args.co2_t, args.authorized_declarant)
     if args.bdo_register_online:
         result["bdo_register_online"] = bdo_online_registration(args.registration_status, args.company_size)
+    # SEKCJA 8: innowacje INN-13..17
+    if args.zero_click_bdo:
+        result["zero_click_bdo"] = zero_click_bdo(args.wz_documents)
+    if args.bdo_reg_detector:
+        result["bdo_reg_detector"] = bdo_registration_detector(args.activity_desc)
+    if args.weee_fee:
+        result["weee_fee"] = weee_product_fee_calculator(args.weee_category, args.weee_mass_kg)
+    if args.recycling:
+        result["recycling"] = recycling_level_tracker(args.recycling_material, args.achieved_pct)
+    if args.transport_licence:
+        result["transport_licence"] = transport_licence_assistant(args.transport_type)
 
     if args.table:
         if "audit" in result:
@@ -611,6 +734,27 @@ def main() -> int:
             bro = result["bdo_register_online"]
             print(f"\nREJESTRACJA ONLINE BDO: status: {bro['registration_status']} | "
                   f"opłata: {bro['rejestracja_fee']} PLN | {bro['alert']}")
+        # SEKCJA 8: innowacje INN-13..17
+        if "zero_click_bdo" in result:
+            z = result["zero_click_bdo"]
+            print(f"\nZERO-CLICK BDO: {z['wz_documents']} WZ → {z['entries_generated']} wpisów ewidencji | "
+                  f"KPO auto: {z['kpo_auto']}")
+        if "bdo_reg_detector" in result:
+            brd = result["bdo_reg_detector"]
+            print(f"\nAUTO-DETEKTOR BDO ({brd['activity_desc']!r}): wytwarza odpady: {brd['generates_waste']} | "
+                  f"rejestracja wymagana: {brd['registration_required']} | routing: {brd['_routing']!r}")
+        if "weee_fee" in result:
+            w = result["weee_fee"]
+            print(f"\nOPŁATA WEEE ({w['category']}): {w['mass_kg']} kg × {w['category_rate_pln_kg']} = "
+                  f"{w['fee_due_pln']} PLN | rejestracja GIOŚ przed wprowadzeniem")
+        if "recycling" in result:
+            r = result["recycling"]
+            print(f"\nRECYKLING ({r['material']}): {r['achieved_level_pct']}% / wymagane {r['required_level_pct']}% | "
+                  f"{r['alert']}")
+        if "transport_licence" in result:
+            tl = result["transport_licence"]
+            print(f"\nLICENCJA TRANSPORTOWA ({tl['transport_type']!r}): wymagana: {tl['licence_required']} | "
+                  f"kroki: {len(tl['steps'])} | kara za brak: {tl['fine_for_missing']} PLN")
         return 0
 
     if args.out:

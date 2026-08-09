@@ -173,6 +173,95 @@ test_crossborder_compliance_panel {
     result.compliance_score == 100
 }
 
+# ── 8a. IMPORT USŁUG / WNT USŁUG — ODWROTNE OBCIĄŻENIE (art. 17) ────────────
+test_import_services_reverse_charge {
+    result := data.jdg.p12_crossborder_innovations.import_services_reverse_charge with
+        input as {"jdg_entrepreneur": {"p12_crossborder_check": true},
+                  "service": {"provider_country": "DE", "buyer_vat_registered": true}}
+    result.reverse_charge_applies == true
+    result._routing == "TRIAGE_QUEUE"
+    "25. dzień" in result.vat_settlement
+}
+
+test_import_services_domestic {
+    result := data.jdg.p12_crossborder_innovations.import_services_reverse_charge with
+        input as {"jdg_entrepreneur": {"p12_crossborder_check": true},
+                  "service": {"provider_country": "PL"}}
+    result.reverse_charge_applies == false
+    result._routing == ""
+}
+
+# ── 8b. NOWE INNOWACJE v9.1 (INN-13..INN-17) ────────────────────────────────
+test_vies_validator_blocked {
+    result := data.jdg.p12_crossborder_innovations.vies_validator with
+        input as {"jdg_entrepreneur": {"p12_crossborder_check": true},
+                  "counterparty": {"vies_valid": false}, "invoice": {"is_cross_border": true}}
+    result.transaction_blocked == true
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_vies_validator_ok {
+    result := data.jdg.p12_crossborder_innovations.vies_validator with
+        input as {"jdg_entrepreneur": {"p12_crossborder_check": true},
+                  "counterparty": {"vies_valid": true}, "invoice": {"is_cross_border": true}}
+    result.transaction_blocked == false
+    result._routing == ""
+}
+
+test_wdt_zero_rate_expert {
+    result := data.jdg.p12_crossborder_innovations.wdt_zero_rate_expert with
+        input as {"jdg_entrepreneur": {"p12_crossborder_check": true, "wdt_documentation_complete": true},
+                  "counterparty": {"vies_valid": true}}
+    result.zero_rate_applicable == true
+    count(result.checklist) == 4
+    result.rate_without_docs == "23% — WDT bez dokumentów w terminie = opodatkowanie stawką krajową"
+}
+
+test_cfc_risk_predictor_high {
+    result := data.jdg.p12_crossborder_innovations.cfc_risk_predictor with
+        input as {"jdg_entrepreneur": {"p12_crossborder_check": true},
+                  "cfc": {"ownership_pct": 60, "passive_income_pct": 40, "effective_tax_rate": 10}}
+    result.risk_level == "WYSOKIE_CFC"
+    result.cfc_risk == true
+    result.effective_tax_rate == 10
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_cfc_risk_predictor_low {
+    result := data.jdg.p12_crossborder_innovations.cfc_risk_predictor with
+        input as {"jdg_entrepreneur": {"p12_crossborder_check": true},
+                  "cfc": {"ownership_pct": 30, "passive_income_pct": 40, "effective_tax_rate": 10}}
+    result.risk_level == "NISKIE"
+    result.cfc_risk == false
+}
+
+test_exit_tax_simulator {
+    result := data.jdg.p12_crossborder_innovations.exit_tax_simulator with
+        input as {"jdg_entrepreneur": {"p12_crossborder_check": true},
+                  "asset": {"unrealized_gain": 5000000}}
+    result.subject_to_exit_tax == true
+    result.estimated_tax == 950000.0
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_mdr_signal_matrix {
+    result := data.jdg.p12_crossborder_innovations.mdr_signal_matrix with
+        input as {"jdg_entrepreneur": {"p12_crossborder_check": true, "mdr_general_benefit": true,
+                                       "mdr_income_shift": true}}
+    result.active_signals_count == 2
+    result.mdr_obligation == true
+    result.recommendation == "RAPORT_MDR_30_DNI"
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_mdr_signal_matrix_clean {
+    result := data.jdg.p12_crossborder_innovations.mdr_signal_matrix with
+        input as {"jdg_entrepreneur": {"p12_crossborder_check": true}}
+    result.active_signals_count == 0
+    result.mdr_obligation == false
+    result.recommendation == "BRAK_OBOWIAZKU_MDR"
+}
+
 # ── 9. Główny decide (P12) + no_match ─────────────────────────────────────────
 test_p12_main_decide {
     result := data.jdg.p12_crossborder_innovations.decide with
@@ -182,6 +271,11 @@ test_p12_main_decide {
     result._routing == "REPORT"
     result.place_of_supply.art28a_28o.b2b_services == "miejsce siedziby nabywcy (art. 28b)"
     result.mdr.report_deadline_days == 30
+    result.import_services.reverse_charge_applies == true
+    result.vies.rule_id == "jdg.p12_crossborder_innovations.vies_validator"
+    result.wdt_expert.zero_rate_applicable == false
+    result.cfc_risk.cfc_risk == false
+    result.mdr_matrix.mdr_obligation == false
 }
 
 test_p12_default_no_match {

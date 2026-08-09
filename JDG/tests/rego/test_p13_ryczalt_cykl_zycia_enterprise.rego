@@ -230,6 +230,87 @@ test_p13_main_decide {
     result.succession.terms.standard_months == 24
 }
 
+# ── 9b. NOWE INNOWACJE v9.1 (INN-13..INN-17) ────────────────────────────────
+test_company_setup_assistant_complete {
+    result := data.jdg.p13_ryczalt_cykl_zycia_innovations.company_setup_assistant with
+        input as {"jdg_entrepreneur": {"p13_ryczalt_check": true, "setup_ceidg_done": true,
+                                       "setup_zus_done": true}}
+    result.setup_complete == true
+    result.steps_completed == 2
+    result.onboarding_pct == 100.0
+    result._routing == ""
+}
+
+test_company_setup_assistant_incomplete {
+    result := data.jdg.p13_ryczalt_cykl_zycia_innovations.company_setup_assistant with
+        input as {"jdg_entrepreneur": {"p13_ryczalt_check": true, "setup_ceidg_done": true}}
+    result.setup_complete == false
+    result._routing == "TRIAGE_QUEUE"
+    count(result.steps) == 6
+}
+
+test_ryczalt_loss_detector {
+    result := data.jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_loss_detector with
+        input as {"jdg_entrepreneur": {"p13_ryczalt_check": true, "revenue_ytd": 5000000,
+                                       "projected_annual_revenue": 10000000}}
+    result.limit_pln == 9000000.0
+    result.projected_loss_risk == true
+    result.loss_triggered == false
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_suspend_or_close_simulator {
+    result := data.jdg.p13_ryczalt_cykl_zycia_innovations.suspend_or_close_simulator with
+        input as {"jdg_entrepreneur": {"p13_ryczalt_check": true, "planned_suspension_months": 6,
+                                       "will_resume": true}}
+    result.recommendation == "ZAWIESZENIE"
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_suspend_or_close_simulator_liquidation {
+    result := data.jdg.p13_ryczalt_cykl_zycia_innovations.suspend_or_close_simulator with
+        input as {"jdg_entrepreneur": {"p13_ryczalt_check": true, "planned_suspension_months": 36,
+                                       "will_resume": true}}
+    result.recommendation == "LIKWIDACJA"
+    result.within_max_suspension == false
+}
+
+test_succession_step_guide {
+    result := data.jdg.p13_ryczalt_cykl_zycia_innovations.succession_step_guide with
+        input as {"jdg_entrepreneur": {"p13_ryczalt_check": true, "succession_months_elapsed": 30}}
+    result.extension_needed == true
+    result.standard_months == 24
+    result.extended_months == 60
+    count(result.checklist) == 6
+    count(result.forms) == 3
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_pkwiu_rate_recommender {
+    result := data.jdg.p13_ryczalt_cykl_zycia_innovations.pkwiu_rate_recommender with
+        input as {"jdg_entrepreneur": {"p13_ryczalt_check": true},
+                  "activity": {"description": "sprzedaż w sklepie internetowym"}}
+    result.recommended_rate == "3%"
+    count(result.matched_keywords) >= 1
+}
+
+test_pkwiu_rate_recommender_it {
+    result := data.jdg.p13_ryczalt_cykl_zycia_innovations.pkwiu_rate_recommender with
+        input as {"jdg_entrepreneur": {"p13_ryczalt_check": true},
+                  "activity": {"description": "programowanie aplikacji mobilnych"}}
+    result.recommended_rate == "12%"
+}
+
+test_p13_main_decide_new_sections {
+    result := data.jdg.p13_ryczalt_cykl_zycia_innovations.decide with
+        input as {"jdg_entrepreneur": {"p13_ryczalt_check": true}}
+    result.loss_detector.rule_id == "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_loss_detector"
+    result.setup.setup_complete == false
+    result.exit_simulator.recommendation == "ZAWIESZENIE"
+    result.succession_guide.months_remaining == 24
+    result.rate_recommender.recommended_rate == "8,5%"
+}
+
 test_p13_default_no_match {
     result := data.jdg.p13_ryczalt_cykl_zycia_innovations.decide with input as {"jdg_entrepreneur": {"tax_year": 2026}}
     result.matched == false

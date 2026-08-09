@@ -33,6 +33,7 @@
 package jdg.p10_kks_innovations
 
 import future.keywords.in
+import future.keywords.if
 
 default decide := {"matched": false, "rule_id": "jdg.p10_kks_innovations.no_match", "package": "jdg.p10_kks_innovations", "priority": 999999}
 
@@ -482,6 +483,91 @@ voluntary_submission_generator := {
     object.get(input.jdg_entrepreneur, "p10_kks_check", false) == true
 }
 
+# ── SEKCJA 7b: NOWE INNOWACJE P10 v9.1 (INN-13..INN-16) ────────────────────────
+# INN-13: SYMULATOR "CO JEŚLI" — korekta (podatek+odsetki) vs sankcja karno-skarbowa.
+penalty_what_if_simulator := {
+    "rule_id": "jdg.p10_kks_innovations.penalty_what_if_simulator",
+    "package": "jdg.p10_kks_innovations",
+    "priority": 976,
+    "matched": true,
+    "tax_arrears": to_number(object.get(input.jdg_entrepreneur, "tax_arrears", 0)),
+    "correction_cost": correction_cost,
+    "penalty_estimate": penalty_estimate,
+    "correction_cheaper": correction_cheaper,
+    "recommendation": "KOREKTA_DEKLARACJI" if correction_cheaper else "DORADCA_PODATKOWY",
+    "_routing": "",
+    "_routing_reason": "Symulator co-jeśli — korekta deklaracji (podatek+odsetki) vs sankcja karno-skarbowa",
+    "_legal_basis": "OrdPU art. 81 (korekta deklaracji); KKS art. 54-56",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p10_kks_check", false) == true
+    correction_cost := round2(to_number(object.get(input.jdg_entrepreneur, "tax_arrears", 0)) * to_number(object.get(kks_limits, "correction_interest_pct", 0.15)))
+    penalty_estimate := round2(kks_daily_rate_min * to_number(object.get(input.offense, "daily_rates", 10)))
+    correction_cheaper := correction_cost < penalty_estimate
+}
+
+# INN-14: RAPORT GOTOWOŚCI NA KONTROLĘ SKARBOWĄ (komplet dokumentów, JPK na żądanie).
+tax_audit_readiness := {
+    "rule_id": "jdg.p10_kks_innovations.tax_audit_readiness",
+    "package": "jdg.p10_kks_innovations",
+    "priority": 977,
+    "matched": true,
+    "readiness_items": [
+        "Komplet dokumentów księgowych (faktury, PKPiR/UoR) — art. 56 KKS",
+        "JPK na żądanie US — 30 dni (art. 193a OrdPU)",
+        "Ewidencja VAT kompletna (art. 57 KKS)",
+        "Deklaracje złożone w terminie (art. 77 KKS)",
+        "Dowody kasowe / potwierdzenia przelewów / wyciągi bankowe",
+    ],
+    "readiness_score": readiness_score,
+    "audit_ready": readiness_score >= 80,
+    "_routing": "TRIAGE_QUEUE" if readiness_score < 80 else "",
+    "_routing_reason": "Raport gotowości na kontrolę skarbową — komplet dokumentów, JPK na żądanie (art. 193a)",
+    "_legal_basis": "KKS art. 56-57; OrdPU art. 193a",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p10_kks_check", false) == true
+    readiness_score := 100 - (20 if object.get(input.jdg_entrepreneur, "documents_incomplete", false) == true else 0) - (20 if object.get(input.jdg_entrepreneur, "jpk_not_ready", false) == true else 0) - (20 if object.get(input.jdg_entrepreneur, "vat_records_incomplete", false) == true else 0) - (20 * to_number(object.get(input.jdg_entrepreneur, "missing_declarations", 0)))
+}
+
+# INN-15: AUDYT ODPOWIEDZIALNOŚCI POWIĄZANEJ (solidarna, zarządca sukcesyjny, podmiot zbiorowy).
+related_liability_audit := {
+    "rule_id": "jdg.p10_kks_innovations.related_liability_audit",
+    "package": "jdg.p10_kks_innovations",
+    "priority": 978,
+    "matched": true,
+    "solidary_liability": "odpowiedzialność solidarna podatnika (art. 107-108 KKS) — wspólnicy/małżonkowie w zakresie wspólnego majątku",
+    "successor_manager": "odpowiedzialność zarządcy sukcesyjnego za zaległości do wartości aktywów (art. 101-102 OrdPU; sukcesja P13)",
+    "collective_entity": "odpowiedzialność podmiotu zbiorowego (ustawa o odpowiedzialności podmiotów zbiorowych)",
+    "succession_active": object.get(input.jdg_entrepreneur, "succession_active", false) == true,
+    "successor_risk_note": "zarządca sukcesyjny odpowiada za zaległości podatkowe do wartości aktywów — aktywny zarząd sukcesyjny" if object.get(input.jdg_entrepreneur, "succession_active", false) == true else "brak zarządu sukcesyjnego — standardowa odpowiedzialność podatnika",
+    "_routing": "TRIAGE_QUEUE" if object.get(input.jdg_entrepreneur, "succession_active", false) == true else "",
+    "_routing_reason": "Audyt odpowiedzialności powiązanej — solidarna, zarządca sukcesyjny, podmiot zbiorowy",
+    "_legal_basis": "KKS art. 107-108; OrdPU art. 101-102; ustawa o odpowiedzialności podmiotów zbiorowych",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p10_kks_check", false) == true
+}
+
+# INN-16: PRZEWIDYWACZ WYROKÓW — trend orzecznictwa NSA/WSA dla typu czynu.
+judgment_trend_predictor := {
+    "rule_id": "jdg.p10_kks_innovations.judgment_trend_predictor",
+    "package": "jdg.p10_kks_innovations",
+    "priority": 979,
+    "matched": true,
+    "offense": object.get(input.offense, "type", "art54"),
+    "trend_source": "orzecznictwo NSA/WSA — judgment_predictor.py / judicial_interpretations_enterprise.rego",
+    "favorable_trend": object.get(input.jdg_entrepreneur, "favorable_jurisprudence_trend", false) == true,
+    "unfavorable_trend": object.get(input.jdg_entrepreneur, "unfavorable_jurisprudence_trend", false) == true,
+    "prediction": "WYSOKIE_SZANSE_OBRONY" if object.get(input.jdg_entrepreneur, "favorable_jurisprudence_trend", false) == true else "RYZYKO_NIEPOMYSLNEGO_WYROKU" if object.get(input.jdg_entrepreneur, "unfavorable_jurisprudence_trend", false) == true else "NEUTRALNE",
+    "_routing": "",
+    "_routing_reason": "Przewidywacz wyroków — trend orzecznictwa dla danego typu czynu (NSA/WSA)",
+    "_legal_basis": "KKS (orzecznictwo); ADR-011",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p10_kks_check", false) == true
+}
+
 # ── GŁÓWNY DECIDE (P10) — raport syntetyczny KKS ──────────────────────────────
 decide := {
     "rule_id": "jdg.p10_kks_innovations.report",
@@ -496,6 +582,10 @@ decide := {
     "limitations": limitation_calendar,
     "duplicates": kks_duplicate_report,
     "pipeline": kks_pipeline_snapshot,
+    "what_if": penalty_what_if_simulator,
+    "audit_readiness": tax_audit_readiness,
+    "related_liability": related_liability_audit,
+    "judgment_trend": judgment_trend_predictor,
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny KKS (P10) — pokrycie, gradacja kar, minimalizacja, czynny żal, przedawnienie",
     "_legal_basis": "KKS (Dz.U. 2025 poz. 678): art. 16, 17, 37, 44, 45, 53-83",

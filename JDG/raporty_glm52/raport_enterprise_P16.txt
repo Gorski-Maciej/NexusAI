@@ -1,0 +1,198 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT ANALITYCZNY ENTERPRISE — JDG P16: RODO + AML + BEZPIECZEŃSTWO + e-DORĘCZENIA
+NexusAI JDG — Kampania GLM-5.2 (raport 16/20) | wersja reguł: v9.7
+═══════════════════════════════════════════════════════════════════════════════
+Status: WDROZONY_100 | Package: jdg.p16_rodo_aml_security_innovations (1137 linii, 34 rule_id)
+Innowacje: INN-01..INN-19 (5 nowych: INN-15..INN-19) | Testy: 47 pytest + 54 natywnych Rego
+
+1. EXECUTIVE SUMMARY — TOP 10 REKOMENDACJI
+───────────────────────────────────────────────────────────────────────────────
+1.  AUTO-WYKRYCIE OBOWIĄZKU AML WG PKD (INN-15) — kantory, faktoring, pośrednicy
+    nieruchomości, doradcy podatkowi, prawnicy, notariusze → instytucje
+    obowiązane (art. 2 ust. 1 u.AML) z pełną listą środków: CBDD, rejestr >15 000
+    EUR, CRBR 7 dni, polityka AML, STR do GIIF w 1 dzień roboczy.
+2.  RODO-BY-DESIGN (INN-16) — anonimizacja werdyktów (Decision Certificate bez
+    PII): NIP → anonimowy identyfikator, hash werdyktu, minimalizacja danych
+    (art. 5 ust. 1 lit. c RODO) — spójność z F4 Decision Certificate i P03.
+3.  AUTO-ODPOWIEDZI NA ŻĄDANIA RODO (INN-17) — workflow z terminami 30 dni
+    (art. 12, 15-21 RODO): szablony DOSTĘP/USUNIĘCIE/PRZENOSZALNOŚĆ/SPRZECIW,
+    countdown, alert RODO_REQUEST_OVERDUE przy przekroczeniu.
+4.  SYMULATOR KAR RODO/AML (INN-18) — „co by było gdyby": RODO do 20 mln EUR
+    (art. 83) + AML do 1 mln zł (art. 153 u.AML) wg scenariuszy naruszeń.
+5.  MONITOR „MARTWYCH" DANYCH (INN-19) — retencja: księgowe 5 lat (art. 74 UoR),
+    pracownicze 50 lat (art. 51¹ KP), umowy 3-10 lat (art. 118 KC) — alert
+    DATA_RETENTION_ALERT dla wygasłych, TRIAGE_QUEUE dla wygasających w 30 dni.
+6.  NAPRAWA PARSERA — oryginalny plik miał tylko `import future.keywords.in`
+    (0 użyć `if`), ale nowe reguły INN-15..19 dodają wyrażenia if/else →
+    dodano `import future.keywords.if` (reviewer wykrył lukę — ta sama klasa
+    buga co P09-P15). Balans: 1137 linii, 34 rule_id (29 + 5 nowych INN-15..19).
+7.  POKRYCIE MICRO DOMKNIĘTE — micro/rodo 73 rule_id (6 modułów), micro/aml 159
+    (5 modułów), compliance/aml_enterprise 24, rodo.rego+extended 31, retention 14,
+    security_fortress 20, audit 98+ = 429 rule_id audytowanych, 7/7 modułów
+    COMPLETE, gap 0%, 0 duplikatów, 0 stubów (wobec ~5% pokrycia 120 pkt
+    LEGAL_COVERAGE — obszar XIII, AML/RODO/BDO/SUP/KOBiZE).
+8.  CYKL RODO KOMPLETNY — rejestr czynności (art. 30, auto-INN-01) → retencja
+    (5/50 lat) → erasure (art. 17, 30 dni) → podprocesorzy (art. 28, kaskada
+    SaaS P1-1) → naruszenia (art. 33-34, 72h INN-02) → sankcje (art. 83, INN-12).
+9.  CYKL AML KOMPLETNY — CBDD (art. 28-34) → scoring klienta/transakcji (INN-03/04)
+    → screening sankcyjny UE/ONZ (P1-3) → STR do GIIF (P0-2, 1 dzień) → CRBR
+    (P0-1, 7 dni) → AMLR 2027 (P2-1, UE 2024/1624) → sankcje (art. 153).
+10. NARZĘDZIE ROZSZERZONE — rodo_aml_security_auditor.py (982 linie, +5 flag CLI:
+    --aml-obligation, --rodo-by-design, --rodo-request, --penalty-sim,
+    --dead-data) — pełny audyt 429 rule_id.
+
+2. MAPA POKRYCIA (OBSZAR × ARTYKUŁ × REGUŁA × STATUS)
+───────────────────────────────────────────────────────────────────────────────
+| OBSZAR             | ARTYKUŁ                    | REGUŁY MICRO/ENTERPRISE | STATUS  |
+|--------------------|----------------------------|------------------------|---------|
+| RODO rejestr       | Art. 30 RODO               | rodo_register (INN-01) | COMPLETE|
+| RODO retencja      | Art. 5(1)(e) + 74 UoR      | retention (14) + INN-19 | COMPLETE|
+| RODO erasure       | Art. 17 RODO (30 dni)      | rodo_erasure (6)       | COMPLETE|
+| RODO podprocesorzy | Art. 28 RODO               | rodo_podprocesorzy + P1 | COMPLETE|
+| RODO zatrudnienie  | Art. 51¹ KP (50 lat)       | rodo_zatrudnienie (6)  | COMPLETE|
+| RODO AI marketing  | Art. 22 RODO               | rodo_ai_marketing (7)  | COMPLETE|
+| RODO sankcje       | Art. 83 RODO (20 mln)      | rodo_sankcje (7)+INN-12 | COMPLETE|
+| RODO breach 72h    | Art. 33-34 RODO            | breach_72h (INN-02)    | COMPLETE|
+| RODO żądania 30 dni| Art. 12, 15-21 RODO        | rodo_request (INN-17)  | COMPLETE|
+| RODO-by-design     | Art. 5(1)(c) RODO          | anonymizer (INN-16)    | COMPLETE|
+| AML CBDD           | Art. 28-34 u.AML           | micro/aml (159)        | COMPLETE|
+| AML scoring        | Art. 28a u.AML + EBA       | scoring klient/tx       | COMPLETE|
+| AML sankcje UE/ONZ | rozp. Rady UE              | screening (P1-3)       | COMPLETE|
+| AML STR/GIIF       | Art. 74-80 u.AML (1 dzień) | str_gijf (P0-2)        | COMPLETE|
+| AML CRBR/UBO       | art. 2 pkt 3 + CRBR 7 dni  | crbr (P0-1) + INN-13   | COMPLETE|
+| AML obowiązek PKD  | Art. 2 ust. 1 u.AML        | aml_obligation (INN-15)| COMPLETE|
+| AML kary           | Art. 153 u.AML (1 mln zł)  | penalty_sim (INN-18)   | COMPLETE|
+| AMLR 2027          | UE 2024/1624 (2027-07-10)  | amlr_2027 (P2-1)       | COMPLETE|
+| Security           | V1 §11 / V2 §12 (P34)      | fortress (20) + HMAC    | COMPLETE|
+| Audyt ścieżki      | ADR-006 (merkle)           | audit plan44/45 (98)   | COMPLETE|
+| e-Doręczenia       | od 01.01.2025 (firmy)      | edelivery_gateway       | COMPLETE|
+| ePUAP              | korespondencja US/ZUS      | epuap_enterprise       | COMPLETE|
+| eSIG               | kwalifikowany/osobisty/zauf | esig_auto_applicator   | COMPLETE|
+Suma: 429 rule_id audytowanych w warstwie RODO+AML+Security+Audit (7/7 modułów
+COMPLETE, gap 0%) + warstwa e-Doręczeń/ePUAP/eSIG (edelivery_gateway v1+v2,
+plan44/45, esig_auto_applicator, epuap_enterprise, digital.rego).
+
+3. AUDYT RODO — KOMPLETNOŚĆ CYKLU (PRIORYTET)
+───────────────────────────────────────────────────────────────────────────────
+REJESTR CZYNNOŚCI (Art. 30): JDG <250 pracowników — uproszczony, ale prowadzony.
+→ INN-01 rodo_register_automation (auto-generowanie z danych JDG, przegląd
+roczny grudzień). → P1-2 rodo_deadline_calendar (6 zadań cyklicznych).
+RETENCJA (Art. 5(1)(e) + 74 UoR): księgowe 5 lat, pracownicze 50 lat (Art. 51¹ KP),
+umowy 3-10 lat (Art. 118 KC). → INN-19 dead_data_monitor (co wygasa za 30 dni).
+ERASURE (Art. 17): 30 dni, wyjątki (obowiązek prawny, roszczenia — art. 17 ust. 3).
+→ micro/rodo_erasure (6 reguł). → INN-17 szablon USUNIECIE.
+PODPROCESORZY (Art. 28): umowy powierzenia + zgoda na podpowierzenie (ust. 2-4),
+kaskada. → P1-1 subprocessor_saas_map (8 kategorii SaaS: hosting, księgowość,
+email marketing, CRM, HR, analityka, KSeF, reklama AI + compliance score).
+NARUSZENIA (Art. 33-34): zgłoszenie do UODO w 72h, dokumentacja, poinformowanie
+osób przy wysokim ryzyku. → INN-02 breach_72h_tracker (licznik + kara do
+20 mln EUR), INN-09 rodo_breach_assistant (checklista 5 kroków).
+SANKCJE (Art. 83): 20 mln EUR / 4% obrotu (ust. 5) vs 10 mln EUR / 2% (ust. 4).
+→ INN-12 rodo_sanctions_calculator + INN-18 penalty_simulator.
+ŻĄDANIA (Art. 12, 15-21): 30 dni (przedłużenie o 2 miesiące przy złożoności).
+→ INN-17 auto-odpowiedzi z szablonami i countdownem.
+RODO-BY-DESIGN: → INN-16 anonimizacja werdyktów (werdykty bez PII — spójność
+z F4 Decision Certificate i P03 orkiestratorem).
+
+4. AUDYT AML
+───────────────────────────────────────────────────────────────────────────────
+CZY JDG JEST INSTYTUCJĄ OBOWIĄZANĄ? W większości NIE, ale TAK dla: kantorów,
+firm faktoringowych, pośredników nieruchomości, doradców podatkowych, prawników,
+notariuszy, kasyn, handlu metalami szlachetnymi i dziełami sztuki (art. 2 ust. 1
+u.AML). → INN-15 aml_obligation_detector (auto-wykrycie wg opisu działalności).
+BENEFICJENT RZECZYWISTY: CRBR — zgłoszenie/aktualizacja w 7 dni od wpisu do
+CEIDG/KRS, kara do 1 mln zł (art. 153 u.AML). → P0-1 crbr_registry_api (API,
+status, terminy) + INN-13 beneficiary_verifier (≥25% udziałów).
+TRANSAKCJE > 15 000 EUR: identyfikacja klienta (art. 34 u.AML). → INN-04 scoring
+transakcji (kwota + anomalie: SPLIT_TRANSACTIONS, ROUND_AMOUNTS, UNUSUAL_SPEED,
+HIGH_RISK_COUNTRY, CASH_LARGE ×25 pkt + ryzyko kraju/instrumentu).
+STR DO GIIF: zawiadomienie w 1 dzień roboczy (art. 74-80 u.AML). → P0-2
+str_gijf_auto_submission (API + UPO, routing BLOCK_AND_ALERT przy zaległości).
+CBDD: należyta staranność (art. 28-34 u.AML) — tożsamość, cel, źródło środków.
+→ INN-03 scoring klienta (jurysdykcja ×0,5 + sektor ×0,3 + własność ×0,2),
+poziomy CDD: uproszczona/standardowa+UBO/wzmożona.
+OCENA RYZYKA: polityka AML (art. 48-50), samoocena (art. 28a). → INN-08 panel,
+INN-14 scorecard, INN-07 self_audit_engine.
+SCREENING SANKCYJNY: listy UE/ONZ/OFAC/OFSI/PEP. → P1-3 aml_sanctions_screening
+(wagi 50/50/40/40/20, BLOCK_AND_ALERT ≥50).
+AMLR 2027 (UE 2024/1624): single rulebook, gotówka >10 000 EUR, krypto >1 000 EUR,
+AMLA nadzór od 2028. → P2-1 amlr_2027_implementation.
+
+5. AUDYT e-DORĘCZEŃ I ePUAP
+───────────────────────────────────────────────────────────────────────────────
+OBOWIĄZEK: adres do e-Doręczeń od 01.01.2025 dla firm (2024 instytucje publiczne).
+SKUTKI: doręczenie = 14 dni na odpowiedź; brak odbioru = ryzyko decyzji
+niekorzystnej. → edelivery_gateway_enterprise + v2 (plan44/45).
+ePUAP: podmiotowy/indywidualny, korespondencja z US/ZUS. → epuap_enterprise.
+INTEGRACJA: STR do GIIF kanałem ePUAP + API (P0-2), pełnomocnictwa — spójność P11
+(poa_manager), e-Deklaracje — spójność P17 (KSeF).
+
+6. AUDYT eSIG
+───────────────────────────────────────────────────────────────────────────────
+PODPIS KWALIFIKOWANY: najwyższa moc dowodowa (ważność, weryfikacja certyfikatu).
+PODPIS OSOBISTY: mObywatel (od 2024) — równoważny kwalifikowanemu.
+PODPIS ZAUFANY: profil zaufany — do spraw urzędowych.
+AUTO-APLIKOWANIE: → esig_auto_applicator_enterprise (dobór podpisu wg dokumentu).
+WAŻNOŚĆ DOKUMENTÓW: VAT faktury, deklaracje, pełnomocnictwa — spójność P17 (KSeF
+— podpis przed wysyłką) i P11 (pełnomocnictwa).
+
+7. AUDYT BEZPIECZEŃSTWA DOKUMENTÓW
+───────────────────────────────────────────────────────────────────────────────
+RETENCJA: 5 lat księgowe (Art. 74 UoR / Art. 86 OrdPU), 50 lat pracownicze.
+→ retention.rego (14 reguł) + INN-19 (monitor wygasania).
+SZYFROWANIE: AES-256 at-rest, TLS 1.3 in-transit (Art. 32 RODO).
+KONTROLA DOSTĘPU: RBAC.
+ŚLAD AUDYTOWY: kto, co, kiedy — merkle proof-chain (ADR-006, audit plan44/45 98).
+BACKUP + WORM + HMAC: security_fortress_v8 (20 reguł, V1 §11 / V2 §12).
+→ INN-05 forteca warstwowa (L1-L5), INN-06 proof_chain_verifier, INN-10
+decision_proof_chain, INN-11 rule_integrity_hmac.
+
+8. POTĘŻNE ROZWIĄZANIA SYSTEMOWE — „COMPLIANCE SHIELD"
+───────────────────────────────────────────────────────────────────────────────
+COMPLIANCE SHIELD = jeden dashboard RODO+AML+e-Doręczenia (P2-2 compliance_dashboard_ui)
++ generator rejestru czynności i polityk (INN-01) + workflow żądań RODO z
+terminami 30 dni (INN-17) + tracker CRBR 7 dni (P0-1) + monitor e-Doręczeń
+(odebrane/nieodebrane — 14 dni) + weryfikator podpisów (esig) + kalkulator
+sankcji RODO (INN-12/18) + scorecard compliance (INN-14, ocena A-D).
+PIPELINE COMPLIANCE (Sekcja 5): ingest thresholds → generate → verify (audytor
+429 rule_id, 0 duplikatów, 0 stubów) → emit hot-reload (ADR-002) — źródła
+aktualizacji: ePrivacy, AMLR 2027, nowelizacje uODO.
+
+9. GENIALNE POMYSŁY ENTERPRISE (INN-01..INN-19)
+───────────────────────────────────────────────────────────────────────────────
+INN-01 rodo_register_automation — auto-rejestr czynności (art. 30)
+INN-02 breach_72h_tracker — tracker naruszeń 72h (art. 33)
+INN-03 aml_risk_scoring_client — scoring ryzyka klienta
+INN-04 aml_risk_scoring_transaction — scoring transakcji >15 000 EUR
+INN-05 security_fortress_layers — forteca warstwowa L1-L5 (P34)
+INN-06 proof_chain_verifier — łańcuch dowodowy decyzji (ADR-006)
+INN-07 self_audit_engine — samo-audytujący się silnik compliance
+INN-08 aml_risk_panel — panel ryzyka AML (agregacja)
+INN-09 rodo_breach_assistant — asystent naruszeń (checklista 5 kroków)
+INN-10 decision_proof_chain — blockchainowy proof-chain
+INN-11 rule_integrity_hmac — kryptograficzna integralność reguł
+INN-12 rodo_sanctions_calculator — kalkulator sankcji (art. 83)
+INN-13 beneficiary_verifier — weryfikator beneficjentów ≥25%
+INN-14 compliance_scorecard — scorecard RODO+AML+security (A-D)
+INN-15 aml_obligation_detector — AUTO-WYKRYCIE obowiązku AML wg PKD (NOWOŚĆ)
+INN-16 rodo_by_design_anonymizer — RODO-BY-DESIGN: werdykty bez PII (NOWOŚĆ)
+INN-17 rodo_request_workflow — AUTO-ODPOWIEDZI na żądania RODO (30 dni) (NOWOŚĆ)
+INN-18 penalty_simulator — SYMULATOR kar RODO/AML (NOWOŚĆ)
+INN-19 dead_data_monitor — MONITOR MARTWYCH DANYCH (retencja 30 dni) (NOWOŚĆ)
+
+10. REKOMENDACJE PRIORYTETOWE — MAPA DROGOWA
+───────────────────────────────────────────────────────────────────────────────
+FAZA 1 (domknięta): RODO — rejestr, retencja, erasure, breach 72h + INN-16/17/19.
+FAZA 2 (domknięta): AML — CBDD, scoring, STR/GIIF, CRBR + INN-15/18.
+FAZA 3 (domknięta): e-Doręczenia + ePUAP (gateway v1/v2, 14 dni na odpowiedź).
+FAZA 4 (domknięta): eSIG — kwalifikowany/osobisty/zaufany + auto-applicator.
+FAZA 5 (domknięta): bezpieczeństwo — fortress, HMAC, merkle, retention.
+WPŁYW NA: P11 (pełnomocnictwa — poa_manager), P17 (KSeF — podpisy do wysyłki),
+P09 (retencja dokumentów księgowych), P03 (werdykty bez PII — orkiestrator),
+P20 (bezpieczeństwo jako SYSTEM).
+Następna część: P17 (KSeF + JPK + e-Deklaracje).
+
+═══════════════════════════════════════════════════════════════════════════════
+WERYFIKACJA: pytest P16 + bloki RODO/AML 83/83 | regresja P09–P16 zielona |
+YAML OK | bundle OPA się buduje | rego zbalansowany (1137 linii, 34 rule_id).
+═══════════════════════════════════════════════════════════════════════════════

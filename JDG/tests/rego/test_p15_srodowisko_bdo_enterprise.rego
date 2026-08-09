@@ -353,3 +353,95 @@ test_p15_default_no_match {
     result.matched == false
     result.rule_id == "jdg.p15_srodowisko_bdo_innovations.no_match"
 }
+
+# ── SEKCJA 8: innowacje INN-13..17 ────────────────────────────────────────────
+test_zero_click_bdo {
+    result := data.jdg.p15_srodowisko_bdo_innovations.zero_click_bdo with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}, "waste_ledger": {"wz_documents": 5}}
+    result.wz_documents == 5
+    result.entries_generated == 5
+    result.kpo_auto == true
+    result.ewidencja_kwartalna_auto == true
+}
+
+test_zero_click_bdo_no_wz {
+    result := data.jdg.p15_srodowisko_bdo_innovations.zero_click_bdo with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}}
+    result.wz_documents == 0
+    result.kpo_auto == false
+}
+
+test_bdo_registration_detector {
+    result := data.jdg.p15_srodowisko_bdo_innovations.bdo_registration_detector with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}, "company_setup": {"activity_desc": "produkcja mebli"}}
+    result.generates_waste == true
+    result.registration_required == true
+    result._routing == "BDO_REGISTRATION_QUEUE"
+    result.before_start == true
+}
+
+test_bdo_registration_detector_clean_activity {
+    result := data.jdg.p15_srodowisko_bdo_innovations.bdo_registration_detector with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}, "company_setup": {"activity_desc": "usługi księgowe"}}
+    result.registration_required == false
+    result._routing == ""
+}
+
+test_weee_product_fee_calculator {
+    result := data.jdg.p15_srodowisko_bdo_innovations.weee_product_fee_calculator with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}, "weee": {"category": "sprzęt_it", "mass_kg": 100}}
+    result.category == "sprzęt_it"
+    result.category_rate_pln_kg == 3.0
+    result.mass_kg == 100
+    result.fee_due_pln == 300
+}
+
+test_weee_product_fee_default_category {
+    result := data.jdg.p15_srodowisko_bdo_innovations.weee_product_fee_calculator with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}}
+    result.category == "duże_agd"
+    result.fee_due_pln == 0
+    result.gioś_registration != ""
+}
+
+test_recycling_level_tracker {
+    result := data.jdg.p15_srodowisko_bdo_innovations.recycling_level_tracker with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}, "recycling": {"material": "tworzywa_sztuczne", "achieved_level_pct": 60}}
+    result.required_level_pct == 50
+    result.achieved_level_pct == 60
+    result.on_track == true
+    result._routing == ""
+    contains(result.alert, "osiągnięty")
+}
+
+test_recycling_level_tracker_alert {
+    result := data.jdg.p15_srodowisko_bdo_innovations.recycling_level_tracker with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}, "recycling": {"material": "papier", "achieved_level_pct": 40}}
+    result.required_level_pct == 75
+    result.on_track == false
+    result._routing == "RECYCLING_ALERT"
+    contains(result.alert, "NIESPEŁNIONY")
+}
+
+test_transport_licence_assistant {
+    result := data.jdg.p15_srodowisko_bdo_innovations.transport_licence_assistant with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}, "transport": {"type": "przewóz rzeczy"}}
+    result.transport_type == "przewóz rzeczy"
+    result.licence_required == true
+    count(result.steps) == 6
+    result.fine_for_missing == 5000
+}
+
+test_transport_licence_assistant_optional {
+    result := data.jdg.p15_srodowisko_bdo_innovations.transport_licence_assistant with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}}
+    result.licence_required == false
+}
+
+test_p15_decide_includes_innovations_v8 {
+    result := data.jdg.p15_srodowisko_bdo_innovations.decide with
+        input as {"jdg_entrepreneur": {"p15_branza_check": true}}
+    result.innovations_v8.zero_click_bdo.ewidencja_kwartalna_auto == true
+    result.innovations_v8.weee_product_fee_calculator.category == "duże_agd"
+    result.innovations_v8.recycling_level_tracker.required_level_pct == 50
+}

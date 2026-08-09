@@ -133,6 +133,65 @@ test_ordpu_pipeline_snapshot {
     result.pipeline.step_4_emit == "hot-reload pakietów jdg.limitations / jdg.interest_calculator"
 }
 
+# ── 15. TRACKER MILCZĄCEGO ZAŁATWIENIA (INN-16) ──────────────────────────────
+test_silent_settlement_tracker_positive {
+    result := data.jdg.p11_ordynacja_podatkowa_innovations.silent_settlement_tracker with
+        input as {"jdg_entrepreneur": {"p11_ordynacja_check": true, "proceeding_started": true, "proceeding_months_elapsed": 3, "proceeding_decision_issued": false}}
+    result.silent_positive_settlement == true
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_silent_settlement_tracker_no {
+    result := data.jdg.p11_ordynacja_podatkowa_innovations.silent_settlement_tracker with
+        input as {"jdg_entrepreneur": {"p11_ordynacja_check": true, "proceeding_started": false, "proceeding_months_elapsed": 1}}
+    result.silent_positive_settlement == false
+}
+
+# ── 16. KALKULATOR OPŁACALNOŚCI KOREKTY (INN-17) ──────────────────────────────
+test_correction_profitability_profitable {
+    result := data.jdg.p11_ordynacja_podatkowa_innovations.correction_profitability_calculator with
+        input as {"jdg_entrepreneur": {"p11_ordynacja_check": true, "tax_difference": 10000, "inspection_risk_pct": 40}}
+    result.correction_cost == round(10000 * 0.15 * 100) / 100
+    result.correction_profitable == true
+    result.recommendation == "ZŁÓŻ_KOREKTĘ"
+}
+
+test_correction_profitability_not_profitable {
+    result := data.jdg.p11_ordynacja_podatkowa_innovations.correction_profitability_calculator with
+        input as {"jdg_entrepreneur": {"p11_ordynacja_check": true, "tax_difference": 500000, "inspection_risk_pct": 5}}
+    result.correction_profitable == false
+    result.recommendation == "ANALIZA_Z_DORADCA"
+}
+
+# ── 17. SYMULATOR ULG W SPŁACIE (INN-18) ──────────────────────────────────────
+test_relief_simulator_umorzenie {
+    result := data.jdg.p11_ordynacja_podatkowa_innovations.relief_simulator with
+        input as {"jdg_entrepreneur": {"p11_ordynacja_check": true, "tax_arrears": 50000, "important_taxpayer_interest": true}}
+    result.relief_options.umorzenie.eligibility == true
+    result.recommendation == "WNIOSEK_O_UMORZENIE"
+}
+
+test_relief_simulator_none {
+    result := data.jdg.p11_ordynacja_podatkowa_innovations.relief_simulator with
+        input as {"jdg_entrepreneur": {"p11_ordynacja_check": true, "tax_arrears": 50000}}
+    result.recommendation == "BRAK_ULGI"
+}
+
+# ── 18. AUTO-WYKRYWANIE PRZEDAWNIENIA (INN-19) ────────────────────────────────
+test_prescription_windup_guard_prescribed {
+    result := data.jdg.p11_ordynacja_podatkowa_innovations.prescription_windup_guard with
+        input as {"jdg_entrepreneur": {"p11_ordynacja_check": true, "liability_year": 2019, "current_year": 2026}}
+    result.prescribed == true
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_prescription_windup_guard_active {
+    result := data.jdg.p11_ordynacja_podatkowa_innovations.prescription_windup_guard with
+        input as {"jdg_entrepreneur": {"p11_ordynacja_check": true, "liability_year": 2024, "current_year": 2026}}
+    result.prescribed == false
+    result._routing == ""
+}
+
 # ── 14. Główny decide (P11) + no_match ────────────────────────────────────────
 test_p11_main_decide {
     result := data.jdg.p11_ordynacja_podatkowa_innovations.decide with

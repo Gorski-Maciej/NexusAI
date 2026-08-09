@@ -17,6 +17,9 @@ from bdo_environment_auditor import (  # noqa: E402
     AGRICULTURAL_GMINA_MULTIPLIERS,
     PACKAGING_FEE_RATES,
     TRANSPORT_PERMITS,
+    RECYCLING_LEVELS,
+    TRANSPORT_LICENCE_STEPS,
+    WEEE_CATEGORY_RATES,
     agricultural_tax_by_gmina,
     agricultural_tax_calculator,
     audit_rego_files,
@@ -24,6 +27,7 @@ from bdo_environment_auditor import (  # noqa: E402
     bdo_assistant,
     bdo_deadline_tracker,
     bdo_online_registration,
+    bdo_registration_detector,
     budowlane_pozwolenie_calculator,
     cbam_calculator,
     cbam_certificates_calculator,
@@ -31,9 +35,13 @@ from bdo_environment_auditor import (  # noqa: E402
     kpo_generator,
     product_fee_material_map,
     product_fee_tracker,
+    recycling_level_tracker,
     seasonal_assistant,
     taxfree_calculator,
+    transport_licence_assistant,
     transport_permit_check,
+    weee_product_fee_calculator,
+    zero_click_bdo,
 )
 
 
@@ -433,3 +441,80 @@ def test_p15_rego_braces_balanced():
     assert text.count("{") == text.count("}"), "Niezbalansowane nawiasy klamrowe w p15 rego"
     t2 = (BASE_DIR / "rules" / "thresholds_jdg.rego").read_text(encoding="utf-8")
     assert t2.count("{") == t2.count("}"), "Niezbalansowane nawiasy klamrowe w thresholds_jdg.rego"
+
+
+def test_p15_future_keywords_imports():
+    """Importy future.keywords.if/in + 5 nowych reguł + podpięcie w decide (naprawa parsera P09-P15)."""
+    text = (BASE_DIR / "rules" / "p15_srodowisko_bdo_innovations_v9.rego").read_text(encoding="utf-8")
+    assert "import future.keywords.if" in text, "Brak import future.keywords.if — if/else nie sparsuje się"
+    assert "import future.keywords.in" in text, "Brak import future.keywords.in"
+    # 5 nowych reguł INN-13..17 + podpięcie w decide (innovations_v8)
+    for rule in ("zero_click_bdo", "bdo_registration_detector", "weee_product_fee_calculator",
+                 "recycling_level_tracker", "transport_licence_assistant"):
+        assert rule in text, f"Brak reguły {rule} (INN-13..17)"
+    assert "innovations_v8" in text, "Brak podpięcia innovations_v8 w decide"
+    assert "INN-13" in text and "INN-17" in text
+
+
+# ── SEKCJA 8: innowacje INN-13..17 ────────────────────────────────────────────
+def test_zero_click_bdo_generates_entries():
+    """INN-13: zero-click BDO — WZ → wpisy ewidencji + KPO auto."""
+    r = zero_click_bdo(wz_documents=5)
+    assert r["entries_generated"] == 5
+    assert r["kpo_auto"] is True
+    assert r["ewidencja_kwartalna_auto"] is True
+    r0 = zero_click_bdo(wz_documents=0)
+    assert r0["entries_generated"] == 0
+    assert r0["kpo_auto"] is False
+
+
+def test_bdo_registration_detector_detects_waste_activity():
+    """INN-14: auto-detecktor rejestracji BDO — produkcja/transport → obowiązek."""
+    assert bdo_registration_detector("produkcja mebli")["registration_required"] is True
+    assert bdo_registration_detector("transport odpadów")["registration_required"] is True
+    assert bdo_registration_detector("usługi księgowe")["registration_required"] is False
+    r = bdo_registration_detector("wytwarzanie opakowań")
+    assert r["_routing"] == "BDO_REGISTRATION_QUEUE"
+    assert r["before_start"] is True
+    assert r["registration_fee"] == BDO["rejestracja_fees"]["mikro"] == 100
+
+
+def test_weee_product_fee_by_category():
+    """INN-15: opłata WEEE wg kategorii — stawki per kg."""
+    r = weee_product_fee_calculator("sprzęt_it", 100.0)
+    assert r["category_rate_pln_kg"] == WEEE_CATEGORY_RATES["sprzęt_it"] == 3.0
+    assert r["fee_due_pln"] == 300.0
+    r2 = weee_product_fee_calculator("duże_agd", 1000.0)
+    assert r2["fee_due_pln"] == 1500.0
+    assert "GIOŚ" in r2["gioś_registration"]
+
+
+def test_recycling_level_tracker_alerts():
+    """INN-16: tracker poziomów recyklingu — on_track + alert."""
+    ok = recycling_level_tracker("tworzywa_sztuczne", 60.0)
+    assert ok["on_track"] is True
+    assert ok["_routing"] == ""
+    assert "osiągnięty" in ok["alert"]
+    bad = recycling_level_tracker("tworzywa_sztuczne", 30.0)
+    assert bad["on_track"] is False
+    assert bad["_routing"] == "RECYCLING_ALERT"
+    assert "NIESPEŁNIONY" in bad["alert"]
+    assert bad["required_level_pct"] == RECYCLING_LEVELS["tworzywa_sztuczne"] == 50
+
+
+def test_transport_licence_assistant_steps():
+    """INN-17: asystent licencji transportowej — 6 kroków + kara."""
+    r = transport_licence_assistant("przewóz rzeczy")
+    assert r["licence_required"] is True
+    assert len(r["steps"]) == len(TRANSPORT_LICENCE_STEPS) == 6
+    assert r["fine_for_missing"] == 5000
+    r0 = transport_licence_assistant("")
+    assert r0["licence_required"] is False
+
+
+def test_p15_tool_rego_routing_keys_aligned():
+    """Klucze _routing w narzędziu zgodne z rego (spójność tool↔rego)."""
+    d = bdo_registration_detector("transport odpadów")
+    assert d["_routing"] == "BDO_REGISTRATION_QUEUE"
+    r = recycling_level_tracker("papier", 40.0)
+    assert r["_routing"] == "RECYCLING_ALERT"

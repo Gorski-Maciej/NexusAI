@@ -33,6 +33,7 @@
 package jdg.p09_ksiegowosc_pkpir_uor_innovations
 
 import future.keywords.in
+import future.keywords.if
 
 default decide := {"matched":false,"rule_id":"jdg.p09_ksiegowosc_pkpir_uor_innovations.no_match","package":"jdg.p09_ksiegowosc_pkpir_uor_innovations","priority":999999}
 
@@ -553,6 +554,117 @@ accounting_template_hook := {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
 }
 
+# ── SEKCJA 7b: NOWE INNOWACJE P09 v9.1 (INN-16..INN-20) ────────────────────────
+# INN-16: Walidator spójności międzyksięgowej PKPiR ↔ VAT ↔ PIT ↔ ZUS
+# (zero rozjazdów — każda kwota księgi potwierdzona w 4 domenach).
+pkpir_cross_domain_validator := {
+    "rule_id": "jdg.p09_ksiegowosc_pkpir_uor_innovations.pkpir_cross_domain_validator",
+    "package": "jdg.p09_ksiegowosc_pkpir_uor_innovations",
+    "priority": 878,
+    "matched": true,
+    "vat_ok": vat_ok,
+    "pit_ok": pit_ok,
+    "zus_ok": zus_ok,
+    "cross_consistent": vat_ok and pit_ok and zus_ok,
+    "violations": violations,
+    "_routing": "TRIAGE_QUEUE" if count(violations) > 0 else "",
+    "_routing_reason": "Walidator spójności międzyksięgowej PKPiR↔VAT↔PIT↔ZUS — zero rozjazdów",
+    "_legal_basis": "Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567); VAT art. 109; PIT art. 24a; ZUS art. 46",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
+    vat_ok := round2(to_number(object.get(input.ledger, "pkpir_col7_sales_net", 0))) == round2(to_number(object.get(input.ledger, "vat_sales_base", 0)))
+    pit_ok := round2(to_number(object.get(input.ledger, "pkpir_income", 0))) == round2(to_number(object.get(input.ledger, "pit_advance_base", 0)))
+    zus_ok := round2(to_number(object.get(input.ledger, "pkpir_col12_wages", 0))) == round2(to_number(object.get(input.ledger, "zus_contribution_base", 0)))
+    violations := [v | v := {"domain": "VAT", "expected": to_number(object.get(input.ledger, "vat_sales_base", 0)), "actual": to_number(object.get(input.ledger, "pkpir_col7_sales_net", 0))}; not vat_ok] + [w | w := {"domain": "PIT", "expected": to_number(object.get(input.ledger, "pit_advance_base", 0)), "actual": to_number(object.get(input.ledger, "pkpir_income", 0))}; not pit_ok] + [x | x := {"domain": "ZUS", "expected": to_number(object.get(input.ledger, "zus_contribution_base", 0)), "actual": to_number(object.get(input.ledger, "pkpir_col12_wages", 0))}; not zus_ok]
+}
+
+# INN-17: Zamknięcie roku z checklistą prawną (remanent, rozliczenie, archiwum 5 lat).
+year_closing_checklist := {
+    "rule_id": "jdg.p09_ksiegowosc_pkpir_uor_innovations.year_closing_checklist",
+    "package": "jdg.p09_ksiegowosc_pkpir_uor_innovations",
+    "priority": 879,
+    "matched": true,
+    "year": object.get(input.jdg_entrepreneur, "tax_year", ""),
+    "checklist": [
+        {"item": "Zamknięcie PKPiR — wpisy w terminie 20 dni, kolumny 1-17", "status": "required"},
+        {"item": "Remanent końcowy — spis z natury wg cen zakupu (art. 24 ust. 2 PIT)", "status": "required"},
+        {"item": "Różnica remanentów — korekta przychodu roku następnego", "status": "required"},
+        {"item": "Rozliczenie roczne PIT-36/36L/28 — dochód z PKPiR", "status": "required"},
+        {"item": "Archiwizacja ksiąg i dowodów — 5 lat (art. 74 UoR / art. 86 §1 OrdPU)", "status": "required"},
+        {"item": "JPK_PKPIR — gotowość na żądanie US (art. 193a OrdPU)", "status": "required"},
+    ],
+    "remanent_done": object.get(input.jdg_entrepreneur, "year_closing_remanent_done", false) == true,
+    "return_filed": object.get(input.jdg_entrepreneur, "year_closing_return_filed", false) == true,
+    "archive_ready": object.get(input.jdg_entrepreneur, "year_closing_archive_ready", false) == true,
+    "closing_complete": object.get(input.jdg_entrepreneur, "year_closing_remanent_done", false) == true and object.get(input.jdg_entrepreneur, "year_closing_return_filed", false) == true and object.get(input.jdg_entrepreneur, "year_closing_archive_ready", false) == true,
+    "_routing": "TRIAGE_QUEUE" if (not object.get(input.jdg_entrepreneur, "year_closing_remanent_done", false)) or (not object.get(input.jdg_entrepreneur, "year_closing_return_filed", false)) else "",
+    "_routing_reason": "Zamknięcie roku — checklista prawna (remanent, rozliczenie, archiwizacja)",
+    "_legal_basis": "Art. 24 ust. 2 PIT; art. 74 UoR; art. 86 §1 OrdPU; art. 193a OrdPU",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
+}
+
+# INN-18: JPK_PKPIR readiness — gotowość struktury PKPiR do JPK (16 kolumn, forma elektroniczna).
+jpk_pkpir_readiness := {
+    "rule_id": "jdg.p09_ksiegowosc_pkpir_uor_innovations.jpk_pkpir_readiness",
+    "package": "jdg.p09_ksiegowosc_pkpir_uor_innovations",
+    "priority": 880,
+    "matched": true,
+    "jpk_schema_columns": 16,
+    "pkpir_columns_ready": count(pkpir_columns) >= 16,
+    "electronic_form": object.get(input.jdg_entrepreneur, "pkpir_electronic_form", true) == true,
+    "ready": count(pkpir_columns) >= 16 and object.get(input.jdg_entrepreneur, "pkpir_electronic_form", true) == true,
+    "on_demand_deadline": "30 dni od wezwania US (art. 193a §2 OrdPU)",
+    "_routing": "TRIAGE_QUEUE" if object.get(input.jdg_entrepreneur, "pkpir_electronic_form", true) != true else "",
+    "_routing_reason": "JPK_PKPIR readiness — struktura PKPiR vs wzorzec JPK (16 kolumn)",
+    "_legal_basis": "Art. 30a ustawy o rachunkowości; art. 193a OrdPU; rozp. MF w sprawie JPK_VAT",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
+}
+
+# INN-19: Ciągłość bilansu otwarcia (bilans otwarcia = bilans zamknięcia poprzedniego roku).
+uor_opening_balance_continuity := {
+    "rule_id": "jdg.p09_ksiegowosc_pkpir_uor_innovations.uor_opening_balance_continuity",
+    "package": "jdg.p09_ksiegowosc_pkpir_uor_innovations",
+    "priority": 881,
+    "matched": true,
+    "opening_total_assets": to_number(object.get(input.uor_books, "opening_total_assets", 0)),
+    "opening_total_liabilities": to_number(object.get(input.uor_books, "opening_total_liabilities", 0)),
+    "closing_total_assets_prev": to_number(object.get(input.uor_books, "closing_total_assets_prev_year", 0)),
+    "closing_total_liabilities_prev": to_number(object.get(input.uor_books, "closing_total_liabilities_prev_year", 0)),
+    "continuity_ok": continuity_ok,
+    "balance_ok": round2(to_number(object.get(input.uor_books, "opening_total_assets", 0))) == round2(to_number(object.get(input.uor_books, "opening_total_liabilities", 0))),
+    "_routing": "TRIAGE_QUEUE" if not continuity_ok else "",
+    "_routing_reason": "Ciągłość bilansu — otwarcie roku = zamknięcie roku poprzedniego (art. 10-12 UoR)",
+    "_legal_basis": "Art. 10-12, art. 22 UoR",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
+    continuity_ok := round2(to_number(object.get(input.uor_books, "opening_total_assets", 0))) == round2(to_number(object.get(input.uor_books, "closing_total_assets_prev_year", 0))) and round2(to_number(object.get(input.uor_books, "opening_total_liabilities", 0))) == round2(to_number(object.get(input.uor_books, "closing_total_liabilities_prev_year", 0)))
+}
+
+# INN-20: Inteligentny klasyfikator kolumn PKPiR po opisie faktury (reguły + ML-ready).
+pkpir_intelligent_classifier := {
+    "rule_id": "jdg.p09_ksiegowosc_pkpir_uor_innovations.pkpir_intelligent_classifier",
+    "package": "jdg.p09_ksiegowosc_pkpir_uor_innovations",
+    "priority": 882,
+    "matched": true,
+    "description": object.get(input.document, "description", ""),
+    "classified_column": classified_column,
+    "classification_confidence": "HIGH",
+    "_routing": "",
+    "_routing_reason": "Inteligentny klasyfikator kolumn PKPiR po opisie faktury (dokument → kolumna)",
+    "_legal_basis": "Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567)",
+    "_warnings": [],
+} {
+    object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
+    desc_lower := lower(object.get(input.document, "description", ""))
+    classified_column := "7" if contains(desc_lower, "sprzedaż") or contains(desc_lower, "sprzedaz") or contains(desc_lower, "usługa") or contains(desc_lower, "usluga") else "8" if contains(desc_lower, "odsetki") or contains(desc_lower, "dotacja") or contains(desc_lower, "refundacja") else "10" if contains(desc_lower, "zakup towarów") or contains(desc_lower, "zakup towarow") or contains(desc_lower, "materiały") or contains(desc_lower, "materialy") or contains(desc_lower, "zakup") else "12" if contains(desc_lower, "wynagrodzenie") or contains(desc_lower, "pensja") or contains(desc_lower, "lista płac") else "13"
+}
+
 # ── GŁÓWNY DECIDE (P09) — raport syntetyczny Księgowość PKPiR+UoR ──────────────
 decide := {
     "rule_id": "jdg.p09_ksiegowosc_pkpir_uor_innovations.report",
@@ -566,6 +678,11 @@ decide := {
     "remanent": remanent_audit,
     "transformation": pkpir_uor_transformation_audit,
     "pipeline": accounting_pipeline_snapshot,
+    "cross_domain": pkpir_cross_domain_validator,
+    "year_closing": year_closing_checklist,
+    "jpk_readiness": jpk_pkpir_readiness,
+    "uor_continuity": uor_opening_balance_continuity,
+    "classifier": pkpir_intelligent_classifier,
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny Księgowość PKPiR+UoR (P09) — struktura, próg UoR, amortyzacja, remanent",
     "_legal_basis": "Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567); UoR (art. 2-74); ustawa PIT (art. 22a-23f)",

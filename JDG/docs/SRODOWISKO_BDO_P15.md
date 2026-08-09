@@ -2,8 +2,9 @@
 
 Pakiet: `jdg.p15_srodowisko_bdo_innovations`
 Plik: `JDG/rules/p15_srodowisko_bdo_innovations_v9.rego`
-Raport: `raporty_jdg_enterprise/R15_Srodowisko_BDO_Branza.txt`
+Raport: `raporty_glm52/raport_enterprise_P15.txt`
 Narzędzie: `JDG/tools/bdo_environment_auditor.py`
+Wersja: v9.6 (2026-08-09) — parser fix + INN-13..17
 
 ## Zakres (8 sekcji promptu wdrożone jako reguły)
 
@@ -21,7 +22,7 @@ Narzędzie: `JDG/tools/bdo_environment_auditor.py`
 | 4. ZAWODY REGULOWANE / TAX-FREE / SEZONOWOŚĆ | `regulated_taxfree_seasonal_audit` — izby/komisje, VAT-REF (art. 127-130 VAT), sezonowość rozliczeń | ✅ |
 | 5. CBAM | `cbam_audit` + `cbam_calculator` (INN-06) — rozporządzenie UE 2023/956, raporty kwartalne, certyfikaty od 2026, estoński CIT | ✅ |
 | 6. OPA jako system | `bdo_pipeline_snapshot` — pipeline ingest→generate→verify→emit (ADR-002, hot-reload) | ✅ |
-| 7. Genius ideas (12) | INN-01..12: bdo_assistant, kpo_generator, bdo_deadline_tracker, product_fee_tracker, budowlane_pozwolenie_calculator, cbam_calculator, branza_compliance_panel, branza_template_hook, regulated_profession_assistant, taxfree_calculator, seasonal_assistant, agricultural_tax_calculator | ✅ |
+| 7. Genius ideas (17) | INN-01..17: bdo_assistant, kpo_generator, bdo_deadline_tracker, product_fee_tracker, budowlane_pozwolenie_calculator, cbam_calculator, branza_compliance_panel, branza_template_hook, regulated_profession_assistant, taxfree_calculator, seasonal_assistant, agricultural_tax_calculator, **zero_click_bdo (13), bdo_registration_detector (14), weee_product_fee_calculator (15), recycling_level_tracker (16), transport_licence_assistant (17)** | ✅ |
 | 8. Mapa drogowa R15 (P0/P1/P2) | **UZUPEŁNIONE 2026-08-05** — 7 reguł: `product_fee_material_map` (P0-1), `bdo_api_integration` (P0-2), `ewc_full_catalog` (P1-1), `agricultural_tax_rate_registry` (P1-2), `transport_permit_tables` (P1-3), `cbam_certificates_2026` (P2-1), `bdo_online_registration` (P2-2) + lookup w `jdg.micro.bdo_ewc` | ✅ |
 
 ## Progi (ADR-002 — `data.jdg.thresholds.bdo_environment`)
@@ -46,6 +47,18 @@ Narzędzie: `JDG/tools/bdo_environment_auditor.py`
 | P2-1 certyfikaty CBAM 2026 | `cbam_certificates` (2026-01-01, 80 EUR/t, umorzenie 31.05, kara 50 EUR/t) + `cbam_certificates_2026` | ✅ |
 | P2-2 rejestracja online BDO | `bdo_online_registration` (endpoint, kroki, opłata, terminy 30 dni) + reguła | ✅ |
 
+### Sekcja 8 — innowacje INN-13..17 (2026-08-09)
+
+| Innowacja | Reguła | Efekt |
+|---|---|---|
+| INN-13 zero-click BDO | `zero_click_bdo` | ewidencja odpadów generowana automatycznie z dokumentów WZ → wpis ewidencji + KPO auto (art. 66-70 UoO) |
+| INN-14 auto-detecktor rejestracji BDO | `bdo_registration_detector` | analiza opisu działalności (produkcja/transport/zbieranie) → obowiązek rejestracji przed startem, integracja P13 |
+| INN-15 kalkulator opłaty WEEE | `weee_product_fee_calculator` | stawki wg kategorii (IT 3,0 / małe AGD 2,5 / duże AGD 1,5 zł/kg) + rejestracja GIOŚ |
+| INN-16 tracker poziomów recyklingu | `recycling_level_tracker` | wymagane % (tworzywa 50, papier 75, szkło 70, metale 70, drewno 60) vs osiągnięte + alert RECYCLING_ALERT |
+| INN-17 asystent licencji transportowej | `transport_licence_assistant` | ścieżka 6 kroków (CEIDG → niekaralność → kwalifikacja → OC → wniosek → opłata), kara 5 tys. zł |
+
+Dane (stawki WEEE, poziomy recyklingu) w `thresholds_jdg.rego` (sekcja `bdo_environment`) — zero hardcode.
+
 Wszystkie wartości w `JDG/rules/thresholds_jdg.rego` (sekcja `bdo_environment`) — zero hardcode w regułach (ADR-002). Katalog EWC rozszerzalny przez dodanie wpisów `{"code", "name", "hazardous"}`.
 
 ## Narzędzie CLI
@@ -68,13 +81,20 @@ python JDG/tools/bdo_environment_auditor.py --agricultural --gmina Warszawa --ha
 python JDG/tools/bdo_environment_auditor.py --transport --route-type poza_ue                              # P1-3 zezwolenia transportowe
 python JDG/tools/bdo_environment_auditor.py --cbam-certificates --co2-t 10 --authorized-declarant         # P2-1 certyfikaty CBAM 2026
 python JDG/tools/bdo_environment_auditor.py --bdo-register-online --registration-status nie_zarejestrowany  # P2-2 rejestracja online BDO
+
+# ── SEKCJA 8: innowacje INN-13..17 ──
+python JDG/tools/bdo_environment_auditor.py --zero-click-bdo --wz-documents 5                        # INN-13 zero-click BDO (ewidencja z WZ)
+python JDG/tools/bdo_environment_auditor.py --bdo-reg-detector --activity-desc "produkcja mebli"      # INN-14 auto-detecktor rejestracji BDO
+python JDG/tools/bdo_environment_auditor.py --weee-fee --weee-category sprzęt_it --weee-mass-kg 100   # INN-15 opłata WEEE wg kategorii
+python JDG/tools/bdo_environment_auditor.py --recycling --recycling-material papier --achieved-pct 80   # INN-16 tracker poziomów recyklingu
+python JDG/tools/bdo_environment_auditor.py --transport-licence --transport-type "przewóz rzeczy"      # INN-17 licencja transportowa krok po kroku
 ```
 
 ## Testy
 
-- Rego: `JDG/tests/rego/test_p15_srodowisko_bdo_enterprise.rego` (24 + 14 scenariuszy R15 = **38**)
-- Pytest: `JDG/tests/auto/test_p15_srodowisko_bdo_enterprise.py` (23 + 20 testów R15 = **43**)
-- Pełny przebieg P01-P15: 256+ testów
+- Rego: `JDG/tests/rego/test_p15_srodowisko_bdo_enterprise.rego` (**50** scenariuszy: 39 + 11 INN-13..17)
+- Pytest: `JDG/tests/auto/test_p15_srodowisko_bdo_enterprise.py` (**50** testów: 43 + 7 INN-13..17)
+- Pełny przebieg P01-P15: 300+ testów
 
 ## Okablowanie
 

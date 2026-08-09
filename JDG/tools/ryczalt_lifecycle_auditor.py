@@ -18,6 +18,11 @@
 #   --suspension     audyt zawieszeń (art. 22-25 PP)
 #   --unregistered   audyt działalności nieewidencjonowanej (art. 6 PP)
 #   --compare        symulator ryczałt vs skala vs liniowy
+#   --setup          asystent zakładania firmy — onboarding CEIDG+NIP+ZUS (INN-13)
+#   --loss-detector  auto-wykrycie utraty ryczałtu — licznik limitu 2M EUR (INN-14)
+#   --suspend-or-close  symulator „zawiesić czy zamknąć" (INN-15)
+#   --succession-guide  sukcesja krok po kroku — checklista prawna (INN-16)
+#   --recommend      inteligentna rekomendacja stawki PKWiU po opisie (INN-17)
 #   --table          format tabelaryczny
 #   --out FILE       zapis JSON do pliku
 #
@@ -222,6 +227,139 @@ def pit_form_comparator(annual_revenue: float, ryczalt_rate_pct: float = 8.5) ->
     }
 
 
+# ── Sekcja 7b (v9.1): asystent zakładania firmy (INN-13) ──────────────────────
+def company_setup_assistant(setup_ceidg_done: bool = False,
+                            setup_zus_done: bool = False) -> dict:
+    """Pełny onboarding CEIDG+NIP+ZUS+wybór formy — asystent zakładania firmy."""
+    completed = sum([setup_ceidg_done, setup_zus_done])
+    return {
+        "steps": [
+            "1. Wniosek CEIDG-1 — rejestracja działalności (wpis w 7 dni, art. 5-7 CEIDG)",
+            "2. NIP i REGON — nadawane automatycznie przez CEIDG",
+            "3. ZUS ZUA — zgłoszenie do ubezpieczeń w 7 dni od rejestracji",
+            "4. Wybór formy opodatkowania — skala/liniowy/ryczałt (do 20. dnia miesiąca następnego)",
+            "5. Rachunek firmowy — otwarcie i zgłoszenie",
+            "6. Rozliczenia VAT — zwolnienie do 200k PLN / rejestracja VAT-R",
+        ],
+        "setup_ceidg_done": setup_ceidg_done,
+        "setup_zus_done": setup_zus_done,
+        "steps_completed": completed,
+        "setup_complete": completed == 2,
+        "onboarding_pct": round2(completed / 2 * 100),
+        "routing": "TRIAGE_QUEUE" if completed < 2 else "",
+        "note": "asystent zakładania firmy — pełny onboarding CEIDG+NIP+ZUS+wybór formy (INN-13)",
+    }
+
+
+# ── Sekcja 7b (v9.1): auto-wykrycie utraty ryczałtu (INN-14) ───────────────────
+def ryczalt_loss_detector(revenue_ytd: float = 5000000.0,
+                          projected_annual_revenue: float = 0.0) -> dict:
+    """Licznik limitu 2M EUR real-time — auto-wykrycie utraty prawa do ryczałtu.
+
+    Semantyka zgodna z rego: projected_annual_revenue używane jako-is (bez fallbacku
+    do revenue_ytd — w rego domyślnie 0 → brak ryzyka projekcji).
+    """
+    limit_pln = round2(RYC["limit_eur"] * RYC["eur_rate_pln"])
+    return {
+        "revenue_ytd": revenue_ytd,
+        "projected_annual_revenue": projected_annual_revenue,
+        "limit_pln": limit_pln,
+        "usage_pct_ytd": round2(revenue_ytd / limit_pln * 100) if limit_pln else 0.0,
+        "projection_pct": round2(projected_annual_revenue / limit_pln * 100) if limit_pln else 0.0,
+        "warning_at_75pct": revenue_ytd >= round2(limit_pln * 75 / 100),
+        "projected_loss_risk": projected_annual_revenue >= limit_pln,
+        "loss_triggered": revenue_ytd > limit_pln,
+        "routing": "TRIAGE_QUEUE" if revenue_ytd > limit_pln or projected_annual_revenue >= limit_pln else "",
+        "note": "przekroczenie limitu 2M EUR → utrata ryczałtu od następnego dnia (art. 6 ust. 4) — licznik real-time",
+    }
+
+
+# ── Sekcja 7b (v9.1): symulator „zawiesić czy zamknąć" (INN-15) ───────────────
+def suspend_or_close_simulator(planned_months: int = 6,
+                               will_resume: bool = True) -> dict:
+    """Rekomendacja: zawieszenie (≤24 mies. + powrót) vs likwidacja."""
+    within_max = planned_months <= RYC["zawieszenie_max_months"]
+    recommendation = "ZAWIESZENIE" if (will_resume and within_max) else "LIKWIDACJA"
+    return {
+        "planned_months": planned_months,
+        "will_resume": will_resume,
+        "within_max_suspension": within_max,
+        "recommendation": recommendation,
+        "suspension_effects": {
+            "zus_social": "składki społeczne 0 zł w okresie zawieszenia",
+            "zus_health": "składka zdrowotna nadal (art. 36a SUS)",
+            "vat": "możliwość zawieszenia rozliczeń VAT",
+            "pit": "brak obowiązku składania PIT-28 za okres zawieszenia (ryczałt)",
+        },
+        "liquidation_effects": {
+            "remanent": "remanent likwidacyjny — spójność z P07/P09",
+            "vat_remanent": "VAT od remanentu (P04)",
+            "ceidg": "wykreślenie z CEIDG",
+            "accounts": "zamknięcie rachunków, rozliczenie z kontrahentami",
+        },
+        "routing": "TRIAGE_QUEUE" if recommendation == "ZAWIESZENIE" else "",
+        "note": "symulator zawiesić vs zamknąć — rekomendacja decyzji exit (art. 22-25 PP)",
+    }
+
+
+# ── Sekcja 7b (v9.1): sukcesja krok po kroku (INN-16) ─────────────────────────
+def succession_step_guide(months_elapsed: int = 0) -> dict:
+    """Checklista prawna + formularze — sukcesja krok po kroku."""
+    remaining = max(0, RYC["succession_standard_months"] - months_elapsed)
+    return {
+        "checklist": [
+            "1. Powołanie zarządcy sukcesyjnego (akt notarialny za życia lub wniosek do 2 mies. po śmierci — art. 3-7 z.s.)",
+            "2. Wpis zarządcy do CEIDG w 14 dni",
+            "3. Zgłoszenie sukcesji do US i ZUS",
+            "4. Kontynuacja umów, zezwoleń i koncesji na NIP zmarłego (dopisek 'w spadku')",
+            "5. Rozliczenia podatkowe (ryczałt/PIT) w imieniu firmy",
+            "6. Monitorowanie terminu 2 lat / przedłużenie do 5 lat (art. 12-13)",
+        ],
+        "forms": ["CEIDG-1 (wpis zarządcy)", "Zgłoszenie sukcesji do US", "ZUS ZUA/ZWUA"],
+        "standard_months": RYC["succession_standard_months"],
+        "extended_months": RYC["succession_extended_months"],
+        "months_elapsed": months_elapsed,
+        "months_remaining": remaining,
+        "extension_needed": months_elapsed >= RYC["succession_standard_months"],
+        "routing": "TRIAGE_QUEUE" if months_elapsed >= RYC["succession_standard_months"] else "",
+        "note": "sukcesja krok po kroku — checklista prawna + formularze, terminy 2/5 lat (INN-16)",
+    }
+
+
+# ── Sekcja 7b (v9.1): rekomendacja stawki PKWiU po opisie (INN-17) ────────────
+# Słowa kluczowe per stawka (spójne z rego pkwiu_rate_recommender)
+PKWIU_RATE_KEYWORDS = [
+    ("3%", ["handel", "sprzedaż", "sklep"]),
+    ("5,5%", ["produkcja", "wytwarz", "budow", "montaż"]),
+    ("12,5%", ["transport", "magazyn", "kurier", "taksówk"]),
+    ("15%", ["gastronom", "restauracj", "hotel", "zakwaterowanie"]),
+    ("12%", ["programow", "informaty", "software", "oprogram", "systemy"]),
+    ("14%", ["architekt", "inżynier", "projektow"]),
+]
+
+PKWIU_MATCH_KEYWORDS = [kw for _, kws in PKWIU_RATE_KEYWORDS for kw in kws]
+
+
+def pkwiu_rate_recommender(activity_description: str = "usługi programistyczne") -> dict:
+    """Inteligentna rekomendacja stawki PKWiU po opisie działalności (słowniki)."""
+    desc = activity_description.lower()
+    matched = []
+    recommended = "8,5%"
+    for rate, kws in PKWIU_RATE_KEYWORDS:
+        hits = [kw for kw in kws if kw in desc]
+        if hits:
+            matched.extend(hits)
+            recommended = rate
+            break
+    return {
+        "activity_description": activity_description,
+        "recommended_rate": recommended,
+        "matched_keywords": matched,
+        "confidence_pct": round2(len(matched) / len(PKWIU_MATCH_KEYWORDS) * 100) if matched else 0.0,
+        "note": "inteligentna rekomendacja stawki ryczałtu po opisie działalności — reguły słownikowe PKWiU (INN-17)",
+    }
+
+
 # ── Audyt realnych plików rego ────────────────────────────────────────────────
 def audit_rego_files() -> dict:
     rule_ids = []
@@ -313,7 +451,19 @@ def main() -> int:
     parser.add_argument("--suspension", action="store_true", help="audyt zawieszeń")
     parser.add_argument("--unregistered", action="store_true", help="audyt działalności nieewidencjonowanej")
     parser.add_argument("--compare", action="store_true", help="symulator ryczałt vs skala vs liniowy")
+    parser.add_argument("--setup", action="store_true", help="asystent zakładania firmy — INN-13")
+    parser.add_argument("--loss-detector", action="store_true", help="auto-wykrycie utraty ryczałtu — INN-14")
+    parser.add_argument("--suspend-or-close", action="store_true", help="symulator zawiesić czy zamknąć — INN-15")
+    parser.add_argument("--succession-guide", action="store_true", help="sukcesja krok po kroku — INN-16")
+    parser.add_argument("--recommend", action="store_true", help="rekomendacja stawki PKWiU po opisie — INN-17")
     parser.add_argument("--pkwiu-code", type=str, default="6201", help="kod PKWiU")
+    parser.add_argument("--activity-desc", type=str, default="usługi programistyczne", help="opis działalności (rekomendacja stawki)")
+    parser.add_argument("--setup-ceidg", action="store_true", help="CEIDG-1 złożony (asystent zakładania)")
+    parser.add_argument("--setup-zus", action="store_true", help="ZUS ZUA złożony (asystent zakładania)")
+    parser.add_argument("--projected-revenue", type=float, default=0.0, help="prognozowany przychód roczny (INN-14)")
+    parser.add_argument("--planned-months", type=int, default=6, help="planowane miesiące zawieszenia (INN-15)")
+    parser.add_argument("--will-not-resume", action="store_true", help="brak planów wznowienia (INN-15 → LIKWIDACJA)")
+    parser.add_argument("--succession-guide-months", type=int, default=0, help="miesiące zarządu sukcesyjnego (INN-16)")
     parser.add_argument("--revenue-ytd", type=float, default=5000000.0, help="przychód od początku roku (PLN)")
     parser.add_argument("--months-active", type=int, default=3, help="miesiące aktywności JDG")
     parser.add_argument("--succession-months", type=int, default=10, help="miesiące zarządu sukcesyjnego")
@@ -327,7 +477,9 @@ def main() -> int:
     result = {"tool": "ryczalt_lifecycle_auditor", "module": "P13 Ryczałt + Cykl Życia JDG"}
 
     if args.audit or not (args.rate or args.limit or args.tax_card or args.lifecycle or
-                          args.succession or args.suspension or args.unregistered or args.compare):
+                          args.succession or args.suspension or args.unregistered or args.compare or
+                          args.setup or args.loss_detector or args.suspend_or_close or
+                          args.succession_guide or args.recommend):
         result["audit"] = audit_rego_files()
     if args.rate:
         result["rate"] = ryczalt_rate_calculator(args.pkwiu_code)
@@ -345,6 +497,16 @@ def main() -> int:
         result["unregistered"] = unregistered_business_audit(args.monthly_revenue)
     if args.compare:
         result["compare"] = pit_form_comparator(args.annual_revenue, args.ryczalt_rate)
+    if args.setup:
+        result["setup"] = company_setup_assistant(args.setup_ceidg, args.setup_zus)
+    if args.loss_detector:
+        result["loss_detector"] = ryczalt_loss_detector(args.revenue_ytd, args.projected_revenue)
+    if args.suspend_or_close:
+        result["exit_simulator"] = suspend_or_close_simulator(args.planned_months, not args.will_not_resume)
+    if args.succession_guide:
+        result["succession_guide"] = succession_step_guide(args.succession_guide_months)
+    if args.recommend:
+        result["rate_recommender"] = pkwiu_rate_recommender(args.activity_desc)
 
     if args.table:
         if "audit" in result:
@@ -378,6 +540,23 @@ def main() -> int:
             c = result["compare"]
             print(f"\nPORÓWNANIE FORM: ryczałt {c['ryczalt_tax']:,.0f} | skala {c['skala_tax']:,.0f} | "
                   f"liniowy {c['liniowy_tax']:,.0f} → NAJKORZYSTNIEJSZY: {c['best_form']}")
+        if "setup" in result:
+            s = result["setup"]
+            print(f"\nASYSENT ZAKŁADANIA: kroki {s['steps_completed']}/2 | onboarding {s['onboarding_pct']}%")
+        if "loss_detector" in result:
+            l = result["loss_detector"]
+            print(f"\nUTRATA RYCZAŁTU: YTD {l['revenue_ytd']:,.0f} / {l['limit_pln']:,.0f} PLN "
+                  f"({l['usage_pct_ytd']}%) | projekcja {l['projection_pct']}% | ryzyko: {l['projected_loss_risk']}")
+        if "exit_simulator" in result:
+            e = result["exit_simulator"]
+            print(f"\nZAWIESIĆ CZY ZAMKNĄĆ: rekomendacja {e['recommendation']} (plan {e['planned_months']} mies.)")
+        if "succession_guide" in result:
+            g = result["succession_guide"]
+            print(f"\nSUKCESJA KROK PO KROKU: {len(g['checklist'])} kroków | pozostało {g['months_remaining']} mies. "
+                  f"(przedłużenie do {g['extended_months']})")
+        if "rate_recommender" in result:
+            r = result["rate_recommender"]
+            print(f"\nREKOMENDACJA STAWKI: {r['recommended_rate']} (słowa: {r['matched_keywords']})")
         return 0
 
     if args.out:
