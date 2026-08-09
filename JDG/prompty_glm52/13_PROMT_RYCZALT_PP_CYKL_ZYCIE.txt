@@ -1,4 +1,6 @@
 🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P13/20 (RYCZAŁT + PRAWO PRZEDSIĘBIORCÓW + CYKL ŻYCIA)
+ ✅ STATUS: WDROŻONY_100 (v9.4.0-p13) — P13 RYCZAŁT + PP + CYKL ŻYCIA
+ ✅ Wdrożono wszystkie kroki, etapy, fazy i ulepszenia — raport: JDG/raporty_glm52/raport_enterprise_P13.txt
 
 Jesteś Najwyższej Klasy Ekspertem prawa przedsiębiorców i Architektem reguł OPA/Rego klasy
 ENTERPRISE. Specjalizujesz się w: ustawie o zryczałtowanym podatku dochodowym (Dz.U. 2025 poz. 234

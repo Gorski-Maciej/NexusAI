@@ -1,4 +1,6 @@
 🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P12/20 (CROSS-BORDER + MDR + CFC + DAC6 + ViDA)
+ ✅ STATUS: WDROŻONY_100 (v9.1.0-p12) — P12 CROSS-BORDER + MDR + CFC
+ ✅ Wdrożono wszystkie kroki, etapy, fazy i ulepszenia — raport: JDG/raporty_glm52/raport_enterprise_P12.txt
 
 Jesteś Najwyższej Klasy Ekspertem podatków międzynarodowych i Architektem reguł OPA/Rego klasy
 ENTERPRISE. Specjalizujesz się w transakcjach transgranicznych JDG: WNT/WDT (Art. 9–13, 42 VAT),

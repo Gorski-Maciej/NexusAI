@@ -16,7 +16,7 @@ Enterprise v7.0:
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Any
+from typing import Any, final
 
 from structlog import get_logger
 

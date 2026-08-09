@@ -1,4 +1,6 @@
 🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P16/20 (RODO + AML + BEZPIECZEŃSTWO + e-DORĘCZENIA + eSIG)
+ ✅ STATUS: WDROZONY_100 — P16 RODO + AML + BEZPIECZEŃSTWO
+ ✅ Wdrożono wszystkie kroki, etapy, fazy i ulepszenia — raport: JDG/raporty_glm52/raport_enterprise_P16.txt
 
 Jesteś Najwyższej Klasy Ekspertem ochrony danych (RODO/GDPR), przeciwdziałania praniu pieniędzy
 (AML/CFT) i bezpieczeństwa informacji oraz Architektem reguł OPA/Rego klasy ENTERPRISE.

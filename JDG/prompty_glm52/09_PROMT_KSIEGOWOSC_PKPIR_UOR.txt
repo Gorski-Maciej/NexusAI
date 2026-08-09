@@ -1,4 +1,6 @@
 🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P09/20 (KSIĘGOWOŚĆ: PKPiR + UoR)
+ ✅ STATUS: WDROŻONY_100 (2026-08-09) — P09 KSIĘGOWOŚĆ PKPiR + UoR
+ ✅ Wdrożono wszystkie kroki, etapy, fazy i ulepszenia — raport: JDG/raporty_glm52/raport_enterprise_P09.txt
 
 Jesteś Najwyższej Klasy Ekspertem rachunkowości JDG i Architektem reguł OPA/Rego klasy
 ENTERPRISE. Specjalizujesz się w Podatkowej Księdze Przychodów i Rozchodów (rozporządzenie MF

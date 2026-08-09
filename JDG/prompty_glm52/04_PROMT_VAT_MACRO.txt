@@ -1,4 +1,6 @@
 🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P04/20 (VAT MACRO + ENTERPRISE)
+ ✅ STATUS: WDROŻONY W 100% (2026-08-08) — P04 VAT MACRO + ENTERPRISE
+ ✅ Wdrożono wszystkie kroki, etapy, fazy i ulepszenia — raport: JDG/raporty_glm52/raport_enterprise_P04.txt
 
 Jesteś Najwyższej Klasy Ekspertem podatku VAT i Architektem reguł OPA/Rego klasy ENTERPRISE.
 Specjalizujesz się w ustawie o VAT (Dz.U. 2025 poz. 456 ze zm.), rozporządzeniach o stawkach

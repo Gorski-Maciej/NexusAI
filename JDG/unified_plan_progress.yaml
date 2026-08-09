@@ -237,7 +237,7 @@ campaign_glm52:
       technical_verification: "LEGACY_BLOCKERS_RESOLVED — banking_automation_enterprise.rego, allowances.rego, api_fallback.rego: metadata YAML removed, braces balanced, inline assignments validated"
       implemented_at: "2026-08-08"
       completed_at: "2026-08-09"
-      verification: "31/31 P03 tests PASSED; regression Python P03/P01/P09 96/96; legacy files validated (0 METADATA, balanced braces, proper packages). WASM/Z3/HSM remain host contracts."
+      verification: "21/21 P03 tests PASSED (test_p03_orchestrator_enterprise.py); regression Python P01+P02+P03 69/69; legacy files validated (0 METADATA, balanced braces, proper packages). WASM/Z3/HSM remain host contracts."
       artifacts:
         - "rules/main_jdg.rego (selected_final_verdict → final_verdict_enforced → public final_verdict)"
         - "rules/audit/runtime_invariants_enterprise.rego (fail-closed invariants, deterministic certificate, auto_post guard)"
@@ -399,8 +399,8 @@ campaign_glm52:
       version: "v9.7.0-p19"
       artifacts:
         - "rules/p19_hr_swiadczenia_innovations_v9.rego (27 rule_id, 29 INN, 26 podstaw prawnych)"
-        - "rules/employer.rego (28) + hyper/misc/plan45.rego (50) = 78 employer rule_id"
-        - "rules/family/plan44_family.rego (11) + plan45_family.rego (52) + hyper/family/plan45.rego (22) = 85 family rule_id"
+        - "rules/employer.rego (28) + rules/jdg/hyper/misc/plan45.rego (50) = 78 employer rule_id"
+        - "rules/family/plan44_family.rego (11) + rules/family/plan45_family.rego (52) + rules/jdg/hyper/family/plan45.rego (22) = 85 family rule_id"
         - "rules/force_majeure/plan44+plan45+hyper/plan45 = 64 force_majeure rule_id"
         - "rules/insurance/plan44+plan45 = 36 insurance rule_id"
         - "rules/solidarity/plan44+plan45+hyper/plan45 = 47 solidarity rule_id"

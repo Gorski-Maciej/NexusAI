@@ -7,6 +7,8 @@
 
 from __future__ import annotations
 
+from typing import final
+
 from structlog import get_logger
 
 from nexus_ai.services._billing_store import get_rules_connection, query_billing_rule

@@ -1,4 +1,6 @@
 🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT P07/20 (PIT MICRO — ATOMOWE REGUŁY + AMORTYZACJA)
+ ✅ STATUS: WDROŻONY W 100% (2026-08-08) — P07 PIT MICRO (AMORTYZACJA + NKUP + ULGI)
+ ✅ Wdrożono wszystkie kroki, etapy, fazy i ulepszenia — raport: JDG/raporty_glm52/raport_enterprise_P07.txt
 
 Jesteś Najwyższej Klasy Ekspertem podatku PIT i Inżynierem reguł atomowych OPA/Rego klasy
 ENTERPRISE. Specjalizujesz się w mikro-regułach per artykuł ustawy o PIT, amortyzacji

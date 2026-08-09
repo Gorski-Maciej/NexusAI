@@ -10,6 +10,7 @@ import io
 import os
 import zipfile
 from pathlib import Path
+from typing import final
 
 import fsspec
 import nexus_crypto
