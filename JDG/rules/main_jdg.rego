@@ -219,6 +219,8 @@ import data.jdg.pit.cross_relief
 import data.jdg.pit.donation_relief
 import data.jdg.pit.tax_loss_harvesting
 import data.jdg.pit.family_estonian
+# RAPORT 04: missing PIT reliefs and active loss carry-forward.
+import data.jdg.pit.missing_reliefs
 import data.jdg.form_optimizer
 
 # ── PAS 18: Provenance (A1 + ADR-006 Immutable Audit Trail) ──
@@ -676,6 +678,7 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(api_fallback.decide,
     safe_merge(substantive.decide,
     safe_merge(forms.decide,
+    safe_merge(missing_reliefs.decide,
     safe_merge(kup.decide,
     safe_merge(accounting.decide,
     safe_merge(business.decide,
@@ -743,7 +746,7 @@ sharded_sale_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 
 # Shard dla DOMESTIC_PURCHASE z ACTIVE JDG (KRYTYCZNE-3 FIX)
@@ -764,6 +767,7 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(substantive.decide,
     safe_merge(deductions.decide,
     safe_merge(procedures.decide,
+    safe_merge(missing_reliefs.decide,
     safe_merge(kup.decide,
     safe_merge(accounting.decide,
     safe_merge(corrections.decide,
@@ -820,7 +824,7 @@ sharded_purchase_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(conflicts.decide,
         fallback.decide
-    )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+    ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 
 full_final_verdict = safe_merge(risk.decide,
@@ -837,6 +841,7 @@ full_final_verdict = safe_merge(risk.decide,
     safe_merge(forms.decide,
     safe_merge(kup.decide,
     safe_merge(advances_returns.decide,
+    safe_merge(missing_reliefs.decide,
     safe_merge(exemptions.decide,
     safe_merge(art21_exemptions.decide,
     safe_merge(transitions.decide,
@@ -931,7 +936,7 @@ full_final_verdict = safe_merge(risk.decide,
     safe_merge(p34_innovations.decide,
     safe_merge(fortress.decide,
         fallback.decide
-    ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+    )))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1203,6 +1208,7 @@ _package_decisions := {
     "jdg.pit.art21_exemptions": art21_exemptions.decide,
     "jdg.pit.transitions": transitions.decide,
     "jdg.pit.elearning": elearning.decide,
+    "jdg.pit.missing_reliefs": missing_reliefs.decide,
     # PAS 6: Allowances
     "jdg.allowances": allowances.decide,
     "jdg.solidarity": solidarity.decide,

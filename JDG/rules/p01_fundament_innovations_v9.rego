@@ -120,9 +120,7 @@ verdict_contract_violations := [violation |
     ]
     count(missing) > 0
     violation := {"package": pkg_name, "missing_fields": missing}
-] else := [] {
-    true
-}
+]
 
 # ── INN-06: PRECOMPILACJA ŚCIEŻEK DECYZYJNYCH ────────────────────────────────
 # Dla znanego fingerprintu (cache) podpowiada hostowi gotowy werdykt
@@ -156,9 +154,7 @@ healing_required := [pkg_name |
     object.get(d, "matched", false) == true
     object.get(d, "_routing", "") == ""
     object.get(d, "_legal_basis", "") == ""
-] else := [] {
-    true
-}
+]
 
 # ── INN-09: ADAPTIVE TRUST SCORE FEEDBACK LOOP ──────────────────────────────
 # Feedback z rzeczywistych wyników (correct/incorrect) koryguje progi
@@ -202,9 +198,7 @@ shadow_decisions := [pkg_name |
     d := package_decisions[pkg_name]
     object.get(d, "mode", "") == "SHADOW"
     object.get(d, "matched", false) == true
-] else := [] {
-    true
-}
+]
 
 shadow_comparison := {
     "shadow_enabled": count(shadow_decisions) > 0,
@@ -213,6 +207,15 @@ shadow_comparison := {
 }
 
 # ── INN-12: TEMPORAL OVERLAP GUARD ───────────────────────────────────────────
+# Rego nie ma operatora `or`; alternatywa jest wyrażona jako dwie reguły.
+_temporal_overlap(a_to, b_from) {
+    a_to == null
+}
+
+_temporal_overlap(a_to, b_from) {
+    b_from <= a_to
+}
+
 # Wersje reguły z nakładającymi się oknami ważności (z rejestru rule_lifecycle).
 temporal_overlap_warnings := [w |
     registry := object.get(data.jdg, "rule_registry", {})
@@ -227,11 +230,9 @@ temporal_overlap_warnings := [w |
     a_to := object.get(a, "valid_to", null)
     b_to := object.get(b, "valid_to", null)
     a_from <= b_from
-    (a_to == null or b_from <= a_to)
+    _temporal_overlap(a_to, b_from)
     w := {"rule_id": rule_id, "a": a.version, "b": b.version, "overlap": true}
-] else := [] {
-    true
-}
+]
 
 # ── INN-13: RULE COMPLEXITY GUARD ────────────────────────────────────────────
 # Reguły bez warunków (tautologie: matched:true + brak routing/uzasadnienia).
@@ -242,9 +243,7 @@ tautology_scan := [rule_id |
     object.get(d, "_routing", "") == ""
     object.get(d, "_routing_reason", "") == ""
     rule_id := object.get(d, "rule_id", pkg_name)
-] else := [] {
-    true
-}
+]
 
 # ── INN-14: LEGAL BASIS COMPLETENESS (ADR-006) ───────────────────────────────
 legal_basis_violations := [rule_id |
@@ -253,9 +252,7 @@ legal_basis_violations := [rule_id |
     object.get(d, "matched", false) == true
     object.get(d, "_legal_basis", "") == ""
     rule_id := object.get(d, "rule_id", pkg_name)
-] else := [] {
-    true
-}
+]
 
 # ── INN-15: EVALUATION ORDER OPTIMIZER ───────────────────────────────────────
 # Sortowanie pakietów wg kosztu (data.jdg.package_cost_ms) — tańsze pierwsze.
@@ -291,9 +288,7 @@ orphan_rules := [rule_id |
     registered := object.keys(object.get(data.jdg.metadata, "rules_metadata", {}))
     some rule_id in registered
     object.get(package_decisions, rule_id, null) == null
-] else := [] {
-    true
-}
+]
 
 # ── INN-18: THRESHOLD DRIFT MONITOR ──────────────────────────────────────────
 # Weryfikacja, że progi z thresholds odpowiadają datom obowiązywania wg
@@ -308,9 +303,7 @@ threshold_drift_warnings := [w |
     entry_value != null
     current_value != entry_value
     w := {"threshold": key, "registry_value": current_value, "temporal_value": entry_value, "drift": true}
-] else := [] {
-    true
-}
+]
 
 # ── DECYZJA: GŁÓWNY RAPORT INNOWACJI FUNDAMENTU ──────────────────────────────
 decide := {
@@ -322,6 +315,7 @@ decide := {
         "INN01_optimal_evaluation_path": optimal_evaluation_path,
         "INN02_hot_reload_ready": hot_reload_ready,
         "INN03_forecast_scale_threshold": forecast_next_period("pit.scale_threshold"),
+        "INN04_digital_twin_verdict": digital_twin_verdict,
         "INN05_verdict_contract_violations": verdict_contract_violations,
         "INN07_evaluation_order_ok": evaluation_order_ok,
         "INN08_healing_required": healing_required,

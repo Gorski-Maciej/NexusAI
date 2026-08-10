@@ -1,483 +1,382 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — ENTERPRISE PIT MISSING RELIEFS (RAPORT 04 — P0/P1 Gap Closure)
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# METADATA
-# title: JDG Enterprise Missing PIT Reliefs — Ulgi zidentyfikowane w Raporcie 04
-# description: |
-#   ENTERPRISE v8.0 — Domknięcie luk P0/P1 z Raportu 04 (PIT CORE + ULGI).
-#   Dodaje brakujące reguły dla ulg:
-#   - Ulga rehabilitacyjna (Art. 26 ust. 1 pkt 6 PIT) — R650-R655
-#   - Ulga internetowa (Art. 26 ust. 1 pkt 6a PIT, 760 PLN) — R660-R662
-#   - Ulga krwiodawstwa (Art. 26 ust. 1 pkt 9c PIT) — R670-R672
-#   - Ulga na dzieci (Art. 27f PIT) — R680-R685
-#   - Ulga na ekspansję (Art. 26ec PIT, 1M PLN) — R690-R693
-#   - Ulga na robotyzację (Art. 26gb PIT, 50%) — R700-R703
-#   - Aktywna reguła straty podatkowej (Art. 9 ust. 3 PIT) — R400-R405
-# architecture: Enterprise Multi-Pass (ADR-001), First-Match-Wins else-chain
-# legal_basis: Art. 9, 26, 26ec, 26gb, 27f PIT
-# package: jdg.pit.missing_reliefs
-# generated_from: RAPORT_04_PIT_CORE.txt (2026-08-10)
-# deprecated: false
-# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI JDG — Report 04 PIT missing reliefs
+# Documentation only; this is not an OPA annotation block.
+# Sources: RAPORT_04_PIT_CORE.txt; Art. 9, 26, 26ec, 26gb and 27f PIT.
+# Contract: recommendations only; no automatic filing or tax decision.
 
 package jdg.pit.missing_reliefs
 
-import data.jdg.helpers
+import future.keywords.in
+import future.keywords.if
 import data.jdg.thresholds
 
 default decide := {
-    "matched": false, "rule_id": "jdg.pit.missing_reliefs.no_match",
-    "package": "jdg.pit.missing_reliefs", "priority": 99999
+    "matched": false,
+    "rule_id": "jdg.pit.missing_reliefs.no_match",
+    "package": "jdg.pit.missing_reliefs",
+    "priority": 99999
 }
 
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  SEKCJA A: AKTYWNA REGUŁA STRATY PODATKOWEJ (Art. 9 ust. 3 PIT)          ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
-#
-# P0-5: Strata podatkowa — max 5 lat, max 50% dochodu w jednym roku.
-# Obecnie istniał tylko info helper P660. Ta reguła AKTYWNIE pomniejsza dochód.
+form_allows_relief(form) if {
+    form in {"PIT_SCALE", "LINEAR"}
+}
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# R400: loss_carry_forward_active — Aktywna reguła odliczenia straty
-# ═══════════════════════════════════════════════════════════════════════════════
+evaluation_year(input_data) := to_number(substring(object.get(input_data, "evaluation_datetime", "2026-01-01"), 0, 4))
+
+third_relief(count, amount) := amount if {
+    count >= 3
+} else := 0 if {
+    count < 3
+}
+
+loss_year_label(amount, year) := [year] if {
+    amount > 0
+} else := [] if {
+    amount <= 0
+}
+
+loss_expiring(amount) := amount if {
+    amount > 0
+} else := 0 if {
+    amount <= 0
+}
+
+loss_routing(amount) := "TRIAGE_QUEUE" if {
+    amount > 50000
+} else := "" if {
+    amount <= 50000
+}
+
+loss_warning_lines(expiring) := [sprintf("   ⚠️ PRZEDAWNIA SIĘ: %.0f PLN — ostatni rok na rozliczenie!", [expiring])] if {
+    expiring > 0
+} else := [] if {
+    expiring <= 0
+}
+
+internet_routing(years_used) := "TRIAGE_QUEUE" if {
+    years_used == 1
+} else := "" if {
+    years_used != 1
+}
+
+internet_warning(years_used) := "To ostatni rok tej ulgi — wykorzystaj ją po sprawdzeniu dokumentów." if {
+    years_used == 1
+} else := "Pamiętaj: ulga internetowa działa tylko przez dwa kolejne lata." if {
+    years_used == 0
+}
+
+child_routing(total_relief) := "TRIAGE_QUEUE" if {
+    total_relief > 5000
+} else := "" if {
+    total_relief <= 5000
+}
+
+expansion_routing(costs) := "TRIAGE_QUEUE" if {
+    costs > 500000
+} else := "" if {
+    costs <= 500000
+}
+
+robotization_routing(costs) := "TRIAGE_QUEUE" if {
+    costs > 200000
+} else := "" if {
+    costs <= 200000
+}
+
+# Active loss carry-forward. It is evaluated only when at least one loss field
+# is present and positive; normal PIT traffic remains no_match.
 decide := {
     "matched": true,
     "rule_id": "jdg.pit.missing_reliefs.loss_carry_forward_active",
     "package": "jdg.pit.missing_reliefs",
     "priority": 400,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
+    "recommendation_only": true,
+    "requires_documentation": true,
+    "evaluation_year": evaluation_year(input),
     "relief_type": "LOSS_CARRY_FORWARD",
+    "pit_form": pit_form,
     "loss_total_available": total_loss_available,
     "loss_max_deductible_this_year": max_deduction,
     "loss_actual_deducted": actual_deduction,
     "loss_remaining_after_year": remaining_loss,
     "loss_expiring_this_year": expiring_loss,
     "loss_years_tracked": loss_years,
-    "_routing": loss_rt,
-    "_routing_reason": sprintf("Strata: dostępne %.0f PLN, max odliczenie %.0f PLN (50%% dochodu %.0f PLN), odliczono %.0f PLN, pozostało %.0f PLN",
-        [total_loss_available, max_deduction, annual_income, actual_deduction, remaining_loss]),
-    "_legal_basis": "Art. 9 ust. 3 PIT (strata — max 5 lat, max 50% rocznie)",
-    "_warnings": build_loss_warnings(total_loss_available, actual_deduction, remaining_loss, expiring_loss, max_deduction)
-} {
-    input.jdg_entrepreneur.tax_form in {"PIT_SCALE", "LINEAR"}
+    "_routing": loss_routing(expiring_loss),
+    "_routing_reason": sprintf("Strata: dostępne %.2f PLN; maksymalne odliczenie %.2f PLN; odliczono %.2f PLN; pozostało %.2f PLN.",
+        [total_loss_available, max_deduction, actual_deduction, remaining_loss]),
+    "_legal_basis": "Art. 9 ust. 3 PIT (strata — pięć lat, maksymalnie 50% dochodu rocznie)",
+    "_warnings": array.concat([
+        "📊 Aktywna strata podatkowa — wynik jest rekomendacją do weryfikacji dokumentów."
+    ], array.concat(loss_warning_lines(expiring_loss), [
+        "Kolejność i możliwość odliczenia wymagają potwierdzenia w dokumentacji rocznej."
+    ]))
+} if {
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
-
-    annual_income := object.get(input.jdg_entrepreneur, "annual_taxable_income", 0)
+    form_allows_relief(pit_form)
+    annual_income := max([0, object.get(input.jdg_entrepreneur, "annual_taxable_income", 0)])
     annual_income > 0
-
-    # Salda strat z lat 2021-2025
-    loss_2021 := object.get(input.jdg_entrepreneur, "tax_loss_2021", 0.0)
-    loss_2022 := object.get(input.jdg_entrepreneur, "tax_loss_2022", 0.0)
-    loss_2023 := object.get(input.jdg_entrepreneur, "tax_loss_2023", 0.0)
-    loss_2024 := object.get(input.jdg_entrepreneur, "tax_loss_2024", 0.0)
-    loss_2025 := object.get(input.jdg_entrepreneur, "tax_loss_2025", 0.0)
-
-    current_year := 2026
-
-    # Tylko straty nie starsze niż 5 lat
-    total_loss_available := 0.0
-    total_loss_available := loss_2021 { current_year - 2021 <= 5 }
-    total_loss_available := total_loss_available + loss_2022 { current_year - 2022 <= 5 }
-    total_loss_available := total_loss_available + loss_2023 { current_year - 2023 <= 5 }
-    total_loss_available := total_loss_available + loss_2024 { current_year - 2024 <= 5 }
-    total_loss_available := total_loss_available + loss_2025 { current_year - 2025 <= 5 }
+    loss_2021 := max([0, object.get(input.jdg_entrepreneur, "tax_loss_2021", 0)])
+    loss_2022 := max([0, object.get(input.jdg_entrepreneur, "tax_loss_2022", 0)])
+    loss_2023 := max([0, object.get(input.jdg_entrepreneur, "tax_loss_2023", 0)])
+    loss_2024 := max([0, object.get(input.jdg_entrepreneur, "tax_loss_2024", 0)])
+    loss_2025 := max([0, object.get(input.jdg_entrepreneur, "tax_loss_2025", 0)])
+    total_loss_available := loss_2021 + loss_2022 + loss_2023 + loss_2024 + loss_2025
     total_loss_available > 0
-
-    # Max 50% dochodu
-    max_deduction := annual_income * 0.5
+    max_deduction := annual_income * object.get(thresholds.pit, "loss_carry_forward_max_pct", 0.50)
     actual_deduction := min([total_loss_available, max_deduction])
     remaining_loss := total_loss_available - actual_deduction
+    expiring_loss := loss_expiring(loss_2021)
 
-    # Strata przedawniająca się w tym roku
-    expiring_loss := loss_2021 { current_year - 2021 == 5; loss_2021 > 0 }
-    expiring_loss := loss_2022 { expiring_loss == 0; current_year - 2022 == 5; loss_2022 > 0 }
-    expiring_loss := 0 { true }
-
-    loss_years := []
-    loss_years := array.concat(loss_years, ["2021"]) { loss_2021 > 0; current_year - 2021 <= 5 }
-    loss_years := array.concat(loss_years, ["2022"]) { loss_2022 > 0; current_year - 2022 <= 5 }
-    loss_years := array.concat(loss_years, ["2023"]) { loss_2023 > 0; current_year - 2023 <= 5 }
-    loss_years := array.concat(loss_years, ["2024"]) { loss_2024 > 0; current_year - 2024 <= 5 }
-    loss_years := array.concat(loss_years, ["2025"]) { loss_2025 > 0; current_year - 2025 <= 5 }
-
-    loss_rt = "TRIAGE_QUEUE" { expiring_loss > 50000 }
-    loss_rt = "" { true }
+    loss_years := array.concat(loss_year_label(loss_2021, "2021"),
+        array.concat(loss_year_label(loss_2022, "2022"),
+        array.concat(loss_year_label(loss_2023, "2023"),
+        array.concat(loss_year_label(loss_2024, "2024"), loss_year_label(loss_2025, "2025")))))
 }
 
-build_loss_warnings(available, deducted, remaining, expiring, max_ded) = warnings {
-    lines := [
-        "📊 AKTYWNA STRATA PODATKOWA",
-        sprintf("   Strata dostępna: %12.0f PLN", [available]),
-        sprintf("   Max odliczenie (50%%): %8.0f PLN", [max_ded]),
-        sprintf("   Odliczono w tym roku: %8.0f PLN", [deducted]),
-        sprintf("   Pozostało do odliczenia: %5.0f PLN", [remaining]),
-    ]
-    lines := array.concat(lines, [sprintf("   ⚠️ PRZEDAWNIA SIĘ: %.0f PLN — OSTATNI ROK na odliczenie!", [expiring])]) { expiring > 0 }
-    lines := array.concat(lines, ["", "💡 Odliczaj stratę w pierwszej kolejności — przed ulgami B+R, IP Box i innymi!"])
-    warnings := lines
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# R401: loss_carry_forward_exhausted — Strata wykorzystana w całości
-# ═══════════════════════════════════════════════════════════════════════════════
+# Explicit audit request with no available loss balance.
 else := {
     "matched": true,
     "rule_id": "jdg.pit.missing_reliefs.loss_fully_used",
     "package": "jdg.pit.missing_reliefs",
     "priority": 401,
-    "pit_form": pit_form,
+    "recommendation_only": true,
+    "requires_documentation": true,
+    "evaluation_year": evaluation_year(input),
+    "pit_form": object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE"),
     "loss_status": "EXHAUSTED",
-    "loss_note": "Wszystkie straty z lat ubiegłych zostały w pełni rozliczone",
     "_routing": "",
-    "_routing_reason": "Brak nierozliczonych strat",
+    "_routing_reason": "Audyt straty: brak nierozliczonego salda w przekazanych danych.",
     "_legal_basis": "Art. 9 ust. 3 PIT",
-    "_warnings": ["✅ Brak nierozliczonych strat podatkowych — dochód nie jest pomniejszany o stratę."]
-} {
-    input.jdg_entrepreneur.tax_form in {"PIT_SCALE", "LINEAR"}
-    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
-    # Brak strat lub już rozliczone
+    "_warnings": ["Brak nierozliczonej straty w przekazanych danych; potwierdź zeznania za poprzednie lata."]
+} if {
+    input.pit_loss_check == true
     object.get(input.jdg_entrepreneur, "has_unresolved_losses", false) == false
 }
 
-
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  SEKCJA B: ULGA REHABILITACYJNA (Art. 26 ust. 1 pkt 6 PIT)               ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# R650: relief_rehabilitation — Ulga rehabilitacyjna
-# ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true,
     "rule_id": "jdg.pit.missing_reliefs.rehabilitation",
     "package": "jdg.pit.missing_reliefs",
     "priority": 650,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
+    "recommendation_only": true,
+    "requires_documentation": true,
+    "evaluation_year": evaluation_year(input),
     "relief_type": "REHABILITATION",
-    "relief_limit": "Wydatki rzeczywiste — limit na samochód: 2 280 PLN rocznie, leki: nadwyżka ponad 100 PLN/mies.",
     "relief_deductible": rehab_expenses,
     "relief_disability_group": disability_group,
     "relief_requires_documentation": true,
     "_routing": "TRIAGE_QUEUE",
-    "_routing_reason": sprintf("Ulga rehabilitacyjna: %.2f PLN (grupa inw.: %s)", [rehab_expenses, disability_group]),
-    "_legal_basis": "Art. 26 ust. 1 pkt 6, ust. 7a-7g PIT",
-    "_warnings": [sprintf("♿ ULGA REHABILITACYJNA — %.2f PLN. Grupa inwalidzka: %s. Kategorie: leki (nadwyżka >100 PLN/mies), zabiegi, sprzęt, samochód (max 2 280 PLN). WYMÓG: dokument potwierdzający niepełnosprawność + faktury/rachunki imienne.",
-        [rehab_expenses, disability_group])]
-} {
+    "_routing_reason": sprintf("Ulga rehabilitacyjna: %.2f PLN; wymagana weryfikacja uprawnienia i dokumentów.", [rehab_expenses]),
+    "_legal_basis": "Art. 26 ust. 1 pkt 6, ust. 7a–7g PIT",
+    "_warnings": ["Rekomendacja: potwierdź orzeczenie/warunki ustawowe oraz imienne faktury lub rachunki."]
+} if {
+    input.pit_rehabilitation_check == true
     input.jdg_entrepreneur.has_disability == true
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
-    pit_form in {"PIT_SCALE", "LINEAR"}
-
+    form_allows_relief(pit_form)
     disability_group := object.get(input.jdg_entrepreneur, "disability_group", "I")
-    # Suma wydatków rehabilitacyjnych (leki, zabiegi, sprzęt, samochód do limitu)
-    meds := object.get(input.jdg_entrepreneur, "rehab_meds_expenses", 0.0)
-    treatments := object.get(input.jdg_entrepreneur, "rehab_treatments_expenses", 0.0)
-    equipment := object.get(input.jdg_entrepreneur, "rehab_equipment_expenses", 0.0)
-    car := min([object.get(input.jdg_entrepreneur, "rehab_car_expenses", 0.0), 2280.0])
-
+    meds := max([0, object.get(input.jdg_entrepreneur, "rehab_meds_expenses", 0)])
+    treatments := max([0, object.get(input.jdg_entrepreneur, "rehab_treatments_expenses", 0)])
+    equipment := max([0, object.get(input.jdg_entrepreneur, "rehab_equipment_expenses", 0)])
+    car_limit := object.get(thresholds.pit, "rehab_car_limit", 2280)
+    car := min([max([0, object.get(input.jdg_entrepreneur, "rehab_car_expenses", 0)]), car_limit])
     rehab_expenses := meds + treatments + equipment + car
     rehab_expenses > 0
 }
 
-
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  SEKCJA C: ULGA INTERNETOWA (Art. 26 ust. 1 pkt 6a PIT, 760 PLN)        ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# R660: relief_internet — Ulga internetowa (max 760 PLN, tylko 2 kolejne lata)
-# ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true,
     "rule_id": "jdg.pit.missing_reliefs.internet",
     "package": "jdg.pit.missing_reliefs",
     "priority": 660,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
+    "recommendation_only": true,
+    "requires_documentation": true,
+    "evaluation_year": evaluation_year(input),
     "relief_type": "INTERNET",
-    "relief_limit": 760,
-    "relief_deductible": min([internet_expenses, 760]),
+    "relief_limit": internet_limit,
+    "relief_deductible": min([internet_expenses, internet_limit]),
     "relief_max_years": 2,
     "relief_years_used": years_used,
-    "relief_years_remaining": max([0, 2 - years_used]),
-    "_routing": internet_rt,
-    "_routing_reason": sprintf("Ulga internetowa: %.2f PLN (rok %d/2)", [min([internet_expenses, 760]), years_used + 1]),
-    "_legal_basis": "Art. 26 ust. 1 pkt 6a PIT (ulga internetowa — 760 PLN, 2 lata)",
-    "_warnings": [sprintf("🌐 ULGA INTERNETOWA — %.2f PLN (limit 760 PLN). Rok %d z 2 dostępnych. %s",
-        [min([internet_expenses, 760]), years_used + 1, warning_extra])]
-} {
+    "relief_years_remaining": 2 - years_used,
+    "_routing": internet_routing(years_used),
+    "_routing_reason": sprintf("Ulga internetowa: %.2f PLN; rok %d z 2.", [min([internet_expenses, internet_limit]), years_used + 1]),
+    "_legal_basis": "Art. 26 ust. 1 pkt 6a PIT",
+    "_warnings": [internet_warning(years_used)]
+} if {
+    input.pit_internet_check == true
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
-    pit_form in {"PIT_SCALE", "LINEAR"}
-
-    internet_expenses := object.get(input.jdg_entrepreneur, "internet_expenses_annual", 0.0)
+    form_allows_relief(pit_form)
+    internet_expenses := max([0, object.get(input.jdg_entrepreneur, "internet_expenses_annual", 0)])
     internet_expenses > 0
-
     years_used := object.get(input.jdg_entrepreneur, "internet_relief_years_used", 0)
-    years_used < 2  # Tylko 2 kolejne lata
-
-    internet_rt = "TRIAGE_QUEUE" { years_used == 1 }
-    internet_rt = "" { true }
-
-    warning_extra = "To OSTATNI rok tej ulgi — wykorzystaj w pełni!" { years_used == 1 }
-    warning_extra = "Pamiętaj: ulga działa tylko przez 2 kolejne lata." { years_used == 0 }
+    years_used >= 0
+    years_used < 2
+    internet_limit := object.get(thresholds.pit, "internet_relief_limit", 760)
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# R661: relief_internet_exhausted — Ulga internetowa wykorzystana
-# ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true,
     "rule_id": "jdg.pit.missing_reliefs.internet_exhausted",
     "package": "jdg.pit.missing_reliefs",
     "priority": 661,
-    "pit_form": pit_form,
+    "recommendation_only": true,
+    "requires_documentation": true,
+    "evaluation_year": evaluation_year(input),
+    "relief_type": "INTERNET",
     "internet_relief_exhausted": true,
-    "internet_relief_note": "Ulga internetowa wykorzystana — limit 2 lat osiągnięty",
     "_routing": "",
-    "_routing_reason": "Ulga internetowa: 2-letni limit wykorzystany",
+    "_routing_reason": "Ulga internetowa: wykorzystany limit dwóch lat.",
     "_legal_basis": "Art. 26 ust. 1 pkt 6a PIT",
-    "_warnings": ["⛔ Ulga internetowa wykorzystana — limit 2 lat osiągnięty. Nie możesz już odliczać internetu w ramach tej ulgi."]
-} {
-    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    "_warnings": ["Ulga internetowa została oznaczona jako wykorzystana; nie odliczaj jej ponownie bez korekty danych."]
+} if {
+    input.pit_internet_check == true
     object.get(input.jdg_entrepreneur, "internet_relief_years_used", 0) >= 2
-    object.get(input.jdg_entrepreneur, "internet_expenses_annual", 0.0) > 0
+    object.get(input.jdg_entrepreneur, "internet_expenses_annual", 0) > 0
 }
 
-
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  SEKCJA D: ULGA KRWIODAWSTWA (Art. 26 ust. 1 pkt 9c PIT)                ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# R670: relief_blood_donation — Ulga krwiodawstwa (ekwiwalent 130 PLN/litr, max 6% dochodu)
-# ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true,
     "rule_id": "jdg.pit.missing_reliefs.blood_donation",
     "package": "jdg.pit.missing_reliefs",
     "priority": 670,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
+    "recommendation_only": true,
+    "requires_documentation": true,
+    "evaluation_year": evaluation_year(input),
     "relief_type": "BLOOD_DONATION",
     "relief_blood_liters": blood_liters,
-    "relief_blood_value_per_liter": 130.0,
+    "relief_blood_value_per_liter": blood_value_per_liter,
     "relief_deductible": min([blood_value, max_deduction]),
-    "relief_max_percent_income": 6.0,
+    "relief_max_percent_income": donation_limit_pct * 100,
     "_routing": "",
-    "_routing_reason": sprintf("Krwiodawstwo: %.1f litrów × 130 PLN = %.2f PLN (max 6%% dochodu = %.2f PLN)",
-        [blood_liters, blood_value, max_deduction]),
-    "_legal_basis": "Art. 26 ust. 1 pkt 9c PIT (honorowe krwiodawstwo)",
-    "_warnings": [sprintf("🩸 ULGA KRWIODAWSTWA — %.1f litrów krwi × 130 PLN/litr = %.2f PLN. Limit: 6%% dochodu (%.2f PLN). Odliczono: %.2f PLN. WYMÓG: zaświadczenie z centrum krwiodawstwa.",
-        [blood_liters, blood_value, max_deduction, min([blood_value, max_deduction])])]
-} {
+    "_routing_reason": sprintf("Krwiodawstwo: %.2f PLN po zastosowaniu limitu dochodu.", [min([blood_value, max_deduction])]),
+    "_legal_basis": "Art. 26 ust. 1 pkt 9c PIT",
+    "_warnings": ["Wymagane zaświadczenie z centrum krwiodawstwa i potwierdzenie limitu odliczeń od dochodu."]
+} if {
+    input.pit_blood_donation_check == true
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
-    pit_form in {"PIT_SCALE", "LINEAR"}
-
-    blood_liters := object.get(input.jdg_entrepreneur, "blood_donation_liters", 0.0)
+    form_allows_relief(pit_form)
+    blood_liters := max([0, object.get(input.jdg_entrepreneur, "blood_donation_liters", 0)])
     blood_liters > 0
-
-    blood_value := blood_liters * 130.0
-    annual_income := object.get(input.jdg_entrepreneur, "annual_taxable_income", 0.0)
-    max_deduction := annual_income * 0.06  # Max 6% dochodu
-
-    blood_value > 0
+    blood_value_per_liter := object.get(thresholds.pit, "blood_value_per_liter", 130)
+    blood_value := blood_liters * blood_value_per_liter
+    annual_income := max([0, object.get(input.jdg_entrepreneur, "annual_taxable_income", 0)])
+    donation_limit_pct := object.get(thresholds.pit, "donation_limit_pct", 0.06)
+    max_deduction := annual_income * donation_limit_pct
 }
 
-
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  SEKCJA E: ULGA NA DZIECI (Art. 27f PIT)                                 ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# R680: relief_child_tax_credit — Ulga na dzieci (kwoty per dziecko)
-# ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true,
     "rule_id": "jdg.pit.missing_reliefs.child_tax_credit",
     "package": "jdg.pit.missing_reliefs",
     "priority": 680,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "PIT_SCALE", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
+    "recommendation_only": true,
+    "requires_documentation": true,
+    "evaluation_year": evaluation_year(input),
     "relief_type": "CHILD_TAX_CREDIT",
     "relief_child_count_total": total_children,
-    "relief_child_eligible_count": eligible_children,
-    "relief_amount_per_first_second": relief_per_child_12,
-    "relief_amount_per_third": relief_per_child_3,
-    "relief_amount_per_fourth_plus": relief_per_child_4p,
+    "relief_child_eligible_count": total_children,
+    "relief_amount_per_first_second": first_second_amount,
+    "relief_amount_per_third": third_amount,
+    "relief_amount_per_fourth_plus": fourth_plus_amount,
     "relief_total_deductible": total_relief,
-    "relief_refundable": true,
-    "_routing": child_rt,
-    "_routing_reason": sprintf("Ulga na dzieci: %d dzieci, odliczenie %.2f PLN",
-        [eligible_children, total_relief]),
-    "_legal_basis": "Art. 27f PIT (ulga prorodzinna)",
-    "_warnings": [sprintf("👶 ULGA NA DZIECI — %d dzieci uprawnionych z %d łącznie. Kwoty: 1 i 2 dziecko: %.2f PLN, 3 dziecko: %.2f PLN, 4+: %.2f PLN. Łączne odliczenie od podatku: %.2f PLN. UWAGA: tylko na skali PIT (PIT-36)! NIE na liniowym/ryczałcie.",
-        [eligible_children, total_children, relief_per_child_12, relief_per_child_3, relief_per_child_4p, total_relief])]
-} {
-    input.jdg_entrepreneur.tax_form == "PIT_SCALE"  # TYLKO skala!
+    "_routing": child_routing(total_relief),
+    "_routing_reason": sprintf("Ulga na dzieci: %d dzieci; odliczenie %.2f PLN.", [total_children, total_relief]),
+    "_legal_basis": "Art. 27f PIT",
+    "_warnings": ["Ulga dotyczy wyłącznie skali PIT i wymaga sprawdzenia warunków opieki oraz dokumentów dzieci."]
+} if {
+    input.pit_child_check == true
+    input.jdg_entrepreneur.tax_form == "PIT_SCALE"
     total_children := object.get(input.jdg_entrepreneur, "children_count", 0)
     total_children > 0
-
-    # Kwoty ulgi na dzieci (2026 — indeksowane)
-    # 1 i 2 dziecko: 92.67 PLN/mies = 1112.04 PLN/rok
-    # 3 dziecko: 166.67 PLN/mies = 2000.04 PLN/rok
-    # 4+ dziecko: 225.00 PLN/mies = 2700.00 PLN/rok
-    relief_per_child_12 := 1112.04
-    relief_per_child_3 := 2000.04
-    relief_per_child_4p := 2700.00
-
-    # Obliczenia
-    eligible_children := total_children
-    first_two_children := min([total_children, 2])
-    third_child := 1 { total_children >= 3 }
-    third_child := 0 { total_children < 3 }
-    fourth_plus := max([total_children - 3, 0])
-
-    total_relief := (first_two_children * relief_per_child_12) +
-        (third_child * relief_per_child_3) +
-        (fourth_plus * relief_per_child_4p)
-
+    first_second_amount := object.get(thresholds.pit, "family_relief_amount_per_child", 1112.04)
+    third_amount := object.get(thresholds.pit, "family_relief_amount_third_child", 2000.04)
+    fourth_plus_amount := object.get(thresholds.pit, "family_relief_amount_fourth_plus", 2700)
+    first_two := min([total_children, 2]) * first_second_amount
+    third := third_relief(total_children, third_amount)
+    fourth_plus := max([total_children - 3, 0]) * fourth_plus_amount
+    total_relief := first_two + third + fourth_plus
     total_relief > 0
-
-    child_rt = "TRIAGE_QUEUE" { total_relief > 5000 }
-    child_rt = "" { true }
 }
 
-
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  SEKCJA F: ULGA NA EKSPANSJĘ (Art. 26ec PIT, max 1M PLN)                ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# R690: relief_expansion — Ulga na ekspansję (targi, reklama zagraniczna)
-# ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true,
     "rule_id": "jdg.pit.missing_reliefs.expansion",
     "package": "jdg.pit.missing_reliefs",
     "priority": 690,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
+    "recommendation_only": true,
+    "requires_documentation": true,
+    "evaluation_year": evaluation_year(input),
     "relief_type": "EXPANSION",
-    "relief_limit": 1000000,
-    "relief_categories": ["TARGI_ZAGRANICZNE", "REKLAMA_ZAGRANICZNA", "PRZYGOTOWANIE_EKSPORTU"],
-    "relief_deductible": min([expansion_costs, 1000000]),
+    "relief_limit": expansion_limit,
+    "relief_deductible": min([expansion_costs, expansion_limit]),
     "relief_carry_forward_years": 6,
-    "_routing": expansion_rt,
-    "_routing_reason": sprintf("Ulga ekspansyjna: %.2f PLN (limit 1M PLN)", [min([expansion_costs, 1000000])]),
-    "_legal_basis": "Art. 26ec PIT (ulga na ekspansję — max 1M PLN)",
-    "_warnings": [sprintf("🌍 ULGA NA EKSPANSJĘ — %.2f PLN (limit 1M PLN). Kwalifikowane koszty: udział w targach zagranicznych, reklama za granicą, przygotowanie dokumentacji eksportowej. Carry-forward: 6 lat. Prowadź osobną ewidencję!",
-        [expansion_costs])]
-} {
+    "_routing": expansion_routing(expansion_costs),
+    "_routing_reason": sprintf("Ulga ekspansyjna: %.2f PLN z limitu %.2f PLN.", [min([expansion_costs, expansion_limit]), expansion_limit]),
+    "_legal_basis": "Art. 26ec PIT",
+    "_warnings": ["Prowadź odrębną ewidencję kosztów i potwierdź spełnienie ustawowych warunków wzrostu sprzedaży."]
+} if {
+    input.pit_expansion_check == true
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
-    pit_form in {"PIT_SCALE", "LINEAR"}
-
-    trade_fairs := object.get(input.jdg_entrepreneur, "expansion_trade_fairs_costs", 0.0)
-    ads_abroad := object.get(input.jdg_entrepreneur, "expansion_ads_abroad_costs", 0.0)
-    export_prep := object.get(input.jdg_entrepreneur, "expansion_export_prep_costs", 0.0)
-
+    form_allows_relief(pit_form)
+    trade_fairs := max([0, object.get(input.jdg_entrepreneur, "expansion_trade_fairs_costs", 0)])
+    ads_abroad := max([0, object.get(input.jdg_entrepreneur, "expansion_ads_abroad_costs", 0)])
+    export_prep := max([0, object.get(input.jdg_entrepreneur, "expansion_export_prep_costs", 0)])
     expansion_costs := trade_fairs + ads_abroad + export_prep
     expansion_costs > 0
-
-    expansion_rt = "TRIAGE_QUEUE" { expansion_costs > 500000 }
-    expansion_rt = "" { true }
+    expansion_limit := object.get(thresholds.pit, "expansion_relief_max_costs", 1000000)
 }
 
-
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║  SEKCJA G: ULGA NA ROBOTYZACJĘ (Art. 26gb PIT, 50%)                     ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# R700: relief_robotization — Ulga na robotyzację (50% kosztów)
-# ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true,
     "rule_id": "jdg.pit.missing_reliefs.robotization",
     "package": "jdg.pit.missing_reliefs",
     "priority": 700,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
+    "recommendation_only": true,
+    "requires_documentation": true,
+    "evaluation_year": evaluation_year(input),
     "relief_type": "ROBOTIZATION",
-    "relief_percent": 50,
-    "relief_robot_purchase_cost": robot_purchase,
-    "relief_robot_training_cost": robot_training,
-    "relief_robot_maintenance_cost": robot_maintenance,
+    "relief_percent": robotization_rate * 100,
     "relief_total_qualified": total_qualified,
-    "relief_deductible": total_qualified * 0.5,
-    "relief_requires_new_robot": true,
-    "_routing": robot_rt,
-    "_routing_reason": sprintf("Ulga robotyzacyjna: %.2f PLN kosztów × 50%% = %.2f PLN odliczenia",
-        [total_qualified, total_qualified * 0.5]),
-    "_legal_basis": "Art. 26gb PIT (ulga na robotyzację — 50% kosztów)",
-    "_warnings": [sprintf("🤖 ULGA NA ROBOTYZACJĘ — Koszty kwalifikowane: %.2f PLN (zakup: %.2f, szkolenie: %.2f, serwis: %.2f). Odliczenie 50%%: %.2f PLN. WYMÓG: roboty przemysłowe/magazynowe + faktury + dokumentacja techniczna. Musi być NOWY robot (nie używany)!",
-        [total_qualified, robot_purchase, robot_training, robot_maintenance, total_qualified * 0.5])]
-} {
+    "relief_deductible": total_qualified * robotization_rate,
+    "relief_requires_documentation": true,
+    "_routing": robotization_routing(total_qualified),
+    "_routing_reason": sprintf("Ulga robotyzacyjna: %.2f PLN kosztów; odliczenie %.2f PLN.", [total_qualified, total_qualified * robotization_rate]),
+    "_legal_basis": "Art. 26gb PIT",
+    "_warnings": ["Potwierdź, że koszty dotyczą kwalifikowanych robotów i są udokumentowane; wynik nie jest automatyczną decyzją podatkową."]
+} if {
+    input.pit_robotization_check == true
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
-    pit_form in {"PIT_SCALE", "LINEAR"}
-
-    robot_purchase := object.get(input.jdg_entrepreneur, "robotization_purchase_costs", 0.0)
-    robot_training := object.get(input.jdg_entrepreneur, "robotization_training_costs", 0.0)
-    robot_maintenance := object.get(input.jdg_entrepreneur, "robotization_maintenance_first_year", 0.0)
-
+    form_allows_relief(pit_form)
+    robot_purchase := max([0, object.get(input.jdg_entrepreneur, "robotization_purchase_costs", 0)])
+    robot_training := max([0, object.get(input.jdg_entrepreneur, "robotization_training_costs", 0)])
+    robot_maintenance := max([0, object.get(input.jdg_entrepreneur, "robotization_maintenance_first_year", 0)])
     total_qualified := robot_purchase + robot_training + robot_maintenance
     total_qualified > 0
-
-    robot_rt = "TRIAGE_QUEUE" { total_qualified > 200000 }
-    robot_rt = "" { true }
+    robotization_rate := object.get(thresholds.pit, "robotization_relief_rate", 0.50)
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# R999: summary — Raport pokrycia brakujących ulg
-# ═══════════════════════════════════════════════════════════════════════════════
 else := {
     "matched": true,
     "rule_id": "jdg.pit.missing_reliefs.coverage_summary",
     "package": "jdg.pit.missing_reliefs",
     "priority": 999,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
+    "recommendation_only": true,
+    "requires_documentation": true,
+    "evaluation_year": evaluation_year(input),
     "relief_coverage": {
-        "LOSS_CARRY_FORWARD": "R400-R401 (Art. 9 ust. 3 PIT) ✅ NOWE",
-        "REHABILITATION": "R650 (Art. 26 ust. 1 pkt 6 PIT) ✅ NOWE",
-        "INTERNET": "R660-R661 (Art. 26 ust. 1 pkt 6a PIT) ✅ NOWE",
-        "BLOOD_DONATION": "R670 (Art. 26 ust. 1 pkt 9c PIT) ✅ NOWE",
-        "CHILD_TAX_CREDIT": "R680 (Art. 27f PIT) ✅ NOWE",
-        "EXPANSION": "R690 (Art. 26ec PIT) ✅ NOWE",
-        "ROBOTIZATION": "R700 (Art. 26gb PIT) ✅ NOWE"
+        "LOSS_CARRY_FORWARD": "active loss audit",
+        "REHABILITATION": "documentation-gated",
+        "INTERNET": "two-year limit",
+        "BLOOD_DONATION": "income-limited",
+        "CHILD_TAX_CREDIT": "scale-only",
+        "EXPANSION": "cost and legal-condition audit",
+        "ROBOTIZATION": "qualified-cost audit"
     },
     "total_new_rules": 7,
     "generated_from": "RAPORT_04_PIT_CORE.txt",
     "_routing": "",
-    "_routing_reason": "Raport pokrycia P0/P1 — 7 nowych reguł z Raportu 04",
-    "_legal_basis": "Ustawa PIT (Dz.U. 2025 poz. 789)",
-    "_warnings": ["📋 RAPORT 04 P0/P1 — Dodano 7 brakujących reguł ulg PIT: strata aktywna, rehabilitacyjna, internetowa, krwiodawstwo, dzieci, ekspansja, robotyzacja. Pokrycie Art. 9, 26, 26ec, 26gb, 27f PIT."]
-} {
-    1 == 1
+    "_routing_reason": "Jawne podsumowanie pokrycia raportu 04.",
+    "_legal_basis": "Art. 9, 26, 26ec, 26gb and 27f PIT",
+    "_warnings": ["Podsumowanie ma charakter audytowy; rekomendacje wymagają dokumentów i weryfikacji."]
+} if {
+    input.pit_missing_reliefs_summary == true
 }

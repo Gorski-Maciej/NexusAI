@@ -1,0 +1,252 @@
+====================================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 15/25 — KSeF / JPK / e-DEKLARACJE / e-DORĘCZENIA / WIS / GTU (obowiązki elektroniczne)
+====================================================================================================
+Data wygenerowania: 2026-08-10 | Źródło sterujące: 15_KSeF_JPK_e-DEKLARACJE_e-DORĘCZENIA_WIS_GTU_o.txt
+Status raportu: AUDYT OPARTY NA DOWODACH
+Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
+UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
+
+1. EXECUTIVE SUMMARY
+- Zakres promptu: Przeprowadź głębokie myślenie i przeprowadź głęboką analizę modułu KSeF/JPK/e-DEKLARACJE na zaawansowanym poziomie Enterprise. Priorytet: **KSeF 2.0 (obowiązek 01.02.2026, sankcje do 500 000 zł)** — generacja XML, walidacja XSD, wysyłka online/offline (7 dni), UPO, firewall, monitor sankcji, sandbox; JPK_V7M (auto-generacja, GTU, kody), JPK_CIT, JPK_KR/ST, deklaracje VAT-7; e-Doręczenia (edelivery_gateway_enterprise/v2, epuap_enterprise), WIS (wis_api_enterprise, wis_autorequester, rules/wis/*), GTU (gtu_completeness_checker_enterprise), cross_declaration_validator_enterprise, corrections.rego, ksef_jpk.rego, rules/jpk/plan26_deadlines.rego, micro/jpk/jpk.rego, micro/ksef/ksef.rego, p17_ksef_jpk_edeklaracje_innovations_v9, _compliance_rates.rego oraz ksef_*_enterprise (10 plików) i jpk_*_enterprise (4 pliki). Sprawdź kompletność łańcucha: faktura → KSeF → UPO → JPK → deklaracja → audyt. Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów: silnik „zero ręcznej pracy" dla KSeF (offline queue z retry, firewall przed błędnym NIP), auto-uzupełnianie GTU z analizą semantyczną, monitor sankcji w czasie rzeczywistym, korelator deklaracji (VAT-7 ≡ JPK_V7M ≡ księgi).
+- Rozwiązane ścieżki promptu: 50/50; brakujące: 0.
+- Przeanalizowane unikalne pliki: 50 (38 Rego), 14,312 linii, 788,347 B.
+- Zaobserwowane rule_id: 506, unikalne: 504, duplikaty w zakresie: 2.
+- Pliki Rego z polem valid_from/valid_to w próbie: 0/38 (0.0%).
+- Wystąpienia _legal_basis w próbie: 476; pakiety Rego: 36.
+- Dopasowane testy domenowe po nazwie pliku: 20.
+
+TOP 10 USTALEŃ / REKOMENDACJI
+01. P0: Zamknąć 0 nierozwiązanych odwołań promptu albo zaktualizować prompt; nie wolno traktować braku pliku jako dowodu implementacji.
+02. P0: Ustalić bramkę spójności dla 504 unikalnych rule_id; wykryte duplikaty w zakresie: 2.
+03. P0: Wymagać testu pozytywnego, granicznego, negatywnego/no_match i temporalnego dla każdej krytycznej reguły.
+04. P0: Powiązać każdą regułę materialną z kanonicznym _legal_basis oraz rekordem w Legal Twin; nie ufać samemu komentarzowi.
+05. P1: Podnieść temporalność: obecnie wykryto ją w 0/38 plików Rego w zakresie audytu.
+06. P1: Parametry stawek, progów, limitów i terminów trzymać w danych wersjonowanych; wykrywać hardcode w CI.
+07. P1: Dodać golden replay i diff werdyktów przed kanarem; zmiana prawa musi mieć datę wejścia i datę wygaśnięcia.
+08. P1: Dopiąć provenance: input → rule_id → podstawa → test → bundle → Decision Certificate.
+09. P2: Utworzyć dashboard pokrycia domeny z rozróżnieniem: istnieje kod, istnieje test, istnieje podstawa, działa w routerze.
+10. P2: Oznaczać rekomendacje jako SUGGEST/ASK_USER; raport nie powinien prowadzić do automatycznej decyzji podatkowej.
+
+2. DOWÓD Z REPOZYTORIUM
+2.1. Rozwiązanie ścieżek wskazanych przez prompt
+| Ścieżka z promptu | Rozwiązanie | Tryb |
+|---|---|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | wprost |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | `docs/WIZJA_OPA_ENTERPRISE_V2.md` | wprost |
+| `docs/Bbb` | `docs/Bbb` | wprost |
+| `docs/LEGAL_REFERENCE_ACTS.md` | `docs/LEGAL_REFERENCE_ACTS.md` | wprost |
+| `docs/LEGAL_COVERAGE.md` | `docs/LEGAL_COVERAGE.md` | wprost |
+| `rules/ksef_jpk.rego` | `rules/ksef_jpk.rego` | wprost |
+| `rules/ksef_innovations_enterprise.rego` | `rules/ksef_innovations_enterprise.rego` | wprost |
+| `rules/ksef_upo_tracker_enterprise.rego` | `rules/ksef_upo_tracker_enterprise.rego` | wprost |
+| `rules/ksef_sanction_monitor_enterprise.rego` | `rules/ksef_sanction_monitor_enterprise.rego` | wprost |
+| `rules/ksef_outbox_enterprise.rego` | `rules/ksef_outbox_enterprise.rego` | wprost |
+| `rules/ksef_firewall_enterprise.rego` | `rules/ksef_firewall_enterprise.rego` | wprost |
+| `rules/ksef_offline_queue_enterprise.rego` | `rules/ksef_offline_queue_enterprise.rego` | wprost |
+| `rules/ksef_receipt_digest_enterprise.rego` | `rules/ksef_receipt_digest_enterprise.rego` | wprost |
+| `rules/ksef_resilience_enterprise.rego` | `rules/ksef_resilience_enterprise.rego` | wprost |
+| `rules/ksef_sandbox_harness_enterprise.rego` | `rules/ksef_sandbox_harness_enterprise.rego` | wprost |
+| `rules/jpk_cit.rego` | `rules/jpk_cit.rego` | wprost |
+| `rules/jpk_v7_autogen_enterprise.rego` | `rules/jpk_v7_autogen_enterprise.rego` | wprost |
+| `rules/jpk_corrections_workflow_enterprise.rego` | `rules/jpk_corrections_workflow_enterprise.rego` | wprost |
+| `rules/jpk_kr_st_generator_enterprise.rego` | `rules/jpk_kr_st_generator_enterprise.rego` | wprost |
+| `rules/jpk/plan26_deadlines.rego` | `rules/jpk/plan26_deadlines.rego` | wprost |
+| `rules/micro/jpk/jpk.rego` | `rules/micro/jpk/jpk.rego` | wprost |
+| `rules/micro/ksef/ksef.rego` | `rules/micro/ksef/ksef.rego` | wprost |
+| `rules/micro/plan33_jpk.rego` | `rules/micro/plan33_jpk.rego` | wprost |
+| `rules/micro/plan33_ksef.rego` | `rules/micro/plan33_ksef.rego` | wprost |
+| `rules/cross_declaration_validator_enterprise.rego` | `rules/cross_declaration_validator_enterprise.rego` | wprost |
+| `rules/gtu_completeness_checker_enterprise.rego` | `rules/gtu_completeness_checker_enterprise.rego` | wprost |
+| `rules/edelivery_gateway_enterprise.rego` | `rules/edelivery_gateway_enterprise.rego` | wprost |
+| `rules/edelivery_gateway_v2_enterprise.rego` | `rules/edelivery_gateway_v2_enterprise.rego` | wprost |
+| `rules/edelivery/plan44_edelivery.rego` | `rules/edelivery/plan44_edelivery.rego` | wprost |
+| `rules/edelivery/plan45_edelivery.rego` | `rules/edelivery/plan45_edelivery.rego` | wprost |
+| `rules/epuap_enterprise.rego` | `rules/epuap_enterprise.rego` | wprost |
+| `rules/wis_api_enterprise.rego` | `rules/wis_api_enterprise.rego` | wprost |
+| `rules/wis_autorequester_enterprise.rego` | `rules/wis_autorequester_enterprise.rego` | wprost |
+| `rules/wis/plan44_wis.rego` | `rules/wis/plan44_wis.rego` | wprost |
+| `rules/wis/plan45_wis.rego` | `rules/wis/plan45_wis.rego` | wprost |
+| `rules/corrections.rego` | `rules/corrections.rego` | wprost |
+| `rules/_compliance_rates.rego` | `rules/_compliance_rates.rego` | wprost |
+| `rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego` | `rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego` | wprost |
+| `tests/test_ksef_generator.py` | `tests/test_ksef_generator.py` | wprost |
+| `tests/auto/test_auto_block_edelivery.py` | `tests/auto/test_auto_block_edelivery.py` | wprost |
+| `tests/auto/test_auto_block_ksef_jpk.py` | `tests/auto/test_auto_block_ksef_jpk.py` | wprost |
+| `tests/auto/test_auto_block_ksef_resilience.py` | `tests/auto/test_auto_block_ksef_resilience.py` | wprost |
+| `tests/auto/test_auto_block_wis.py` | `tests/auto/test_auto_block_wis.py` | wprost |
+| `tests/auto/test_p15_srodowisko_bdo_enterprise.py` | `tests/auto/test_p15_srodowisko_bdo_enterprise.py` | wprost |
+| `tests/auto/test_p17_ksef_jpk_edeklaracje_enterprise.py` | `tests/auto/test_p17_ksef_jpk_edeklaracje_enterprise.py` | wprost |
+| `tests/rego/test_native_edelivery_gateway_enterprise.rego` | `tests/rego/test_native_edelivery_gateway_enterprise.rego` | wprost |
+| `tests/rego/test_native_gtu_completeness_checker_enterprise.rego` | `tests/rego/test_native_gtu_completeness_checker_enterprise.rego` | wprost |
+| `tests/rego/test_native_jdg_jpk.rego` | `tests/rego/test_native_jdg_jpk.rego` | wprost |
+| `tests/rego/test_native_jpk_corrections_workflow_enterprise.rego` | `tests/rego/test_native_jpk_corrections_workflow_enterprise.rego` | wprost |
+| `tests/rego/test_native_jpk_kr_st_generator_enterprise.rego` | `tests/rego/test_native_jpk_kr_st_generator_enterprise.rego` | wprost |
+
+2.2. Ścieżki nierozwiązane — nie są dowodem istnienia funkcji
+- brak
+
+2.3. Statystyki artefaktów
+| Plik | Linie | Bajty | rule_id | _legal_basis | temporal | package |
+|---|---:|---:|---:|---:|---:|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | 425 | 35383 | 0 | 0 | 14 |  |
+| `docs/Bbb` | 238 | 20680 | 0 | 0 | 0 |  |
+| `docs/LEGAL_COVERAGE.md` | 270 | 13940 | 0 | 0 | 0 |  |
+| `docs/LEGAL_REFERENCE_ACTS.md` | 163 | 15878 | 0 | 0 | 0 |  |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | 399 | 34502 | 0 | 0 | 3 |  |
+| `rules/_compliance_rates.rego` | 100 | 4651 | 0 | 0 | 0 | jdg.compliance_rates |
+| `rules/corrections.rego` | 485 | 16235 | 20 | 19 | 0 | jdg.corrections |
+| `rules/cross_declaration_validator_enterprise.rego` | 382 | 11270 | 5 | 4 | 0 | jdg.cross_validator |
+| `rules/edelivery/plan44_edelivery.rego` | 57 | 7299 | 9 | 8 | 0 | jdg.edelivery |
+| `rules/edelivery/plan45_edelivery.rego` | 138 | 16283 | 42 | 41 | 0 | jdg.edelivery.hyper |
+| `rules/edelivery_gateway_enterprise.rego` | 212 | 7822 | 4 | 3 | 0 | jdg.edelivery_gateway |
+| `rules/edelivery_gateway_v2_enterprise.rego` | 175 | 5924 | 0 | 0 | 0 | jdg.enterprise.edelivery_gateway |
+| `rules/epuap_enterprise.rego` | 258 | 11861 | 4 | 3 | 0 | jdg.epuap |
+| `rules/gtu_completeness_checker_enterprise.rego` | 153 | 8810 | 4 | 3 | 0 | jdg.gtu_checker |
+| `rules/jpk/plan26_deadlines.rego` | 14 | 1749 | 2 | 1 | 0 | jdg.jpk |
+| `rules/jpk_cit.rego` | 195 | 8781 | 5 | 4 | 0 | jdg.jpk_cit |
+| `rules/jpk_corrections_workflow_enterprise.rego` | 270 | 13420 | 4 | 3 | 0 | jdg.jpk_corrections |
+| `rules/jpk_kr_st_generator_enterprise.rego` | 266 | 14419 | 5 | 4 | 0 | jdg.jpk_kr_st |
+| `rules/jpk_v7_autogen_enterprise.rego` | 475 | 24009 | 8 | 7 | 0 | jdg.jpk_v7_autogen |
+| `rules/ksef_firewall_enterprise.rego` | 236 | 12797 | 4 | 3 | 0 | jdg.ksef_firewall |
+| `rules/ksef_innovations_enterprise.rego` | 341 | 19369 | 6 | 5 | 0 | jdg.ksef_innovations |
+| `rules/ksef_jpk.rego` | 254 | 14740 | 11 | 10 | 0 | jdg.ksef_jpk |
+| `rules/ksef_offline_queue_enterprise.rego` | 205 | 11427 | 4 | 3 | 0 | jdg.ksef_offline_queue |
+| `rules/ksef_outbox_enterprise.rego` | 241 | 14202 | 5 | 4 | 0 | jdg.ksef_outbox |
+| `rules/ksef_receipt_digest_enterprise.rego` | 168 | 9736 | 4 | 3 | 0 | jdg.ksef_receipt_digest |
+| `rules/ksef_resilience_enterprise.rego` | 477 | 27070 | 8 | 7 | 0 | jdg.ksef_resilience |
+| `rules/ksef_sanction_monitor_enterprise.rego` | 156 | 9095 | 3 | 2 | 0 | jdg.ksef_sanction_monitor |
+| `rules/ksef_sandbox_harness_enterprise.rego` | 170 | 9502 | 4 | 3 | 0 | jdg.ksef_sandbox |
+| `rules/ksef_upo_tracker_enterprise.rego` | 205 | 11300 | 4 | 3 | 0 | jdg.ksef_upo_tracker |
+| `rules/micro/jpk/jpk.rego` | 1015 | 32104 | 36 | 35 | 0 | jdg.micro.jpk |
+| `rules/micro/ksef/ksef.rego` | 2275 | 74132 | 80 | 79 | 0 | jdg.micro.ksef |
+| `rules/micro/plan33_jpk.rego` | 357 | 50963 | 71 | 70 | 0 | jdg.micro.jpk |
+| `rules/micro/plan33_ksef.rego` | 378 | 56403 | 75 | 74 | 0 | jdg.micro.ksef |
+| `rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego` | 955 | 50153 | 30 | 29 | 0 | jdg.p17_ksef_jpk_edeklaracje_innovations |
+| `rules/wis/plan44_wis.rego` | 58 | 6937 | 9 | 8 | 0 | jdg.wis |
+| `rules/wis/plan45_wis.rego` | 130 | 13582 | 36 | 35 | 0 | jdg.wis.hyper |
+| `rules/wis_api_enterprise.rego` | 208 | 11263 | 4 | 3 | 0 | jdg.wis_api |
+| `rules/wis_autorequester_enterprise.rego` | 131 | 7548 | 0 | 0 | 0 | jdg.enterprise.wis_autorequester |
+| `tests/auto/test_auto_block_edelivery.py` | 179 | 7444 | 10 | 0 | 0 |  |
+| `tests/auto/test_auto_block_ksef_jpk.py` | 77 | 3111 | 4 | 0 | 0 |  |
+| `tests/auto/test_auto_block_ksef_resilience.py` | 43 | 1824 | 2 | 0 | 0 |  |
+| `tests/auto/test_auto_block_wis.py` | 43 | 1605 | 2 | 0 | 0 |  |
+| `tests/auto/test_p15_srodowisko_bdo_enterprise.py` | 520 | 24911 | 0 | 0 | 0 |  |
+| `tests/auto/test_p17_ksef_jpk_edeklaracje_enterprise.py` | 463 | 21516 | 0 | 0 | 0 |  |
+| `tests/rego/test_native_edelivery_gateway_enterprise.rego` | 59 | 2262 | 0 | 0 | 0 | test_jdg_edelivery_gateway |
+| `tests/rego/test_native_gtu_completeness_checker_enterprise.rego` | 76 | 2425 | 0 | 0 | 0 | test_jdg_gtu_checker |
+| `tests/rego/test_native_jdg_jpk.rego` | 22 | 908 | 0 | 0 | 0 | test_jdg_jpk |
+| `tests/rego/test_native_jpk_corrections_workflow_enterprise.rego` | 59 | 2335 | 0 | 0 | 0 | test_jdg_jpk_corrections |
+| `tests/rego/test_native_jpk_kr_st_generator_enterprise.rego` | 71 | 2566 | 0 | 0 | 0 | test_jdg_jpk_kr_st |
+| `tests/test_ksef_generator.py` | 65 | 2201 | 0 | 0 | 0 |  |
+
+3. ANALIZA PRAWO → REGUŁA → TEST → WERDYKT
+Przeprowadź głębokie myślenie nad łańcuchem dowodowym, ale nie utożsamiaj obecności tekstu z poprawnością prawną.
+- PRAWO: prompt wskazuje akty i artykuły; raport wymaga potwierdzenia w docs/Bbb/LEGAL_REFERENCE_ACTS oraz kanonicznego identyfikatora aktu.
+- REGUŁA: w wybranych plikach znaleziono 506 deklarowanych rule_id (504 unikalnych); przykładowe obserwacje:
+  - rules/_compliance_rates.rego: package=jdg.compliance_rates
+  - rules/corrections.rego: rule_id=20, przykłady=jdg.corrections.no_match, jdg.corrections.storno_type, jdg.corrections.jpk_amendment_code
+  - rules/cross_declaration_validator_enterprise.rego: rule_id=5, przykłady=jdg.cross_validator.no_match, jdg.cross_validator.jpk_vs_pit_revenue, jdg.cross_validator.pit_vs_zus_income
+  - rules/edelivery/plan44_edelivery.rego: rule_id=9, przykłady=jdg.edelivery.no_match, jdg.edelivery.fiction_detection, jdg.edelivery.platform_monitoring
+  - rules/edelivery/plan45_edelivery.rego: rule_id=42, przykłady=jdg.edelivery.hyper.no_match, jdg.edelivery.hyper.registration_mandatory, jdg.edelivery.hyper.registration_deadline
+  - rules/edelivery_gateway_enterprise.rego: rule_id=4, przykłady=jdg.edelivery_gateway.no_match, jdg.edelivery_gateway.delivery_status, jdg.edelivery_gateway.eus_scanner
+  - rules/edelivery_gateway_v2_enterprise.rego: package=jdg.enterprise.edelivery_gateway
+  - rules/epuap_enterprise.rego: rule_id=4, przykłady=jdg.epuap.no_match, jdg.epuap.delivery_status, jdg.epuap.sending_instructions
+  - rules/gtu_completeness_checker_enterprise.rego: rule_id=4, przykłady=jdg.gtu_checker.no_match, jdg.gtu_checker.completeness_audit, jdg.gtu_checker.per_invoice_validation
+  - rules/jpk/plan26_deadlines.rego: rule_id=2, przykłady=jdg.jpk.no_match, jdg.jpk.filing_deadlines_detailed
+  - rules/jpk_cit.rego: rule_id=5, przykłady=jdg.jpk_cit.no_match, jdg.jpk_cit.cit_calculation_standard, jdg.jpk_cit.cit_calculation_estonian
+  - rules/jpk_corrections_workflow_enterprise.rego: rule_id=4, przykłady=jdg.jpk_corrections.no_match, jdg.jpk_corrections.correction_need_detection, jdg.jpk_corrections.correction_autogen
+  - rules/jpk_kr_st_generator_enterprise.rego: rule_id=5, przykłady=jdg.jpk_kr_st.no_match, jdg.jpk_kr_st.kr_eligibility_check, jdg.jpk_kr_st.kr_structure_generator
+  - rules/jpk_v7_autogen_enterprise.rego: rule_id=8, przykłady=jdg.jpk_v7.no_match, jdg.jpk_v7.sales_register_autofill, jdg.jpk_v7.purchase_register_autofill
+  - rules/ksef_firewall_enterprise.rego: rule_id=4, przykłady=jdg.ksef_firewall.no_match, jdg.ksef_firewall.firewall_status, jdg.ksef_firewall.rate_limiter
+  - rules/ksef_innovations_enterprise.rego: rule_id=6, przykłady=jdg.ksef_innovations.no_match, jdg.ksef_innovations.upo_tracker, jdg.ksef_innovations.sanction_exposure_calculator
+  - rules/ksef_jpk.rego: rule_id=11, przykłady=jdg.ksef_jpk.no_match, jdg.ksef_jpk.token_stale, jdg.ksef_jpk.ksef_mandatory
+  - rules/ksef_offline_queue_enterprise.rego: rule_id=4, przykłady=jdg.ksef_offline_queue.no_match, jdg.ksef_offline_queue.queue_status, jdg.ksef_offline_queue.priority_dispatch
+  - rules/ksef_outbox_enterprise.rego: rule_id=5, przykłady=jdg.ksef_outbox.no_match, jdg.ksef_outbox.enqueue_invoice, jdg.ksef_outbox.dispatch_invoice
+  - rules/ksef_receipt_digest_enterprise.rego: rule_id=4, przykłady=jdg.ksef_receipt_digest.no_match, jdg.ksef_receipt_digest.digest_poll, jdg.ksef_receipt_digest.receipt_jpk_reconciliation
+- TEST: dopasowanie nazwy pliku testowego nie dowodzi wykonania testu; należy uruchomić pytest/opa test i zapisać wynik w CI.
+- WERDYKT: należy zweryfikować, czy pakiety (36) są rzeczywiście włączone przez router, safe_merge i końcowy invariant check.
+- DATA: wartości liczbowe należy porównać z bundle canonical; ten generator nie uznaje samego literalnego wystąpienia liczby za potwierdzenie jej prawidłowości.
+
+4. REJESTR LUK I RYZYK
+| ID | Obserwacja | Dowód | Wpływ | Priorytet | Kryterium zamknięcia |
+|---|---|---|---|---|---|
+| G-01 | Brakujące ścieżki źródłowe: 0 | Tabela 2.2 | Niepełny audyt | P0 | 0 braków albo jawne mapowanie migracyjne |
+| G-02 | Duplikaty rule_id w próbie: 2 | jdg.micro.jpk.no_match, jdg.micro.ksef.no_match | Niedeterminizm / kolizja | P0 | dead_rule_detector = 0 |
+| G-03 | Brak temporalności w 38/38 plików Rego | Tabela 2.3 | Błędny time-travel | P1 | valid_from/valid_to + test graniczny |
+| G-04 | Niepotwierdzony most test → reguła → werdykt | Brak wyniku uruchomienia w raporcie | Cichy regres | P1 | coverage + golden replay |
+| G-05 | Niepotwierdzona kanoniczność podstaw prawnych | _legal_basis=476 | Ryzyko błędnej podstawy | P0 | Legal Twin i validator przechodzą |
+| G-06 | Brak dowodu wdrożenia kanarowego | Prompt opisuje wymaganie; repo wymaga weryfikacji runtime | Niebezpieczny release | P1 | metryki + auto-rollback test |
+
+5. OPA JAKO SYSTEM
+Control Plane: rejestr reguł, review, walidacja, podpisany bundle, Legal Twin, kanar i rollback.
+Data Plane: deterministyczna ewaluacja, First-Match-Wins, safe_merge, temporalność, provenance i runtime invariants.
+Minimalny kontrakt wydania:
+```text
+change request → legal diff → rule/test diff → validate/lint → pytest + opa test
+→ legal-basis gate → duplicate/stub/tautology gate → golden replay
+→ signed bundle → canary → health metrics → ACTIVE albo ROLLED_BACK
+```
+Każdy etap musi pozostawić artefakt, wersję i hash; sam raport analityczny nie zmienia lifecycle reguły.
+
+6. TESTY I WALIDACJA
+| Test / grupa | Stan istnienia | Wymagany dowód |
+|---|---|---|
+| `tests/auto/test_auto_block_ksef_jpk.py` | istnieje, 77 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/auto/test_auto_block_ksef_resilience.py` | istnieje, 43 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/auto/test_p17_ksef_jpk_edeklaracje_enterprise.py` | istnieje, 463 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/micro/test_native_micro_jpk.rego` | istnieje, 130 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/micro/test_native_micro_ksef.rego` | istnieje, 130 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_jdg_jpk.rego` | istnieje, 22 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_jpk_corrections_workflow_enterprise.rego` | istnieje, 59 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_jpk_kr_st_generator_enterprise.rego` | istnieje, 71 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_jpk_v7_autogen_enterprise.rego` | istnieje, 107 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_ksef_firewall_enterprise.rego` | istnieje, 59 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_ksef_innovations_enterprise.rego` | istnieje, 83 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_ksef_offline_queue_enterprise.rego` | istnieje, 59 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_ksef_outbox_enterprise.rego` | istnieje, 71 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_ksef_receipt_digest_enterprise.rego` | istnieje, 59 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_ksef_resilience_enterprise.rego` | istnieje, 107 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_ksef_sanction_monitor_enterprise.rego` | istnieje, 47 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_ksef_sandbox_harness_enterprise.rego` | istnieje, 59 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_ksef_upo_tracker_enterprise.rego` | istnieje, 59 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_p17_ksef_jpk_edeklaracje_enterprise.rego` | istnieje, 438 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/test_ksef_generator.py` | istnieje, 65 linii | uruchomienie + wynik + przypadki graniczne |
+Rekomendowany zestaw: happy path, no_match, granice progów, data przed/po nowelizacji, duplikat/konflikt, brak danych, rollback i determinism replay.
+
+7. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+01. Legal Twin diff: zmiana artykułu automatycznie pokazuje dotknięte rule_id, testy i formularze.
+02. Temporal boundary generator: automatyczne przypadki dzień przed / dzień wejścia / dzień po.
+03. Decision Certificate verifier: podpis, bundle_version, rule_version, threshold_version i hash wejścia.
+04. Rule impact graph: graf zależności reguła → router → werdykt → dokument.
+05. Evidence completeness score: osobne wyniki dla prawa, kodu, testu, danych i runtime.
+06. Golden replay bank per domena i wersja prawa, z tolerancją wyłącznie dla pól niedeterministycznych.
+07. Declarative Change Wizard z obowiązkowym ASK_USER przy niejednoznacznej podstawie prawnej.
+08. Canary risk budget: automatyczny rollback po wzroście BLOCK_AND_ALERT lub zmianie rozkładu werdyktów.
+09. Hardcode provenance scanner: literal → źródło danych → data obowiązywania → test.
+10. Coverage desert radar: mapa aktów i pakietów bez reguł, bez testów albo bez routera.
+11. Explainability bundle: dowód decyzji eksportowany razem z wersją reguły i podstawą prawną.
+12. Mutation testing dla najważniejszych rule_id; brak wykrycia mutacji blokuje promocję do ACTIVE.
+Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, że funkcje istnieją.
+
+8. KONTRAKTY Z INNYMI CZĘŚCIAMI
+- Raport master 00: wspólne LCI/TCL/RV/UVR, _legal_basis, valid_from/valid_to, rule_id, 25-polowy werdykt.
+- Pakiety wykryte w bieżącym zakresie: jdg.compliance_rates, jdg.corrections, jdg.cross_validator, jdg.edelivery, jdg.edelivery.hyper, jdg.edelivery_gateway, jdg.enterprise.edelivery_gateway, jdg.enterprise.wis_autorequester, jdg.epuap, jdg.gtu_checker, jdg.jpk, jdg.jpk_cit, jdg.jpk_corrections, jdg.jpk_kr_st, jdg.jpk_v7_autogen, jdg.ksef_firewall, jdg.ksef_innovations, jdg.ksef_jpk, jdg.ksef_offline_queue, jdg.ksef_outbox, jdg.ksef_receipt_digest, jdg.ksef_resilience, jdg.ksef_sanction_monitor, jdg.ksef_sandbox, jdg.ksef_upo_tracker, jdg.micro.jpk, jdg.micro.ksef, jdg.p17_ksef_jpk_edeklaracje_innovations, jdg.wis, jdg.wis.hyper.
+- Części sąsiednie muszą traktować powyższe nazwy jako obserwację, nie jako zgodę na dodawanie reguł bez rejestracji.
+- Zmiana rule_id wymaga aktualizacji routera, manifestu, testów, bundle, dokumentacji i golden replay.
+
+9. MAPA DROGOWA
+| Etap | Zadanie | Kryterium | Szacunek |
+|---|---|---|---|
+| P0 | Uzupełnić/uzgodnić źródła i legal basis | 0 braków, validator OK | 1–3 dni |
+| P0 | Zbudować testy krytycznych rule_id | positive/negative/boundary | 2–5 dni |
+| P1 | Wdrożyć temporalny golden replay | przejścia dat bez regresji | 2–5 dni |
+| P1 | Podłączyć provenance i Decision Certificate | pełny łańcuch dowodu | 2–5 dni |
+| P1 | Kanar + metryki + rollback | test SLA i failure injection | 1–2 tyg. |
+| P2 | Dashboard coverage/evidence | trend domeny per bundle | 1–2 tyg. |
+
+10. WNIOSKI KOŃCOWE
+Audyt części 15 potwierdza istnienie 50 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
+Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+KONIEC RAPORTU 15/25 — raport wygenerowany z promptu 15_KSeF_JPK_e-DEKLARACJE_e-DORĘCZENIA_WIS_GTU_o.txt
+====================================================================================================

@@ -1,0 +1,221 @@
+====================================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 11/25 — PCC / PODATKI LOKALNE / AKCYZĄ (nieruchomości, środki transportu, umowy, paliwo, alkohol)
+====================================================================================================
+Data wygenerowania: 2026-08-10 | Źródło sterujące: 11_PCC_PODATKI_LOKALNE_AKCYZĄ_nieruchomości_śro.txt
+Status raportu: AUDYT OPARTY NA DOWODACH
+Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
+UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
+
+1. EXECUTIVE SUMMARY
+- Zakres promptu: Przeprowadź głębokie myślenie i przeprowadź głęboką analizę modułu PCC/LOKALNE/AKCYZA na zaawansowanym poziomie Enterprise. **Pokrycie PCC+lokalne+akcyza wg LEGAL_COVERAGE.md ~1% (225 pkt) — NAJWIĘKSZA LUKA!** Oceń: local_taxes.rego, rules/local_taxes/* (10 plików: pcc.rego, pcc_enterprise_complete, pcc_excise_enterprise, excise_enterprise_complete, local_procedures_enterprise, plan26_local, real_estate, transport, akcyza_fuel, akcyza_alcohol), micro/pcc/pcc.rego, micro/akcyza (katalog — 1 plik), micro/transport/transport.rego, p14_pcc_lokalne_akcyza_innovations_v9, p15_pcc_local_excise_innovations_v8, p33_pcc_complete, p33_excise_supplement, _pcc_local_excise_rates.rego. Sprawdź: PCC (umowy sprzedaży, pożyczki, spółki — stawki 0,5%/1%/2%, wyłączenia, obowiązek 14 dni), podatek od nieruchomości (stawki uchwał gmin, budynki/grunty), środki transportu, akcyza (paliwo, alkohol, inne wyroby — legalność obrotu, dokumenty), opłaty lokalne. Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów: silnik „pcc w 1 kliknięcie" (PCC-3 auto), baza stawek lokalnych z temporalnością i hot-reload, klasyfikator wyrobów akcyzowych z pełną podstawą prawną, kalendarz terminów lokalnych.
+- Rozwiązane ścieżki promptu: 41/41; brakujące: 0.
+- Przeanalizowane unikalne pliki: 41 (32 Rego), 20,045 linii, 989,060 B.
+- Zaobserwowane rule_id: 674, unikalne: 671, duplikaty w zakresie: 3.
+- Pliki Rego z polem valid_from/valid_to w próbie: 0/32 (0.0%).
+- Wystąpienia _legal_basis w próbie: 634; pakiety Rego: 30.
+- Dopasowane testy domenowe po nazwie pliku: 7.
+
+TOP 10 USTALEŃ / REKOMENDACJI
+01. P0: Zamknąć 0 nierozwiązanych odwołań promptu albo zaktualizować prompt; nie wolno traktować braku pliku jako dowodu implementacji.
+02. P0: Ustalić bramkę spójności dla 671 unikalnych rule_id; wykryte duplikaty w zakresie: 3.
+03. P0: Wymagać testu pozytywnego, granicznego, negatywnego/no_match i temporalnego dla każdej krytycznej reguły.
+04. P0: Powiązać każdą regułę materialną z kanonicznym _legal_basis oraz rekordem w Legal Twin; nie ufać samemu komentarzowi.
+05. P1: Podnieść temporalność: obecnie wykryto ją w 0/32 plików Rego w zakresie audytu.
+06. P1: Parametry stawek, progów, limitów i terminów trzymać w danych wersjonowanych; wykrywać hardcode w CI.
+07. P1: Dodać golden replay i diff werdyktów przed kanarem; zmiana prawa musi mieć datę wejścia i datę wygaśnięcia.
+08. P1: Dopiąć provenance: input → rule_id → podstawa → test → bundle → Decision Certificate.
+09. P2: Utworzyć dashboard pokrycia domeny z rozróżnieniem: istnieje kod, istnieje test, istnieje podstawa, działa w routerze.
+10. P2: Oznaczać rekomendacje jako SUGGEST/ASK_USER; raport nie powinien prowadzić do automatycznej decyzji podatkowej.
+
+2. DOWÓD Z REPOZYTORIUM
+2.1. Rozwiązanie ścieżek wskazanych przez prompt
+| Ścieżka z promptu | Rozwiązanie | Tryb |
+|---|---|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | wprost |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | `docs/WIZJA_OPA_ENTERPRISE_V2.md` | wprost |
+| `docs/Bbb` | `docs/Bbb` | wprost |
+| `docs/LEGAL_REFERENCE_ACTS.md` | `docs/LEGAL_REFERENCE_ACTS.md` | wprost |
+| `docs/LEGAL_COVERAGE.md` | `docs/LEGAL_COVERAGE.md` | wprost |
+| `rules/local_taxes.rego` | `rules/local_taxes.rego` | wprost |
+| `rules/_pcc_local_excise_rates.rego` | `rules/_pcc_local_excise_rates.rego` | wprost |
+| `rules/p14_pcc_lokalne_akcyza_innovations_v9.rego` | `rules/p14_pcc_lokalne_akcyza_innovations_v9.rego` | wprost |
+| `rules/p15_pcc_local_excise_innovations_v8.rego` | `rules/p15_pcc_local_excise_innovations_v8.rego` | wprost |
+| `rules/p33_pcc_complete.rego` | `rules/p33_pcc_complete.rego` | wprost |
+| `rules/p33_excise_supplement.rego` | `rules/p33_excise_supplement.rego` | wprost |
+| `rules/local_taxes/pcc.rego` | `rules/local_taxes/pcc.rego` | wprost |
+| `rules/local_taxes/pcc_enterprise_complete.rego` | `rules/local_taxes/pcc_enterprise_complete.rego` | wprost |
+| `rules/local_taxes/pcc_excise_enterprise.rego` | `rules/local_taxes/pcc_excise_enterprise.rego` | wprost |
+| `rules/local_taxes/excise_enterprise_complete.rego` | `rules/local_taxes/excise_enterprise_complete.rego` | wprost |
+| `rules/local_taxes/local_procedures_enterprise.rego` | `rules/local_taxes/local_procedures_enterprise.rego` | wprost |
+| `rules/local_taxes/plan26_local.rego` | `rules/local_taxes/plan26_local.rego` | wprost |
+| `rules/local_taxes/real_estate.rego` | `rules/local_taxes/real_estate.rego` | wprost |
+| `rules/local_taxes/transport.rego` | `rules/local_taxes/transport.rego` | wprost |
+| `rules/local_taxes/akcyza_fuel.rego` | `rules/local_taxes/akcyza_fuel.rego` | wprost |
+| `rules/local_taxes/akcyza_alcohol.rego` | `rules/local_taxes/akcyza_alcohol.rego` | wprost |
+| `rules/micro/pcc/pcc.rego` | `rules/micro/pcc/pcc.rego` | wprost |
+| `rules/micro/transport/transport.rego` | `rules/micro/transport/transport.rego` | wprost |
+| `rules/micro/akcyza/akcyza.rego` | `rules/micro/akcyza/akcyza.rego` | wprost |
+| `rules/micro/plan33_pcc.rego` | `rules/micro/plan33_pcc.rego` | wprost |
+| `rules/micro/plan33_prop_transport.rego` | `rules/micro/plan33_prop_transport.rego` | wprost |
+| `rules/micro/plan33_agricultural_tax.rego` | `rules/micro/plan33_agricultural_tax.rego` | wprost |
+| `rules/pcc/pcc_companies.rego` | `rules/pcc/pcc_companies.rego` | wprost |
+| `rules/pcc/pcc_loans.rego` | `rules/pcc/pcc_loans.rego` | wprost |
+| `rules/pcc/pcc_rates.rego` | `rules/pcc/pcc_rates.rego` | wprost |
+| `rules/pcc/pcc_sales.rego` | `rules/pcc/pcc_sales.rego` | wprost |
+| `rules/pcc/plan42_pcc.rego` | `rules/pcc/plan42_pcc.rego` | wprost |
+| `tests/test_pcc_excise_enterprise.py` | `tests/test_pcc_excise_enterprise.py` | wprost |
+| `tests/auto/test_auto_block_local.py` | `tests/auto/test_auto_block_local.py` | wprost |
+| `tests/auto/test_auto_block_local_taxes.py` | `tests/auto/test_auto_block_local_taxes.py` | wprost |
+| `tests/auto/test_p14_pcc_lokalne_akcyza_enterprise.py` | `tests/auto/test_p14_pcc_lokalne_akcyza_enterprise.py` | wprost |
+| `tests/rego/test_native_jdg_pcc.rego` | `tests/rego/test_native_jdg_pcc.rego` | wprost |
+| `tests/rego/test_p14_pcc_lokalne_akcyza_enterprise.rego` | `tests/rego/test_p14_pcc_lokalne_akcyza_enterprise.rego` | wprost |
+| `tests/rego/test_pcc_loans_companies_rates.rego` | `tests/rego/test_pcc_loans_companies_rates.rego` | wprost |
+| `tests/rego/test_pcc_sales.rego` | `tests/rego/test_pcc_sales.rego` | wprost |
+| `tests/rego/micro/test_native_micro_pcc.rego` | `tests/rego/micro/test_native_micro_pcc.rego` | wprost |
+
+2.2. Ścieżki nierozwiązane — nie są dowodem istnienia funkcji
+- brak
+
+2.3. Statystyki artefaktów
+| Plik | Linie | Bajty | rule_id | _legal_basis | temporal | package |
+|---|---:|---:|---:|---:|---:|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | 425 | 35383 | 0 | 0 | 14 |  |
+| `docs/Bbb` | 238 | 20680 | 0 | 0 | 0 |  |
+| `docs/LEGAL_COVERAGE.md` | 270 | 13940 | 0 | 0 | 0 |  |
+| `docs/LEGAL_REFERENCE_ACTS.md` | 163 | 15878 | 0 | 0 | 0 |  |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | 399 | 34502 | 0 | 0 | 3 |  |
+| `rules/_pcc_local_excise_rates.rego` | 281 | 13050 | 0 | 0 | 0 | jdg.pcc_local_excise_rates |
+| `rules/local_taxes/akcyza_alcohol.rego` | 311 | 12696 | 21 | 20 | 0 | jdg.akcyza.alcohol_tobacco |
+| `rules/local_taxes/akcyza_fuel.rego` | 280 | 11287 | 19 | 18 | 0 | jdg.akcyza.fuel_energy |
+| `rules/local_taxes/excise_enterprise_complete.rego` | 645 | 41400 | 16 | 15 | 0 | jdg.local_taxes.excise_enterprise |
+| `rules/local_taxes/local_procedures_enterprise.rego` | 750 | 48553 | 16 | 15 | 0 | jdg.local_taxes.procedures_enterprise |
+| `rules/local_taxes/pcc.rego` | 182 | 7234 | 4 | 3 | 0 | jdg.local_taxes.pcc |
+| `rules/local_taxes/pcc_enterprise_complete.rego` | 1050 | 67743 | 52 | 51 | 0 | jdg.local_taxes.pcc_enterprise |
+| `rules/local_taxes/pcc_excise_enterprise.rego` | 507 | 32209 | 19 | 18 | 0 | jdg.local.enterprise |
+| `rules/local_taxes/plan26_local.rego` | 39 | 5808 | 7 | 6 | 0 | jdg.local_taxes |
+| `rules/local_taxes/real_estate.rego` | 127 | 5492 | 3 | 2 | 0 | jdg.local_taxes.real_estate |
+| `rules/local_taxes/transport.rego` | 84 | 3723 | 2 | 1 | 0 | jdg.local_taxes.transport |
+| `rules/local_taxes.rego` | 569 | 32879 | 28 | 27 | 0 | jdg.local_taxes |
+| `rules/micro/akcyza/akcyza.rego` | 3640 | 128317 | 133 | 132 | 0 | jdg.micro.akcyza |
+| `rules/micro/pcc/pcc.rego` | 2567 | 83255 | 90 | 89 | 0 | jdg.micro.pcc |
+| `rules/micro/plan33_agricultural_tax.rego` | 32 | 3869 | 6 | 5 | 0 | jdg.micro.agricultural_tax |
+| `rules/micro/plan33_pcc.rego` | 302 | 41427 | 60 | 59 | 0 | jdg.micro.pcc |
+| `rules/micro/plan33_prop_transport.rego` | 32 | 3973 | 6 | 5 | 0 | jdg.micro.prop_transport |
+| `rules/micro/transport/transport.rego` | 1279 | 42132 | 45 | 44 | 0 | jdg.micro.transport |
+| `rules/p14_pcc_lokalne_akcyza_innovations_v9.rego` | 613 | 37293 | 25 | 24 | 0 | jdg.p14_pcc_lokalne_akcyza_innovations |
+| `rules/p15_pcc_local_excise_innovations_v8.rego` | 1230 | 67482 | 14 | 0 | 0 | jdg.p15_innovations |
+| `rules/p33_excise_supplement.rego` | 447 | 25521 | 8 | 7 | 0 | jdg.p33_excise_supplement |
+| `rules/p33_pcc_complete.rego` | 435 | 24581 | 7 | 5 | 0 | jdg.p33_pcc_complete |
+| `rules/pcc/pcc_companies.rego` | 292 | 11702 | 20 | 19 | 0 | jdg.pcc.exchanges_companies |
+| `rules/pcc/pcc_loans.rego` | 246 | 9262 | 16 | 15 | 0 | jdg.pcc.loans |
+| `rules/pcc/pcc_rates.rego` | 370 | 14177 | 26 | 25 | 0 | jdg.pcc.rate_changes |
+| `rules/pcc/pcc_sales.rego` | 384 | 14511 | 26 | 25 | 0 | jdg.pcc.sales_agreements |
+| `rules/pcc/plan42_pcc.rego` | 29 | 3952 | 5 | 4 | 0 | jdg.pcc |
+| `tests/auto/test_auto_block_local.py` | 179 | 7292 | 10 | 0 | 0 |  |
+| `tests/auto/test_auto_block_local_taxes.py` | 213 | 9329 | 12 | 0 | 0 |  |
+| `tests/auto/test_p14_pcc_lokalne_akcyza_enterprise.py` | 302 | 13669 | 0 | 0 | 0 |  |
+| `tests/rego/micro/test_native_micro_pcc.rego` | 130 | 3612 | 0 | 0 | 0 | test_jdg_micro_pcc |
+| `tests/rego/test_native_jdg_pcc.rego` | 58 | 2071 | 0 | 0 | 0 | test_jdg_pcc |
+| `tests/rego/test_p14_pcc_lokalne_akcyza_enterprise.rego` | 266 | 13214 | 0 | 0 | 0 | jdg.tests.p14_pcc_lokalne_akcyza |
+| `tests/rego/test_pcc_loans_companies_rates.rego` | 153 | 5032 | 0 | 0 | 0 | jdg.pcc.loans_companies_rates_test |
+| `tests/rego/test_pcc_sales.rego` | 112 | 3487 | 0 | 0 | 0 | jdg.pcc.sales_agreements_test |
+| `tests/test_pcc_excise_enterprise.py` | 414 | 17443 | 0 | 0 | 0 |  |
+
+3. ANALIZA PRAWO → REGUŁA → TEST → WERDYKT
+Przeprowadź głębokie myślenie nad łańcuchem dowodowym, ale nie utożsamiaj obecności tekstu z poprawnością prawną.
+- PRAWO: prompt wskazuje akty i artykuły; raport wymaga potwierdzenia w docs/Bbb/LEGAL_REFERENCE_ACTS oraz kanonicznego identyfikatora aktu.
+- REGUŁA: w wybranych plikach znaleziono 674 deklarowanych rule_id (671 unikalnych); przykładowe obserwacje:
+  - rules/_pcc_local_excise_rates.rego: package=jdg.pcc_local_excise_rates
+  - rules/local_taxes/akcyza_alcohol.rego: rule_id=21, przykłady=jdg.akcyza.alcohol_tobacco.no_match, jdg.akcyza.alcohol_tobacco.alcohol.r1, jdg.akcyza.alcohol_tobacco.alcohol.r2
+  - rules/local_taxes/akcyza_fuel.rego: rule_id=19, przykłady=jdg.akcyza.fuel_energy.no_match, jdg.akcyza.fuel_energy.fuel.r1, jdg.akcyza.fuel_energy.fuel.r2
+  - rules/local_taxes/excise_enterprise_complete.rego: rule_id=16, przykłady=jdg.local_taxes.excise.no_match, jdg.local_taxes.excise.motor_fuel_gasoline, jdg.local_taxes.excise.motor_fuel_diesel
+  - rules/local_taxes/local_procedures_enterprise.rego: rule_id=16, przykłady=jdg.local_taxes.procedures.no_match, jdg.local_taxes.procedures.pcc_statute_of_limitations, jdg.local_taxes.procedures.pcc_overpayment_refund
+  - rules/local_taxes/pcc.rego: rule_id=4, przykłady=jdg.local_taxes.pcc.no_match, jdg.local_taxes.pcc.pcc_mandatory_purchase, jdg.local_taxes.pcc.pcc_loan_from_private
+  - rules/local_taxes/pcc_enterprise_complete.rego: rule_id=52, przykłady=jdg.local_taxes.pcc.no_match, jdg.local_taxes.pcc.sale_detection, jdg.local_taxes.pcc.loan_borrow
+  - rules/local_taxes/pcc_excise_enterprise.rego: rule_id=19, przykłady=jdg.local.enterprise.no_match, jdg.local.pcc_donation_agreement, jdg.local.pcc_partnership_contribution
+  - rules/local_taxes/plan26_local.rego: rule_id=7, przykłady=jdg.local_taxes.no_match, jdg.local_taxes.pcc_purchase_from_private, jdg.local_taxes.pcc_loan_from_private
+  - rules/local_taxes/real_estate.rego: rule_id=3, przykłady=jdg.local_taxes.real_estate.no_match, jdg.local_taxes.real_estate.commercial_rate, jdg.local_taxes.real_estate.deadline_overdue
+  - rules/local_taxes/transport.rego: rule_id=2, przykłady=jdg.local_taxes.transport.no_match, jdg.local_taxes.transport.tax_applicable
+  - rules/local_taxes.rego: rule_id=28, przykłady=jdg.local_taxes.no_match, jdg.local.pcc_mandatory, jdg.local.real_estate_commercial
+  - rules/micro/akcyza/akcyza.rego: rule_id=133, przykłady=jdg.micro.akcyza.no_match, jdg.micro.akcyza.a2.r1, jdg.micro.akcyza.a2.r2
+  - rules/micro/pcc/pcc.rego: rule_id=90, przykłady=jdg.micro.pcc.no_match, jdg.micro.pcc.a1.r1, jdg.micro.pcc.a1.r2
+  - rules/micro/plan33_agricultural_tax.rego: rule_id=6, przykłady=jdg.micro.agricultural_tax.no_match, jdg.agricultural_tax.r1, jdg.agricultural_tax.r2
+  - rules/micro/plan33_pcc.rego: rule_id=60, przykłady=jdg.micro.pcc.no_match, jdg.pcc.a1.r1, jdg.pcc.a1.r10
+  - rules/micro/plan33_prop_transport.rego: rule_id=6, przykłady=jdg.micro.prop_transport.no_match, jdg.prop_transport.r1, jdg.prop_transport.r2
+  - rules/micro/transport/transport.rego: rule_id=45, przykłady=jdg.micro.transport.no_match, jdg.micro.transport.a4.r1, jdg.micro.transport.a4.r2
+  - rules/p14_pcc_lokalne_akcyza_innovations_v9.rego: rule_id=25, przykłady=jdg.p14_pcc_lokalne_akcyza_innovations.no_match, jdg.p14_pcc_lokalne_akcyza_innovations.pcc_local_excise_coverage_report, jdg.p14_pcc_lokalne_akcyza_innovations.pcc_audit
+  - rules/p15_pcc_local_excise_innovations_v8.rego: rule_id=14, przykłady=jdg.p15_innovations.no_match, jdg.p15_innovations.pcc_detection_engine, jdg.p15_innovations.pcc3_auto_filler
+- TEST: dopasowanie nazwy pliku testowego nie dowodzi wykonania testu; należy uruchomić pytest/opa test i zapisać wynik w CI.
+- WERDYKT: należy zweryfikować, czy pakiety (30) są rzeczywiście włączone przez router, safe_merge i końcowy invariant check.
+- DATA: wartości liczbowe należy porównać z bundle canonical; ten generator nie uznaje samego literalnego wystąpienia liczby za potwierdzenie jej prawidłowości.
+
+4. REJESTR LUK I RYZYK
+| ID | Obserwacja | Dowód | Wpływ | Priorytet | Kryterium zamknięcia |
+|---|---|---|---|---|---|
+| G-01 | Brakujące ścieżki źródłowe: 0 | Tabela 2.2 | Niepełny audyt | P0 | 0 braków albo jawne mapowanie migracyjne |
+| G-02 | Duplikaty rule_id w próbie: 3 | jdg.local_taxes.no_match, jdg.local_taxes.pcc.no_match, jdg.micro.pcc.no_match | Niedeterminizm / kolizja | P0 | dead_rule_detector = 0 |
+| G-03 | Brak temporalności w 32/32 plików Rego | Tabela 2.3 | Błędny time-travel | P1 | valid_from/valid_to + test graniczny |
+| G-04 | Niepotwierdzony most test → reguła → werdykt | Brak wyniku uruchomienia w raporcie | Cichy regres | P1 | coverage + golden replay |
+| G-05 | Niepotwierdzona kanoniczność podstaw prawnych | _legal_basis=634 | Ryzyko błędnej podstawy | P0 | Legal Twin i validator przechodzą |
+| G-06 | Brak dowodu wdrożenia kanarowego | Prompt opisuje wymaganie; repo wymaga weryfikacji runtime | Niebezpieczny release | P1 | metryki + auto-rollback test |
+
+5. OPA JAKO SYSTEM
+Control Plane: rejestr reguł, review, walidacja, podpisany bundle, Legal Twin, kanar i rollback.
+Data Plane: deterministyczna ewaluacja, First-Match-Wins, safe_merge, temporalność, provenance i runtime invariants.
+Minimalny kontrakt wydania:
+```text
+change request → legal diff → rule/test diff → validate/lint → pytest + opa test
+→ legal-basis gate → duplicate/stub/tautology gate → golden replay
+→ signed bundle → canary → health metrics → ACTIVE albo ROLLED_BACK
+```
+Każdy etap musi pozostawić artefakt, wersję i hash; sam raport analityczny nie zmienia lifecycle reguły.
+
+6. TESTY I WALIDACJA
+| Test / grupa | Stan istnienia | Wymagany dowód |
+|---|---|---|
+| `tests/auto/test_p14_pcc_lokalne_akcyza_enterprise.py` | istnieje, 302 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/micro/test_native_micro_pcc.rego` | istnieje, 130 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_jdg_pcc.rego` | istnieje, 58 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_p14_pcc_lokalne_akcyza_enterprise.rego` | istnieje, 266 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_pcc_loans_companies_rates.rego` | istnieje, 153 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_pcc_sales.rego` | istnieje, 112 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/test_pcc_excise_enterprise.py` | istnieje, 414 linii | uruchomienie + wynik + przypadki graniczne |
+Rekomendowany zestaw: happy path, no_match, granice progów, data przed/po nowelizacji, duplikat/konflikt, brak danych, rollback i determinism replay.
+
+7. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+01. Legal Twin diff: zmiana artykułu automatycznie pokazuje dotknięte rule_id, testy i formularze.
+02. Temporal boundary generator: automatyczne przypadki dzień przed / dzień wejścia / dzień po.
+03. Decision Certificate verifier: podpis, bundle_version, rule_version, threshold_version i hash wejścia.
+04. Rule impact graph: graf zależności reguła → router → werdykt → dokument.
+05. Evidence completeness score: osobne wyniki dla prawa, kodu, testu, danych i runtime.
+06. Golden replay bank per domena i wersja prawa, z tolerancją wyłącznie dla pól niedeterministycznych.
+07. Declarative Change Wizard z obowiązkowym ASK_USER przy niejednoznacznej podstawie prawnej.
+08. Canary risk budget: automatyczny rollback po wzroście BLOCK_AND_ALERT lub zmianie rozkładu werdyktów.
+09. Hardcode provenance scanner: literal → źródło danych → data obowiązywania → test.
+10. Coverage desert radar: mapa aktów i pakietów bez reguł, bez testów albo bez routera.
+11. Explainability bundle: dowód decyzji eksportowany razem z wersją reguły i podstawą prawną.
+12. Mutation testing dla najważniejszych rule_id; brak wykrycia mutacji blokuje promocję do ACTIVE.
+Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, że funkcje istnieją.
+
+8. KONTRAKTY Z INNYMI CZĘŚCIAMI
+- Raport master 00: wspólne LCI/TCL/RV/UVR, _legal_basis, valid_from/valid_to, rule_id, 25-polowy werdykt.
+- Pakiety wykryte w bieżącym zakresie: jdg.akcyza.alcohol_tobacco, jdg.akcyza.fuel_energy, jdg.local.enterprise, jdg.local_taxes, jdg.local_taxes.excise_enterprise, jdg.local_taxes.pcc, jdg.local_taxes.pcc_enterprise, jdg.local_taxes.procedures_enterprise, jdg.local_taxes.real_estate, jdg.local_taxes.transport, jdg.micro.agricultural_tax, jdg.micro.akcyza, jdg.micro.pcc, jdg.micro.prop_transport, jdg.micro.transport, jdg.p14_pcc_lokalne_akcyza_innovations, jdg.p15_innovations, jdg.p33_excise_supplement, jdg.p33_pcc_complete, jdg.pcc, jdg.pcc.exchanges_companies, jdg.pcc.loans, jdg.pcc.loans_companies_rates_test, jdg.pcc.rate_changes, jdg.pcc.sales_agreements, jdg.pcc.sales_agreements_test, jdg.pcc_local_excise_rates, jdg.tests.p14_pcc_lokalne_akcyza, test_jdg_micro_pcc, test_jdg_pcc.
+- Części sąsiednie muszą traktować powyższe nazwy jako obserwację, nie jako zgodę na dodawanie reguł bez rejestracji.
+- Zmiana rule_id wymaga aktualizacji routera, manifestu, testów, bundle, dokumentacji i golden replay.
+
+9. MAPA DROGOWA
+| Etap | Zadanie | Kryterium | Szacunek |
+|---|---|---|---|
+| P0 | Uzupełnić/uzgodnić źródła i legal basis | 0 braków, validator OK | 1–3 dni |
+| P0 | Zbudować testy krytycznych rule_id | positive/negative/boundary | 2–5 dni |
+| P1 | Wdrożyć temporalny golden replay | przejścia dat bez regresji | 2–5 dni |
+| P1 | Podłączyć provenance i Decision Certificate | pełny łańcuch dowodu | 2–5 dni |
+| P1 | Kanar + metryki + rollback | test SLA i failure injection | 1–2 tyg. |
+| P2 | Dashboard coverage/evidence | trend domeny per bundle | 1–2 tyg. |
+
+10. WNIOSKI KOŃCOWE
+Audyt części 11 potwierdza istnienie 41 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
+Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+KONIEC RAPORTU 11/25 — raport wygenerowany z promptu 11_PCC_PODATKI_LOKALNE_AKCYZĄ_nieruchomości_śro.txt
+====================================================================================================

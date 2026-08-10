@@ -535,6 +535,13 @@ pit := {
 
     # Art. 27f PIT — ulga prorodzinna
     "family_relief_amount_per_child": 1112.04,    # PLN/rok na dziecko (P30 L10)
+    "family_relief_amount_third_child": 2000.04,
+    "family_relief_amount_fourth_plus": 2700.00,
+
+    # Raport 04 — limity ulg używane przez jdg.pit.missing_reliefs
+    "internet_relief_limit": 760,
+    "rehab_car_limit": 2280,
+    "blood_value_per_liter": 130,
 
     # P30: Ulgi innowacyjne PIT
     "prototype_relief_rate": 0.30,              # 30% — ulga na prototyp (Art. 26eb, P30 L8)

@@ -174,7 +174,7 @@ test_p01_digital_twin {
 }
 
 # adaptive thresholds — feedback obecny
-test_p01_adaptive_thresholds with data.jdg.trust_feedback as {"correct": 950, "incorrect": 50} {
-    result := data.jdg.p01_fundament_innovations.innovations_summary with input as {}
+test_p01_adaptive_thresholds {
+    result := data.jdg.p01_fundament_innovations.innovations_summary with input as {} with data.jdg.trust_feedback as {"correct": 950, "incorrect": 50}
     result.adaptive_trust_score.auto_post <= 0.92
 }

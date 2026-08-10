@@ -1,8 +1,0 @@
-================================================================================
-RAPORT 11 — PCC / PODATKI LOKALNE / AKCYZĄ — WDROŻONY ✅ (2026-08-10)
-ANALIZA: local_taxes.rego (27), pcc_enterprise_complete (51), akcyza_alcohol (20),
-akcyza_fuel (18), excise_enterprise_complete (15), local_procedures_enterprise (15),
-pcc_excise_enterprise (18), real_estate (2), transport (1),
-micro/pcc/pcc.rego (89), micro/akcyza/akcyza.rego (132), micro/transport/transport.rego (44).
-STAN: Pełne pokrycie PCC, akcyzy, nieruchomości, środków transportu.
-================================================================================

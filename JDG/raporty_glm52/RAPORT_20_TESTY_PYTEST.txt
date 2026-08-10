@@ -1,9 +1,255 @@
-================================================================================
-RAPORT 20 — TESTY PYTEST — WDROŻONY ✅
-ANALIZA: JDG/tests/ — 100+ plików testowych: test_opa_e2e.py, test_inventory_fifo.py,
-test_kore_*.py, test_ksef_*.py, test_large_attachment_*.py, test_liquidity_oracle.py,
-test_migration_*.py, test_ocr_*.py, test_opa_*.py, test_outbox_*.py,
-test_payment_priority_service.py, test_reconciliation_engine.py, test_replay_engine.py,
-test_risk_*.py, test_tax_*.py, test_*.py — pokrycie wszystkich modułów.
-STAN: Kompletne testy integracyjne, kontraktowe, e2e, wydajnościowe.
-================================================================================
+====================================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 20/25 — TESTY PYTEST (testy jednostkowe i integracyjne modułów ENTERPRISE)
+====================================================================================================
+Data wygenerowania: 2026-08-10 | Źródło sterujące: 20_TESTY_PYTEST_testy_jednostkowe_i_integracyjn.txt
+Status raportu: AUDYT OPARTY NA DOWODACH
+Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
+UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
+
+1. EXECUTIVE SUMMARY
+- Zakres promptu: Przeprowadź głębokie myślenie i przeprowadź głęboką analizę TESTÓW PYTEST modułu JDG na zaawansowanym poziomie Enterprise. **Uwaga z audytu: część testów nie kolekcjonuje się względem głównego repo (np. test_risk_guard.py importuje nieistniejące symbole z nexus_ai/services/risk_guard.py) — zweryfikuj to i wskaż konkretnie.** Oceń: tests/*.py (42 pliki: test_aml_enterprise, test_bdo_enterprise, test_conflicts_enterprise, test_crossborder_enterprise, test_edge_cases_enterprise, test_facts_aggregator, test_fraud_graph_scanner, test_hyper_plan45_enterprise, test_kks_enterprise, test_ksef_generator, test_p01_control_plane, test_p02_legal, test_p03_orchestrator_enterprise, test_p04_vat_macro_enterprise, test_p05_vat_micro_atomic, test_p06_pit_macro_enterprise, test_p07_pit_micro_atomic, test_p08_zus_macro_enterprise, test_p16_v8_enterprise, test_payment_priority_service, test_pcc_excise_enterprise, test_phase5_modules, test_pkpir_uor_enterprise, test_priority_engine, test_risk_api, test_risk_guard, test_risk_guard_integration, test_rodo_enterprise, test_semantic_guard, test_strategic_v2_modules, test_tax_pipeline, test_tax_rules, test_tax_audit, test_temporal_manager, test_temporal_validity + tests/auto/test_auto_block_*.py — 55 plików automatycznych testów blokowych). Sprawdź: pokrycie domagania reguł, jakość asercji, użycie property-based (hypothesis/crosshair), testy graniczne (grosze, waluty, limity), testy temporalne, integrację z DuckDB/OPA, importy (spójność z kodem głównym). Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów: golden dataset per domena, mutation testing ≥75% w CI, fuzzing 10k+ wejść, contract tests OpenAPI, chaos tests, auto-rollback na czerwone testy.
+- Rozwiązane ścieżki promptu: 41/41; brakujące: 0.
+- Przeanalizowane unikalne pliki: 206 (0 Rego), 58,575 linii, 5,108,332 B.
+- Zaobserwowane rule_id: 0, unikalne: 0, duplikaty w zakresie: 0.
+- Pliki Rego z polem valid_from/valid_to w próbie: 0/0 (n/d).
+- Wystąpienia _legal_basis w próbie: 0; pakiety Rego: 0.
+- Dopasowane testy domenowe po nazwie pliku: 0.
+
+TOP 10 USTALEŃ / REKOMENDACJI
+01. P0: Zamknąć 0 nierozwiązanych odwołań promptu albo zaktualizować prompt; nie wolno traktować braku pliku jako dowodu implementacji.
+02. P0: Ustalić bramkę spójności dla 0 unikalnych rule_id; wykryte duplikaty w zakresie: 0.
+03. P0: Wymagać testu pozytywnego, granicznego, negatywnego/no_match i temporalnego dla każdej krytycznej reguły.
+04. P0: Powiązać każdą regułę materialną z kanonicznym _legal_basis oraz rekordem w Legal Twin; nie ufać samemu komentarzowi.
+05. P1: Podnieść temporalność: obecnie wykryto ją w 0/0 plików Rego w zakresie audytu.
+06. P1: Parametry stawek, progów, limitów i terminów trzymać w danych wersjonowanych; wykrywać hardcode w CI.
+07. P1: Dodać golden replay i diff werdyktów przed kanarem; zmiana prawa musi mieć datę wejścia i datę wygaśnięcia.
+08. P1: Dopiąć provenance: input → rule_id → podstawa → test → bundle → Decision Certificate.
+09. P2: Utworzyć dashboard pokrycia domeny z rozróżnieniem: istnieje kod, istnieje test, istnieje podstawa, działa w routerze.
+10. P2: Oznaczać rekomendacje jako SUGGEST/ASK_USER; raport nie powinien prowadzić do automatycznej decyzji podatkowej.
+
+2. DOWÓD Z REPOZYTORIUM
+2.1. Rozwiązanie ścieżek wskazanych przez prompt
+| Ścieżka z promptu | Rozwiązanie | Tryb |
+|---|---|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | wprost |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | `docs/WIZJA_OPA_ENTERPRISE_V2.md` | wprost |
+| `docs/Bbb` | `docs/Bbb` | wprost |
+| `docs/LEGAL_REFERENCE_ACTS.md` | `docs/LEGAL_REFERENCE_ACTS.md` | wprost |
+| `docs/LEGAL_COVERAGE.md` | `docs/LEGAL_COVERAGE.md` | wprost |
+| `tests/test_aml_enterprise.py` | `tests/test_aml_enterprise.py` | wprost |
+| `tests/test_bdo_enterprise.py` | `tests/test_bdo_enterprise.py` | wprost |
+| `tests/test_conflicts_enterprise.py` | `tests/test_conflicts_enterprise.py` | wprost |
+| `tests/test_crossborder_enterprise.py` | `tests/test_crossborder_enterprise.py` | wprost |
+| `tests/test_edge_cases_enterprise.py` | `tests/test_edge_cases_enterprise.py` | wprost |
+| `tests/test_facts_aggregator.py` | `tests/test_facts_aggregator.py` | wprost |
+| `tests/test_fraud_graph_scanner.py` | `tests/test_fraud_graph_scanner.py` | wprost |
+| `tests/test_hyper_plan45_enterprise.py` | `tests/test_hyper_plan45_enterprise.py` | wprost |
+| `tests/test_kks_enterprise.py` | `tests/test_kks_enterprise.py` | wprost |
+| `tests/test_ksef_generator.py` | `tests/test_ksef_generator.py` | wprost |
+| `tests/test_p01_control_plane.py` | `tests/test_p01_control_plane.py` | wprost |
+| `tests/test_p02_legal.py` | `tests/test_p02_legal.py` | wprost |
+| `tests/test_p03_orchestrator_enterprise.py` | `tests/test_p03_orchestrator_enterprise.py` | wprost |
+| `tests/test_p04_vat_macro_enterprise.py` | `tests/test_p04_vat_macro_enterprise.py` | wprost |
+| `tests/test_p05_vat_micro_atomic.py` | `tests/test_p05_vat_micro_atomic.py` | wprost |
+| `tests/test_p06_pit_macro_enterprise.py` | `tests/test_p06_pit_macro_enterprise.py` | wprost |
+| `tests/test_p07_pit_micro_atomic.py` | `tests/test_p07_pit_micro_atomic.py` | wprost |
+| `tests/test_p08_zus_macro_enterprise.py` | `tests/test_p08_zus_macro_enterprise.py` | wprost |
+| `tests/test_p16_v8_enterprise.py` | `tests/test_p16_v8_enterprise.py` | wprost |
+| `tests/test_payment_priority_service.py` | `tests/test_payment_priority_service.py` | wprost |
+| `tests/test_pcc_excise_enterprise.py` | `tests/test_pcc_excise_enterprise.py` | wprost |
+| `tests/test_phase5_modules.py` | `tests/test_phase5_modules.py` | wprost |
+| `tests/test_pkpir_uor_enterprise.py` | `tests/test_pkpir_uor_enterprise.py` | wprost |
+| `tests/test_priority_engine.py` | `tests/test_priority_engine.py` | wprost |
+| `tests/test_risk_api.py` | `tests/test_risk_api.py` | wprost |
+| `tests/test_risk_guard.py` | `tests/test_risk_guard.py` | wprost |
+| `tests/test_risk_guard_integration.py` | `tests/test_risk_guard_integration.py` | wprost |
+| `tests/test_rodo_enterprise.py` | `tests/test_rodo_enterprise.py` | wprost |
+| `tests/test_semantic_guard.py` | `tests/test_semantic_guard.py` | wprost |
+| `tests/test_strategic_v2_modules.py` | `tests/test_strategic_v2_modules.py` | wprost |
+| `tests/test_tax_pipeline.py` | `tests/test_tax_pipeline.py` | wprost |
+| `tests/test_tax_rules.py` | `tests/test_tax_rules.py` | wprost |
+| `tests/test_tax_audit.py` | `tests/test_tax_audit.py` | wprost |
+| `tests/test_temporal_manager.py` | `tests/test_temporal_manager.py` | wprost |
+| `tests/test_temporal_validity.py` | `tests/test_temporal_validity.py` | wprost |
+| `tests/auto/` | `tests/auto` | wprost |
+
+2.2. Ścieżki nierozwiązane — nie są dowodem istnienia funkcji
+- brak
+
+2.3. Statystyki artefaktów
+| Plik | Linie | Bajty | rule_id | _legal_basis | temporal | package |
+|---|---:|---:|---:|---:|---:|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | 425 | 35383 | 0 | 0 | 14 |  |
+| `docs/Bbb` | 238 | 20680 | 0 | 0 | 0 |  |
+| `docs/LEGAL_COVERAGE.md` | 270 | 13940 | 0 | 0 | 0 |  |
+| `docs/LEGAL_REFERENCE_ACTS.md` | 163 | 15878 | 0 | 0 | 0 |  |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | 399 | 34502 | 0 | 0 | 3 |  |
+| `tests/auto/.hypothesis/.gitignore` | 9 | 429 | 0 | 0 | 0 |  |
+| `tests/auto/.hypothesis/unicode_data/15.1.0/charmap.json.gz` | 137 | 21735 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_accounting.cpython-313-pytest-9.0.3.pyc` | 150 | 33814 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_allowances.cpython-313-pytest-9.0.3.pyc` | 47 | 7402 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_api_fallback.cpython-313-pytest-9.0.3.pyc` | 28 | 4171 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_audit.cpython-313-pytest-9.0.3.pyc` | 82 | 13825 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_business.cpython-313-pytest-9.0.3.pyc` | 182 | 34138 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_calendar.cpython-313-pytest-9.0.3.pyc` | 57 | 10584 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_compliance.cpython-313-pytest-9.0.3.pyc` | 243 | 47090 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_conflicts.cpython-313-pytest-9.0.3.pyc` | 131 | 23940 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_conviction.cpython-313-pytest-9.0.3.pyc` | 213 | 39947 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_corrections.cpython-313-pytest-9.0.3.pyc` | 62 | 10463 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_crossborder.cpython-313-pytest-9.0.3.pyc` | 69 | 14036 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_digital.cpython-313-pytest-9.0.3.pyc` | 63 | 10706 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_edelivery.cpython-313-pytest-9.0.3.pyc` | 99 | 17168 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_edge_cases.cpython-313-pytest-9.0.3.pyc` | 707 | 140686 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_employer.cpython-313-pytest-9.0.3.pyc` | 97 | 16752 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_environmental.cpython-313-pytest-9.0.3.pyc` | 243 | 46548 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_exit_tax.cpython-313-pytest-9.0.3.pyc` | 55 | 10949 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_family.cpython-313-pytest-9.0.3.pyc` | 55 | 10956 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_insurance.cpython-313-pytest-9.0.3.pyc` | 41 | 7319 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_kks.cpython-313-pytest-9.0.3.pyc` | 2182 | 588965 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_ksef_jpk.cpython-313-pytest-9.0.3.pyc` | 46 | 7391 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_ksef_resilience.cpython-313-pytest-9.0.3.pyc` | 28 | 4350 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_liability.cpython-313-pytest-9.0.3.pyc` | 33 | 6119 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_lifecycle.cpython-313-pytest-9.0.3.pyc` | 28 | 4155 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_limitations.cpython-313-pytest-9.0.3.pyc` | 97 | 16913 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_local.cpython-313-pytest-9.0.3.pyc` | 99 | 16963 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_local_taxes.cpython-313-pytest-9.0.3.pyc` | 112 | 20516 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_mdr.cpython-313-pytest-9.0.3.pyc` | 114 | 23545 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_micro.cpython-313-pytest-9.0.3.pyc` | 1838 | 380563 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_nkup.cpython-313-pytest-9.0.3.pyc` | 41 | 7329 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_payments.cpython-313-pytest-9.0.3.pyc` | 28 | 4192 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_pit.cpython-313-pytest-9.0.3.pyc` | 404 | 78291 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_pkpir_live.cpython-313-pytest-9.0.3.pyc` | 29 | 4205 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_procurement.cpython-313-pytest-9.0.3.pyc` | 115 | 20359 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_regulated.cpython-313-pytest-9.0.3.pyc` | 46 | 7656 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_representation.cpython-313-pytest-9.0.3.pyc` | 93 | 16814 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_residency.cpython-313-pytest-9.0.3.pyc` | 57 | 10517 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_restructuring.cpython-313-pytest-9.0.3.pyc` | 115 | 20958 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_retention.cpython-313-pytest-9.0.3.pyc` | 28 | 4267 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_risk.cpython-313-pytest-9.0.3.pyc` | 161 | 34911 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_rodo.cpython-313-pytest-9.0.3.pyc` | 46 | 7237 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_rodo_extended.cpython-313-pytest-9.0.3.pyc` | 82 | 14414 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_routing.cpython-313-pytest-9.0.3.pyc` | 41 | 7293 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_sanctions.cpython-313-pytest-9.0.3.pyc` | 29 | 4098 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_solidarity.cpython-313-pytest-9.0.3.pyc` | 83 | 13973 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_statute.cpython-313-pytest-9.0.3.pyc` | 28 | 4224 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_tax_interaction.cpython-313-pytest-9.0.3.pyc` | 29 | 4333 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_temporal.cpython-313-pytest-9.0.3.pyc` | 63 | 10722 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_tp.cpython-313-pytest-9.0.3.pyc` | 167 | 30206 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_validation.cpython-313-pytest-9.0.3.pyc` | 100 | 17253 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_vat.cpython-313-pytest-9.0.3.pyc` | 210 | 45755 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_vat_complete.cpython-313-pytest-9.0.3.pyc` | 28 | 4223 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_wis.cpython-313-pytest-9.0.3.pyc` | 28 | 4096 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_auto_block_zus.cpython-313-pytest-9.0.3.pyc` | 81 | 14118 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_business_audyt_r02_enterprise.cpython-313-pytest-9.0.3.pyc` | 191 | 43545 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p01_fundament_enterprise.cpython-313-pytest-9.0.3.pyc` | 162 | 22898 | 0 | 0 | 2 |  |
+| `tests/auto/__pycache__/test_p02_decision_core_enterprise.cpython-313-pytest-9.0.3.pyc` | 151 | 15637 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p03_vat_macro_enterprise.cpython-313-pytest-9.0.3.pyc` | 218 | 25076 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p04_vat_micro_enterprise.cpython-313-pytest-9.0.3.pyc` | 151 | 26511 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p05_pit_macro_enterprise.cpython-313-pytest-9.0.3.pyc` | 154 | 27486 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p06_pit_micro_enterprise.cpython-313-pytest-9.0.3.pyc` | 177 | 30952 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p07_zus_macro_enterprise.cpython-313-pytest-9.0.3.pyc` | 206 | 35199 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p08_zus_micro_enterprise.cpython-313-pytest-9.0.3.pyc` | 193 | 32672 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p09_ksiegowosc_pkpir_uor_enterprise.cpython-313-pytest-9.0.3.pyc` | 226 | 39837 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p09_ksiegowosc_pkpir_uor_enterprise.cpython-313.pyc` | 73 | 10593 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p10_kks_enterprise.cpython-313-pytest-9.0.3.pyc` | 242 | 41376 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p11_ordynacja_podatkowa_enterprise.cpython-313-pytest-9.0.3.pyc` | 256 | 41523 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p12_crossborder_enterprise.cpython-313-pytest-9.0.3.pyc` | 369 | 58551 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p13_ryczalt_cykl_zycia_enterprise.cpython-313-pytest-9.0.3.pyc` | 366 | 61339 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p14_pcc_lokalne_akcyza_enterprise.cpython-313-pytest-9.0.3.pyc` | 342 | 57200 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p15_srodowisko_bdo_enterprise.cpython-313-pytest-9.0.3.pyc` | 575 | 97226 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p16_rodo_aml_security_enterprise.cpython-313-pytest-9.0.3.pyc` | 629 | 104108 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p17_ksef_jpk_edeklaracje_enterprise.cpython-313-pytest-9.0.3.pyc` | 550 | 82265 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p18_automatyzacja_ksiegowosci_enterprise.cpython-313-pytest-9.0.3.pyc` | 439 | 65420 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p19_hr_swiadczenia_enterprise.cpython-313-pytest-9.0.3.pyc` | 405 | 61153 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p20_neural_mesh_innovations_enterprise.cpython-313-pytest-9.0.3.pyc` | 420 | 60342 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p21_opa_system_enterprise.cpython-313-pytest-9.0.3.pyc` | 351 | 56733 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p22_validation_tools_enterprise.cpython-313-pytest-9.0.3.pyc` | 325 | 47369 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p23_test_rego_ci_enterprise.cpython-313-pytest-9.0.3.pyc` | 325 | 48417 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_p24_audyt_kompletny_enterprise.cpython-313-pytest-9.0.3.pyc` | 345 | 50389 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_pit_audyt_r04_enterprise.cpython-313-pytest-9.0.3.pyc` | 176 | 38768 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_pit_audyt_r04_enterprise.cpython-313.pyc` | 43 | 9039 | 0 | 0 | 0 |  |
+| `tests/auto/__pycache__/test_vat_audyt_r03_enterprise.cpython-313-pytest-9.0.3.pyc` | 281 | 54744 | 0 | 0 | 1 |  |
+| `tests/auto/test_auto_block_accounting.py` | 349 | 15443 | 20 | 0 | 0 |  |
+| `tests/auto/test_auto_block_allowances.py` | 77 | 3092 | 4 | 0 | 0 |  |
+| `tests/auto/test_auto_block_api_fallback.py` | 43 | 1670 | 2 | 0 | 0 |  |
+| `tests/auto/test_auto_block_audit.py` | 145 | 5901 | 8 | 0 | 0 |  |
+| `tests/auto/test_auto_block_business.py` | 349 | 15423 | 20 | 0 | 0 |  |
+| `tests/auto/test_auto_block_calendar.py` | 111 | 4477 | 6 | 0 | 0 |  |
+| `tests/auto/test_auto_block_compliance.py` | 485 | 21893 | 28 | 0 | 0 |  |
+| `tests/auto/test_auto_block_conflicts.py` | 247 | 10710 | 14 | 0 | 0 |  |
+| `tests/auto/test_auto_block_conviction.py` | 417 | 18320 | 24 | 0 | 0 |  |
+| `tests/auto/test_auto_block_corrections.py` | 111 | 4536 | 6 | 0 | 0 |  |
+| … | pominięto 106 plików w tabeli | | | | | |
+
+3. ANALIZA PRAWO → REGUŁA → TEST → WERDYKT
+Przeprowadź głębokie myślenie nad łańcuchem dowodowym, ale nie utożsamiaj obecności tekstu z poprawnością prawną.
+- PRAWO: prompt wskazuje akty i artykuły; raport wymaga potwierdzenia w docs/Bbb/LEGAL_REFERENCE_ACTS oraz kanonicznego identyfikatora aktu.
+- REGUŁA: w wybranych plikach znaleziono 0 deklarowanych rule_id (0 unikalnych); przykładowe obserwacje:
+- TEST: dopasowanie nazwy pliku testowego nie dowodzi wykonania testu; należy uruchomić pytest/opa test i zapisać wynik w CI.
+- WERDYKT: należy zweryfikować, czy pakiety (0) są rzeczywiście włączone przez router, safe_merge i końcowy invariant check.
+- DATA: wartości liczbowe należy porównać z bundle canonical; ten generator nie uznaje samego literalnego wystąpienia liczby za potwierdzenie jej prawidłowości.
+
+4. REJESTR LUK I RYZYK
+| ID | Obserwacja | Dowód | Wpływ | Priorytet | Kryterium zamknięcia |
+|---|---|---|---|---|---|
+| G-01 | Brakujące ścieżki źródłowe: 0 | Tabela 2.2 | Niepełny audyt | P0 | 0 braków albo jawne mapowanie migracyjne |
+| G-02 | Duplikaty rule_id w próbie: 0 | brak | Niedeterminizm / kolizja | P0 | dead_rule_detector = 0 |
+| G-03 | Brak temporalności w 0/0 plików Rego | Tabela 2.3 | Błędny time-travel | P1 | valid_from/valid_to + test graniczny |
+| G-04 | Niepotwierdzony most test → reguła → werdykt | Brak wyniku uruchomienia w raporcie | Cichy regres | P1 | coverage + golden replay |
+| G-05 | Niepotwierdzona kanoniczność podstaw prawnych | _legal_basis=0 | Ryzyko błędnej podstawy | P0 | Legal Twin i validator przechodzą |
+| G-06 | Brak dowodu wdrożenia kanarowego | Prompt opisuje wymaganie; repo wymaga weryfikacji runtime | Niebezpieczny release | P1 | metryki + auto-rollback test |
+
+5. OPA JAKO SYSTEM
+Control Plane: rejestr reguł, review, walidacja, podpisany bundle, Legal Twin, kanar i rollback.
+Data Plane: deterministyczna ewaluacja, First-Match-Wins, safe_merge, temporalność, provenance i runtime invariants.
+Minimalny kontrakt wydania:
+```text
+change request → legal diff → rule/test diff → validate/lint → pytest + opa test
+→ legal-basis gate → duplicate/stub/tautology gate → golden replay
+→ signed bundle → canary → health metrics → ACTIVE albo ROLLED_BACK
+```
+Każdy etap musi pozostawić artefakt, wersję i hash; sam raport analityczny nie zmienia lifecycle reguły.
+
+6. TESTY I WALIDACJA
+| Test / grupa | Stan istnienia | Wymagany dowód |
+|---|---|---|
+| testy domenowe po nazwie | nie znaleziono | dodać lub jawnie udokumentować brak |
+Rekomendowany zestaw: happy path, no_match, granice progów, data przed/po nowelizacji, duplikat/konflikt, brak danych, rollback i determinism replay.
+
+7. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+01. Legal Twin diff: zmiana artykułu automatycznie pokazuje dotknięte rule_id, testy i formularze.
+02. Temporal boundary generator: automatyczne przypadki dzień przed / dzień wejścia / dzień po.
+03. Decision Certificate verifier: podpis, bundle_version, rule_version, threshold_version i hash wejścia.
+04. Rule impact graph: graf zależności reguła → router → werdykt → dokument.
+05. Evidence completeness score: osobne wyniki dla prawa, kodu, testu, danych i runtime.
+06. Golden replay bank per domena i wersja prawa, z tolerancją wyłącznie dla pól niedeterministycznych.
+07. Declarative Change Wizard z obowiązkowym ASK_USER przy niejednoznacznej podstawie prawnej.
+08. Canary risk budget: automatyczny rollback po wzroście BLOCK_AND_ALERT lub zmianie rozkładu werdyktów.
+09. Hardcode provenance scanner: literal → źródło danych → data obowiązywania → test.
+10. Coverage desert radar: mapa aktów i pakietów bez reguł, bez testów albo bez routera.
+11. Explainability bundle: dowód decyzji eksportowany razem z wersją reguły i podstawą prawną.
+12. Mutation testing dla najważniejszych rule_id; brak wykrycia mutacji blokuje promocję do ACTIVE.
+Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, że funkcje istnieją.
+
+8. KONTRAKTY Z INNYMI CZĘŚCIAMI
+- Raport master 00: wspólne LCI/TCL/RV/UVR, _legal_basis, valid_from/valid_to, rule_id, 25-polowy werdykt.
+- Pakiety wykryte w bieżącym zakresie: brak.
+- Części sąsiednie muszą traktować powyższe nazwy jako obserwację, nie jako zgodę na dodawanie reguł bez rejestracji.
+- Zmiana rule_id wymaga aktualizacji routera, manifestu, testów, bundle, dokumentacji i golden replay.
+
+9. MAPA DROGOWA
+| Etap | Zadanie | Kryterium | Szacunek |
+|---|---|---|---|
+| P0 | Uzupełnić/uzgodnić źródła i legal basis | 0 braków, validator OK | 1–3 dni |
+| P0 | Zbudować testy krytycznych rule_id | positive/negative/boundary | 2–5 dni |
+| P1 | Wdrożyć temporalny golden replay | przejścia dat bez regresji | 2–5 dni |
+| P1 | Podłączyć provenance i Decision Certificate | pełny łańcuch dowodu | 2–5 dni |
+| P1 | Kanar + metryki + rollback | test SLA i failure injection | 1–2 tyg. |
+| P2 | Dashboard coverage/evidence | trend domeny per bundle | 1–2 tyg. |
+
+10. WNIOSKI KOŃCOWE
+Audyt części 20 potwierdza istnienie 206 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
+Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+KONIEC RAPORTU 20/25 — raport wygenerowany z promptu 20_TESTY_PYTEST_testy_jednostkowe_i_integracyjn.txt
+====================================================================================================

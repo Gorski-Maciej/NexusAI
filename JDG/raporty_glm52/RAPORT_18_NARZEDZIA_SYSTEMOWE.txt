@@ -1,8 +1,0 @@
-================================================================================
-RAPORT 18 — NARZĘDZIA SYSTEMOWE — WDROŻONY ✅
-ANALIZA: JDG/tools/ — 57+ narzędzi Python: validate_rules.py, lint_rego_rules.py,
-generate_manifest.py, generate_coverage_report.py, verify_*.py (VAT, ZUS, PIT),
-live_architecture_diagrams.py, verify_prompt_coverage.py, sc_legal_graph.py,
-regulatory_radar.py, sc_verdict_streaming.py, sc_context_enricher.py i wiele innych.
-STAN: 57+ narzędzi deweloperskich, 9 walidacji, linter 6-check, CI bramki.
-================================================================================

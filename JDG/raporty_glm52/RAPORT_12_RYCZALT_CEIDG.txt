@@ -1,8 +1,0 @@
-================================================================================
-RAPORT 12 — RYCZAŁT / CEIDG / PRAWO PRZEDSIĘBIORCÓW / SUKCESJA — WDROŻONY ✅
-ANALIZA: micro/ryczalt/ryczalt.rego (155), micro/ceidg/ceidg.rego (42),
-micro/sukcesja/sukcesja.rego (140), micro/pp/pp.rego (147), business.rego (23),
-lifecycle_manager_enterprise (4), micro/plan33_ryc (158).
-STAN: Kompletne pokrycie — wszystkie 4 formy opodatkowania, CEIDG,
-sukcesja, prawo przedsiębiorców.
-================================================================================

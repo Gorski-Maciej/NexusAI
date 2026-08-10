@@ -1,0 +1,258 @@
+====================================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 09/25 — UoR / PKPiR / KSIĘGOWOŚĆ (pełna księgowość, księgi, kolumny PKPiR, amortyzacja, transformacja)
+====================================================================================================
+Data wygenerowania: 2026-08-10 | Źródło sterujące: 09_UoR_PKPiR_KSIĘGOWOŚĆ_pełna_księgowość_księgi.txt
+Status raportu: AUDYT OPARTY NA DOWODACH
+Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
+UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
+
+1. EXECUTIVE SUMMARY
+- Zakres promptu: Przeprowadź głębokie myślenie i przeprowadź głęboką analizę modułu KSIĘGOWOŚCI (UoR/PKPiR) na zaawansowanym poziomie Enterprise. **To jedna z największych luk wg LEGAL_COVERAGE.md: pokrycie UoR ~0% (martwa warstwa PKPiR z matched:false)!** Oceń: accounting.rego (~22 tys. tokenów), rules/accounting/* (pkpir_enterprise_live, pkpir_enterprise_validation, pkpir_enterprise_validator, uor_enterprise_live, depreciation_enterprise, depreciation_enterprise_complete, plan23_leasing, plan42_pkpir), rules/uor/* (9 plików: uor_books, uor_assets, uor_costs, uor_revenue, uor_obligation, uor_closing, uor_inventory, uor_financial_stmt, plan42_uor), micro/uor/uor.rego, micro/pkpir/* (7 plików: pkpir, pkpir_kolumny, pkpir_przychody, pkpir_koszty, pkpir_nkup, pkpir_remanent, pkpir_korekty), micro/amortyzacja/* (pit_a22a, pit_a22i, pit_a22k, pit_a22n), pkpir_to_uor_transformer.rego, p09/p11/p12 innovations, p33_uor_supplement, p18_automatyzacja_ksiegowosci_innovations_v9. Sprawdź: kompletność 17 kolumn PKPiR, remanent, walidację kolumn, amortyzację (KŚT, limity 150 000/225 000), leasing, sprawozdanie finansowe, inwentaryzację, progi pełnej księgowości (2 000 000 EUR). Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów: pełny automatyzm księgowania z podwójnym zapisem (TigerBeetle/Shadow Ledger), transformator PKPiR→UoR, automatyczna walidacja kolumn z dowodem zgodności z rozporządzeniem, system „zero martwych reguł" dla warstwy księgowej.
+- Rozwiązane ścieżki promptu: 57/57; brakujące: 0.
+- Przeanalizowane unikalne pliki: 57 (46 Rego), 22,576 linii, 1,168,793 B.
+- Zaobserwowane rule_id: 854, unikalne: 849, duplikaty w zakresie: 4.
+- Pliki Rego z polem valid_from/valid_to w próbie: 0/46 (0.0%).
+- Wystąpienia _legal_basis w próbie: 804; pakiety Rego: 44.
+- Dopasowane testy domenowe po nazwie pliku: 12.
+
+TOP 10 USTALEŃ / REKOMENDACJI
+01. P0: Zamknąć 0 nierozwiązanych odwołań promptu albo zaktualizować prompt; nie wolno traktować braku pliku jako dowodu implementacji.
+02. P0: Ustalić bramkę spójności dla 849 unikalnych rule_id; wykryte duplikaty w zakresie: 4.
+03. P0: Wymagać testu pozytywnego, granicznego, negatywnego/no_match i temporalnego dla każdej krytycznej reguły.
+04. P0: Powiązać każdą regułę materialną z kanonicznym _legal_basis oraz rekordem w Legal Twin; nie ufać samemu komentarzowi.
+05. P1: Podnieść temporalność: obecnie wykryto ją w 0/46 plików Rego w zakresie audytu.
+06. P1: Parametry stawek, progów, limitów i terminów trzymać w danych wersjonowanych; wykrywać hardcode w CI.
+07. P1: Dodać golden replay i diff werdyktów przed kanarem; zmiana prawa musi mieć datę wejścia i datę wygaśnięcia.
+08. P1: Dopiąć provenance: input → rule_id → podstawa → test → bundle → Decision Certificate.
+09. P2: Utworzyć dashboard pokrycia domeny z rozróżnieniem: istnieje kod, istnieje test, istnieje podstawa, działa w routerze.
+10. P2: Oznaczać rekomendacje jako SUGGEST/ASK_USER; raport nie powinien prowadzić do automatycznej decyzji podatkowej.
+
+2. DOWÓD Z REPOZYTORIUM
+2.1. Rozwiązanie ścieżek wskazanych przez prompt
+| Ścieżka z promptu | Rozwiązanie | Tryb |
+|---|---|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | wprost |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | `docs/WIZJA_OPA_ENTERPRISE_V2.md` | wprost |
+| `docs/Bbb` | `docs/Bbb` | wprost |
+| `docs/LEGAL_REFERENCE_ACTS.md` | `docs/LEGAL_REFERENCE_ACTS.md` | wprost |
+| `docs/LEGAL_COVERAGE.md` | `docs/LEGAL_COVERAGE.md` | wprost |
+| `rules/accounting.rego` | `rules/accounting.rego` | wprost |
+| `rules/pkpir_to_uor_transformer.rego` | `rules/pkpir_to_uor_transformer.rego` | wprost |
+| `rules/_pkpir_rates.rego` | `rules/_pkpir_rates.rego` | wprost |
+| `rules/_uor_rates.rego` | `rules/_uor_rates.rego` | wprost |
+| `rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego` | `rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego` | wprost |
+| `rules/p11_accounting_pkpir_innovations_v8.rego` | `rules/p11_accounting_pkpir_innovations_v8.rego` | wprost |
+| `rules/p12_uor_innovations_v8.rego` | `rules/p12_uor_innovations_v8.rego` | wprost |
+| `rules/p33_uor_supplement.rego` | `rules/p33_uor_supplement.rego` | wprost |
+| `rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` | `rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` | wprost |
+| `rules/accounting/pkpir_enterprise_live.rego` | `rules/accounting/pkpir_enterprise_live.rego` | wprost |
+| `rules/accounting/pkpir_enterprise_validation.rego` | `rules/accounting/pkpir_enterprise_validation.rego` | wprost |
+| `rules/accounting/pkpir_enterprise_validator.rego` | `rules/accounting/pkpir_enterprise_validator.rego` | wprost |
+| `rules/accounting/uor_enterprise_live.rego` | `rules/accounting/uor_enterprise_live.rego` | wprost |
+| `rules/accounting/depreciation_enterprise.rego` | `rules/accounting/depreciation_enterprise.rego` | wprost |
+| `rules/accounting/depreciation_enterprise_complete.rego` | `rules/accounting/depreciation_enterprise_complete.rego` | wprost |
+| `rules/accounting/plan23_leasing.rego` | `rules/accounting/plan23_leasing.rego` | wprost |
+| `rules/accounting/plan42_pkpir.rego` | `rules/accounting/plan42_pkpir.rego` | wprost |
+| `rules/uor/plan42_uor.rego` | `rules/uor/plan42_uor.rego` | wprost |
+| `rules/uor/uor_assets.rego` | `rules/uor/uor_assets.rego` | wprost |
+| `rules/uor/uor_books.rego` | `rules/uor/uor_books.rego` | wprost |
+| `rules/uor/uor_closing.rego` | `rules/uor/uor_closing.rego` | wprost |
+| `rules/uor/uor_costs.rego` | `rules/uor/uor_costs.rego` | wprost |
+| `rules/uor/uor_financial_stmt.rego` | `rules/uor/uor_financial_stmt.rego` | wprost |
+| `rules/uor/uor_inventory.rego` | `rules/uor/uor_inventory.rego` | wprost |
+| `rules/uor/uor_obligation.rego` | `rules/uor/uor_obligation.rego` | wprost |
+| `rules/uor/uor_revenue.rego` | `rules/uor/uor_revenue.rego` | wprost |
+| `rules/micro/uor/uor.rego` | `rules/micro/uor/uor.rego` | wprost |
+| `rules/micro/plan33_uor.rego` | `rules/micro/plan33_uor.rego` | wprost |
+| `rules/micro/pkpir/pkpir.rego` | `rules/micro/pkpir/pkpir.rego` | wprost |
+| `rules/micro/pkpir/pkpir_kolumny.rego` | `rules/micro/pkpir/pkpir_kolumny.rego` | wprost |
+| `rules/micro/pkpir/pkpir_przychody.rego` | `rules/micro/pkpir/pkpir_przychody.rego` | wprost |
+| `rules/micro/pkpir/pkpir_koszty.rego` | `rules/micro/pkpir/pkpir_koszty.rego` | wprost |
+| `rules/micro/pkpir/pkpir_nkup.rego` | `rules/micro/pkpir/pkpir_nkup.rego` | wprost |
+| `rules/micro/pkpir/pkpir_remanent.rego` | `rules/micro/pkpir/pkpir_remanent.rego` | wprost |
+| `rules/micro/pkpir/pkpir_korekty.rego` | `rules/micro/pkpir/pkpir_korekty.rego` | wprost |
+| `rules/micro/amortyzacja/pit_a22a.rego` | `rules/micro/amortyzacja/pit_a22a.rego` | wprost |
+| `rules/micro/amortyzacja/pit_a22i.rego` | `rules/micro/amortyzacja/pit_a22i.rego` | wprost |
+| `rules/micro/amortyzacja/pit_a22k.rego` | `rules/micro/amortyzacja/pit_a22k.rego` | wprost |
+| `rules/micro/amortyzacja/pit_a22n.rego` | `rules/micro/amortyzacja/pit_a22n.rego` | wprost |
+| `bundles/accounting_compliance.json` | `bundles/accounting_compliance.json` | wprost |
+| `tests/test_pkpir_uor_enterprise.py` | `tests/test_pkpir_uor_enterprise.py` | wprost |
+| `tests/test_tax_pipeline.py` | `tests/test_tax_pipeline.py` | wprost |
+| `tests/auto/test_auto_block_accounting.py` | `tests/auto/test_auto_block_accounting.py` | wprost |
+| `tests/auto/test_auto_block_pkpir_live.py` | `tests/auto/test_auto_block_pkpir_live.py` | wprost |
+| `tests/auto/test_p09_ksiegowosc_pkpir_uor_enterprise.py` | `tests/auto/test_p09_ksiegowosc_pkpir_uor_enterprise.py` | wprost |
+| `tests/rego/test_native_jdg_uor.rego` | `tests/rego/test_native_jdg_uor.rego` | wprost |
+| `tests/rego/test_p09_ksiegowosc_pkpir_uor_enterprise.rego` | `tests/rego/test_p09_ksiegowosc_pkpir_uor_enterprise.rego` | wprost |
+| `tests/rego/test_uor_books.rego` | `tests/rego/test_uor_books.rego` | wprost |
+| `tests/rego/test_uor_inventory_closing_fs.rego` | `tests/rego/test_uor_inventory_closing_fs.rego` | wprost |
+| `tests/rego/test_uor_live_adapter.rego` | `tests/rego/test_uor_live_adapter.rego` | wprost |
+| `tests/rego/test_uor_obligation.rego` | `tests/rego/test_uor_obligation.rego` | wprost |
+| `tests/rego/test_uor_revenue_costs_assets.rego` | `tests/rego/test_uor_revenue_costs_assets.rego` | wprost |
+
+2.2. Ścieżki nierozwiązane — nie są dowodem istnienia funkcji
+- brak
+
+2.3. Statystyki artefaktów
+| Plik | Linie | Bajty | rule_id | _legal_basis | temporal | package |
+|---|---:|---:|---:|---:|---:|---|
+| `bundles/accounting_compliance.json` | 326 | 7050 | 0 | 0 | 0 |  |
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | 425 | 35383 | 0 | 0 | 14 |  |
+| `docs/Bbb` | 238 | 20680 | 0 | 0 | 0 |  |
+| `docs/LEGAL_COVERAGE.md` | 270 | 13940 | 0 | 0 | 0 |  |
+| `docs/LEGAL_REFERENCE_ACTS.md` | 163 | 15878 | 0 | 0 | 0 |  |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | 399 | 34502 | 0 | 0 | 3 |  |
+| `rules/_pkpir_rates.rego` | 322 | 19347 | 0 | 0 | 0 | jdg.pkpir_rates |
+| `rules/_uor_rates.rego` | 252 | 16246 | 0 | 0 | 0 | jdg.uor_rates |
+| `rules/accounting/depreciation_enterprise.rego` | 379 | 22470 | 12 | 11 | 0 | jdg.accounting.depreciation |
+| `rules/accounting/depreciation_enterprise_complete.rego` | 411 | 17029 | 30 | 29 | 0 | jdg.pit.depreciation |
+| `rules/accounting/pkpir_enterprise_live.rego` | 843 | 38883 | 13 | 12 | 0 | jdg.pkpir_live |
+| `rules/accounting/pkpir_enterprise_validation.rego` | 772 | 44624 | 35 | 34 | 0 | jdg.accounting.pkpir_validation |
+| `rules/accounting/pkpir_enterprise_validator.rego` | 570 | 33480 | 22 | 21 | 0 | jdg.accounting.pkpir |
+| `rules/accounting/plan23_leasing.rego` | 34 | 4116 | 6 | 5 | 0 | jdg.accounting |
+| `rules/accounting/plan42_pkpir.rego` | 14 | 1565 | 2 | 1 | 0 | jdg.accounting |
+| `rules/accounting/uor_enterprise_live.rego` | 189 | 14963 | 12 | 11 | 0 | jdg.uor_live |
+| `rules/accounting.rego` | 1690 | 87154 | 74 | 74 | 0 | jdg.accounting |
+| `rules/micro/amortyzacja/pit_a22a.rego` | 211 | 11671 | 11 | 10 | 0 | jdg.micro.amort_a22a |
+| `rules/micro/amortyzacja/pit_a22i.rego` | 199 | 11164 | 10 | 9 | 0 | jdg.micro.amort_a22i |
+| `rules/micro/amortyzacja/pit_a22k.rego` | 154 | 8848 | 8 | 7 | 0 | jdg.micro.amort_a22k |
+| `rules/micro/amortyzacja/pit_a22n.rego` | 154 | 8678 | 8 | 7 | 0 | jdg.micro.amort_a22n |
+| `rules/micro/pkpir/pkpir.rego` | 215 | 10936 | 12 | 11 | 0 | jdg.micro.pkpir |
+| `rules/micro/pkpir/pkpir_kolumny.rego` | 239 | 12525 | 13 | 12 | 0 | jdg.micro.pkpir_columns |
+| `rules/micro/pkpir/pkpir_korekty.rego` | 190 | 10726 | 10 | 9 | 0 | jdg.micro.pkpir_corrections |
+| `rules/micro/pkpir/pkpir_koszty.rego` | 232 | 12697 | 12 | 11 | 0 | jdg.micro.pkpir_costs |
+| `rules/micro/pkpir/pkpir_nkup.rego` | 225 | 12162 | 12 | 11 | 0 | jdg.micro.pkpir_nkup |
+| `rules/micro/pkpir/pkpir_przychody.rego` | 237 | 12691 | 12 | 11 | 0 | jdg.micro.pkpir_revenue |
+| `rules/micro/pkpir/pkpir_remanent.rego` | 196 | 10627 | 10 | 9 | 0 | jdg.micro.pkpir_remnant |
+| `rules/micro/plan33_uor.rego` | 132 | 19919 | 26 | 25 | 0 | jdg.micro.uor_plan33 |
+| `rules/micro/uor/uor.rego` | 2712 | 125554 | 149 | 148 | 0 | jdg.micro.uor |
+| `rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego` | 692 | 41805 | 28 | 27 | 0 | jdg.p09_ksiegowosc_pkpir_uor_innovations |
+| `rules/p11_accounting_pkpir_innovations_v8.rego` | 229 | 8844 | 14 | 0 | 0 | jdg.p11_innovations |
+| `rules/p12_uor_innovations_v8.rego` | 853 | 47798 | 14 | 12 | 0 | jdg.p12_innovations |
+| `rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` | 950 | 56202 | 31 | 30 | 0 | jdg.p18_automatyzacja_ksiegowosci_innovations |
+| `rules/p33_uor_supplement.rego` | 521 | 29345 | 8 | 7 | 0 | jdg.p33_uor_supplement |
+| `rules/pkpir_to_uor_transformer.rego` | 413 | 25222 | 7 | 6 | 0 | jdg.pkpir_to_uor_transformer |
+| `rules/uor/plan42_uor.rego` | 34 | 4231 | 6 | 5 | 0 | jdg.uor |
+| `rules/uor/uor_assets.rego` | 538 | 20557 | 34 | 33 | 0 | jdg.uor.assets |
+| `rules/uor/uor_books.rego` | 796 | 30765 | 53 | 52 | 0 | jdg.uor.books |
+| `rules/uor/uor_closing.rego` | 387 | 14909 | 26 | 25 | 0 | jdg.uor.closing |
+| `rules/uor/uor_costs.rego` | 398 | 15193 | 27 | 26 | 0 | jdg.uor.costs |
+| `rules/uor/uor_financial_stmt.rego` | 409 | 17073 | 28 | 27 | 0 | jdg.uor.financial_stmt |
+| `rules/uor/uor_inventory.rego` | 272 | 10961 | 18 | 17 | 0 | jdg.uor.inventory |
+| `rules/uor/uor_obligation.rego` | 551 | 23317 | 31 | 30 | 0 | jdg.uor.obligation |
+| `rules/uor/uor_revenue.rego` | 449 | 16709 | 30 | 29 | 0 | jdg.uor.revenue |
+| `tests/auto/test_auto_block_accounting.py` | 349 | 15443 | 20 | 0 | 0 |  |
+| `tests/auto/test_auto_block_pkpir_live.py` | 43 | 1696 | 2 | 0 | 0 |  |
+| `tests/auto/test_p09_ksiegowosc_pkpir_uor_enterprise.py` | 235 | 10484 | 0 | 0 | 0 |  |
+| `tests/rego/test_native_jdg_uor.rego` | 70 | 2332 | 0 | 0 | 0 | test_jdg_uor |
+| `tests/rego/test_p09_ksiegowosc_pkpir_uor_enterprise.rego` | 248 | 12960 | 0 | 0 | 0 | jdg.tests.p09_ksiegowosc |
+| `tests/rego/test_uor_books.rego` | 152 | 4742 | 0 | 0 | 0 | jdg.uor.books_test |
+| `tests/rego/test_uor_inventory_closing_fs.rego` | 185 | 5972 | 0 | 0 | 0 | jdg.uor.inventory_closing_fs_test |
+| `tests/rego/test_uor_live_adapter.rego` | 153 | 4728 | 0 | 0 | 0 | jdg.uor_live_adapter_test |
+| `tests/rego/test_uor_obligation.rego` | 162 | 5563 | 0 | 0 | 0 | jdg.uor.obligation_test |
+| `tests/rego/test_uor_revenue_costs_assets.rego` | 177 | 5908 | 0 | 0 | 0 | jdg.uor.revenue_costs_assets_test |
+| `tests/test_pkpir_uor_enterprise.py` | 516 | 23862 | 0 | 0 | 0 |  |
+| `tests/test_tax_pipeline.py` | 401 | 16664 | 0 | 0 | 0 |  |
+
+3. ANALIZA PRAWO → REGUŁA → TEST → WERDYKT
+Przeprowadź głębokie myślenie nad łańcuchem dowodowym, ale nie utożsamiaj obecności tekstu z poprawnością prawną.
+- PRAWO: prompt wskazuje akty i artykuły; raport wymaga potwierdzenia w docs/Bbb/LEGAL_REFERENCE_ACTS oraz kanonicznego identyfikatora aktu.
+- REGUŁA: w wybranych plikach znaleziono 854 deklarowanych rule_id (849 unikalnych); przykładowe obserwacje:
+  - rules/_pkpir_rates.rego: package=jdg.pkpir_rates
+  - rules/_uor_rates.rego: package=jdg.uor_rates
+  - rules/accounting/depreciation_enterprise.rego: rule_id=12, przykłady=jdg.accounting.depreciation.no_match, jdg.accounting.depreciation.asset_definition, jdg.accounting.depreciation.low_value_one_time
+  - rules/accounting/depreciation_enterprise_complete.rego: rule_id=30, przykłady=jdg.pit.depreciation.no_match, jdg.pit.depreciation.a22a.r1, jdg.pit.depreciation.a22a.r2
+  - rules/accounting/pkpir_enterprise_live.rego: rule_id=13, przykłady=jdg.pkpir_live.no_match, jdg.pkpir_live.col1_sequential_validation, jdg.pkpir_live.col2_3_date_validation
+  - rules/accounting/pkpir_enterprise_validation.rego: rule_id=35, przykłady=jdg.accounting.pkpir_val.no_match, jdg.accounting.pkpir_col1_sequential, jdg.accounting.pkpir_col2_event_date
+  - rules/accounting/pkpir_enterprise_validator.rego: rule_id=22, przykłady=jdg.accounting.pkpir.no_match, jdg.accounting.pkpir.columns_structure, jdg.accounting.pkpir.revenue_columns_validation
+  - rules/accounting/plan23_leasing.rego: rule_id=6, przykłady=jdg.accounting.no_match, jdg.accounting.operating_lease_kup, jdg.accounting.financial_lease_interest_kup
+  - rules/accounting/plan42_pkpir.rego: rule_id=2, przykłady=jdg.accounting.no_match, jdg.accounting.pkpir_remnant_consistency
+  - rules/accounting/uor_enterprise_live.rego: rule_id=12, przykłady=jdg.uor_live.no_match, jdg.uor_live.full_accounting_obligation_check, jdg.uor_live.accounting_document_validation
+  - rules/accounting.rego: rule_id=74, przykłady=jdg.accounting.no_match, jdg.accounting.pkpir_column_mapping, jdg.accounting.pkpir_revenue_recognition
+  - rules/micro/amortyzacja/pit_a22a.rego: rule_id=11, przykłady=jdg.micro.amort_a22a.no_match, jdg.micro.amort_a22a.r1, jdg.micro.amort_a22a.r2
+  - rules/micro/amortyzacja/pit_a22i.rego: rule_id=10, przykłady=jdg.micro.amort_a22i.no_match, jdg.micro.amort_a22i.r1, jdg.micro.amort_a22i.r2
+  - rules/micro/amortyzacja/pit_a22k.rego: rule_id=8, przykłady=jdg.micro.amort_a22k.no_match, jdg.micro.amort_a22k.r1, jdg.micro.amort_a22k.r2
+  - rules/micro/amortyzacja/pit_a22n.rego: rule_id=8, przykłady=jdg.micro.amort_a22n.no_match, jdg.micro.amort_a22n.r1, jdg.micro.amort_a22n.r2
+  - rules/micro/pkpir/pkpir.rego: rule_id=12, przykłady=jdg.micro.pkpir.no_match, jdg.micro.pkpir.p9.r1, jdg.micro.pkpir.p9.r2
+  - rules/micro/pkpir/pkpir_kolumny.rego: rule_id=13, przykłady=jdg.micro.pkpir_columns.no_match, jdg.micro.pkpir_columns.p10.r1, jdg.micro.pkpir_columns.p10.r2
+  - rules/micro/pkpir/pkpir_korekty.rego: rule_id=10, przykłady=jdg.micro.pkpir_corrections.no_match, jdg.micro.pkpir_corrections.c1.r1, jdg.micro.pkpir_corrections.c1.r2
+  - rules/micro/pkpir/pkpir_koszty.rego: rule_id=12, przykłady=jdg.micro.pkpir_costs.no_match, jdg.micro.pkpir_costs.p15.r1, jdg.micro.pkpir_costs.p15.r2
+  - rules/micro/pkpir/pkpir_nkup.rego: rule_id=12, przykłady=jdg.micro.pkpir_nkup.no_match, jdg.micro.pkpir_nkup.p21.r1, jdg.micro.pkpir_nkup.p21.r2
+- TEST: dopasowanie nazwy pliku testowego nie dowodzi wykonania testu; należy uruchomić pytest/opa test i zapisać wynik w CI.
+- WERDYKT: należy zweryfikować, czy pakiety (44) są rzeczywiście włączone przez router, safe_merge i końcowy invariant check.
+- DATA: wartości liczbowe należy porównać z bundle canonical; ten generator nie uznaje samego literalnego wystąpienia liczby za potwierdzenie jej prawidłowości.
+
+4. REJESTR LUK I RYZYK
+| ID | Obserwacja | Dowód | Wpływ | Priorytet | Kryterium zamknięcia |
+|---|---|---|---|---|---|
+| G-01 | Brakujące ścieżki źródłowe: 0 | Tabela 2.2 | Niepełny audyt | P0 | 0 braków albo jawne mapowanie migracyjne |
+| G-02 | Duplikaty rule_id w próbie: 4 | jdg.accounting.no_match, jdg.accounting.pkpir_col1_sequential, jdg.accounting.pkpir_col8_other_revenue, jdg.micro.uor.no_match | Niedeterminizm / kolizja | P0 | dead_rule_detector = 0 |
+| G-03 | Brak temporalności w 46/46 plików Rego | Tabela 2.3 | Błędny time-travel | P1 | valid_from/valid_to + test graniczny |
+| G-04 | Niepotwierdzony most test → reguła → werdykt | Brak wyniku uruchomienia w raporcie | Cichy regres | P1 | coverage + golden replay |
+| G-05 | Niepotwierdzona kanoniczność podstaw prawnych | _legal_basis=804 | Ryzyko błędnej podstawy | P0 | Legal Twin i validator przechodzą |
+| G-06 | Brak dowodu wdrożenia kanarowego | Prompt opisuje wymaganie; repo wymaga weryfikacji runtime | Niebezpieczny release | P1 | metryki + auto-rollback test |
+
+5. OPA JAKO SYSTEM
+Control Plane: rejestr reguł, review, walidacja, podpisany bundle, Legal Twin, kanar i rollback.
+Data Plane: deterministyczna ewaluacja, First-Match-Wins, safe_merge, temporalność, provenance i runtime invariants.
+Minimalny kontrakt wydania:
+```text
+change request → legal diff → rule/test diff → validate/lint → pytest + opa test
+→ legal-basis gate → duplicate/stub/tautology gate → golden replay
+→ signed bundle → canary → health metrics → ACTIVE albo ROLLED_BACK
+```
+Każdy etap musi pozostawić artefakt, wersję i hash; sam raport analityczny nie zmienia lifecycle reguły.
+
+6. TESTY I WALIDACJA
+| Test / grupa | Stan istnienia | Wymagany dowód |
+|---|---|---|
+| `tests/auto/test_auto_block_pkpir_live.py` | istnieje, 43 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/auto/test_p09_ksiegowosc_pkpir_uor_enterprise.py` | istnieje, 235 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/micro/test_native_micro_pkpir.rego` | istnieje, 130 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/micro/test_native_micro_uor.rego` | istnieje, 130 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_jdg_uor.rego` | istnieje, 70 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_p09_ksiegowosc_pkpir_uor_enterprise.rego` | istnieje, 248 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_uor_books.rego` | istnieje, 152 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_uor_inventory_closing_fs.rego` | istnieje, 185 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_uor_live_adapter.rego` | istnieje, 153 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_uor_obligation.rego` | istnieje, 162 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_uor_revenue_costs_assets.rego` | istnieje, 177 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/test_pkpir_uor_enterprise.py` | istnieje, 516 linii | uruchomienie + wynik + przypadki graniczne |
+Rekomendowany zestaw: happy path, no_match, granice progów, data przed/po nowelizacji, duplikat/konflikt, brak danych, rollback i determinism replay.
+
+7. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+01. Legal Twin diff: zmiana artykułu automatycznie pokazuje dotknięte rule_id, testy i formularze.
+02. Temporal boundary generator: automatyczne przypadki dzień przed / dzień wejścia / dzień po.
+03. Decision Certificate verifier: podpis, bundle_version, rule_version, threshold_version i hash wejścia.
+04. Rule impact graph: graf zależności reguła → router → werdykt → dokument.
+05. Evidence completeness score: osobne wyniki dla prawa, kodu, testu, danych i runtime.
+06. Golden replay bank per domena i wersja prawa, z tolerancją wyłącznie dla pól niedeterministycznych.
+07. Declarative Change Wizard z obowiązkowym ASK_USER przy niejednoznacznej podstawie prawnej.
+08. Canary risk budget: automatyczny rollback po wzroście BLOCK_AND_ALERT lub zmianie rozkładu werdyktów.
+09. Hardcode provenance scanner: literal → źródło danych → data obowiązywania → test.
+10. Coverage desert radar: mapa aktów i pakietów bez reguł, bez testów albo bez routera.
+11. Explainability bundle: dowód decyzji eksportowany razem z wersją reguły i podstawą prawną.
+12. Mutation testing dla najważniejszych rule_id; brak wykrycia mutacji blokuje promocję do ACTIVE.
+Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, że funkcje istnieją.
+
+8. KONTRAKTY Z INNYMI CZĘŚCIAMI
+- Raport master 00: wspólne LCI/TCL/RV/UVR, _legal_basis, valid_from/valid_to, rule_id, 25-polowy werdykt.
+- Pakiety wykryte w bieżącym zakresie: jdg.accounting, jdg.accounting.depreciation, jdg.accounting.pkpir, jdg.accounting.pkpir_validation, jdg.micro.amort_a22a, jdg.micro.amort_a22i, jdg.micro.amort_a22k, jdg.micro.amort_a22n, jdg.micro.pkpir, jdg.micro.pkpir_columns, jdg.micro.pkpir_corrections, jdg.micro.pkpir_costs, jdg.micro.pkpir_nkup, jdg.micro.pkpir_remnant, jdg.micro.pkpir_revenue, jdg.micro.uor, jdg.micro.uor_plan33, jdg.p09_ksiegowosc_pkpir_uor_innovations, jdg.p11_innovations, jdg.p12_innovations, jdg.p18_automatyzacja_ksiegowosci_innovations, jdg.p33_uor_supplement, jdg.pit.depreciation, jdg.pkpir_live, jdg.pkpir_rates, jdg.pkpir_to_uor_transformer, jdg.tests.p09_ksiegowosc, jdg.uor, jdg.uor.assets, jdg.uor.books.
+- Części sąsiednie muszą traktować powyższe nazwy jako obserwację, nie jako zgodę na dodawanie reguł bez rejestracji.
+- Zmiana rule_id wymaga aktualizacji routera, manifestu, testów, bundle, dokumentacji i golden replay.
+
+9. MAPA DROGOWA
+| Etap | Zadanie | Kryterium | Szacunek |
+|---|---|---|---|
+| P0 | Uzupełnić/uzgodnić źródła i legal basis | 0 braków, validator OK | 1–3 dni |
+| P0 | Zbudować testy krytycznych rule_id | positive/negative/boundary | 2–5 dni |
+| P1 | Wdrożyć temporalny golden replay | przejścia dat bez regresji | 2–5 dni |
+| P1 | Podłączyć provenance i Decision Certificate | pełny łańcuch dowodu | 2–5 dni |
+| P1 | Kanar + metryki + rollback | test SLA i failure injection | 1–2 tyg. |
+| P2 | Dashboard coverage/evidence | trend domeny per bundle | 1–2 tyg. |
+
+10. WNIOSKI KOŃCOWE
+Audyt części 09 potwierdza istnienie 57 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
+Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+KONIEC RAPORTU 09/25 — raport wygenerowany z promptu 09_UoR_PKPiR_KSIĘGOWOŚĆ_pełna_księgowość_księgi.txt
+====================================================================================================

@@ -1,7 +1,190 @@
-================================================================================
-RAPORT 22 — BUNDLE / API / MIGRACJE — WDROŻONY ✅
-ANALIZA: bundles/bundle.sh (v8.0), api/openapi.yaml (10 endpointów, JWT Bearer),
-migrations/ (DuckDB RuleStore: 9 tabel, 2 migracje, seed 50 progów),
-RuleStore z thresholds (hot-reload parametrów).
-STAN: Bundle OPA v8.0, OpenAPI 3.0.3, DuckDB RuleStore, hot-reload thresholds.
-================================================================================
+====================================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 22/25 — BUNDLE / API / MIGRACJE (bundle OPA, OpenAPI, RuleStore DuckDB, deployment, rejestry)
+====================================================================================================
+Data wygenerowania: 2026-08-10 | Źródło sterujące: 22_BUNDLE_API_MIGRACJE_bundle_OPA_OpenAPI_RuleS.txt
+Status raportu: AUDYT OPARTY NA DOWODACH
+Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
+UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
+
+1. EXECUTIVE SUMMARY
+- Zakres promptu: Przeprowadź głębokie myślenie i przeprowadź głęboką analizę BUNDLE/API/MIGRACJI na zaawansowanym poziomie Enterprise. To realizuje Control Plane i Data Plane z V1/V2. Oceń: bundles/bundle.sh (budowa tar.gz, manifest), bundles/manifest.json, manifest_v2.json, policy_registry.json, legal_graph.json, thresholds_data.json, deployments.json, impact_matrix.json, law_radar.json, policies_drift_report.json, healthy_versions.json, rule_registry.json, legal_reference_canon.json, legal_basis_audit.json, legal_coverage_gaps.json, legal_basis_v2_report.json, coverage_deserts.json, legal_change_calendar.json, accounting_compliance.json, hardcoded_audit.json, vat_micro_inventory.json, pit_micro_inventory.json, zus_micro_inventory.json; api/openapi.yaml (10 endpointów, JWT); migrations/001_jdg_rule_store.sql, 002_jdg_enterprise_v7.sql, 003_jdg_v8_legal_twin.sql. Sprawdź: spójność liczb między manifestem a regułami (L2: niespójne metryki!), podpisywanie bundle (brak HSM — wskaż jak dodać), delta-bundles, long-polling, persist=true, wersjonowanie i „listę zdrowych wersji", hot-reload danych przez OPA Data API, 9 tabel RuleStore (w tym jdg_legal_cartography → rozbudowa do legal_graph LKG), audyt WORM (Merkle/HMAC), model ról. Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów: bundle server z podpisem i weryfikacją na węźle, kanary 5%→100% z auto-rollbackiem ≤5 min, wdrożenie parametru ≤15 min, pełny łańcuch traceability nowelizacja→werdykt.
+- Rozwiązane ścieżki promptu: 37/37; brakujące: 0.
+- Przeanalizowane unikalne pliki: 37 (1 Rego), 372,694 linii, 12,016,646 B.
+- Zaobserwowane rule_id: 2, unikalne: 2, duplikaty w zakresie: 0.
+- Pliki Rego z polem valid_from/valid_to w próbie: 1/1 (100.0%).
+- Wystąpienia _legal_basis w próbie: 1; pakiety Rego: 1.
+- Dopasowane testy domenowe po nazwie pliku: 3.
+
+TOP 10 USTALEŃ / REKOMENDACJI
+01. P0: Zamknąć 0 nierozwiązanych odwołań promptu albo zaktualizować prompt; nie wolno traktować braku pliku jako dowodu implementacji.
+02. P0: Ustalić bramkę spójności dla 2 unikalnych rule_id; wykryte duplikaty w zakresie: 0.
+03. P0: Wymagać testu pozytywnego, granicznego, negatywnego/no_match i temporalnego dla każdej krytycznej reguły.
+04. P0: Powiązać każdą regułę materialną z kanonicznym _legal_basis oraz rekordem w Legal Twin; nie ufać samemu komentarzowi.
+05. P1: Podnieść temporalność: obecnie wykryto ją w 1/1 plików Rego w zakresie audytu.
+06. P1: Parametry stawek, progów, limitów i terminów trzymać w danych wersjonowanych; wykrywać hardcode w CI.
+07. P1: Dodać golden replay i diff werdyktów przed kanarem; zmiana prawa musi mieć datę wejścia i datę wygaśnięcia.
+08. P1: Dopiąć provenance: input → rule_id → podstawa → test → bundle → Decision Certificate.
+09. P2: Utworzyć dashboard pokrycia domeny z rozróżnieniem: istnieje kod, istnieje test, istnieje podstawa, działa w routerze.
+10. P2: Oznaczać rekomendacje jako SUGGEST/ASK_USER; raport nie powinien prowadzić do automatycznej decyzji podatkowej.
+
+2. DOWÓD Z REPOZYTORIUM
+2.1. Rozwiązanie ścieżek wskazanych przez prompt
+| Ścieżka z promptu | Rozwiązanie | Tryb |
+|---|---|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | wprost |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | `docs/WIZJA_OPA_ENTERPRISE_V2.md` | wprost |
+| `docs/Bbb` | `docs/Bbb` | wprost |
+| `docs/LEGAL_REFERENCE_ACTS.md` | `docs/LEGAL_REFERENCE_ACTS.md` | wprost |
+| `docs/LEGAL_COVERAGE.md` | `docs/LEGAL_COVERAGE.md` | wprost |
+| `bundles/bundle.sh` | `bundles/bundle.sh` | wprost |
+| `bundles/manifest.json` | `bundles/manifest.json` | wprost |
+| `bundles/manifest_v2.json` | `bundles/manifest_v2.json` | wprost |
+| `bundles/legal_graph.json` | `bundles/legal_graph.json` | wprost |
+| `bundles/thresholds_data.json` | `bundles/thresholds_data.json` | wprost |
+| `bundles/deployments.json` | `bundles/deployments.json` | wprost |
+| `bundles/impact_matrix.json` | `bundles/impact_matrix.json` | wprost |
+| `bundles/law_radar.json` | `bundles/law_radar.json` | wprost |
+| `bundles/policies_drift_report.json` | `bundles/policies_drift_report.json` | wprost |
+| `bundles/healthy_versions.json` | `bundles/healthy_versions.json` | wprost |
+| `bundles/rule_registry.json` | `bundles/rule_registry.json` | wprost |
+| `bundles/legal_reference_canon.json` | `bundles/legal_reference_canon.json` | wprost |
+| `bundles/legal_coverage_gaps.json` | `bundles/legal_coverage_gaps.json` | wprost |
+| `bundles/coverage_deserts.json` | `bundles/coverage_deserts.json` | wprost |
+| `bundles/legal_change_calendar.json` | `bundles/legal_change_calendar.json` | wprost |
+| `bundles/accounting_compliance.json` | `bundles/accounting_compliance.json` | wprost |
+| `bundles/hardcoded_audit.json` | `bundles/hardcoded_audit.json` | wprost |
+| `bundles/policy_registry.json` | `bundles/policy_registry.json` | wprost |
+| `bundles/legal_basis_audit.json` | `bundles/legal_basis_audit.json` | wprost |
+| `bundles/legal_basis_v2_report.json` | `bundles/legal_basis_v2_report.json` | wprost |
+| `bundles/vat_micro_inventory.json` | `bundles/vat_micro_inventory.json` | wprost |
+| `bundles/pit_micro_inventory.json` | `bundles/pit_micro_inventory.json` | wprost |
+| `bundles/zus_micro_inventory.json` | `bundles/zus_micro_inventory.json` | wprost |
+| `api/openapi.yaml` | `api/openapi.yaml` | wprost |
+| `migrations/001_jdg_rule_store.sql` | `migrations/001_jdg_rule_store.sql` | wprost |
+| `migrations/002_jdg_enterprise_v7.sql` | `migrations/002_jdg_enterprise_v7.sql` | wprost |
+| `migrations/003_jdg_v8_legal_twin.sql` | `migrations/003_jdg_v8_legal_twin.sql` | wprost |
+| `tests/test_p01_control_plane.py` | `tests/test_p01_control_plane.py` | wprost |
+| `tests/test_risk_api.py` | `tests/test_risk_api.py` | wprost |
+| `tests/test_tax_pipeline.py` | `tests/test_tax_pipeline.py` | wprost |
+| `tests/auto/test_p01_fundament_enterprise.py` | `tests/auto/test_p01_fundament_enterprise.py` | wprost |
+| `tests/rego/test_p01_fundament_enterprise.rego` | `tests/rego/test_p01_fundament_enterprise.rego` | wprost |
+
+2.2. Ścieżki nierozwiązane — nie są dowodem istnienia funkcji
+- brak
+
+2.3. Statystyki artefaktów
+| Plik | Linie | Bajty | rule_id | _legal_basis | temporal | package |
+|---|---:|---:|---:|---:|---:|---|
+| `api/openapi.yaml` | 1038 | 41017 | 0 | 0 | 1 |  |
+| `bundles/accounting_compliance.json` | 326 | 7050 | 0 | 0 | 0 |  |
+| `bundles/bundle.sh` | 157 | 6834 | 0 | 0 | 0 |  |
+| `bundles/coverage_deserts.json` | 414 | 12219 | 0 | 0 | 40 |  |
+| `bundles/deployments.json` | 18 | 461 | 0 | 0 | 0 |  |
+| `bundles/hardcoded_audit.json` | 797 | 21941 | 0 | 0 | 0 |  |
+| `bundles/healthy_versions.json` | 21 | 629 | 0 | 0 | 0 |  |
+| `bundles/impact_matrix.json` | 401 | 13266 | 43 | 0 | 0 |  |
+| `bundles/law_radar.json` | 21 | 479 | 0 | 0 | 0 |  |
+| `bundles/legal_basis_audit.json` | 86042 | 2924479 | 12286 | 0 | 0 |  |
+| `bundles/legal_basis_v2_report.json` | 118237 | 3167635 | 12286 | 0 | 0 |  |
+| `bundles/legal_change_calendar.json` | 15 | 314 | 0 | 0 | 0 |  |
+| `bundles/legal_coverage_gaps.json` | 446 | 10989 | 0 | 0 | 0 |  |
+| `bundles/legal_graph.json` | 2886 | 100978 | 0 | 0 | 206 |  |
+| `bundles/legal_reference_canon.json` | 218 | 9006 | 0 | 0 | 0 |  |
+| `bundles/manifest.json` | 33 | 1220 | 0 | 0 | 0 |  |
+| `bundles/manifest_v2.json` | 2616 | 104415 | 0 | 0 | 0 |  |
+| `bundles/pit_micro_inventory.json` | 2422 | 71488 | 0 | 0 | 0 |  |
+| `bundles/policies_drift_report.json` | 529 | 18251 | 0 | 0 | 0 |  |
+| `bundles/policy_registry.json` | 147439 | 5131191 | 12286 | 0 | 0 |  |
+| `bundles/rule_registry.json` | 1 | 2 | 0 | 0 | 0 |  |
+| `bundles/thresholds_data.json` | 31 | 649 | 0 | 0 | 2 |  |
+| `bundles/vat_micro_inventory.json` | 2130 | 58159 | 0 | 0 | 0 |  |
+| `bundles/zus_micro_inventory.json` | 2732 | 79646 | 0 | 0 | 0 |  |
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | 425 | 35383 | 0 | 0 | 14 |  |
+| `docs/Bbb` | 238 | 20680 | 0 | 0 | 0 |  |
+| `docs/LEGAL_COVERAGE.md` | 270 | 13940 | 0 | 0 | 0 |  |
+| `docs/LEGAL_REFERENCE_ACTS.md` | 163 | 15878 | 0 | 0 | 0 |  |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | 399 | 34502 | 0 | 0 | 3 |  |
+| `migrations/001_jdg_rule_store.sql` | 296 | 27295 | 0 | 0 | 18 |  |
+| `migrations/002_jdg_enterprise_v7.sql` | 103 | 6342 | 0 | 0 | 0 |  |
+| `migrations/003_jdg_v8_legal_twin.sql` | 118 | 8686 | 0 | 0 | 4 | VARCHAR, |
+| `tests/auto/test_p01_fundament_enterprise.py` | 158 | 8561 | 2 | 0 | 6 |  |
+| `tests/rego/test_p01_fundament_enterprise.rego` | 180 | 7640 | 2 | 1 | 16 | test_p01_fundament |
+| `tests/test_p01_control_plane.py` | 360 | 16223 | 2 | 0 | 16 |  |
+| `tests/test_risk_api.py` | 613 | 22534 | 2 | 0 | 8 |  |
+| `tests/test_tax_pipeline.py` | 401 | 16664 | 0 | 0 | 0 |  |
+
+3. ANALIZA PRAWO → REGUŁA → TEST → WERDYKT
+Przeprowadź głębokie myślenie nad łańcuchem dowodowym, ale nie utożsamiaj obecności tekstu z poprawnością prawną.
+- PRAWO: prompt wskazuje akty i artykuły; raport wymaga potwierdzenia w docs/Bbb/LEGAL_REFERENCE_ACTS oraz kanonicznego identyfikatora aktu.
+- REGUŁA: w wybranych plikach znaleziono 2 deklarowanych rule_id (2 unikalnych); przykładowe obserwacje:
+  - tests/rego/test_p01_fundament_enterprise.rego: rule_id=2, przykłady=x, jdg.risk.x
+- TEST: dopasowanie nazwy pliku testowego nie dowodzi wykonania testu; należy uruchomić pytest/opa test i zapisać wynik w CI.
+- WERDYKT: należy zweryfikować, czy pakiety (1) są rzeczywiście włączone przez router, safe_merge i końcowy invariant check.
+- DATA: wartości liczbowe należy porównać z bundle canonical; ten generator nie uznaje samego literalnego wystąpienia liczby za potwierdzenie jej prawidłowości.
+
+4. REJESTR LUK I RYZYK
+| ID | Obserwacja | Dowód | Wpływ | Priorytet | Kryterium zamknięcia |
+|---|---|---|---|---|---|
+| G-01 | Brakujące ścieżki źródłowe: 0 | Tabela 2.2 | Niepełny audyt | P0 | 0 braków albo jawne mapowanie migracyjne |
+| G-02 | Duplikaty rule_id w próbie: 0 | brak | Niedeterminizm / kolizja | P0 | dead_rule_detector = 0 |
+| G-03 | Brak temporalności w 0/1 plików Rego | Tabela 2.3 | Błędny time-travel | P1 | valid_from/valid_to + test graniczny |
+| G-04 | Niepotwierdzony most test → reguła → werdykt | Brak wyniku uruchomienia w raporcie | Cichy regres | P1 | coverage + golden replay |
+| G-05 | Niepotwierdzona kanoniczność podstaw prawnych | _legal_basis=1 | Ryzyko błędnej podstawy | P0 | Legal Twin i validator przechodzą |
+| G-06 | Brak dowodu wdrożenia kanarowego | Prompt opisuje wymaganie; repo wymaga weryfikacji runtime | Niebezpieczny release | P1 | metryki + auto-rollback test |
+
+5. OPA JAKO SYSTEM
+Control Plane: rejestr reguł, review, walidacja, podpisany bundle, Legal Twin, kanar i rollback.
+Data Plane: deterministyczna ewaluacja, First-Match-Wins, safe_merge, temporalność, provenance i runtime invariants.
+Minimalny kontrakt wydania:
+```text
+change request → legal diff → rule/test diff → validate/lint → pytest + opa test
+→ legal-basis gate → duplicate/stub/tautology gate → golden replay
+→ signed bundle → canary → health metrics → ACTIVE albo ROLLED_BACK
+```
+Każdy etap musi pozostawić artefakt, wersję i hash; sam raport analityczny nie zmienia lifecycle reguły.
+
+6. TESTY I WALIDACJA
+| Test / grupa | Stan istnienia | Wymagany dowód |
+|---|---|---|
+| `tests/auto/test_auto_block_api_fallback.py` | istnieje, 43 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_wis_api_enterprise.rego` | istnieje, 59 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/test_risk_api.py` | istnieje, 613 linii | uruchomienie + wynik + przypadki graniczne |
+Rekomendowany zestaw: happy path, no_match, granice progów, data przed/po nowelizacji, duplikat/konflikt, brak danych, rollback i determinism replay.
+
+7. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+01. Legal Twin diff: zmiana artykułu automatycznie pokazuje dotknięte rule_id, testy i formularze.
+02. Temporal boundary generator: automatyczne przypadki dzień przed / dzień wejścia / dzień po.
+03. Decision Certificate verifier: podpis, bundle_version, rule_version, threshold_version i hash wejścia.
+04. Rule impact graph: graf zależności reguła → router → werdykt → dokument.
+05. Evidence completeness score: osobne wyniki dla prawa, kodu, testu, danych i runtime.
+06. Golden replay bank per domena i wersja prawa, z tolerancją wyłącznie dla pól niedeterministycznych.
+07. Declarative Change Wizard z obowiązkowym ASK_USER przy niejednoznacznej podstawie prawnej.
+08. Canary risk budget: automatyczny rollback po wzroście BLOCK_AND_ALERT lub zmianie rozkładu werdyktów.
+09. Hardcode provenance scanner: literal → źródło danych → data obowiązywania → test.
+10. Coverage desert radar: mapa aktów i pakietów bez reguł, bez testów albo bez routera.
+11. Explainability bundle: dowód decyzji eksportowany razem z wersją reguły i podstawą prawną.
+12. Mutation testing dla najważniejszych rule_id; brak wykrycia mutacji blokuje promocję do ACTIVE.
+Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, że funkcje istnieją.
+
+8. KONTRAKTY Z INNYMI CZĘŚCIAMI
+- Raport master 00: wspólne LCI/TCL/RV/UVR, _legal_basis, valid_from/valid_to, rule_id, 25-polowy werdykt.
+- Pakiety wykryte w bieżącym zakresie: test_p01_fundament.
+- Części sąsiednie muszą traktować powyższe nazwy jako obserwację, nie jako zgodę na dodawanie reguł bez rejestracji.
+- Zmiana rule_id wymaga aktualizacji routera, manifestu, testów, bundle, dokumentacji i golden replay.
+
+9. MAPA DROGOWA
+| Etap | Zadanie | Kryterium | Szacunek |
+|---|---|---|---|
+| P0 | Uzupełnić/uzgodnić źródła i legal basis | 0 braków, validator OK | 1–3 dni |
+| P0 | Zbudować testy krytycznych rule_id | positive/negative/boundary | 2–5 dni |
+| P1 | Wdrożyć temporalny golden replay | przejścia dat bez regresji | 2–5 dni |
+| P1 | Podłączyć provenance i Decision Certificate | pełny łańcuch dowodu | 2–5 dni |
+| P1 | Kanar + metryki + rollback | test SLA i failure injection | 1–2 tyg. |
+| P2 | Dashboard coverage/evidence | trend domeny per bundle | 1–2 tyg. |
+
+10. WNIOSKI KOŃCOWE
+Audyt części 22 potwierdza istnienie 37 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
+Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+KONIEC RAPORTU 22/25 — raport wygenerowany z promptu 22_BUNDLE_API_MIGRACJE_bundle_OPA_OpenAPI_RuleS.txt
+====================================================================================================

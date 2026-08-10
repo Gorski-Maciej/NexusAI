@@ -1,212 +1,268 @@
-================================================================================
-RAPORT ANALITYCZNY ENTERPRISE — ZUS/SUS
-(składki, ulgi start/preferencyjny/Mały ZUS+, zdrowotna, zasiłki, PPK/PFRON, HR)
-================================================================================
-Data: 2026-08-10 | Część: 06/25 | Poziom: ENTERPRISE v8.0
-================================================================================
+====================================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 06/25 — ZUS/SUS — składki, ulgi (start/preferencyjny/Mały ZUS+), zdrowotna, zasiłki, PPK/PFRON, HR
+====================================================================================================
+Data wygenerowania: 2026-08-10 | Źródło sterujące: 06_ZUS_SUS_składki_ulgi.txt
+Status raportu: AUDYT OPARTY NA DOWODACH
+Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
+UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
-EXECUTIVE SUMMARY
-================================================================================
+1. EXECUTIVE SUMMARY
+- Zakres promptu: Przeprowadź głębokie myślenie i przeprowadź głęboką analizę modułu ZUS na zaawansowanym poziomie Enterprise. Priorytet: **SKŁADKA ZDROWOTNA (Polski Ład)** — skala 9% od dochodu; liniowy 4,9% (limit 12 900 zł rocznie — ZWERYFIKUJ, czy nie jest przestarzały); ryczałt 4,9% z 3 progami podstawy (60%/100%/180% przeciętnego wynagrodzenia); karta podatkowa 9% od minimalnego. Składki społeczne: emerytalna 19,52%, rentowa 8%, chorobowa 2,45%, wypadkowa 1,67%; ulga na start (Art. 18a, 6 mies.), preferencyjny (Art. 18c, 24 mies.), Mały ZUS+ (36 mies., 30% minimalnego — SPRAWDŹ nowe limity 2026); terminy (10/15/20 dzień miesiąca); zasiłki (chorobowy, macierzyński, opiekuńczy — micro/zasilkowa); PPK/PFRON (ppk_pfron_enterprise); składka solidarnościowa (solidarity_auto_calc_enterprise); pracownicy (employer.rego, mpips.rego, p19_hr_swiadczenia_innovations_v9, insurance_tracker_enterprise). Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów: kalkulator optymalnej składki zdrowotnej z symulacją „co by było gdyby", automatyczny tracker ulg ZUS z alarmami terminów, precyzyjny silnik podstawy wymiaru (health_precision_engine_v8, cumulative_revenue_engine), temporalność składek.
+- Rozwiązane ścieżki promptu: 64/64; brakujące: 0.
+- Przeanalizowane unikalne pliki: 64 (54 Rego), 32,273 linii, 1,520,456 B.
+- Zaobserwowane rule_id: 1143, unikalne: 812, duplikaty w zakresie: 308.
+- Pliki Rego z polem valid_from/valid_to w próbie: 1/54 (1.9%).
+- Wystąpienia _legal_basis w próbie: 1059; pakiety Rego: 26.
+- Dopasowane testy domenowe po nazwie pliku: 8.
 
-Przeprowadź głębokie myślenie nad modułem ZUS/SUS. Moduł obejmuje zus.rego
-(2000+ linii, 30+ reguł), employer.rego (wynagrodzenia, PPK), 16 plików micro/sus,
-7 plików micro/zdrowotna, 5 plików micro/zasilkowa, oraz pliki innowacji p07-p08.
+TOP 10 USTALEŃ / REKOMENDACJI
+01. P0: Zamknąć 0 nierozwiązanych odwołań promptu albo zaktualizować prompt; nie wolno traktować braku pliku jako dowodu implementacji.
+02. P0: Ustalić bramkę spójności dla 812 unikalnych rule_id; wykryte duplikaty w zakresie: 308.
+03. P0: Wymagać testu pozytywnego, granicznego, negatywnego/no_match i temporalnego dla każdej krytycznej reguły.
+04. P0: Powiązać każdą regułę materialną z kanonicznym _legal_basis oraz rekordem w Legal Twin; nie ufać samemu komentarzowi.
+05. P1: Podnieść temporalność: obecnie wykryto ją w 1/54 plików Rego w zakresie audytu.
+06. P1: Parametry stawek, progów, limitów i terminów trzymać w danych wersjonowanych; wykrywać hardcode w CI.
+07. P1: Dodać golden replay i diff werdyktów przed kanarem; zmiana prawa musi mieć datę wejścia i datę wygaśnięcia.
+08. P1: Dopiąć provenance: input → rule_id → podstawa → test → bundle → Decision Certificate.
+09. P2: Utworzyć dashboard pokrycia domeny z rozróżnieniem: istnieje kod, istnieje test, istnieje podstawa, działa w routerze.
+10. P2: Oznaczać rekomendacje jako SUGGEST/ASK_USER; raport nie powinien prowadzić do automatycznej decyzji podatkowej.
 
-Po przeprowadzeniu głębokiej analizy stwierdzam:
-- STAN: Moduł ZUS jest BARDZO ZAAWANSOWANY. Pełne pokrycie ulg (start 6m,
-  preferencyjny 24m, Mały ZUS+ 36m), składki zdrowotnej (4 formy × stawki),
-  zasiłków (chorobowy, macierzyński, opiekuńczy, rehabilitacyjny, wypadkowy,
-  pogrzebowy), emerytur/rent, koordynacji świadczeń.
-- WERYFIKACJA LIMITU: 12 900 PLN (limit odliczenia zdrowotnej liniowy) został
-  zaktualizowany do 14 100 PLN przez INN01 w p04 — wartość w thresholds.
+2. DOWÓD Z REPOZYTORIUM
+2.1. Rozwiązanie ścieżek wskazanych przez prompt
+| Ścieżka z promptu | Rozwiązanie | Tryb |
+|---|---|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | wprost |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | `docs/WIZJA_OPA_ENTERPRISE_V2.md` | wprost |
+| `docs/Bbb` | `docs/Bbb` | wprost |
+| `docs/LEGAL_REFERENCE_ACTS.md` | `docs/LEGAL_REFERENCE_ACTS.md` | wprost |
+| `docs/LEGAL_COVERAGE.md` | `docs/LEGAL_COVERAGE.md` | wprost |
+| `rules/zus.rego` | `rules/zus.rego` | wprost |
+| `rules/employer.rego` | `rules/employer.rego` | wprost |
+| `rules/mpips.rego` | `rules/mpips.rego` | wprost |
+| `rules/ppk_pfron_enterprise.rego` | `rules/ppk_pfron_enterprise.rego` | wprost |
+| `rules/solidarity_auto_calc_enterprise.rego` | `rules/solidarity_auto_calc_enterprise.rego` | wprost |
+| `rules/insurance_tracker_enterprise.rego` | `rules/insurance_tracker_enterprise.rego` | wprost |
+| `rules/p19_hr_swiadczenia_innovations_v9.rego` | `rules/p19_hr_swiadczenia_innovations_v9.rego` | wprost |
+| `rules/zus/plan23_interactions.rego` | `rules/zus/plan23_interactions.rego` | wprost |
+| `rules/zus/plan42_benefits.rego` | `rules/zus/plan42_benefits.rego` | wprost |
+| `rules/zus/enterprise_benefits.rego` | `rules/zus/enterprise_benefits.rego` | wprost |
+| `rules/zus/sickness_benefits_enterprise.rego` | `rules/zus/sickness_benefits_enterprise.rego` | wprost |
+| `rules/zus/health_contribution_enterprise.rego` | `rules/zus/health_contribution_enterprise.rego` | wprost |
+| `rules/zus/health_precision_engine_v8.rego` | `rules/zus/health_precision_engine_v8.rego` | wprost |
+| `rules/zus/cumulative_revenue_engine.rego` | `rules/zus/cumulative_revenue_engine.rego` | wprost |
+| `rules/micro/sus/sus.rego` | `rules/micro/sus/sus.rego` | wprost |
+| `rules/micro/sus/sus_a6.rego` | `rules/micro/sus/sus_a6.rego` | wprost |
+| `rules/micro/sus/sus_a6b.rego` | `rules/micro/sus/sus_a6b.rego` | wprost |
+| `rules/micro/sus/sus_a9.rego` | `rules/micro/sus/sus_a9.rego` | wprost |
+| `rules/micro/sus/sus_a11.rego` | `rules/micro/sus/sus_a11.rego` | wprost |
+| `rules/micro/sus/sus_a13.rego` | `rules/micro/sus/sus_a13.rego` | wprost |
+| `rules/micro/sus/sus_a14.rego` | `rules/micro/sus/sus_a14.rego` | wprost |
+| `rules/micro/sus/sus_a18.rego` | `rules/micro/sus/sus_a18.rego` | wprost |
+| `rules/micro/sus/sus_a18a.rego` | `rules/micro/sus/sus_a18a.rego` | wprost |
+| `rules/micro/sus/sus_a18c.rego` | `rules/micro/sus/sus_a18c.rego` | wprost |
+| `rules/micro/sus/sus_a19.rego` | `rules/micro/sus/sus_a19.rego` | wprost |
+| `rules/micro/sus/sus_a22.rego` | `rules/micro/sus/sus_a22.rego` | wprost |
+| `rules/micro/sus/sus_a24.rego` | `rules/micro/sus/sus_a24.rego` | wprost |
+| `rules/micro/sus/sus_a36.rego` | `rules/micro/sus/sus_a36.rego` | wprost |
+| `rules/micro/sus/sus_a40.rego` | `rules/micro/sus/sus_a40.rego` | wprost |
+| `rules/micro/sus/sus_a47.rego` | `rules/micro/sus/sus_a47.rego` | wprost |
+| `rules/micro/zdrowotna/zdrowotna.rego` | `rules/micro/zdrowotna/zdrowotna.rego` | wprost |
+| `rules/micro/zdrowotna/zdrowotna_a79.rego` | `rules/micro/zdrowotna/zdrowotna_a79.rego` | wprost |
+| `rules/micro/zdrowotna/zdrowotna_a81.rego` | `rules/micro/zdrowotna/zdrowotna_a81.rego` | wprost |
+| `rules/micro/zdrowotna/zdrowotna_a81b.rego` | `rules/micro/zdrowotna/zdrowotna_a81b.rego` | wprost |
+| `rules/micro/zdrowotna/zdrowotna_a81c.rego` | `rules/micro/zdrowotna/zdrowotna_a81c.rego` | wprost |
+| `rules/micro/zdrowotna/zdrowotna_a81d.rego` | `rules/micro/zdrowotna/zdrowotna_a81d.rego` | wprost |
+| `rules/micro/zdrowotna/zdrowotna_a82.rego` | `rules/micro/zdrowotna/zdrowotna_a82.rego` | wprost |
+| `rules/micro/zasilkowa/zasilkowa.rego` | `rules/micro/zasilkowa/zasilkowa.rego` | wprost |
+| `rules/micro/zasilkowa/zasilkowa_a19.rego` | `rules/micro/zasilkowa/zasilkowa_a19.rego` | wprost |
+| `rules/micro/zasilkowa/zasilkowa_a29.rego` | `rules/micro/zasilkowa/zasilkowa_a29.rego` | wprost |
+| `rules/micro/zasilkowa/zasilkowa_a32.rego` | `rules/micro/zasilkowa/zasilkowa_a32.rego` | wprost |
+| `rules/micro/zasilkowa/zasilkowa_a33.rego` | `rules/micro/zasilkowa/zasilkowa_a33.rego` | wprost |
+| `rules/micro/plan33_zus.rego` | `rules/micro/plan33_zus.rego` | wprost |
+| `rules/micro/plan34_zus.rego` | `rules/micro/plan34_zus.rego` | wprost |
+| `rules/p07_zus_macro_innovations_v8.rego` | `rules/p07_zus_macro_innovations_v8.rego` | wprost |
+| `rules/p07_zus_macro_innovations_v9.rego` | `rules/p07_zus_macro_innovations_v9.rego` | wprost |
+| `rules/p08_zus_macro_enterprise_v9.rego` | `rules/p08_zus_macro_enterprise_v9.rego` | wprost |
+| `rules/p08_zus_micro_innovations_v8.rego` | `rules/p08_zus_micro_innovations_v8.rego` | wprost |
+| `rules/p08_zus_micro_innovations_v9.rego` | `rules/p08_zus_micro_innovations_v9.rego` | wprost |
+| `rules/micro/_zus_micro_rates.rego` | `rules/micro/_zus_micro_rates.rego` | wprost |
+| `rules/micro/plan33_health.rego` | `rules/micro/plan33_health.rego` | wprost |
+| `bundles/zus_micro_inventory.json` | `bundles/zus_micro_inventory.json` | wprost |
+| `tests/test_p08_zus_macro_enterprise.py` | `tests/test_p08_zus_macro_enterprise.py` | wprost |
+| `tests/auto/test_auto_block_zus.py` | `tests/auto/test_auto_block_zus.py` | wprost |
+| `tests/auto/test_p07_zus_macro_enterprise.py` | `tests/auto/test_p07_zus_macro_enterprise.py` | wprost |
+| `tests/auto/test_p08_zus_micro_enterprise.py` | `tests/auto/test_p08_zus_micro_enterprise.py` | wprost |
+| `tests/rego/test_p07_zus_macro_enterprise.rego` | `tests/rego/test_p07_zus_macro_enterprise.rego` | wprost |
+| `tests/rego/test_p08_zus_macro_enterprise.rego` | `tests/rego/test_p08_zus_macro_enterprise.rego` | wprost |
+| `tests/rego/test_p08_zus_micro_enterprise.rego` | `tests/rego/test_p08_zus_micro_enterprise.rego` | wprost |
 
-TOP 10 REKOMENDACJI (P0/P1/P2):
-================================================================================
+2.2. Ścieżki nierozwiązane — nie są dowodem istnienia funkcji
+- brak
 
-P0-1: AKTUALIZUJ LIMIT ZDROWOTNY LINIOWY — 12 900 → 14 100 PLN (2026)
-      w zus.rego P722 — obecnie odwołanie do data.jdg.thresholds.limits
-      .health_linear_deduction_limit, zweryfikuj wartość w bundles
-P0-2: DODAJ temporalność stawek ZUS — stopy procentowe (19.52%, 8%, 2.45%,
-      1.67%) mogą się zmieniać — parametryzuj przez thresholds
-P0-3: DODAJ reguły dla składki solidarnościowej (4% od nadwyżki >1M PLN)
-      — solidarity_auto_calc_enterprise istnieje ale nie jest wpięty
-P0-4: ZWERYFIKUJ limity Małego ZUS+ na 2026 — próg 120k PLN przychodu
-      i podstawa 30% przeciętnego miesięcznego dochodu
-P0-5: DODAJ reguły dla PFRON (wpłaty na PFRON przy zatrudnieniu)
+2.3. Statystyki artefaktów
+| Plik | Linie | Bajty | rule_id | _legal_basis | temporal | package |
+|---|---:|---:|---:|---:|---:|---|
+| `bundles/zus_micro_inventory.json` | 2732 | 79646 | 0 | 0 | 0 |  |
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | 425 | 35383 | 0 | 0 | 14 |  |
+| `docs/Bbb` | 238 | 20680 | 0 | 0 | 0 |  |
+| `docs/LEGAL_COVERAGE.md` | 270 | 13940 | 0 | 0 | 0 |  |
+| `docs/LEGAL_REFERENCE_ACTS.md` | 163 | 15878 | 0 | 0 | 0 |  |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | 399 | 34502 | 0 | 0 | 3 |  |
+| `rules/employer.rego` | 465 | 25902 | 28 | 27 | 0 | jdg.employer |
+| `rules/insurance_tracker_enterprise.rego` | 132 | 3926 | 0 | 0 | 0 | jdg.enterprise.insurance_tracker |
+| `rules/micro/_zus_micro_rates.rego` | 207 | 11052 | 0 | 0 | 0 | jdg.micro.zus_rates |
+| `rules/micro/plan33_health.rego` | 207 | 31720 | 41 | 40 | 0 | jdg.micro.health |
+| `rules/micro/plan33_zus.rego` | 907 | 150841 | 181 | 180 | 0 | jdg.micro.zus |
+| `rules/micro/plan34_zus.rego` | 107 | 17642 | 21 | 20 | 0 | jdg.micro.zus |
+| `rules/micro/sus/sus.rego` | 3508 | 114787 | 123 | 122 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a11.rego` | 248 | 8610 | 9 | 8 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a13.rego` | 248 | 8583 | 9 | 8 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a14.rego` | 248 | 8673 | 9 | 8 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a18.rego` | 304 | 10330 | 11 | 10 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a18a.rego` | 304 | 10453 | 11 | 10 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a18c.rego` | 304 | 10244 | 11 | 10 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a19.rego` | 248 | 8682 | 9 | 8 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a22.rego` | 248 | 8592 | 9 | 8 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a24.rego` | 192 | 6876 | 7 | 6 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a36.rego` | 248 | 8538 | 9 | 8 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a40.rego` | 248 | 8601 | 9 | 8 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a47.rego` | 246 | 8394 | 9 | 8 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a6.rego` | 248 | 8662 | 9 | 8 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a6b.rego` | 192 | 6925 | 7 | 6 | 0 | jdg.micro.sus |
+| `rules/micro/sus/sus_a9.rego` | 248 | 8500 | 9 | 8 | 0 | jdg.micro.sus |
+| `rules/micro/zasilkowa/zasilkowa.rego` | 1101 | 37132 | 39 | 38 | 0 | jdg.micro.zasilkowa |
+| `rules/micro/zasilkowa/zasilkowa_a19.rego` | 304 | 10630 | 11 | 10 | 0 | jdg.micro.zasilkowa |
+| `rules/micro/zasilkowa/zasilkowa_a29.rego` | 304 | 10674 | 11 | 10 | 0 | jdg.micro.zasilkowa |
+| `rules/micro/zasilkowa/zasilkowa_a32.rego` | 304 | 10652 | 11 | 10 | 0 | jdg.micro.zasilkowa |
+| `rules/micro/zasilkowa/zasilkowa_a33.rego` | 246 | 8647 | 9 | 8 | 0 | jdg.micro.zasilkowa |
+| `rules/micro/zdrowotna/zdrowotna.rego` | 3794 | 131978 | 137 | 136 | 0 | jdg.micro.zdrowotna |
+| `rules/micro/zdrowotna/zdrowotna_a79.rego` | 304 | 10951 | 11 | 10 | 0 | jdg.micro.zdrowotna |
+| `rules/micro/zdrowotna/zdrowotna_a81.rego` | 304 | 10907 | 11 | 10 | 0 | jdg.micro.zdrowotna |
+| `rules/micro/zdrowotna/zdrowotna_a81b.rego` | 304 | 10964 | 11 | 10 | 0 | jdg.micro.zdrowotna |
+| `rules/micro/zdrowotna/zdrowotna_a81c.rego` | 363 | 12955 | 13 | 12 | 0 | jdg.micro.zdrowotna |
+| `rules/micro/zdrowotna/zdrowotna_a81d.rego` | 363 | 12955 | 13 | 12 | 0 | jdg.micro.zdrowotna |
+| `rules/micro/zdrowotna/zdrowotna_a82.rego` | 2251 | 79151 | 83 | 82 | 0 | jdg.micro.zdrowotna |
+| `rules/mpips.rego` | 336 | 19779 | 13 | 12 | 0 | jdg.mpips |
+| `rules/p07_zus_macro_innovations_v8.rego` | 489 | 27204 | 20 | 0 | 0 | jdg.p07_innovations |
+| `rules/p07_zus_macro_innovations_v9.rego` | 770 | 42718 | 24 | 23 | 0 | jdg.p07_zus_macro_innovations |
+| `rules/p08_zus_macro_enterprise_v9.rego` | 879 | 36965 | 16 | 13 | 0 | jdg.p08_zus_macro_enterprise |
+| `rules/p08_zus_micro_innovations_v8.rego` | 271 | 10203 | 16 | 0 | 0 | jdg.p08_innovations |
+| `rules/p08_zus_micro_innovations_v9.rego` | 637 | 34342 | 22 | 21 | 0 | jdg.p08_zus_micro_innovations |
+| `rules/p19_hr_swiadczenia_innovations_v9.rego` | 827 | 45826 | 27 | 26 | 0 | jdg.p19_hr_swiadczenia_innovations |
+| `rules/ppk_pfron_enterprise.rego` | 370 | 20830 | 8 | 7 | 0 | jdg.ppk_pfron |
+| `rules/solidarity_auto_calc_enterprise.rego` | 130 | 7040 | 0 | 0 | 0 | jdg.enterprise.solidarity_auto_calc |
+| `rules/zus/cumulative_revenue_engine.rego` | 151 | 9583 | 5 | 4 | 0 | jdg.zus.cumulative_engine |
+| `rules/zus/enterprise_benefits.rego` | 447 | 28688 | 12 | 11 | 0 | jdg.zus.benefits |
+| `rules/zus/health_contribution_enterprise.rego` | 444 | 31002 | 16 | 15 | 0 | jdg.zus.health_contribution |
+| `rules/zus/health_precision_engine_v8.rego` | 317 | 16242 | 11 | 10 | 1 | jdg.zus.precision_engine |
+| `rules/zus/plan23_interactions.rego` | 54 | 8048 | 10 | 9 | 0 | jdg.zus |
+| `rules/zus/plan42_benefits.rego` | 49 | 6998 | 9 | 8 | 0 | jdg.zus |
+| `rules/zus/sickness_benefits_enterprise.rego` | 411 | 26744 | 15 | 14 | 0 | jdg.zus.sickness_benefits |
+| `rules/zus.rego` | 779 | 47917 | 28 | 27 | 0 | jdg.zus |
+| `tests/auto/test_auto_block_zus.py` | 145 | 6169 | 8 | 0 | 0 |  |
+| `tests/auto/test_p07_zus_macro_enterprise.py` | 179 | 8271 | 0 | 0 | 0 |  |
+| `tests/auto/test_p08_zus_micro_enterprise.py` | 159 | 7259 | 0 | 0 | 0 |  |
+| `tests/rego/test_p07_zus_macro_enterprise.rego` | 162 | 8498 | 0 | 0 | 0 | jdg.tests.p07_zus_macro |
+| `tests/rego/test_p08_zus_macro_enterprise.rego` | 357 | 16843 | 0 | 0 | 0 | jdg.p08_zus_macro_enterprise_test |
+| `tests/rego/test_p08_zus_micro_enterprise.rego` | 149 | 8380 | 0 | 0 | 0 | jdg.tests.p08_zus_micro |
+| `tests/test_p08_zus_macro_enterprise.py` | 285 | 10749 | 0 | 0 | 0 |  |
 
-P1-1: DODAJ integrację ZUS↔PIT — automatyczne przekazywanie składek do
-      deklaracji rocznej
-P1-2: DODAJ reguły dla świadczenia "Dobry Start" (300+), "Rodzina 800+"
-P1-3: DODAJ alerty terminów płatności (10/15/20 dzień miesiąca)
-P1-4: ROZSZERZ employer.rego o umowy B2B, kontrakty menedżerskie
-P1-5: DODAJ reguły dla PPK — automatyczne naliczanie wpłat 1.5%+2.5%
+3. ANALIZA PRAWO → REGUŁA → TEST → WERDYKT
+Przeprowadź głębokie myślenie nad łańcuchem dowodowym, ale nie utożsamiaj obecności tekstu z poprawnością prawną.
+- PRAWO: prompt wskazuje akty i artykuły; raport wymaga potwierdzenia w docs/Bbb/LEGAL_REFERENCE_ACTS oraz kanonicznego identyfikatora aktu.
+- REGUŁA: w wybranych plikach znaleziono 1143 deklarowanych rule_id (812 unikalnych); przykładowe obserwacje:
+  - rules/employer.rego: rule_id=28, przykłady=jdg.employer.no_match, jdg.employer.creative_kup_50, jdg.employer.standard_kup_250
+  - rules/insurance_tracker_enterprise.rego: package=jdg.enterprise.insurance_tracker
+  - rules/micro/_zus_micro_rates.rego: package=jdg.micro.zus_rates
+  - rules/micro/plan33_health.rego: rule_id=41, przykłady=jdg.micro.health.no_match, jdg.health.a81b.r1, jdg.health.a81b.r10
+  - rules/micro/plan33_zus.rego: rule_id=181, przykłady=jdg.micro.zus.no_match, jdg.zus.a11.r2, jdg.zus.a11.r3
+  - rules/micro/plan34_zus.rego: rule_id=21, przykłady=jdg.micro.zus.no_match, jdg.zus.a6.r1, jdg.zus.a6.r2
+  - rules/micro/sus/sus.rego: rule_id=123, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a6.r1, jdg.micro.sus.a6.r2
+  - rules/micro/sus/sus_a11.rego: rule_id=9, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a11.r1, jdg.micro.sus.a11.r2
+  - rules/micro/sus/sus_a13.rego: rule_id=9, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a13.r1, jdg.micro.sus.a13.r2
+  - rules/micro/sus/sus_a14.rego: rule_id=9, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a14.r1, jdg.micro.sus.a14.r2
+  - rules/micro/sus/sus_a18.rego: rule_id=11, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a18.r1, jdg.micro.sus.a18.r2
+  - rules/micro/sus/sus_a18a.rego: rule_id=11, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a18a.r1, jdg.micro.sus.a18a.r2
+  - rules/micro/sus/sus_a18c.rego: rule_id=11, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a18c.r1, jdg.micro.sus.a18c.r2
+  - rules/micro/sus/sus_a19.rego: rule_id=9, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a19.r1, jdg.micro.sus.a19.r2
+  - rules/micro/sus/sus_a22.rego: rule_id=9, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a22.r1, jdg.micro.sus.a22.r2
+  - rules/micro/sus/sus_a24.rego: rule_id=7, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a24.r1, jdg.micro.sus.a24.r2
+  - rules/micro/sus/sus_a36.rego: rule_id=9, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a36.r1, jdg.micro.sus.a36.r2
+  - rules/micro/sus/sus_a40.rego: rule_id=9, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a40.r1, jdg.micro.sus.a40.r2
+  - rules/micro/sus/sus_a47.rego: rule_id=9, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a47.r1, jdg.micro.sus.a47.r2
+  - rules/micro/sus/sus_a6.rego: rule_id=9, przykłady=jdg.micro.sus.no_match, jdg.micro.sus.a6.r1, jdg.micro.sus.a6.r2
+- TEST: dopasowanie nazwy pliku testowego nie dowodzi wykonania testu; należy uruchomić pytest/opa test i zapisać wynik w CI.
+- WERDYKT: należy zweryfikować, czy pakiety (26) są rzeczywiście włączone przez router, safe_merge i końcowy invariant check.
+- DATA: wartości liczbowe należy porównać z bundle canonical; ten generator nie uznaje samego literalnego wystąpienia liczby za potwierdzenie jej prawidłowości.
 
-================================================================================
-1. POKRYCIE USTAWY SUS — ARTYKUŁY
-================================================================================
+4. REJESTR LUK I RYZYK
+| ID | Obserwacja | Dowód | Wpływ | Priorytet | Kryterium zamknięcia |
+|---|---|---|---|---|---|
+| G-01 | Brakujące ścieżki źródłowe: 0 | Tabela 2.2 | Niepełny audyt | P0 | 0 braków albo jawne mapowanie migracyjne |
+| G-02 | Duplikaty rule_id w próbie: 308 | jdg.employer.peron_contribution, jdg.employer.ppk_auto_enrollment, jdg.micro.sus.a11.r1, jdg.micro.sus.a11.r2, jdg.micro.sus.a11.r3 | Niedeterminizm / kolizja | P0 | dead_rule_detector = 0 |
+| G-03 | Brak temporalności w 53/54 plików Rego | Tabela 2.3 | Błędny time-travel | P1 | valid_from/valid_to + test graniczny |
+| G-04 | Niepotwierdzony most test → reguła → werdykt | Brak wyniku uruchomienia w raporcie | Cichy regres | P1 | coverage + golden replay |
+| G-05 | Niepotwierdzona kanoniczność podstaw prawnych | _legal_basis=1059 | Ryzyko błędnej podstawy | P0 | Legal Twin i validator przechodzą |
+| G-06 | Brak dowodu wdrożenia kanarowego | Prompt opisuje wymaganie; repo wymaga weryfikacji runtime | Niebezpieczny release | P1 | metryki + auto-rollback test |
 
-| Artykuł SUS      | Temat                       | Reguły ZUS                         | Status |
-|------------------|-----------------------------|------------------------------------|--------|
-| Art. 6           | Podmioty ubezpieczone       | zus.rego P700                      | A ✅   |
-| Art. 9           | Zbieg etat+JDG              | P743, P1222                        | A ✅   |
-| Art. 18-19       | Podstawa wymiaru            | P700, P741, P742                   | A ✅   |
-| Art. 18a         | Ulga na start               | P740                               | A ✅   |
-| Art. 18c         | Mały ZUS Plus               | P741, P773                         | A ✅   |
-| Art. 22          | Stopy procentowe            | P700 (19.52%, 8%, 2.45%, 1.67%)   | A ✅   |
-| Art. 36          | Terminy płatności           | P784 (10 dzień)                    | A ✅   |
-| Art. 47          | Deklaracje ZUS DRA          | P784                               | B      |
-| Ustawa zdrowotna | Składka zdrowotna           | P720, P722, P724, P779, P780       | A ✅   |
-| Ustawa zasiłkowa | Zasiłek chorobowy           | P1200                              | A ✅   |
-| Ustawa zasiłkowa | Zasiłek macierzyński        | P1201                              | A ✅   |
-| Ustawa zasiłkowa | Zasiłek opiekuńczy          | P1202                              | A ✅   |
-| Ustawa zasiłkowa | Świadczenie rehabilitacyjne | P1203                              | A ✅   |
-| Ustawa wypadkowa | Zasiłek wypadkowy           | P1204                              | A ✅   |
-| FUS              | Emerytura                   | P1207                              | A ✅   |
-| FUS              | Renta rodzinna              | P1210                              | A ✅   |
-| FUS              | Zasiłek pogrzebowy          | P1205                              | A ✅   |
-| Solidarnościowa  | Składka solidarnościowa     | solidarity_auto_calc_enterprise    | B      |
-| PPK              | Pracownicze Plany Kapitałowe| employer.rego P1212                | B      |
-| PFRON            | Wpłaty na PFRON             | ppk_pfron_enterprise               | B      |
+5. OPA JAKO SYSTEM
+Control Plane: rejestr reguł, review, walidacja, podpisany bundle, Legal Twin, kanar i rollback.
+Data Plane: deterministyczna ewaluacja, First-Match-Wins, safe_merge, temporalność, provenance i runtime invariants.
+Minimalny kontrakt wydania:
+```text
+change request → legal diff → rule/test diff → validate/lint → pytest + opa test
+→ legal-basis gate → duplicate/stub/tautology gate → golden replay
+→ signed bundle → canary → health metrics → ACTIVE albo ROLLED_BACK
+```
+Każdy etap musi pozostawić artefakt, wersję i hash; sam raport analityczny nie zmienia lifecycle reguły.
 
-================================================================================
-2. WERYFIKACJA LIMITÓW 2026
-================================================================================
+6. TESTY I WALIDACJA
+| Test / grupa | Stan istnienia | Wymagany dowód |
+|---|---|---|
+| `tests/auto/test_auto_block_zus.py` | istnieje, 145 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/auto/test_p07_zus_macro_enterprise.py` | istnieje, 179 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/auto/test_p08_zus_micro_enterprise.py` | istnieje, 159 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/micro/test_native_micro_sus.rego` | istnieje, 130 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_p07_zus_macro_enterprise.rego` | istnieje, 162 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_p08_zus_macro_enterprise.rego` | istnieje, 357 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_p08_zus_micro_enterprise.rego` | istnieje, 149 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/test_p08_zus_macro_enterprise.py` | istnieje, 285 linii | uruchomienie + wynik + przypadki graniczne |
+Rekomendowany zestaw: happy path, no_match, granice progów, data przed/po nowelizacji, duplikat/konflikt, brak danych, rollback i determinism replay.
 
-Przeprowadź głęboką analizę limitów ZUS na 2026:
+7. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+01. Legal Twin diff: zmiana artykułu automatycznie pokazuje dotknięte rule_id, testy i formularze.
+02. Temporal boundary generator: automatyczne przypadki dzień przed / dzień wejścia / dzień po.
+03. Decision Certificate verifier: podpis, bundle_version, rule_version, threshold_version i hash wejścia.
+04. Rule impact graph: graf zależności reguła → router → werdykt → dokument.
+05. Evidence completeness score: osobne wyniki dla prawa, kodu, testu, danych i runtime.
+06. Golden replay bank per domena i wersja prawa, z tolerancją wyłącznie dla pól niedeterministycznych.
+07. Declarative Change Wizard z obowiązkowym ASK_USER przy niejednoznacznej podstawie prawnej.
+08. Canary risk budget: automatyczny rollback po wzroście BLOCK_AND_ALERT lub zmianie rozkładu werdyktów.
+09. Hardcode provenance scanner: literal → źródło danych → data obowiązywania → test.
+10. Coverage desert radar: mapa aktów i pakietów bez reguł, bez testów albo bez routera.
+11. Explainability bundle: dowód decyzji eksportowany razem z wersją reguły i podstawą prawną.
+12. Mutation testing dla najważniejszych rule_id; brak wykrycia mutacji blokuje promocję do ACTIVE.
+Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, że funkcje istnieją.
 
-| Limit/Stawka               | Wartość w regułach   | Wartość 2026    | Status |
-|----------------------------|----------------------|-----------------|--------|
-| Składka emerytalna         | 19.52%               | 19.52%          | ✅ OK  |
-| Składka rentowa            | 8.00%                | 8.00%           | ✅ OK  |
-| Składka chorobowa          | 2.45%                | 2.45%           | ✅ OK  |
-| Składka wypadkowa          | 1.67%                | 1.67%           | ✅ OK  |
-| FP + FS                    | 2.45%                | 2.45%           | ✅ OK  |
-| Zdrowotna skala            | 9.00%                | 9.00%           | ✅ OK  |
-| Zdrowotna liniowy          | 4.90%                | 4.90%           | ✅ OK  |
-| Zdrowotna ryczałt          | 9.00%                | 9.00%           | ✅ OK  |
-| Limit odliczenia liniowy   | 12 900 → 14 100 PLN  | 14 100 PLN      | ⚠️ FIX  |
-| Limit Mały ZUS+ przychód   | 120 000 PLN          | 120 000 PLN     | ✅ OK  |
-| Min. wynagrodzenie         | 4 800 PLN            | ~4 800 PLN      | ✅ OK  |
-| Przeciętne wynagrodzenie   | 8 190 PLN            | ~8 200 PLN      | ✅ OK  |
-| Zasiłek pogrzebowy         | 4 000 PLN            | 4 000 PLN       | ✅ OK  |
+8. KONTRAKTY Z INNYMI CZĘŚCIAMI
+- Raport master 00: wspólne LCI/TCL/RV/UVR, _legal_basis, valid_from/valid_to, rule_id, 25-polowy werdykt.
+- Pakiety wykryte w bieżącym zakresie: jdg.employer, jdg.enterprise.insurance_tracker, jdg.enterprise.solidarity_auto_calc, jdg.micro.health, jdg.micro.sus, jdg.micro.zasilkowa, jdg.micro.zdrowotna, jdg.micro.zus, jdg.micro.zus_rates, jdg.mpips, jdg.p07_innovations, jdg.p07_zus_macro_innovations, jdg.p08_innovations, jdg.p08_zus_macro_enterprise, jdg.p08_zus_macro_enterprise_test, jdg.p08_zus_micro_innovations, jdg.p19_hr_swiadczenia_innovations, jdg.ppk_pfron, jdg.tests.p07_zus_macro, jdg.tests.p08_zus_micro, jdg.zus, jdg.zus.benefits, jdg.zus.cumulative_engine, jdg.zus.health_contribution, jdg.zus.precision_engine, jdg.zus.sickness_benefits.
+- Części sąsiednie muszą traktować powyższe nazwy jako obserwację, nie jako zgodę na dodawanie reguł bez rejestracji.
+- Zmiana rule_id wymaga aktualizacji routera, manifestu, testów, bundle, dokumentacji i golden replay.
 
-WNIOSEK: Większość limitów zgodna. Należy zweryfikować health_linear_deduction_limit
-w bundles/legal_reference_canon.json — czy wynosi 14 100 PLN.
+9. MAPA DROGOWA
+| Etap | Zadanie | Kryterium | Szacunek |
+|---|---|---|---|
+| P0 | Uzupełnić/uzgodnić źródła i legal basis | 0 braków, validator OK | 1–3 dni |
+| P0 | Zbudować testy krytycznych rule_id | positive/negative/boundary | 2–5 dni |
+| P1 | Wdrożyć temporalny golden replay | przejścia dat bez regresji | 2–5 dni |
+| P1 | Podłączyć provenance i Decision Certificate | pełny łańcuch dowodu | 2–5 dni |
+| P1 | Kanar + metryki + rollback | test SLA i failure injection | 1–2 tyg. |
+| P2 | Dashboard coverage/evidence | trend domeny per bundle | 1–2 tyg. |
 
-================================================================================
-3. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (12 pomysłów)
-================================================================================
-
-INNOWACJA #1: Kalkulator Optymalnej Składki Zdrowotnej
-- Opis: Symulacja "co by było gdyby" — ile wyniesie składka zdrowotna przy
-  różnych formach opodatkowania i poziomach dochodu
-- Korzyść: Przedsiębiorca widzi realny koszt składki przed wyborem formy
-- Status: CZĘŚCIOWO (form_transition_simulator FTS-1780)
-
-INNOWACJA #2: Auto-Tracker Ulg ZUS z Alarmami
-- Opis: System śledzi wykorzystanie ulg (start, preferencyjny, Mały ZUS+)
-  i wysyła alerty 30 dni przed wygaśnięciem
-- Korzyść: Nigdy nie przegapisz końca ulgi — automatyczne przejście
-- Status: CZĘŚCIOWO (_future_events w zus.rego)
-
-INNOWACJA #3: Precyzyjny Silnik Podstawy Wymiaru
-- Opis: Dokładne obliczenie podstawy ZUS na podstawie rzeczywistego dochodu
-  z PKPiR, a nie deklaracji
-- Korzyść: Zero błędów w podstawie — zgodność z rzeczywistością
-- Status: CZĘŚCIOWO (health_precision_engine_v8)
-
-INNOWACJA #4: Kalkulator Zasiłków z Symulacją
-- Opis: "Ile dostanę zasiłku jeśli zachoruję jutro?" — kalkulator na podstawie
-  ostatnich 12 miesięcy składek
-- Korzyść: Przedsiębiorca wie ile odłożyć na "czarną godzinę"
-- Status: NIE zaimplementowane
-
-INNOWACJA #5: Auto-Wypełnianie ZUS DRA
-- Opis: Automatyczne generowanie deklaracji ZUS DRA na podstawie KPiR i
-  wybranej formy opodatkowania
-- Korzyść: Zero ręcznego wypełniania — eksport XML do PUE ZUS
-- Status: NIE zaimplementowane
-
-INNOWACJA #6: Monitor Zmian Stawek ZUS
-- Opis: Śledzenie obwieszczeń ZUS/MF o zmianach stawek, prognozowanego
-  wynagrodzenia, minimalnego — auto-aktualizacja thresholds
-- Korzyść: System zawsze aktualny — adaptacja przed zmianą
-- Status: NIE zaimplementowane
-
-INNOWACJA #7: Optymalizator PPK dla Mikrofirm
-- Opis: Analiza czy PPK się opłaca przy małej liczbie pracowników,
-  z symulacją dopłat państwa
-- Korzyść: Świadoma decyzja o PPK — nie każdy musi przystępować
-- Status: NIE zaimplementowane
-
-INNOWACJA #8: Symulator Emerytury JDG
-- Opis: "Ile wyniesie moja emerytura z ZUS?" — na podstawie historycznych
-  składek i prognoz
-- Korzyść: Motywacja do dobrowolnych oszczędności (IKE/IKZE)
-- Status: NIE zaimplementowane
-
-INNOWACJA #9: Auto-Rozliczenie Roczne Składki Zdrowotnej
-- Opis: Automatyczne porównanie wpłaconych zaliczek zdrowotnych z rzeczywistą
-  należnością — generowanie przelewu lub wniosku o zwrot
-- Korzyść: Uniknięcie odsetek od niedopłaty / szybki zwrot nadpłaty
-- Status: CZĘŚCIOWO (P780)
-
-INNOWACJA #10: Asystent Kontroli ZUS
-- Opis: Pakiet dokumentów na wypadek kontroli ZUS: wszystkie DRA, przelewy,
-  podstawy wymiaru, decyzje o ulgach
-- Korzyść: Natychmiastowa odpowiedź na wezwanie ZUS
-- Status: NIE zaimplementowane
-
-INNOWACJA #11: Integracja z PUE ZUS API
-- Opis: Automatyczna komunikacja z Platformą Usług Elektronicznych ZUS:
-  wysyłka DRA, odbiór decyzji, sprawdzanie salda
-- Korzyść: Pełna automatyzacja kontaktów z ZUS
-- Status: NIE zaimplementowane
-
-INNOWACJA #12: Predykcja Podstawy Wymiaru na Następny Rok
-- Opis: Na podstawie trendu przychodów z 3 lat, system przewiduje podstawę
-  ZUS na następny rok i sugeruje optymalną ulgę
-- Korzyść: Proaktywne planowanie kosztów ZUS
-- Status: NIE zaimplementowane
-
-================================================================================
-4. KONTRAKTY Z INNYMI CZĘŚCIAMI
-================================================================================
-
-4.1 Z CZĘŚCIĄ 00 (FUNDAMENT):
-- Wspólne: thresholds, legal_reference_canon, Decision Certificate
-- KONTRAKT: Stawki ZUS w thresholds muszą być zgodne z obwieszczeniami ZUS
-
-4.2 Z CZĘŚCIĄ 04 (PIT CORE):
-- Wspólne: P570 (zdrowotna liniowy), health_linear_deduction_limit
-- KONTRAKT: Limit odliczenia zdrowotnej = 14 100 PLN dla 2026
-
-4.3 Z CZĘŚCIĄ 08 (ORDYNACJA PODATKOWA):
-- Wspólne: terminy płatności, odsetki od zaległości
-- KONTRAKT: Część 08 dostarczy kalkulator odsetek dla zaległych ZUS
-
-================================================================================
-5. MAPA DROGOWA
-================================================================================
-
-| Priorytet | Zadanie                              | Czas  | Wpływ  |
-|-----------|--------------------------------------|-------|--------|
-| P0-1      | Weryfikacja limitu 12900 → 14100     | 1h    | WYSOKI |
-| P0-2      | Parametryzacja stóp ZUS              | 2h    | WYSOKI |
-| P0-3      | Reguły składki solidarnościowej      | 2h    | ŚREDNI |
-| P0-5      | Reguły PFRON                         | 3h    | ŚREDNI |
-| INN04     | Kalkulator zasiłków                  | 4h    | ŚREDNI |
-| INN09     | Auto-rozliczenie roczne zdrowotnej   | 3h    | WYSOKI |
-
-================================================================================
-6. PODSUMOWANIE
-================================================================================
-
-Moduł ZUS/SUS osiąga ZAAWANSOWANY POZIOM ENTERPRISE. Pełne pokrycie ulg,
-składek społecznych/zdrowotnych, zasiłków i emerytur. Kluczowe luki:
-weryfikacja limitu 12900→14100, parametryzacja stóp, rozszerzenie PPK/PFRON
-i integracja z PUE ZUS.
-
-================================================================================
-KONIEC RAPORTU 06/25
-================================================================================
+10. WNIOSKI KOŃCOWE
+Audyt części 06 potwierdza istnienie 64 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
+Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+KONIEC RAPORTU 06/25 — raport wygenerowany z promptu 06_ZUS_SUS_składki_ulgi.txt
+====================================================================================================

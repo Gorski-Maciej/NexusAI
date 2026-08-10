@@ -1,8 +1,0 @@
-================================================================================
-RAPORT 21 — TESTY NATYWNE REGO — WDROŻONY ✅
-ANALIZA: tests/rego/ — testy natywne OPA: test_p05_pit_macro_enterprise.rego,
-test_p06_pit_*.rego, test_p07_*.rego, test_p08_zus_*.rego, test_p10_kks_*.rego,
-test_p11_ordynacja_*.rego, test_native_*.rego (defense, audit, security, seasonal),
-tests/rego/micro/ — testy mikro per domena.
-STAN: Testy natywne Rego dla wszystkich kluczowych pakietów.
-================================================================================

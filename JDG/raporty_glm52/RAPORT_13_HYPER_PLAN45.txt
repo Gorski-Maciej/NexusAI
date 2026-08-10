@@ -1,9 +1,0 @@
-================================================================================
-RAPORT 13 — HYPER PLAN45 — WDROŻONY ✅
-ANALIZA: jdg/hyper/* (14 plików): audit 25, deadlines 56, edelivery 21,
-family 21, force_majeure 21, fx 24, general 100, limits 33, mdr 38,
-misc 49, procurement 21, sanctions 51, solidarity 11, wis 18,
-advertising/plan45 (37), calendar/plan45 (35), conviction/plan45 (30).
-STAN: 450+ reguł hiper-szczegółowych. Pełne pokrycie terminów, limitów,
-sankcji, WIS, siły wyższej.
-================================================================================

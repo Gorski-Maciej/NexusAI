@@ -1,0 +1,232 @@
+====================================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 10/25 — CROSS-BORDER / TP / MDR-DAC6 / CFC / ViDA / CBAM / DAC8 (transakcje zagraniczne)
+====================================================================================================
+Data wygenerowania: 2026-08-10 | Źródło sterujące: 10_CROSS-BORDER_TP_MDR-DAC6_CFC_ViDA_CBAM_DAC8_.txt
+Status raportu: AUDYT OPARTY NA DOWODACH
+Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
+UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
+
+1. EXECUTIVE SUMMARY
+- Zakres promptu: Przeprowadź głębokie myślenie i przeprowadź głęboką analizę modułu CROSS-BORDER na zaawansowanym poziomie Enterprise. **Pokrycie cross-border wg LEGAL_COVERAGE.md <2% — jedna z największych luk!** Oceń: crossborder.rego, international.rego, international_expanded.rego, rules/crossborder/* (exit_tax_cfc_complete, plan23_ue, post_brexit), micro/crossborder/crossborder.rego, p12_crossborder_innovations_v9, p13_crossborder_innovations_v8, vida_drr_full.rego, cbam_full.rego, dac8_report_generator.rego, cfc_auto_classifier.rego, mdr_auto_generator.rego, mdr_dac6_enterprise.rego, wdt_document_tracker.rego, cross_jurisdiction_ruling_enterprise.rego, cross_domain_intelligence_enterprise.rego, p3233_innovations.rego, rules/tp/* (plan44_tp, plan45_tp), rules/mdr/* (mdr_enterprise, mdr_hallmarks, plan44_mdr, plan45_mdr), _crossborder_rates.rego. Sprawdź: WDT (30 dni, limit eksportowy), WNT, eksport pośredni, import usług (reverse charge), miejsce świadczenia (Art. 28a–28o), kursy NBP (temporalność), TP (transakcje z podmiotami powiązanymi, dokumentacja), MDR/DAC6 (schemata, hallmarks, terminy 30 dni), CFC (próg 50%/33%), ViDA/DRR, CBAM, DAC8 (krypto). Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów: automatyczny klasyfikator transakcji transgranicznych z łańcuchem podstaw prawnych, tracker WDT z alarmem 30 dni, auto-generator dokumentacji TP, harmonizacja z kursami NBP z pełnym time-travel.
+- Rozwiązane ścieżki promptu: 45/45; brakujące: 0.
+- Przeanalizowane unikalne pliki: 45 (35 Rego), 16,793 linii, 841,572 B.
+- Zaobserwowane rule_id: 596, unikalne: 594, duplikaty w zakresie: 2.
+- Pliki Rego z polem valid_from/valid_to w próbie: 0/35 (0.0%).
+- Wystąpienia _legal_basis w próbie: 568; pakiety Rego: 33.
+- Dopasowane testy domenowe po nazwie pliku: 10.
+
+TOP 10 USTALEŃ / REKOMENDACJI
+01. P0: Zamknąć 0 nierozwiązanych odwołań promptu albo zaktualizować prompt; nie wolno traktować braku pliku jako dowodu implementacji.
+02. P0: Ustalić bramkę spójności dla 594 unikalnych rule_id; wykryte duplikaty w zakresie: 2.
+03. P0: Wymagać testu pozytywnego, granicznego, negatywnego/no_match i temporalnego dla każdej krytycznej reguły.
+04. P0: Powiązać każdą regułę materialną z kanonicznym _legal_basis oraz rekordem w Legal Twin; nie ufać samemu komentarzowi.
+05. P1: Podnieść temporalność: obecnie wykryto ją w 0/35 plików Rego w zakresie audytu.
+06. P1: Parametry stawek, progów, limitów i terminów trzymać w danych wersjonowanych; wykrywać hardcode w CI.
+07. P1: Dodać golden replay i diff werdyktów przed kanarem; zmiana prawa musi mieć datę wejścia i datę wygaśnięcia.
+08. P1: Dopiąć provenance: input → rule_id → podstawa → test → bundle → Decision Certificate.
+09. P2: Utworzyć dashboard pokrycia domeny z rozróżnieniem: istnieje kod, istnieje test, istnieje podstawa, działa w routerze.
+10. P2: Oznaczać rekomendacje jako SUGGEST/ASK_USER; raport nie powinien prowadzić do automatycznej decyzji podatkowej.
+
+2. DOWÓD Z REPOZYTORIUM
+2.1. Rozwiązanie ścieżek wskazanych przez prompt
+| Ścieżka z promptu | Rozwiązanie | Tryb |
+|---|---|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | wprost |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | `docs/WIZJA_OPA_ENTERPRISE_V2.md` | wprost |
+| `docs/Bbb` | `docs/Bbb` | wprost |
+| `docs/LEGAL_REFERENCE_ACTS.md` | `docs/LEGAL_REFERENCE_ACTS.md` | wprost |
+| `docs/LEGAL_COVERAGE.md` | `docs/LEGAL_COVERAGE.md` | wprost |
+| `rules/crossborder.rego` | `rules/crossborder.rego` | wprost |
+| `rules/international.rego` | `rules/international.rego` | wprost |
+| `rules/international_expanded.rego` | `rules/international_expanded.rego` | wprost |
+| `rules/_crossborder_rates.rego` | `rules/_crossborder_rates.rego` | wprost |
+| `rules/vida_drr_full.rego` | `rules/vida_drr_full.rego` | wprost |
+| `rules/cbam_full.rego` | `rules/cbam_full.rego` | wprost |
+| `rules/dac8_report_generator.rego` | `rules/dac8_report_generator.rego` | wprost |
+| `rules/cfc_auto_classifier.rego` | `rules/cfc_auto_classifier.rego` | wprost |
+| `rules/mdr_auto_generator.rego` | `rules/mdr_auto_generator.rego` | wprost |
+| `rules/mdr_dac6_enterprise.rego` | `rules/mdr_dac6_enterprise.rego` | wprost |
+| `rules/wdt_document_tracker.rego` | `rules/wdt_document_tracker.rego` | wprost |
+| `rules/cross_jurisdiction_ruling_enterprise.rego` | `rules/cross_jurisdiction_ruling_enterprise.rego` | wprost |
+| `rules/cross_domain_intelligence_enterprise.rego` | `rules/cross_domain_intelligence_enterprise.rego` | wprost |
+| `rules/p3233_innovations.rego` | `rules/p3233_innovations.rego` | wprost |
+| `rules/p12_crossborder_innovations_v9.rego` | `rules/p12_crossborder_innovations_v9.rego` | wprost |
+| `rules/p13_crossborder_innovations_v8.rego` | `rules/p13_crossborder_innovations_v8.rego` | wprost |
+| `rules/crossborder/exit_tax_cfc_complete.rego` | `rules/crossborder/exit_tax_cfc_complete.rego` | wprost |
+| `rules/crossborder/plan23_ue.rego` | `rules/crossborder/plan23_ue.rego` | wprost |
+| `rules/crossborder/post_brexit.rego` | `rules/crossborder/post_brexit.rego` | wprost |
+| `rules/micro/crossborder/crossborder.rego` | `rules/micro/crossborder/crossborder.rego` | wprost |
+| `rules/tp/plan44_tp.rego` | `rules/tp/plan44_tp.rego` | wprost |
+| `rules/tp/plan45_tp.rego` | `rules/tp/plan45_tp.rego` | wprost |
+| `rules/mdr/mdr_enterprise.rego` | `rules/mdr/mdr_enterprise.rego` | wprost |
+| `rules/mdr/mdr_hallmarks.rego` | `rules/mdr/mdr_hallmarks.rego` | wprost |
+| `rules/mdr/plan44_mdr.rego` | `rules/mdr/plan44_mdr.rego` | wprost |
+| `rules/mdr/plan45_mdr.rego` | `rules/mdr/plan45_mdr.rego` | wprost |
+| `rules/micro/plan33_cb.rego` | `rules/micro/plan33_cb.rego` | wprost |
+| `rules/micro/plan33_tp.rego` | `rules/micro/plan33_tp.rego` | wprost |
+| `rules/micro/plan33_mdr.rego` | `rules/micro/plan33_mdr.rego` | wprost |
+| `tests/test_crossborder_enterprise.py` | `tests/test_crossborder_enterprise.py` | wprost |
+| `tests/auto/test_auto_block_crossborder.py` | `tests/auto/test_auto_block_crossborder.py` | wprost |
+| `tests/auto/test_auto_block_mdr.py` | `tests/auto/test_auto_block_mdr.py` | wprost |
+| `tests/auto/test_auto_block_tp.py` | `tests/auto/test_auto_block_tp.py` | wprost |
+| `tests/auto/test_p12_crossborder_enterprise.py` | `tests/auto/test_p12_crossborder_enterprise.py` | wprost |
+| `tests/rego/test_akcyza_depreciation_mdr_exittax.rego` | `tests/rego/test_akcyza_depreciation_mdr_exittax.rego` | wprost |
+| `tests/rego/test_native_exit_tax_mdr_enterprise.rego` | `tests/rego/test_native_exit_tax_mdr_enterprise.rego` | wprost |
+| `tests/rego/test_native_jdg_fx.rego` | `tests/rego/test_native_jdg_fx.rego` | wprost |
+| `tests/rego/test_native_mdr_dac6_enterprise.rego` | `tests/rego/test_native_mdr_dac6_enterprise.rego` | wprost |
+| `tests/rego/test_p12_crossborder_enterprise.rego` | `tests/rego/test_p12_crossborder_enterprise.rego` | wprost |
+| `tests/rego/micro/test_native_micro_crossborder.rego` | `tests/rego/micro/test_native_micro_crossborder.rego` | wprost |
+
+2.2. Ścieżki nierozwiązane — nie są dowodem istnienia funkcji
+- brak
+
+2.3. Statystyki artefaktów
+| Plik | Linie | Bajty | rule_id | _legal_basis | temporal | package |
+|---|---:|---:|---:|---:|---:|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | 425 | 35383 | 0 | 0 | 14 |  |
+| `docs/Bbb` | 238 | 20680 | 0 | 0 | 0 |  |
+| `docs/LEGAL_COVERAGE.md` | 270 | 13940 | 0 | 0 | 0 |  |
+| `docs/LEGAL_REFERENCE_ACTS.md` | 163 | 15878 | 0 | 0 | 0 |  |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | 399 | 34502 | 0 | 0 | 3 |  |
+| `rules/_crossborder_rates.rego` | 103 | 4501 | 0 | 0 | 0 | jdg.crossborder_rates |
+| `rules/cbam_full.rego` | 195 | 8882 | 4 | 3 | 0 | jdg.cbam_full |
+| `rules/cfc_auto_classifier.rego` | 248 | 10639 | 4 | 3 | 0 | jdg.cfc_auto_classifier |
+| `rules/cross_domain_intelligence_enterprise.rego` | 638 | 20607 | 16 | 15 | 0 | jdg.cross_domain_hub |
+| `rules/cross_jurisdiction_ruling_enterprise.rego` | 170 | 5373 | 0 | 0 | 0 | jdg.enterprise.cross_jurisdiction_ruling |
+| `rules/crossborder/exit_tax_cfc_complete.rego` | 263 | 10822 | 17 | 16 | 0 | jdg.exit_tax_cfc |
+| `rules/crossborder/plan23_ue.rego` | 49 | 6740 | 9 | 8 | 0 | jdg.crossborder |
+| `rules/crossborder/post_brexit.rego` | 123 | 3953 | 4 | 3 | 0 | jdg.crossborder.post_brexit |
+| `rules/crossborder.rego` | 808 | 40409 | 32 | 31 | 0 | jdg.crossborder |
+| `rules/dac8_report_generator.rego` | 263 | 12078 | 4 | 3 | 0 | jdg.dac8_report_generator |
+| `rules/international.rego` | 335 | 17980 | 17 | 16 | 0 | jdg.international |
+| `rules/international_expanded.rego` | 352 | 13808 | 24 | 23 | 0 | jdg.international |
+| `rules/mdr/mdr_enterprise.rego` | 439 | 28467 | 19 | 18 | 0 | jdg.mdr.enterprise |
+| `rules/mdr/mdr_hallmarks.rego` | 316 | 14701 | 21 | 20 | 0 | jdg.mdr.hallmarks |
+| `rules/mdr/plan44_mdr.rego` | 69 | 8842 | 11 | 10 | 0 | jdg.mdr |
+| `rules/mdr/plan45_mdr.rego` | 155 | 18044 | 43 | 42 | 0 | jdg.mdr.hyper |
+| `rules/mdr_auto_generator.rego` | 268 | 15564 | 6 | 5 | 0 | jdg.mdr_auto_generator |
+| `rules/mdr_dac6_enterprise.rego` | 308 | 16686 | 4 | 3 | 0 | jdg.mdr_dac6 |
+| `rules/micro/crossborder/crossborder.rego` | 5320 | 179990 | 193 | 192 | 0 | jdg.micro.crossborder |
+| `rules/micro/plan33_cb.rego` | 107 | 15523 | 21 | 20 | 0 | jdg.micro.cb |
+| `rules/micro/plan33_mdr.rego` | 57 | 7977 | 11 | 10 | 0 | jdg.micro.mdr |
+| `rules/micro/plan33_tp.rego` | 82 | 11274 | 16 | 15 | 0 | jdg.micro.tp |
+| `rules/p12_crossborder_innovations_v9.rego` | 652 | 38026 | 27 | 26 | 0 | jdg.p12_crossborder_innovations |
+| `rules/p13_crossborder_innovations_v8.rego` | 759 | 43952 | 14 | 12 | 0 | jdg.p13_innovations |
+| `rules/p3233_innovations.rego` | 422 | 26332 | 8 | 7 | 0 | jdg.p3233_innovations |
+| `rules/tp/plan44_tp.rego` | 63 | 7681 | 10 | 9 | 0 | jdg.tp |
+| `rules/tp/plan45_tp.rego` | 218 | 24844 | 53 | 52 | 0 | jdg.tp.hyper |
+| `rules/vida_drr_full.rego` | 185 | 10640 | 4 | 3 | 0 | jdg.vida_drr_full |
+| `rules/wdt_document_tracker.rego` | 170 | 9514 | 4 | 3 | 0 | jdg.wdt_document_tracker |
+| `tests/auto/test_auto_block_crossborder.py` | 145 | 6103 | 8 | 0 | 0 |  |
+| `tests/auto/test_auto_block_mdr.py` | 247 | 10226 | 14 | 0 | 0 |  |
+| `tests/auto/test_auto_block_tp.py` | 315 | 13342 | 18 | 0 | 0 |  |
+| `tests/auto/test_p12_crossborder_enterprise.py` | 335 | 14658 | 0 | 0 | 0 |  |
+| `tests/rego/micro/test_native_micro_crossborder.rego` | 130 | 4098 | 0 | 0 | 0 | test_jdg_micro_crossborder |
+| `tests/rego/test_akcyza_depreciation_mdr_exittax.rego` | 191 | 6519 | 0 | 0 | 0 | jdg.akcyza_depreciation_mdr_exittax_test |
+| `tests/rego/test_native_exit_tax_mdr_enterprise.rego` | 107 | 3904 | 0 | 0 | 0 | test_jdg_exit_tax_mdr |
+| `tests/rego/test_native_jdg_fx.rego` | 190 | 6128 | 0 | 0 | 0 | test_jdg_fx |
+| `tests/rego/test_native_mdr_dac6_enterprise.rego` | 59 | 2092 | 0 | 0 | 0 | test_jdg_mdr_dac6 |
+| `tests/rego/test_p12_crossborder_enterprise.rego` | 285 | 13959 | 0 | 0 | 0 | jdg.tests.p12_crossborder |
+| `tests/test_crossborder_enterprise.py` | 157 | 6311 | 0 | 0 | 0 |  |
+
+3. ANALIZA PRAWO → REGUŁA → TEST → WERDYKT
+Przeprowadź głębokie myślenie nad łańcuchem dowodowym, ale nie utożsamiaj obecności tekstu z poprawnością prawną.
+- PRAWO: prompt wskazuje akty i artykuły; raport wymaga potwierdzenia w docs/Bbb/LEGAL_REFERENCE_ACTS oraz kanonicznego identyfikatora aktu.
+- REGUŁA: w wybranych plikach znaleziono 596 deklarowanych rule_id (594 unikalnych); przykładowe obserwacje:
+  - rules/_crossborder_rates.rego: package=jdg.crossborder_rates
+  - rules/cbam_full.rego: rule_id=4, przykłady=jdg.cbam_full.no_match, jdg.cbam_full.sector_classification, jdg.cbam_full.quarterly_reporting
+  - rules/cfc_auto_classifier.rego: rule_id=4, przykłady=jdg.cfc_auto_classifier.no_match, jdg.cfc_auto_classifier.passive_classifier, jdg.cfc_auto_classifier.de_minimis_check
+  - rules/cross_domain_intelligence_enterprise.rego: rule_id=16, przykłady=jdg.cross_domain.no_match, jdg.cross_domain.vat_pit_domino, jdg.cross_domain.pit_zus_interlock
+  - rules/cross_jurisdiction_ruling_enterprise.rego: package=jdg.enterprise.cross_jurisdiction_ruling
+  - rules/crossborder/exit_tax_cfc_complete.rego: rule_id=17, przykłady=jdg.exit_tax_cfc.no_match, jdg.exit_tax_cfc.exit_tax.r1, jdg.exit_tax_cfc.exit_tax.r2
+  - rules/crossborder/plan23_ue.rego: rule_id=9, przykłady=jdg.crossborder.no_match, jdg.crossborder.vat_ue_registration_mandatory, jdg.crossborder.vat_r_ue_filing_deadline
+  - rules/crossborder/post_brexit.rego: rule_id=4, przykłady=jdg.crossborder.post_brexit.no_match, jdg.crossborder.post_brexit.uk_goods_import, jdg.crossborder.post_brexit.uk_services_export_b2b
+  - rules/crossborder.rego: rule_id=32, przykłady=jdg.crossborder.no_match, jdg.crossborder.eu_reverse_charge, jdg.crossborder.wdt_no_docs
+  - rules/dac8_report_generator.rego: rule_id=4, przykłady=jdg.dac8_report_generator.no_match, jdg.dac8_report_generator.template, jdg.dac8_report_generator.multi_category
+  - rules/international.rego: rule_id=17, przykłady=jdg.international.no_match, jdg.international.wht_obligation, jdg.international.tp_documentation_threshold
+  - rules/international_expanded.rego: rule_id=24, przykłady=jdg.international.no_match, jdg.international.wht.r1, jdg.international.wht.r2
+  - rules/mdr/mdr_enterprise.rego: rule_id=19, przykłady=jdg.mdr.enterprise.no_match, jdg.mdr.enterprise.role_promoter, jdg.mdr.enterprise.role_user
+  - rules/mdr/mdr_hallmarks.rego: rule_id=21, przykłady=jdg.mdr.hallmarks.no_match, jdg.mdr.hallmarks.general.r1, jdg.mdr.hallmarks.general.r2
+  - rules/mdr/plan44_mdr.rego: rule_id=11, przykłady=jdg.mdr.no_match, jdg.mdr.reportable_scheme_detection, jdg.mdr.promoter_vs_user
+  - rules/mdr/plan45_mdr.rego: rule_id=43, przykłady=jdg.mdr.hyper.no_match, jdg.mdr.hyper.hallmark_a1_confidentiality, jdg.mdr.hyper.hallmark_a2_success_fee
+  - rules/mdr_auto_generator.rego: rule_id=6, przykłady=jdg.mdr_auto_generator.no_match, jdg.mdr_auto_generator.mdr1_promoter, jdg.mdr_auto_generator.mdr3_user
+  - rules/mdr_dac6_enterprise.rego: rule_id=4, przykłady=jdg.mdr_dac6.no_match, jdg.mdr_dac6.hallmark_detection, jdg.mdr_dac6.tax_advantage_analyzer
+  - rules/micro/crossborder/crossborder.rego: rule_id=193, przykłady=jdg.micro.crossborder.no_match, jdg.micro.crossborder.a23o.r1, jdg.micro.crossborder.a23o.r2
+  - rules/micro/plan33_cb.rego: rule_id=21, przykłady=jdg.micro.cb.no_match, jdg.cb.r1, jdg.cb.r10
+- TEST: dopasowanie nazwy pliku testowego nie dowodzi wykonania testu; należy uruchomić pytest/opa test i zapisać wynik w CI.
+- WERDYKT: należy zweryfikować, czy pakiety (33) są rzeczywiście włączone przez router, safe_merge i końcowy invariant check.
+- DATA: wartości liczbowe należy porównać z bundle canonical; ten generator nie uznaje samego literalnego wystąpienia liczby za potwierdzenie jej prawidłowości.
+
+4. REJESTR LUK I RYZYK
+| ID | Obserwacja | Dowód | Wpływ | Priorytet | Kryterium zamknięcia |
+|---|---|---|---|---|---|
+| G-01 | Brakujące ścieżki źródłowe: 0 | Tabela 2.2 | Niepełny audyt | P0 | 0 braków albo jawne mapowanie migracyjne |
+| G-02 | Duplikaty rule_id w próbie: 2 | jdg.crossborder.no_match, jdg.international.no_match | Niedeterminizm / kolizja | P0 | dead_rule_detector = 0 |
+| G-03 | Brak temporalności w 35/35 plików Rego | Tabela 2.3 | Błędny time-travel | P1 | valid_from/valid_to + test graniczny |
+| G-04 | Niepotwierdzony most test → reguła → werdykt | Brak wyniku uruchomienia w raporcie | Cichy regres | P1 | coverage + golden replay |
+| G-05 | Niepotwierdzona kanoniczność podstaw prawnych | _legal_basis=568 | Ryzyko błędnej podstawy | P0 | Legal Twin i validator przechodzą |
+| G-06 | Brak dowodu wdrożenia kanarowego | Prompt opisuje wymaganie; repo wymaga weryfikacji runtime | Niebezpieczny release | P1 | metryki + auto-rollback test |
+
+5. OPA JAKO SYSTEM
+Control Plane: rejestr reguł, review, walidacja, podpisany bundle, Legal Twin, kanar i rollback.
+Data Plane: deterministyczna ewaluacja, First-Match-Wins, safe_merge, temporalność, provenance i runtime invariants.
+Minimalny kontrakt wydania:
+```text
+change request → legal diff → rule/test diff → validate/lint → pytest + opa test
+→ legal-basis gate → duplicate/stub/tautology gate → golden replay
+→ signed bundle → canary → health metrics → ACTIVE albo ROLLED_BACK
+```
+Każdy etap musi pozostawić artefakt, wersję i hash; sam raport analityczny nie zmienia lifecycle reguły.
+
+6. TESTY I WALIDACJA
+| Test / grupa | Stan istnienia | Wymagany dowód |
+|---|---|---|
+| `tests/auto/test_auto_block_crossborder.py` | istnieje, 145 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/auto/test_auto_block_mdr.py` | istnieje, 247 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/auto/test_auto_block_tp.py` | istnieje, 315 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/auto/test_p12_crossborder_enterprise.py` | istnieje, 335 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/micro/test_native_micro_crossborder.rego` | istnieje, 130 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_akcyza_depreciation_mdr_exittax.rego` | istnieje, 191 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_exit_tax_mdr_enterprise.rego` | istnieje, 107 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_native_mdr_dac6_enterprise.rego` | istnieje, 59 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_p12_crossborder_enterprise.rego` | istnieje, 285 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/test_crossborder_enterprise.py` | istnieje, 157 linii | uruchomienie + wynik + przypadki graniczne |
+Rekomendowany zestaw: happy path, no_match, granice progów, data przed/po nowelizacji, duplikat/konflikt, brak danych, rollback i determinism replay.
+
+7. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+01. Legal Twin diff: zmiana artykułu automatycznie pokazuje dotknięte rule_id, testy i formularze.
+02. Temporal boundary generator: automatyczne przypadki dzień przed / dzień wejścia / dzień po.
+03. Decision Certificate verifier: podpis, bundle_version, rule_version, threshold_version i hash wejścia.
+04. Rule impact graph: graf zależności reguła → router → werdykt → dokument.
+05. Evidence completeness score: osobne wyniki dla prawa, kodu, testu, danych i runtime.
+06. Golden replay bank per domena i wersja prawa, z tolerancją wyłącznie dla pól niedeterministycznych.
+07. Declarative Change Wizard z obowiązkowym ASK_USER przy niejednoznacznej podstawie prawnej.
+08. Canary risk budget: automatyczny rollback po wzroście BLOCK_AND_ALERT lub zmianie rozkładu werdyktów.
+09. Hardcode provenance scanner: literal → źródło danych → data obowiązywania → test.
+10. Coverage desert radar: mapa aktów i pakietów bez reguł, bez testów albo bez routera.
+11. Explainability bundle: dowód decyzji eksportowany razem z wersją reguły i podstawą prawną.
+12. Mutation testing dla najważniejszych rule_id; brak wykrycia mutacji blokuje promocję do ACTIVE.
+Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, że funkcje istnieją.
+
+8. KONTRAKTY Z INNYMI CZĘŚCIAMI
+- Raport master 00: wspólne LCI/TCL/RV/UVR, _legal_basis, valid_from/valid_to, rule_id, 25-polowy werdykt.
+- Pakiety wykryte w bieżącym zakresie: jdg.akcyza_depreciation_mdr_exittax_test, jdg.cbam_full, jdg.cfc_auto_classifier, jdg.cross_domain_hub, jdg.crossborder, jdg.crossborder.post_brexit, jdg.crossborder_rates, jdg.dac8_report_generator, jdg.enterprise.cross_jurisdiction_ruling, jdg.exit_tax_cfc, jdg.international, jdg.mdr, jdg.mdr.enterprise, jdg.mdr.hallmarks, jdg.mdr.hyper, jdg.mdr_auto_generator, jdg.mdr_dac6, jdg.micro.cb, jdg.micro.crossborder, jdg.micro.mdr, jdg.micro.tp, jdg.p12_crossborder_innovations, jdg.p13_innovations, jdg.p3233_innovations, jdg.tests.p12_crossborder, jdg.tp, jdg.tp.hyper, jdg.vida_drr_full, jdg.wdt_document_tracker, test_jdg_exit_tax_mdr.
+- Części sąsiednie muszą traktować powyższe nazwy jako obserwację, nie jako zgodę na dodawanie reguł bez rejestracji.
+- Zmiana rule_id wymaga aktualizacji routera, manifestu, testów, bundle, dokumentacji i golden replay.
+
+9. MAPA DROGOWA
+| Etap | Zadanie | Kryterium | Szacunek |
+|---|---|---|---|
+| P0 | Uzupełnić/uzgodnić źródła i legal basis | 0 braków, validator OK | 1–3 dni |
+| P0 | Zbudować testy krytycznych rule_id | positive/negative/boundary | 2–5 dni |
+| P1 | Wdrożyć temporalny golden replay | przejścia dat bez regresji | 2–5 dni |
+| P1 | Podłączyć provenance i Decision Certificate | pełny łańcuch dowodu | 2–5 dni |
+| P1 | Kanar + metryki + rollback | test SLA i failure injection | 1–2 tyg. |
+| P2 | Dashboard coverage/evidence | trend domeny per bundle | 1–2 tyg. |
+
+10. WNIOSKI KOŃCOWE
+Audyt części 10 potwierdza istnienie 45 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
+Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+KONIEC RAPORTU 10/25 — raport wygenerowany z promptu 10_CROSS-BORDER_TP_MDR-DAC6_CFC_ViDA_CBAM_DAC8_.txt
+====================================================================================================

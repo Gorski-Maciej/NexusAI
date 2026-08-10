@@ -1,8 +1,235 @@
-================================================================================
-RAPORT 14 — RODO / AML-CBDD / BDO / ŚRODOWISKO — WDROŻONY ✅
-ANALIZA: micro/rodo/* (6 plików: rodo, ai_marketing, erasure, podprocesorzy,
-sankcje, zatrudnienie), micro/aml/* (4: aml 125 reguł, cbdd, ryzyko, str_gif),
-compliance/aml_enterprise (23), micro/bdo/* (6), environmental/* (2),
-micro/srodowisko (48), micro/plan33_rodo (10).
-STAN: Pełne RODO + AML + BDO + środowisko + ESG.
-================================================================================
+====================================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 14/25 — RODO / AML-CBDD / BDO / ŚRODOWISKO / SEKURYTYZACJA (bezpieczeństwo i zgodność)
+====================================================================================================
+Data wygenerowania: 2026-08-10 | Źródło sterujące: 14_RODO_AML-CBDD_BDO_ŚRODOWISKO_SEKURYTYZACJA_b.txt
+Status raportu: AUDYT OPARTY NA DOWODACH
+Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
+UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
+
+1. EXECUTIVE SUMMARY
+- Zakres promptu: Przeprowadź głębokie myślenie i przeprowadź głęboką analizę modułu RODO/AML/BDO/ŚRODOWISKO na zaawansowanym poziomie Enterprise. **Pokrycie AML/RODO/BDO wg LEGAL_COVERAGE.md ~5%.**Oceń: rodo.rego, rodo_extended.rego, rules/rodo/plan42_rodo.rego, rules/micro/rodo/* (6 plików: rodo, rodo_ai_marketing, rodo_erasure, rodo_podprocesorzy, rodo_sankcje, rodo_zatrudnienie — Art. 17, 28, 30, 83 RODO), rules/micro/aml/* (5 plików: aml, aml_cbdd, aml_ryzyko, aml_str_gif, aml_transakcje — ustawa o AML/CBDD), rules/micro/bdo/* (6 plików: bdo_ewc, bdo_ewidencja, bdo_rejestracja, bdo_transport, bdo_weee_baterie, bdo_zezwolenia), micro/srodowisko/srodowisko.rego, environmental.rego, rules/environmental/bdo_enterprise.rego, p15_srodowisko_bdo_innovations_v9.rego, p16_rodo_aml_security_innovations_v9.rego, rules/security/security_fortress_v8.rego, rules/compliance/aml_enterprise.rego, rules/micro/srodowisko/srodowisko.rego. Sprawdź: rejestr czynności (Art. 30), prawo do usunięcia (Art. 17), sankcje (Art. 83), podprocesorzy (Art. 28), obowiązki AML (rejestracja, CBBD, STR do GIF, ocena ryzyka), BDO (rejestracja, ewidencja, WEEE, baterie, opakowania, transport). Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów: automatyczny rejestr czynności z mapą przetwarzania, silnik oceny ryzyka AML z scoringiem kontrahentów, monitor obowiązków BDO z kalendarzem, integracja z Decision Certificate (każdy werdykt zgodny z RODO).
+- Rozwiązane ścieżki promptu: 45/45; brakujące: 0.
+- Przeanalizowane unikalne pliki: 45 (33 Rego), 17,149 linii, 844,115 B.
+- Zaobserwowane rule_id: 507, unikalne: 505, duplikaty w zakresie: 2.
+- Pliki Rego z polem valid_from/valid_to w próbie: 1/33 (3.0%).
+- Wystąpienia _legal_basis w próbie: 479; pakiety Rego: 31.
+- Dopasowane testy domenowe po nazwie pliku: 13.
+
+TOP 10 USTALEŃ / REKOMENDACJI
+01. P0: Zamknąć 0 nierozwiązanych odwołań promptu albo zaktualizować prompt; nie wolno traktować braku pliku jako dowodu implementacji.
+02. P0: Ustalić bramkę spójności dla 505 unikalnych rule_id; wykryte duplikaty w zakresie: 2.
+03. P0: Wymagać testu pozytywnego, granicznego, negatywnego/no_match i temporalnego dla każdej krytycznej reguły.
+04. P0: Powiązać każdą regułę materialną z kanonicznym _legal_basis oraz rekordem w Legal Twin; nie ufać samemu komentarzowi.
+05. P1: Podnieść temporalność: obecnie wykryto ją w 1/33 plików Rego w zakresie audytu.
+06. P1: Parametry stawek, progów, limitów i terminów trzymać w danych wersjonowanych; wykrywać hardcode w CI.
+07. P1: Dodać golden replay i diff werdyktów przed kanarem; zmiana prawa musi mieć datę wejścia i datę wygaśnięcia.
+08. P1: Dopiąć provenance: input → rule_id → podstawa → test → bundle → Decision Certificate.
+09. P2: Utworzyć dashboard pokrycia domeny z rozróżnieniem: istnieje kod, istnieje test, istnieje podstawa, działa w routerze.
+10. P2: Oznaczać rekomendacje jako SUGGEST/ASK_USER; raport nie powinien prowadzić do automatycznej decyzji podatkowej.
+
+2. DOWÓD Z REPOZYTORIUM
+2.1. Rozwiązanie ścieżek wskazanych przez prompt
+| Ścieżka z promptu | Rozwiązanie | Tryb |
+|---|---|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | wprost |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | `docs/WIZJA_OPA_ENTERPRISE_V2.md` | wprost |
+| `docs/Bbb` | `docs/Bbb` | wprost |
+| `docs/LEGAL_REFERENCE_ACTS.md` | `docs/LEGAL_REFERENCE_ACTS.md` | wprost |
+| `docs/LEGAL_COVERAGE.md` | `docs/LEGAL_COVERAGE.md` | wprost |
+| `rules/rodo.rego` | `rules/rodo.rego` | wprost |
+| `rules/rodo_extended.rego` | `rules/rodo_extended.rego` | wprost |
+| `rules/rodo/plan42_rodo.rego` | `rules/rodo/plan42_rodo.rego` | wprost |
+| `rules/micro/rodo/rodo.rego` | `rules/micro/rodo/rodo.rego` | wprost |
+| `rules/micro/rodo/rodo_ai_marketing.rego` | `rules/micro/rodo/rodo_ai_marketing.rego` | wprost |
+| `rules/micro/rodo/rodo_erasure.rego` | `rules/micro/rodo/rodo_erasure.rego` | wprost |
+| `rules/micro/rodo/rodo_podprocesorzy.rego` | `rules/micro/rodo/rodo_podprocesorzy.rego` | wprost |
+| `rules/micro/rodo/rodo_sankcje.rego` | `rules/micro/rodo/rodo_sankcje.rego` | wprost |
+| `rules/micro/rodo/rodo_zatrudnienie.rego` | `rules/micro/rodo/rodo_zatrudnienie.rego` | wprost |
+| `rules/compliance/aml_enterprise.rego` | `rules/compliance/aml_enterprise.rego` | wprost |
+| `rules/micro/aml/aml.rego` | `rules/micro/aml/aml.rego` | wprost |
+| `rules/micro/aml/aml_cbdd.rego` | `rules/micro/aml/aml_cbdd.rego` | wprost |
+| `rules/micro/aml/aml_ryzyko.rego` | `rules/micro/aml/aml_ryzyko.rego` | wprost |
+| `rules/micro/aml/aml_str_gif.rego` | `rules/micro/aml/aml_str_gif.rego` | wprost |
+| `rules/micro/aml/aml_transakcje.rego` | `rules/micro/aml/aml_transakcje.rego` | wprost |
+| `rules/environmental.rego` | `rules/environmental.rego` | wprost |
+| `rules/environmental/bdo_enterprise.rego` | `rules/environmental/bdo_enterprise.rego` | wprost |
+| `rules/micro/bdo/bdo_ewc.rego` | `rules/micro/bdo/bdo_ewc.rego` | wprost |
+| `rules/micro/bdo/bdo_ewidencja.rego` | `rules/micro/bdo/bdo_ewidencja.rego` | wprost |
+| `rules/micro/bdo/bdo_rejestracja.rego` | `rules/micro/bdo/bdo_rejestracja.rego` | wprost |
+| `rules/micro/bdo/bdo_transport.rego` | `rules/micro/bdo/bdo_transport.rego` | wprost |
+| `rules/micro/bdo/bdo_weee_baterie.rego` | `rules/micro/bdo/bdo_weee_baterie.rego` | wprost |
+| `rules/micro/bdo/bdo_zezwolenia.rego` | `rules/micro/bdo/bdo_zezwolenia.rego` | wprost |
+| `rules/micro/srodowisko/srodowisko.rego` | `rules/micro/srodowisko/srodowisko.rego` | wprost |
+| `rules/security/security_fortress_v8.rego` | `rules/security/security_fortress_v8.rego` | wprost |
+| `rules/p15_srodowisko_bdo_innovations_v9.rego` | `rules/p15_srodowisko_bdo_innovations_v9.rego` | wprost |
+| `rules/p16_rodo_aml_security_innovations_v9.rego` | `rules/p16_rodo_aml_security_innovations_v9.rego` | wprost |
+| `rules/micro/plan33_rodo.rego` | `rules/micro/plan33_rodo.rego` | wprost |
+| `tests/test_aml_enterprise.py` | `tests/test_aml_enterprise.py` | wprost |
+| `tests/test_bdo_enterprise.py` | `tests/test_bdo_enterprise.py` | wprost |
+| `tests/test_rodo_enterprise.py` | `tests/test_rodo_enterprise.py` | wprost |
+| `tests/auto/test_auto_block_rodo.py` | `tests/auto/test_auto_block_rodo.py` | wprost |
+| `tests/auto/test_auto_block_rodo_extended.py` | `tests/auto/test_auto_block_rodo_extended.py` | wprost |
+| `tests/auto/test_p15_srodowisko_bdo_enterprise.py` | `tests/auto/test_p15_srodowisko_bdo_enterprise.py` | wprost |
+| `tests/auto/test_p16_rodo_aml_security_enterprise.py` | `tests/auto/test_p16_rodo_aml_security_enterprise.py` | wprost |
+| `tests/rego/test_p15_srodowisko_bdo_enterprise.rego` | `tests/rego/test_p15_srodowisko_bdo_enterprise.rego` | wprost |
+| `tests/rego/test_p16_rodo_aml_security_enterprise.rego` | `tests/rego/test_p16_rodo_aml_security_enterprise.rego` | wprost |
+| `tests/rego/micro/test_native_micro_aml.rego` | `tests/rego/micro/test_native_micro_aml.rego` | wprost |
+| `tests/rego/micro/test_native_micro_bdo.rego` | `tests/rego/micro/test_native_micro_bdo.rego` | wprost |
+| `tests/rego/micro/test_native_micro_rodo.rego` | `tests/rego/micro/test_native_micro_rodo.rego` | wprost |
+
+2.2. Ścieżki nierozwiązane — nie są dowodem istnienia funkcji
+- brak
+
+2.3. Statystyki artefaktów
+| Plik | Linie | Bajty | rule_id | _legal_basis | temporal | package |
+|---|---:|---:|---:|---:|---:|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | 425 | 35383 | 0 | 0 | 14 |  |
+| `docs/Bbb` | 238 | 20680 | 0 | 0 | 0 |  |
+| `docs/LEGAL_COVERAGE.md` | 270 | 13940 | 0 | 0 | 0 |  |
+| `docs/LEGAL_REFERENCE_ACTS.md` | 163 | 15878 | 0 | 0 | 0 |  |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | 399 | 34502 | 0 | 0 | 3 |  |
+| `rules/compliance/aml_enterprise.rego` | 229 | 14173 | 1 | 0 | 0 | jdg.compliance.aml |
+| `rules/environmental/bdo_enterprise.rego` | 648 | 34925 | 24 | 23 | 0 | jdg.environmental.bdo |
+| `rules/environmental.rego` | 275 | 14824 | 15 | 14 | 0 | jdg.environmental |
+| `rules/micro/aml/aml.rego` | 3468 | 117234 | 126 | 125 | 0 | jdg.micro.aml |
+| `rules/micro/aml/aml_cbdd.rego` | 89 | 4495 | 7 | 6 | 0 | jdg.micro.aml_cbdd |
+| `rules/micro/aml/aml_ryzyko.rego` | 137 | 6874 | 9 | 8 | 0 | jdg.micro.aml_ryzyko |
+| `rules/micro/aml/aml_str_gif.rego` | 123 | 6056 | 9 | 8 | 0 | jdg.micro.aml_str_gif |
+| `rules/micro/aml/aml_transakcje.rego` | 106 | 5257 | 8 | 7 | 0 | jdg.micro.aml_transakcje |
+| `rules/micro/bdo/bdo_ewc.rego` | 212 | 12774 | 10 | 9 | 0 | jdg.micro.bdo_ewc |
+| `rules/micro/bdo/bdo_ewidencja.rego` | 155 | 7898 | 10 | 9 | 0 | jdg.micro.bdo_ewidencja |
+| `rules/micro/bdo/bdo_rejestracja.rego` | 198 | 11305 | 10 | 9 | 0 | jdg.micro.bdo_rejestracja |
+| `rules/micro/bdo/bdo_transport.rego` | 124 | 7166 | 8 | 7 | 0 | jdg.micro.bdo_transport |
+| `rules/micro/bdo/bdo_weee_baterie.rego` | 105 | 5766 | 7 | 6 | 0 | jdg.micro.bdo_weee |
+| `rules/micro/bdo/bdo_zezwolenia.rego` | 108 | 6047 | 8 | 7 | 0 | jdg.micro.bdo_zezwolenia |
+| `rules/micro/plan33_rodo.rego` | 60 | 7956 | 11 | 10 | 0 | jdg.micro.rodo |
+| `rules/micro/rodo/rodo.rego` | 1162 | 37588 | 41 | 40 | 0 | jdg.micro.rodo |
+| `rules/micro/rodo/rodo_ai_marketing.rego` | 88 | 4383 | 7 | 6 | 0 | jdg.micro.rodo_ai_marketing |
+| `rules/micro/rodo/rodo_erasure.rego` | 83 | 4395 | 6 | 5 | 0 | jdg.micro.rodo_erasure |
+| `rules/micro/rodo/rodo_podprocesorzy.rego` | 79 | 4235 | 6 | 5 | 0 | jdg.micro.rodo_podprocesorzy |
+| `rules/micro/rodo/rodo_sankcje.rego` | 95 | 4867 | 7 | 6 | 0 | jdg.micro.rodo_sankcje |
+| `rules/micro/rodo/rodo_zatrudnienie.rego` | 84 | 4595 | 6 | 5 | 0 | jdg.micro.rodo_zatrudnienie |
+| `rules/micro/srodowisko/srodowisko.rego` | 1391 | 45886 | 49 | 48 | 0 | jdg.micro.srodowisko |
+| `rules/p15_srodowisko_bdo_innovations_v9.rego` | 839 | 49732 | 33 | 32 | 0 | jdg.p15_srodowisko_bdo_innovations |
+| `rules/p16_rodo_aml_security_innovations_v9.rego` | 1137 | 64511 | 34 | 33 | 0 | jdg.p16_rodo_aml_security_innovations |
+| `rules/rodo/plan42_rodo.rego` | 24 | 2771 | 4 | 3 | 0 | jdg.rodo |
+| `rules/rodo.rego` | 364 | 22105 | 13 | 12 | 0 | jdg.rodo |
+| `rules/rodo_extended.rego` | 443 | 30114 | 18 | 17 | 0 | jdg.rodo_extended |
+| `rules/security/security_fortress_v8.rego` | 855 | 57135 | 20 | 19 | 38 | jdg.security.fortress |
+| `tests/auto/test_auto_block_rodo.py` | 77 | 2955 | 4 | 0 | 0 |  |
+| `tests/auto/test_auto_block_rodo_extended.py` | 145 | 6478 | 8 | 0 | 0 |  |
+| `tests/auto/test_p15_srodowisko_bdo_enterprise.py` | 520 | 24911 | 0 | 0 | 0 |  |
+| `tests/auto/test_p16_rodo_aml_security_enterprise.py` | 537 | 25273 | 0 | 0 | 0 |  |
+| `tests/rego/micro/test_native_micro_aml.rego` | 130 | 3612 | 0 | 0 | 0 | test_jdg_micro_aml |
+| `tests/rego/micro/test_native_micro_bdo.rego` | 130 | 3821 | 0 | 0 | 0 | test_jdg_micro_bdo_ewc |
+| `tests/rego/micro/test_native_micro_rodo.rego` | 130 | 3669 | 0 | 0 | 0 | test_jdg_micro_rodo |
+| `tests/rego/test_p15_srodowisko_bdo_enterprise.rego` | 447 | 20954 | 0 | 0 | 0 | jdg.tests.p15_srodowisko_bdo |
+| `tests/rego/test_p16_rodo_aml_security_enterprise.rego` | 509 | 24313 | 0 | 0 | 0 | jdg.tests.p16_rodo_aml_security |
+| `tests/test_aml_enterprise.py` | 123 | 4539 | 0 | 0 | 0 |  |
+| `tests/test_bdo_enterprise.py` | 105 | 3577 | 0 | 0 | 0 |  |
+| `tests/test_rodo_enterprise.py` | 120 | 4563 | 0 | 0 | 0 |  |
+
+3. ANALIZA PRAWO → REGUŁA → TEST → WERDYKT
+Przeprowadź głębokie myślenie nad łańcuchem dowodowym, ale nie utożsamiaj obecności tekstu z poprawnością prawną.
+- PRAWO: prompt wskazuje akty i artykuły; raport wymaga potwierdzenia w docs/Bbb/LEGAL_REFERENCE_ACTS oraz kanonicznego identyfikatora aktu.
+- REGUŁA: w wybranych plikach znaleziono 507 deklarowanych rule_id (505 unikalnych); przykładowe obserwacje:
+  - rules/compliance/aml_enterprise.rego: rule_id=1, przykłady=jdg.compliance.aml.no_match
+  - rules/environmental/bdo_enterprise.rego: rule_id=24, przykłady=jdg.environmental.bdo.no_match, jdg.environmental.bdo.registration_micro, jdg.environmental.bdo.registration_small
+  - rules/environmental.rego: rule_id=15, przykłady=jdg.environmental.no_match, jdg.environmental.sup_plastic_fee, jdg.environmental.bdo_registration_required
+  - rules/micro/aml/aml.rego: rule_id=126, przykłady=jdg.micro.aml.no_match, jdg.micro.aml.a8.r1, jdg.micro.aml.a8.r2
+  - rules/micro/aml/aml_cbdd.rego: rule_id=7, przykłady=jdg.micro.aml_cbdd.no_match, jdg.micro.aml_cbdd.r1, jdg.micro.aml_cbdd.r2
+  - rules/micro/aml/aml_ryzyko.rego: rule_id=9, przykłady=jdg.micro.aml_ryzyko.no_match, jdg.micro.aml_ryzyko.r1, jdg.micro.aml_ryzyko.r2
+  - rules/micro/aml/aml_str_gif.rego: rule_id=9, przykłady=jdg.micro.aml_str_gif.no_match, jdg.micro.aml_str_gif.r1, jdg.micro.aml_str_gif.r2
+  - rules/micro/aml/aml_transakcje.rego: rule_id=8, przykłady=jdg.micro.aml_transakcje.no_match, jdg.micro.aml_transakcje.r1, jdg.micro.aml_transakcje.r2
+  - rules/micro/bdo/bdo_ewc.rego: rule_id=10, przykłady=jdg.micro.bdo_ewc.no_match, jdg.micro.bdo_ewc.r1, jdg.micro.bdo_ewc.r2
+  - rules/micro/bdo/bdo_ewidencja.rego: rule_id=10, przykłady=jdg.micro.bdo_ewidencja.no_match, jdg.micro.bdo_ewidencja.r1, jdg.micro.bdo_ewidencja.r2
+  - rules/micro/bdo/bdo_rejestracja.rego: rule_id=10, przykłady=jdg.micro.bdo_rejestracja.no_match, jdg.micro.bdo_rejestracja.r1, jdg.micro.bdo_rejestracja.r2
+  - rules/micro/bdo/bdo_transport.rego: rule_id=8, przykłady=jdg.micro.bdo_transport.no_match, jdg.micro.bdo_transport.r1, jdg.micro.bdo_transport.r2
+  - rules/micro/bdo/bdo_weee_baterie.rego: rule_id=7, przykłady=jdg.micro.bdo_weee.no_match, jdg.micro.bdo_weee.r1, jdg.micro.bdo_weee.r2
+  - rules/micro/bdo/bdo_zezwolenia.rego: rule_id=8, przykłady=jdg.micro.bdo_zezwolenia.no_match, jdg.micro.bdo_zezwolenia.r1, jdg.micro.bdo_zezwolenia.r2
+  - rules/micro/plan33_rodo.rego: rule_id=11, przykłady=jdg.micro.rodo.no_match, jdg.micro.rodo.r1, jdg.micro.rodo.r2
+  - rules/micro/rodo/rodo.rego: rule_id=41, przykłady=jdg.micro.rodo.no_match, jdg.micro.rodo.a6.r1, jdg.micro.rodo.a6.r2
+  - rules/micro/rodo/rodo_ai_marketing.rego: rule_id=7, przykłady=jdg.micro.rodo_ai_marketing.no_match, jdg.micro.rodo_ai_marketing.r1, jdg.micro.rodo_ai_marketing.r2
+  - rules/micro/rodo/rodo_erasure.rego: rule_id=6, przykłady=jdg.micro.rodo_erasure.no_match, jdg.micro.rodo_erasure.r1, jdg.micro.rodo_erasure.r2
+  - rules/micro/rodo/rodo_podprocesorzy.rego: rule_id=6, przykłady=jdg.micro.rodo_podprocesorzy.no_match, jdg.micro.rodo_podprocesorzy.r1, jdg.micro.rodo_podprocesorzy.r2
+  - rules/micro/rodo/rodo_sankcje.rego: rule_id=7, przykłady=jdg.micro.rodo_sankcje.no_match, jdg.micro.rodo_sankcje.r1, jdg.micro.rodo_sankcje.r2
+- TEST: dopasowanie nazwy pliku testowego nie dowodzi wykonania testu; należy uruchomić pytest/opa test i zapisać wynik w CI.
+- WERDYKT: należy zweryfikować, czy pakiety (31) są rzeczywiście włączone przez router, safe_merge i końcowy invariant check.
+- DATA: wartości liczbowe należy porównać z bundle canonical; ten generator nie uznaje samego literalnego wystąpienia liczby za potwierdzenie jej prawidłowości.
+
+4. REJESTR LUK I RYZYK
+| ID | Obserwacja | Dowód | Wpływ | Priorytet | Kryterium zamknięcia |
+|---|---|---|---|---|---|
+| G-01 | Brakujące ścieżki źródłowe: 0 | Tabela 2.2 | Niepełny audyt | P0 | 0 braków albo jawne mapowanie migracyjne |
+| G-02 | Duplikaty rule_id w próbie: 2 | jdg.micro.rodo.no_match, jdg.rodo.no_match | Niedeterminizm / kolizja | P0 | dead_rule_detector = 0 |
+| G-03 | Brak temporalności w 32/33 plików Rego | Tabela 2.3 | Błędny time-travel | P1 | valid_from/valid_to + test graniczny |
+| G-04 | Niepotwierdzony most test → reguła → werdykt | Brak wyniku uruchomienia w raporcie | Cichy regres | P1 | coverage + golden replay |
+| G-05 | Niepotwierdzona kanoniczność podstaw prawnych | _legal_basis=479 | Ryzyko błędnej podstawy | P0 | Legal Twin i validator przechodzą |
+| G-06 | Brak dowodu wdrożenia kanarowego | Prompt opisuje wymaganie; repo wymaga weryfikacji runtime | Niebezpieczny release | P1 | metryki + auto-rollback test |
+
+5. OPA JAKO SYSTEM
+Control Plane: rejestr reguł, review, walidacja, podpisany bundle, Legal Twin, kanar i rollback.
+Data Plane: deterministyczna ewaluacja, First-Match-Wins, safe_merge, temporalność, provenance i runtime invariants.
+Minimalny kontrakt wydania:
+```text
+change request → legal diff → rule/test diff → validate/lint → pytest + opa test
+→ legal-basis gate → duplicate/stub/tautology gate → golden replay
+→ signed bundle → canary → health metrics → ACTIVE albo ROLLED_BACK
+```
+Każdy etap musi pozostawić artefakt, wersję i hash; sam raport analityczny nie zmienia lifecycle reguły.
+
+6. TESTY I WALIDACJA
+| Test / grupa | Stan istnienia | Wymagany dowód |
+|---|---|---|
+| `tests/auto/test_auto_block_rodo.py` | istnieje, 77 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/auto/test_auto_block_rodo_extended.py` | istnieje, 145 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/auto/test_p15_srodowisko_bdo_enterprise.py` | istnieje, 520 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/auto/test_p16_rodo_aml_security_enterprise.py` | istnieje, 537 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/micro/test_native_micro_aml.rego` | istnieje, 130 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/micro/test_native_micro_bdo.rego` | istnieje, 130 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/micro/test_native_micro_rodo.rego` | istnieje, 130 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/micro/test_native_micro_srodowisko.rego` | istnieje, 130 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_p15_srodowisko_bdo_enterprise.rego` | istnieje, 447 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_p16_rodo_aml_security_enterprise.rego` | istnieje, 509 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/test_aml_enterprise.py` | istnieje, 123 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/test_bdo_enterprise.py` | istnieje, 105 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/test_rodo_enterprise.py` | istnieje, 120 linii | uruchomienie + wynik + przypadki graniczne |
+Rekomendowany zestaw: happy path, no_match, granice progów, data przed/po nowelizacji, duplikat/konflikt, brak danych, rollback i determinism replay.
+
+7. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+01. Legal Twin diff: zmiana artykułu automatycznie pokazuje dotknięte rule_id, testy i formularze.
+02. Temporal boundary generator: automatyczne przypadki dzień przed / dzień wejścia / dzień po.
+03. Decision Certificate verifier: podpis, bundle_version, rule_version, threshold_version i hash wejścia.
+04. Rule impact graph: graf zależności reguła → router → werdykt → dokument.
+05. Evidence completeness score: osobne wyniki dla prawa, kodu, testu, danych i runtime.
+06. Golden replay bank per domena i wersja prawa, z tolerancją wyłącznie dla pól niedeterministycznych.
+07. Declarative Change Wizard z obowiązkowym ASK_USER przy niejednoznacznej podstawie prawnej.
+08. Canary risk budget: automatyczny rollback po wzroście BLOCK_AND_ALERT lub zmianie rozkładu werdyktów.
+09. Hardcode provenance scanner: literal → źródło danych → data obowiązywania → test.
+10. Coverage desert radar: mapa aktów i pakietów bez reguł, bez testów albo bez routera.
+11. Explainability bundle: dowód decyzji eksportowany razem z wersją reguły i podstawą prawną.
+12. Mutation testing dla najważniejszych rule_id; brak wykrycia mutacji blokuje promocję do ACTIVE.
+Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, że funkcje istnieją.
+
+8. KONTRAKTY Z INNYMI CZĘŚCIAMI
+- Raport master 00: wspólne LCI/TCL/RV/UVR, _legal_basis, valid_from/valid_to, rule_id, 25-polowy werdykt.
+- Pakiety wykryte w bieżącym zakresie: jdg.compliance.aml, jdg.environmental, jdg.environmental.bdo, jdg.micro.aml, jdg.micro.aml_cbdd, jdg.micro.aml_ryzyko, jdg.micro.aml_str_gif, jdg.micro.aml_transakcje, jdg.micro.bdo_ewc, jdg.micro.bdo_ewidencja, jdg.micro.bdo_rejestracja, jdg.micro.bdo_transport, jdg.micro.bdo_weee, jdg.micro.bdo_zezwolenia, jdg.micro.rodo, jdg.micro.rodo_ai_marketing, jdg.micro.rodo_erasure, jdg.micro.rodo_podprocesorzy, jdg.micro.rodo_sankcje, jdg.micro.rodo_zatrudnienie, jdg.micro.srodowisko, jdg.p15_srodowisko_bdo_innovations, jdg.p16_rodo_aml_security_innovations, jdg.rodo, jdg.rodo_extended, jdg.security.fortress, jdg.tests.p15_srodowisko_bdo, jdg.tests.p16_rodo_aml_security, test_jdg_micro_aml, test_jdg_micro_bdo_ewc.
+- Części sąsiednie muszą traktować powyższe nazwy jako obserwację, nie jako zgodę na dodawanie reguł bez rejestracji.
+- Zmiana rule_id wymaga aktualizacji routera, manifestu, testów, bundle, dokumentacji i golden replay.
+
+9. MAPA DROGOWA
+| Etap | Zadanie | Kryterium | Szacunek |
+|---|---|---|---|
+| P0 | Uzupełnić/uzgodnić źródła i legal basis | 0 braków, validator OK | 1–3 dni |
+| P0 | Zbudować testy krytycznych rule_id | positive/negative/boundary | 2–5 dni |
+| P1 | Wdrożyć temporalny golden replay | przejścia dat bez regresji | 2–5 dni |
+| P1 | Podłączyć provenance i Decision Certificate | pełny łańcuch dowodu | 2–5 dni |
+| P1 | Kanar + metryki + rollback | test SLA i failure injection | 1–2 tyg. |
+| P2 | Dashboard coverage/evidence | trend domeny per bundle | 1–2 tyg. |
+
+10. WNIOSKI KOŃCOWE
+Audyt części 14 potwierdza istnienie 45 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
+Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+KONIEC RAPORTU 14/25 — raport wygenerowany z promptu 14_RODO_AML-CBDD_BDO_ŚRODOWISKO_SEKURYTYZACJA_b.txt
+====================================================================================================

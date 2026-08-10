@@ -1,10 +1,212 @@
-================================================================================
-RAPORT 16 — SYSTEM OPA — INNOWACJE P18–P35 — WDROŻONY ✅
-ANALIZA: bundles/ (bundle.sh v8.0, manifest.json 10878 reguł), policies/ (32 pakiety),
-migrations/ (DuckDB RuleStore 9 tabel, 2 migracje), api/openapi.yaml (10 endpointów),
-decision_core_completeness (5), cross_declaration_validator (4),
-decision_composer (2), esig_auto_applicator (4), legislative_monitor (5),
-lifecycle_manager (4), p22_innovations, p35_innovations, p35_system_gaps.
-STAN: OPA jako SYSTEM — Control Plane + Data Plane, cykl życia reguł,
-Legal Twin/LKG, Decision Certificate, Law Radar, Declarative Change.
-================================================================================
+====================================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 16/25 — SYSTEM OPA — INNOWACJE P18–P35 (OPA jako rozbudowany SYSTEM, automatyzacja, walidacja, audyt)
+====================================================================================================
+Data wygenerowania: 2026-08-10 | Źródło sterujące: 16_SYSTEM_OPA_INNOWACJE_P18_P35.txt
+Status raportu: AUDYT OPARTY NA DOWODACH
+Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
+UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
+
+1. EXECUTIVE SUMMARY
+- Zakres promptu: Przeprowadź głębokie myślenie i przeprowadź głęboką analizę „SYSTEMU OPA" na zaawansowanym poziomie Enterprise. **To serce wymogu „OPA MUSI BYĆ ROZBUDOWANYM SYSTEMEM": prawo jest bardzo zmienne, zmiany reguł oraz dodawanie/usuwanie reguł musi być sprawne, niezawodne i proste, a silnik musi się szybko i profesjonalnie adaptować do zmian.** Oceń: p21_opa_system_innovations_v9 (policy registry, canary, shadow), p22_validation_tools_innovations_v9 (bramki jakości), p23_test_rego_ci_innovations_v9 (CI dla Rego), p24_audyt_kompletny_innovations_v9, p18_automatyzacja_ksiegowosci_innovations_v9, p20_neural_mesh_innovations_v9, p34_innovations_engine, p34_remaining_fixes, p35_cross_act_coherence, p35_system_gaps, p35_innovations_engine, p01_core_architecture_innovations_v8, p01_fundament_innovations_v9, p02_decision_core_innovations_v9, p03_orchestrator_innovations_v9, p21/p22/p23/p24_innovations_enterprise, rule_lifecycle_enterprise, reliability_guarantee_enterprise, decision_core_completeness_enterprise, p14_compliance_innovations_v8. Zbuduj KOMPLETNĄ mapę: jak JDG realizuje (a) dodanie reguły w 7 krokach, (b) zmianę reguły jako nową wersję SHADOW→CANDIDATE→ACTIVE, (c) bezpieczne usuwanie (deprecate→retire→purge), (d) kill-switch, (e) pipeline ISAP→produkcja ≤24 h (P0 ≤4 h), (f) parametr hot-reload ≤15 min, (g) bramki CI blokujące (lint, validate, tautologia, dead-rule, hardcoded, zero-defect, mutation ≥70%, golden replay, impact), (h) filary V2 (Legal Twin, runtime invariants, Decision Certificate, Law Radar, Declarative Change). Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów — wskaż, czego brakuje do „ufortyfikowanej fortecy".
+- Rozwiązane ścieżki promptu: 39/39; brakujące: 0.
+- Przeanalizowane unikalne pliki: 39 (25 Rego), 16,387 linii, 912,509 B.
+- Zaobserwowane rule_id: 363, unikalne: 363, duplikaty w zakresie: 0.
+- Pliki Rego z polem valid_from/valid_to w próbie: 8/25 (32.0%).
+- Wystąpienia _legal_basis w próbie: 420; pakiety Rego: 25.
+- Dopasowane testy domenowe po nazwie pliku: 2.
+
+TOP 10 USTALEŃ / REKOMENDACJI
+01. P0: Zamknąć 0 nierozwiązanych odwołań promptu albo zaktualizować prompt; nie wolno traktować braku pliku jako dowodu implementacji.
+02. P0: Ustalić bramkę spójności dla 363 unikalnych rule_id; wykryte duplikaty w zakresie: 0.
+03. P0: Wymagać testu pozytywnego, granicznego, negatywnego/no_match i temporalnego dla każdej krytycznej reguły.
+04. P0: Powiązać każdą regułę materialną z kanonicznym _legal_basis oraz rekordem w Legal Twin; nie ufać samemu komentarzowi.
+05. P1: Podnieść temporalność: obecnie wykryto ją w 8/25 plików Rego w zakresie audytu.
+06. P1: Parametry stawek, progów, limitów i terminów trzymać w danych wersjonowanych; wykrywać hardcode w CI.
+07. P1: Dodać golden replay i diff werdyktów przed kanarem; zmiana prawa musi mieć datę wejścia i datę wygaśnięcia.
+08. P1: Dopiąć provenance: input → rule_id → podstawa → test → bundle → Decision Certificate.
+09. P2: Utworzyć dashboard pokrycia domeny z rozróżnieniem: istnieje kod, istnieje test, istnieje podstawa, działa w routerze.
+10. P2: Oznaczać rekomendacje jako SUGGEST/ASK_USER; raport nie powinien prowadzić do automatycznej decyzji podatkowej.
+
+2. DOWÓD Z REPOZYTORIUM
+2.1. Rozwiązanie ścieżek wskazanych przez prompt
+| Ścieżka z promptu | Rozwiązanie | Tryb |
+|---|---|---|
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | wprost |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | `docs/WIZJA_OPA_ENTERPRISE_V2.md` | wprost |
+| `docs/Bbb` | `docs/Bbb` | wprost |
+| `docs/LEGAL_REFERENCE_ACTS.md` | `docs/LEGAL_REFERENCE_ACTS.md` | wprost |
+| `docs/LEGAL_COVERAGE.md` | `docs/LEGAL_COVERAGE.md` | wprost |
+| `rules/p01_core_architecture_innovations_v8.rego` | `rules/p01_core_architecture_innovations_v8.rego` | wprost |
+| `rules/p01_fundament_innovations_v9.rego` | `rules/p01_fundament_innovations_v9.rego` | wprost |
+| `rules/p02_decision_core_innovations_v9.rego` | `rules/p02_decision_core_innovations_v9.rego` | wprost |
+| `rules/p03_orchestrator_innovations_v9.rego` | `rules/p03_orchestrator_innovations_v9.rego` | wprost |
+| `rules/p14_compliance_innovations_v8.rego` | `rules/p14_compliance_innovations_v8.rego` | wprost |
+| `rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` | `rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` | wprost |
+| `rules/p20_neural_mesh_innovations_v9.rego` | `rules/p20_neural_mesh_innovations_v9.rego` | wprost |
+| `rules/p21_opa_system_innovations_v9.rego` | `rules/p21_opa_system_innovations_v9.rego` | wprost |
+| `rules/p21_innovations_enterprise.rego` | `rules/p21_innovations_enterprise.rego` | wprost |
+| `rules/p22_validation_tools_innovations_v9.rego` | `rules/p22_validation_tools_innovations_v9.rego` | wprost |
+| `rules/p22_innovations_enterprise.rego` | `rules/p22_innovations_enterprise.rego` | wprost |
+| `rules/p23_test_rego_ci_innovations_v9.rego` | `rules/p23_test_rego_ci_innovations_v9.rego` | wprost |
+| `rules/p23_innovations_enterprise.rego` | `rules/p23_innovations_enterprise.rego` | wprost |
+| `rules/p24_audyt_kompletny_innovations_v9.rego` | `rules/p24_audyt_kompletny_innovations_v9.rego` | wprost |
+| `rules/p24_innovations_enterprise.rego` | `rules/p24_innovations_enterprise.rego` | wprost |
+| `rules/micro/p24_innovations_enterprise.rego` | `rules/micro/p24_innovations_enterprise.rego` | wprost |
+| `rules/p34_innovations_engine.rego` | `rules/p34_innovations_engine.rego` | wprost |
+| `rules/p34_remaining_fixes.rego` | `rules/p34_remaining_fixes.rego` | wprost |
+| `rules/p35_cross_act_coherence.rego` | `rules/p35_cross_act_coherence.rego` | wprost |
+| `rules/p35_system_gaps.rego` | `rules/p35_system_gaps.rego` | wprost |
+| `rules/p35_innovations_engine.rego` | `rules/p35_innovations_engine.rego` | wprost |
+| `rules/rule_lifecycle_enterprise.rego` | `rules/rule_lifecycle_enterprise.rego` | wprost |
+| `rules/reliability_guarantee_enterprise.rego` | `rules/reliability_guarantee_enterprise.rego` | wprost |
+| `rules/decision_core_completeness_enterprise.rego` | `rules/decision_core_completeness_enterprise.rego` | wprost |
+| `bundles/policies_drift_report.json` | `bundles/policies_drift_report.json` | wprost |
+| `bundles/hardcoded_audit.json` | `bundles/hardcoded_audit.json` | wprost |
+| `bundles/coverage_deserts.json` | `bundles/coverage_deserts.json` | wprost |
+| `bundles/impact_matrix.json` | `bundles/impact_matrix.json` | wprost |
+| `tests/test_p01_control_plane.py` | `tests/test_p01_control_plane.py` | wprost |
+| `tests/test_p02_legal.py` | `tests/test_p02_legal.py` | wprost |
+| `tests/test_p16_v8_enterprise.py` | `tests/test_p16_v8_enterprise.py` | wprost |
+| `tests/test_phase5_modules.py` | `tests/test_phase5_modules.py` | wprost |
+| `tests/test_strategic_v2_modules.py` | `tests/test_strategic_v2_modules.py` | wprost |
+| `tests/rego/test_native_strategic_advisor_enterprise.rego` | `tests/rego/test_native_strategic_advisor_enterprise.rego` | wprost |
+
+2.2. Ścieżki nierozwiązane — nie są dowodem istnienia funkcji
+- brak
+
+2.3. Statystyki artefaktów
+| Plik | Linie | Bajty | rule_id | _legal_basis | temporal | package |
+|---|---:|---:|---:|---:|---:|---|
+| `bundles/coverage_deserts.json` | 414 | 12219 | 0 | 0 | 40 |  |
+| `bundles/hardcoded_audit.json` | 797 | 21941 | 0 | 0 | 0 |  |
+| `bundles/impact_matrix.json` | 401 | 13266 | 43 | 0 | 0 |  |
+| `bundles/policies_drift_report.json` | 529 | 18251 | 0 | 0 | 0 |  |
+| `docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` | 425 | 35383 | 0 | 0 | 14 |  |
+| `docs/Bbb` | 238 | 20680 | 0 | 0 | 0 |  |
+| `docs/LEGAL_COVERAGE.md` | 270 | 13940 | 0 | 0 | 0 |  |
+| `docs/LEGAL_REFERENCE_ACTS.md` | 163 | 15878 | 0 | 0 | 0 |  |
+| `docs/WIZJA_OPA_ENTERPRISE_V2.md` | 399 | 34502 | 0 | 0 | 3 |  |
+| `rules/decision_core_completeness_enterprise.rego` | 220 | 8658 | 6 | 5 | 0 | jdg.decision_core_completeness |
+| `rules/micro/p24_innovations_enterprise.rego` | 488 | 24669 | 30 | 29 | 0 | jdg.p24.innovations |
+| `rules/p01_core_architecture_innovations_v8.rego` | 78 | 5064 | 8 | 0 | 0 | jdg.p01_innovations |
+| `rules/p01_fundament_innovations_v9.rego` | 365 | 18254 | 3 | 2 | 4 | jdg.p01_fundament_innovations |
+| `rules/p02_decision_core_innovations_v9.rego` | 332 | 14703 | 2 | 1 | 0 | jdg.p02_decision_core_innovations |
+| `rules/p03_orchestrator_innovations_v9.rego` | 297 | 15880 | 2 | 1 | 0 | jdg.p03_orchestrator_innovations |
+| `rules/p14_compliance_innovations_v8.rego` | 833 | 47718 | 13 | 12 | 0 | jdg.p14_innovations |
+| `rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` | 950 | 56202 | 31 | 30 | 0 | jdg.p18_automatyzacja_ksiegowosci_innovations |
+| `rules/p20_neural_mesh_innovations_v9.rego` | 809 | 43578 | 29 | 28 | 0 | jdg.p20_neural_mesh_innovations |
+| `rules/p21_innovations_enterprise.rego` | 234 | 29927 | 49 | 48 | 0 | jdg.p21_innovations |
+| `rules/p21_opa_system_innovations_v9.rego` | 456 | 28769 | 2 | 22 | 2 | jdg.p21_opa_system_innovations |
+| `rules/p22_innovations_enterprise.rego` | 178 | 25485 | 49 | 48 | 0 | jdg.p22_innovations |
+| `rules/p22_validation_tools_innovations_v9.rego` | 459 | 29729 | 2 | 22 | 0 | jdg.p22_validation_tools_innovations |
+| `rules/p23_innovations_enterprise.rego` | 78 | 11077 | 21 | 20 | 0 | jdg.p23_innovations |
+| `rules/p23_test_rego_ci_innovations_v9.rego` | 423 | 26916 | 2 | 22 | 0 | jdg.p23_test_rego_ci_innovations |
+| `rules/p24_audyt_kompletny_innovations_v9.rego` | 504 | 32463 | 2 | 27 | 0 | jdg.p24_audyt_kompletny_innovations |
+| `rules/p24_innovations_enterprise.rego` | 1128 | 62024 | 30 | 28 | 0 | jdg.p24_innovations |
+| `rules/p34_innovations_engine.rego` | 615 | 34282 | 17 | 16 | 34 | jdg.p34_innovations |
+| `rules/p34_remaining_fixes.rego` | 549 | 34936 | 15 | 14 | 34 | jdg.p34_remaining |
+| `rules/p35_cross_act_coherence.rego` | 346 | 19628 | 11 | 10 | 20 | jdg.p35_coherence |
+| `rules/p35_innovations_engine.rego` | 387 | 22572 | 17 | 16 | 33 | jdg.p35_innovations |
+| `rules/p35_system_gaps.rego` | 359 | 19814 | 12 | 11 | 22 | jdg.p35_gaps |
+| `rules/reliability_guarantee_enterprise.rego` | 190 | 9446 | 5 | 4 | 0 | jdg.reliability_guarantee |
+| `rules/rule_lifecycle_enterprise.rego` | 255 | 12792 | 5 | 4 | 28 | jdg.rule_lifecycle |
+| `tests/rego/test_native_strategic_advisor_enterprise.rego` | 107 | 3686 | 0 | 0 | 0 | test_jdg_strategic_advisor |
+| `tests/test_p01_control_plane.py` | 360 | 16223 | 2 | 0 | 16 |  |
+| `tests/test_p02_legal.py` | 182 | 7814 | 0 | 0 | 0 |  |
+| `tests/test_p16_v8_enterprise.py` | 445 | 17785 | 0 | 0 | 0 |  |
+| `tests/test_phase5_modules.py` | 708 | 29186 | 10 | 0 | 0 |  |
+| `tests/test_strategic_v2_modules.py` | 416 | 17169 | 6 | 0 | 0 |  |
+
+3. ANALIZA PRAWO → REGUŁA → TEST → WERDYKT
+Przeprowadź głębokie myślenie nad łańcuchem dowodowym, ale nie utożsamiaj obecności tekstu z poprawnością prawną.
+- PRAWO: prompt wskazuje akty i artykuły; raport wymaga potwierdzenia w docs/Bbb/LEGAL_REFERENCE_ACTS oraz kanonicznego identyfikatora aktu.
+- REGUŁA: w wybranych plikach znaleziono 363 deklarowanych rule_id (363 unikalnych); przykładowe obserwacje:
+  - rules/decision_core_completeness_enterprise.rego: rule_id=6, przykłady=jdg.decision_core_completeness.no_match, jdg.decision_core_completeness.limitations_alert, jdg.decision_core_completeness.limitations_calendar_report
+  - rules/micro/p24_innovations_enterprise.rego: rule_id=30, przykłady=jdg.p24.innovations.no_match, jdg.p24.i1.r1, jdg.p24.i1.r2
+  - rules/p01_core_architecture_innovations_v8.rego: rule_id=8, przykłady=jdg.p01_innovations.no_match, jdg.p01_innovations.thresholds_path_fix, jdg.p01_innovations.provenance_activation
+  - rules/p01_fundament_innovations_v9.rego: rule_id=3, przykłady=jdg.p01_fundament_innovations.no_match, jdg.p01_fundament_innovations.digital_twin, jdg.p01_fundament_innovations.report
+  - rules/p02_decision_core_innovations_v9.rego: rule_id=2, przykłady=jdg.p02_decision_core_innovations.no_match, jdg.p02_decision_core_innovations.report
+  - rules/p03_orchestrator_innovations_v9.rego: rule_id=2, przykłady=jdg.p03_orchestrator_innovations.no_match, jdg.p03_orchestrator_innovations.orchestrator_report
+  - rules/p14_compliance_innovations_v8.rego: rule_id=13, przykłady=jdg.p14_innovations.no_match, jdg.p14_innovations.gdpr_auto_compliance, jdg.p14_innovations.aml_risk_matrix
+  - rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego: rule_id=31, przykłady=jdg.p18_automatyzacja_ksiegowosci_innovations.no_match, jdg.p18_automatyzacja_ksiegowosci_innovations.automatyzacja_coverage_report, jdg.p18_automatyzacja_ksiegowosci_innovations.banking_audit
+  - rules/p20_neural_mesh_innovations_v9.rego: rule_id=29, przykłady=jdg.p20_neural_mesh_innovations.no_match, jdg.p20_neural_mesh_innovations.neural_mesh_coverage_report, jdg.p20_neural_mesh_innovations.neural_mesh_audit
+  - rules/p21_innovations_enterprise.rego: rule_id=49, przykłady=jdg.p21_innovations.no_match, jdg.p21_innovations.fx_real_time_monitor, jdg.p21_innovations.fx_auto_calculator
+  - rules/p21_opa_system_innovations_v9.rego: rule_id=2, przykłady=jdg.p21_opa_system_innovations.no_match, jdg.p21_opa_system_innovations.opa_system
+  - rules/p22_innovations_enterprise.rego: rule_id=49, przykłady=jdg.p22_innovations.no_match, jdg.p22_innovations.fm_auto_detector_rcb_imgw, jdg.p22_innovations.fm_relief_application_generator
+  - rules/p22_validation_tools_innovations_v9.rego: rule_id=2, przykłady=jdg.p22_validation_tools_innovations.no_match, jdg.p22_validation_tools_innovations.quality_assurance
+  - rules/p23_innovations_enterprise.rego: rule_id=21, przykłady=jdg.p23_innovations.no_match, jdg.p23_innovations.hyper_tier_runtime_activation, jdg.p23_innovations.hyper_micro_sync_monitor
+  - rules/p23_test_rego_ci_innovations_v9.rego: rule_id=2, przykłady=jdg.p23_test_rego_ci_innovations.no_match, jdg.p23_test_rego_ci_innovations.test_shield
+  - rules/p24_audyt_kompletny_innovations_v9.rego: rule_id=2, przykłady=jdg.p24_audyt_kompletny_innovations.no_match, jdg.p24_audyt_kompletny_innovations.master_synthesis
+  - rules/p24_innovations_enterprise.rego: rule_id=30, przykłady=jdg.p24_innovations.no_match, jdg.p24_innovations.i1.ceidg_change_detector_address, jdg.p24_innovations.i1.ceidg_change_detector_pkd
+  - rules/p34_innovations_engine.rego: rule_id=17, przykłady=jdg.p34_innovations.no_match, jdg.p34_innovations.adversarial_fuzzing_engine, jdg.p34_innovations.cross_domain_contradiction_detector
+  - rules/p34_remaining_fixes.rego: rule_id=15, przykłady=jdg.p34_remaining.no_match, jdg.p34.continuous_delivery_split, jdg.p34.threshold_valid_from_required
+  - rules/p35_cross_act_coherence.rego: rule_id=11, przykłady=jdg.p35_coherence.no_match, jdg.p35.cross_act_conflict_detector, jdg.p35.coherence_scorer
+- TEST: dopasowanie nazwy pliku testowego nie dowodzi wykonania testu; należy uruchomić pytest/opa test i zapisać wynik w CI.
+- WERDYKT: należy zweryfikować, czy pakiety (25) są rzeczywiście włączone przez router, safe_merge i końcowy invariant check.
+- DATA: wartości liczbowe należy porównać z bundle canonical; ten generator nie uznaje samego literalnego wystąpienia liczby za potwierdzenie jej prawidłowości.
+
+4. REJESTR LUK I RYZYK
+| ID | Obserwacja | Dowód | Wpływ | Priorytet | Kryterium zamknięcia |
+|---|---|---|---|---|---|
+| G-01 | Brakujące ścieżki źródłowe: 0 | Tabela 2.2 | Niepełny audyt | P0 | 0 braków albo jawne mapowanie migracyjne |
+| G-02 | Duplikaty rule_id w próbie: 0 | brak | Niedeterminizm / kolizja | P0 | dead_rule_detector = 0 |
+| G-03 | Brak temporalności w 17/25 plików Rego | Tabela 2.3 | Błędny time-travel | P1 | valid_from/valid_to + test graniczny |
+| G-04 | Niepotwierdzony most test → reguła → werdykt | Brak wyniku uruchomienia w raporcie | Cichy regres | P1 | coverage + golden replay |
+| G-05 | Niepotwierdzona kanoniczność podstaw prawnych | _legal_basis=420 | Ryzyko błędnej podstawy | P0 | Legal Twin i validator przechodzą |
+| G-06 | Brak dowodu wdrożenia kanarowego | Prompt opisuje wymaganie; repo wymaga weryfikacji runtime | Niebezpieczny release | P1 | metryki + auto-rollback test |
+
+5. OPA JAKO SYSTEM
+Control Plane: rejestr reguł, review, walidacja, podpisany bundle, Legal Twin, kanar i rollback.
+Data Plane: deterministyczna ewaluacja, First-Match-Wins, safe_merge, temporalność, provenance i runtime invariants.
+Minimalny kontrakt wydania:
+```text
+change request → legal diff → rule/test diff → validate/lint → pytest + opa test
+→ legal-basis gate → duplicate/stub/tautology gate → golden replay
+→ signed bundle → canary → health metrics → ACTIVE albo ROLLED_BACK
+```
+Każdy etap musi pozostawić artefakt, wersję i hash; sam raport analityczny nie zmienia lifecycle reguły.
+
+6. TESTY I WALIDACJA
+| Test / grupa | Stan istnienia | Wymagany dowód |
+|---|---|---|
+| `tests/auto/test_p21_opa_system_enterprise.py` | istnieje, 317 linii | uruchomienie + wynik + przypadki graniczne |
+| `tests/rego/test_p21_opa_system_enterprise.rego` | istnieje, 75 linii | uruchomienie + wynik + przypadki graniczne |
+Rekomendowany zestaw: happy path, no_match, granice progów, data przed/po nowelizacji, duplikat/konflikt, brak danych, rollback i determinism replay.
+
+7. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+01. Legal Twin diff: zmiana artykułu automatycznie pokazuje dotknięte rule_id, testy i formularze.
+02. Temporal boundary generator: automatyczne przypadki dzień przed / dzień wejścia / dzień po.
+03. Decision Certificate verifier: podpis, bundle_version, rule_version, threshold_version i hash wejścia.
+04. Rule impact graph: graf zależności reguła → router → werdykt → dokument.
+05. Evidence completeness score: osobne wyniki dla prawa, kodu, testu, danych i runtime.
+06. Golden replay bank per domena i wersja prawa, z tolerancją wyłącznie dla pól niedeterministycznych.
+07. Declarative Change Wizard z obowiązkowym ASK_USER przy niejednoznacznej podstawie prawnej.
+08. Canary risk budget: automatyczny rollback po wzroście BLOCK_AND_ALERT lub zmianie rozkładu werdyktów.
+09. Hardcode provenance scanner: literal → źródło danych → data obowiązywania → test.
+10. Coverage desert radar: mapa aktów i pakietów bez reguł, bez testów albo bez routera.
+11. Explainability bundle: dowód decyzji eksportowany razem z wersją reguły i podstawą prawną.
+12. Mutation testing dla najważniejszych rule_id; brak wykrycia mutacji blokuje promocję do ACTIVE.
+Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, że funkcje istnieją.
+
+8. KONTRAKTY Z INNYMI CZĘŚCIAMI
+- Raport master 00: wspólne LCI/TCL/RV/UVR, _legal_basis, valid_from/valid_to, rule_id, 25-polowy werdykt.
+- Pakiety wykryte w bieżącym zakresie: jdg.decision_core_completeness, jdg.p01_fundament_innovations, jdg.p01_innovations, jdg.p02_decision_core_innovations, jdg.p03_orchestrator_innovations, jdg.p14_innovations, jdg.p18_automatyzacja_ksiegowosci_innovations, jdg.p20_neural_mesh_innovations, jdg.p21_innovations, jdg.p21_opa_system_innovations, jdg.p22_innovations, jdg.p22_validation_tools_innovations, jdg.p23_innovations, jdg.p23_test_rego_ci_innovations, jdg.p24.innovations, jdg.p24_audyt_kompletny_innovations, jdg.p24_innovations, jdg.p34_innovations, jdg.p34_remaining, jdg.p35_coherence, jdg.p35_gaps, jdg.p35_innovations, jdg.reliability_guarantee, jdg.rule_lifecycle, test_jdg_strategic_advisor.
+- Części sąsiednie muszą traktować powyższe nazwy jako obserwację, nie jako zgodę na dodawanie reguł bez rejestracji.
+- Zmiana rule_id wymaga aktualizacji routera, manifestu, testów, bundle, dokumentacji i golden replay.
+
+9. MAPA DROGOWA
+| Etap | Zadanie | Kryterium | Szacunek |
+|---|---|---|---|
+| P0 | Uzupełnić/uzgodnić źródła i legal basis | 0 braków, validator OK | 1–3 dni |
+| P0 | Zbudować testy krytycznych rule_id | positive/negative/boundary | 2–5 dni |
+| P1 | Wdrożyć temporalny golden replay | przejścia dat bez regresji | 2–5 dni |
+| P1 | Podłączyć provenance i Decision Certificate | pełny łańcuch dowodu | 2–5 dni |
+| P1 | Kanar + metryki + rollback | test SLA i failure injection | 1–2 tyg. |
+| P2 | Dashboard coverage/evidence | trend domeny per bundle | 1–2 tyg. |
+
+10. WNIOSKI KOŃCOWE
+Audyt części 16 potwierdza istnienie 39 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
+Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+KONIEC RAPORTU 16/25 — raport wygenerowany z promptu 16_SYSTEM_OPA_INNOWACJE_P18_P35.txt
+====================================================================================================
