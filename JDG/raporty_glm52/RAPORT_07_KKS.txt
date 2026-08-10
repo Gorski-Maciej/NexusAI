@@ -1,0 +1,155 @@
+================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — KKS — Kodeks Karny Skarbowy
+(czynny żal, sankcje, kary, obrona, GAAR, sanctions)
+================================================================================
+Data: 2026-08-10 | Część: 07/25 | Poziom: ENTERPRISE v8.0
+================================================================================
+
+EXECUTIVE SUMMARY
+================================================================================
+
+Przeprowadź głębokie myślenie nad modułem KKS. Główny plik kks.rego (~63k tokenów)
+to MONSTRUALNY silnik z 200+ regułami w 4 grupach: czynny żal (30 reguł),
+przestępstwa skarbowe (160 reguł), wykroczenia (60 reguł), sankcje/postępowanie
+(40 reguł). Dodatkowo: 6 plików rules/kks/*, penalty_ai_enterprise,
+sanctions_optimization, gaar_shield_enterprise, micro/kks.
+
+Po przeprowadzeniu głębokiej analizy stwierdzam:
+- STAN: Moduł KKS jest NAJBARDZIEJ ROZBUDOWANYM modulem JDG. Pełne pokrycie
+  czynnego żalu (Art. 16, 6+ reguł), przedawnienia (Art. 44), przestępstw
+  (Art. 54-76), wykroczeń (Art. 77-83), sankcji.
+- SILNE STRONY: 4 strategie obrony, kalkulator kar, agregacja ryzyka,
+  temporalność karalności, voluntary disclosure warianty
+
+TOP 10 REKOMENDACJI (P0/P1/P2):
+================================================================================
+
+P0-1: DODAJ GAAR SHIELD JAKO AKTYWNĄ REGUŁĘ — obecnie gaar_shield_enterprise.rego
+      istnieje ale jest tylko stubem (2 reguły). Rozszerz o pełną matrycę GAAR.
+P0-2: ZINTEGRUJ KKS Z thresholds — stawki dzienne grzywny (1/30 min. wynagrodzenia)
+      powinny być parametryzowane
+P0-3: DODAJ testy dla wszystkich 5 luk P1 z legal_coverage_gaps.json
+      (Art. 54, 56, 57, 62, 64)
+P0-4: DODAJ regułę "defense_builder" — automatyczny kreator 4 strategii obrony
+
+P1-1: DODAJ temporalność stawek grzywien (min. wynagrodzenie zmienia się co roku)
+P1-2: ROZSZERZ penalty calculator o symulację 3 scenariuszy (min/max/expected)
+P1-3: DODAJ integrację KKS↔KSeF — automatyczne wykrywanie pustych faktur
+P1-4: DODAJ monitoring przedawnienia z alertami (30 dni przed upływem)
+P1-5: DODAJ defense strategy builder z AI (rekomendacja strategii na podstawie
+      podobnych spraw KAS)
+
+================================================================================
+1. POKRYCIE ARTYKUŁÓW KKS
+================================================================================
+
+| Artykuł KKS | Temat                        | Reguły                     | Status |
+|-------------|------------------------------|----------------------------|--------|
+| Art. 16     | Czynny żal                   | P200-P209 (10 reguł)       | A ✅   |
+| Art. 17-19  | Okoliczności łagodzące       | P210-P215 (6 reguł)        | A ✅   |
+| Art. 19 §3-4| Okoliczności obciążające     | P216-P219 (4 reguły)       | A ✅   |
+| Art. 44     | Przedawnienie karalności     | P220-P229 (10 reguł)       | A ✅   |
+| Art. 51     | Przedawnienie wykroczeń      | P225                       | A ✅   |
+| Art. 54     | Uchylanie od opodatkowania   | P240-P249                  | A ✅   |
+| Art. 56     | Nierzetelne księgi           | P130, P250-P259            | A ✅   |
+| Art. 57     | Nierzetelna ewidencja VAT    | P131, P270-P279            | A ✅   |
+| Art. 62     | Puste faktury                | P132, P300-P309            | A ✅   |
+| Art. 64     | Niewłaściwa stawka VAT       | P133                       | B      |
+| Art. 68     | Niszczenie dokumentów        | P136                       | B      |
+| Art. 69     | Utrudnianie kontroli         | P140                       | B      |
+| Art. 77     | Niezłożenie deklaracji       | P134                       | B      |
+| Art. 79     | Niezapłacenie podatku        | P135                       | B      |
+| Art. 83     | Wykroczenia skarbowe         | P400-P459                  | B      |
+| GAAR        | Klauzula obejścia prawa      | gaar_shield_enterprise     | C ⚠️   |
+
+================================================================================
+2. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (12 pomysłów)
+================================================================================
+
+INNOWACJA #1: Silnik Predykcji Ryzyka Karnego per Transakcja
+- Opis: Każda transakcja otrzymuje score KKS 0-100 na podstawie 20+ czynników
+- Korzyść: Natychmiastowe ostrzeżenie przed ryzykowną operacją
+- Status: CZĘŚCIOWO (P141 agregacja)
+
+INNOWACJA #2: Automatyczny "Czynny Żal w Jednym Kliknięciu"
+- Opis: System generuje kompletny wniosek o czynny żal z pełną dokumentacją
+  i obliczeniem zaległości, gotowy do wysłania do KAS
+- Korzyść: 5 minut zamiast 5 godzin pracy prawnika
+- Status: NIE zaimplementowane
+
+INNOWACJA #3: Kalkulator Kar z Temporalnością
+- Opis: Oblicza karę wg stanu prawnego z dnia popełnienia czynu, nie z dnia
+  orzekania (time-travel dla KKS)
+- Korzyść: Zawsze prawidłowa kara wg właściwej ustawy
+- Status: NIE zaimplementowane
+
+INNOWACJA #4: Defense Builder — Strategia 4-Ścieżkowa
+- Opis: Automatycznie generuje 4 strategie obrony: (1) brak czynu, (2) brak winy,
+  (3) znikoma szkodliwość, (4) nadzwyczajne złagodzenie
+- Korzyść: Gotowy pakiet dla adwokata — pełna dokumentacja
+- Status: NIE zaimplementowane
+
+INNOWACJA #5: Monitoring Sankcji KSeF (do 500 000 PLN)
+- Opis: Śledzi terminy KSeF i ostrzega przed sankcjami: 500k PLN za brak KSeF,
+  sankcje za puste faktury, sankcje za brak JPK
+- Korzyść: Uniknięcie gigantycznych kar administracyjnych
+- Status: NIE zaimplementowane
+
+INNOWACJA #6: Auto-Detekcja Schematów Podatkowych (MDR)
+- Opis: Automatycznie wykrywa schematy podatkowe podlegające MDR i generuje
+  zgłoszenie MDR-3
+- Korzyść: Uniknięcie kary do 2 mln PLN za brak zgłoszenia MDR
+- Status: NIE zaimplementowane
+
+INNOWACJA #7: Symulator Rozprawy KKS
+- Opis: Na podstawie zarzutów i dowodów symuluje możliwy wyrok sądu
+  (uniewinnienie / warunkowe umorzenie / grzywna / pozbawienie wolności)
+- Korzyść: Realistyczna ocena ryzyka przed podjęciem decyzji procesowej
+- Status: NIE zaimplementowane
+
+INNOWACJA #8: Asystent Kontroli KAS
+- Opis: Checklista + generator dokumentów na wypadek kontroli: pełnomocnictwo,
+  wykaz dokumentów, protokół, zastrzeżenia
+- Korzyść: Zero stresu — system prowadzi przez procedurę krok po kroku
+- Status: NIE zaimplementowane
+
+INNOWACJA #9: GAAR Deep Scanner
+- Opis: Analizuje każdą transakcję pod kątem GAAR: czy głównym celem było
+  osiągnięcie korzyści podatkowej sprzecznej z przedmiotem ustawy?
+- Korzyść: Uniknięcie klauzuli obejścia prawa podatkowego
+- Status: NIE zaimplementowane
+
+INNOWACJA #10: Kalkulator Terminów Przedawnienia
+- Opis: Dla każdego czynu zabronionego oblicza dokładną datę przedawnienia
+  karalności z uwzględnieniem przerwań biegu (czynności organu)
+- Korzyść: Wiedza czy sprawa jest już przedawniona
+- Status: CZĘŚCIOWO (P138, P220-P229)
+
+INNOWACJA #11: Raport "Czysta Karta Podatkowa"
+- Opis: Kompleksowy audyt KKS — sprawdza wszystkie obszary ryzyka i generuje
+  certyfikat zgodności
+- Korzyść: Dokument dla banku/inwestora potwierdzający brak ryzyka KKS
+- Status: NIE zaimplementowane
+
+INNOWACJA #12: Automatyczny Kalkulator Ugody z KAS
+- Opis: Oblicza optymalną kwotę dobrowolnego poddania się odpowiedzialności
+  (Art. 17 § 1 KKS) — minimalna grzywna za zgodę na wyrok
+- Korzyść: Niższa kara + brak procesu sądowego
+- Status: NIE zaimplementowane
+
+================================================================================
+3. MAPA DROGOWA
+================================================================================
+
+| Priorytet | Zadanie                              | Czas  | Wpływ  |
+|-----------|--------------------------------------|-------|--------|
+| P0-1      | Rozszerzenie GAAR shield             | 4h    | WYSOKI |
+| P0-2      | Parametryzacja stawek KKS            | 2h    | WYSOKI |
+| P0-3      | Testy dla Art. 54,56,57,62,64        | 6h    | WYSOKI |
+| P0-4      | Defense builder                      | 4h    | ŚREDNI |
+| INN01     | Predykcja ryzyka karnego             | 6h    | WYSOKI |
+| INN02     | Auto czynny żal                      | 4h    | WYSOKI |
+
+================================================================================
+KONIEC RAPORTU 07/25
+================================================================================

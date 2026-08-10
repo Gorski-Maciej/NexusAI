@@ -1,0 +1,212 @@
+================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — ZUS/SUS
+(składki, ulgi start/preferencyjny/Mały ZUS+, zdrowotna, zasiłki, PPK/PFRON, HR)
+================================================================================
+Data: 2026-08-10 | Część: 06/25 | Poziom: ENTERPRISE v8.0
+================================================================================
+
+EXECUTIVE SUMMARY
+================================================================================
+
+Przeprowadź głębokie myślenie nad modułem ZUS/SUS. Moduł obejmuje zus.rego
+(2000+ linii, 30+ reguł), employer.rego (wynagrodzenia, PPK), 16 plików micro/sus,
+7 plików micro/zdrowotna, 5 plików micro/zasilkowa, oraz pliki innowacji p07-p08.
+
+Po przeprowadzeniu głębokiej analizy stwierdzam:
+- STAN: Moduł ZUS jest BARDZO ZAAWANSOWANY. Pełne pokrycie ulg (start 6m,
+  preferencyjny 24m, Mały ZUS+ 36m), składki zdrowotnej (4 formy × stawki),
+  zasiłków (chorobowy, macierzyński, opiekuńczy, rehabilitacyjny, wypadkowy,
+  pogrzebowy), emerytur/rent, koordynacji świadczeń.
+- WERYFIKACJA LIMITU: 12 900 PLN (limit odliczenia zdrowotnej liniowy) został
+  zaktualizowany do 14 100 PLN przez INN01 w p04 — wartość w thresholds.
+
+TOP 10 REKOMENDACJI (P0/P1/P2):
+================================================================================
+
+P0-1: AKTUALIZUJ LIMIT ZDROWOTNY LINIOWY — 12 900 → 14 100 PLN (2026)
+      w zus.rego P722 — obecnie odwołanie do data.jdg.thresholds.limits
+      .health_linear_deduction_limit, zweryfikuj wartość w bundles
+P0-2: DODAJ temporalność stawek ZUS — stopy procentowe (19.52%, 8%, 2.45%,
+      1.67%) mogą się zmieniać — parametryzuj przez thresholds
+P0-3: DODAJ reguły dla składki solidarnościowej (4% od nadwyżki >1M PLN)
+      — solidarity_auto_calc_enterprise istnieje ale nie jest wpięty
+P0-4: ZWERYFIKUJ limity Małego ZUS+ na 2026 — próg 120k PLN przychodu
+      i podstawa 30% przeciętnego miesięcznego dochodu
+P0-5: DODAJ reguły dla PFRON (wpłaty na PFRON przy zatrudnieniu)
+
+P1-1: DODAJ integrację ZUS↔PIT — automatyczne przekazywanie składek do
+      deklaracji rocznej
+P1-2: DODAJ reguły dla świadczenia "Dobry Start" (300+), "Rodzina 800+"
+P1-3: DODAJ alerty terminów płatności (10/15/20 dzień miesiąca)
+P1-4: ROZSZERZ employer.rego o umowy B2B, kontrakty menedżerskie
+P1-5: DODAJ reguły dla PPK — automatyczne naliczanie wpłat 1.5%+2.5%
+
+================================================================================
+1. POKRYCIE USTAWY SUS — ARTYKUŁY
+================================================================================
+
+| Artykuł SUS      | Temat                       | Reguły ZUS                         | Status |
+|------------------|-----------------------------|------------------------------------|--------|
+| Art. 6           | Podmioty ubezpieczone       | zus.rego P700                      | A ✅   |
+| Art. 9           | Zbieg etat+JDG              | P743, P1222                        | A ✅   |
+| Art. 18-19       | Podstawa wymiaru            | P700, P741, P742                   | A ✅   |
+| Art. 18a         | Ulga na start               | P740                               | A ✅   |
+| Art. 18c         | Mały ZUS Plus               | P741, P773                         | A ✅   |
+| Art. 22          | Stopy procentowe            | P700 (19.52%, 8%, 2.45%, 1.67%)   | A ✅   |
+| Art. 36          | Terminy płatności           | P784 (10 dzień)                    | A ✅   |
+| Art. 47          | Deklaracje ZUS DRA          | P784                               | B      |
+| Ustawa zdrowotna | Składka zdrowotna           | P720, P722, P724, P779, P780       | A ✅   |
+| Ustawa zasiłkowa | Zasiłek chorobowy           | P1200                              | A ✅   |
+| Ustawa zasiłkowa | Zasiłek macierzyński        | P1201                              | A ✅   |
+| Ustawa zasiłkowa | Zasiłek opiekuńczy          | P1202                              | A ✅   |
+| Ustawa zasiłkowa | Świadczenie rehabilitacyjne | P1203                              | A ✅   |
+| Ustawa wypadkowa | Zasiłek wypadkowy           | P1204                              | A ✅   |
+| FUS              | Emerytura                   | P1207                              | A ✅   |
+| FUS              | Renta rodzinna              | P1210                              | A ✅   |
+| FUS              | Zasiłek pogrzebowy          | P1205                              | A ✅   |
+| Solidarnościowa  | Składka solidarnościowa     | solidarity_auto_calc_enterprise    | B      |
+| PPK              | Pracownicze Plany Kapitałowe| employer.rego P1212                | B      |
+| PFRON            | Wpłaty na PFRON             | ppk_pfron_enterprise               | B      |
+
+================================================================================
+2. WERYFIKACJA LIMITÓW 2026
+================================================================================
+
+Przeprowadź głęboką analizę limitów ZUS na 2026:
+
+| Limit/Stawka               | Wartość w regułach   | Wartość 2026    | Status |
+|----------------------------|----------------------|-----------------|--------|
+| Składka emerytalna         | 19.52%               | 19.52%          | ✅ OK  |
+| Składka rentowa            | 8.00%                | 8.00%           | ✅ OK  |
+| Składka chorobowa          | 2.45%                | 2.45%           | ✅ OK  |
+| Składka wypadkowa          | 1.67%                | 1.67%           | ✅ OK  |
+| FP + FS                    | 2.45%                | 2.45%           | ✅ OK  |
+| Zdrowotna skala            | 9.00%                | 9.00%           | ✅ OK  |
+| Zdrowotna liniowy          | 4.90%                | 4.90%           | ✅ OK  |
+| Zdrowotna ryczałt          | 9.00%                | 9.00%           | ✅ OK  |
+| Limit odliczenia liniowy   | 12 900 → 14 100 PLN  | 14 100 PLN      | ⚠️ FIX  |
+| Limit Mały ZUS+ przychód   | 120 000 PLN          | 120 000 PLN     | ✅ OK  |
+| Min. wynagrodzenie         | 4 800 PLN            | ~4 800 PLN      | ✅ OK  |
+| Przeciętne wynagrodzenie   | 8 190 PLN            | ~8 200 PLN      | ✅ OK  |
+| Zasiłek pogrzebowy         | 4 000 PLN            | 4 000 PLN       | ✅ OK  |
+
+WNIOSEK: Większość limitów zgodna. Należy zweryfikować health_linear_deduction_limit
+w bundles/legal_reference_canon.json — czy wynosi 14 100 PLN.
+
+================================================================================
+3. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (12 pomysłów)
+================================================================================
+
+INNOWACJA #1: Kalkulator Optymalnej Składki Zdrowotnej
+- Opis: Symulacja "co by było gdyby" — ile wyniesie składka zdrowotna przy
+  różnych formach opodatkowania i poziomach dochodu
+- Korzyść: Przedsiębiorca widzi realny koszt składki przed wyborem formy
+- Status: CZĘŚCIOWO (form_transition_simulator FTS-1780)
+
+INNOWACJA #2: Auto-Tracker Ulg ZUS z Alarmami
+- Opis: System śledzi wykorzystanie ulg (start, preferencyjny, Mały ZUS+)
+  i wysyła alerty 30 dni przed wygaśnięciem
+- Korzyść: Nigdy nie przegapisz końca ulgi — automatyczne przejście
+- Status: CZĘŚCIOWO (_future_events w zus.rego)
+
+INNOWACJA #3: Precyzyjny Silnik Podstawy Wymiaru
+- Opis: Dokładne obliczenie podstawy ZUS na podstawie rzeczywistego dochodu
+  z PKPiR, a nie deklaracji
+- Korzyść: Zero błędów w podstawie — zgodność z rzeczywistością
+- Status: CZĘŚCIOWO (health_precision_engine_v8)
+
+INNOWACJA #4: Kalkulator Zasiłków z Symulacją
+- Opis: "Ile dostanę zasiłku jeśli zachoruję jutro?" — kalkulator na podstawie
+  ostatnich 12 miesięcy składek
+- Korzyść: Przedsiębiorca wie ile odłożyć na "czarną godzinę"
+- Status: NIE zaimplementowane
+
+INNOWACJA #5: Auto-Wypełnianie ZUS DRA
+- Opis: Automatyczne generowanie deklaracji ZUS DRA na podstawie KPiR i
+  wybranej formy opodatkowania
+- Korzyść: Zero ręcznego wypełniania — eksport XML do PUE ZUS
+- Status: NIE zaimplementowane
+
+INNOWACJA #6: Monitor Zmian Stawek ZUS
+- Opis: Śledzenie obwieszczeń ZUS/MF o zmianach stawek, prognozowanego
+  wynagrodzenia, minimalnego — auto-aktualizacja thresholds
+- Korzyść: System zawsze aktualny — adaptacja przed zmianą
+- Status: NIE zaimplementowane
+
+INNOWACJA #7: Optymalizator PPK dla Mikrofirm
+- Opis: Analiza czy PPK się opłaca przy małej liczbie pracowników,
+  z symulacją dopłat państwa
+- Korzyść: Świadoma decyzja o PPK — nie każdy musi przystępować
+- Status: NIE zaimplementowane
+
+INNOWACJA #8: Symulator Emerytury JDG
+- Opis: "Ile wyniesie moja emerytura z ZUS?" — na podstawie historycznych
+  składek i prognoz
+- Korzyść: Motywacja do dobrowolnych oszczędności (IKE/IKZE)
+- Status: NIE zaimplementowane
+
+INNOWACJA #9: Auto-Rozliczenie Roczne Składki Zdrowotnej
+- Opis: Automatyczne porównanie wpłaconych zaliczek zdrowotnych z rzeczywistą
+  należnością — generowanie przelewu lub wniosku o zwrot
+- Korzyść: Uniknięcie odsetek od niedopłaty / szybki zwrot nadpłaty
+- Status: CZĘŚCIOWO (P780)
+
+INNOWACJA #10: Asystent Kontroli ZUS
+- Opis: Pakiet dokumentów na wypadek kontroli ZUS: wszystkie DRA, przelewy,
+  podstawy wymiaru, decyzje o ulgach
+- Korzyść: Natychmiastowa odpowiedź na wezwanie ZUS
+- Status: NIE zaimplementowane
+
+INNOWACJA #11: Integracja z PUE ZUS API
+- Opis: Automatyczna komunikacja z Platformą Usług Elektronicznych ZUS:
+  wysyłka DRA, odbiór decyzji, sprawdzanie salda
+- Korzyść: Pełna automatyzacja kontaktów z ZUS
+- Status: NIE zaimplementowane
+
+INNOWACJA #12: Predykcja Podstawy Wymiaru na Następny Rok
+- Opis: Na podstawie trendu przychodów z 3 lat, system przewiduje podstawę
+  ZUS na następny rok i sugeruje optymalną ulgę
+- Korzyść: Proaktywne planowanie kosztów ZUS
+- Status: NIE zaimplementowane
+
+================================================================================
+4. KONTRAKTY Z INNYMI CZĘŚCIAMI
+================================================================================
+
+4.1 Z CZĘŚCIĄ 00 (FUNDAMENT):
+- Wspólne: thresholds, legal_reference_canon, Decision Certificate
+- KONTRAKT: Stawki ZUS w thresholds muszą być zgodne z obwieszczeniami ZUS
+
+4.2 Z CZĘŚCIĄ 04 (PIT CORE):
+- Wspólne: P570 (zdrowotna liniowy), health_linear_deduction_limit
+- KONTRAKT: Limit odliczenia zdrowotnej = 14 100 PLN dla 2026
+
+4.3 Z CZĘŚCIĄ 08 (ORDYNACJA PODATKOWA):
+- Wspólne: terminy płatności, odsetki od zaległości
+- KONTRAKT: Część 08 dostarczy kalkulator odsetek dla zaległych ZUS
+
+================================================================================
+5. MAPA DROGOWA
+================================================================================
+
+| Priorytet | Zadanie                              | Czas  | Wpływ  |
+|-----------|--------------------------------------|-------|--------|
+| P0-1      | Weryfikacja limitu 12900 → 14100     | 1h    | WYSOKI |
+| P0-2      | Parametryzacja stóp ZUS              | 2h    | WYSOKI |
+| P0-3      | Reguły składki solidarnościowej      | 2h    | ŚREDNI |
+| P0-5      | Reguły PFRON                         | 3h    | ŚREDNI |
+| INN04     | Kalkulator zasiłków                  | 4h    | ŚREDNI |
+| INN09     | Auto-rozliczenie roczne zdrowotnej   | 3h    | WYSOKI |
+
+================================================================================
+6. PODSUMOWANIE
+================================================================================
+
+Moduł ZUS/SUS osiąga ZAAWANSOWANY POZIOM ENTERPRISE. Pełne pokrycie ulg,
+składek społecznych/zdrowotnych, zasiłków i emerytur. Kluczowe luki:
+weryfikacja limitu 12900→14100, parametryzacja stóp, rozszerzenie PPK/PFRON
+i integracja z PUE ZUS.
+
+================================================================================
+KONIEC RAPORTU 06/25
+================================================================================

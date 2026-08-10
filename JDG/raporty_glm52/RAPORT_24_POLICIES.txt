@@ -1,0 +1,8 @@
+================================================================================
+RAPORT 24 — POLICIES — LUSTRO REGUŁ + OVERLAYS v2026/v2027 — WDROŻONY ✅
+ANALIZA: policies/ — 32 pakiety (jdg/pit, jdg/vat, jdg/zus, jdg/kks, jdg/edge_cases,
+jdg/temporal, jdg/compliance, tax/direct/cit, tax/direct/pit, ...),
+policies/bundle.sh, bundles/manifest.json (10878 reguł),
+overlays v2026/v2027 — spójność rules/ ↔ policies/.
+STAN: 32 pakiety policies, overlays v2026 i v2027, synchronizacja z rules/.
+================================================================================

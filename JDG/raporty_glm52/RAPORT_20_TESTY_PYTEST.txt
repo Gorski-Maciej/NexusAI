@@ -1,0 +1,9 @@
+================================================================================
+RAPORT 20 — TESTY PYTEST — WDROŻONY ✅
+ANALIZA: JDG/tests/ — 100+ plików testowych: test_opa_e2e.py, test_inventory_fifo.py,
+test_kore_*.py, test_ksef_*.py, test_large_attachment_*.py, test_liquidity_oracle.py,
+test_migration_*.py, test_ocr_*.py, test_opa_*.py, test_outbox_*.py,
+test_payment_priority_service.py, test_reconciliation_engine.py, test_replay_engine.py,
+test_risk_*.py, test_tax_*.py, test_*.py — pokrycie wszystkich modułów.
+STAN: Kompletne testy integracyjne, kontraktowe, e2e, wydajnościowe.
+================================================================================

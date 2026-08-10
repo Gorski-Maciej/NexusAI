@@ -1,0 +1,374 @@
+================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — PIT — CORE (MACRO) + ULGI
+(skala, liniowy, KUP, NKUP, amortyzacja, ulgi Art. 21–26h, IP Box)
+================================================================================
+Data: 2026-08-10 | Część: 04/25 | Poziom: ENTERPRISE v8.0
+================================================================================
+
+EXECUTIVE SUMMARY
+================================================================================
+
+Przeprowadź głębokie myślenie nad całością modułu PIT w NexusAI JDG. Moduł
+obejmuje 20 plików rules/pit/*, 3 pliki top-level (allowances.rego, nkup_enterprise_complete.rego,
+plan23_reliefs.rego), 7 plików innowacji (p04-p07) oraz 3 pliki micro (plan33_pit,
+plan34_pit, pit.rego). Łącznie ~37 plików Rego z ~1200+ regułami.
+
+Po przeprowadzeniu głębokiej analizy wszystkich plików stwierdzam:
+- STAN: Moduł PIT jest w ZAAWANSOWANYM STANIE. Pokrywa wszystkie 4 formy
+  opodatkowania (skala 12/32%, liniowy 19%, ryczałt, karta podatkowa)
+- KUP/NKUP: Solidne pokrycie Art. 22-23 PIT z 23 regułami w kup.rego,
+  nkup_enterprise_complete.rego i rozróżnieniem reklama/reprezentacja
+- ULGI: 15+ ulg w allowances.rego + enterprise pliki dla B+R, IP Box, termo
+- INNOWACJE: p04-p07 dostarczają 34+ innowacji i poprawek (health limit fix,
+  85528 externalizer, dynamiczna kolejność ulg, what-if symulator, auto-
+  klasyfikator kosztów B+R, optymalizator IP Box vs B+R)
+
+TOP 10 REKOMENDACJI (P0/P1/P2):
+================================================================================
+
+P0-1: PRZENIEŚ STAWKI PIT DO thresholds — 20+ wystąpień hardcoded 0.12, 0.19,
+      0.05 w forms.rego, kup.rego, rd_relief, ipbox — parametryzuj przez
+      data.thresholds.rates (ADR-002)
+P0-2: DOMKNIJ LIMIT 85528 — 20+ hardcoded 85528 w art21_exemptions, family_estonian,
+      exemptions — przenieś do data.thresholds.pit.pit0_shared_limit
+P0-3: DODAJ TESTY DLA P04-P07 — pliki innowacji nie mają dedykowanych testów
+      jednostkowych w pytest
+P0-4: UJEDNOLIĆ rule_id W ALLOWANCES — konflikt nazw: jdg.allowances.relief_rd_*
+      vs jdg.pit.rd_relief.* — ujednolić prefixy
+P0-5: BRAKUJE reguł dla straty podatkowej (Art. 9 ust. 3 PIT) jako aktywnej
+      reguły decyzyjnej (tylko info helper P660)
+P0-6: DODAJ reguły dla ulgi rehabilitacyjnej (Art. 26 ust. 1 pkt 6 PIT)
+      — obecnie brak dedykowanych reguł
+P0-7: DODAJ reguły dla ulgi internetowej (Art. 26 ust. 1 pkt 6a PIT, 760 PLN)
+      — obecnie brak
+P0-8: DODAJ reguły dla ulgi na dzieci (Art. 27f PIT) — tylko BLOCK dla liniowego
+      w forms.rego P494, brak reguły przyznającej
+P0-9: DODAJ reguły dla ulgi krwiodawstwa (Art. 26 ust. 1 pkt 9c PIT)
+      — obecnie brak
+P1-1: DODAJ temporalność do reguł B+R (valid_from 2016-01-01 dla podstawowej,
+       2018-01-01 dla 200%)
+
+================================================================================
+1. POKRYCIE ARTYKUŁÓW USTAWY PIT
+================================================================================
+
+Przeprowadź głęboką analizę pokrycia ustawy PIT przez reguły OPA:
+
+| Artykuł PIT      | Temat                              | Reguły                                            | Status |
+|------------------|------------------------------------|--------------------------------------------------|--------|
+| Art. 9 ust. 3    | Strata podatkowa (5 lat/50%)       | P660 (info helper TYLKO)                         | C ⚠️   |
+| Art. 10          | Źródła przychodów                  | forms.rego P508 (wyłączenia)                     | B      |
+| Art. 14          | Przychody z działalności           | forms.rego P508                                  | B      |
+| Art. 21 ust.1 pkt 148 | Ulga dla młodych (PIT-0)     | allowances.rego P650                             | A ✅   |
+| Art. 21 ust.1 pkt 152 | Ulga na powrót               | allowances.rego P651                             | A ✅   |
+| Art. 21 ust.1 pkt 153 | Ulga 4+                      | art21_exemptions, family_estonian                | B      |
+| Art. 21 ust.1 pkt 154 | Ulga senior                 | art21_exemptions                                 | B      |
+| Art. 22           | Koszty uzyskania przychodów        | kup.rego P560-P572                               | A ✅   |
+| Art. 23           | Wydatki NKUP (57 punktów)          | kup.rego + nkup_enterprise_complete.rego         | A ✅   |
+| Art. 24           | Dochód                             | forms.rego (pośrednio)                           | B      |
+| Art. 26           | Ulga rehabilitacyjna               | BRAK REGUŁ                                       | C ❌   |
+| Art. 26 ust.1 pkt 2b | IKZE                           | allowances.rego P605                             | A ✅   |
+| Art. 26 ust.1 pkt 2c | Związki zawodowe               | allowances.rego P622                             | A ✅   |
+| Art. 26 ust.1 pkt 6a | Ulga internetowa (760 PLN)     | BRAK REGUŁ                                       | C ❌   |
+| Art. 26 ust.1 pkt 9 | Darowizny OPP                  | donation_relief_enterprise                       | B      |
+| Art. 26 ust.1 pkt 9c | Krwiodawstwo                   | BRAK REGUŁ                                       | C ❌   |
+| Art. 26e          | Ulga B+R (100-200%)                | rd_relief_enterprise + allowances P600, P637-638 | A ✅   |
+| Art. 26eb         | Ulga na prototyp (30%)             | allowances/plan23_reliefs P601                   | B      |
+| Art. 26ec         | Ulga na ekspansję (1M PLN)         | BRAK DEDYKOWANEJ REGUŁY                          | C ❌   |
+| Art. 26gb         | Ulga na robotyzację (50%)          | BRAK DEDYKOWANEJ REGUŁY                          | C ❌   |
+| Art. 26h          | Ulga termomodernizacyjna (53k)     | thermo_relief_enterprise R120-R129               | A ✅   |
+| Art. 26ha         | Ulga CSR/sponsoringowa             | allowances.rego P612                             | A ✅   |
+| Art. 26hd         | Ulga na terminal płatniczy         | allowances.rego P614                             | A ✅   |
+| Art. 26i          | Złe długi PIT (wierzyciel)         | allowances.rego P618                             | A ✅   |
+| Art. 27           | Skala podatkowa 12%/32%            | forms.rego P500                                  | A ✅   |
+| Art. 27f          | Ulga na dzieci                     | TYLKO BLOCK P494, brak reguły przyznającej       | C ❌   |
+| Art. 27g          | Ulga abolicyjna (1360 PLN)         | allowances.rego P620                             | A ✅   |
+| Art. 30c          | Podatek liniowy 19%                | forms.rego P510                                  | A ✅   |
+| Art. 30ca         | IP Box (5%)                        | ipbox_enterprise R130-R137 + allowances P610     | A ✅   |
+| Art. 44           | Zaliczki na podatek                | advances_returns.rego                            | B      |
+| Art. 45           | Zeznania roczne                    | forms.rego (zwraca typ)                          | B      |
+
+LEGENDA: A = wysokie pokrycie, B = średnie, C = luka/niskie
+
+================================================================================
+2. LUKI KRYTYCZNE (P0) — NATYCHMIASTOWA NAPRAWA
+================================================================================
+
+2.1 P0-2: HARDCoded 85528 w art21_exemptions_enterprise.rego
+------------------------------------------------------------------------
+Przeprowadź głęboką analizę: wartość 85 528 PLN (limit PIT-0) występuje
+20+ razy w plikach art21_exemptions_enterprise.rego, family_estonian_enterprise.rego,
+exemptions.rego. Jest to naruszenie ADR-002 (Zero Hardcoded Values).
+
+ROZWIĄZANIE: Wszystkie wystąpienia 85528 zastąpić odwołaniem do
+data.thresholds.pit.pit0_shared_limit. Wartość zdefiniowana w bundles/
+legal_reference_canon.json.
+
+2.2 P0-5: Strata podatkowa — brak aktywnej reguły decyzyjnej
+------------------------------------------------------------------------
+Przeprowadź głęboką analizę: Art. 9 ust. 3 PIT — strata z lat ubiegłych
+(max 5 lat, max 50% w jednym roku) jest KRYTYCZNA dla poprawnego obliczenia
+dochodu. Obecnie tylko info helper P660 — brak reguły, która aktywnie
+pomniejsza dochód o stratę.
+
+PROPONOWANA REGUŁA: jdg.pit.loss_carry_forward z priorytetem 400 (przed
+obliczeniem dochodu), która:
+- Sprawdza dostępne straty z lat 2021-2025
+- Odejmuje max 50% bieżącego dochodu na każdy rok straty
+- Śledzi wykorzystane saldo
+
+2.3 P0-3: Testy dla modułów P04-P07
+------------------------------------------------------------------------
+Pliki p04_pit_macro_innovations_v8.rego, p05_pit_innovations_v8.rego,
+p06_pit_macro_enterprise_v9.rego, p07_pit_micro_atomic_v9.rego NIE MAJĄ
+dedykowanych testów pytest. Istniejące testy (test_p06_pit_macro_enterprise.py,
+test_p07_pit_micro_atomic.py) są w katalogu tests/ ale nie testują
+wszystkich 34+ innowacji.
+
+================================================================================
+3. LUKI ŚREDNIE (P1)
+================================================================================
+
+3.1 P1-1: Temporalność B+R
+------------------------------------------------------------------------
+Reguły B+R w rd_relief_enterprise.rego i allowances.rego NIE MAJĄ
+valid_from/valid_to. Ulga B+R obowiązuje od 2016 (podstawowa) i od 2018 (200%).
+Brak temporalności = brak możliwości time-travel dla kontroli z lat 2016-2025.
+
+3.2 P1-2: Brak reguł dla ulgi rehabilitacyjnej (Art. 26 PIT)
+------------------------------------------------------------------------
+Brak dedykowanych reguł. Należy dodać:
+- jdg.pit.relief_rehabilitation — limit zależny od dochodu/stopnia niepełnosprawności
+- Kategorie: leki, zabiegi, sprzęt rehabilitacyjny, samochód
+
+3.3 P1-3: Brak reguł dla ulgi internetowej (Art. 26 ust. 1 pkt 6a)
+------------------------------------------------------------------------
+Limit 760 PLN rocznie. Należy dodać:
+- jdg.pit.relief_internet — tylko 2 kolejne lata
+- Sprawdzenie czy nie był odliczany w poprzednich 2 latach
+
+3.4 P1-4: Brak reguł dla ulgi krwiodawstwa (Art. 26 ust. 1 pkt 9c)
+------------------------------------------------------------------------
+Należy dodać:
+- jdg.pit.relief_blood — ekwiwalent 130 PLN za litr
+- Limit 6% dochodu
+
+3.5 P1-5: Brak reguł dla ulgi na dzieci (Art. 27f PIT)
+------------------------------------------------------------------------
+Tylko P494 blokuje dla liniowego. Brak reguły przyznającej:
+- jdg.pit.relief_child — kwoty per dziecko (1112,04/2224,08/2700/4224 PLN)
+
+================================================================================
+4. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (12+ pomysłów)
+================================================================================
+
+INNOWACJA #1: Symulator "Co by było gdyby" dla ulg (What-If Relief Simulator)
+- Opis: Interaktywny symulator pozwalający przedsiębiorcy wybrać dowolną
+  kombinację ulg i zobaczyć efektywną stopę podatkową
+- Korzyść: Maksymalizacja oszczędności — wybór między B+R vs IP Box vs
+  brak ulg z pełną symulacją podatku
+- Status: CZĘŚCIOWO zaimplementowany (C156 w p05_innovations) — wymaga
+  rozszerzenia o UI i więcej kombinacji
+
+INNOWACJA #2: Optymalizator formy opodatkowania (Tax Form Optimizer)
+- Opis: Na podstawie przewidywanych przychodów/kosztów/ulg system sugeruje
+  optymalną formę (skala vs liniowy vs ryczałt) z prognozą 3-letnią
+- Korzyść: Przedsiębiorca nie musi samodzielnie kalkulować — system
+  pokazuje konkretne kwoty podatku dla każdej formy
+- Status: CZĘŚCIOWO (I-FO01 w p05) — wymaga integracji z full-year projection
+
+INNOWACJA #3: Predykcja zaliczek na podatek (Advance Tax Predictor)
+- Opis: System prognozuje miesięczne zaliczki na podstawie trendu przychodów
+  i kosztów, ostrzegając o potencjalnym przekroczeniu progu 32%
+- Korzyść: Unikanie niedopłat i odsetek, optymalizacja cash-flow
+- Status: NIE zaimplementowane
+
+INNOWACJA #4: Auto-detekcja optymalnej amortyzacji (Depreciation Optimizer)
+- Opis: System porównuje amortyzację liniową vs degresywną vs jednorazową
+  (100k PLN) i sugeruje najkorzystniejszą metodę
+- Korzyść: Maksymalizacja KUP w pierwszych latach, lepszy cash-flow
+- Status: NIE zaimplementowane
+
+INNOWACJA #5: Kalkulator składki zdrowotnej (Health Contribution Calculator)
+- Opis: Dla każdej formy opodatkowania pokazuje rzeczywistą składkę zdrowotną
+  (9%, 4.9%, ryczałtowe progi) z uwzględnieniem limitu odliczenia 14 100 PLN
+  dla liniowego
+- Korzyść: Pełna transparentność kosztów pozapodatkowych
+- Status: CZĘŚCIOWO — limit 14100 zaimplementowany przez P04 INN01
+
+INNOWACJA #6: Asystent kontroli podatkowej (Tax Audit Assistant)
+- Opis: System przygotowuje kompletny pakiet dokumentów na wypadek kontroli:
+  wszystkie podstawy prawne, obliczenia, faktury, ewidencje
+- Korzyść: Natychmiastowa odpowiedź na wezwanie US, redukcja stresu
+- Status: NIE zaimplementowane
+
+INNOWACJA #7: Automatyczny kalkulator PPK dla JDG
+- Opis: Dla JDG zatrudniających pracowników — automatyczne obliczenie wpłat
+  PPK (1.5% + 2.5% + dopłata państwa)
+- Korzyść: Zero błędów w naliczeniach PPK
+- Status: NIE zaimplementowane
+
+INNOWACJA #8: Monitor zmian stawek PIT (PIT Rate Change Monitor)
+- Opis: System śledzi projekty ustaw zmieniające stawki PIT i automatycznie
+  aktualizuje progi w legal_reference_canon.json
+- Korzyść: Natychmiastowa adaptacja do zmian prawa
+- Status: NIE zaimplementowane
+
+INNOWACJA #9: Raport porównawczy form opodatkowania (Annual Tax Comparison Report)
+- Opis: Po zakończeniu roku system generuje raport "co by było gdyby" —
+  ile wyniósłby podatek przy innych formach opodatkowania
+- Korzyść: Świadoma decyzja o ewentualnej zmianie formy na kolejny rok
+- Status: NIE zaimplementowane
+
+INNOWACJA #10: Inteligentny asystent KUP (Smart KUP Classifier)
+- Opis: AI klasyfikuje wydatki jako KUP/NKUP na podstawie opisu faktury,
+  PKD, branży i historycznych decyzji — automatycznie wykrywa reprezentację
+  vs reklamę
+- Korzyść: Redukcja błędów w klasyfikacji KUP, mniej ASK_USER
+- Status: NIE zaimplementowane
+
+INNOWACJA #11: Symulator przejścia na estoński CIT (Estonian CIT Transition Simulator)
+- Opis: Pełna symulacja finansowa przejścia JDG → Sp. z o.o. + CIT estoński:
+  koszty transformacji, oszczędności podatkowe, lock-in 4 lata
+- Korzyść: Świadoma decyzja o transformacji formy prawnej
+- Status: CZĘŚCIOWO — E187 (exit cost calculator)
+
+INNOWACJA #12: Auto-rozkład zaliczek na raty (Tax Installment Optimizer)
+- Opis: Gdy zaliczka przekracza określony próg, system proponuje rozłożenie
+  na raty z symulacją odsetek
+- Korzyść: Lepsze zarządzanie płynnością finansową
+- Status: NIE zaimplementowane
+
+================================================================================
+5. OPA JAKO SYSTEM — WZMOCNIENIE CONTROL PLANE
+================================================================================
+
+Przeprowadź głębokie myślenie nad tym, jak moduł PIT wzmacnia systemowość OPA:
+
+A. CYKL ŻYCIA REGUŁ:
+- Każda reguła PIT powinna mieć kompletny cykl: SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK
+- Obecnie: tylko valid_from/valid_to w forms.rego i kup.rego
+- REKOMENDACJA: Dodać metadane lifecycle do wszystkich 1200+ reguł PIT
+
+B. KANARY I AUTO-ROLLBACK:
+- Dla reguł PIT o wysokim wpływie (stawki, progi, limity) należy wdrożyć
+  wdrożenia kanarkowe: najpierw 1% ruchu, potem 10%, potem 100%
+- Auto-rollback gdy: błąd walidacji >0.1% lub niezgodność z legal_reference_canon
+
+C. LAW RADAR DLA PIT:
+- Automatyczny monitoring RCL (legislacja.gov.pl) dla projektu ustawy o PIT
+- Alert gdy projekt zmienia: stawki, progi, limity, definicje KUP/NKUP
+- Automatyczne generowanie Diff-Report: "Co się zmieni?"
+
+D. DECLARATIVE CHANGE DLA PIT:
+- Operator opisuje zmianę: "Od 2027-01-01 stawka liniowa zmienia się z 19% na 17%"
+- System automatycznie:
+  1. Znajduje wszystkie reguły z pit_rate="0.19"
+  2. Aktualizuje legal_reference_canon.json
+  3. Tworzy nowe wersje reguł z valid_from=2027-01-01
+  4. Oznacza stare reguły valid_to=2026-12-31
+  5. Buduje bundle testowy
+  6. Uruchamia testy regresyjne
+  7. Wdraża kanarkowo
+
+================================================================================
+6. KONTRAKTY Z INNYMI CZĘŚCIAMI
+================================================================================
+
+Przeprowadź głęboką analizę spójności między częściami:
+
+6.1 Z CZĘŚCIĄ 00 (FUNDAMENT):
+- Wspólny słownik: werdykt 25-polowy, First-Match-Wins, safe_merge
+- Wspólne metadane: _legal_basis, valid_from, valid_to
+- KONTRAKT: Moduł PIT używa data.thresholds zgodnie z ADR-002 (zero hardcoded)
+  ale NADAL ma 20+ hardcoded stawek → DO NAPRAWY
+
+6.2 Z CZĘŚCIĄ 05 (PIT ENTERPRISE):
+- Wspólne rule_id: jdg.pit.forms.*, jdg.pit.kup.*, jdg.allowances.*
+- KONTRAKT: Część 05 rozszerzy forms.rego o PIT-36, PIT-36L, PIT-28 (deklaracje)
+- KONTRAKT: Część 05 doda enterprise symulatory: "co by było gdyby" dla form
+
+6.3 Z CZĘŚCIĄ 06 (ZUS/SUS):
+- Wspólne dane: składka zdrowotna, podstawa wymiaru składek społecznych
+- KONTRAKT: P570 w kup.rego używa thresholds.zus.health_linear_deduction_limit
+- KONTRAKT: Część 06 dostarczy dokładne podstawy ZUS dla JDG
+
+6.4 Z CZĘŚCIĄ 09 (UoR/PKPiR):
+- Wspólne dane: PKPiR kolumny KUP, amortyzacja ŚT
+- KONTRAKT: Moduł PIT odczytuje dane z PKPiR (kolumna 13-16) do kalkulacji KUP
+
+================================================================================
+7. MAPA DROGOWA WDROŻENIA
+================================================================================
+
+| Priorytet | Zadanie                                       | Szac. czas | Wpływ | Ryzyko |
+|-----------|-----------------------------------------------|------------|-------|--------|
+| P0-5      | Reguła straty podatkowej (Art. 9 ust. 3)      | 2h         | WYSOKI| WYSOKIE|
+| P0-2      | Eliminacja hardcode 85528                     | 3h         | WYSOKI| ŚREDNIE|
+| P0-1      | Parametryzacja stawek PIT                     | 4h         | WYSOKI| ŚREDNIE|
+| P0-3      | Testy jednostkowe dla P04-P07                 | 6h         | WYSOKI| NISKIE |
+| P0-4      | Ujednolicenie rule_id                         | 2h         | ŚREDNI| ŚREDNIE|
+| P1-1      | Temporalność B+R                               | 2h         | ŚREDNI| NISKIE |
+| P1-2      | Ulga rehabilitacyjna                           | 3h         | ŚREDNI| NISKIE |
+| P1-3      | Ulga internetowa                               | 2h         | NISKI | NISKIE |
+| P1-4      | Ulga krwiodawstwa                              | 1h         | NISKI | NISKIE |
+| P1-5      | Ulga na dzieci                                 | 3h         | ŚREDNI| NISKIE |
+| INN03     | Predykcja zaliczek                            | 4h         | ŚREDNI| NISKIE |
+| INN04     | Optymalizator amortyzacji                     | 3h         | ŚREDNI| NISKIE |
+
+================================================================================
+8. DIAGRAM PRZEPŁYWU DECYZYJNEGO (Mermaid)
+================================================================================
+
+```mermaid
+flowchart TD
+    A[Transakcja] --> B{Forma opodatkowania?}
+    B -->|SCALE| C[P500: Skala 12/32%]
+    B -->|LINEAR| D[P510: Liniowy 19%]
+    B -->|LUMP_SUM| E[P520: Ryczałt]
+    B -->|TAX_CARD| F[P530: Karta podatkowa]
+    
+    C --> G{Czy PIT-0?}
+    G -->|Wiek ≤26| H[P650: Ulga młodych]
+    G -->|Powrót z emigracji| I[P651: Ulga na powrót]
+    G -->|4+ dzieci| J[P654: Ulga 4+]
+    G -->|Nie| K[Standard]
+    
+    K --> L[KUP/NKUP]
+    L --> M[P560-P572: Klasyfikacja wydatków]
+    
+    M --> N{Czy ulgi?}
+    N -->|B+R| O[P600: 100-200%]
+    N -->|IP Box| P[P610: 5%]
+    N -->|Termo| Q[R120: 53k PLN]
+    N -->|Darowizny| R[P612]
+    N -->|IKZE| S[P605]
+    
+    O --> T[Obliczenie dochodu]
+    P --> T
+    Q --> T
+    R --> T
+    S --> T
+    
+    T --> U[Zaliczka miesięczna]
+    U --> V[WERDYKT]
+```
+
+================================================================================
+9. PODSUMOWANIE KOŃCOWE
+================================================================================
+
+Moduł PIT w NexusAI JDG reprezentuje zaawansowany poziom Enterprise z solidnym
+pokryciem ustawy PIT. Główne obszary do poprawy to:
+1. Eliminacja hardcoded wartości (85528, stawki 0.12/0.19/0.05) — P0
+2. Dodanie aktywnych reguł dla straty, rehabilitacji, internetu, dzieci — P0/P1
+3. Testy dla innowacji P04-P07 — P0
+4. Temporalność reguł B+R — P1
+5. 12 innowacji wyprzedzających profesjonalistów — rekomendacje do implementacji
+
+Po wdrożeniu wszystkich poprawek P0/P1 moduł PIT osiągnie najwyższy poziom
+ENTERPRISE, gotowy do pełnej automatyzacji rozliczeń PIT dla JDG.
+
+================================================================================
+KONIEC RAPORTU 04/25
+================================================================================

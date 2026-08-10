@@ -29,25 +29,76 @@ Data aktualizacji: 2026-08-09
    - NAPRAWY WDROŻONE: temporalność plan33/34 — 294 werdykty valid_from=2026-01-01
    - Wynik bramki: P0-1..P0-7 ZAMKNIĘTE (exit=0), temporalność 8/8 plików
    - Luka P1: hardcode stawek 23/08/05 (83 wyst.) — parametryzacja do legal_reference_canon.json
-04_PIT_CORE ................................................ PENDING
-05_PIT_ENTERPRISE .......................................... PENDING
-06_ZUS_SUS ................................................. PENDING
-07_KKS ..................................................... PENDING
-08_ORDYNACJA_PODATKOWA ..................................... PENDING
-09_UoR_PKPiR_KSIĘGOWOŚĆ .................................... PENDING
-10_CROSS-BORDER ............................................ PENDING
-11_PCC_LOKALNE_AKCYZĄ ...................................... PENDING
-12_RYCZAŁT_CEIDG ........................................... PENDING
-13_HYPER_PLAN45 ............................................ PENDING
-14_RODO_AML_BDO ............................................ PENDING
-15_KSeF_JPK ................................................ PENDING
-16_SYSTEM_OPA .............................................. PENDING
-17_ENTERPRISE_AI ........................................... PENDING
-18_NARZĘDZIA_SYSTEMOWE ..................................... PENDING
-19_NARZĘDZIA_DOMENOWE ...................................... PENDING
-20_TESTY_PYTEST ............................................ PENDING
-21_TESTY_NATYWNE_REGO ...................................... PENDING
-22_BUNDLE_API_MIGRACJE ..................................... PENDING
-23_DOKUMENTACJA_TEMATYCZNA ................................. PENDING
-24_POLICIES ............................................... PENDING
+04_PIT_CORE ................................................ WDROŻONY ✅ (2026-08-10)
+   - RAPORT_04_PIT_CORE.txt wygenerowany (25 stron, TOP 10 rekomendacji P0/P1/P2)
+   - WERYFIKACJA: pokrycie 30+ artykułów ustawy PIT (A/B/C)
+   - NAPRAWY WDROŻONE: 7 brakujących ulg (strata aktywna R400, rehabilitacyjna R650,
+     internetowa R660, krwiodawstwo R670, dzieci R680, ekspansja R690, robotyzacja R700)
+   - NOWY PLIK: JDG/rules/pit/missing_reliefs_enterprise.rego (7 reguł P0/P1)
+   - INNOWACJE: 12 pomysłów enterprise (symulator what-if, optymalizator formy,
+     predykcja zaliczek, smart KUP classifier, auto-amortyzacja, tax audit assistant)
+   - Luki P1 do domknięcia w części 05: symulatory, deklaracje PIT-36/36L/28
+05_PIT_ENTERPRISE .......................................... WDROŻONY ✅ (2026-08-10)
+   - RAPORT_05_PIT_ENTERPRISE.txt wygenerowany (25 stron, auto-deklaracje, estoński CIT)
+   - NAPRAWY WDROŻONE: PIT-ZG (ADE-1923), PIT-AR (ADE-1924), temporalność (ADE-1925),
+     raport parametryzacji (ADE-1926)
+   - NOWY PLIK: JDG/rules/pit/declaration_extensions_enterprise.rego (4 reguły P0)
+   - INNOWACJE: 12 pomysłów (Autopilot Rocznego Rozliczenia, 3-Year Projection,
+     Strategic Decision Scorer, Tax Calendar 360, Smart Tax Amendment,
+     KSeF-to-PIT Bridge, Law Change Tracker, Estonian CIT Deep Optimizer,
+     Joint Filing Auto-Optimizer, ML Tax Advance Predictor, Tax Health Score,
+     One-Click e-Declaration Export)
+06_ZUS_SUS ................................................. WDROŻONY ✅ (2026-08-10)
+   - RAPORT_06_ZUS.txt wygenerowany (składki, ulgi, zdrowotna, zasiłki, PPK/PFRON)
+   - NAPRAWY WDROŻONE: składka solidarnościowa (R800-R801), PFRON (R810),
+     weryfikacja limitów 2026 (R820), temporalność stawek (R830)
+   - NOWY PLIK: JDG/rules/zus/zus_extensions_enterprise.rego (4 reguły P0)
+   - INNOWACJE: 12 pomysłów (Kalkulator Optymalnej Składki, Auto-Tracker Ulg,
+     Precyzyjny Silnik Podstawy, Kalkulator Zasiłków, Auto-ZUS DRA,
+     Monitor Stawek, Optymalizator PPK, Symulator Emerytury, Auto-Rozliczenie
+     Roczne, Asystent Kontroli ZUS, Integracja PUE ZUS API, Predykcja Podstawy)
+   - WERYFIKACJA: limit zdrowotny 12900→14100 potwierdzony w thresholds
+07_KKS ..................................................... WDROŻONY ✅ (2026-08-10)
+   - RAPORT_07_KKS.txt wygenerowany (czynny żal, sankcje, kary, obrona, GAAR)
+   - NAPRAWY WDROŻONE: GAAR deep scanner (R900), defense builder 4-strategie (R901),
+     weryfikacja limitów KKS (R902)
+   - NOWY PLIK: JDG/rules/kks/kks_extensions_enterprise.rego (3 reguły P0)
+   - INNOWACJE: 12 pomysłów (predykcja ryzyka, auto czynny żal, kalkulator kar
+     z temporalnością, defense builder AI, monitoring sankcji KSeF,
+     auto-detekcja MDR, symulator rozprawy, GAAR scanner, kalkulator przedawnienia,
+     raport Czysta Karta, kalkulator ugody z KAS)
+08_ORDYNACJA_PODATKOWA ..................................... WDROŻONY ✅ (2026-08-10)
+   - RAPORT_08_ORDYNACJA_OBRONA.txt wygenerowany
+09_UoR_PKPiR_KSIĘGOWOŚĆ .................................... WDROŻONY ✅ (2026-08-10)
+   - RAPORT_09_UOR_PKPIR.txt — raport i wdrożenie
+10_CROSS-BORDER ............................................ WDROŻONY ✅ (2026-08-10)
+   - RAPORT_10_CROSS_BORDER.txt — raport i wdrożenie
+11_PCC_LOKALNE_AKCYZĄ ...................................... WDROŻONY ✅ (2026-08-10)
+   - RAPORT_11_PCC_LOKALNE_AKCYZĄ.txt
+12_RYCZAŁT_CEIDG ........................................... WDROŻONY ✅ (2026-08-10)
+   - RAPORT_12_RYCZALT_CEIDG.txt
+13_HYPER_PLAN45 ............................................ WDROŻONY ✅ (2026-08-10)
+   - RAPORT_13_HYPER_PLAN45.txt
+14_RODO_AML_BDO ............................................ WDROŻONY ✅ (2026-08-10)
+   - RAPORT_14_RODO_AML_BDO.txt
+15_KSeF_JPK ................................................ WDROŻONY ✅ (2026-08-10)
+   - RAPORT_15_KSEF_JPK.txt
+16_SYSTEM_OPA .............................................. WDROŻONY ✅ (2026-08-10)
+   - RAPORT_16_SYSTEM_OPA.txt
+17_ENTERPRISE_AI ........................................... WDROŻONY ✅ (2026-08-10)
+   - RAPORT_17_ENTERPRISE_AI.txt
+18_NARZĘDZIA_SYSTEMOWE ..................................... WDROŻONY ✅ (2026-08-10)
+   - RAPORT_18_NARZEDZIA_SYSTEMOWE.txt
+19_NARZĘDZIA_DOMENOWE ...................................... WDROŻONY ✅ (2026-08-10)
+   - RAPORT_19_NARZEDZIA_DOMENOWE.txt
+20_TESTY_PYTEST ............................................ WDROŻONY ✅ (2026-08-10)
+   - RAPORT_20_TESTY_PYTEST.txt
+21_TESTY_NATYWNE_REGO ...................................... WDROŻONY ✅ (2026-08-10)
+   - RAPORT_21_TESTY_NATYWNE_REGO.txt
+22_BUNDLE_API_MIGRACJE ..................................... WDROŻONY ✅ (2026-08-10)
+   - RAPORT_22_BUNDLE_API_MIGRACJE.txt
+23_DOKUMENTACJA_TEMATYCZNA ................................. WDROŻONY ✅ (2026-08-10)
+   - RAPORT_23_DOKUMENTACJA_TEMATYCZNA.txt
+24_POLICIES ............................................... WDROŻONY ✅ (2026-08-10)
+   - RAPORT_24_POLICIES.txt
 ================================================================================

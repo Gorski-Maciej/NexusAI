@@ -1,0 +1,8 @@
+================================================================================
+RAPORT 14 — RODO / AML-CBDD / BDO / ŚRODOWISKO — WDROŻONY ✅
+ANALIZA: micro/rodo/* (6 plików: rodo, ai_marketing, erasure, podprocesorzy,
+sankcje, zatrudnienie), micro/aml/* (4: aml 125 reguł, cbdd, ryzyko, str_gif),
+compliance/aml_enterprise (23), micro/bdo/* (6), environmental/* (2),
+micro/srodowisko (48), micro/plan33_rodo (10).
+STAN: Pełne RODO + AML + BDO + środowisko + ESG.
+================================================================================

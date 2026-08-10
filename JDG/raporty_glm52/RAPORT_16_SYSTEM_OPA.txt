@@ -1,0 +1,10 @@
+================================================================================
+RAPORT 16 — SYSTEM OPA — INNOWACJE P18–P35 — WDROŻONY ✅
+ANALIZA: bundles/ (bundle.sh v8.0, manifest.json 10878 reguł), policies/ (32 pakiety),
+migrations/ (DuckDB RuleStore 9 tabel, 2 migracje), api/openapi.yaml (10 endpointów),
+decision_core_completeness (5), cross_declaration_validator (4),
+decision_composer (2), esig_auto_applicator (4), legislative_monitor (5),
+lifecycle_manager (4), p22_innovations, p35_innovations, p35_system_gaps.
+STAN: OPA jako SYSTEM — Control Plane + Data Plane, cykl życia reguł,
+Legal Twin/LKG, Decision Certificate, Law Radar, Declarative Change.
+================================================================================

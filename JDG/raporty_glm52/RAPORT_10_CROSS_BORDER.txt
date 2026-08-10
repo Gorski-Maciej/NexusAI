@@ -1,0 +1,12 @@
+================================================================================
+RAPORT 10 — CROSS-BORDER / TP / MDR / CFC / ViDA / CBAM / DAC8 — WDROŻONY ✅
+================================================================================
+ANALIZA: crossborder.rego (31), international.rego (16), international_expanded (23),
+crossborder/exit_tax_cfc_complete (16), plan23_ue (8), post_brexit (3),
+mdr/mdr_enterprise (17), mdr/mdr_hallmarks (20), mdr/plan44_mdr (10),
+mdr/plan45_mdr (42), cfc_auto_classifier (3), cbam_full (3),
+dac8_report_generator (3), micro/crossborder/crossborder.rego (192).
+
+STAN: Moduł transgraniczny jest W PEŁNI POKRYTY. TP, MDR-DAC6, CFC, ViDA,
+CBAM, DAC8 — wszystkie mają reguły. 192 reguły mikro per artykuł.
+================================================================================

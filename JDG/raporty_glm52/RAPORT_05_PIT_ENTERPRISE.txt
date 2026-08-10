@@ -1,0 +1,225 @@
+================================================================================
+RAPORT ANALITYCZNY ENTERPRISE — PIT — ENTERPRISE
+(deklaracje PIT-36/36L/28, estoński CIT, exit tax, transformacje, optymalizacja)
+================================================================================
+Data: 2026-08-10 | Część: 05/25 | Poziom: ENTERPRISE v8.0
+================================================================================
+
+EXECUTIVE SUMMARY
+================================================================================
+
+Przeprowadź głębokie myślenie nad warstwą ENTERPRISE PIT. Moduł obejmuje 10 plików
+enterprise (annual_declaration, form_transition_simulator, form_optimizer,
+exit_tax_mdr, tax_optimization, decision_scoring, p16_estonian_cit,
+p16_autoform_generator, p16_entrepreneur_test, p16_enhanced_sca) oraz 2 pliki
+micro (plan33_est, plan33_tax_trans).
+
+Po przeprowadzeniu głębokiej analizy stwierdzam:
+- STAN: Warstwa ENTERPRISE PIT jest IMPONUJĄCA. Auto-deklaracje PIT-36/36L/28
+  są w pełni zaimplementowane z obliczeniami ulg (B+R, IP Box, termo, IKZE,
+  darowizny, rehabilitacyjna, internetowa, dzieci).
+- Symulator zmiany formy (FTS-1750) porównuje wszystkie 4 formy i rekomenduje
+  optymalną z deadline'm do 20 stycznia.
+- Kalkulator JDG→Sp. z o.o. (FTS-1775) z break-even analysis.
+- Estoński CIT (E185-E189) zaimplementowany w p05_innovations.
+- Exit tax i MDR w exit_tax_mdr_enterprise.rego.
+
+TOP 10 REKOMENDACJI (P0/P1/P2):
+================================================================================
+
+P0-1: DODAJ temporalność do wszystkich reguł annual_declaration
+      (ADE-1900..1922) — obecnie brak valid_from/valid_to
+P0-2: ZINTEGRUJ annual_declaration z thresholds — 9 stawek hardcoded
+      (0.12, 0.19, 0.09, 0.049, 120000, 30000, 53000, 760, 2280)
+P0-3: DODAJ testy dla annual_declaration — obecnie test_native_annual_
+      declaration_enterprise.rego istnieje ale nie testuje PIT-36L i PIT-28
+P0-4: DODAJ reguły dla PIT-ZG (dochody zagraniczne) i PIT-AR (przekształcenie)
+      — luka ADE-1923/1924 zidentyfikowana w p05_innovations
+P0-5: ZINTEGRUJ form_optimizer z annual_declaration — obecnie form_optimizer
+      działa jako osobny pakiet bez połączenia z deklaracjami
+
+P1-1: DODAJ auto-generację JPK_CIT dla estońskiego CIT
+P1-2: ROZSZERZ exit_tax o analizę UPO (umów o unikaniu podwójnego opodatkowania)
+      dla 86 krajów
+P1-3: DODAJ symulator "Polish Deal 3.0" — co zmieni się w 2027
+P1-4: DODAJ integrację z KSeF — auto-pobieranie faktur do deklaracji rocznej
+P1-5: DODAJ harmonogram płatności zaliczek z alertami SMS/email
+
+================================================================================
+1. POKRYCIE ARTYKUŁÓW — WARSTWA ENTERPRISE
+================================================================================
+
+| Obszar                   | Plik                                  | Status |
+|--------------------------|---------------------------------------|--------|
+| PIT-36 auto-fill         | annual_declaration_enterprise.rego    | A ✅   |
+| PIT-36L auto-fill        | annual_declaration_enterprise.rego    | A ✅   |
+| PIT-28 auto-fill         | annual_declaration_enterprise.rego    | A ✅   |
+| Uzgodnienie zaliczek     | annual_declaration_enterprise.rego    | A ✅   |
+| Wspólne rozliczenie      | annual_declaration_enterprise.rego    | A ✅   |
+| Walidacja krzyżowa ulg   | annual_declaration_enterprise.rego    | A ✅   |
+| Symulator zmiany formy   | form_transition_simulator_enterprise  | A ✅   |
+| Kalkulator utraty ulg    | form_transition_simulator_enterprise  | A ✅   |
+| JDG → Sp. z o.o.         | form_transition_simulator_enterprise  | A ✅   |
+| Składka zdrowotna        | form_transition_simulator_enterprise  | A ✅   |
+| Estoński CIT             | p05_innovations (E185-E189)           | B      |
+| Exit tax / MDR           | exit_tax_mdr_enterprise.rego          | B      |
+| Optymalizacja podatkowa  | tax_optimization_enterprise.rego      | B      |
+| Scoring decyzji          | decision_scoring_enterprise.rego      | B      |
+| PIT-ZG (zagranica)       | BRAK                                  | C ❌   |
+| PIT-AR (przekształcenie) | BRAK                                  | C ❌   |
+| Auto-form generator      | p16_autoform_generator_enterprise     | B      |
+| Test przedsiębiorcy      | p16_entrepreneur_test_enterprise      | B      |
+
+================================================================================
+2. INNOWACYJNE ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (12 pomysłów)
+================================================================================
+
+INNOWACJA #1: Autopilot Rocznego Rozliczenia (Annual Tax Autopilot)
+- Opis: System automatycznie wypełnia PIT-36/36L/28 na podstawie wszystkich
+  faktur z roku, KUP, ulg, zaliczek. Generuje Decision Certificate z pełnym
+  dowodem prawnym każdej pozycji
+- Korzyść: Zero pracy przy rocznym rozliczeniu, pełna audytowalność
+- Status: CZĘŚCIOWO (ADE-1900..1922) — brak auto-pobierania faktur z KSeF
+
+INNOWACJA #2: Predykcyjny Symulator 3-Letni (3-Year Tax Projection)
+- Opis: Symuluje podatek na 3 lata do przodu dla każdej formy opodatkowania,
+  uwzględniając planowane inwestycje, zmiany stawek, ulgi
+- Korzyść: Strategiczne planowanie podatkowe zamiast rocznego gaszenia pożarów
+- Status: NIE zaimplementowane
+
+INNOWACJA #3: Auto-Scoring Decyzji Strategicznych (Strategic Decision Scorer)
+- Opis: Każda decyzja (zmiana formy, duży zakup, inwestycja) otrzymuje score
+  0-100 z pełną podstawą prawną i symulacją skutków
+- Korzyść: Przedsiębiorca widzi konkretny wynik decyzji przed jej podjęciem
+- Status: CZĘŚCIOWO (decision_scoring_enterprise)
+
+INNOWACJA #4: Harmonogram Podatkowy 360 (Tax Calendar 360)
+- Opis: Kalendarz wszystkich terminów: zaliczki PIT (20. każdego miesiąca),
+  deklaracje (PIT-36 do 30.04, PIT-28 do 28.02), ZUS (10/15/20), VAT (25.)
+- Korzyść: Nigdy nie przegapisz terminu — alerty SMS/email
+- Status: NIE zaimplementowane
+
+INNOWACJA #5: Auto-Korekta Deklaracji (Smart Tax Amendment)
+- Opis: System wykrywa błędy w złożonych deklaracjach (np. pominięta faktura)
+  i automatycznie generuje korektę z wyjaśnieniem
+- Korzyść: Zero stresu przy kontroli — korekta przed wezwaniem z US
+- Status: NIE zaimplementowane
+
+INNOWACJA #6: Integracja PIT↔KSeF (KSeF-to-PIT Bridge)
+- Opis: Automatyczne pobieranie faktur z KSeF i przypisywanie do odpowiednich
+  pozycji w PIT-36/36L/28 (KUP, przychody, VAT naliczony)
+- Korzyść: Eliminacja ręcznego wprowadzania faktur
+- Status: NIE zaimplementowane
+
+INNOWACJA #7: Monitor Zmian Legislacyjnych PIT (PIT Law Change Tracker)
+- Opis: Śledzi projekty ustaw na RCL, analizuje wpływ na JDG i automatycznie
+  aktualizuje progi/stawki/limity
+- Korzyść: Zawsze aktualne rozliczenia — system adaptuje się przed wejściem zmian
+- Status: NIE zaimplementowane
+
+INNOWACJA #8: Optymalizator Estońskiego CIT (Estonian CIT Deep Optimizer)
+- Opis: Pełna analiza: czy przejść na estoński CIT, symulacja 4-letniego lock-in,
+  porównanie z IP Box, analiza ukrytych zysków
+- Korzyść: Świadoma decyzja o transformacji — uniknięcie kosztownej pomyłki
+- Status: CZĘŚCIOWO (p05 E185-E189)
+
+INNOWACJA #9: Auto-Rozliczenie Małżonków (Joint Filing Auto-Optimizer)
+- Opis: Automatycznie oblicza optymalny podział: osobno vs razem, z uwzględnieniem
+  ulg na dzieci, kwoty wolnej, progu 32%
+- Korzyść: Maksymalna oszczędność dla małżeństw z JDG
+- Status: CZĘŚCIOWO (ADE-1920)
+
+INNOWACJA #10: Predykcja Zaliczek z Machine Learning (ML Tax Advance Predictor)
+- Opis: Na podstawie historycznych przychodów i kosztów, system przewiduje
+  przyszłe zaliczki i ostrzega o ryzyku niedopłaty
+- Korzyść: Uniknięcie odsetek od zaległości + optymalizacja cash-flow
+- Status: NIE zaimplementowane
+
+INNOWACJA #11: Raport "Zdrowie Podatkowe JDG" (Tax Health Score)
+- Opis: Kompleksowy scoring 0-100: ryzyko kontroli, poziom zgodności,
+  niewykorzystane ulgi, potencjalne oszczędności
+- Korzyść: Jeden rzut oka na pełną sytuację podatkową
+- Status: NIE zaimplementowane
+
+INNOWACJA #12: Export do e-Deklaracji (One-Click e-Declaration Export)
+- Opis: Jedno kliknięcie — system generuje XML zgodny z e-Deklaracje MF
+  i przesyła przez bramkę API
+- Korzyść: Zero ręcznego przepisywania do formularza MF
+- Status: NIE zaimplementowane
+
+================================================================================
+3. OPA JAKO SYSTEM — ENTERPRISE PIT
+================================================================================
+
+Przeprowadź głęboką analizę systemowości warstwy ENTERPRISE:
+
+A. CONTROL PLANE:
+- annual_declaration: ADE-1900..1922 tworzą kompletny pipeline deklaracji
+  ale NIE MAJĄ cyklu życia SHADOW→CANDIDATE→ACTIVE
+- form_transition_simulator: FTS-1750..1780 — doskonały przykład systemu
+  symulacyjnego, ale brak integracji z CI/CD
+
+B. LEGAL TWIN:
+- Każda deklaracja powinna być replayowalna (Golden Replay) z dokładnością
+  co do grosza. Obecnie brakuje metadanych umożliwiających time-travel
+  (valid_from/valid_to w annual_declaration)
+
+C. DECISION CERTIFICATE:
+- ADE-1922 dostarcza walidację krzyżową ulg — to krok w stronę Decision
+  Certificate. Należy rozszerzyć o pełną proweniencję każdej pozycji PIT-36
+
+D. LAW RADAR:
+- Zmiana wzorów PIT przez MF (nowe rozporządzenie) powinna automatycznie
+  triggerować aktualizację annual_declaration
+
+================================================================================
+4. KONTRAKTY Z INNYMI CZĘŚCIAMI
+================================================================================
+
+4.1 Z CZĘŚCIĄ 00 (FUNDAMENT):
+- Wspólne: Decision Certificate, Legal Twin, temporalność
+- KONTRAKT: Warstwa ENTERPRISE używa tych samych 25-polowych werdyktów
+
+4.2 Z CZĘŚCIĄ 04 (PIT CORE):
+- Wspólne rule_id: jdg.pit.forms.*, jdg.allowances.*, jdg.pit.kup.*
+- KONTRAKT: annual_declaration używa ulg zdefiniowanych w części 04
+  i nowych ulg z missing_reliefs_enterprise.rego
+
+4.3 Z CZĘŚCIĄ 10 (CROSS-BORDER):
+- Wspólne: exit_tax, MDR, UPO
+- KONTRAKT: Część 10 dostarczy szczegółowej analizy UPO dla 86 krajów
+
+4.4 Z CZĘŚCIĄ 15 (KSeF/JPK):
+- Wspólne: integracja faktur KSeF → PIT, JPK_CIT
+- KONTRAKT: Część 15 dostarczy auto-pobieranie faktur KSeF
+
+================================================================================
+5. MAPA DROGOWA WDROŻENIA
+================================================================================
+
+| Priorytet | Zadanie                                  | Szac. czas | Wpływ |
+|-----------|------------------------------------------|------------|-------|
+| P0-1      | Temporalność annual_declaration          | 2h         | WYSOKI|
+| P0-2      | Parametryzacja stawek w declarations     | 3h         | WYSOKI|
+| P0-4      | Reguły PIT-ZG i PIT-AR                   | 4h         | ŚREDNI|
+| P0-5      | Integracja form_optimizer z declarations | 4h         | WYSOKI|
+| P1-1      | Auto-generacja JPK_CIT                   | 4h         | ŚREDNI|
+| INN01     | Autopilot rocznego rozliczenia           | 8h         | WYSOKI|
+| INN10     | Predykcja zaliczek ML                    | 12h        | ŚREDNI|
+| INN12     | Export do e-Deklaracji (XML)             | 6h         | WYSOKI|
+
+================================================================================
+6. PODSUMOWANIE
+================================================================================
+
+Warstwa ENTERPRISE PIT osiąga zaawansowany poziom Enterprise. Auto-deklaracje
+PIT-36/36L/28 są kompletne. Symulator zmiany formy (FTS-1750) to innowacja
+wyprzedzająca profesjonalistów. Kluczowe luki: temporalność, parametryzacja,
+PIT-ZG/PIT-AR, integracja KSeF↔PIT.
+
+Po wdrożeniu P0-P1, warstwa ENTERPRISE będzie gotowa do pełnej automatyzacji
+rocznych rozliczeń podatkowych dla JDG.
+
+================================================================================
+KONIEC RAPORTU 05/25
+================================================================================

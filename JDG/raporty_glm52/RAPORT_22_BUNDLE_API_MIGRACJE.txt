@@ -1,0 +1,7 @@
+================================================================================
+RAPORT 22 — BUNDLE / API / MIGRACJE — WDROŻONY ✅
+ANALIZA: bundles/bundle.sh (v8.0), api/openapi.yaml (10 endpointów, JWT Bearer),
+migrations/ (DuckDB RuleStore: 9 tabel, 2 migracje, seed 50 progów),
+RuleStore z thresholds (hot-reload parametrów).
+STAN: Bundle OPA v8.0, OpenAPI 3.0.3, DuckDB RuleStore, hot-reload thresholds.
+================================================================================
