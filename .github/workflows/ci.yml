@@ -165,7 +165,7 @@ jobs:
           pip install dist/wheels/nexus_crypto-*.whl
 
       - name: Cache mypyc compiled *.so files
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             **/*.cpython-313*.so
@@ -557,7 +557,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -610,7 +610,7 @@ jobs:
       - uses: ./.github/actions/setup-hatch
 
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ccache
           key: ccache-pgo-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'nexus_ai/**/*.py') }}
@@ -619,7 +619,7 @@ jobs:
             ccache-pgo-
 
       - name: Cache NUITKA_CACHE_DIR
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/nuitka
           key: nuitka-pgo-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
@@ -721,7 +721,7 @@ jobs:
           cache-key-prefix: hatch-nuitka-clang
 
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ccache
           key: ccache-nuitka-clang-${{ hashFiles('pyproject.toml', 'nexus_ai/**/*.py') }}
@@ -729,7 +729,7 @@ jobs:
             ccache-nuitka-clang-
 
       - name: Cache NUITKA_CACHE_DIR
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/nuitka
           key: nuitka-cache-clang-${{ hashFiles('pyproject.toml') }}
@@ -862,7 +862,7 @@ jobs:
           cache-key-prefix: hatch-nuitka-${{ runner.os }}
 
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ccache
           key: ccache-nuitka-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'nexus_ai/**/*.py') }}
@@ -871,7 +871,7 @@ jobs:
             ccache-nuitka-
 
       - name: Cache NUITKA_CACHE_DIR
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/nuitka
           key: nuitka-cache-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
