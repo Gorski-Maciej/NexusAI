@@ -89,6 +89,57 @@ class TestCoverageGapReport:
         articles = gap.parse_coverage()
         assert all(a.get("declared_status") in ("COMPLETE", "PARTIAL", "GAP") for a in articles)
 
+    def test_wildcard_declaration_resolves_rule_family(self):
+        actual = {
+            "jdg.kks.tax_evasion_fictitious_costs_p246",
+            "jdg.kks.tax_evasion_double_books_p244",
+        }
+        assert gap.resolve_declared_rule("jdg.kks.tax_evasion_*", actual) == sorted(actual)
+        assert gap.resolve_declared_rule("jdg.kks.missing_*", actual) == []
+
+    def test_comment_fixture_and_docstring_are_not_test_evidence(self):
+        content = (
+            '# jdg.kks.fake_comment\n'
+            'fixture = "jdg.kks.fake_fixture"\n'
+            'def test_case():\n'
+            '    """jdg.kks.fake_docstring"""\n'
+            '    def helper():\n'
+            '        assert "jdg.kks.fake_nested" in "jdg.kks.fake_nested"\n'
+            '    assert "jdg.kks.real_case" in "jdg.kks.real_case"\n'
+        )
+        assert gap._tested_rule_ids(content, ".py") == {"jdg.kks.real_case"}
+
+
+    def test_kks_priority_requires_complete_wildcard_evidence(self):
+        report = gap.analyze()
+        kks_rows = [row for row in report["rows"] if "KKS" in row["act"]]
+        assert len(kks_rows) == 6
+
+        by_article = {row["article"].split(" — ", 1)[0]: row for row in kks_rows}
+        assert by_article["16"]["actual_status"] == "PARTIAL"
+        assert set(by_article["16"]["evidence_missing_rules"]) == {
+            "jdg.kks.voluntary_disclosure_art16",
+            "jdg.kks.voluntary_disclosure_correction_before_audit",
+            "jdg.kks.voluntary_disclosure_deadline",
+            "jdg.kks.voluntary_disclosure_eligible",
+            "jdg.kks.voluntary_disclosure_foreign_tax",
+            "jdg.kks.voluntary_disclosure_guide",
+            "jdg.kks.voluntary_disclosure_multiple_offenses",
+            "jdg.kks.voluntary_disclosure_partial",
+            "jdg.kks.voluntary_disclosure_payment",
+            "jdg.kks.voluntary_disclosure_successor",
+        }
+        assert by_article["44"]["actual_status"] == "PARTIAL"
+        assert by_article["44"]["evidence_missing_rules"] == [
+            "jdg.kks.statute_of_limitations_crime_5y"
+        ]
+        assert all(
+            row["actual_status"] == "COMPLETE"
+            for row in kks_rows
+            if row["article"].split(" — ", 1)[0] not in {"16", "44"}
+        )
+        assert report["priorities"]["P1_KKS"] == 2
+
 
 # ══════════════════════ BRAMKA RV (V2) ══════════════════════
 

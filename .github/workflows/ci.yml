@@ -1100,6 +1100,9 @@ jobs:
         run: python JDG/tools/cross_package_conflict_detector.py --json > jdg_conflicts.json || true
       - name: Temporal Drift Detection
         run: python JDG/tools/temporal_drift_detector.py --check || true
+      - name: JDG Metrics Gate (RAPORT_00 P0-1)
+        run: python JDG/tools/metrics_generator.py --gate
+
       - name: JDG Unit Tests
         run: pytest JDG/tests/ -v -m 'unit or rego' --timeout=60 --tb=short -q 2>&1 | tail -20
       - name: Upload JDG Reports

@@ -23,6 +23,7 @@ Usage:
 """
 
 import argparse
+import hashlib
 import json
 import sys
 from datetime import datetime, timezone
@@ -30,6 +31,7 @@ from pathlib import Path
 
 JDG_ROOT = Path(__file__).resolve().parent.parent
 GOLDEN_PATH = JDG_ROOT / "bundles" / "golden_verdicts.json"
+SCHEMA_VERSION = 2
 
 
 def now() -> str:
@@ -38,8 +40,11 @@ def now() -> str:
 
 def load() -> dict:
     if GOLDEN_PATH.exists():
-        return json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
-    return {"verdicts": {}, "annotations": [], "replays": []}
+        try:
+            return json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
+        except (OSError, TypeError, ValueError) as exc:
+            sys.exit(f"❌ Uszkodzony golden_verdicts.json — wymagane odtworzenie/migracja: {exc}")
+    return {"schema_version": SCHEMA_VERSION, "verdicts": {}, "annotations": [], "replays": []}
 
 
 def save(data: dict) -> None:
@@ -47,17 +52,38 @@ def save(data: dict) -> None:
     GOLDEN_PATH.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
+def _require_current_schema(data: dict) -> None:
+    if data.get("schema_version") != SCHEMA_VERSION:
+        sys.exit(
+            "❌ Nieobsługiwany schema_version Golden Replay — "
+            "wymagana jawna migracja baseline’u do wersji 2"
+        )
+
+
+def canonical_verdict_hash(v) -> str:
+    """Stabilny SHA-256 kanonicznej treści werdyktu."""
+    canonical = json.dumps(v, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def _hash(v) -> str:
-    return json.dumps(v, sort_keys=True, ensure_ascii=False)
+    """Kompatybilny alias wewnętrzny dla kanonicznego hasha."""
+    return canonical_verdict_hash(v)
 
 
 def cmd_record(args) -> None:
     data = load()
+    if GOLDEN_PATH.exists():
+        _require_current_schema(data)
+    if args.input_hash in data.get("verdicts", {}):
+        sys.exit(f"❌ Golden verdict {args.input_hash} już istnieje — baseline jest niezmienny")
     verdict = json.loads(Path(args.verdict).read_text(encoding="utf-8")) if Path(args.verdict).exists() \
         else json.loads(args.verdict)
+    data["schema_version"] = SCHEMA_VERSION
     entry = {
         "verdict": verdict,
-        "verdict_hash": _hash(verdict),
+        "verdict_hash": canonical_verdict_hash(verdict),
+        "hash_algorithm": "sha256-canonical-json-v1",
         "bundle_version": args.bundle,
         "recorded_at": now(),
         "legal_basis_refs": args.legal_refs.split(",") if args.legal_refs else [],
@@ -69,17 +95,25 @@ def cmd_record(args) -> None:
 
 def cmd_replay(args) -> None:
     data = load()
+    _require_current_schema(data)
     if args.input_hash not in data["verdicts"]:
         sys.exit(f"❌ Brak złotego werdyktu dla {args.input_hash} — najpierw: record")
     golden = data["verdicts"][args.input_hash]
     verdict = json.loads(Path(args.verdict).read_text(encoding="utf-8")) if Path(args.verdict).exists() \
         else json.loads(args.verdict)
-    new_hash = _hash(verdict)
-    changed = new_hash != golden["verdict_hash"]
+    new_hash = canonical_verdict_hash(verdict)
+    golden_hash = canonical_verdict_hash(golden["verdict"])
+    if golden.get("verdict_hash") != golden_hash:
+        sys.exit(f"❌ Uszkodzony baseline {args.input_hash} — hash werdyktu nie pasuje")
+    changed = new_hash != golden_hash
     explained = bool(args.reason)
     # UVR: zmiana bez uzasadnienia = unexplained verdict
     row = {
         "input_hash": args.input_hash,
+        "golden_verdict_hash": golden_hash,
+        "new_verdict": verdict,
+        "new_verdict_hash": new_hash,
+        "hash_algorithm": "sha256-canonical-json-v1",
         "changed": changed,
         "explained": explained,
         "reason": args.reason,
@@ -100,6 +134,7 @@ def cmd_replay(args) -> None:
 
 def cmd_annotate(args) -> None:
     data = load()
+    _require_current_schema(data)
     if args.input_hash not in data["verdicts"]:
         sys.exit(f"❌ Brak złotego werdyktu dla {args.input_hash}")
     data["annotations"].append({

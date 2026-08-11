@@ -45,7 +45,11 @@ IMMUTABLE_PKG = ["zus", "risk", "security"]
 def skanuj_rdzen():
     """Czyta main_jdg.rego + runtime_invariants_enterprise.rego (Decision Certificate
     jest egzekwowany przez runtime_invariants.enforce() — plik audit/)."""
-    pliki = ["main_jdg.rego", os.path.join("audit", "runtime_invariants_enterprise.rego")]
+    pliki = [
+        "main_jdg.rego",
+        os.path.join("audit", "runtime_invariants_enterprise.rego"),
+        "provenance.rego",
+    ]
     teksty = []
     for rel in pliki:
         sciezka = os.path.join(RULES, rel)
@@ -62,7 +66,11 @@ def analizuj():
     if err:
         return {"ok": False, "error": err, "raport": "01_ORKIESTRATOR_RDZEN"}
     wyniki = {}
-    wyniki["_skanowane_pliki"] = ["main_jdg.rego", "audit/runtime_invariants_enterprise.rego"]
+    wyniki["_skanowane_pliki"] = [
+        "main_jdg.rego",
+        "audit/runtime_invariants_enterprise.rego",
+        "provenance.rego",
+    ]
 
     # 1. Decision Certificate: wersje w werdykcie (V1 §9.3 / V2 F4)
     for pole in POLA_CERTYFIKATU:
@@ -93,9 +101,37 @@ def analizuj():
 
     # 5. Provenance (enrich_verdict)
     wyniki["provenance_enrich"] = "enrich_verdict" in t or "provenance" in t
+    # Dopuszczamy białe znaki i łamanie linii, ale wymagamy dokładnych
+    # identyfikatorów kontraktu, aby komentarz nie mógł dać fałszywego PASS.
+    provenance_integration = re.search(
+        r"final_verdict_with_provenance\s*=\s*"
+        r"provenance\.enrich_verdict\s*\(\s*"
+        r"final_verdict_enriched\s*,\s*_provenance_context\s*\)",
+        t,
+    )
+    wyniki["provenance_integration"] = bool(provenance_integration)
+    wyniki["provenance_to_p01"] = bool(re.search(
+        r"final_verdict_p01\s*=\s*safe_merge\s*\(\s*"
+        r"final_verdict_with_provenance\s*,",
+        t,
+    ))
+    wyniki["public_enforced_verdict"] = bool(re.search(
+        r"final_verdict\s*=\s*final_verdict_enforced\b", t
+    ))
 
-    # 6. Trace / determinizm (planowane w raporcie 01, P0-3)
-    wyniki["trace_sciezki"] = bool(re.search(r"\btrace\b", t))
+    # 6. Trace / determinizm (A1 provenance, raport 01 P0-3).
+    # Sam komentarz lub nazwa pola `trace` nie jest dowodem. Wymagamy
+    # konkretnego łańcucha integracji enrichmentu z publicznym werdyktem,
+    # budowy ścieżki oraz niepustej ścieżki egzekwowanej przez invariants.
+    trace_contract = (
+        wyniki["provenance_integration"]
+        and wyniki["provenance_to_p01"]
+        and wyniki["public_enforced_verdict"]
+        and "build_decision_path" in t
+        and "_provenance_tree" in t
+        and "count(c._provenance_tree.path) < 1" in t
+    )
+    wyniki["trace_sciezki"] = trace_contract
 
     # Werdykt końcowy: wszystkie invariants spełnione
     inv_spełnione = (
@@ -109,6 +145,10 @@ def analizuj():
         and wyniki["gate_block_and_alert"]
         and wyniki["gated_abort"]
         and wyniki["provenance_enrich"]
+        and wyniki["provenance_integration"]
+        and wyniki["provenance_to_p01"]
+        and wyniki["public_enforced_verdict"]
+        and wyniki["trace_sciezki"]
     )
     wyniki_zbiorcze = {
         "ok": inv_spełnione,
@@ -143,7 +183,10 @@ def main():
         print(f"BLOCK_AND_ALERT gate:{s.get('gate_block_and_alert')}")
         print(f"gated_abort_verdict: {s.get('gated_abort')}")
         print(f"provenance enrich:   {s.get('provenance_enrich')}")
-        print(f"trace ścieżki:       {s.get('trace_sciezki')} (P0-3 planowane)")
+        print(f"provenance integration: {s.get('provenance_integration')}")
+        print(f"provenance → P01:    {s.get('provenance_to_p01')}")
+        print(f"public enforced verdict: {s.get('public_enforced_verdict')}")
+        print(f"trace ścieżki:       {s.get('trace_sciezki')} (provenance path contract)")
         print("-" * 62)
         print("WERDYKT: " + ("INVARIANTS SPEŁNIONE ✅" if wynik.get("ok")
                              else "WYMAGA DOMKNIĘCIA ⚠️ (patrz RAPORT_01: P0-1/P0-3)"))

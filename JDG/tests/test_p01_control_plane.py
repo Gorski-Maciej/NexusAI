@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -33,6 +34,8 @@ import decision_certificate as dc  # noqa: E402
 import law_radar  # noqa: E402
 import declarative_change as dec  # noqa: E402
 import confidence_dashboard as cd  # noqa: E402
+import metrics_generator  # noqa: E402
+import verify_verdict_invariants as vvi  # noqa: E402
 
 
 # ══════════════════════ MANIFEST 2.0 (L2) ══════════════════════
@@ -182,17 +185,96 @@ class TestDeploymentOrchestrator:
         old = do.STATE_PATH
         do.STATE_PATH = tmp_path / "deployments.json"
         try:
+            do.cmd_init(argparse_stub(version="previous-healthy"))
+            state = do.load_state()
+            state["deployments"]["previous-healthy"].update({
+                "phase": "FULL_SOAK", "rollout_pct": 100,
+                "quality": 100.0, "error_rate": 0.0,
+            })
+            state["healthy_versions"] = ["previous-healthy"]
+            state["active_version"] = "previous-healthy"
+            do.save_state(state)
             do.cmd_init(argparse_stub(version="jdg-bundle-v9.0.0"))
+            state = do.load_state()
+            state["deployments"]["jdg-bundle-v9.0.0"].update({
+                "quality": 100.0, "error_rate": 0.0,
+            })
+            do.save_state(state)
             do.cmd_canary(argparse_stub(version="jdg-bundle-v9.0.0"))
             do.cmd_shadow_compare(argparse_stub(version="jdg-bundle-v9.0.0", delta=1.0))
             do.cmd_ramped(argparse_stub(version="jdg-bundle-v9.0.0"))
             do.cmd_promote(argparse_stub(version="jdg-bundle-v9.0.0"))
             state = do.load_state()
+            pending = state["deployments"]["jdg-bundle-v9.0.0"]
+            assert state["active_version"] == "previous-healthy"
+            assert pending["pending_active_version"] == "jdg-bundle-v9.0.0"
+            assert pending["phase"] == "SOAK_PENDING"
+            assert pending["rollout_pct"] == 100
+            completed_at = (
+                datetime.fromisoformat(pending["soak_until"]) + timedelta(minutes=1)
+            ).isoformat()
+            do.cmd_complete_soak(argparse_stub(
+                version="jdg-bundle-v9.0.0", completed_at=completed_at))
+            state = do.load_state()
             assert state["deployments"]["jdg-bundle-v9.0.0"]["phase"] == "FULL_SOAK"
-            assert state["deployments"]["jdg-bundle-v9.0.0"]["rollout_pct"] == 100
-            # auto-rollback
+            assert "jdg-bundle-v9.0.0" in state["healthy_versions"]
+            assert state["active_version"] == "jdg-bundle-v9.0.0"
+            # auto-rollback: state aktywnej wersji musi faktycznie wrócić.
             do.cmd_auto_rollback(argparse_stub(version="jdg-bundle-v9.0.0", reason="test"))
-            assert do.load_state()["deployments"]["jdg-bundle-v9.0.0"]["phase"] == "ROLLED_BACK"
+            rolled = do.load_state()
+            assert rolled["deployments"]["jdg-bundle-v9.0.0"]["phase"] == "ROLLED_BACK"
+            assert rolled["deployments"]["jdg-bundle-v9.0.0"]["rollback_applied"] is True
+            assert rolled["active_version"] == "previous-healthy"
+        finally:
+            do.STATE_PATH = old
+
+    def test_complete_soak_is_required_before_healthy_registration(self, tmp_path):
+        old = do.STATE_PATH
+        do.STATE_PATH = tmp_path / "deployments.json"
+        try:
+            do.cmd_init(argparse_stub(version="soak-check"))
+            state = do.load_state()
+            state["deployments"]["soak-check"].update({
+                "quality": 100.0, "error_rate": 0.0,
+            })
+            do.save_state(state)
+            do.cmd_promote(argparse_stub(version="soak-check"))
+            pending = do.load_state()["deployments"]["soak-check"]
+            with pytest.raises(SystemExit):
+                do.cmd_complete_soak(argparse_stub(
+                    version="soak-check", completed_at=pending["started_at"]))
+            assert "soak-check" not in do.load_state()["healthy_versions"]
+            completed_at = (
+                datetime.fromisoformat(pending["soak_until"]) + timedelta(minutes=1)
+            ).isoformat()
+            do.cmd_complete_soak(argparse_stub(
+                version="soak-check", completed_at=completed_at))
+            completed = do.load_state()["deployments"]["soak-check"]
+            assert completed["phase"] == "FULL_SOAK"
+            assert "soak-check" in do.load_state()["healthy_versions"]
+
+            # Pogorszenie telemetryczne podczas soak blokuje certyfikację.
+            do.cmd_init(argparse_stub(version="soak-unhealthy"))
+            state = do.load_state()
+            state["deployments"]["soak-unhealthy"].update({
+                "quality": 100.0, "error_rate": 0.0,
+            })
+            do.save_state(state)
+            do.cmd_promote(argparse_stub(version="soak-unhealthy"))
+            pending_unhealthy = do.load_state()["deployments"]["soak-unhealthy"]
+            state = do.load_state()
+            state["deployments"]["soak-unhealthy"]["quality"] = 94.99
+            previous_active = state["active_version"]
+            do.save_state(state)
+            completed_at = (
+                datetime.fromisoformat(pending_unhealthy["soak_until"]) + timedelta(minutes=1)
+            ).isoformat()
+            with pytest.raises(SystemExit):
+                do.cmd_complete_soak(argparse_stub(
+                    version="soak-unhealthy", completed_at=completed_at))
+            unhealthy_state = do.load_state()
+            assert "soak-unhealthy" not in unhealthy_state["healthy_versions"]
+            assert unhealthy_state["active_version"] == previous_active
         finally:
             do.STATE_PATH = old
 
@@ -203,6 +285,140 @@ class TestDeploymentOrchestrator:
             do.cmd_init(argparse_stub(version="b1"))
             with pytest.raises(SystemExit):
                 do.cmd_shadow_compare(argparse_stub(version="b1", delta=5.0))
+        finally:
+            do.STATE_PATH = old
+
+    def test_legacy_state_defaults_to_no_active_version(self, tmp_path):
+        old = do.STATE_PATH
+        do.STATE_PATH = tmp_path / "deployments.json"
+        try:
+            do.STATE_PATH.write_text(json.dumps({
+                "deployments": {"legacy": {"phase": "FULL_SOAK", "quality": 100.0,
+                                              "error_rate": 0.0}},
+                "healthy_versions": ["legacy"],
+            }), encoding="utf-8")
+            state = do.load_state()
+            assert state["active_version"] is None
+            with pytest.raises(SystemExit):
+                do.cmd_auto_rollback(argparse_stub(version="legacy", reason="legacy"))
+        finally:
+            do.STATE_PATH = old
+
+    def test_promote_is_fail_closed_without_initial_telemetry(self, tmp_path):
+        old = do.STATE_PATH
+        do.STATE_PATH = tmp_path / "deployments.json"
+        try:
+            do.cmd_init(argparse_stub(version="no-telemetry"))
+            with pytest.raises(SystemExit):
+                do.cmd_promote(argparse_stub(version="no-telemetry"))
+            state = do.load_state()
+            assert state["deployments"]["no-telemetry"]["phase"] == "INIT"
+            assert state["active_version"] is None
+        finally:
+            do.STATE_PATH = old
+
+    def test_health_is_fail_closed_when_telemetry_is_missing(self, tmp_path):
+        old = do.STATE_PATH
+        do.STATE_PATH = tmp_path / "deployments.json"
+        try:
+            do.cmd_init(argparse_stub(version="telemetry-missing"))
+            state = do.load_state()
+            del state["deployments"]["telemetry-missing"]["quality"]
+            del state["deployments"]["telemetry-missing"]["error_rate"]
+            do.save_state(state)
+            assert do.cmd_health(argparse_stub(version="telemetry-missing", quality=95.0, error=1.0)) == 1
+        finally:
+            do.STATE_PATH = old
+
+    def test_hot_reload_sla_records_pass_and_fail(self, tmp_path, monkeypatch):
+        old = do.STATE_PATH
+        do.STATE_PATH = tmp_path / "deployments.json"
+        try:
+            monkeypatch.setattr(do, "now", lambda: "2026-08-11T12:00:00+00:00")
+            do.cmd_init(argparse_stub(version="reload-pass"))
+            monkeypatch.setattr(do, "now", lambda: "2026-08-11T12:10:00+00:00")
+            do.cmd_hot_reload(argparse_stub(
+                version="reload-pass", started_at="2026-08-11T12:00:00+00:00"))
+            passed = do.load_state()["deployments"]["reload-pass"]
+            assert passed["hot_reload_minutes"] == 10.0
+            assert passed["hot_reload_sla_pass"] is True
+
+            monkeypatch.setattr(do, "now", lambda: "2026-08-11T12:15:00+00:00")
+            do.cmd_hot_reload(argparse_stub(
+                version="reload-pass", started_at="2026-08-11T12:00:00+00:00"))
+            boundary = do.load_state()["deployments"]["reload-pass"]
+            assert boundary["hot_reload_minutes"] == 15.0
+            assert boundary["hot_reload_sla_pass"] is True
+
+            monkeypatch.setattr(do, "now", lambda: "2026-08-11T12:00:00+00:00")
+            do.cmd_init(argparse_stub(version="reload-fail"))
+            monkeypatch.setattr(do, "now", lambda: "2026-08-11T12:31:00+00:00")
+            with pytest.raises(SystemExit) as exc:
+                do.cmd_hot_reload(argparse_stub(
+                    version="reload-fail", started_at="2026-08-11T12:00:00+00:00"))
+            assert exc.value.code == 2
+            failed = do.load_state()["deployments"]["reload-fail"]
+            assert failed["hot_reload_minutes"] == 31.0
+            assert failed["hot_reload_sla_pass"] is False
+            with pytest.raises(ValueError):
+                do._elapsed_minutes(
+                    "2026-08-11T12:01:00+00:00",
+                    "2026-08-11T12:00:00+00:00",
+                )
+        finally:
+            do.STATE_PATH = old
+
+    def test_rollback_sla_records_pass_and_fail(self, tmp_path, monkeypatch):
+        old = do.STATE_PATH
+        do.STATE_PATH = tmp_path / "deployments.json"
+        try:
+            monkeypatch.setattr(do, "now", lambda: "2026-08-11T12:00:00+00:00")
+            do.cmd_init(argparse_stub(version="rollback-pass"))
+            state = do.load_state()
+            state["deployments"]["rollback-pass"].update({
+                "phase": "FULL_SOAK", "rollout_pct": 100,
+                "quality": 100.0, "error_rate": 0.0,
+            })
+            state["healthy_versions"] = ["rollback-pass"]
+            state["active_version"] = "rollback-pass"
+            do.save_state(state)
+            monkeypatch.setattr(do, "now", lambda: "2026-08-11T12:05:00+00:00")
+            do.cmd_init(argparse_stub(version="rollback-fail"))
+            state = do.load_state()
+            state["active_version"] = "rollback-fail"
+            do.save_state(state)
+            do.cmd_auto_rollback(argparse_stub(
+                version="rollback-fail", reason="test", incident_started_at="2026-08-11T12:00:00+00:00"))
+            rolled = do.load_state()["deployments"]["rollback-fail"]
+            assert rolled["rollback_mttr_minutes"] == 5.0
+            assert rolled["rollback_sla_pass"] is True
+            assert rolled["phase"] == "ROLLED_BACK"
+            assert rolled["rollback_applied"] is True
+            assert do.load_state()["active_version"] == "rollback-pass"
+
+            monkeypatch.setattr(do, "now", lambda: "2026-08-11T12:05:00+00:00")
+            do.cmd_init(argparse_stub(version="rollback-breach"))
+            state = do.load_state()
+            state["active_version"] = "rollback-breach"
+            do.save_state(state)
+            monkeypatch.setattr(do, "now", lambda: "2026-08-11T12:12:00+00:00")
+            with pytest.raises(SystemExit) as exc:
+                do.cmd_auto_rollback(argparse_stub(
+                    version="rollback-breach", reason="test", incident_started_at="2026-08-11T12:00:00+00:00"))
+            assert exc.value.code == 2
+            failed = do.load_state()["deployments"]["rollback-breach"]
+            assert failed["rollback_mttr_minutes"] == 12.0
+            assert failed["rollback_sla_pass"] is False
+            assert failed["phase"] == "ROLLBACK_SLA_BREACH"
+            assert failed["rollback_applied"] is False
+            assert do.load_state()["active_version"] == "rollback-breach"
+
+            # Rollback z wersji nieaktywnej jest fail-closed i nie mutuje stanu.
+            with pytest.raises(SystemExit):
+                do.cmd_auto_rollback(argparse_stub(
+                    version="rollback-pass", reason="stale request",
+                    incident_started_at="2026-08-11T12:00:00+00:00"))
+            assert do.load_state()["active_version"] == "rollback-breach"
         finally:
             do.STATE_PATH = old
 
@@ -231,6 +447,10 @@ class TestGoldenReplay:
             golden_replay.cmd_record(argparse_stub(
                 input_hash="h1", verdict='{"matched": true, "vat_rate": 0.23}',
                 bundle="b1", legal_refs="LKG-0001"))
+            with pytest.raises(SystemExit):
+                golden_replay.cmd_record(argparse_stub(
+                    input_hash="h1", verdict='{"matched": true, "vat_rate": 0.23}',
+                    bundle="b1", legal_refs="LKG-0001"))
             # ten sam werdykt — brak zmiany
             golden_replay.cmd_replay(argparse_stub(
                 input_hash="h1", verdict='{"matched": true, "vat_rate": 0.23}',
@@ -240,6 +460,29 @@ class TestGoldenReplay:
                 golden_replay.cmd_replay(argparse_stub(
                     input_hash="h1", verdict='{"matched": true, "vat_rate": 0.08}',
                     reason=None))
+            with pytest.raises(SystemExit):
+                golden_replay.cmd_replay(argparse_stub(
+                    input_hash="unknown", verdict='{"matched": true}',
+                    reason=None))
+        finally:
+            golden_replay.GOLDEN_PATH = old
+
+    def test_record_replay_artifact_is_consumed_by_metrics(self, tmp_path, monkeypatch):
+        old = golden_replay.GOLDEN_PATH
+        golden_replay.GOLDEN_PATH = tmp_path / "golden.json"
+        try:
+            golden_replay.cmd_record(argparse_stub(
+                input_hash="h1", verdict='{"matched": true, "vat_rate": 0.23}',
+                bundle="b1", legal_refs="LKG-0001"))
+            golden_replay.cmd_replay(argparse_stub(
+                input_hash="h1", verdict='{"matched": true, "vat_rate": 0.23}',
+                reason=None))
+            monkeypatch.setattr(metrics_generator, "GOLDEN_REPLAY_PATH", golden_replay.GOLDEN_PATH)
+            metrics = metrics_generator.compute_metrics()
+            assert metrics["golden_replay"]["valid"] is True
+            assert metrics["golden_replay"]["replays"] == 1
+            assert metrics["golden_replay"]["uver_pct"] == 0.0
+            assert metrics["gate"]["GOLDEN_REPLAY_PASS"] is True
         finally:
             golden_replay.GOLDEN_PATH = old
 
@@ -347,6 +590,142 @@ class TestConfidenceDashboard:
         assert "legal_confidence_index" in d
         assert set(d["indexes"]) == {"LCI", "TCL", "RV"}
         assert "decision_confidence" in d and "uver_pct" in d
+
+
+# ══════════════════════ RAPORT 00/01 VERDICT TRACE CONTRACT ══════════════════════
+
+class TestVerdictTraceContract:
+    def test_provenance_path_contract_is_verified(self):
+        """The static contract is explicit; OPA runtime needs a host with opa."""
+        result = vvi.analizuj()
+        details = result["szczegoly"]
+        assert details["trace_sciezki"] is True
+        assert details["provenance_integration"] is True
+        assert details["provenance_to_p01"] is True
+        assert details["public_enforced_verdict"] is True
+        assert "provenance.rego" in details["_skanowane_pliki"]
+
+
+# ══════════════════════ RAPORT 00 METRICS GATE ══════════════════════
+
+class TestMetricsGenerator:
+    def test_tcl_is_computed_from_canonical_legal_basis(self):
+        metrics = metrics_generator.compute_metrics()
+        assert metrics["indexes"]["TCL"] == metrics_generator.compute_tcl()
+        rules = metrics_generator.scan_rules()
+        assert metrics["rules"]["temporal_coverage_pct"] == rules["temporal_coverage_pct"]
+        assert "TCL_PASS" in metrics["gate"]
+        assert "HARDCODE_PASS" in metrics["gate"]
+        assert metrics["gate"]["ALL_PASS"] is False
+
+    def test_golden_replay_is_separate_from_legal_audit_uvr(self, tmp_path, monkeypatch):
+        golden = tmp_path / "golden_verdicts.json"
+        verdict = {"matched": True}
+        golden.write_text(json.dumps({
+            "schema_version": 2,
+            "verdicts": {"h1": {
+                "verdict": verdict,
+                "verdict_hash": golden_replay.canonical_verdict_hash(verdict),
+                "hash_algorithm": "sha256-canonical-json-v1",
+            }},
+            "annotations": [],
+            "replays": [{
+                "golden_verdict_hash": golden_replay.canonical_verdict_hash(verdict),
+                "new_verdict": {"matched": False},
+                "new_verdict_hash": golden_replay.canonical_verdict_hash({"matched": False}),
+                "hash_algorithm": "sha256-canonical-json-v1",
+                "input_hash": "h1",
+                "changed": True,
+                "explained": False,
+                "uver_applies": True,
+            }],
+        }), encoding="utf-8")
+        monkeypatch.setattr(metrics_generator, "GOLDEN_REPLAY_PATH", golden)
+        metrics = metrics_generator.compute_metrics()
+        assert metrics["indexes"]["UVR"] == metrics_generator.compute_uvr()
+        assert metrics["golden_replay"]["uver_pct"] == 100.0
+        assert metrics["gate"]["GOLDEN_REPLAY_PASS"] is False
+        assert metrics["gate"]["ALL_PASS"] is False
+
+    def test_valid_golden_replay_passes_its_own_gate(self, tmp_path, monkeypatch):
+        golden = tmp_path / "golden_verdicts.json"
+        verdict = {"matched": True}
+        verdict_hash = golden_replay.canonical_verdict_hash(verdict)
+        golden.write_text(json.dumps({
+            "schema_version": 2,
+            "verdicts": {"h1": {
+                "verdict": verdict,
+                "verdict_hash": verdict_hash,
+                "hash_algorithm": "sha256-canonical-json-v1",
+            }},
+            "annotations": [],
+            "replays": [{
+                "input_hash": "h1",
+                "golden_verdict_hash": verdict_hash,
+                "new_verdict": verdict,
+                "new_verdict_hash": verdict_hash,
+                "hash_algorithm": "sha256-canonical-json-v1",
+                "changed": False,
+                "explained": False,
+                "uver_applies": False,
+            }],
+        }), encoding="utf-8")
+        monkeypatch.setattr(metrics_generator, "GOLDEN_REPLAY_PATH", golden)
+        metrics = metrics_generator.compute_metrics()
+        assert metrics["golden_replay"]["valid"] is True
+        assert metrics["golden_replay"]["uver_pct"] == 0.0
+        assert metrics["gate"]["GOLDEN_REPLAY_PASS"] is True
+
+    def test_tampered_replay_hash_is_not_a_pass(self, tmp_path, monkeypatch):
+        golden = tmp_path / "golden_verdicts.json"
+        verdict = {"matched": True}
+        golden.write_text(json.dumps({
+            "schema_version": 2,
+            "verdicts": {"h1": {
+                "verdict": verdict,
+                "verdict_hash": golden_replay.canonical_verdict_hash(verdict),
+                "hash_algorithm": "sha256-canonical-json-v1",
+            }},
+            "replays": [{
+                "input_hash": "h1",
+                "golden_verdict_hash": golden_replay.canonical_verdict_hash(verdict),
+                "new_verdict": {"matched": False},
+                "new_verdict_hash": "tampered",
+                "hash_algorithm": "sha256-canonical-json-v1",
+                "changed": True,
+                "explained": False,
+                "uver_applies": True,
+            }],
+        }), encoding="utf-8")
+        monkeypatch.setattr(metrics_generator, "GOLDEN_REPLAY_PATH", golden)
+        metrics = metrics_generator.compute_metrics()
+        assert metrics["golden_replay"]["valid"] is False
+        assert metrics["gate"]["GOLDEN_REPLAY_PASS"] is False
+
+    def test_malformed_golden_replay_is_not_a_pass(self, tmp_path, monkeypatch):
+        golden = tmp_path / "golden_verdicts.json"
+        golden.write_text(json.dumps({
+            "verdicts": {"h1": {"verdict": {"matched": True}}},
+            "replays": [],
+        }), encoding="utf-8")
+        monkeypatch.setattr(metrics_generator, "GOLDEN_REPLAY_PATH", golden)
+        metrics = metrics_generator.compute_metrics()
+        assert metrics["golden_replay"]["valid"] is False
+        assert metrics["gate"]["GOLDEN_REPLAY_PASS"] is False
+
+    def test_missing_golden_replay_is_not_a_pass(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(metrics_generator, "GOLDEN_REPLAY_PATH", tmp_path / "missing.json")
+        metrics = metrics_generator.compute_metrics()
+        assert metrics["golden_replay"]["available"] is False
+        assert metrics["golden_replay"]["uver_pct"] is None
+        assert metrics["gate"]["GOLDEN_REPLAY_PASS"] is False
+
+    def test_dry_run_does_not_require_writing_artifact(self, tmp_path, monkeypatch):
+        output = tmp_path / "metrics.json"
+        monkeypatch.setattr(metrics_generator, "OUT_METRICS", output)
+        metrics = metrics_generator.compute_metrics()
+        assert metrics["indexes"]["TCL"] < metrics_generator.SLO["TCL_MIN"]
+        assert not output.exists()
 
 
 # ── helper: stub argparse ────────────────────────────────────────────────

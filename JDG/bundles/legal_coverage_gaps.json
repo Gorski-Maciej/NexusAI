@@ -1,14 +1,15 @@
 {
-  "generated_at": "2026-08-08T12:11:23.468594+00:00",
+  "generated_at": "2026-08-11T19:35:15.217378+00:00",
   "articles_total": 27,
   "declared_points": 18,
   "by_status": {
-    "COMPLETE": 15,
-    "GAP": 12
+    "PARTIAL": 16,
+    "GAP": 6,
+    "COMPLETE": 5
   },
   "priorities": {
-    "P1_KKS": 5,
-    "P1_VAT_odliczenia": 0,
+    "P1_KKS": 2,
+    "P1_VAT_odliczenia": 1,
     "P1_amortyzacja": 0,
     "P2_UoR": 0,
     "P2_PCC_lokalne_akcyza": 0
@@ -16,12 +17,11 @@
   "priority_details": {
     "P1_KKS": [
       "IV. KKS — KODEKS KARNY SKARBOWY Art. 16 — Czynny żal",
-      "IV. KKS — KODEKS KARNY SKARBOWY Art. 54 — Uchylanie się od opodatkowania",
-      "IV. KKS — KODEKS KARNY SKARBOWY Art. 56 — Nierzetelne księgi/PKPiR",
-      "IV. KKS — KODEKS KARNY SKARBOWY Art. 62 — Puste faktury",
-      "IV. KKS — KODEKS KARNY SKARBOWY Art. 57 — Nierzetelna ewidencja VAT"
+      "IV. KKS — KODEKS KARNY SKARBOWY Art. 44 — Przedawnienie karalności przestępstw (5 lat)"
     ],
-    "P1_VAT_odliczenia": [],
+    "P1_VAT_odliczenia": [
+      "I. USTAWA O VAT Art. 86 — Odliczenie VAT naliczonego"
+    ],
     "P1_amortyzacja": [],
     "P2_UoR": [],
     "P2_PCC_lokalne_akcyza": []
@@ -34,14 +34,17 @@
         "V.01-V.05"
       ],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.vat.a5.r1"
       ],
       "existing_rules": [
         "jdg.vat.a5.r1"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.vat.a5.r1"
+      ]
     },
     {
       "act": "I. USTAWA O VAT",
@@ -57,7 +60,8 @@
       "existing_rules": [],
       "missing_rules": [
         "jdg.vat.a17.r5"
-      ]
+      ],
+      "evidence_missing_rules": []
     },
     {
       "act": "I. USTAWA O VAT",
@@ -66,14 +70,17 @@
         "V.41-V.45"
       ],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.vat.a41.r1"
       ],
       "existing_rules": [
         "jdg.vat.a41.r1"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.vat.a41.r1"
+      ]
     },
     {
       "act": "I. USTAWA O VAT",
@@ -82,14 +89,17 @@
         "V.86-V.95"
       ],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.vat.a86.r1"
       ],
       "existing_rules": [
         "jdg.vat.a86.r1"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.vat.a86.r1"
+      ]
     },
     {
       "act": "I. USTAWA O VAT",
@@ -98,14 +108,17 @@
         "V.89a.1-V.89a.9"
       ],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.vat.a89a.r1"
       ],
       "existing_rules": [
         "jdg.vat.a89a.r1"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.vat.a89a.r1"
+      ]
     },
     {
       "act": "I. USTAWA O VAT",
@@ -114,14 +127,17 @@
         "V.89b.1-V.89b.5"
       ],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.vat.a89b.r1"
       ],
       "existing_rules": [
         "jdg.vat.a89b.r1"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.vat.a89b.r1"
+      ]
     },
     {
       "act": "I. USTAWA O VAT",
@@ -137,7 +153,8 @@
       "existing_rules": [],
       "missing_rules": [
         "jdg.vat.a90.r1"
-      ]
+      ],
+      "evidence_missing_rules": []
     },
     {
       "act": "I. USTAWA O VAT",
@@ -146,14 +163,17 @@
         "V.106e.1-V.106e.14"
       ],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.vat.a106e.r10"
       ],
       "existing_rules": [
         "jdg.vat.a106e.r10"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.vat.a106e.r10"
+      ]
     },
     {
       "act": "I. USTAWA O VAT",
@@ -169,7 +189,8 @@
       "existing_rules": [],
       "missing_rules": [
         "jdg.vat.a113.r1"
-      ]
+      ],
+      "evidence_missing_rules": []
     },
     {
       "act": "I. USTAWA O VAT",
@@ -178,13 +199,34 @@
         "V.106na-V.106nq"
       ],
       "declared_status": "COMPLETE",
-      "actual_status": "GAP",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.ksef_jpk.*"
       ],
-      "existing_rules": [],
-      "missing_rules": [
-        "jdg.ksef_jpk.*"
+      "existing_rules": [
+        "jdg.ksef_jpk.jpk_gtu_completeness",
+        "jdg.ksef_jpk.jpk_pkpir",
+        "jdg.ksef_jpk.jpk_v7m",
+        "jdg.ksef_jpk.ksef_b2c_exemption",
+        "jdg.ksef_jpk.ksef_b2c_mandatory_2026",
+        "jdg.ksef_jpk.ksef_duplicate_detected",
+        "jdg.ksef_jpk.ksef_mandatory",
+        "jdg.ksef_jpk.ksef_offline_pkpir",
+        "jdg.ksef_jpk.ksef_offline_recovery",
+        "jdg.ksef_jpk.no_match",
+        "jdg.ksef_jpk.token_stale"
+      ],
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.ksef_jpk.jpk_gtu_completeness",
+        "jdg.ksef_jpk.jpk_pkpir",
+        "jdg.ksef_jpk.jpk_v7m",
+        "jdg.ksef_jpk.ksef_b2c_exemption",
+        "jdg.ksef_jpk.ksef_b2c_mandatory_2026",
+        "jdg.ksef_jpk.ksef_mandatory",
+        "jdg.ksef_jpk.ksef_offline_pkpir",
+        "jdg.ksef_jpk.ksef_offline_recovery",
+        "jdg.ksef_jpk.no_match"
       ]
     },
     {
@@ -201,7 +243,8 @@
       "existing_rules": [],
       "missing_rules": [
         "jdg.pit.advances_returns.loss_carry_forward"
-      ]
+      ],
+      "evidence_missing_rules": []
     },
     {
       "act": "II. USTAWA O PIT",
@@ -210,14 +253,17 @@
         "P.14.1-P.14.8"
       ],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.pit.a14.r1"
       ],
       "existing_rules": [
         "jdg.pit.a14.r1"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.pit.a14.r1"
+      ]
     },
     {
       "act": "II. USTAWA O PIT",
@@ -226,14 +272,17 @@
         "P.22.1-P.22.15"
       ],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.pit.a22.r1"
       ],
       "existing_rules": [
         "jdg.pit.a22.r1"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.pit.a22.r1"
+      ]
     },
     {
       "act": "II. USTAWA O PIT",
@@ -242,14 +291,17 @@
         "P.23.1-P.23.57"
       ],
       "declared_status": "PARTIAL",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.pit.a23.r1"
       ],
       "existing_rules": [
         "jdg.pit.a23.r1"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.pit.a23.r1"
+      ]
     },
     {
       "act": "II. USTAWA O PIT",
@@ -258,14 +310,17 @@
         "P.27.1-P.27.9"
       ],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.pit.a27.r1"
       ],
       "existing_rules": [
         "jdg.pit.a27.r1"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.pit.a27.r1"
+      ]
     },
     {
       "act": "II. USTAWA O PIT",
@@ -281,7 +336,8 @@
       "existing_rules": [],
       "missing_rules": [
         "jdg.pit.a30c.r1"
-      ]
+      ],
+      "evidence_missing_rules": []
     },
     {
       "act": "II. USTAWA O PIT",
@@ -290,14 +346,17 @@
         "P.30ca.1-P.30ca.11"
       ],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.pit.a30ca.r1"
       ],
       "existing_rules": [
         "jdg.pit.a30ca.r1"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.pit.a30ca.r1"
+      ]
     },
     {
       "act": "II. USTAWA O PIT",
@@ -313,35 +372,42 @@
       "existing_rules": [
         "jdg.crossborder.cfc_jdg_controlled"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": []
     },
     {
       "act": "III. ORDYNACJA PODATKOWA",
       "article": "70 — Przedawnienie zobowiązań (5 lat)",
       "points": [],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.ord.a70.r1"
       ],
       "existing_rules": [
         "jdg.ord.a70.r1"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.ord.a70.r1"
+      ]
     },
     {
       "act": "III. ORDYNACJA PODATKOWA",
       "article": "81 — Korekty deklaracji",
       "points": [],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.ord.a81.r1"
       ],
       "existing_rules": [
         "jdg.ord.a81.r1"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.ord.a81.r1"
+      ]
     },
     {
       "act": "III. ORDYNACJA PODATKOWA",
@@ -355,20 +421,45 @@
       "existing_rules": [],
       "missing_rules": [
         "jdg.ord.a117ba.r1"
-      ]
+      ],
+      "evidence_missing_rules": []
     },
     {
       "act": "IV. KKS — KODEKS KARNY SKARBOWY",
       "article": "16 — Czynny żal",
       "points": [],
       "declared_status": "COMPLETE",
-      "actual_status": "GAP",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.kks.voluntary_disclosure_*"
       ],
-      "existing_rules": [],
-      "missing_rules": [
-        "jdg.kks.voluntary_disclosure_*"
+      "existing_rules": [
+        "jdg.kks.voluntary_disclosure_art16",
+        "jdg.kks.voluntary_disclosure_bribe_disclosure",
+        "jdg.kks.voluntary_disclosure_correction_before_audit",
+        "jdg.kks.voluntary_disclosure_deadline",
+        "jdg.kks.voluntary_disclosure_deadline_breach",
+        "jdg.kks.voluntary_disclosure_eligible",
+        "jdg.kks.voluntary_disclosure_foreign_tax",
+        "jdg.kks.voluntary_disclosure_guide",
+        "jdg.kks.voluntary_disclosure_mandatory_reporter",
+        "jdg.kks.voluntary_disclosure_multiple_offenses",
+        "jdg.kks.voluntary_disclosure_partial",
+        "jdg.kks.voluntary_disclosure_payment",
+        "jdg.kks.voluntary_disclosure_successor"
+      ],
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.kks.voluntary_disclosure_art16",
+        "jdg.kks.voluntary_disclosure_correction_before_audit",
+        "jdg.kks.voluntary_disclosure_deadline",
+        "jdg.kks.voluntary_disclosure_eligible",
+        "jdg.kks.voluntary_disclosure_foreign_tax",
+        "jdg.kks.voluntary_disclosure_guide",
+        "jdg.kks.voluntary_disclosure_multiple_offenses",
+        "jdg.kks.voluntary_disclosure_partial",
+        "jdg.kks.voluntary_disclosure_payment",
+        "jdg.kks.voluntary_disclosure_successor"
       ]
     },
     {
@@ -376,71 +467,111 @@
       "article": "44 — Przedawnienie karalności przestępstw (5 lat)",
       "points": [],
       "declared_status": "COMPLETE",
-      "actual_status": "COMPLETE",
+      "actual_status": "PARTIAL",
       "declared_rules": [
         "jdg.kks.statute_of_limitations_crime_5y"
       ],
       "existing_rules": [
         "jdg.kks.statute_of_limitations_crime_5y"
       ],
-      "missing_rules": []
+      "missing_rules": [],
+      "evidence_missing_rules": [
+        "jdg.kks.statute_of_limitations_crime_5y"
+      ]
     },
     {
       "act": "IV. KKS — KODEKS KARNY SKARBOWY",
       "article": "54 — Uchylanie się od opodatkowania",
       "points": [],
       "declared_status": "PARTIAL",
-      "actual_status": "GAP",
+      "actual_status": "COMPLETE",
       "declared_rules": [
         "jdg.kks.tax_evasion_*"
       ],
-      "existing_rules": [],
-      "missing_rules": [
-        "jdg.kks.tax_evasion_*"
-      ]
+      "existing_rules": [
+        "jdg.kks.tax_evasion_classification",
+        "jdg.kks.tax_evasion_concealed_business_art54_p3",
+        "jdg.kks.tax_evasion_double_books_p244",
+        "jdg.kks.tax_evasion_elements_art54_p1",
+        "jdg.kks.tax_evasion_false_declaration",
+        "jdg.kks.tax_evasion_hiding_revenue",
+        "jdg.kks.tax_evasion_inflated_costs_p243",
+        "jdg.kks.tax_evasion_shell_company_p245",
+        "jdg.kks.tax_evasion_significant_art54_p2"
+      ],
+      "missing_rules": [],
+      "evidence_missing_rules": []
     },
     {
       "act": "IV. KKS — KODEKS KARNY SKARBOWY",
       "article": "56 — Nierzetelne księgi/PKPiR",
       "points": [],
       "declared_status": "COMPLETE",
-      "actual_status": "GAP",
+      "actual_status": "COMPLETE",
       "declared_rules": [
         "jdg.kks.unreliable_books_*"
       ],
-      "existing_rules": [],
-      "missing_rules": [
-        "jdg.kks.unreliable_books_*"
-      ]
+      "existing_rules": [
+        "jdg.kks.unreliable_books_destroyed_p258",
+        "jdg.kks.unreliable_books_falsified_entries",
+        "jdg.kks.unreliable_books_missing_entries",
+        "jdg.kks.unreliable_books_wrong_values_p257"
+      ],
+      "missing_rules": [],
+      "evidence_missing_rules": []
     },
     {
       "act": "IV. KKS — KODEKS KARNY SKARBOWY",
       "article": "62 — Puste faktury",
       "points": [],
       "declared_status": "COMPLETE",
-      "actual_status": "GAP",
+      "actual_status": "COMPLETE",
       "declared_rules": [
         "jdg.kks.empty_invoice_*"
       ],
-      "existing_rules": [],
-      "missing_rules": [
-        "jdg.kks.empty_invoice_*"
-      ]
+      "existing_rules": [
+        "jdg.kks.empty_invoice_art62",
+        "jdg.kks.empty_invoice_carousel_art62_p3",
+        "jdg.kks.empty_invoice_conspirator_p314",
+        "jdg.kks.empty_invoice_cross_border_p308",
+        "jdg.kks.empty_invoice_cross_border_p316",
+        "jdg.kks.empty_invoice_digital_forgery_p309",
+        "jdg.kks.empty_invoice_esignature_forgery_p317",
+        "jdg.kks.empty_invoice_intermediary_p313",
+        "jdg.kks.empty_invoice_issued",
+        "jdg.kks.empty_invoice_ksef_fraud_p310",
+        "jdg.kks.empty_invoice_ksef_validation_p318",
+        "jdg.kks.empty_invoice_organized_scheme_p307",
+        "jdg.kks.empty_invoice_recipient_knowledge_p312",
+        "jdg.kks.empty_invoice_systematic_p306",
+        "jdg.kks.empty_invoice_timestamp_fraud_p311",
+        "jdg.kks.empty_invoice_upo_verification_p319",
+        "jdg.kks.empty_invoice_value_bands_p315"
+      ],
+      "missing_rules": [],
+      "evidence_missing_rules": []
     },
     {
       "act": "IV. KKS — KODEKS KARNY SKARBOWY",
       "article": "57 — Nierzetelna ewidencja VAT",
       "points": [],
       "declared_status": "COMPLETE",
-      "actual_status": "GAP",
+      "actual_status": "COMPLETE",
       "declared_rules": [
         "jdg.kks.unreliable_vat_*"
       ],
-      "existing_rules": [],
-      "missing_rules": [
-        "jdg.kks.unreliable_vat_*"
-      ]
+      "existing_rules": [
+        "jdg.kks.unreliable_vat_evidence_art57",
+        "jdg.kks.unreliable_vat_evidence_detailed",
+        "jdg.kks.unreliable_vat_records"
+      ],
+      "missing_rules": [],
+      "evidence_missing_rules": []
     }
   ],
-  "actual_rule_ids": 11860
+  "actual_rule_ids": 11992,
+  "evidence_summary": {
+    "nonempty_legal_basis_rule_ids": 11210,
+    "tested_rule_ids": 1606
+  }
 }

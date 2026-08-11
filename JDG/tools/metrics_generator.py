@@ -7,8 +7,8 @@ do bundles/metrics.json dla CI gate + dashboardu /jdg/health.
 
 Wskaźniki (definicje z RAPORT_00 / WIZJA V2):
   LCI = Legal Coverage Index = punkty prawne pokryte / wszystkie × 100 (cel ≥ 99%)
-  TCL = Total Canonical Coverage = reguły z _legal_basis kanoniczną / materialne × 100 (cel 100%)
-  RV  = Reference Validity = reguły OK / reguły z podstawą × 100 (cel ≥ 90%)
+  TCL = Total Canonical Coverage = reguły z kanoniczną podstawą / reguły materialne × 100 (cel 100%)
+  RV  = Reference Validity = reguły OK / reguły z rozpoznaną podstawą × 100 (cel ≥ 90%)
   UVR = Unverified = reguły bez weryfikowalnej podstawy (cel 0)
   duplikaty = 0, stuby = 0
 
@@ -17,6 +17,7 @@ Usage:
   python metrics_generator.py --gate       # bramka CI: FAIL przy naruszeniu SLO
   python metrics_generator.py --json       # JSON na stdout
   python metrics_generator.py --health     # Health-Score JDG 0-100
+  python metrics_generator.py --dry-run --json  # JSON bez zapisu artefaktu
 """
 
 import argparse
@@ -27,6 +28,8 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+from golden_replay import canonical_verdict_hash
+
 JDG_ROOT = Path(__file__).resolve().parent.parent
 BUNDLES = JDG_ROOT / "bundles"
 RULES_DIR = JDG_ROOT / "rules"
@@ -34,6 +37,7 @@ LEGAL_COVERAGE = JDG_ROOT / "docs" / "LEGAL_COVERAGE.md"
 LEGAL_GAPS = BUNDLES / "legal_coverage_gaps.json"
 LEGAL_AUDIT = BUNDLES / "legal_basis_audit.json"
 OUT_METRICS = BUNDLES / "metrics.json"
+GOLDEN_REPLAY_PATH = BUNDLES / "golden_verdicts.json"
 
 # SLO targets (V1/V2)
 SLO = {
@@ -41,8 +45,10 @@ SLO = {
     "TCL_MIN": 100,
     "RV_MIN": 90,
     "UVR_MAX": 0,
+    "GOLDEN_REPLAY_UVER_MAX": 0,
     "duplicates_MAX": 0,
     "stubs_MAX": 0,
+    "hardcoded_MAX": 0,
 }
 
 
@@ -55,6 +61,7 @@ def scan_rules() -> dict:
     dup_counter = defaultdict(int)
     stubs = 0
     hardcoded = 0
+    temporal_blocks = 0
 
     for path in sorted(RULES_DIR.rglob("*.rego")):
         total_files += 1
@@ -65,9 +72,14 @@ def scan_rules() -> dict:
 
         # Licz bloki reguł
         pattern = re.compile(r'(?:default\s+)?(?:else\s+)?:=\s*\{')
-        for match in pattern.finditer(content):
-            block = content[match.start():]
+        matches = list(pattern.finditer(content))
+        for index, match in enumerate(matches):
+            next_start = matches[index + 1].start() if index + 1 < len(matches) else len(content)
+            block = content[match.start():next_start]
             total_blocks += 1
+
+            if re.search(r'"valid_(?:from|to)"\s*:', block):
+                temporal_blocks += 1
 
             m_matched = re.search(r'"matched"\s*:\s*(true|false)', block[:4000])
             if m_matched and m_matched.group(1) == "true":
@@ -98,6 +110,8 @@ def scan_rules() -> dict:
         "duplicate_rule_ids": duplicates,
         "stub_count": stubs,
         "hardcoded_values": hardcoded,
+        "temporal_blocks": temporal_blocks,
+        "temporal_coverage_pct": round(temporal_blocks / total_blocks * 100, 2) if total_blocks else 0.0,
     }
 
 
@@ -130,31 +144,114 @@ def compute_lci() -> float:
     return 8.0  # estymata z COVERAGE_REPORT.md (44/509 ≈ 8.6%)
 
 
-def compute_rv() -> float:
-    """RV: reguły OK (kanoniczne) / reguły z podstawą × 100."""
+def _legal_audit_stats() -> dict[str, int]:
+    """Wczytaj statystyki audytu z bezpiecznymi wartościami domyślnymi."""
     if LEGAL_AUDIT.exists():
         try:
             audit = json.loads(LEGAL_AUDIT.read_text(encoding="utf-8"))
             stats = audit.get("stats", {})
-            ok = stats.get("OK", 0)
-            total = sum(stats.values())
-            if total > 0:
-                return round(ok / total * 100, 2)
-        except Exception:
+            return {key: int(stats.get(key, 0) or 0) for key in
+                    ("OK", "NON_CANONICAL", "MISSING", "UNKNOWN_ACT")}
+        except (OSError, TypeError, ValueError):
             pass
-    return 5.33  # wartość z RAPORT_00
+    return {"OK": 0, "NON_CANONICAL": 0, "MISSING": 0, "UNKNOWN_ACT": 0}
+
+
+def compute_tcl() -> float:
+    """TCL: kanoniczne podstawy / reguły materialne × 100."""
+    stats = _legal_audit_stats()
+    ok = stats["OK"]
+    material = ok + stats["NON_CANONICAL"] + stats["MISSING"] + stats["UNKNOWN_ACT"]
+    return round(ok / material * 100, 2) if material else 0.0
+
+
+def compute_rv() -> float:
+    """RV: reguły OK / reguły z rozpoznaną podstawą × 100."""
+    stats = _legal_audit_stats()
+    ok = stats["OK"]
+    identified = ok + stats["NON_CANONICAL"]
+    return round(ok / identified * 100, 2) if identified else 0.0
 
 
 def compute_uvr() -> int:
     """UVR: liczba reguł z MISSING lub UNKNOWN_ACT."""
     if LEGAL_AUDIT.exists():
         try:
-            audit = json.loads(LEGAL_AUDIT.read_text(encoding="utf-8"))
-            stats = audit.get("stats", {})
-            return stats.get("MISSING", 0) + stats.get("UNKNOWN_ACT", 0)
-        except Exception:
+            stats = _legal_audit_stats()
+            return stats["MISSING"] + stats["UNKNOWN_ACT"]
+        except (OSError, TypeError, ValueError):
             pass
     return 1138  # wartość z RAPORT_00
+
+
+def _golden_replay_stats() -> dict:
+    """Odczytaj dowód Golden Replay bez wykonywania zapisu.
+
+    Golden Replay mierzy procent nieuzasadnionych zmian werdyktów (UVER),
+    odrębnie od UVR legal-audit (MISSING + UNKNOWN_ACT). Brak artefaktu lub
+    uszkodzony artefakt oznacza brak dowodu i nie może przejść bramki.
+    """
+    empty = {
+        "available": False,
+        "valid": False,
+        "golden_verdicts": 0,
+        "replays": 0,
+        "changed": 0,
+        "unexplained": 0,
+        "uver_pct": None,
+    }
+    if not GOLDEN_REPLAY_PATH.exists():
+        return empty
+    try:
+        data = json.loads(GOLDEN_REPLAY_PATH.read_text(encoding="utf-8"))
+        verdicts = data.get("verdicts")
+        replays = data.get("replays")
+        if data.get("schema_version") != 2:
+            return empty
+        if not isinstance(verdicts, dict) or not isinstance(replays, list) or not verdicts:
+            return empty
+        if any(
+            not isinstance(key, str)
+            or not isinstance(entry, dict)
+            or "verdict" not in entry
+            or entry.get("verdict_hash") != canonical_verdict_hash(entry.get("verdict"))
+            or entry.get("hash_algorithm") != "sha256-canonical-json-v1"
+            for key, entry in verdicts.items()
+        ):
+            return empty
+        if not replays or any(
+            not isinstance(row, dict)
+            or row.get("input_hash") not in verdicts
+            or not isinstance(row.get("changed"), bool)
+            or not isinstance(row.get("explained"), bool)
+            or not isinstance(row.get("golden_verdict_hash"), str)
+            or "new_verdict" not in row
+            or not isinstance(row.get("new_verdict_hash"), str)
+            or row.get("hash_algorithm") != "sha256-canonical-json-v1"
+            or row.get("golden_verdict_hash") != verdicts[row.get("input_hash")].get("verdict_hash")
+            or row.get("new_verdict_hash") != canonical_verdict_hash(row.get("new_verdict"))
+            or not isinstance(row.get("uver_applies"), bool)
+            or row.get("changed") != (row.get("new_verdict_hash") != row.get("golden_verdict_hash"))
+            or row.get("uver_applies") != (row.get("changed") and not row.get("explained"))
+            for row in replays
+        ):
+            return empty
+        if {row["input_hash"] for row in replays} != set(verdicts):
+            return empty
+        unexplained = sum(1 for row in replays if row.get("uver_applies") is True)
+        changed = sum(1 for row in replays if row.get("changed") is True)
+        total = len(replays)
+        return {
+            "available": True,
+            "valid": bool(verdicts),
+            "golden_verdicts": len(verdicts),
+            "replays": total,
+            "changed": changed,
+            "unexplained": unexplained,
+            "uver_pct": round(unexplained / total * 100, 2) if total else 0.0,
+        }
+    except (OSError, TypeError, ValueError):
+        return empty
 
 
 def health_score(rules: dict, lci: float, rv: float, uvr: int) -> dict:
@@ -195,15 +292,19 @@ def health_score(rules: dict, lci: float, rv: float, uvr: int) -> dict:
 
 
 def compute_metrics() -> dict:
-    """Pełna kalkulacja wskaźników."""
+    """Pełna kalkulacja wskaźników z artefaktów repozytorium.
+
+    TCL pochodzi z audytu kanonicznych podstaw prawnych. Pokrycie pól
+    temporalnych jest publikowane osobno jako diagnostyczne
+    ``temporal_coverage_pct`` i nie podszywa się pod TCL.
+    """
     rules = scan_rules()
     lci = compute_lci()
+    tcl = compute_tcl()
     rv = compute_rv()
     uvr = compute_uvr()
+    golden_replay = _golden_replay_stats()
     hs = health_score(rules, lci, rv, uvr)
-
-    # TCL: szacowany na podstawie temporal.rego coverage
-    tcl = 85.0  # temporal coverage estimate (improve with real data)
 
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -223,21 +324,34 @@ def compute_metrics() -> dict:
             "duplicate_rule_ids": rules["duplicate_rule_ids"],
             "stub_count": rules["stub_count"],
             "hardcoded_values": rules["hardcoded_values"],
+            "temporal_blocks": rules["temporal_blocks"],
+            "temporal_coverage_pct": rules["temporal_coverage_pct"],
         },
         "health_score": hs,
+        "golden_replay": golden_replay,
         "slo": SLO,
         "gate": {
             "LCI_PASS": lci >= SLO["LCI_MIN"],
+            "TCL_PASS": tcl >= SLO["TCL_MIN"],
             "RV_PASS": rv >= SLO["RV_MIN"],
             "UVR_PASS": uvr <= SLO["UVR_MAX"],
+            "GOLDEN_REPLAY_PASS": (
+                golden_replay["valid"]
+                and golden_replay["uver_pct"] <= SLO["GOLDEN_REPLAY_UVER_MAX"]
+            ),
             "DUPES_PASS": rules["duplicate_rule_ids"] <= SLO["duplicates_MAX"],
             "STUBS_PASS": rules["stub_count"] <= SLO["stubs_MAX"],
+            "HARDCODE_PASS": rules["hardcoded_values"] <= SLO["hardcoded_MAX"],
             "ALL_PASS": (
                 lci >= SLO["LCI_MIN"]
+                and tcl >= SLO["TCL_MIN"]
                 and rv >= SLO["RV_MIN"]
                 and uvr <= SLO["UVR_MAX"]
+                and golden_replay["valid"]
+                and golden_replay["uver_pct"] <= SLO["GOLDEN_REPLAY_UVER_MAX"]
                 and rules["duplicate_rule_ids"] <= SLO["duplicates_MAX"]
                 and rules["stub_count"] <= SLO["stubs_MAX"]
+                and rules["hardcoded_values"] <= SLO["hardcoded_MAX"]
             ),
         },
     }
@@ -248,7 +362,8 @@ def cmd_gate(metrics: dict) -> int:
     gate = metrics["gate"]
     if gate["ALL_PASS"]:
         print("✅ METRICS GATE — ALL SLO PASSED")
-        print(f"   LCI={metrics['indexes']['LCI']}% RV={metrics['indexes']['RV']}% "
+        print(f"   LCI={metrics['indexes']['LCI']}% TCL={metrics['indexes']['TCL']}% "
+              f"RV={metrics['indexes']['RV']}% "
               f"UVR={metrics['indexes']['UVR']} duplikaty={metrics['rules']['duplicate_rule_ids']} "
               f"stuby={metrics['rules']['stub_count']}")
         return 0
@@ -256,14 +371,27 @@ def cmd_gate(metrics: dict) -> int:
     print("❌ METRICS GATE — SLO VIOLATIONS:")
     if not gate["LCI_PASS"]:
         print(f"   LCI {metrics['indexes']['LCI']}% < {SLO['LCI_MIN']}%")
+    if not gate["TCL_PASS"]:
+        print(f"   TCL {metrics['indexes']['TCL']}% < {SLO['TCL_MIN']}%")
     if not gate["RV_PASS"]:
         print(f"   RV {metrics['indexes']['RV']}% < {SLO['RV_MIN']}%")
     if not gate["UVR_PASS"]:
         print(f"   UVR {metrics['indexes']['UVR']} > {SLO['UVR_MAX']}")
+    if not gate["GOLDEN_REPLAY_PASS"]:
+        replay = metrics["golden_replay"]
+        if not replay["available"]:
+            print("   Golden Replay: brak artefaktu golden_verdicts.json")
+        elif not replay["valid"]:
+            print("   Golden Replay: brak złotych werdyktów (brak dowodu baseline)")
+        else:
+            print(f"   Golden Replay UVER {replay['uver_pct']}% > "
+                  f"{SLO['GOLDEN_REPLAY_UVER_MAX']}%")
     if not gate["DUPES_PASS"]:
         print(f"   Duplikaty {metrics['rules']['duplicate_rule_ids']} > {SLO['duplicates_MAX']}")
     if not gate["STUBS_PASS"]:
         print(f"   Stuby {metrics['rules']['stub_count']} > {SLO['stubs_MAX']}")
+    if not gate["HARDCODE_PASS"]:
+        print(f"   Hardcode {metrics['rules']['hardcoded_values']} > {SLO['hardcoded_MAX']}")
     return 1
 
 
@@ -272,11 +400,13 @@ def main() -> None:
     p.add_argument("--gate", action="store_true", help="bramka CI: FAIL przy naruszeniu SLO")
     p.add_argument("--json", action="store_true", help="JSON na stdout")
     p.add_argument("--health", action="store_true", help="Health-Score JDG 0-100")
+    p.add_argument("--dry-run", action="store_true", help="nie zapisuj bundles/metrics.json")
     args = p.parse_args()
 
     metrics = compute_metrics()
-    BUNDLES.mkdir(parents=True, exist_ok=True)
-    OUT_METRICS.write_text(json.dumps(metrics, indent=2, ensure_ascii=False), encoding="utf-8")
+    if not args.dry_run:
+        BUNDLES.mkdir(parents=True, exist_ok=True)
+        OUT_METRICS.write_text(json.dumps(metrics, indent=2, ensure_ascii=False), encoding="utf-8")
 
     if args.json:
         print(json.dumps(metrics, indent=2, ensure_ascii=False))
@@ -294,7 +424,7 @@ def main() -> None:
           f"duplikaty={metrics['rules']['duplicate_rule_ids']} "
           f"stuby={metrics['rules']['stub_count']} "
           f"health={metrics['health_score']['score']}/100")
-    print(f"   Zapisano: {OUT_METRICS.relative_to(JDG_ROOT)}")
+    print(f"   {'Nie zapisano (dry-run)' if args.dry_run else f'Zapisano: {OUT_METRICS.relative_to(JDG_ROOT)}'}")
 
     if args.gate:
         sys.exit(cmd_gate(metrics))
