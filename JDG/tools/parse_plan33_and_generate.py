@@ -24,7 +24,7 @@ DOMAIN_TO_PACKAGE = {
     "zus": "jdg.micro.zus",
     "ryc": "jdg.micro.ryc",
     "health": "jdg.micro.health",
-    "kks": "jdg.micro.kks",
+    "kks": "jdg.micro.kks.plan33",
     "pcc": "jdg.micro.pcc",
     "uor": "jdg.micro.uor",
     "ceidg": "jdg.micro.ceidg",
@@ -354,11 +354,19 @@ def generate_rego_files(rules, dry_run=False):
         
         # Rules
         for idx, r in enumerate(domain_rules):
+            # Plan33 is a supplementary namespace: source catalog IDs
+            # historically used the canonical micro prefix, but generated
+            # rules must remain globally unique after regeneration.
+            generated_rule_id = r["rule_id"]
+            if domain == "kks" and generated_rule_id.startswith("jdg.micro.kks."):
+                generated_rule_id = generated_rule_id.replace(
+                    "jdg.micro.kks.", "jdg.micro.kks.plan33.", 1
+                )
             # Comment line
             desc = r.get("description", r.get("condition", ""))
             desc = desc.replace('"', '\\"')
             name = r.get("name", "")
-            comment = f"# {r['rule_id']}"
+            comment = f"# {generated_rule_id}"
             if name:
                 comment += f" — `{name}`"
             if desc:
@@ -372,7 +380,7 @@ def generate_rego_files(rules, dry_run=False):
             routing_reason = r.get("condition", "")
             legal_basis = r.get("legal_basis", "")
             verdict = build_verdict(
-                rule_id=r["rule_id"],
+                rule_id=generated_rule_id,
                 package=package,
                 priority=r["priority"],
                 routing_reason=routing_reason,

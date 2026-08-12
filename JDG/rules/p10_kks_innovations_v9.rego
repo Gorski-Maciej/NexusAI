@@ -121,6 +121,11 @@ penalty_gradation_audit := {
     "max_rates_crime": kks_max_rates_crime,
     "max_rates_misdemeanor": kks_max_rates_misdemeanor,
     "offense_matrix": kks_offense_matrix,
+    # Temporal evidence is attached to the material audit verdict, not merely
+    # to the package/file. The KKS provisions covered here are effective from
+    # the current source snapshot until superseded by a later legal version.
+    "valid_from": "2026-01-01",
+    "valid_to": null,
     "aggravating": ["recydywa (art. 37)", "korzyść dużej wartości", "utrudnianie kontroli", "wielość czynów"],
     "mitigating": ["mała wartość (art. 53 §6)", "pierwsze naruszenie", "dobrowolna naprawa szkody", "przyznanie się"],
     "recidivism_note": "recydywa — kara w wysokości do 2× górnej granicy (art. 37 §1 pkt 2 KKS)",
@@ -239,6 +244,8 @@ voluntary_disclosure_audit := {
         "zapłata należności (podatek + odsetki) w terminie",
     ],
     "art17_voluntary_submission": "dobrowolne poddanie się odpowiedzialności — wniosek o skazanie bez postępowania sądowego",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
     "exclusions": ["czyn zabroniony został ujawniony przez kontrolę", "organ dysponował już informacjami o czynie"],
     "_routing": "",
     "_routing_reason": "Audyt czynnego żalu (art. 16) i dobrowolnego poddania się (art. 17)",
@@ -275,6 +282,8 @@ limitation_calendar := {
     "matched": true,
     "crime_years": to_number(object.get(kks_limits, "limitation_years_crime", 5)),
     "misdemeanor_years": to_number(object.get(kks_limits, "limitation_years_misdemeanor", 3)),
+    "valid_from": "2026-01-01",
+    "valid_to": null,
     "note": "przedawnienie karalności przestępstwa skarbowego — 5 lat; wykroczenia — 3 lata (art. 44 KKS)",
     "tax_arrears_interaction": "przedawnienie zobowiązania podatkowego (5 lat, art. 70 OrdPU) — przedawnienie karalności nie następuje przed przedawnieniem zobowiązania",
     "_routing": "",
@@ -586,10 +595,13 @@ decide := {
     "audit_readiness": tax_audit_readiness,
     "related_liability": related_liability_audit,
     "judgment_trend": judgment_trend_predictor,
-    "_routing": "REPORT",
-    "_routing_reason": "Raport syntetyczny KKS (P10) — pokrycie, gradacja kar, minimalizacja, czynny żal, przedawnienie",
+    "_routing": "SUGGEST",
+    "decision_mode": "SUGGEST",
+    "recommendation_only": true,
+    "requires_human_review": true,
+    "_routing_reason": "Raport syntetyczny KKS (P10) — pokrycie, gradacja kar, minimalizacja, czynny żal, przedawnienie; bez automatycznej decyzji",
     "_legal_basis": "KKS (Dz.U. 2025 poz. 678): art. 16, 17, 37, 44, 45, 53-83",
-    "_warnings": [],
+    "_warnings": ["RECOMMENDATION_ONLY: odpowiedzialność karno-skarbowa wymaga weryfikacji doradcy/adwokata; system nie składa zawiadomień automatycznie."],
 } {
     object.get(input.jdg_entrepreneur, "p10_kks_check", false) == true
 }

@@ -100,7 +100,7 @@ class KKSAtomRuleScanner:
         plan33_count = 0
         if PLAN33_PATH.exists():
             plan33_content = PLAN33_PATH.read_text()
-            plan33_count = len(re.findall(r'"rule_id":"jdg\.micro\.kks\.a\d+\.r\d+"', plan33_content))
+            plan33_count = len(re.findall(r'"rule_id":"jdg\.micro\.kks\.plan33\.a\d+\.r\d+"', plan33_content))
 
         return {
             "total_atom_rules_found": len(rules_found),

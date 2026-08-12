@@ -84,7 +84,7 @@ Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U
 7. Kodeks Karny Skarbowy (KKS)
 
 Źródło Temat Kluczowe artykuły
-Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy (tekst jednolity: Dz.U. 2025 poz. 678, ze zmianami na 2026 r.) Odpowiedzialność karna-skarbowa za przestępstwa i wykroczenia podatkowe Art. 54 (uchylanie się od opodatkowania), art. 56 (nierzetelne księgi/PKPiR), art. 57 (nierzetelna ewidencja VAT), art. 62 § 2 (puste faktury – fałszerstwo faktur VAT), art. 77 (niezłożenie deklaracji w terminie)
+Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy (tekst jednolity: Dz.U. 2025 poz. 678, ze zmianami na 2026 r.) Odpowiedzialność karna-skarbowa za przestępstwa i wykroczenia podatkowe Art. 16 (czynny żal), art. 44 (przedawnienie karalności), art. 54 (uchylanie się od opodatkowania), art. 56 (nierzetelne księgi/PKPiR), art. 57 (nierzetelna ewidencja VAT), art. 62 § 2 (puste faktury – fałszerstwo faktur VAT), art. 77 (niezłożenie deklaracji w terminie)
 
 8. Szczególne regulacje dla JDG
 

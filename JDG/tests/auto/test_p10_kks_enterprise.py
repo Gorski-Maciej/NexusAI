@@ -218,13 +218,20 @@ def test_p10_new_rule_ids():
 
 
 def test_p10_report_exists():
-    """Raport kampanii raport_enterprise_P10.txt musi istnieć i być oznaczony WDROŻONY_100."""
-    r = BASE_DIR / "raporty_glm52" / "raport_enterprise_P10.txt"
-    assert r.exists(), "Brak raportu raport_enterprise_P10.txt"
+    """Canonical RAPORT_07 exists and reports its evidence-gated status honestly."""
+    r = BASE_DIR / "raporty_glm52" / "RAPORT_07_KKS.txt"
+    assert r.exists(), "Brak kanonicznego raportu RAPORT_07_KKS.txt"
     text = r.read_text(encoding="utf-8")
-    assert "WDROŻONY_100" in text
-    assert "INN-16" in text
-    assert "P11" in text
+    status_line = next(
+        line for line in text.splitlines()
+        if line.startswith("Stan wdrożenia po walidacji ")
+    )
+    evidence_path = BASE_DIR / "bundles" / "kks_report07_evidence.json"
+    evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+    assert f"{evidence['status']} (" in status_line
+    assert f"{evidence['checks_passed']}/{evidence['checks_total']} bramek" in status_line
+    assert "raport NIE jest WDROZONY_100" in status_line
+    assert "bundles/kks_report07_evidence.json" in text
 
 
 def test_p10_tool_smoke():

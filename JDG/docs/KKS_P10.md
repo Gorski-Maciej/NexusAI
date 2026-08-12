@@ -1,8 +1,9 @@
 # P10 — KKS (Kodeks Karny Skarbowy) Enterprise
 
 Kampania: `prompty_glm52/10_PROMT_KKS_SANKCJE.txt`
-Raport: `raporty_glm52/raport_enterprise_P10.txt`
-Status: **✅ WDROŻONY_100** (2026-08-09)
+Raport: `raporty_glm52/RAPORT_07_KKS.txt`
+Status: **BLOCKED_BY_EVIDENCE** (8/9 bramek; 2026-08-12)
+Dowód: `bundles/kks_report07_evidence.json` + `tools/kks_report07_gate.py --strict`
 
 ## Pakiet rego: `jdg.p10_kks_innovations`
 
@@ -52,7 +53,7 @@ Wszystkie progi czytane z `data.jdg.thresholds.kks` z domyślnymi (min. wynagrod
 - `JDG/tests/test_kks_enterprise.py` — testy KKS enterprise
 
 ## Walidacja (2026-08-09)
-- pytest P01+P02+P03+PKPiR/UoR: **113/113** zielonych; tests/auto P10: **25/25**
+- Historycznie: pytest P01+P02+P03+PKPiR/UoR: **113/113**; obecna walidacja P10: **46/47** (stary alias raportu zastąpiony kanonicznym raportem 07; bramka dowodowa pozostaje fail-closed).
 - Parser Rego: balanced braces, `import future.keywords.if` obecny
 - Bundle OPA: **446 plików** (bundle.sh v9.0, SBOM)
 - Spójność międzyczęściowa: P04 (fraud VAT) · P09 (art. 56 PKPiR) · P11 (Ordynacja) · P17 (KSeF sankcje) · P13 (sukcesja) · P03 (orkiestrator PAS 18k)

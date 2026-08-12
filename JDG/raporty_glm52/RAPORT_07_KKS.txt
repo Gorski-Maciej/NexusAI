@@ -4,6 +4,8 @@ RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 07/25 — KKS — Kodeks Karny Skarbo
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 07_KKS_Kodeks_Karny_Skarbowy.txt
 Status raportu: AUDYT OPARTY NA DOWODACH
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
+Stan wdrożenia po walidacji 2026-08-12: BLOCKED_BY_EVIDENCE (8/9 bramek P07 przechodzi; raport NIE jest WDROZONY_100).
+Artefakt dowodowy: `bundles/kks_report07_evidence.json`; bramka: `tools/kks_report07_gate.py --strict`.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
 1. EXECUTIVE SUMMARY

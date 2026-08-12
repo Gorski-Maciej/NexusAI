@@ -1,0 +1,147 @@
+from __future__ import annotations
+
+import json
+import sys
+from datetime import datetime, timedelta
+from pathlib import Path
+from types import SimpleNamespace
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(BASE_DIR / "tools"))
+
+import kks_report07_gate as gate  # noqa: E402
+import deployment_orchestrator as orchestrator  # noqa: E402
+
+
+def test_report07_gate_scans_declared_scope():
+    evidence = gate.build_evidence()
+    inventory = evidence["inventory"]
+    assert inventory["files_total"] == len(gate.RULE_FILES)
+    assert inventory["files_present"] == inventory["files_total"]
+    assert inventory["rule_ids_total"] > 500
+    assert inventory["rule_ids_unique"] > 450
+    # Plan33/Plan42/enterprise layers use explicit namespaces; every
+    # executable rule_id in the declared RAPORT_07 scope must now be unique.
+    assert inventory["duplicate_count"] == len(inventory["duplicate_rule_ids"])
+    assert inventory["duplicate_count"] == 0
+
+
+def test_report07_gate_requires_human_review_for_kks_advice():
+    evidence = gate.build_evidence()
+    safety = evidence["safety"]
+    assert safety["package_present"] is True
+    assert safety["suggest_mode_declared"] is True
+    assert safety["no_auto_post_contract"] is True
+
+
+def test_report07_gate_proves_router_and_core_evidence():
+    evidence = gate.build_evidence()
+    router = evidence["router"]
+    assert router["main_router_present"] is True
+    assert router["p10_imported"] is True
+    assert router["p10_registered"] is True
+    assert router["p10_final_verdict_wired"] is True
+    assert router["provenance_wired"] is True
+    assert router["runtime_invariants_wired"] is True
+    assert evidence["tests"]["critical_rule_evidence_complete"] is True
+
+
+def test_article_range_parser_matches_legal_twin_ranges():
+    assert gate._article_covers("44", "a44") is True
+    assert gate._article_covers("54-57", "a56") is True
+    assert gate._article_covers("54-57", "a62") is False
+    assert gate._article_covers("62a", "a62") is True
+
+
+def test_report07_gate_accepts_only_complete_kks_rollout_contract(tmp_path, monkeypatch):
+    """Exercise the full KKS rollout contract in an isolated state file only."""
+    old_state_path = orchestrator.STATE_PATH
+    orchestrator.STATE_PATH = tmp_path / "deployments.json"
+    monkeypatch.setattr(orchestrator, "now", lambda: "2026-08-12T12:00:00+00:00")
+    try:
+        baseline = "previous-healthy"
+        candidate = "kks-bundle-v9.0.0"
+        orchestrator.cmd_init(SimpleNamespace(version=baseline))
+        state = orchestrator.load_state()
+        state["deployments"][baseline].update({
+            "phase": "FULL_SOAK", "rollout_pct": 100,
+            "quality": 100.0, "error_rate": 0.0,
+        })
+        state["healthy_versions"] = [baseline]
+        state["active_version"] = baseline
+        orchestrator.save_state(state)
+
+        orchestrator.cmd_init(SimpleNamespace(version=candidate))
+        state = orchestrator.load_state()
+        state["deployments"][candidate].update({"quality": 100.0, "error_rate": 0.0})
+        orchestrator.save_state(state)
+        orchestrator.cmd_canary(SimpleNamespace(version=candidate))
+        state = orchestrator.load_state()
+        assert state["deployments"][candidate]["phase"] == "CANARY"
+        assert state["deployments"][candidate]["rollout_pct"] == 5
+        # Synthetic observation of the canary phase: quality/error telemetry
+        # meets the documented gate before progressing further.
+        state["deployments"][candidate]["canary_ok"] = True
+        orchestrator.save_state(state)
+
+        orchestrator.cmd_shadow_compare(SimpleNamespace(version=candidate, delta=1.0))
+        assert orchestrator.load_state()["deployments"][candidate]["phase"] == "SHADOW_COMPARE"
+        orchestrator.cmd_ramped(SimpleNamespace(version=candidate))
+        state = orchestrator.load_state()
+        assert state["deployments"][candidate]["phase"] == "RAMPED"
+        assert state["deployments"][candidate]["rollout_pct"] in {25, 50, 100}
+        orchestrator.cmd_promote(SimpleNamespace(version=candidate))
+        assert orchestrator.load_state()["deployments"][candidate]["phase"] == "SOAK_PENDING"
+        pending = orchestrator.load_state()["deployments"][candidate]
+        completed_at = (
+            datetime.fromisoformat(pending["soak_until"]) + timedelta(minutes=1)
+        ).isoformat()
+        orchestrator.cmd_complete_soak(
+            SimpleNamespace(version=candidate, completed_at=completed_at)
+        )
+        before_rollback = orchestrator.load_state()
+        assert before_rollback["active_version"] == candidate
+        assert before_rollback["deployments"][candidate]["phase"] == "FULL_SOAK"
+
+        # Five-minute incident-to-rollback interval exercises the actual SLA
+        # boundary instead of certifying an instantaneous rollback.
+        monkeypatch.setattr(orchestrator, "now", lambda: "2026-08-12T12:05:00+00:00")
+        orchestrator.cmd_auto_rollback(SimpleNamespace(
+            version=candidate,
+            reason="isolated contract",
+            incident_started_at="2026-08-12T12:00:00+00:00",
+        ))
+        after_rollback = orchestrator.load_state()
+        assert after_rollback["active_version"] == baseline
+        assert after_rollback["deployments"][candidate]["rollback_applied"] is True
+        assert after_rollback["deployments"][candidate]["rollback_sla_pass"] is True
+        assert after_rollback["deployments"][candidate]["rollback_mttr_minutes"] == 5.0
+        assert after_rollback["deployments"][candidate]["phase"] == "ROLLED_BACK"
+
+        monkeypatch.setattr(gate, "BUNDLES_DIR", tmp_path)
+        evidence = gate._deployment_evidence()
+        assert evidence["kks_deployments"] == 1
+        assert evidence["canary"] is True
+        assert evidence["rollback_sla"] is True
+        # The rollback intentionally leaves the previous healthy version active;
+        # this is not production certification and must not be treated as one.
+        assert evidence["production_active"] is False
+        assert evidence["canary"] and evidence["rollback_sla"]
+        # The complete rollout contract is observable locally, but the gate's
+        # committed production state remains independently fail-closed below.
+    finally:
+        orchestrator.STATE_PATH = old_state_path
+
+
+def test_report07_gate_is_fail_closed_until_all_production_evidence_exists(tmp_path, monkeypatch):
+    evidence = gate.build_evidence()
+    assert evidence["status"] == "BLOCKED_BY_EVIDENCE"
+    assert evidence["checks"]["duplicate_gate"] is True
+    assert evidence["checks"]["temporal_gate"] is True
+    assert evidence["checks"]["canary_rollback_gate"] is False
+    assert evidence["status"] == "BLOCKED_BY_EVIDENCE"
+
+    output = tmp_path / "evidence.json"
+    monkeypatch.setattr(gate, "EVIDENCE_PATH", output)
+    output.write_text(json.dumps(evidence), encoding="utf-8")
+    assert json.loads(output.read_text(encoding="utf-8"))["status"] == "BLOCKED_BY_EVIDENCE"

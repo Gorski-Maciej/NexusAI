@@ -64,7 +64,10 @@ ACT_KEYWORDS = [
     ("towarów i usług", ["vat"]),
     ("dochodowym od osób fizycznych", ["pit"]),
     ("systemie ubezpieczeń społecznych", ["zus"]),
+    # The legal source uses both inflected forms: "Kodeks karny skarbowy"
+    # in act headers and "KKS" in rule provenance. Keep both forms linked.
     ("karnym skarbowym", ["kks"]),
+    ("karny skarbowy", ["kks"]),
     ("czynności cywilnoprawnych", ["pcc"]),
     ("rachunkowości", ["uor", "rachunkowości"]),
     ("przedsiębiorców", ["przedsiębiorc"]),

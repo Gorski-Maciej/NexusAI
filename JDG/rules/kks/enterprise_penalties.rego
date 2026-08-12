@@ -222,7 +222,7 @@ else := {
 
 # ── K121: empty_invoice_chain — Pusta faktura / karuzela VAT ──
 else := {
-    "matched": true, "rule_id": "jdg.kks.empty_invoice_art62",
+    "matched": true, "rule_id": "jdg.kks.enterprise.empty_invoice_art62",
     "package": "jdg.kks.enterprise_penalties", "priority": 121,
     "kks_offense_type": "EMPTY_INVOICE",
     "kks_article": "62", "kks_paragraph": "2",
@@ -267,7 +267,7 @@ else := {
 
 # ── K130: wrong_vat_rate — Niewłaściwa stawka VAT ──
 else := {
-    "matched": true, "rule_id": "jdg.kks.wrong_vat_rate_art64",
+    "matched": true, "rule_id": "jdg.kks.enterprise.wrong_vat_rate_art64",
     "package": "jdg.kks.enterprise_penalties", "priority": 130,
     "kks_offense_type": "WRONG_VAT_RATE",
     "kks_article": "64",
@@ -393,7 +393,7 @@ else := {
 
 # ── K150: daily_rate_calculation — Stawka dzienna grzywny KKS ──
 else := {
-    "matched": true, "rule_id": "jdg.kks.daily_rate_calculation",
+    "matched": true, "rule_id": "jdg.kks.enterprise.daily_rate_calculation",
     "package": "jdg.kks.enterprise_penalties", "priority": 150,
     "kks_daily_rate_min_pln": 56.00,
     "kks_daily_rate_max_pln": 56000.00,

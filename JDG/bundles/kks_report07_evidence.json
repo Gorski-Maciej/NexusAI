@@ -1,0 +1,340 @@
+{
+  "report": "RAPORT_07_KKS",
+  "method": "evidence-first; no inference from filenames",
+  "inventory": {
+    "files": [
+      {
+        "path": "rules/kks.rego",
+        "exists": true,
+        "rule_id_count": 256,
+        "legal_basis_count": 255,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/_kks_micro_rates.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/kks/_kks_macro_rates.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/kks/enterprise_penalties.rego",
+        "exists": true,
+        "rule_id_count": 22,
+        "legal_basis_count": 21,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/kks/kks_innovations_v8.rego",
+        "exists": true,
+        "rule_id_count": 14,
+        "legal_basis_count": 13,
+        "temporal": true,
+        "critical_temporal_rule_count": 2,
+        "package_declared": true
+      },
+      {
+        "path": "rules/kks/plan42_detailed.rego",
+        "exists": true,
+        "rule_id_count": 13,
+        "legal_basis_count": 12,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/kks/plan43_decomposition.rego",
+        "exists": true,
+        "rule_id_count": 22,
+        "legal_basis_count": 21,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/kks/plan44_kks_conviction.rego",
+        "exists": true,
+        "rule_id_count": 3,
+        "legal_basis_count": 2,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/kks/kks.rego",
+        "exists": true,
+        "rule_id_count": 474,
+        "legal_basis_count": 473,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_kks.rego",
+        "exists": true,
+        "rule_id_count": 65,
+        "legal_basis_count": 64,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p09_kks_macro_innovations_v8.rego",
+        "exists": true,
+        "rule_id_count": 15,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p10_kks_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 24,
+        "legal_basis_count": 23,
+        "temporal": true,
+        "critical_temporal_rule_count": 6,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p10_kks_micro_innovations_v8.rego",
+        "exists": true,
+        "rule_id_count": 12,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p33_ordpu_kks_supplement.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 6,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/risk/plan26_kks.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 4,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/gaar_shield_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 3,
+        "legal_basis_count": 2,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/penalty_ai_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/sanctions_optimization_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 4,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/sanctions_supplements_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/kks/kks_extensions_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 4,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      }
+    ],
+    "files_total": 20,
+    "files_present": 20,
+    "rule_ids_total": 946,
+    "rule_ids_unique": 943,
+    "duplicate_rule_ids": [],
+    "duplicate_count": 0,
+    "temporal_files": 2,
+    "critical_temporal_rule_count": 6,
+    "critical_temporal_evidence": {
+      "a16": true,
+      "a44": true,
+      "a54": true,
+      "a56": true,
+      "a57": true,
+      "a62": true
+    },
+    "temporal_coverage_pct": 10.0
+  },
+  "tests": {
+    "files_declared": 5,
+    "files_present": 5,
+    "critical_rule_markers": {
+      "a16": true,
+      "a44": true,
+      "a54": true,
+      "a56": true,
+      "a57": true,
+      "a62": true
+    },
+    "critical_rule_marker_aliases": {
+      "a16": [
+        "jdg.kks.voluntary_disclosure_art16",
+        "voluntary_disclosure",
+        "disclosure_assistant"
+      ],
+      "a44": [
+        "jdg.kks.statute_of_limitations_art44",
+        "limitation_calendar",
+        "statute_of_limitations"
+      ],
+      "a54": [
+        "jdg.kks.tax_evasion_elements_art54_p1",
+        "jdg.kks.tax_evasion_significant_art54_p2",
+        "jdg.kks.tax_evasion_concealed_business_art54_p3",
+        "tax_evasion",
+        "art54"
+      ],
+      "a56": [
+        "jdg.kks.unreliable_pkpir_art56",
+        "unreliable_pkpir_art56",
+        "art56"
+      ],
+      "a57": [
+        "jdg.kks.unreliable_vat_evidence_art57",
+        "unreliable_vat_evidence_art57",
+        "art57"
+      ],
+      "a62": [
+        "jdg.kks.empty_invoice_art62",
+        "empty_invoice_art62",
+        "empty_invoices"
+      ]
+    },
+    "critical_articles_referenced": {
+      "a16": true,
+      "a44": true,
+      "a54": true,
+      "a56": true,
+      "a57": true,
+      "a62": true
+    },
+    "critical_rule_evidence_complete": true,
+    "native_rego_test_present": true,
+    "pytest_test_present": true
+  },
+  "legal_twin": {
+    "present": true,
+    "kks_nodes": 14,
+    "critical_basis_refs": 6,
+    "critical_basis_rule_ids": {
+      "a16": [
+        "jdg.kks.voluntary_disclosure_art16"
+      ],
+      "a44": [
+        "jdg.kks.statute_of_limitations_art44"
+      ],
+      "a54": [
+        "jdg.kks.tax_evasion_concealed_business_art54_p3",
+        "jdg.kks.tax_evasion_elements_art54_p1",
+        "jdg.kks.tax_evasion_significant_art54_p2"
+      ],
+      "a56": [
+        "jdg.kks.unreliable_pkpir_art56"
+      ],
+      "a57": [
+        "jdg.kks.unreliable_vat_evidence_art57"
+      ],
+      "a62": [
+        "jdg.kks.empty_invoice_art62"
+      ]
+    },
+    "critical_articles_required": 6,
+    "indexes": {
+      "LCI": 38.46,
+      "TCL": 100.0,
+      "RV": 12.6
+    }
+  },
+  "router": {
+    "main_router_present": true,
+    "p10_imported": true,
+    "p10_registered": true,
+    "p10_final_verdict_wired": true,
+    "provenance_wired": true,
+    "runtime_invariants_wired": true
+  },
+  "safety": {
+    "package_present": true,
+    "suggest_mode_declared": true,
+    "ask_user_supported_elsewhere": false,
+    "no_auto_post_contract": true
+  },
+  "golden_replay": {
+    "present": true,
+    "schema_version": 2,
+    "kks_verdicts": 1,
+    "replays": 3,
+    "kks_replays": 1,
+    "unexplained_replays": 0,
+    "kks_unexplained_replays": 0
+  },
+  "deployment": {
+    "present": true,
+    "kks_deployments": 0,
+    "canary": false,
+    "rollback_sla": false,
+    "production_active": false,
+    "active_version": null
+  },
+  "checks": {
+    "all_report_rule_files_present": true,
+    "duplicate_gate": true,
+    "critical_tests_mapped": true,
+    "temporal_gate": true,
+    "legal_twin_gate": true,
+    "router_gate": true,
+    "recommendation_safety_gate": true,
+    "golden_replay_gate": true,
+    "canary_rollback_gate": false
+  },
+  "checks_passed": 8,
+  "checks_total": 9,
+  "status": "BLOCKED_BY_EVIDENCE"
+}

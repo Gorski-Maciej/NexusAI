@@ -29,8 +29,44 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 
+
+def _load_kks_thresholds() -> dict:
+    """Load the KKS data block from the authoritative Rego thresholds file.
+
+    The CLI is intentionally usable without OPA, but it must not silently drift
+    from the runtime data contract. Values are parsed only from the quoted KKS
+    object; malformed/missing data falls back to the constants below and is
+    surfaced by the report gate.
+    """
+    path = BASE_DIR / "rules" / "thresholds_jdg.rego"
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return {}
+    match = re.search(r"(?ms)^kks\\s*:=\\s*\\{(?P<body>.*?)^\\}", text)
+    if not match:
+        return {}
+    values = {}
+    for key, raw in re.findall(r'"([a-zA-Z0-9_]+)"\\s*:\\s*([^,\\n]+)', match.group("body")):
+        raw = raw.strip()
+        if raw == "null":
+            values[key] = None
+        elif raw.lower() in {"true", "false"}:
+            values[key] = raw.lower() == "true"
+        elif raw.startswith('"') and raw.endswith('"'):
+            values[key] = raw[1:-1]
+        else:
+            try:
+                values[key] = float(raw) if "." in raw else int(raw)
+            except ValueError:
+                continue
+    return values
+
+
 # ── Progi ustawowe 2026 (spójne z data.jdg.thresholds.kks — ADR-002) ──────────
 KKS = {
+    # Fallbacks keep the standalone CLI usable when the source file is absent;
+    # the authoritative values below are loaded from thresholds_jdg.rego.
     "min_wage": 4800.0,                 # minimalne wynagrodzenie 2026 (PLN)
     "daily_rate_denominator": 30,       # stawka dzienna = 1/30 min. wynagrodzenia
     "daily_rate_max_multiple": 400,     # maksymalna stawka dzienna 400×
@@ -41,7 +77,11 @@ KKS = {
     "limitation_years_crime": 5,        # przedawnienie przestępstwa (art. 44)
     "limitation_years_misdemeanor": 3,  # przedawnienie wykroczenia (art. 44)
     "small_value_multiple": 500,        # mała wartość (art. 53 §6) — 500× min.
+    "correction_interest_pct": 0.15,    # audytowy scenariusz korekty (ADR-002)
+    "valid_from": "2026-01-01",
+    "valid_to": None,
 }
+KKS.update(_load_kks_thresholds())
 
 DAILY_RATE_MIN = round(KKS["min_wage"] / KKS["daily_rate_denominator"], 2)   # 160.00
 DAILY_RATE_MAX = KKS["min_wage"] * KKS["daily_rate_max_multiple"]             # 1 920 000
@@ -219,13 +259,13 @@ def audit_rego_files() -> dict:
     # Pokrycie artykułów: jdg.micro.kks.a{N} → klucz artykułu
     covered = set()
     for rid in unique:
-        m = re.match(r"jdg\.micro\.kks\.(a\d+[a-z]?)", rid)
+        m = re.match(r"jdg\.micro\.kks(?:\.plan33)?\.(a\d+[a-z]?)", rid)
         if m:
             covered.add(m.group(1))
 
     articles = {}
     for art in PRIORITY_ARTICLES:
-        refs = sum(1 for rid in unique if re.match(rf"jdg\.micro\.kks\.{re.escape(art)}(?:\.|$)", rid))
+        refs = sum(1 for rid in unique if re.match(rf"jdg\.micro\.kks(?:\.plan33)?\.{re.escape(art)}(?:\.|$)", rid))
         articles[art] = {"status": "COMPLETE" if refs > 0 else "MISSING", "rules": refs}
 
     total_arts = len(PRIORITY_ARTICLES)

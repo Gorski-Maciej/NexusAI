@@ -693,6 +693,29 @@ ord := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# KKS / ORDYNACJA PODATKOWA THRESHOLDS — RAPORT_07 (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Wersjonowane dane KKS są jedynym źródłem progów używanych przez pakiety KKS.
+# Zmiana prawa aktualizuje dane i valid_from/valid_to, a nie logikę reguł.
+
+kks := {
+    "min_wage": 4800.0,
+    "daily_rate_denominator": 30,
+    "daily_rate_max_multiple": 400,
+    "crime_threshold_multiple": 200,
+    "mandatory_prison_threshold": 5000000,
+    "max_rates_crime": 720,
+    "max_rates_misdemeanor": 240,
+    "limitation_years_crime": 5,
+    "limitation_years_misdemeanor": 3,
+    "small_value_multiple": 500,
+    "correction_interest_pct": 0.15,
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "source_act": "Kodeks karny skarbowy; Ordynacja podatkowa",
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # AMORTYZACJA / KŚT THRESHOLDS
 # ═══════════════════════════════════════════════════════════════════════════════
 

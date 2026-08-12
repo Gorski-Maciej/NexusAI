@@ -1,18 +1,18 @@
 # 🧬 LEGAL TWIN — LEGAL KNOWLEDGE GRAPH (F1, WIZJA V2 §2)
 
-> Wygenerowano: 2026-08-08T11:56:47.750922+00:00 · generator: `legal_twin.py`
+> Wygenerowano: 2026-08-12T17:51:35.001795+00:00 · generator: `legal_twin.py`
 
 ## Indeksy Pewności (V2 §2.3)
 
 | Indeks | Wartość | Cel V2 |
 |---|---|---|
-| **LCI** — Legal Coverage Index | 30.1% | ≥ 99% |
+| **LCI** — Legal Coverage Index | 38.46% | ≥ 99% |
 | **TCL** — Temporal Continuity of Law | 100.0% | 100% |
-| **RV** — Rule–Law Verification | 10.15% | 100% |
+| **RV** — Rule–Law Verification | 12.6% | 100% |
 
 - Akty prawne w LKG: 16
-- Węzły prawa (artykuły): 103 (pokryte: 31)
-- Reguły zeskanowane: 12286
+- Węzły prawa (artykuły): 104 (pokryte: 40)
+- Reguły zeskanowane: 12123
 
 ## Niepokryte artykuły („pustynia pokrycia" = alarm)
 
