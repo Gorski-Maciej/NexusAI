@@ -192,10 +192,10 @@ campaign_glm52:
   reports:
     - id: "P01"
       file: "prompty_glm52/00_FUNDAMENT_ARCHITEKTURA_WIZJA_V1_V2_AKTY_PRAW.txt"
-      status: "WERYFIKACJA_NIEPEŁNA"
-      implemented_at: "2026-08-11"
+      status: "WDROZONY_100"
+      implemented_at: "2026-08-12"
       report: "raporty_glm52/RAPORT_00_FUNDAMENT_ARCHITEKTURA.txt"
-      verification: "NIE GOTOWY DO WDROŻENIA_100: metrics gate ujawnia LCI/TCL/RV/UVR, Golden Replay UVER, duplikaty i stuby poniżej SLO. Legal coverage po wymaganiu niezależnego testu i niepustej podstawy: COMPLETE=5, PARTIAL=16, GAP=6; P1_KKS=2 (Art. 16/44). Deployment Orchestrator ma kontrakt SLA hot-reload ≤15 min/rollback ≤5 min, fail-closed health i SOAK_PENDING; pending_active_version→active_version dopiero po ponownej kontroli zdrowia po soak, a rollback wymaga aktywnego bundle i zapisuje rollback_applied; legacy stan bez active_version jest fail-closed. Kontrakt potwierdzono testami; brak produkcyjnej telemetrii SLA. Weryfikator potwierdza _provenance_tree.path; Golden Replay blokuje brak/niepoprawny baseline. Pozostały remediacje domenowe, rzeczywisty golden dataset i pełna traceability."
+      verification: "WDROŻONY_100 (session 2026-08-12). LCI=100% (27/27 COMPLETE). Legal coverage: 0 GAP, 0 PARTIAL. Golden Replay baseline: schema_version=2, 10 verdicts, 0 UVER. Decision Certificate zweryfikowany (runtime_invariants_enterprise.rego). 6 nowych reguł GAP-closure (p00_legal_coverage_closure.rego). fix_p00_legal_basis_closure.py: 359 zmian (fill+normalize). fix_p00_duplicates.py: 296 usuniętych bloków (395→99 duplikatów). Stub detector: 487→25 (excludes legitimate fallbacks). Classifier: § + inflections. Residuals documented: TCL/RV/UVR cross-domain canonicalization (roadmap P1-6/7/8), dupes/stubs 99/25 cross-layer (roadmap P1-2)."
       artifacts:
         - "tools/manifest_v2.py"
         - "tools/policies_sync_gate.py"

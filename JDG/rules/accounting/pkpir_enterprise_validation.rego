@@ -685,7 +685,7 @@ else := {"matched":true,"rule_id":"jdg.accounting.vat_register_pkpir_alignment",
 "package":"jdg.accounting.pkpir_validation","priority":877,
 "vat_pkpir_date_aligned":dates_ok,
 "_routing":align_rt,"_routing_reason":align_rs,
-"_legal_basis":"§ 9 Rozp. MF PKPiR; Art. 109 VAT; Art. 193a OrdPU",
+"_legal_basis":"§ 9 rozporządzenia MF w sprawie PKPiR; Art. 109 VAT; Art. 193a OrdPU",
 "_warnings":[sprintf("ZGODNOŚĆ REJESTRÓW — VAT: %s | PKPiR: %s. %s. Rejestry muszą być spójne — data i kwota.",[vat_date,pkpir_date,align_note])]
 }{
     input.jdg_entrepreneur.is_vat_payer==true

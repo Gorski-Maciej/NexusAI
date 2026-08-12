@@ -32,7 +32,7 @@ decide := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§21 Rozp. MF z 15.11.2025 r.",
+    "_legal_basis": "§21 rozporządzenia MF z 15.11.2025 r.",
     "_warnings": ["[MICRO] §21 PKPiR: Kol.14 — wydatki niestanowiące kosztów uzyskania przychodu (NKUP). NIE wliczaj do dochodu PIT!"]
 } { input.jdg_entrepreneur.uses_pkpir == true }
 
@@ -220,6 +220,6 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§21 Rozp. MF PKPiR",
+    "_legal_basis": "§21 rozporządzenia MF w sprawie PKPiR",
     "_warnings": ["[MICRO] PKPiR NKUP — wydatek stanowi KUP"]
 } { true }

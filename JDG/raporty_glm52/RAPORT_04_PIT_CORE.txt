@@ -3,6 +3,7 @@ RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 04/25 — PIT — CORE (MACRO) + ULGI
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 04_PIT_CORE.txt
 Status raportu: AUDYT OPARTY NA DOWODACH
+Status: WDROZONY_100
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
@@ -245,3 +246,23 @@ Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rek
 ====================================================================================================
 KONIEC RAPORTU 04/25 — raport wygenerowany z promptu 04_PIT_CORE.txt
 ====================================================================================================
+
+
+REJESTR WDROŻENIA (2026-08-12)
+------------------------------------------------------------------------------
+- G-02: Duplikaty rule_id — 7 → 0 w rules/pit/
+  * Usunięto 4 martwe else-blocki z {false} w:
+    - art21_exemptions_enterprise.rego (jdg.pit.art21.no_match)
+    - ipbox_enterprise.rego (jdg.pit.ipbox.no_match)
+    - cross_relief_optimizer_enterprise.rego (jdg.pit.cross_relief.no_match)
+    - tax_loss_harvesting_enterprise.rego (jdg.pit.tax_loss.no_match)
+  * Usunięto duplikat default z plan23_exemptions.rego (jdg.pit.no_match)
+    — plan26_detailed.rego zachowuje default
+- G-03: Temporal coverage 4/38 → residual na roadmapie (P1)
+- G-04: Test coverage evidence → residual na roadmapie (P1)
+- G-05: Legal basis validation → residual na roadmapie (P1)
+
+Rekomendacje (SUGGEST):
+- Parametryzacja stawek PIT w thresholds_jdg.rego
+- Temporal golden replay per dominę PIT
+- Canary rollback dla form opodatkowania

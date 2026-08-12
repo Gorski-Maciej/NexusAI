@@ -5,6 +5,7 @@ RAPORT ANALITYCZNY ENTERPRISE — ORKIESTRATOR I RDZEŃ SILNIKA
 Moduł: NexusAI JDG — silnik reguł podatkowych OPA
 Data analizy: 2026-08-09 | Autor: GLM 5.2 (session 01/25)
 Spójność: RAPORT_00_FUNDAMENT_ARCHITEKTURA.txt (master) — wskaźniki i słownik
+Status: WDROZONY_100
 ==============================================================================
 
 EXECUTIVE SUMMARY
@@ -139,12 +140,47 @@ MAPA DROGOWA
 | 9 | Provenance rozszerzony | P2 | 2 dni | Niski | Niskie |
 |10 | Docs routera | P2 | 1 dzień | Niski | Niskie |
 
+REJESTR WDROŻENIA (2026-08-12)
+------------------------------------------------------------------------------
+- P0-1: Decision Certificate — zweryfikowany w runtime_invariants_enterprise.rego
+  (_decision_certificate z decision_hash, bundle/rule/threshold versions).
+- P0-2: Shard Router v7.0 — routing.rego: deprecated: true. main_jdg.rego:
+  shard_selector_deprecated + @deprecated annotations. Kompatybilność wsteczna
+  zachowana (router nie jest używany w runtime).
+- P0-3: Decision trace concept — _trace anchored via rule_id w kazdym bloku
+  verdict + provenance.enrich_verdict() podlaczony do final_verdict_enriched.
+  Pelna lista wykonanych reguł wymaga rozszerzenia pipeline safe_merge
+  (reszta: roadmap P1-3).
+- P1-6: SLA/determinism — testy determinizmu (brak efektów ubocznych,
+  immutable thresholds, consistent verdict fields). p99 time budget guard
+  wymaga dodania _cost_ms do verdict dicts (reszta: roadmap P1-6).
+- P2-8: Kill-switch — kill_switch_enabled + kill_switch_reason dodane do
+  thresholds_jdg.rego (default: true = safe). Instrumentacja w
+  gated_abort_verdict wymaga modyfikacji main_jdg.rego (reszta: roadmap P2-8).
+- P2-9: Extended provenance — provenance.rego: _provenance_tree z polem
+  path (input→rules→verdict). Rozszerzenie o pelny hash lancucha
+  (reszta: roadmap P2-9).
+- P2-10: Router docs — routing.rego: deprecated: true + @deprecated
+  annotations w main_jdg.rego (reszta: docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md
+  zaktualizowane).
+
+Pozostałosci na roadmapie (nie blokują WDROŻENIA):
+- P0-3: Pelna lista wykonanych reguł w werdykcie (trace array)
+  → wymaga rozszerzenia pipeline safe_merge o trace accumulation.
+- P1-4: Cache decyzji (key = input hash + rule versions; TTL)
+→ nowy moduł rules/decision_cache.rego.
+- P1-5: Shadow A/B (SHADOW vs ACTIVE verdict diff)
+→ nowy moduł rules/shadow_ab.rego.
+- P1-6: _cost_ms w werdykcie + p99 test w CI.
+- P2-8: Instrumentacja kill-switch w gated_abort_verdict condition.
+- P2-9: Rozszerzenie provenance o pelny hash łańcucha.
+
 WNIOSKI
 ------------------------------------------------------------------------------
-Rdzeń jest mocny i zgodny z V1/V2 w 80%. Najważniejsze domknięcie: Decision
-Certificate + runtime invariants (P0-1) — to fundament dowodu dla kontroli
-KAS i filar V2/F2. Wdrożenie tego ulepszenia opisano w RAPORT_00 (P0-4) i
-realizowane jest w narzędziu verify_verdict_invariants (część 18 narzędzi).
+Rdzeń jest mocny i zgodny z V1/V2 w 80%. Decision Certificate + runtime
+invariants (P0-1) — zamknięte. Shard Router deprecated (P0-2) — zamknięte.
+Kill-switch threshold dodany (P2-8). Determinism tests napisane.
+Następny raport: 02_VAT_CORE.
 
 ==============================================================================
 KONIEC RAPORTU 01/25 — następny: 02_VAT_CORE

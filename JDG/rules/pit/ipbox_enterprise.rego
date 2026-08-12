@@ -282,13 +282,3 @@ else := {
 # ═══════════════════════════════════════════════════════════════════════════════
 # NO-MATCH (R04 P1: stub { true } usunięty — nie generuje fałszywego matched:true)
 # ═══════════════════════════════════════════════════════════════════════════════
-else := {
-    "matched": false,
-    "rule_id": "jdg.pit.ipbox.no_match",
-    "package": "jdg.pit.ipbox",
-    "priority": 999,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 30ca-30cb PIT"
-} {
-    false
-}

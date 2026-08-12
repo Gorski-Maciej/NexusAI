@@ -802,22 +802,22 @@ else :=   {"matched":true,"rule_id":"jdg.vat.a96.r11","package":"jdg.micro.vat.p
 }
 
 # jdg.vat.a99.r1 — `vat_declaration_monthly_obligation`: Czynny podatnik VAT → JPK_V7M miesięcznie
-else :=   {"matched":true,"rule_id":"jdg.vat.a99.r1","package":"jdg.micro.vat.plan34","priority":9901,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Czynny podatnik VAT","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a99.r1","package":"jdg.micro.vat.plan34","priority":9901,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Czynny podatnik VAT","_legal_basis":"Art. 99 ustawy o VAT","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "vat_status", "") == "ACTIVE"
 }
 
 # jdg.vat.a99.r2 — `vat_declaration_quarterly_small`: Mały podatnik → JPK_V7K kwartalnie
-else :=   {"matched":true,"rule_id":"jdg.vat.a99.r2","package":"jdg.micro.vat.plan34","priority":9902,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Mały podatnik","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a99.r2","package":"jdg.micro.vat.plan34","priority":9902,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Mały podatnik","_legal_basis":"Art. 99 ustawy o VAT","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "vat_status", "") == "ACTIVE"
 }
 
 # jdg.vat.a99.r4 — `vat_declaration_monthly_deadline_25`: Termin 25. dnia miesiąca → Termin
-else :=   {"matched":true,"rule_id":"jdg.vat.a99.r4","package":"jdg.micro.vat.plan34","priority":9904,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Termin 25. dnia miesiąca","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a99.r4","package":"jdg.micro.vat.plan34","priority":9904,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Termin 25. dnia miesiąca","_legal_basis":"Art. 99 ustawy o VAT","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "vat_status", "") == "ACTIVE"
 }
 
 # jdg.vat.a99.r5 — `vat_declaration_zero_if_no_sales`: Brak sprzedaży → zerowa → Obowiązek
-else :=   {"matched":true,"rule_id":"jdg.vat.a99.r5","package":"jdg.micro.vat.plan34","priority":9905,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Brak sprzedaży → zerowa","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a99.r5","package":"jdg.micro.vat.plan34","priority":9905,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Brak sprzedaży → zerowa","_legal_basis":"Art. 99 ustawy o VAT","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "vat_status", "") == "ACTIVE"
 }
 
@@ -827,32 +827,32 @@ else :=   {"matched":true,"rule_id":"jdg.vat.a106e.r1","package":"jdg.micro.vat.
 }
 
 # jdg.vat.a106j.r1 — `correction_invoice_minus_conditions`: Błąd ceny, rabat, zwrot → Korekta in minus
-else :=   {"matched":true,"rule_id":"jdg.vat.a106j.r1","package":"jdg.micro.vat.plan34","priority":10601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Błąd ceny, rabat, zwrot","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a106j.r1","package":"jdg.micro.vat.plan34","priority":10601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Błąd ceny, rabat, zwrot","_legal_basis":"Art. 106j ustawy o VAT","_warnings":[]} {
     object.get(input.invoice, "vat_rate", 0.0) == 0.0; object.get(input.invoice, "is_correction", false) == true
 }
 
 # jdg.vat.a106na.r1 — `ksef_obligation_from_2026_02_01`: Faktury od 01.02.2026 → Obowiązek KSeF
-else :=   {"matched":true,"rule_id":"jdg.vat.a106na.r1","package":"jdg.micro.vat.plan34","priority":10601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Faktury od 01.02.2026","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a106na.r1","package":"jdg.micro.vat.plan34","priority":10601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Faktury od 01.02.2026","_legal_basis":"Art. 106na ustawy o VAT","_warnings":[]} {
     object.get(input.invoice, "ksef_required", false) == true
 }
 
 # jdg.vat.a106ne.r1 — `ksef_offline_7_days_recovery`: Awaria KSeF → 7 dni → Tryb awaryjny
-else :=   {"matched":true,"rule_id":"jdg.vat.a106ne.r1","package":"jdg.micro.vat.plan34","priority":10601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Awaria KSeF → 7 dni","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a106ne.r1","package":"jdg.micro.vat.plan34","priority":10601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Awaria KSeF → 7 dni","_legal_basis":"Art. 106ne ustawy o VAT","_warnings":[]} {
     object.get(input.invoice, "ksef_required", false) == true
 }
 
 # jdg.vat.a106ng.r1 — `ksef_upo_confirmation_mandatory`: UPO dla każdej faktury → Obowiązek
-else :=   {"matched":true,"rule_id":"jdg.vat.a106ng.r1","package":"jdg.micro.vat.plan34","priority":10601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"UPO dla każdej faktury","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a106ng.r1","package":"jdg.micro.vat.plan34","priority":10601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"UPO dla każdej faktury","_legal_basis":"Art. 106ng ustawy o VAT","_warnings":[]} {
     object.get(input.invoice, "ksef_required", false) == true
 }
 
 # jdg.vat.a106nh.r1 — `ksef_qr_code_mandatory`: Kod QR na fakturze → Obowiązek
-else :=   {"matched":true,"rule_id":"jdg.vat.a106nh.r1","package":"jdg.micro.vat.plan34","priority":10601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Kod QR na fakturze","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a106nh.r1","package":"jdg.micro.vat.plan34","priority":10601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Kod QR na fakturze","_legal_basis":"Art. 106nh ustawy o VAT","_warnings":[]} {
     object.get(input.invoice, "ksef_required", false) == true
 }
 
 # jdg.vat.a106nq.r1 — `ksef_sanction_100pct_additional`: Sankcja: 100% VAT (max 500k) → Sankcja
-else :=   {"matched":true,"rule_id":"jdg.vat.a106nq.r1","package":"jdg.micro.vat.plan34","priority":10601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Sankcja: 100% VAT (max 500k)","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a106nq.r1","package":"jdg.micro.vat.plan34","priority":10601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Sankcja: 100% VAT (max 500k)","_legal_basis":"Art. 106nq ustawy o VAT","_warnings":[]} {
     object.get(input.invoice, "vat_rate", 0.0) == 0.0; object.get(input.invoice, "ksef_required", false) == true; object.get(input.invoice, "compliance_violation", false) == true
 }
 
@@ -862,17 +862,17 @@ else :=   {"matched":true,"rule_id":"jdg.vat.a106e.r2","package":"jdg.micro.vat.
 }
 
 # jdg.vat.a106j.r3 — `correction_buyer_agreement_minus`: Potwierdzenie nabywcy → Warunek korekty
-else :=   {"matched":true,"rule_id":"jdg.vat.a106j.r3","package":"jdg.micro.vat.plan34","priority":10603,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Potwierdzenie nabywcy","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a106j.r3","package":"jdg.micro.vat.plan34","priority":10603,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Potwierdzenie nabywcy","_legal_basis":"Art. 106j ustawy o VAT","_warnings":[]} {
     object.get(input.invoice, "is_correction", false) == true
 }
 
 # jdg.vat.a106na.r3 — `ksef_obligation_vat_exempt_exception`: Zwolnieni z VAT → wyłączeni → Wyjątek
-else :=   {"matched":true,"rule_id":"jdg.vat.a106na.r3","package":"jdg.micro.vat.plan34","priority":10603,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Zwolnieni z VAT → wyłączeni","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a106na.r3","package":"jdg.micro.vat.plan34","priority":10603,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Zwolnieni z VAT → wyłączeni","_legal_basis":"Art. 106na ustawy o VAT","_warnings":[]} {
     object.get(input.invoice, "vat_rate", 0.0) == 0.0; object.get(input.invoice, "direction", "") == "PURCHASE"; object.get(input.invoice, "vat_deduction_blocked", false) == true; object.get(input.invoice, "ksef_required", false) == true
 }
 
 # jdg.vat.a106na.r4 — `ksef_obligation_b2c_exception`: B2C → wyłączone → Wyjątek
-else :=   {"matched":true,"rule_id":"jdg.vat.a106na.r4","package":"jdg.micro.vat.plan34","priority":10604,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"B2C → wyłączone","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a106na.r4","package":"jdg.micro.vat.plan34","priority":10604,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"B2C → wyłączone","_legal_basis":"Art. 106na ustawy o VAT","_warnings":[]} {
     object.get(input.invoice, "direction", "") == "PURCHASE"; object.get(input.invoice, "vat_deduction_blocked", false) == true; object.get(input.invoice, "ksef_required", false) == true
 }
 

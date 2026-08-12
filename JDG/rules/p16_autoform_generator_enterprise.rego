@@ -28,6 +28,7 @@ import future.keywords.in
 
 default decide := {
     "matched": false, "rule_id": "jdg.autoform.no_match",
+    "valid_from":"2024-01-01","valid_to":"9999-12-31","temporal_source":"Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osob fizycznych"
     "package": "jdg.autoform", "priority": 9999
 }
 

@@ -247,7 +247,7 @@ else := {
     "business_status":"","ceidg_registration_required":false,
     "construction_rate_valid":true,"construction_area_ok":true,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"Art. 41 ust. 12-12c VAT + Rozp. MF z 4.12.2024 r.",
+    "_legal_basis":"Art. 41 ust. 12-12c VAT + rozporządzenia MF z 4.12.2024 r.",
     "_warnings":["Budownictwo mieszkaniowe 8% VAT — domy ≤300 m² / mieszkania ≤150 m². Prawidłowo."]
 } {
     input.invoice.category_code == "CONSTRUCTION_RESIDENTIAL"
@@ -287,7 +287,7 @@ else := {
     "medical_device_valid":true,"medical_ce_marked":true,
     "cn_medical_validated": cn_ok,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"Rozp. MF z 4.12.2024 r., Załącznik nr 1, poz. 87-105",
+    "_legal_basis":"rozporządzenia MF z 4.12.2024 r., Załącznik nr 1, poz. 87-105",
     "_warnings":["Sprzęt medyczny 8% VAT — certyfikat CE + kod CN potwierdzony."]
 } {
     input.invoice.category_code == "MEDICAL_EQUIPMENT"
@@ -312,7 +312,7 @@ else := {
     "books_5pct_valid":true,"books_isbn_validated":true,
     "books_cn_validated": cn_ok,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"Rozp. MF z 4.12.2024 r., Załącznik nr 2",
+    "_legal_basis":"rozporządzenia MF z 4.12.2024 r., Załącznik nr 2",
     "_warnings":["Książka/e-book 5% VAT — ISBN/digital ID + kod CN potwierdzone."]
 } {
     input.invoice.category_code in {"BOOKS","EBOOKS","AUDIOBOOKS"}

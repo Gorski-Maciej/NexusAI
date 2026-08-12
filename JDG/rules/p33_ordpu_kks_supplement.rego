@@ -360,7 +360,7 @@ else := verdict {
         "business_status": "", "ceidg_registration_required": false,
         "_routing": kks_routing,
         "_routing_reason": reason,
-        "_legal_basis": "Art. 58-59 KKS; Rozp. MF § 3 ust. 1 (zwolnienie z kasy do 20k B2C)",
+        "_legal_basis": "Art. 58-59 KKS; rozporządzenia MF § 3 ust. 1 (zwolnienie z kasy do 20k B2C)",
         "_warnings": [sprintf("🧾 KKS Art.58-59 KASA FISKALNA: %s. B2C=%.0f PLN, Limit=%.0f PLN. %s. Maks. stawek=%d.",
             [cr_status, b2c_revenue, cash_register_limit, cr_action, kks_max_rates])]
     }

@@ -36,7 +36,7 @@ decide := {
         "SALDO_KOSZTOW"],
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§ 10-12 Rozp. MF z 15.11.2025 r. w sprawie PKPiR",
+    "_legal_basis": "§ 10-12 rozporządzenia MF z 15.11.2025 r. w sprawie PKPiR",
     "_warnings": ["PKPiR — 19 kolumn obowiązkowych. Kolumny 10-13: KUP (wynagrodzenia, pozostałe). Kolumna 14: NKUP. Kolumna 15: amortyzacja. Prowadź chronologicznie, bez pustych wierszy."]
 } {
     input.jdg_entrepreneur.tax_form in {"PIT_SCALE", "LINEAR"}
@@ -57,7 +57,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": revenue_routing,
     "_routing_reason": sprintf("Kol. %s PKPiR — %.2f PLN. Metoda kasowa: data = data otrzymania zapłaty.", [revenue_column, revenue_amount]),
-    "_legal_basis": "§ 13-14 Rozp. MF PKPiR, Art. 14 PIT",
+    "_legal_basis": "§ 13-14 rozporządzenia MF w sprawie PKPiR, Art. 14 PIT",
     "_warnings": [sprintf("PKPiR KOL.%s — Przychód %.2f PLN. Zasada: (1) Kol.7 = sprzedane towary/usługi, (2) Kol.8 = pozostałe przychody (dotacje, zwroty), (3) Ewidencja KASOWA — data otrzymania zapłaty, nie data faktury!", [revenue_column, revenue_amount])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -82,7 +82,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": cost_routing,
     "_routing_reason": sprintf("Kol. %s PKPiR — koszt %.2f PLN (kategoria: %s)", [cost_column, cost_amount, cost_category]),
-    "_legal_basis": "§ 15-20 Rozp. MF PKPiR, Art. 22 PIT",
+    "_legal_basis": "§ 15-20 rozporządzenia MF w sprawie PKPiR, Art. 22 PIT",
     "_warnings": [sprintf("PKPiR KOL.%s — KUP %.2f PLN. Kategorie: (1) Kol.10 = zakup towarów handlowych + materiałów podstawowych, (2) Kol.11 = koszty uboczne zakupu, (3) Kol.12 = wynagrodzenia brutto, (4) Kol.13 = pozostałe wydatki (czynsz, media, telefon). Ewidencja: data poniesienia = data faktury.", [cost_column, cost_amount])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -114,7 +114,7 @@ else := {
     "pkpir_nkup_reason": nkup_reason,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 23 PIT, § 21 Rozp. MF PKPiR",
+    "_legal_basis": "Art. 23 PIT, § 21 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("PKPiR KOL.14 — NKUP %.2f PLN. Powód: %s. Kolumna 14 = wydatki NIEbędące KUP — NIE wliczaj do kosztów w PIT!", [nkup_amount, nkup_reason])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -147,7 +147,7 @@ else := {
     "pkpir_depreciation_monthly_pln": monthly_depr,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 22a-22o PIT, § 22-26 Rozp. MF PKPiR",
+    "_legal_basis": "Art. 22a-22o PIT, § 22-26 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("PKPiR KOL.15 — Amortyzacja %.2f PLN/mies. Metoda: %s (stawka %.0f%%). ŚT wartość początkowa: %.2f PLN. Odpisy miesięczne od następnego miesiąca po przyjęciu do użytkowania!", [monthly_depr, depr_method, depr_rate, asset_value])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -177,7 +177,7 @@ else := {
     "pkpir_salary_components": salary_components,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 22 ust. 1 PIT, § 17 Rozp. MF PKPiR",
+    "_legal_basis": "Art. 22 ust. 1 PIT, § 17 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("PKPiR KOL.12 — Wynagrodzenie brutto %.2f PLN. Składniki: brutto + składki ZUS pracodawcy (emerytalna, rentowa, wypadkowa, FP, FGŚP). Wpis w dacie wypłaty (kasowo!). Nie zapomnij o PIT-4R i ZUS DRA!", [salary_gross])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -199,7 +199,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": pkpir_routing,
     "_routing_reason": sprintf("PKPiR chronologia: %s. Ostatni zapis: %s.", [order_status, last_date]),
-    "_legal_basis": "§ 9 Rozp. MF PKPiR (chronologia zapisów)",
+    "_legal_basis": "§ 9 rozporządzenia MF w sprawie PKPiR (chronologia zapisów)",
     "_warnings": [sprintf("PKPiR CHRONOLOGIA — %s. Zapis z datą %s. Wymóg: zapisy chronologicznie, bez pustych wierszy, bez przeróbek. Błędy poprawiaj przez STORNO CZERWONE (nie przekreślaj!).", [order_status, last_date])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -225,7 +225,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": sprintf("Korekta PKPiR: storno czerwone pozycji %s na kwotę %.2f PLN", [original_entry_id, correction_amount]),
-    "_legal_basis": "§ 9 ust. 2 Rozp. MF PKPiR (korekta przez storno)",
+    "_legal_basis": "§ 9 ust. 2 rozporządzenia MF w sprawie PKPiR (korekta przez storno)",
     "_warnings": [sprintf("KOREKTA PKPiR — storno czerwone zapisu nr %s. (1) NOWY wiersz z kwotą ujemną (ze znakiem minus lub kolorem czerwonym), (2) W kol. 17 wyjaśnij przyczynę korekty, (3) NIE przekreślaj ani nie wymazuj oryginalnego zapisu!", [original_entry_id])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -248,7 +248,7 @@ else := {
     "pkpir_daily_balance": daily_balance,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§ 27 Rozp. MF PKPiR (podsumowanie miesięczne i roczne)",
+    "_legal_basis": "§ 27 rozporządzenia MF w sprawie PKPiR (podsumowanie miesięczne i roczne)",
     "_warnings": [sprintf("PKPiR SUMA DZIENNA — Przychody: %.2f PLN | Koszty: %.2f PLN | Bilans: %.2f PLN. Sumuj codziennie na końcu strony. Narastająco miesięcznie.", [daily_revenue, daily_cost, daily_balance])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -271,7 +271,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Zamknięcie roczne PKPiR — podsumowanie + remanent na 31 grudnia",
-    "_legal_basis": "§ 27-29 Rozp. MF PKPiR, Art. 24 PIT",
+    "_legal_basis": "§ 27-29 rozporządzenia MF w sprawie PKPiR, Art. 24 PIT",
     "_warnings": [sprintf("ZAMKNIĘCIE ROCZNE PKPiR — rok %d. Wymagane: (1) Podsumowanie wszystkich kolumn za rok, (2) Spis z natury (remanent) na 31 grudnia — wycena wg ceny zakupu lub niższej rynkowej, (3) Przeniesienie remanentu na 1 stycznia następnego roku, (4) Przechowuj PKPiR przez 5 lat!", [tax_year])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -297,7 +297,7 @@ else := {
     "pkpir_inventory_valuation": "LOWER_OF_COST_OR_MARKET",
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§ 27-29 Rozp. MF PKPiR, Art. 24 ust. 2 PIT",
+    "_legal_basis": "§ 27-29 rozporządzenia MF w sprawie PKPiR, Art. 24 ust. 2 PIT",
     "_warnings": [sprintf("REMANENT ROCZNY — Spis z natury na 31 grudnia %d. (1) Wycena: NIŻSZA z cen: zakupu lub rynkowej na dzień remanentu, (2) Uwzględnij towary, materiały, produkcję w toku, (3) Remanent końcowy = remanent początkowy następnego roku.", [tax_year])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -321,7 +321,7 @@ else := {
     "pkpir_inventory_valuation_price": valuated_price,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§ 28 Rozp. MF PKPiR",
+    "_legal_basis": "§ 28 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("WYCENA REMANENTU — Cena zakupu: %.2f PLN | Cena rynkowa: %.2f PLN | Wycena: %.2f PLN (niższa z obu). Pamiętaj: (1) Towary uszkodzone/przeterminowane — wycena zerowa, (2) Produkcja w toku — koszt wytworzenia, (3) Nie wyceniaj ŚT i niematerialnych!", [purchase_price, market_price, valuated_price])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -460,7 +460,7 @@ else := {
     "pkpir_vat_nondeductible": vat_nondeductible,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 109 VAT, § 21 ust. 2 Rozp. MF PKPiR",
+    "_legal_basis": "Art. 109 VAT, § 21 ust. 2 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("EWIDENCJA VAT W PKPiR — Kolumna 16. VAT naliczony odliczalny: %.2f PLN (odlicz w JPK_V7). VAT nieodliczalny: %.2f PLN (wchodzi w KUP). Pamiętaj: przy zwolnieniu z VAT — cały VAT wchodzi w KUP!", [vat_deductible, vat_nondeductible])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -483,7 +483,7 @@ else := {
     "pkpir_gross_amount_kup": amount_gross,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 113 VAT, § 21 ust. 3 Rozp. MF PKPiR",
+    "_legal_basis": "Art. 113 VAT, § 21 ust. 3 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("PKPiR BEZ VAT — Jesteś zwolniony z VAT. Kwota brutto %.2f PLN jest w całości KUP. Nie wyodrębniaj VAT — cała kwota idzie w kolumnę kosztową (10-13).", [amount_gross])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -509,7 +509,7 @@ else := {
     "pkpir_retention_until": retention_end_year,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 86 § 1 OrdPU, § 29 Rozp. MF PKPiR",
+    "_legal_basis": "Art. 86 § 1 OrdPU, § 29 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("ARCHIWIZACJA PKPiR — Przechowuj PKPiR + faktury + dowody księgowe przez 5 lat (od końca roku podatkowego). Rok %d: przechowuj do końca %d. Zniszczenie dokumentów = KKS Art. 68!", [retention_start_year, retention_end_year])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -563,7 +563,7 @@ else := {
     "zus_social_base_type": "", "zus_health_rate": "",
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Rozp. MF PKPiR",
+    "_legal_basis": "rozporządzenia MF w sprawie PKPiR",
     "_warnings": ["[PKPiR] Transakcja nie wymaga specjalnej walidacji PKPiR — księguj standardowo"]
 } {
     input.jdg_entrepreneur.uses_pkpir == true

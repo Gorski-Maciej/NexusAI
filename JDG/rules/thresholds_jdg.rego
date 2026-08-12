@@ -448,6 +448,8 @@ opa_system := {
     "decision_monitor_days": 30,                 # monitoring jakości decyzji — 30 dni
     "legislative_adapt_hours": 24,               # auto-adaptacja do nowelizacji w 24 h
     "feature_flag_default": "ON",               # default feature-flag dla reguł
+    "kill_switch_enabled": true,                 # P01-RAPORT_01: globalny kill-switch; false = abort ALL
+    "kill_switch_reason": "",                    # powód aktywacji kill-switcha (logowanie)
     "signature_algorithm": "SHA256",             # weryfikacja podpisu bundle
     "temporal_versions_keep": 5,                 # ile wersji temporalnych przechowujemy
 }

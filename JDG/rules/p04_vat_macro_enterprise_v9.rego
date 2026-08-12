@@ -591,7 +591,7 @@ rate_drift_guard := {
     },
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Rate Drift Guard 2026 — stawka z faktury różni się od mapy stawek (rozp. MF 4.12.2024)",
-    "_legal_basis": "Art. 41 ust. 1-2 VAT + Rozp. MF z 4.12.2024 (stawki obniżone)",
+    "_legal_basis": "Art. 41 ust. 1-2 VAT + rozporządzenia MF z 4.12.2024 (stawki obniżone)",
     "_warnings": [sprintf("Rate drift: faktura %s, mapa 2026: %s. Zweryfikuj stawkę.", [object.get(input.invoice, "vat_rate", ""), expected_rate_2026])]
 } {
     object.get(input.jdg_entrepreneur, "p04_rate_drift_check", false) == true

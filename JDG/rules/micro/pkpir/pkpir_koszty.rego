@@ -31,7 +31,7 @@ decide := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§15 Rozp. MF z 15.11.2025 r.",
+    "_legal_basis": "§15 rozporządzenia MF z 15.11.2025 r.",
     "_warnings": [sprintf("[MICRO] §15 PKPiR: Koszt %.2f PLN — data poniesienia = data faktury (%s)", [amount, invoice_date])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -52,7 +52,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§16 Rozp. MF PKPiR",
+    "_legal_basis": "§16 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §16 PKPiR: Kol.10 — zakup towarów handlowych + materiałów podstawowych: %.2f PLN", [amount])]
 } {
     input.invoice.direction == "PURCHASE"
@@ -71,7 +71,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§17 Rozp. MF PKPiR",
+    "_legal_basis": "§17 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §17 PKPiR: Kol.11 — koszty uboczne zakupu (transport, ubezpieczenie, cło): %.2f PLN", [amount])]
 } {
     input.invoice.category_code in {"TRANSPORT_COST", "INSURANCE_COST", "CUSTOMS_DUTY"}
@@ -89,7 +89,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§18 Rozp. MF PKPiR",
+    "_legal_basis": "§18 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §18 PKPiR: Kol.12 — wynagrodzenie brutto %.2f PLN + składki ZUS pracodawcy. Wpis w dacie wypłaty.", [gross_amount])]
 } {
     input.invoice.category_code in {"SALARY", "WAGES", "BONUS", "SALARY_GROSS"}
@@ -107,7 +107,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§19 Rozp. MF PKPiR",
+    "_legal_basis": "§19 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §19 PKPiR: Kol.13 — pozostałe wydatki (czynsz, media, telefon, biuro): %.2f PLN", [amount])]
 } {
     input.invoice.category_code in {"RENT", "UTILITIES", "TELECOM", "OFFICE", "IT_SERVICES", "ACCOUNTING", "LEGAL"}
@@ -125,7 +125,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§18 ust. 2 Rozp. MF PKPiR",
+    "_legal_basis": "§18 ust. 2 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §18 PKPiR: Kol.12 — składki ZUS od wynagrodzeń (emerytalne, rentowe, wypadkowe, FP, FGŚP): %.2f PLN", [zus_contrib])]
 } {
     zus_contrib := object.get(input.employment, "zus_employer_contributions", 0)
@@ -144,7 +144,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Wydatek osobisty — NIE może być w kolumnach 10-13 PKPiR! Przenieś do kol. 14 (NKUP).",
-    "_legal_basis": "Art. 23 PIT, §21 Rozp. MF PKPiR",
+    "_legal_basis": "Art. 23 PIT, §21 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §19 PKPiR: BLOCK — wydatek %s (%.2f PLN) NIEZWIĄZANY z działalnością → NKUP kol.14!", [category, amount])]
 } {
     input.invoice.category_code in {"ALCOHOL", "ENTERTAINMENT", "LUXURY", "PERSONAL_EXPENSE"}
@@ -165,7 +165,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Płatność gotówkowa >15 000 PLN → NKUP (Art. 22p PIT)! Przenieś do kol.14.",
-    "_legal_basis": "Art. 22p PIT, §19 Rozp. MF PKPiR",
+    "_legal_basis": "Art. 22p PIT, §19 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §19 PKPiR: BLOCK — gotówka %.2f PLN > 15k → NKUP kol.14! Przelew = KUP.", [amount])]
 } {
     input.invoice.is_cash_payment == true
@@ -227,6 +227,6 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§15-20 Rozp. MF PKPiR",
+    "_legal_basis": "§15-20 rozporządzenia MF w sprawie PKPiR",
     "_warnings": ["[MICRO] PKPiR kolumny kosztowe — OK"]
 } { true }

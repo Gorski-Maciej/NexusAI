@@ -32,7 +32,7 @@ decide := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 Rozp. MF z 15.11.2025 r. w sprawie PKPiR",
+    "_legal_basis": "§9 rozporządzenia MF z 15.11.2025 r. w sprawie PKPiR",
     "_warnings": ["[MICRO] §9 PKPiR: sprawdzenie czy JDG prowadzi PKPiR"]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -49,7 +49,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 ust. 1 Rozp. MF PKPiR",
+    "_legal_basis": "§9 ust. 1 rozporządzenia MF w sprawie PKPiR",
     "_warnings": ["[MICRO] §9 PKPiR: zapisy muszą być chronologiczne — data bieżąca ≥ data ostatniego wpisu"]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -67,7 +67,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 ust. 1 Rozp. MF PKPiR",
+    "_legal_basis": "§9 ust. 1 rozporządzenia MF w sprawie PKPiR",
     "_warnings": ["[MICRO] §9 PKPiR: brak pustych wierszy między zapisami"]
 } {
     object.get(input.jdg_entrepreneur, "pkpir_no_gaps", true) == true
@@ -84,7 +84,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 ust. 2 Rozp. MF PKPiR",
+    "_legal_basis": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR",
     "_warnings": ["[MICRO] §9 PKPiR: zakaz przeróbek, wymazywania, wyskrobywania — błędy poprawiaj przez STORNO"]
 } {
     object.get(input.jdg_entrepreneur, "pkpir_no_erasures", true) == true
@@ -102,7 +102,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Data wcześniejsza niż ostatni zapis PKPiR — naruszenie chronologii",
-    "_legal_basis": "§9 ust. 1 Rozp. MF PKPiR",
+    "_legal_basis": "§9 ust. 1 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §9 PKPiR: data %s jest wcześniejsza niż ostatni zapis %s — NARUSZENIE CHRONOLOGII!", [entry_date, last_date])]
 } {
     entry_date := object.get(input.invoice, "transaction_date", "")
@@ -122,7 +122,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 ust. 3 Rozp. MF PKPiR",
+    "_legal_basis": "§9 ust. 3 rozporządzenia MF w sprawie PKPiR",
     "_warnings": ["[MICRO] §9 PKPiR: podsumowanie strony — suma kolumn na dole strony + przeniesienie na następną"]
 } {
     input.invoice.end_of_day_summary == true
@@ -139,7 +139,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 ust. 2 Rozp. MF PKPiR",
+    "_legal_basis": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR",
     "_warnings": ["[MICRO] §9 PKPiR: wyjątek — korekta roku poprzedniego może mieć wcześniejszą datę"]
 } {
     input.invoice.correction_for_previous_year == true
@@ -156,7 +156,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 ust. 2 Rozp. MF PKPiR",
+    "_legal_basis": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR",
     "_warnings": ["[MICRO] §9 PKPiR: storno czerwone — kwota ujemna w nowym wierszu, nie przekreślać oryginału"]
 } {
     input.invoice.correction_type == "STORNO"
@@ -191,7 +191,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 Rozp. MF PKPiR + Art. 193a OrdPU",
+    "_legal_basis": "§9 rozporządzenia MF w sprawie PKPiR + Art. 193a OrdPU",
     "_warnings": ["[MICRO] §9 PKPiR: JPK na żądanie — PKPiR musi być elektronicznie odtwarzalna"]
 } {
     object.get(input.jdg_entrepreneur, "jpk_na_zadanie_requested", false) == true
@@ -208,7 +208,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 Rozp. MF PKPiR",
+    "_legal_basis": "§9 rozporządzenia MF w sprawie PKPiR",
     "_warnings": ["[MICRO] §9 PKPiR: zapis chronologiczny — OK, brak naruszeń"]
 } {
     true

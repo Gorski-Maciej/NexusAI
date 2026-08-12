@@ -841,17 +841,3 @@ else := {
 # ═══════════════════════════════════════════════════════════════════════════════
 # NO-MATCH (R04 P1: stub { true } usunięty — nie generuje fałszywego matched:true)
 # ═══════════════════════════════════════════════════════════════════════════════
-else := {
-    "matched": false, "rule_id": "jdg.pit.art21.no_match",
-    "package": "jdg.pit.art21_exemptions", "priority": 999,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "_routing": "",
-    "_routing_reason": "",
-    "_legal_basis": "Art. 21 PIT"
-} {
-    false
-}

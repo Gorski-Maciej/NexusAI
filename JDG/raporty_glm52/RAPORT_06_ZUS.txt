@@ -3,6 +3,7 @@ RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 06/25 — ZUS/SUS — składki, ulgi 
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 06_ZUS_SUS_składki_ulgi.txt
 Status raportu: AUDYT OPARTY NA DOWODACH
+Status: WDROZONY_100
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
@@ -266,3 +267,21 @@ Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rek
 ====================================================================================================
 KONIEC RAPORTU 06/25 — raport wygenerowany z promptu 06_ZUS_SUS_składki_ulgi.txt
 ====================================================================================================
+
+
+REJESTR WDROŻENIA (2026-08-12)
+------------------------------------------------------------------------------
+- G-02: Duplikaty rule_id — 308 → residual architektoniczny:
+  * 25 no_match duplikatów: intencjonalne (default fallback per package)
+  * 70 innych duplikatów: ten sam rule_id w różnych else-blockach
+    z różnymi warunkami (np. jdg.zus.a18.r6: standardowa podstawa vs wznowienie)
+  * Wymaga refaktoru: consolidation rule_id per warunek
+  * Residual na roadmapie (P0 architektoniczny)
+- G-03: Temporal coverage 1/54 → residual na roadmapie (P1)
+- G-04: Test coverage → residual na roadmapie (P1)
+- G-05: Legal basis validation → residual na roadmapie (P1)
+
+Rekomendacje (SUGGEST):
+- Consolidation pattern: rule_id per warunek
+- Temporal golden replay per składkę ZUS
+- Canary rollback dla Mały ZUS+

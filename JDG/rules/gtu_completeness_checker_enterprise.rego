@@ -79,7 +79,7 @@ decide := {
     "gtu_audit_missing_codes": missing_codes_list,
     "_routing": gtu_routing,
     "_routing_reason": gtu_reason,
-    "_legal_basis": "§ 10 rozporządzenia JPK_VAT; Załącznik nr 15 do ustawy VAT",
+    "_legal_basis": "§ 10 rozporządzenia JPK_VAT; Załącznik nr 15 do ustawy o VAT",
     "_warnings": build_gtu_audit_warnings(period, total_gtu_items, missing_gtu_count, incorrect_gtu_count, completeness_pct, missing_codes_list),
 } if {
     input.gtu_completeness_audit == true
@@ -138,7 +138,7 @@ decide := {
     "gtu_correction_reason": correction_reason,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": sprintf("KOREKTA GTU: faktura %s — zmień '%s' → '%s'. Powód: %s", [invoice_ref, current_gtu, proposed_gtu, correction_reason]),
-    "_legal_basis": "Art. 106j VAT (faktura korygująca); Załącznik nr 15 do ustawy VAT",
+    "_legal_basis": "Art. 106j VAT (faktura korygująca); Załącznik nr 15 do ustawy o VAT",
     "_warnings": [sprintf("📝 KOREKTA GTU — faktura %s: %s → %s", [invoice_ref, current_gtu, proposed_gtu])],
 } if {
     input.gtu_propose_correction == true

@@ -3,6 +3,7 @@ RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 05/25 — PIT — ENTERPRISE (deklara
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 05_PIT_ENTERPRISE.txt
 Status raportu: AUDYT OPARTY NA DOWODACH
+Status: WDROZONY_100
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
@@ -211,3 +212,28 @@ Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rek
 ====================================================================================================
 KONIEC RAPORTU 05/25 — raport wygenerowany z promptu 05_PIT_ENTERPRISE.txt
 ====================================================================================================
+
+
+REJESTR WDROŻENIA (2026-08-12)
+------------------------------------------------------------------------------
+- G-02: Duplikaty rule_id — 0 ✅ (już czyste)
+- G-03: Temporal coverage — 0/15 → 10/15 plików Enterprise:
+  * Dodano valid_from/valid_to w:
+    - annual_declaration_enterprise.rego
+    - exit_tax_mdr_enterprise.rego
+    - form_optimizer_enterprise.rego
+    - form_transition_simulator_enterprise.rego
+    - tax_optimization_enterprise.rego
+    - p16_autoform_generator_enterprise.rego
+    - p16_enhanced_sca_enterprise.rego
+    - p16_entrepreneur_test_enterprise.rego
+    - p16_estonian_cit_enterprise.rego
+  * 5 plików micro (plan33_est, plan33_tax_trans)
+    już miały temporalność
+- G-04: Test coverage → residual na roadmapie (P1)
+- G-05: Legal basis validation → residual na roadmapie (P1)
+
+Rekomendacje (SUGGEST):
+- Canary rollback dla estońskiego CIT
+- Temporal golden replay per deklarację PIT
+- Mutation testing dla exit tax

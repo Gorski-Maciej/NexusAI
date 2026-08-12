@@ -24,6 +24,7 @@ import data.jdg.allowances
 
 default decide := {
     "matched": false, "rule_id": "jdg.tax_opt.no_match",
+    "valid_from":"2024-01-01","valid_to":"9999-12-31","temporal_source":"Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osob fizycznych"
     "package": "jdg.tax_optimization", "priority": 9999
 }
 

@@ -954,7 +954,7 @@ else := {
     "business_status":"",
     "depreciation_rate":rate,"depreciation_period_years":years,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"Art. 22i PIT, Załącznik nr 1 do ustawy PIT",
+    "_legal_basis":"Art. 22i PIT, Załącznik nr 1 do ustawy o PIT",
     "_warnings":[sprintf("Stawka amortyzacji: %.1f%% rocznie (okres: %.0f lat)", [rate*100, years])]
 } if {
     input.invoice.expense_type == "FIXED_ASSET"

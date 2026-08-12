@@ -31,7 +31,7 @@ decide := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§13 Rozp. MF z 15.11.2025 r.",
+    "_legal_basis": "§13 rozporządzenia MF z 15.11.2025 r.",
     "_warnings": [sprintf("[MICRO] §13 PKPiR: Kol.7 — przychód %.2f PLN METODĄ KASOWĄ (data otrzymania zapłaty: %s)", [amount, payment_date])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -53,7 +53,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Przychód nieotrzymany — NIE wpisuj do PKPiR do momentu zapłaty!",
-    "_legal_basis": "§13 ust. 1 Rozp. MF PKPiR",
+    "_legal_basis": "§13 ust. 1 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §13 PKPiR: Kol.7 — przychód %.2f PLN NIEOTRZYMANY. Metoda kasowa = wpisz dopiero po otrzymaniu zapłaty!", [amount])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -73,7 +73,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§13 ust. 1 pkt 1 Rozp. MF PKPiR",
+    "_legal_basis": "§13 ust. 1 pkt 1 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §13 PKPiR: Kol.7 — sprzedaż towarów/usług: %.2f PLN netto (VAT czynny) / brutto (zw. VAT)", [amount])]
 } {
     input.invoice.direction == "SALE"
@@ -93,7 +93,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§13 ust. 1 pkt 2 Rozp. MF PKPiR",
+    "_legal_basis": "§13 ust. 1 pkt 2 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §13 PKPiR: Kol.8 — pozostałe przychody: %.2f PLN (%s)", [amount, revenue_type])]
 } {
     input.invoice.direction == "SALE"
@@ -114,7 +114,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§14 Rozp. MF PKPiR",
+    "_legal_basis": "§14 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §14 PKPiR: Kol.9 — opis: %s", [description])]
 } {
     description := object.get(input.invoice, "description", "")
@@ -174,7 +174,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("DUPLIKAT — faktura %s już zaksięgowana w PKPiR!", [doc_number]),
-    "_legal_basis": "§13 Rozp. MF PKPiR",
+    "_legal_basis": "§13 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §13 PKPiR: BLOCK — faktura %s już istnieje w PKPiR pod LP %d!", [doc_number, lp_number])]
 } {
     doc_number := object.get(input.invoice, "document_number", "")
@@ -232,6 +232,6 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§13-14 Rozp. MF PKPiR",
+    "_legal_basis": "§13-14 rozporządzenia MF w sprawie PKPiR",
     "_warnings": ["[MICRO] PKPiR kolumny przychodowe — OK"]
 } { true }

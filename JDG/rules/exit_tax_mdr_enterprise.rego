@@ -167,6 +167,7 @@ estonian_cit_available_for(small_taxpayer, employees, reinvested) = true {
 
 default decide := {
     "matched": false, "rule_id": "jdg.exit_tax_mdr.no_match",
+    "valid_from":"2024-01-01","valid_to":"9999-12-31","temporal_source":"Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osob fizycznych"
     "package": "jdg.exit_tax_mdr", "priority": 9999
 }
 

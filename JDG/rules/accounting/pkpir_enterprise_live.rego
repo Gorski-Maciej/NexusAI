@@ -93,7 +93,7 @@ decide := verdict {
         "business_status": "", "ceidg_registration_required": false,
         "_routing": lp_routing,
         "_routing_reason": lp_routing_reason,
-        "_legal_basis": "§10 ust. 1 pkt 1 Rozp. MF PKPiR",
+        "_legal_basis": "§10 ust. 1 pkt 1 rozporządzenia MF w sprawie PKPiR",
         "_warnings": lp_warnings
     }
 }
@@ -169,7 +169,7 @@ else := verdict {
         "business_status": "", "ceidg_registration_required": false,
         "_routing": date_routing,
         "_routing_reason": date_routing_reason,
-        "_legal_basis": "§10 ust. 1 pkt 2-3 Rozp. MF PKPiR; §9 ust. 1 (chronologia)",
+        "_legal_basis": "§10 ust. 1 pkt 2-3 rozporządzenia MF w sprawie PKPiR; §9 ust. 1 (chronologia)",
         "_warnings": date_warnings
     }
 }
@@ -239,7 +239,7 @@ else := verdict {
         "business_status": "", "ceidg_registration_required": false,
         "_routing": doc_routing,
         "_routing_reason": doc_routing_reason,
-        "_legal_basis": "§10 ust. 1 pkt 4-5 Rozp. MF PKPiR",
+        "_legal_basis": "§10 ust. 1 pkt 4-5 rozporządzenia MF w sprawie PKPiR",
         "_warnings": doc_warnings
     }
 }
@@ -315,7 +315,7 @@ else := verdict {
         "business_status": "", "ceidg_registration_required": false,
         "_routing": "",
         "_routing_reason": "",
-        "_legal_basis": "§11 Rozp. MF PKPiR; §13-14 (przychody)",
+        "_legal_basis": "§11 rozporządzenia MF w sprawie PKPiR; §13-14 (przychody)",
         "_warnings": rev_warnings
     }
 }
@@ -403,7 +403,7 @@ else := verdict {
         "business_status": "", "ceidg_registration_required": false,
         "_routing": cost_routing,
         "_routing_reason": cost_routing_reason,
-        "_legal_basis": "§12, 15-21 Rozp. MF PKPiR",
+        "_legal_basis": "§12, 15-21 rozporządzenia MF w sprawie PKPiR",
         "_warnings": cost_warnings
     }
 }
@@ -457,7 +457,7 @@ else := verdict {
         "business_status": "", "ceidg_registration_required": false,
         "_routing": "",
         "_routing_reason": "",
-        "_legal_basis": "§12 ust. 4-6 Rozp. MF PKPiR; §21 (NKUP)",
+        "_legal_basis": "§12 ust. 4-6 rozporządzenia MF w sprawie PKPiR; §21 (NKUP)",
         "_warnings": nkup_warnings
     }
 }
@@ -609,7 +609,7 @@ else := verdict {
         "business_status": "", "ceidg_registration_required": false,
         "_routing": remnant_routing,
         "_routing_reason": remnant_routing_reason,
-        "_legal_basis": "§27-29 Rozp. MF PKPiR; Art. 24 ust. 2 PIT",
+        "_legal_basis": "§27-29 rozporządzenia MF w sprawie PKPiR; Art. 24 ust. 2 PIT",
         "_warnings": remnant_warnings
     }
 }
@@ -694,7 +694,7 @@ else := verdict {
         "business_status": "", "ceidg_registration_required": false,
         "_routing": cross_routing,
         "_routing_reason": cross_routing_reason,
-        "_legal_basis": "§10-29 Rozp. MF PKPiR; Art. 24 PIT",
+        "_legal_basis": "§10-29 rozporządzenia MF w sprawie PKPiR; Art. 24 PIT",
         "_warnings": cross_warnings
     }
 }
@@ -757,7 +757,7 @@ else := verdict {
         "business_status": "", "ceidg_registration_required": false,
         "_routing": summary_routing,
         "_routing_reason": summary_routing_reason,
-        "_legal_basis": "§9-29 Rozp. MF PKPiR (podsumowanie okresu)",
+        "_legal_basis": "§9-29 rozporządzenia MF w sprawie PKPiR (podsumowanie okresu)",
         "_warnings": summary_warnings
     }
 }

@@ -1,0 +1,2374 @@
+{
+  "generated_at": "2026-08-12T14:30:11.204926+00:00",
+  "applied": 296,
+  "removals": [
+    {
+      "rule_id": "jdg.micro.sus.a11.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a11.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a11.r1: sus_a11_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a11.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a11.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a11.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a11.r2: sus_a11_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a11.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a11.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a11.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a11.r3: sus_a11_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a11.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a11.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a11.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a11.r4: sus_a11_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a11.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a11.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a11.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a11.r5: sus_a11_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a11.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a11.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a11.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a11.r6: sus_a11_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a11.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a11.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a11.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a11.r7: sus_a11_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a11.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a11.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a11.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.sus.a11.r8: sus_a11_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a11.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a13.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a13.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a13.r1: sus_a13_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a13.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a13.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a13.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a13.r2: sus_a13_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a13.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a13.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a13.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a13.r3: sus_a13_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a13.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a13.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a13.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a13.r4: sus_a13_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a13.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a13.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a13.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a13.r5: sus_a13_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a13.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a13.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a13.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a13.r6: sus_a13_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a13.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a13.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a13.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a13.r7: sus_a13_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a13.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a13.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a13.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.sus.a13.r8: sus_a13_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a13.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a14.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a14.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a14.r1: sus_a14_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a14.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a14.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a14.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a14.r2: sus_a14_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a14.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a14.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a14.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a14.r3: sus_a14_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a14.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a14.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a14.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a14.r4: sus_a14_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a14.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a14.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a14.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a14.r5: sus_a14_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a14.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a14.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a14.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a14.r6: sus_a14_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a14.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a14.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a14.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a14.r7: sus_a14_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a14.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a14.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a14.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.sus.a14.r8: sus_a14_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a14.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a18.r1: sus_a18_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18.r10",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18.rego",
+      "kind": "else",
+      "start": 275,
+      "end": 304,
+      "text": "# jdg.micro.sus.a18.r10: sus_a18_r10_interaction_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18.r10\",\n    \"package\": \"jdg.micro.sus\",\n    \"p"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a18.r2: sus_a18_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a18.r3: sus_a18_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a18.r4: sus_a18_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a18.r5: sus_a18_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a18.r6: sus_a18_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a18.r7: sus_a18_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.sus.a18.r8: sus_a18_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18.r9",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18.rego",
+      "kind": "else",
+      "start": 247,
+      "end": 276,
+      "text": "# jdg.micro.sus.a18.r9: sus_a18_r9_interaction_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18.r9\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18a.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18a.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a18a.r1: sus_a18a_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18a.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"p"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18a.r10",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18a.rego",
+      "kind": "else",
+      "start": 275,
+      "end": 304,
+      "text": "# jdg.micro.sus.a18a.r10: sus_a18a_r10_interaction_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18a.r10\",\n    \"package\": \"jdg.micro.sus\",\n   "
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18a.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18a.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a18a.r2: sus_a18a_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18a.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18a.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18a.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a18a.r3: sus_a18a_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18a.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18a.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18a.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a18a.r4: sus_a18a_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18a.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18a.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18a.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a18a.r5: sus_a18a_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18a.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18a.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18a.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a18a.r6: sus_a18a_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18a.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18a.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18a.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a18a.r7: sus_a18a_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18a.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"pri"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18a.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18a.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.sus.a18a.r8: sus_a18a_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18a.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"pri"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18a.r9",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18a.rego",
+      "kind": "else",
+      "start": 247,
+      "end": 276,
+      "text": "# jdg.micro.sus.a18a.r9: sus_a18a_r9_interaction_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18a.r9\",\n    \"package\": \"jdg.micro.sus\",\n    \"p"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18c.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18c.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a18c.r1: sus_a18c_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18c.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"p"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18c.r10",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18c.rego",
+      "kind": "else",
+      "start": 275,
+      "end": 304,
+      "text": "# jdg.micro.sus.a18c.r10: sus_a18c_r10_interaction_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18c.r10\",\n    \"package\": \"jdg.micro.sus\",\n   "
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18c.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18c.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a18c.r2: sus_a18c_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18c.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18c.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18c.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a18c.r3: sus_a18c_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18c.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18c.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18c.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a18c.r4: sus_a18c_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18c.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18c.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18c.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a18c.r5: sus_a18c_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18c.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18c.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18c.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a18c.r6: sus_a18c_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18c.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18c.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18c.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a18c.r7: sus_a18c_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18c.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"pri"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18c.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18c.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.sus.a18c.r8: sus_a18c_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18c.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"pri"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a18c.r9",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a18c.rego",
+      "kind": "else",
+      "start": 247,
+      "end": 276,
+      "text": "# jdg.micro.sus.a18c.r9: sus_a18c_r9_interaction_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a18c.r9\",\n    \"package\": \"jdg.micro.sus\",\n    \"p"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a19.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a19.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a19.r1: sus_a19_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a19.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a19.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a19.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a19.r2: sus_a19_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a19.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a19.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a19.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a19.r3: sus_a19_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a19.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a19.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a19.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a19.r4: sus_a19_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a19.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a19.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a19.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a19.r5: sus_a19_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a19.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a19.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a19.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a19.r6: sus_a19_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a19.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a19.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a19.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a19.r7: sus_a19_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a19.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a19.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a19.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.sus.a19.r8: sus_a19_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a19.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a22.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a22.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a22.r1: sus_a22_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a22.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a22.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a22.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a22.r2: sus_a22_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a22.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a22.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a22.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a22.r3: sus_a22_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a22.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a22.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a22.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a22.r4: sus_a22_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a22.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a22.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a22.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a22.r5: sus_a22_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a22.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a22.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a22.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a22.r6: sus_a22_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a22.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a22.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a22.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a22.r7: sus_a22_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a22.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a22.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a22.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.sus.a22.r8: sus_a22_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a22.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a24.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a24.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a24.r1: sus_a24_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a24.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a24.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a24.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a24.r2: sus_a24_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a24.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a24.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a24.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a24.r3: sus_a24_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a24.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a24.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a24.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a24.r4: sus_a24_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a24.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a24.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a24.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a24.r5: sus_a24_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a24.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a24.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a24.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a24.r6: sus_a24_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a24.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a36.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a36.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a36.r1: sus_a36_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a36.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a36.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a36.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a36.r2: sus_a36_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a36.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a36.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a36.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a36.r3: sus_a36_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a36.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a36.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a36.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a36.r4: sus_a36_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a36.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a36.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a36.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a36.r5: sus_a36_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a36.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a36.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a36.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a36.r6: sus_a36_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a36.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a36.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a36.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a36.r7: sus_a36_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a36.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a36.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a36.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.sus.a36.r8: sus_a36_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a36.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a40.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a40.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a40.r1: sus_a40_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a40.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a40.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a40.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a40.r2: sus_a40_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a40.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a40.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a40.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a40.r3: sus_a40_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a40.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a40.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a40.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a40.r4: sus_a40_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a40.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a40.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a40.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a40.r5: sus_a40_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a40.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a40.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a40.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a40.r6: sus_a40_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a40.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a40.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a40.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a40.r7: sus_a40_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a40.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a40.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a40.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.sus.a40.r8: sus_a40_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a40.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a47.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a47.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a47.r1: sus_a47_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a47.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a47.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a47.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a47.r2: sus_a47_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a47.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a47.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a47.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a47.r3: sus_a47_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a47.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a47.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a47.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a47.r4: sus_a47_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a47.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a47.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a47.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a47.r5: sus_a47_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a47.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a47.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a47.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a47.r6: sus_a47_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a47.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a47.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a47.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a47.r7: sus_a47_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a47.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a47.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a47.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 247,
+      "text": "# jdg.micro.sus.a47.r8: sus_a47_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a47.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"priori"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a6.r1: sus_a6_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a6.r2: sus_a6_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\":"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a6.r3: sus_a6_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\":"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a6.r4: sus_a6_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\":"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a6.r5: sus_a6_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\":"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a6.r6: sus_a6_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\":"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a6.r7: sus_a6_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\""
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.sus.a6.r8: sus_a6_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\""
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6b.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6b.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a6b.r1: sus_a6b_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6b.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"prio"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6b.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6b.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a6b.r2: sus_a6b_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6b.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6b.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6b.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a6b.r3: sus_a6b_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6b.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6b.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6b.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a6b.r4: sus_a6b_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6b.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6b.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6b.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a6b.r5: sus_a6b_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6b.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a6b.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a6b.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a6b.r6: sus_a6b_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a6b.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a9.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a9.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.sus.a9.r1: sus_a9_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a9.r1\",\n    \"package\": \"jdg.micro.sus\",\n    \"priorit"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a9.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a9.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.sus.a9.r2: sus_a9_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a9.r2\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\":"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a9.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a9.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.sus.a9.r3: sus_a9_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a9.r3\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\":"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a9.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a9.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.sus.a9.r4: sus_a9_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a9.r4\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\":"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a9.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a9.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.sus.a9.r5: sus_a9_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a9.r5\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\":"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a9.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a9.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.sus.a9.r6: sus_a9_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a9.r6\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\":"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a9.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a9.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.sus.a9.r7: sus_a9_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a9.r7\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\""
+    },
+    {
+      "rule_id": "jdg.micro.sus.a9.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/sus/sus_a9.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.sus.a9.r8: sus_a9_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.sus.a9.r8\",\n    \"package\": \"jdg.micro.sus\",\n    \"priority\""
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a19.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a19.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.zasilkowa.a19.r1: zasilkowa_a19_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a19.r1\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a19.r10",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a19.rego",
+      "kind": "else",
+      "start": 275,
+      "end": 304,
+      "text": "# jdg.micro.zasilkowa.a19.r10: zasilkowa_a19_r10_interaction_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a19.r10\",\n    \"package\": \"jdg."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a19.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a19.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.zasilkowa.a19.r2: zasilkowa_a19_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a19.r2\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a19.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a19.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.zasilkowa.a19.r3: zasilkowa_a19_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a19.r3\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a19.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a19.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.zasilkowa.a19.r4: zasilkowa_a19_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a19.r4\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a19.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a19.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.zasilkowa.a19.r5: zasilkowa_a19_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a19.r5\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a19.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a19.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.zasilkowa.a19.r6: zasilkowa_a19_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a19.r6\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a19.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a19.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.zasilkowa.a19.r7: zasilkowa_a19_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a19.r7\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a19.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a19.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.zasilkowa.a19.r8: zasilkowa_a19_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a19.r8\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a19.r9",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a19.rego",
+      "kind": "else",
+      "start": 247,
+      "end": 276,
+      "text": "# jdg.micro.zasilkowa.a19.r9: zasilkowa_a19_r9_interaction_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a19.r9\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a29.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a29.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.zasilkowa.a29.r1: zasilkowa_a29_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a29.r1\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a29.r10",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a29.rego",
+      "kind": "else",
+      "start": 275,
+      "end": 304,
+      "text": "# jdg.micro.zasilkowa.a29.r10: zasilkowa_a29_r10_interaction_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a29.r10\",\n    \"package\": \"jdg."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a29.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a29.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.zasilkowa.a29.r2: zasilkowa_a29_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a29.r2\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a29.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a29.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.zasilkowa.a29.r3: zasilkowa_a29_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a29.r3\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a29.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a29.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.zasilkowa.a29.r4: zasilkowa_a29_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a29.r4\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a29.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a29.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.zasilkowa.a29.r5: zasilkowa_a29_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a29.r5\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a29.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a29.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.zasilkowa.a29.r6: zasilkowa_a29_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a29.r6\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a29.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a29.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.zasilkowa.a29.r7: zasilkowa_a29_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a29.r7\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a29.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a29.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.zasilkowa.a29.r8: zasilkowa_a29_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a29.r8\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a29.r9",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a29.rego",
+      "kind": "else",
+      "start": 247,
+      "end": 276,
+      "text": "# jdg.micro.zasilkowa.a29.r9: zasilkowa_a29_r9_interaction_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a29.r9\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a32.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a32.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.zasilkowa.a32.r1: zasilkowa_a32_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a32.r1\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a32.r10",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a32.rego",
+      "kind": "else",
+      "start": 275,
+      "end": 304,
+      "text": "# jdg.micro.zasilkowa.a32.r10: zasilkowa_a32_r10_interaction_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a32.r10\",\n    \"package\": \"jdg."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a32.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a32.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.zasilkowa.a32.r2: zasilkowa_a32_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a32.r2\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a32.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a32.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.zasilkowa.a32.r3: zasilkowa_a32_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a32.r3\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a32.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a32.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.zasilkowa.a32.r4: zasilkowa_a32_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a32.r4\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a32.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a32.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.zasilkowa.a32.r5: zasilkowa_a32_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a32.r5\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a32.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a32.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.zasilkowa.a32.r6: zasilkowa_a32_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a32.r6\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a32.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a32.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.zasilkowa.a32.r7: zasilkowa_a32_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a32.r7\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a32.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a32.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.zasilkowa.a32.r8: zasilkowa_a32_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a32.r8\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a32.r9",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a32.rego",
+      "kind": "else",
+      "start": 247,
+      "end": 276,
+      "text": "# jdg.micro.zasilkowa.a32.r9: zasilkowa_a32_r9_interaction_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a32.r9\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a33.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a33.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.zasilkowa.a33.r1: zasilkowa_a33_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a33.r1\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a33.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a33.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.zasilkowa.a33.r2: zasilkowa_a33_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a33.r2\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a33.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a33.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.zasilkowa.a33.r3: zasilkowa_a33_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a33.r3\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a33.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a33.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.zasilkowa.a33.r4: zasilkowa_a33_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a33.r4\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a33.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a33.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.zasilkowa.a33.r5: zasilkowa_a33_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a33.r5\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a33.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a33.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.zasilkowa.a33.r6: zasilkowa_a33_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a33.r6\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a33.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a33.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.zasilkowa.a33.r7: zasilkowa_a33_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a33.r7\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zasilkowa.a33.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zasilkowa/zasilkowa_a33.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 247,
+      "text": "# jdg.micro.zasilkowa.a33.r8: zasilkowa_a33_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zasilkowa.a33.r8\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a79.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.zdrowotna.a79.r1: zdrowotna_a79_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a79.r1\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a79.r10",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "kind": "else",
+      "start": 275,
+      "end": 304,
+      "text": "# jdg.micro.zdrowotna.a79.r10: zdrowotna_a79_r10_interaction_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a79.r10\",\n    \"package\": \"jdg."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a79.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.zdrowotna.a79.r2: zdrowotna_a79_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a79.r2\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a79.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.zdrowotna.a79.r3: zdrowotna_a79_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a79.r3\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a79.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.zdrowotna.a79.r4: zdrowotna_a79_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a79.r4\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a79.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.zdrowotna.a79.r5: zdrowotna_a79_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a79.r5\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a79.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.zdrowotna.a79.r6: zdrowotna_a79_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a79.r6\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a79.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.zdrowotna.a79.r7: zdrowotna_a79_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a79.r7\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a79.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.zdrowotna.a79.r8: zdrowotna_a79_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a79.r8\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a79.r9",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "kind": "else",
+      "start": 247,
+      "end": 276,
+      "text": "# jdg.micro.zdrowotna.a79.r9: zdrowotna_a79_r9_interaction_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a79.r9\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.zdrowotna.a81.r1: zdrowotna_a81_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81.r1\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81.r10",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81.rego",
+      "kind": "else",
+      "start": 275,
+      "end": 304,
+      "text": "# jdg.micro.zdrowotna.a81.r10: zdrowotna_a81_r10_interaction_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81.r10\",\n    \"package\": \"jdg."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.zdrowotna.a81.r2: zdrowotna_a81_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81.r2\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.zdrowotna.a81.r3: zdrowotna_a81_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81.r3\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.zdrowotna.a81.r4: zdrowotna_a81_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81.r4\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.zdrowotna.a81.r5: zdrowotna_a81_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81.r5\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.zdrowotna.a81.r6: zdrowotna_a81_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81.r6\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.zdrowotna.a81.r7: zdrowotna_a81_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81.r7\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.zdrowotna.a81.r8: zdrowotna_a81_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81.r8\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81.r9",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81.rego",
+      "kind": "else",
+      "start": 247,
+      "end": 276,
+      "text": "# jdg.micro.zdrowotna.a81.r9: zdrowotna_a81_r9_interaction_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81.r9\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81b.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81b.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.zdrowotna.a81b.r1: zdrowotna_a81b_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81b.r1\",\n    \"package\": \"jdg."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81b.r10",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81b.rego",
+      "kind": "else",
+      "start": 275,
+      "end": 304,
+      "text": "# jdg.micro.zdrowotna.a81b.r10: zdrowotna_a81b_r10_interaction_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81b.r10\",\n    \"package\": \"j"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81b.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81b.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.zdrowotna.a81b.r2: zdrowotna_a81b_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81b.r2\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81b.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81b.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.zdrowotna.a81b.r3: zdrowotna_a81b_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81b.r3\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81b.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81b.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.zdrowotna.a81b.r4: zdrowotna_a81b_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81b.r4\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81b.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81b.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.zdrowotna.a81b.r5: zdrowotna_a81b_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81b.r5\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81b.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81b.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.zdrowotna.a81b.r6: zdrowotna_a81b_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81b.r6\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81b.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81b.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.zdrowotna.a81b.r7: zdrowotna_a81b_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81b.r7\",\n    \"package\": \"jdg.mi"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81b.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81b.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.zdrowotna.a81b.r8: zdrowotna_a81b_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81b.r8\",\n    \"package\": \"jdg.mi"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81b.r9",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81b.rego",
+      "kind": "else",
+      "start": 247,
+      "end": 276,
+      "text": "# jdg.micro.zdrowotna.a81b.r9: zdrowotna_a81b_r9_interaction_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81b.r9\",\n    \"package\": \"jdg."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81c.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.zdrowotna.a81c.r1: zdrowotna_a81c_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81c.r1\",\n    \"package\": \"jdg."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81c.r10",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego",
+      "kind": "else",
+      "start": 275,
+      "end": 304,
+      "text": "# jdg.micro.zdrowotna.a81c.r10: zdrowotna_a81c_r10_interaction_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81c.r10\",\n    \"package\": \"j"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81c.r11",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego",
+      "kind": "else",
+      "start": 303,
+      "end": 332,
+      "text": "# jdg.micro.zdrowotna.a81c.r11: zdrowotna_a81c_r11_deadline\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81c.r11\",\n    \"package\": \"jdg.mi"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81c.r12",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego",
+      "kind": "else",
+      "start": 331,
+      "end": 363,
+      "text": "# jdg.micro.zdrowotna.a81c.r12: zdrowotna_a81c_r12_sanction [SANKCJA]\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81c.r12\",\n    \"package"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81c.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.zdrowotna.a81c.r2: zdrowotna_a81c_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81c.r2\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81c.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.zdrowotna.a81c.r3: zdrowotna_a81c_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81c.r3\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81c.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.zdrowotna.a81c.r4: zdrowotna_a81c_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81c.r4\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81c.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.zdrowotna.a81c.r5: zdrowotna_a81c_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81c.r5\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81c.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.zdrowotna.a81c.r6: zdrowotna_a81c_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81c.r6\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81c.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.zdrowotna.a81c.r7: zdrowotna_a81c_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81c.r7\",\n    \"package\": \"jdg.mi"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81c.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.zdrowotna.a81c.r8: zdrowotna_a81c_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81c.r8\",\n    \"package\": \"jdg.mi"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81c.r9",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81c.rego",
+      "kind": "else",
+      "start": 247,
+      "end": 276,
+      "text": "# jdg.micro.zdrowotna.a81c.r9: zdrowotna_a81c_r9_interaction_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81c.r9\",\n    \"package\": \"jdg."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81d.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.zdrowotna.a81d.r1: zdrowotna_a81d_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81d.r1\",\n    \"package\": \"jdg."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81d.r10",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego",
+      "kind": "else",
+      "start": 275,
+      "end": 304,
+      "text": "# jdg.micro.zdrowotna.a81d.r10: zdrowotna_a81d_r10_interaction_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81d.r10\",\n    \"package\": \"j"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81d.r11",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego",
+      "kind": "else",
+      "start": 303,
+      "end": 332,
+      "text": "# jdg.micro.zdrowotna.a81d.r11: zdrowotna_a81d_r11_deadline\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81d.r11\",\n    \"package\": \"jdg.mi"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81d.r12",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego",
+      "kind": "else",
+      "start": 331,
+      "end": 363,
+      "text": "# jdg.micro.zdrowotna.a81d.r12: zdrowotna_a81d_r12_sanction [SANKCJA]\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81d.r12\",\n    \"package"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81d.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.zdrowotna.a81d.r2: zdrowotna_a81d_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81d.r2\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81d.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.zdrowotna.a81d.r3: zdrowotna_a81d_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81d.r3\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81d.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.zdrowotna.a81d.r4: zdrowotna_a81d_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81d.r4\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81d.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.zdrowotna.a81d.r5: zdrowotna_a81d_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81d.r5\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81d.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.zdrowotna.a81d.r6: zdrowotna_a81d_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81d.r6\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81d.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.zdrowotna.a81d.r7: zdrowotna_a81d_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81d.r7\",\n    \"package\": \"jdg.mi"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81d.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 248,
+      "text": "# jdg.micro.zdrowotna.a81d.r8: zdrowotna_a81d_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81d.r8\",\n    \"package\": \"jdg.mi"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a81d.r9",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a81d.rego",
+      "kind": "else",
+      "start": 247,
+      "end": 276,
+      "text": "# jdg.micro.zdrowotna.a81d.r9: zdrowotna_a81d_r9_interaction_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a81d.r9\",\n    \"package\": \"jdg."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a82.r1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "decide",
+      "start": 23,
+      "end": 52,
+      "text": "# jdg.micro.zdrowotna.a82.r1: zdrowotna_a82_r1_eligibility\ndecide := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a82.r1\",\n    \"package\": \"jdg.mic"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a82.r2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 51,
+      "end": 80,
+      "text": "# jdg.micro.zdrowotna.a82.r2: zdrowotna_a82_r2_positive_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a82.r2\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a82.r3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 79,
+      "end": 108,
+      "text": "# jdg.micro.zdrowotna.a82.r3: zdrowotna_a82_r3_positive_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a82.r3\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a82.r4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 107,
+      "end": 136,
+      "text": "# jdg.micro.zdrowotna.a82.r4: zdrowotna_a82_r4_positive_3\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a82.r4\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a82.r5",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 135,
+      "end": 164,
+      "text": "# jdg.micro.zdrowotna.a82.r5: zdrowotna_a82_r5_negative_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a82.r5\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a82.r6",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 163,
+      "end": 192,
+      "text": "# jdg.micro.zdrowotna.a82.r6: zdrowotna_a82_r6_negative_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a82.r6\",\n    \"package\": \"jdg.micro."
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a82.r7",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 191,
+      "end": 220,
+      "text": "# jdg.micro.zdrowotna.a82.r7: zdrowotna_a82_r7_exception_1\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a82.r7\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a82.r8",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 219,
+      "end": 254,
+      "text": "# jdg.micro.zdrowotna.a82.r8: zdrowotna_a82_r8_exception_2\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.micro.zdrowotna.a82.r8\",\n    \"package\": \"jdg.micro"
+    },
+    {
+      "rule_id": "jdg.zdr.a10.u1.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 253,
+      "end": 281,
+      "text": "# jdg.zdr.a10.u1.p2 — `zdr_a10_u1_p2`: Art. 10 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a10.u1.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a10.u2.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 280,
+      "end": 308,
+      "text": "# jdg.zdr.a10.u2.p3 — `zdr_a10_u2_p3`: Art. 10 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a10.u2.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a10.u4.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 307,
+      "end": 335,
+      "text": "# jdg.zdr.a10.u4.p4 — `zdr_a10_u4_p4`: Art. 10 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a10.u4.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a10.u5.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 334,
+      "end": 362,
+      "text": "# jdg.zdr.a10.u5.p1 — `zdr_a10_u5_p1`: Art. 10 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a10.u5.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a11.u1.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 361,
+      "end": 389,
+      "text": "# jdg.zdr.a11.u1.p1 — `zdr_a11_u1_p1`: Art. 11 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a11.u1.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a11.u1.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 388,
+      "end": 416,
+      "text": "# jdg.zdr.a11.u1.p3 — `zdr_a11_u1_p3`: Art. 11 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a11.u1.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a11.u2.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 415,
+      "end": 443,
+      "text": "# jdg.zdr.a11.u2.p2 — `zdr_a11_u2_p2`: Art. 11 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a11.u2.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a11.u3.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 442,
+      "end": 470,
+      "text": "# jdg.zdr.a11.u3.p3 — `zdr_a11_u3_p3`: Art. 11 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a11.u3.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a11.u3.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 469,
+      "end": 497,
+      "text": "# jdg.zdr.a11.u3.p4 — `zdr_a11_u3_p4`: Art. 11 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a11.u3.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a11.u4.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 496,
+      "end": 524,
+      "text": "# jdg.zdr.a11.u4.p1 — `zdr_a11_u4_p1`: Art. 11 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a11.u4.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a11.u4.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 523,
+      "end": 551,
+      "text": "# jdg.zdr.a11.u4.p4 — `zdr_a11_u4_p4`: Art. 11 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a11.u4.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a11.u5.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 550,
+      "end": 578,
+      "text": "# jdg.zdr.a11.u5.p2 — `zdr_a11_u5_p2`: Art. 11 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a11.u5.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a12.u1.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 577,
+      "end": 605,
+      "text": "# jdg.zdr.a12.u1.p2 — `zdr_a12_u1_p2`: Art. 12 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a12.u1.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a12.u2.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 604,
+      "end": 632,
+      "text": "# jdg.zdr.a12.u2.p3 — `zdr_a12_u2_p3`: Art. 12 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a12.u2.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a12.u2.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 631,
+      "end": 659,
+      "text": "# jdg.zdr.a12.u2.p4 — `zdr_a12_u2_p4`: Art. 12 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a12.u2.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a12.u3.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 658,
+      "end": 686,
+      "text": "# jdg.zdr.a12.u3.p1 — `zdr_a12_u3_p1`: Art. 12 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a12.u3.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a12.u3.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 685,
+      "end": 713,
+      "text": "# jdg.zdr.a12.u3.p4 — `zdr_a12_u3_p4`: Art. 12 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a12.u3.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a12.u4.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 712,
+      "end": 740,
+      "text": "# jdg.zdr.a12.u4.p2 — `zdr_a12_u4_p2`: Art. 12 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a12.u4.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a12.u5.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 739,
+      "end": 767,
+      "text": "# jdg.zdr.a12.u5.p1 — `zdr_a12_u5_p1`: Art. 12 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a12.u5.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a12.u5.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 766,
+      "end": 794,
+      "text": "# jdg.zdr.a12.u5.p3 — `zdr_a12_u5_p3`: Art. 12 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a12.u5.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a13.u1.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 793,
+      "end": 821,
+      "text": "# jdg.zdr.a13.u1.p3 — `zdr_a13_u1_p3`: Art. 13 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a13.u1.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a13.u1.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 820,
+      "end": 848,
+      "text": "# jdg.zdr.a13.u1.p4 — `zdr_a13_u1_p4`: Art. 13 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a13.u1.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a13.u2.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 847,
+      "end": 875,
+      "text": "# jdg.zdr.a13.u2.p1 — `zdr_a13_u2_p1`: Art. 13 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a13.u2.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a13.u2.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 874,
+      "end": 902,
+      "text": "# jdg.zdr.a13.u2.p4 — `zdr_a13_u2_p4`: Art. 13 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a13.u2.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a13.u3.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 901,
+      "end": 929,
+      "text": "# jdg.zdr.a13.u3.p2 — `zdr_a13_u3_p2`: Art. 13 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a13.u3.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a13.u4.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 928,
+      "end": 956,
+      "text": "# jdg.zdr.a13.u4.p1 — `zdr_a13_u4_p1`: Art. 13 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a13.u4.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a13.u4.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 955,
+      "end": 983,
+      "text": "# jdg.zdr.a13.u4.p3 — `zdr_a13_u4_p3`: Art. 13 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a13.u4.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a13.u5.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 982,
+      "end": 1010,
+      "text": "# jdg.zdr.a13.u5.p2 — `zdr_a13_u5_p2`: Art. 13 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a13.u5.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a14.u1.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1009,
+      "end": 1037,
+      "text": "# jdg.zdr.a14.u1.p1 — `zdr_a14_u1_p1`: Art. 14 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a14.u1.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a14.u1.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1036,
+      "end": 1064,
+      "text": "# jdg.zdr.a14.u1.p4 — `zdr_a14_u1_p4`: Art. 14 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a14.u1.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a14.u2.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1063,
+      "end": 1091,
+      "text": "# jdg.zdr.a14.u2.p2 — `zdr_a14_u2_p2`: Art. 14 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a14.u2.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a14.u3.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1090,
+      "end": 1118,
+      "text": "# jdg.zdr.a14.u3.p1 — `zdr_a14_u3_p1`: Art. 14 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a14.u3.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a14.u3.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1117,
+      "end": 1145,
+      "text": "# jdg.zdr.a14.u3.p3 — `zdr_a14_u3_p3`: Art. 14 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a14.u3.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a14.u4.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1144,
+      "end": 1172,
+      "text": "# jdg.zdr.a14.u4.p2 — `zdr_a14_u4_p2`: Art. 14 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a14.u4.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a14.u5.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1171,
+      "end": 1199,
+      "text": "# jdg.zdr.a14.u5.p3 — `zdr_a14_u5_p3`: Art. 14 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a14.u5.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a14.u5.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1198,
+      "end": 1226,
+      "text": "# jdg.zdr.a14.u5.p4 — `zdr_a14_u5_p4`: Art. 14 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a14.u5.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a15.u1.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1225,
+      "end": 1253,
+      "text": "# jdg.zdr.a15.u1.p2 — `zdr_a15_u1_p2`: Art. 15 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a15.u1.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a15.u2.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1252,
+      "end": 1280,
+      "text": "# jdg.zdr.a15.u2.p1 — `zdr_a15_u2_p1`: Art. 15 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a15.u2.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a15.u2.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1279,
+      "end": 1307,
+      "text": "# jdg.zdr.a15.u2.p3 — `zdr_a15_u2_p3`: Art. 15 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a15.u2.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a15.u3.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1306,
+      "end": 1334,
+      "text": "# jdg.zdr.a15.u3.p2 — `zdr_a15_u3_p2`: Art. 15 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a15.u3.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a15.u4.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1333,
+      "end": 1361,
+      "text": "# jdg.zdr.a15.u4.p3 — `zdr_a15_u4_p3`: Art. 15 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a15.u4.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a15.u4.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1360,
+      "end": 1388,
+      "text": "# jdg.zdr.a15.u4.p4 — `zdr_a15_u4_p4`: Art. 15 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a15.u4.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a15.u5.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1387,
+      "end": 1415,
+      "text": "# jdg.zdr.a15.u5.p1 — `zdr_a15_u5_p1`: Art. 15 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a15.u5.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a15.u5.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1414,
+      "end": 1442,
+      "text": "# jdg.zdr.a15.u5.p4 — `zdr_a15_u5_p4`: Art. 15 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a15.u5.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a16.u1.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1441,
+      "end": 1469,
+      "text": "# jdg.zdr.a16.u1.p1 — `zdr_a16_u1_p1`: Art. 16 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a16.u1.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a16.u1.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1468,
+      "end": 1496,
+      "text": "# jdg.zdr.a16.u1.p3 — `zdr_a16_u1_p3`: Art. 16 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a16.u1.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a16.u2.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1495,
+      "end": 1523,
+      "text": "# jdg.zdr.a16.u2.p2 — `zdr_a16_u2_p2`: Art. 16 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a16.u2.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a16.u3.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1522,
+      "end": 1550,
+      "text": "# jdg.zdr.a16.u3.p3 — `zdr_a16_u3_p3`: Art. 16 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a16.u3.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a16.u3.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1549,
+      "end": 1577,
+      "text": "# jdg.zdr.a16.u3.p4 — `zdr_a16_u3_p4`: Art. 16 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a16.u3.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a16.u4.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1576,
+      "end": 1604,
+      "text": "# jdg.zdr.a16.u4.p1 — `zdr_a16_u4_p1`: Art. 16 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a16.u4.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a16.u4.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1603,
+      "end": 1631,
+      "text": "# jdg.zdr.a16.u4.p4 — `zdr_a16_u4_p4`: Art. 16 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a16.u4.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a16.u5.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1630,
+      "end": 1658,
+      "text": "# jdg.zdr.a16.u5.p2 — `zdr_a16_u5_p2`: Art. 16 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a16.u5.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a17.u1.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1657,
+      "end": 1685,
+      "text": "# jdg.zdr.a17.u1.p2 — `zdr_a17_u1_p2`: Art. 17 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a17.u1.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a17.u2.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1684,
+      "end": 1712,
+      "text": "# jdg.zdr.a17.u2.p3 — `zdr_a17_u2_p3`: Art. 17 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a17.u2.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a17.u2.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1711,
+      "end": 1739,
+      "text": "# jdg.zdr.a17.u2.p4 — `zdr_a17_u2_p4`: Art. 17 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a17.u2.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a17.u3.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1738,
+      "end": 1766,
+      "text": "# jdg.zdr.a17.u3.p1 — `zdr_a17_u3_p1`: Art. 17 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a17.u3.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a17.u3.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1765,
+      "end": 1793,
+      "text": "# jdg.zdr.a17.u3.p4 — `zdr_a17_u3_p4`: Art. 17 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a17.u3.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a17.u4.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1792,
+      "end": 1820,
+      "text": "# jdg.zdr.a17.u4.p2 — `zdr_a17_u4_p2`: Art. 17 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a17.u4.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a17.u5.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1819,
+      "end": 1847,
+      "text": "# jdg.zdr.a17.u5.p1 — `zdr_a17_u5_p1`: Art. 17 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a17.u5.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a17.u5.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1846,
+      "end": 1874,
+      "text": "# jdg.zdr.a17.u5.p3 — `zdr_a17_u5_p3`: Art. 17 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a17.u5.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a18.u1.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1873,
+      "end": 1901,
+      "text": "# jdg.zdr.a18.u1.p4 — `zdr_a18_u1_p4`: Art. 18 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a18.u1.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a18.u2.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1900,
+      "end": 1928,
+      "text": "# jdg.zdr.a18.u2.p1 — `zdr_a18_u2_p1`: Art. 18 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a18.u2.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a18.u3.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1927,
+      "end": 1955,
+      "text": "# jdg.zdr.a18.u3.p2 — `zdr_a18_u3_p2`: Art. 18 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a18.u3.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a18.u4.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1954,
+      "end": 1982,
+      "text": "# jdg.zdr.a18.u4.p1 — `zdr_a18_u4_p1`: Art. 18 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a18.u4.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a18.u4.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 1981,
+      "end": 2009,
+      "text": "# jdg.zdr.a18.u4.p3 — `zdr_a18_u4_p3`: Art. 18 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a18.u4.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a18.u5.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 2008,
+      "end": 2036,
+      "text": "# jdg.zdr.a18.u5.p2 — `zdr_a18_u5_p2`: Art. 18 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a18.u5.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a19.u1.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 2035,
+      "end": 2063,
+      "text": "# jdg.zdr.a19.u1.p1 — `zdr_a19_u1_p1`: Art. 19 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a19.u1.p1\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a19.u2.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 2062,
+      "end": 2090,
+      "text": "# jdg.zdr.a19.u2.p2 — `zdr_a19_u2_p2`: Art. 19 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a19.u2.p2\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a19.u3.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 2089,
+      "end": 2117,
+      "text": "# jdg.zdr.a19.u3.p3 — `zdr_a19_u3_p3`: Art. 19 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a19.u3.p3\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a19.u5.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 2116,
+      "end": 2144,
+      "text": "# jdg.zdr.a19.u5.p4 — `zdr_a19_u5_p4`: Art. 19 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a19.u5.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a20.u4.p4",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 2143,
+      "end": 2171,
+      "text": "# jdg.zdr.a20.u4.p4 — `zdr_a20_u4_p4`: Art. 20 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a20.u4.p4\",\n    \"package\": \"jdg.micro.zd"
+    },
+    {
+      "rule_id": "jdg.zdr.a9.u1.p1",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 2170,
+      "end": 2198,
+      "text": "# jdg.zdr.a9.u1.p1 — `zdr_a9_u1_p1`: Art. 9 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a9.u1.p1\",\n    \"package\": \"jdg.micro.zdrowo"
+    },
+    {
+      "rule_id": "jdg.zdr.a9.u2.p2",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 2197,
+      "end": 2225,
+      "text": "# jdg.zdr.a9.u2.p2 — `zdr_a9_u2_p2`: Art. 9 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a9.u2.p2\",\n    \"package\": \"jdg.micro.zdrowo"
+    },
+    {
+      "rule_id": "jdg.zdr.a9.u3.p3",
+      "file": "/data/data/com.termux/files/home/NexusAI/JDG/rules/micro/zdrowotna/zdrowotna_a82.rego",
+      "kind": "else",
+      "start": 2224,
+      "end": 2251,
+      "text": "# jdg.zdr.a9.u3.p3 — `zdr_a9_u3_p3`: Art. 9 → Punkt kontrolny\nelse := {\n    \"matched\": true,\n    \"rule_id\": \"jdg.zdr.a9.u3.p3\",\n    \"package\": \"jdg.micro.zdrowo"
+    }
+  ]
+}

@@ -9,7 +9,6 @@ package jdg.pit
 import data.jdg.helpers
 import data.jdg.thresholds
 
-default decide := {"matched":false,"rule_id":"jdg.pit.no_match","package":"jdg.pit","priority":99999}
 
 # ── EX-1: Shared Limit 85 528 PLN — Wspólny limit ulg PIT-0 ────────────────
 decide := {"matched":true,"rule_id":"jdg.pit.exemption_interactions_shared_limit","package":"jdg.pit","priority":588,

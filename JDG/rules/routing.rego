@@ -14,7 +14,7 @@
 #   - fc_vat_rate < 0.95 na skali → BLOCK (P10), na ryczałcie tylko TRIAGE (P15)
 #   - fc_vendor_nip < 0.80 → BLOCK niezależnie od formy
 # package: jdg.routing
-# deprecated: false
+# deprecated: true  # P01 RAPORT_01 — migrated to inline conditions in main_jdg.rego
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.routing

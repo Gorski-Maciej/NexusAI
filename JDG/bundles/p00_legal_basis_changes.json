@@ -1,0 +1,2528 @@
+{
+  "generated_at": "2026-08-12T14:30:09.169506+00:00",
+  "tool": "fix_p00_legal_basis_closure.py",
+  "dry_run": false,
+  "stats": {
+    "normalized": 167,
+    "files": 31,
+    "skip_no_derivation": 270,
+    "filled_empty": 192,
+    "skip_no_warnings_anchor": 1,
+    "changes": 359
+  },
+  "changes": [
+    {
+      "rule_id": "jdg.pit.depreciation.kst.r1",
+      "file": "rules/accounting/depreciation_enterprise_complete.rego",
+      "kind": "NORMALIZE",
+      "old": "Wykaz rocznych stawek amortyzacyjnych (załącznik nr 1 do ustawy PIT)",
+      "new": "Wykaz rocznych stawek amortyzacyjnych (załącznik nr 1 do ustawy o PIT)"
+    },
+    {
+      "rule_id": "jdg.pkpir_live.no_match",
+      "file": "rules/accounting/pkpir_enterprise_live.rego",
+      "kind": "NORMALIZE",
+      "old": "§10 ust. 1 pkt 1 Rozp. MF PKPiR",
+      "new": "§10 ust. 1 pkt 1 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.pkpir_live.col2_3_date_validation",
+      "file": "rules/accounting/pkpir_enterprise_live.rego",
+      "kind": "NORMALIZE",
+      "old": "§10 ust. 1 pkt 2-3 Rozp. MF PKPiR; §9 ust. 1 (chronologia)",
+      "new": "§10 ust. 1 pkt 2-3 rozporządzenia MF w sprawie PKPiR; §9 ust. 1 (chronologia)"
+    },
+    {
+      "rule_id": "jdg.pkpir_live.col4_5_document_validation",
+      "file": "rules/accounting/pkpir_enterprise_live.rego",
+      "kind": "NORMALIZE",
+      "old": "§10 ust. 1 pkt 4-5 Rozp. MF PKPiR",
+      "new": "§10 ust. 1 pkt 4-5 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.pkpir_live.col6_9_revenue_columns",
+      "file": "rules/accounting/pkpir_enterprise_live.rego",
+      "kind": "NORMALIZE",
+      "old": "§11 Rozp. MF PKPiR; §13-14 (przychody)",
+      "new": "§11 rozporządzenia MF w sprawie PKPiR; §13-14 (przychody)"
+    },
+    {
+      "rule_id": "jdg.pkpir_live.col10_14_cost_columns",
+      "file": "rules/accounting/pkpir_enterprise_live.rego",
+      "kind": "NORMALIZE",
+      "old": "§12, 15-21 Rozp. MF PKPiR",
+      "new": "§12, 15-21 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.pkpir_live.col15_16_depreciation_vat_nkup",
+      "file": "rules/accounting/pkpir_enterprise_live.rego",
+      "kind": "NORMALIZE",
+      "old": "§12 ust. 4-6 Rozp. MF PKPiR; §21 (NKUP)",
+      "new": "§12 ust. 4-6 rozporządzenia MF w sprawie PKPiR; §21 (NKUP)"
+    },
+    {
+      "rule_id": "jdg.pkpir_live.remnant_continuity_annual",
+      "file": "rules/accounting/pkpir_enterprise_live.rego",
+      "kind": "NORMALIZE",
+      "old": "§27-29 Rozp. MF PKPiR; Art. 24 ust. 2 PIT",
+      "new": "§27-29 rozporządzenia MF w sprawie PKPiR; Art. 24 ust. 2 PIT"
+    },
+    {
+      "rule_id": "jdg.pkpir_live.cross_column_consistency_check",
+      "file": "rules/accounting/pkpir_enterprise_live.rego",
+      "kind": "NORMALIZE",
+      "old": "§10-29 Rozp. MF PKPiR; Art. 24 PIT",
+      "new": "§10-29 rozporządzenia MF w sprawie PKPiR; Art. 24 PIT"
+    },
+    {
+      "rule_id": "jdg.pkpir_live.period_summary_report",
+      "file": "rules/accounting/pkpir_enterprise_live.rego",
+      "kind": "NORMALIZE",
+      "old": "§9-29 Rozp. MF PKPiR (podsumowanie okresu)",
+      "new": "§9-29 rozporządzenia MF w sprawie PKPiR (podsumowanie okresu)"
+    },
+    {
+      "rule_id": "jdg.accounting.vat_register_pkpir_alignment",
+      "file": "rules/accounting/pkpir_enterprise_validation.rego",
+      "kind": "NORMALIZE",
+      "old": "§ 9 Rozp. MF PKPiR; Art. 109 VAT; Art. 193a OrdPU",
+      "new": "§ 9 rozporządzenia MF w sprawie PKPiR; Art. 109 VAT; Art. 193a OrdPU"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.no_match",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "§ 10-12 Rozp. MF z 15.11.2025 r. w sprawie PKPiR",
+      "new": "§ 10-12 rozporządzenia MF z 15.11.2025 r. w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.revenue_columns_validation",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "§ 13-14 Rozp. MF PKPiR, Art. 14 PIT",
+      "new": "§ 13-14 rozporządzenia MF w sprawie PKPiR, Art. 14 PIT"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.cost_columns_validation",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "§ 15-20 Rozp. MF PKPiR, Art. 22 PIT",
+      "new": "§ 15-20 rozporządzenia MF w sprawie PKPiR, Art. 22 PIT"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.nkup_column_validation",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 23 PIT, § 21 Rozp. MF PKPiR",
+      "new": "Art. 23 PIT, § 21 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.depreciation_column",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 22a-22o PIT, § 22-26 Rozp. MF PKPiR",
+      "new": "Art. 22a-22o PIT, § 22-26 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.salary_column_validation",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 22 ust. 1 PIT, § 17 Rozp. MF PKPiR",
+      "new": "Art. 22 ust. 1 PIT, § 17 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.date_order_validation",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "§ 9 Rozp. MF PKPiR (chronologia zapisów)",
+      "new": "§ 9 rozporządzenia MF w sprawie PKPiR (chronologia zapisów)"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.correction_storno",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "§ 9 ust. 2 Rozp. MF PKPiR (korekta przez storno)",
+      "new": "§ 9 ust. 2 rozporządzenia MF w sprawie PKPiR (korekta przez storno)"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.daily_integrity_sum",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "§ 27 Rozp. MF PKPiR (podsumowanie miesięczne i roczne)",
+      "new": "§ 27 rozporządzenia MF w sprawie PKPiR (podsumowanie miesięczne i roczne)"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.annual_close",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "§ 27-29 Rozp. MF PKPiR, Art. 24 PIT",
+      "new": "§ 27-29 rozporządzenia MF w sprawie PKPiR, Art. 24 PIT"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.inventory_annual",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "§ 27-29 Rozp. MF PKPiR, Art. 24 ust. 2 PIT",
+      "new": "§ 27-29 rozporządzenia MF w sprawie PKPiR, Art. 24 ust. 2 PIT"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.inventory_valuation",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "§ 28 Rozp. MF PKPiR",
+      "new": "§ 28 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.vat_evidence_journal",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 109 VAT, § 21 ust. 2 Rozp. MF PKPiR",
+      "new": "Art. 109 VAT, § 21 ust. 2 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.vat_exempt_no_column_16",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 113 VAT, § 21 ust. 3 Rozp. MF PKPiR",
+      "new": "Art. 113 VAT, § 21 ust. 3 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.retention_5years",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 86 § 1 OrdPU, § 29 Rozp. MF PKPiR",
+      "new": "Art. 86 § 1 OrdPU, § 29 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.accounting.pkpir.fallback_no_match",
+      "file": "rules/accounting/pkpir_enterprise_validator.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF PKPiR",
+      "new": "rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.accounting.depreciation_rate_assignment",
+      "file": "rules/accounting.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 22i PIT, Załącznik nr 1 do ustawy PIT",
+      "new": "Art. 22i PIT, Załącznik nr 1 do ustawy o PIT"
+    },
+    {
+      "rule_id": "jdg.edge_cases.nip_checksum_pl",
+      "file": "rules/edge_cases.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 96b VAT, Rozp. MF ws. NIP",
+      "new": "Art. 96b VAT, rozporządzenia MF ws. NIP"
+    },
+    {
+      "rule_id": "jdg.edge_cases.pkpir_column_consistency",
+      "file": "rules/edge_cases.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF ws. PKPiR",
+      "new": "rozporządzenia MF ws. PKPiR"
+    },
+    {
+      "rule_id": "jdg.edge_cases.cash_register_breach_mid_year",
+      "file": "rules/edge_cases.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF § 3 ust. 1",
+      "new": "rozporządzenia MF § 3 ust. 1"
+    },
+    {
+      "rule_id": "jdg.edge_cases.cash_register_service_review",
+      "file": "rules/edge_cases.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF ws. kas rejestrujących",
+      "new": "rozporządzenia MF ws. kas rejestrujących"
+    },
+    {
+      "rule_id": "jdg.gtu_checker.completeness_audit",
+      "file": "rules/gtu_completeness_checker_enterprise.rego",
+      "kind": "NORMALIZE",
+      "old": "§ 10 rozporządzenia JPK_VAT; Załącznik nr 15 do ustawy VAT",
+      "new": "§ 10 rozporządzenia JPK_VAT; Załącznik nr 15 do ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.gtu_checker.correction_proposal",
+      "file": "rules/gtu_completeness_checker_enterprise.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 106j VAT (faktura korygująca); Załącznik nr 15 do ustawy VAT",
+      "new": "Art. 106j VAT (faktura korygująca); Załącznik nr 15 do ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.jpk_v7.gtu_code_autoassignment",
+      "file": "rules/jpk_v7_autogen_enterprise.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 106e ust. 1 pkt 18a VAT; Zalacznik nr 15 do ustawy VAT",
+      "new": "Art. 106e ust. 1 pkt 18a VAT; Zalacznik nr 15 do ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.kks.extensions.coverage_summary",
+      "file": "rules/kks/kks_extensions_enterprise.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Kodeksu karnego skarbowego"
+    },
+    {
+      "rule_id": "jdg.kks.innovations.art80_83_extended",
+      "file": "rules/kks/kks_innovations_v8.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Kodeksu karnego skarbowego"
+    },
+    {
+      "rule_id": "jdg.local_taxes.procedures.lab_alcohol_exemption",
+      "file": "rules/local_taxes/local_procedures_enterprise.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 30 ust. 7 pkt 2 Ustawy o podatku akcyzowym; Rozp. MF ws. zwolnień",
+      "new": "Art. 30 ust. 7 pkt 2 Ustawy o podatku akcyzowym; rozporządzenia MF ws. zwolnień"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir.no_match",
+      "file": "rules/micro/pkpir/pkpir.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 Rozp. MF z 15.11.2025 r. w sprawie PKPiR",
+      "new": "§9 rozporządzenia MF z 15.11.2025 r. w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir.p9.r2",
+      "file": "rules/micro/pkpir/pkpir.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 ust. 1 Rozp. MF PKPiR",
+      "new": "§9 ust. 1 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir.p9.r3",
+      "file": "rules/micro/pkpir/pkpir.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 ust. 1 Rozp. MF PKPiR",
+      "new": "§9 ust. 1 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir.p9.r4",
+      "file": "rules/micro/pkpir/pkpir.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 ust. 2 Rozp. MF PKPiR",
+      "new": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir.p9.r5",
+      "file": "rules/micro/pkpir/pkpir.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 ust. 1 Rozp. MF PKPiR",
+      "new": "§9 ust. 1 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir.p9.r6",
+      "file": "rules/micro/pkpir/pkpir.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 ust. 3 Rozp. MF PKPiR",
+      "new": "§9 ust. 3 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir.p9.r7",
+      "file": "rules/micro/pkpir/pkpir.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 ust. 2 Rozp. MF PKPiR",
+      "new": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir.p9.r8",
+      "file": "rules/micro/pkpir/pkpir.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 ust. 2 Rozp. MF PKPiR",
+      "new": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir.p9.r10",
+      "file": "rules/micro/pkpir/pkpir.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 Rozp. MF PKPiR + Art. 193a OrdPU",
+      "new": "§9 rozporządzenia MF w sprawie PKPiR + Art. 193a OrdPU"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir.p9.fallback",
+      "file": "rules/micro/pkpir/pkpir.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 Rozp. MF PKPiR",
+      "new": "§9 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_columns.no_match",
+      "file": "rules/micro/pkpir/pkpir_kolumny.rego",
+      "kind": "NORMALIZE",
+      "old": "§10 Rozp. MF z 15.11.2025 r.",
+      "new": "§10 rozporządzenia MF z 15.11.2025 r."
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_columns.p10.r2",
+      "file": "rules/micro/pkpir/pkpir_kolumny.rego",
+      "kind": "NORMALIZE",
+      "old": "§10 ust. 1 pkt 1 Rozp. MF PKPiR",
+      "new": "§10 ust. 1 pkt 1 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_columns.p10.r3",
+      "file": "rules/micro/pkpir/pkpir_kolumny.rego",
+      "kind": "NORMALIZE",
+      "old": "§10 ust. 1 pkt 2-3 Rozp. MF PKPiR",
+      "new": "§10 ust. 1 pkt 2-3 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_columns.p10.r4",
+      "file": "rules/micro/pkpir/pkpir_kolumny.rego",
+      "kind": "NORMALIZE",
+      "old": "§10 ust. 1 pkt 4-5 Rozp. MF PKPiR",
+      "new": "§10 ust. 1 pkt 4-5 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_columns.p10.r5",
+      "file": "rules/micro/pkpir/pkpir_kolumny.rego",
+      "kind": "NORMALIZE",
+      "old": "§11 Rozp. MF PKPiR",
+      "new": "§11 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_columns.p10.r6",
+      "file": "rules/micro/pkpir/pkpir_kolumny.rego",
+      "kind": "NORMALIZE",
+      "old": "§12 Rozp. MF PKPiR",
+      "new": "§12 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_columns.p10.r7",
+      "file": "rules/micro/pkpir/pkpir_kolumny.rego",
+      "kind": "NORMALIZE",
+      "old": "§12 ust. 4-5 Rozp. MF PKPiR",
+      "new": "§12 ust. 4-5 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_columns.p10.r8",
+      "file": "rules/micro/pkpir/pkpir_kolumny.rego",
+      "kind": "NORMALIZE",
+      "old": "§12 ust. 6 Rozp. MF PKPiR",
+      "new": "§12 ust. 6 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_columns.p10.r9",
+      "file": "rules/micro/pkpir/pkpir_kolumny.rego",
+      "kind": "NORMALIZE",
+      "old": "§10 Rozp. MF PKPiR + Art. 56 KKS",
+      "new": "§10 rozporządzenia MF w sprawie PKPiR + Art. 56 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_columns.p10.fallback",
+      "file": "rules/micro/pkpir/pkpir_kolumny.rego",
+      "kind": "NORMALIZE",
+      "old": "§10-12 Rozp. MF PKPiR",
+      "new": "§10-12 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_corrections.no_match",
+      "file": "rules/micro/pkpir/pkpir_korekty.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 ust. 2 Rozp. MF z 15.11.2025 r.",
+      "new": "§9 ust. 2 rozporządzenia MF z 15.11.2025 r."
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_corrections.c1.r2",
+      "file": "rules/micro/pkpir/pkpir_korekty.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 ust. 2 Rozp. MF PKPiR",
+      "new": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_corrections.c1.r3",
+      "file": "rules/micro/pkpir/pkpir_korekty.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 ust. 2 Rozp. MF PKPiR",
+      "new": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_corrections.c1.r4",
+      "file": "rules/micro/pkpir/pkpir_korekty.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 ust. 2 Rozp. MF PKPiR + Art. 14 PIT",
+      "new": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR + Art. 14 PIT"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_corrections.c1.r5",
+      "file": "rules/micro/pkpir/pkpir_korekty.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 ust. 2 Rozp. MF PKPiR + Art. 22 PIT",
+      "new": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR + Art. 22 PIT"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_corrections.c1.fallback",
+      "file": "rules/micro/pkpir/pkpir_korekty.rego",
+      "kind": "NORMALIZE",
+      "old": "§9 Rozp. MF PKPiR",
+      "new": "§9 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_costs.no_match",
+      "file": "rules/micro/pkpir/pkpir_koszty.rego",
+      "kind": "NORMALIZE",
+      "old": "§15 Rozp. MF z 15.11.2025 r.",
+      "new": "§15 rozporządzenia MF z 15.11.2025 r."
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_costs.p15.r2",
+      "file": "rules/micro/pkpir/pkpir_koszty.rego",
+      "kind": "NORMALIZE",
+      "old": "§16 Rozp. MF PKPiR",
+      "new": "§16 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_costs.p15.r3",
+      "file": "rules/micro/pkpir/pkpir_koszty.rego",
+      "kind": "NORMALIZE",
+      "old": "§17 Rozp. MF PKPiR",
+      "new": "§17 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_costs.p15.r4",
+      "file": "rules/micro/pkpir/pkpir_koszty.rego",
+      "kind": "NORMALIZE",
+      "old": "§18 Rozp. MF PKPiR",
+      "new": "§18 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_costs.p15.r5",
+      "file": "rules/micro/pkpir/pkpir_koszty.rego",
+      "kind": "NORMALIZE",
+      "old": "§19 Rozp. MF PKPiR",
+      "new": "§19 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_costs.p15.r6",
+      "file": "rules/micro/pkpir/pkpir_koszty.rego",
+      "kind": "NORMALIZE",
+      "old": "§18 ust. 2 Rozp. MF PKPiR",
+      "new": "§18 ust. 2 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_costs.p15.r7",
+      "file": "rules/micro/pkpir/pkpir_koszty.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 23 PIT, §21 Rozp. MF PKPiR",
+      "new": "Art. 23 PIT, §21 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_costs.p15.r8",
+      "file": "rules/micro/pkpir/pkpir_koszty.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 22p PIT, §19 Rozp. MF PKPiR",
+      "new": "Art. 22p PIT, §19 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_costs.p15.fallback",
+      "file": "rules/micro/pkpir/pkpir_koszty.rego",
+      "kind": "NORMALIZE",
+      "old": "§15-20 Rozp. MF PKPiR",
+      "new": "§15-20 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_nkup.no_match",
+      "file": "rules/micro/pkpir/pkpir_nkup.rego",
+      "kind": "NORMALIZE",
+      "old": "§21 Rozp. MF z 15.11.2025 r.",
+      "new": "§21 rozporządzenia MF z 15.11.2025 r."
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_nkup.p21.fallback",
+      "file": "rules/micro/pkpir/pkpir_nkup.rego",
+      "kind": "NORMALIZE",
+      "old": "§21 Rozp. MF PKPiR",
+      "new": "§21 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_revenue.no_match",
+      "file": "rules/micro/pkpir/pkpir_przychody.rego",
+      "kind": "NORMALIZE",
+      "old": "§13 Rozp. MF z 15.11.2025 r.",
+      "new": "§13 rozporządzenia MF z 15.11.2025 r."
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_revenue.p13.r2",
+      "file": "rules/micro/pkpir/pkpir_przychody.rego",
+      "kind": "NORMALIZE",
+      "old": "§13 ust. 1 Rozp. MF PKPiR",
+      "new": "§13 ust. 1 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_revenue.p13.r3",
+      "file": "rules/micro/pkpir/pkpir_przychody.rego",
+      "kind": "NORMALIZE",
+      "old": "§13 ust. 1 pkt 1 Rozp. MF PKPiR",
+      "new": "§13 ust. 1 pkt 1 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_revenue.p13.r4",
+      "file": "rules/micro/pkpir/pkpir_przychody.rego",
+      "kind": "NORMALIZE",
+      "old": "§13 ust. 1 pkt 2 Rozp. MF PKPiR",
+      "new": "§13 ust. 1 pkt 2 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_revenue.p13.r5",
+      "file": "rules/micro/pkpir/pkpir_przychody.rego",
+      "kind": "NORMALIZE",
+      "old": "§14 Rozp. MF PKPiR",
+      "new": "§14 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_revenue.p13.r8",
+      "file": "rules/micro/pkpir/pkpir_przychody.rego",
+      "kind": "NORMALIZE",
+      "old": "§13 Rozp. MF PKPiR",
+      "new": "§13 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_revenue.p13.fallback",
+      "file": "rules/micro/pkpir/pkpir_przychody.rego",
+      "kind": "NORMALIZE",
+      "old": "§13-14 Rozp. MF PKPiR",
+      "new": "§13-14 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_remnant.no_match",
+      "file": "rules/micro/pkpir/pkpir_remanent.rego",
+      "kind": "NORMALIZE",
+      "old": "§27 Rozp. MF z 15.11.2025 r.",
+      "new": "§27 rozporządzenia MF z 15.11.2025 r."
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_remnant.p27.r2",
+      "file": "rules/micro/pkpir/pkpir_remanent.rego",
+      "kind": "NORMALIZE",
+      "old": "§28 ust. 1 Rozp. MF PKPiR",
+      "new": "§28 ust. 1 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_remnant.p27.r3",
+      "file": "rules/micro/pkpir/pkpir_remanent.rego",
+      "kind": "NORMALIZE",
+      "old": "§28 ust. 2 Rozp. MF PKPiR",
+      "new": "§28 ust. 2 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_remnant.p27.r4",
+      "file": "rules/micro/pkpir/pkpir_remanent.rego",
+      "kind": "NORMALIZE",
+      "old": "§29 Rozp. MF PKPiR",
+      "new": "§29 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_remnant.p27.r7",
+      "file": "rules/micro/pkpir/pkpir_remanent.rego",
+      "kind": "NORMALIZE",
+      "old": "§27 Rozp. MF PKPiR",
+      "new": "§27 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_remnant.p27.r8",
+      "file": "rules/micro/pkpir/pkpir_remanent.rego",
+      "kind": "NORMALIZE",
+      "old": "§28-29 Rozp. MF PKPiR",
+      "new": "§28-29 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.pkpir_remnant.p27.fallback",
+      "file": "rules/micro/pkpir/pkpir_remanent.rego",
+      "kind": "NORMALIZE",
+      "old": "§27-29 Rozp. MF PKPiR",
+      "new": "§27-29 rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.micro.jpk.no_match",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 2 rozp. JPK_VAT",
+      "new": "§ 2 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r12",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 3 rozp. JPK_VAT",
+      "new": "§ 3 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r13",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 4 rozp. JPK_VAT",
+      "new": "§ 4 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r14",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 5 rozp. JPK_VAT",
+      "new": "§ 5 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r15",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 6 rozp. JPK_VAT",
+      "new": "§ 6 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r16",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 10 rozp. JPK_VAT",
+      "new": "§ 10 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r17",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 11 rozp. JPK_VAT",
+      "new": "§ 11 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r18",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 12 rozp. JPK_VAT",
+      "new": "§ 12 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r19",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 13 rozp. JPK_VAT",
+      "new": "§ 13 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r20",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 14 rozp. JPK_VAT",
+      "new": "§ 14 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r21",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 15 rozp. JPK_VAT",
+      "new": "§ 15 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r22",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 16 rozp. JPK_VAT",
+      "new": "§ 16 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r23",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 17 rozp. JPK_VAT",
+      "new": "§ 17 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r24",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 18 rozp. JPK_VAT",
+      "new": "§ 18 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r25",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 18a",
+      "new": "§ 18a"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r26",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 18b",
+      "new": "§ 18b"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r27",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 18c",
+      "new": "§ 18c"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r28",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 18d",
+      "new": "§ 18d"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r29",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 18e",
+      "new": "§ 18e"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r30",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 19 rozp. JPK_VAT",
+      "new": "§ 19 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r31",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 20 rozp. JPK_VAT",
+      "new": "§ 20 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r32",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 21 rozp. JPK_VAT",
+      "new": "§ 21 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r33",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 22 rozp. JPK_VAT",
+      "new": "§ 22 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r34",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 23 rozp. JPK_VAT",
+      "new": "§ 23 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.a99.r35",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "par. 24 rozp. JPK_VAT",
+      "new": "§ 24 rozp. JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.jpk.b.r10",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF",
+      "new": "rozporządzenia MF"
+    },
+    {
+      "rule_id": "jdg.jpk.b.r2",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF w sprawie PKPiR",
+      "new": "rozporządzenia MF w sprawie PKPiR"
+    },
+    {
+      "rule_id": "jdg.jpk.b.r3",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF",
+      "new": "rozporządzenia MF"
+    },
+    {
+      "rule_id": "jdg.jpk.b.r4",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF",
+      "new": "rozporządzenia MF"
+    },
+    {
+      "rule_id": "jdg.jpk.b.r5",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF",
+      "new": "rozporządzenia MF"
+    },
+    {
+      "rule_id": "jdg.jpk.b.r6",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF",
+      "new": "rozporządzenia MF"
+    },
+    {
+      "rule_id": "jdg.jpk.b.r7",
+      "file": "rules/micro/plan33_jpk.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF",
+      "new": "rozporządzenia MF"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a54.r6",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 54 par. 1 KKS",
+      "new": "Art. 54 § 1 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a54.r7",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 54 par. 2 KKS",
+      "new": "Art. 54 § 2 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a54.r8",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 54 par. 3 KKS",
+      "new": "Art. 54 § 3 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a54.r9",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 54 par. 4 KKS",
+      "new": "Art. 54 § 4 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a62.r10",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 62 par. 2 KKS",
+      "new": "Art. 62 § 2 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a62.r11",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 62 par. 2 KKS",
+      "new": "Art. 62 § 2 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a62.r6",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 62 par. 2 KKS",
+      "new": "Art. 62 § 2 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a62.r7",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 62 par. 2 KKS",
+      "new": "Art. 62 § 2 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a62.r8",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 62 par. 2 KKS",
+      "new": "Art. 62 § 2 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a62.r9",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 62 par. 2 KKS",
+      "new": "Art. 62 § 2 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a56.r6",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 56 par. 1 KKS",
+      "new": "Art. 56 § 1 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a56.r7",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 56 par. 2 KKS",
+      "new": "Art. 56 § 2 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a56.r8",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 56 par. 3 KKS",
+      "new": "Art. 56 § 3 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a56.r9",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 56 par. 4 KKS",
+      "new": "Art. 56 § 4 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a57.r10",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 57 par. 5 KKS",
+      "new": "Art. 57 § 5 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a57.r11",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 56 par. 5 w zw. z Art. 57 KKS",
+      "new": "Art. 56 § 5 w zw. z Art. 57 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a57.r6",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 57 par. 1 KKS",
+      "new": "Art. 57 § 1 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a57.r7",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 57 par. 2 KKS",
+      "new": "Art. 57 § 2 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a57.r8",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 57 par. 3 KKS",
+      "new": "Art. 57 § 3 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a57.r9",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 57 par. 4 w zw. z par. 10 JPK_VAT",
+      "new": "Art. 57 § 4 w zw. z § 10 JPK_VAT"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a77.r6",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 77 par. 1 KKS",
+      "new": "Art. 77 § 1 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a77.r7",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 77 par. 2 KKS",
+      "new": "Art. 77 § 2 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a77.r8",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 77 par. 3 KKS",
+      "new": "Art. 77 § 3 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a77.r9",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 77 par. 4 KKS",
+      "new": "Art. 77 § 4 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a80.r1",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 80 par. 1 KKS",
+      "new": "Art. 80 § 1 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a80.r2",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 80 par. 2 KKS",
+      "new": "Art. 80 § 2 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a80.r3",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 80 par. 3 KKS",
+      "new": "Art. 80 § 3 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a80.r4",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 80 par. 4 KKS",
+      "new": "Art. 80 § 4 KKS"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a80.r5",
+      "file": "rules/micro/plan33_kks.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 80 par. 5 KKS",
+      "new": "Art. 80 § 5 KKS"
+    },
+    {
+      "rule_id": "jdg.ord.a29.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 29 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a29.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 29 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a29.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 29 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a29.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 29 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a29.r5",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 29 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a32.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 32 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a32.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 32 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a33.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 33 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a33.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 33 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a33.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 33 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a33.r5",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 33 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a33.r6",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 33 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a33.r7",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 33 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a33.r8",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 33 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a47.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 47 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a47.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 47 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a47.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 47 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a47.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 47 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a47.r5",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 47 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a47.r6",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 47 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a47.r7",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 47 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a48.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 48 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a48.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 48 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a48.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 48 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a49.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 49 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a49.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 49 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a51.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 51 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a51.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 51 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a51.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 51 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a52.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 52 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a52.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 52 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a52.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 52 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a52.r5",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 52 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67b.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67b § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67c.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67c § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67d.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67d § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67e.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67e § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67b.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67b § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67c.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67c § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67d.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67d § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67e.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67e § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67b.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67b § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67e.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67e § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67b.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67b § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67b.r5",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67b § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67b.r6",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67b § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67b.r7",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67b § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a67b.r8",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 67b § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a70.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 70 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a70.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 70 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a70.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 70 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a70.r5",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 70 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a70.r6",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 70 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a70.r7",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 70 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a70.r9",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 70 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a70.r10",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 70 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a70.r11",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 70 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a70.r12",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 70 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a70.r13",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 70 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a71.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 71 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a71.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 71 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a72.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 72 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a72.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 72 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a72.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 72 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a72.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 72 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a72.r5",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 72 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a73.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 73 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a73.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 73 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a74.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 74 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a75.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 75 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a75.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 75 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a76.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 76 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a76.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 76 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a77.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 77 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a77.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 77 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a78.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 78 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a79.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 79 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a79.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 79 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a80.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 80 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a81.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 81 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a81a.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 81a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a81b.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 81b § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a81c.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 81c § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a81.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 81 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a81a.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 81a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a81.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 81 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a81.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 81 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a81.r6",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 81 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a81.r7",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 81 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a81.r8",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 81 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a81.r9",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 81 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a119a.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 119a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a119a.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 119a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a119a.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 119a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a119a.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 119a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a119a.r5",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 119a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a119a.r6",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 119a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a119a.r7",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 119a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a119a.r8",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 119a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a119a.r9",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 119a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a119a.r10",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 119a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a145.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 145 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a145.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 145 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a145.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 145 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a145.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 145 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a145.r6",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 145 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a146.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 146 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a146.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 146 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a146.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 146 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a147.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 147 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a147.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 147 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a147.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 147 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a147.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 147 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a148.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 148 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a148.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 148 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a149.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 149 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a149.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 149 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a149.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 149 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a149.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 149 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a165.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 165 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a165.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 165 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a165.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 165 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a165.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 165 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a165.r5",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 165 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a165.r6",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 165 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a165.r7",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 165 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a166.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 166 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a166.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 166 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a168.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 168 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a168.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 168 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a170.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 170 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a170.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 170 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a170.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 170 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a170.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 170 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a171.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 171 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a171.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 171 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a171.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 171 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a172.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 172 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a173.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 173 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a173.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 173 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a174.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 174 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a180.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 180 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a180.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 180 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a199a.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 199a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a199a.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 199a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a199a.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 199a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a199a.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 199a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a199a.r5",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 199a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a199a.r6",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 199a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a199a.r7",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 199a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a199a.r8",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 199a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a199a.r9",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 199a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a199a.r10",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 199a § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a208.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 208 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a208.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 208 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a208.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 208 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a208.r5",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 208 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a210.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 210 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a210.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 210 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a213.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 213 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a213.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 213 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a219.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 219 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a220.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 220 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a220.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 220 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a221.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 221 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a221.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 221 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a221.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 221 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a221.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 221 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a222.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 222 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a222.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 222 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a222.r3",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 222 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a222.r4",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 222 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a223.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 223 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a224.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 224 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a225.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 225 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a226.r1",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 226 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.ord.a226.r2",
+      "file": "rules/micro/plan34_ord.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 226 § 1 Ordynacji podatkowej"
+    },
+    {
+      "rule_id": "jdg.vat.a99.r1",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 99 ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.a99.r2",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 99 ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.a99.r4",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 99 ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.a99.r5",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 99 ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.a106j.r1",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 106j ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.a106na.r1",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 106na ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.a106ne.r1",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 106ne ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.a106ng.r1",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 106ng ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.a106nh.r1",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 106nh ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.a106nq.r1",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 106nq ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.a106j.r3",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 106j ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.a106na.r3",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 106na ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.a106na.r4",
+      "file": "rules/micro/plan34_vat.rego",
+      "kind": "FILL",
+      "old": "",
+      "new": "Art. 106na ustawy o VAT"
+    },
+    {
+      "rule_id": "jdg.p04_vat_macro_enterprise.rate_drift_guard",
+      "file": "rules/p04_vat_macro_enterprise_v9.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 41 ust. 1-2 VAT + Rozp. MF z 4.12.2024 (stawki obniżone)",
+      "new": "Art. 41 ust. 1-2 VAT + rozporządzenia MF z 4.12.2024 (stawki obniżone)"
+    },
+    {
+      "rule_id": "jdg.p05_vat_micro_atomic.temporal_projection",
+      "file": "rules/p05_vat_micro_atomic_v9.rego",
+      "kind": "NORMALIZE",
+      "old": "ADR-003 (temporalność) + F2 V2 + rozp. MF 4.12.2024 (stawki 2026)",
+      "new": "ADR-003 (temporalność) + F2 V2 + rozporządzenia MF 4.12.2024 (stawki 2026)"
+    },
+    {
+      "rule_id": "jdg.p09_ksiegowosc_pkpir_uor_innovations.amortization_dual_calculator",
+      "file": "rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego",
+      "kind": "NORMALIZE",
+      "old": "UoR art. 32; ustawa PIT art. 22a-22m",
+      "new": "UoR art. 32; ustawy o PIT art. 22a-22m"
+    },
+    {
+      "rule_id": "jdg.p09_ksiegowosc_pkpir_uor_innovations.amortization_leasing_audit",
+      "file": "rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego",
+      "kind": "NORMALIZE",
+      "old": "Ustawa PIT art. 22a-22n, 23a-23f; rozporządzenie RM (KŚT)",
+      "new": "ustawy o PIT art. 22a-22n, 23a-23f; rozporządzenie RM (KŚT)"
+    },
+    {
+      "rule_id": "jdg.p09_ksiegowosc_pkpir_uor_innovations.report",
+      "file": "rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567); UoR (art. 2-74); ustawa PIT (art. 22a-23f)",
+      "new": "Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567); UoR (art. 2-74); ustawy o PIT (art. 22a-23f)"
+    },
+    {
+      "rule_id": "jdg.p33_ordpu_kks_supplement.auto_correspondence",
+      "file": "rules/p33_ordpu_kks_supplement.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 58-59 KKS; Rozp. MF § 3 ust. 1 (zwolnienie z kasy do 20k B2C)",
+      "new": "Art. 58-59 KKS; rozporządzenia MF § 3 ust. 1 (zwolnienie z kasy do 20k B2C)"
+    },
+    {
+      "rule_id": "jdg.pit.declaration_ext.temporal_validity_check",
+      "file": "rules/pit/declaration_extensions_enterprise.rego",
+      "kind": "NORMALIZE",
+      "old": "Ustawa PIT Dz.U. 2025 poz. 789 (stan prawny na 2026-01-01)",
+      "new": "ustawy o PIT Dz.U. 2025 poz. 789 (stan prawny na 2026-01-01)"
+    },
+    {
+      "rule_id": "jdg.pit.declaration_ext.coverage_summary",
+      "file": "rules/pit/declaration_extensions_enterprise.rego",
+      "kind": "NORMALIZE",
+      "old": "Ustawa PIT (Dz.U. 2025 poz. 789); KSH Art. 551-584",
+      "new": "ustawy o PIT (Dz.U. 2025 poz. 789); KSH Art. 551-584"
+    },
+    {
+      "rule_id": "jdg.tp.hyper.method_cup_comparable_uncontrolled",
+      "file": "rules/tp/plan45_tp.rego",
+      "kind": "NORMALIZE",
+      "old": "OECD TPG §2.13-2.34, Rozp. MF",
+      "new": "OECD TPG §2.13-2.34, rozporządzenia MF"
+    },
+    {
+      "rule_id": "jdg.tp.hyper.method_resale_price",
+      "file": "rules/tp/plan45_tp.rego",
+      "kind": "NORMALIZE",
+      "old": "OECD TPG §2.35-2.44, Rozp. MF",
+      "new": "OECD TPG §2.35-2.44, rozporządzenia MF"
+    },
+    {
+      "rule_id": "jdg.tp.hyper.method_cost_plus",
+      "file": "rules/tp/plan45_tp.rego",
+      "kind": "NORMALIZE",
+      "old": "OECD TPG §2.45-2.52, Rozp. MF",
+      "new": "OECD TPG §2.45-2.52, rozporządzenia MF"
+    },
+    {
+      "rule_id": "jdg.tp.hyper.method_tnmm",
+      "file": "rules/tp/plan45_tp.rego",
+      "kind": "NORMALIZE",
+      "old": "OECD TPG §2.53-2.74, Rozp. MF",
+      "new": "OECD TPG §2.53-2.74, rozporządzenia MF"
+    },
+    {
+      "rule_id": "jdg.vat.reduced_rates.construction_8pct_validated",
+      "file": "rules/vat/plan42_reduced_rates.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 41 ust. 12-12c VAT + Rozp. MF z 4.12.2024 r.",
+      "new": "Art. 41 ust. 12-12c VAT + rozporządzenia MF z 4.12.2024 r."
+    },
+    {
+      "rule_id": "jdg.vat.reduced_rates.medical_8pct_validated",
+      "file": "rules/vat/plan42_reduced_rates.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF z 4.12.2024 r., Załącznik nr 1, poz. 87-105",
+      "new": "rozporządzenia MF z 4.12.2024 r., Załącznik nr 1, poz. 87-105"
+    },
+    {
+      "rule_id": "jdg.vat.reduced_rates.books_5pct_validated",
+      "file": "rules/vat/plan42_reduced_rates.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF z 4.12.2024 r., Załącznik nr 2",
+      "new": "rozporządzenia MF z 4.12.2024 r., Załącznik nr 2"
+    },
+    {
+      "rule_id": "jdg.vat.substantive.books_5pct_validation",
+      "file": "rules/vat/substantive.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF z 4.12.2024 r., Załącznik nr 2 + Art. 41 ust. 2a VAT",
+      "new": "rozporządzenia MF z 4.12.2024 r., Załącznik nr 2 + Art. 41 ust. 2a VAT"
+    },
+    {
+      "rule_id": "jdg.vat.substantive.construction_8pct_validation",
+      "file": "rules/vat/substantive.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 41 ust. 12-12c VAT + Rozp. MF z 4.12.2024 r.",
+      "new": "Art. 41 ust. 12-12c VAT + rozporządzenia MF z 4.12.2024 r."
+    },
+    {
+      "rule_id": "jdg.vat.substantive.medical_equipment_8pct_validation",
+      "file": "rules/vat/substantive.rego",
+      "kind": "NORMALIZE",
+      "old": "Rozp. MF z 4.12.2024 r., Załącznik nr 1, poz. 87-105",
+      "new": "rozporządzenia MF z 4.12.2024 r., Załącznik nr 1, poz. 87-105"
+    },
+    {
+      "rule_id": "jdg.vat_rates_audit.no_match",
+      "file": "rules/vat_rates_exemptions_audit_enterprise.rego",
+      "kind": "NORMALIZE",
+      "old": "Art. 41 ust. 1-2a VAT + Rozp. MF z 4.12.2024 r.",
+      "new": "Art. 41 ust. 1-2a VAT + rozporządzenia MF z 4.12.2024 r."
+    }
+  ]
+}

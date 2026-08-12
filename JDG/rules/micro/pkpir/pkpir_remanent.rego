@@ -31,7 +31,7 @@ decide := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§27 Rozp. MF z 15.11.2025 r.",
+    "_legal_basis": "§27 rozporządzenia MF z 15.11.2025 r.",
     "_warnings": [sprintf("[MICRO] §27 PKPiR: Remanent roczny na 31 grudnia %d. Obowiązkowy przy PKPiR!", [tax_year])]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -51,7 +51,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§28 ust. 1 Rozp. MF PKPiR",
+    "_legal_basis": "§28 ust. 1 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §28 PKPiR: Wycena remanentu — NIŻSZA z cen: zakupu (%.2f) lub rynkowej (%.2f) = %.2f PLN", [purchase, market, valued])]
 } {
     input.jdg_entrepreneur.has_inventory == true
@@ -72,7 +72,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§28 ust. 2 Rozp. MF PKPiR",
+    "_legal_basis": "§28 ust. 2 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §28 PKPiR: Towary uszkodzone/przeterminowane — wycena ZEROWA. %d pozycji.", [count])]
 } {
     count := object.get(input.jdg_entrepreneur, "damaged_goods_count", 0)
@@ -90,7 +90,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§29 Rozp. MF PKPiR",
+    "_legal_basis": "§29 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §29 PKPiR: Remanent końcowy %.2f PLN = remanent początkowy następnego roku", [remnant_value])]
 } {
     remnant_value := object.get(input.jdg_entrepreneur, "remnant_value_pln", 0)
@@ -153,7 +153,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Brak remanentu rocznego mimo posiadania zapasów — ryzyko KKS!",
-    "_legal_basis": "§27 Rozp. MF PKPiR",
+    "_legal_basis": "§27 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §27 PKPiR: BRAK REMANENTU za %d. Masz zapasy — remanent OBOWIĄZKOWY! Ryzyko KKS Art.56.", [tax_year])]
 } {
     input.jdg_entrepreneur.has_inventory == true
@@ -173,7 +173,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§28-29 Rozp. MF PKPiR",
+    "_legal_basis": "§28-29 rozporządzenia MF w sprawie PKPiR",
     "_warnings": [sprintf("[MICRO] §28 PKPiR: Dokumentacja remanentu — spis z natury + wycena + podpis. Przechowuj 5 lat od końca %d.", [retention_end])]
 } {
     object.get(input.jdg_entrepreneur, "remnant_documentation_complete", true) == false
@@ -191,6 +191,6 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§27-29 Rozp. MF PKPiR",
+    "_legal_basis": "§27-29 rozporządzenia MF w sprawie PKPiR",
     "_warnings": ["[MICRO] PKPiR remanent — nie dotyczy (brak zapasów lub poza terminem)"]
 } { true }

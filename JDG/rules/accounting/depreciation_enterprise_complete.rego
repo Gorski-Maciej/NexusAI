@@ -157,7 +157,7 @@ else := {
     "priority": 300020,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Wykaz rocznych stawek amortyzacyjnych (załącznik nr 1 do ustawy PIT)",
+    "_legal_basis": "Wykaz rocznych stawek amortyzacyjnych (załącznik nr 1 do ustawy o PIT)",
     "_warnings": ["[PIT] KŚT Grupa 0: Grunty — NIE amortyzuje się (0%)"],
     "rate_pct": 0.00,
     "depreciable": false

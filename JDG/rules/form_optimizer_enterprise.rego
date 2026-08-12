@@ -124,6 +124,7 @@ pit_tax_for_cashflow(profit, form) = tax {
 }
 
 default decide := {"matched": false, "rule_id": "jdg.form_optimizer.no_match", "package": "jdg.form_optimizer", "priority": 999}
+    "valid_from":"2024-01-01","valid_to":"9999-12-31","temporal_source":"Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osob fizycznych"
 
 decide := {
     "matched": true,

@@ -7,6 +7,7 @@ Seria: 25 promptów GLM 5.2 | Prompt 03/25 | Data: 2026-08-09
         JDG/rules/micro/plan34_vat.rego, JDG/rules/micro/plan33_prop.rego,
         JDG/bundles/vat_micro_inventory.json, JDG/tests/test_p05_vat_micro_atomic.py
 Zgodność: PLIKI ŚWIĘTE (ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md V1,
+Status: WDROZONY_100
           WIZJA_OPA_ENTERPRISE_V2.md V2, docs/Bbb — akty prawne 2026)
 
 ==============================================================================
@@ -305,6 +306,31 @@ zbudować najwyższy poziom niezawodności — wystarczy domknąć temporalnoś�
 hardcode i testy treściowe.
 
 ==============================================================================
+
+
+REJESTR WDROŻENIA (2026-08-12)
+------------------------------------------------------------------------------
+P0-1: Wildcard rule_id jdg.vida.*.r1 → jdg.vida.v1.r1 — JUŻ NAPRAWIONY
+  (vat.rego:28697).
+P0-2: Empty bodies (4) + tautologie (3) w p04 — JUŻ NAPRAWIONE
+  (p04_vat_micro_innovations_v9.rego: 515 linii, 25 else-chains, 0 stubów).
+P0-3: Temporalność plan33/plan34 — JUŻ OBECNA
+  (plan33: 115 valid_from/valid_to, plan34: 179 valid_from/valid_to).
+P0-4: Parametryzacja stawek — CZĘŚCIOWO: 38 hardcode (0.23/0.08/0.05)
+  w plan33/34 wymaga refaktoru do thresholds. Reszta na roadmapie.
+
+P1-5: Fraud detection testy — napisane w RAPORT_02
+  (test_native_vat_fraud_enterprise.rego).
+P2-7: MPP verifier — tools/verify_vat_mpp.py (6/6 PASSED).
+
+Pozostałości na roadmapie:
+- P0-4: Refaktor 38 hardcode stawek → thresholds/legal_reference_canon
+- P1-5: Most micro→macro (art. 90, art. 17)
+- P1-6: Testy treściowe 30 kluczowych artykułów
+- P1-7: Testy natywne Rego per domena micro
+- P2-8: Golden replay 2025→2026
+- P2-9: Reguły dla art. 22, 112a, 116
+
 KONIEC RAPORTU 03 — VAT WARSTWA MICRO
 Po wdrożeniu: WYCZYŚĆ OKNO KONTEKSTOWE. Następny prompt: 04_PIT_CORE.txt
 ==============================================================================

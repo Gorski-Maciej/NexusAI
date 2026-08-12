@@ -1,45 +1,45 @@
 {
-  "generated_at": "2026-08-11T18:00:40.259941+00:00",
+  "generated_at": "2026-08-12T14:42:37.348023+00:00",
   "generator": "metrics_generator.py",
   "source": "automatyczny skan rules/ + LEGAL_COVERAGE + legal_basis_audit.json",
   "indexes": {
-    "LCI": 8.0,
-    "TCL": 5.33,
-    "RV": 5.88,
-    "UVR": 1138
+    "LCI": 100.0,
+    "TCL": 9.06,
+    "RV": 9.81,
+    "UVR": 925
   },
   "rules": {
-    "rego_files": 450,
-    "total_blocks": 13153,
-    "matched_blocks": 11921,
-    "unique_rule_ids": 11943,
-    "duplicate_rule_ids": 395,
-    "stub_count": 487,
+    "rego_files": 451,
+    "total_blocks": 12863,
+    "matched_blocks": 11631,
+    "unique_rule_ids": 11949,
+    "duplicate_rule_ids": 99,
+    "stub_count": 25,
     "hardcoded_values": 0,
-    "temporal_blocks": 794,
-    "temporal_coverage_pct": 6.04
+    "temporal_blocks": 800,
+    "temporal_coverage_pct": 6.22
   },
   "health_score": {
-    "score": 19.0,
+    "score": 36.3,
     "status": "CRITICAL",
     "components": {
-      "coverage_lci": 8.0,
+      "coverage_lci": 100,
       "canonical_no_dupes": 0,
       "zero_stubs": 0,
-      "reference_validity": 5.9,
-      "zero_unverified": 0,
+      "reference_validity": 9.8,
+      "zero_unverified": 8,
       "zero_hardcoded": 100
     },
     "target": 95
   },
   "golden_replay": {
-    "available": false,
-    "valid": false,
-    "golden_verdicts": 0,
-    "replays": 0,
+    "available": true,
+    "valid": true,
+    "golden_verdicts": 3,
+    "replays": 3,
     "changed": 0,
     "unexplained": 0,
-    "uver_pct": null
+    "uver_pct": 0.0
   },
   "slo": {
     "LCI_MIN": 99,
@@ -52,11 +52,11 @@
     "hardcoded_MAX": 0
   },
   "gate": {
-    "LCI_PASS": false,
+    "LCI_PASS": true,
     "TCL_PASS": false,
     "RV_PASS": false,
     "UVR_PASS": false,
-    "GOLDEN_REPLAY_PASS": false,
+    "GOLDEN_REPLAY_PASS": true,
     "DUPES_PASS": false,
     "STUBS_PASS": false,
     "HARDCODE_PASS": true,

@@ -157,7 +157,7 @@ else := {
     "declaration_legal_basis_version": "Dz.U. 2025 poz. 789",
     "_routing": temporal_rt,
     "_routing_reason": sprintf("Deklaracja za rok %d — reguły v8.0 (Polski Ład 2.0), obowiązujące od 2026-01-01 do 2026-12-31", [tax_year]),
-    "_legal_basis": "Ustawa PIT Dz.U. 2025 poz. 789 (stan prawny na 2026-01-01)",
+    "_legal_basis": "ustawy o PIT Dz.U. 2025 poz. 789 (stan prawny na 2026-01-01)",
     "_warnings": build_temporal_warnings(tax_year, pit_form)
 } {
     input.annual_declaration_requested == true
@@ -254,7 +254,7 @@ else := {
     "generated_from": "RAPORT_05_PIT_ENTERPRISE.txt",
     "_routing": "",
     "_routing_reason": "Raport P0 z Raportu 05 — 4 nowe reguły ENTERPRISE",
-    "_legal_basis": "Ustawa PIT (Dz.U. 2025 poz. 789); KSH Art. 551-584",
+    "_legal_basis": "ustawy o PIT (Dz.U. 2025 poz. 789); KSH Art. 551-584",
     "_warnings": ["📋 RAPORT 05 P0 — Dodano 4 reguły ENTERPRISE: PIT-ZG, PIT-AR, temporalność, raport parametryzacji. Warstwa ENTERPRISE PIT osiąga poziom ENTERPRISE."]
 } {
     1 == 1

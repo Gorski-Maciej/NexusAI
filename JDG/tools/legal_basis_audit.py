@@ -33,8 +33,19 @@ OUT_MD = JDG_ROOT / "docs" / "AUDYT_PODSTAW_PRAWNYCH.md"
 
 RULE_ID_RE = re.compile(r'"rule_id"\s*:\s*"([^"]+)"')
 LEGAL_BASIS_RE = re.compile(r'"_?legal_basis"\s*:\s*"([^"]+)"')
-ART_RE = re.compile(r"[Aa]rt\.\s*\d+")
+# P00: wzorzec referencji kanonicznej obejmuje Art. X (z literami: Art. 117ba)
+# oraz paragrafy rozporządzeń (§ 10) — zgodnie ze słownikiem kanonicznym 30 aktów
+REF_RE = re.compile(r"(?:[Aa]rt\.\s*\d+[a-z]*|§\s*\d+)")
 DZ_U_RE = re.compile(r"Dz\.U\.\s*\d{4}")
+
+# Dodatkowe formy odmiany dla aktów spoza wzorca prefiksowego (P00)
+EXTRA_FORMS = {
+    "ordynacja podatkowa": ["ordynacji podatkowej", "ordynacją podatkową"],
+    "prawo przedsiębiorców": ["prawa przedsiębiorców", "prawem przedsiębiorców"],
+    "kodeks karny skarbowy": ["kodeksu karnego skarbowego", "kodeksie karnym skarbowym"],
+    "kodeks pracy": ["kodeksu pracy", "kodeksie pracy"],
+    "ustawa o zasiłku pieniężnym": ["ustawy o zasiłku pieniężnym"],
+}
 
 
 def load_canon() -> dict:
@@ -63,9 +74,11 @@ def _inflections(short: str) -> list[str]:
     """Formy odmiany canonical_short (mianownik/dopełniacz/miejscownik) —
     „ustawa o VAT" → „ustawy o VAT", „ustawie o VAT" (odporność na odmianę)."""
     forms = [short]
-    for head, tail in (("ustawa", "ustawy"), ("ustawa", "ustawie"),
+    for head, tail in (("ustawa", "ustawy"), ("ustawa", "ustawie"), ("ustawa", "ustawą"),
                        ("rozporządzenie", "rozporządzenia"), ("rozporządzenie", "rozporządzeniu"),
-                       ("prawo", "prawa"), ("kodeks", "kodeksu"), ("kodeks", "kodeksie")):
+                       ("rozporządzenie", "rozporządzeniem"),
+                       ("prawo", "prawa"), ("prawo", "prawem"),
+                       ("kodeks", "kodeksu"), ("kodeks", "kodeksie"), ("kodeks", "kodeksem")):
         if short.startswith(head + " "):
             forms.append(tail + short[len(head):])
     return forms
@@ -75,13 +88,16 @@ def classify(basis: str, acts: list[dict]) -> tuple[str, str | None]:
     """Zwraca (klasa, znaleziony akt kanoniczny lub None)."""
     if not basis or not basis.strip():
         return "MISSING", None
-    if not ART_RE.search(basis):
+    if not REF_RE.search(basis):
         return "NON_CANONICAL", None
     lb = basis.lower()
     for act in acts:
-        if any(k in lb for k in act.get("keywords", [])):
-            # akt rozpoznany — sprawdź format kanoniczny (z odmianą)
-            if any(f in lb for f in _inflections(act["canonical_short"].lower())):
+        key = act.get("canonical_short", "").lower()
+        forms = _inflections(key) + EXTRA_FORMS.get(key, [])
+        # akt rozpoznany po słowie kluczowym LUB po formie kanonicznej (P00)
+        if any(k in lb for k in act.get("keywords", [])) or any(f in lb for f in forms):
+            # sprawdź format kanoniczny (z odmianą)
+            if any(f in lb for f in forms):
                 return "OK", act["canonical_short"]
             return "NON_CANONICAL", act["canonical_short"]
     return "UNKNOWN_ACT", None

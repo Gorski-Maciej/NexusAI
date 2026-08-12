@@ -200,16 +200,16 @@ else := {"matched":true,"rule_id":"jdg.tp.hyper.sanction_management_board_liabil
 }
 
 # ══ R1476-R1480: TP Valuation Methods (L-TP-2: CUP/RESALE/COST+/TNMM) ══
-else := {"matched":true,"rule_id":"jdg.tp.hyper.method_cup_comparable_uncontrolled","package":"jdg.tp.hyper","priority":1476,"_routing":"","_routing_reason":"TP metoda: CUP (L-TP-2 fix) — porównywalna niekontrolowana","_legal_basis":"OECD TPG §2.13-2.34, Rozp. MF","_warnings":["Metoda CUP (Comparable Uncontrolled Price) — porównaj cenę transakcji kontrolowanej z ceną transakcji niekontrolowanej. Najlepsza dla towarów standaryzowanych, surowców, walut."]} {
+else := {"matched":true,"rule_id":"jdg.tp.hyper.method_cup_comparable_uncontrolled","package":"jdg.tp.hyper","priority":1476,"_routing":"","_routing_reason":"TP metoda: CUP (L-TP-2 fix) — porównywalna niekontrolowana","_legal_basis":"OECD TPG §2.13-2.34, rozporządzenia MF","_warnings":["Metoda CUP (Comparable Uncontrolled Price) — porównaj cenę transakcji kontrolowanej z ceną transakcji niekontrolowanej. Najlepsza dla towarów standaryzowanych, surowców, walut."]} {
     object.get(input.tp, "tp_method", "") == "CUP"
 }
-else := {"matched":true,"rule_id":"jdg.tp.hyper.method_resale_price","package":"jdg.tp.hyper","priority":1477,"_routing":"","_routing_reason":"TP metoda: RESALE (L-TP-2 fix) — ceny odprzedaży","_legal_basis":"OECD TPG §2.35-2.44, Rozp. MF","_warnings":["Metoda RESALE — marża odsprzedaży: porównaj marżę brutto dystrybutora z marżą rynkową. Odpowiednia dla dystrybutorów, resellerów."]} {
+else := {"matched":true,"rule_id":"jdg.tp.hyper.method_resale_price","package":"jdg.tp.hyper","priority":1477,"_routing":"","_routing_reason":"TP metoda: RESALE (L-TP-2 fix) — ceny odprzedaży","_legal_basis":"OECD TPG §2.35-2.44, rozporządzenia MF","_warnings":["Metoda RESALE — marża odsprzedaży: porównaj marżę brutto dystrybutora z marżą rynkową. Odpowiednia dla dystrybutorów, resellerów."]} {
     object.get(input.tp, "tp_method", "") == "RESALE"
 }
-else := {"matched":true,"rule_id":"jdg.tp.hyper.method_cost_plus","package":"jdg.tp.hyper","priority":1478,"_routing":"","_routing_reason":"TP metoda: COST+ (L-TP-2 fix) — koszt plus","_legal_basis":"OECD TPG §2.45-2.52, Rozp. MF","_warnings":["Metoda COST+ — narzut na koszty: porównaj narzut zysku producenta/usługodawcy z narzutem rynkowym. Odpowiednia dla producentów, usług."]} {
+else := {"matched":true,"rule_id":"jdg.tp.hyper.method_cost_plus","package":"jdg.tp.hyper","priority":1478,"_routing":"","_routing_reason":"TP metoda: COST+ (L-TP-2 fix) — koszt plus","_legal_basis":"OECD TPG §2.45-2.52, rozporządzenia MF","_warnings":["Metoda COST+ — narzut na koszty: porównaj narzut zysku producenta/usługodawcy z narzutem rynkowym. Odpowiednia dla producentów, usług."]} {
     object.get(input.tp, "tp_method", "") == "COST_PLUS"
 }
-else := {"matched":true,"rule_id":"jdg.tp.hyper.method_tnmm","package":"jdg.tp.hyper","priority":1479,"_routing":"","_routing_reason":"TP metoda: TNMM (L-TP-2 fix) — marży transakcyjnej netto","_legal_basis":"OECD TPG §2.53-2.74, Rozp. MF","_warnings":["Metoda TNMM (Transactional Net Margin Method) — porównaj marżę netto na transakcji z marżą rynkową. Najczęściej stosowana, wymaga benchmarkingu."]} {
+else := {"matched":true,"rule_id":"jdg.tp.hyper.method_tnmm","package":"jdg.tp.hyper","priority":1479,"_routing":"","_routing_reason":"TP metoda: TNMM (L-TP-2 fix) — marży transakcyjnej netto","_legal_basis":"OECD TPG §2.53-2.74, rozporządzenia MF","_warnings":["Metoda TNMM (Transactional Net Margin Method) — porównaj marżę netto na transakcji z marżą rynkową. Najczęściej stosowana, wymaga benchmarkingu."]} {
     object.get(input.tp, "tp_method", "") == "TNMM"
 }
 else := {"matched":true,"rule_id":"jdg.tp.hyper.method_selection_documentation","package":"jdg.tp.hyper","priority":1480,"_routing":"WARNING","_routing_reason":"TP: dokumentacja wyboru metody (L-TP-2 fix) — wymagana","_legal_basis":"Art. 23zf ust. 6 PIT, OECD TPG","_warnings":["Wybierz metodę TP odpowiednią do rodzaju transakcji. Udokumentuj DLACZEGO wybrano tę metodę, a odrzucono inne. Brak uzasadnienia = ryzyko zakwestionowania przez US."]} {

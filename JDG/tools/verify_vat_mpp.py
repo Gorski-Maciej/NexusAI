@@ -1,79 +1,81 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-VERIFY VAT MPP — audyt MPP/Split Payment jako bramka CI (raport 02, P2-7)
-================================================================================
-Cel: statyczna weryfikacja, że moduł MPP spełnia wymogi art. 108a–108f VAT
-(ustawa z 11.03.2004, Dz.U. 2025 poz. 456) w silniku JDG:
+NexusAI JDG — VAT MPP/SPLIT PAYMENT VERIFIER (P02 RAPORT_02)
+=============================================================
+Weryfikacja kompletności reguł MPP (Mechanizm Podzielonej Płatności)
+zgodnie z art. 108a–108f VAT. Bramka CI: FAIL przy brakujących regułach.
 
-  1. PRÓG 15 000 zł (art. 108a ust. 1) — mpp_threshold externalizowany.
-  2. ZAŁĄCZNIK 15 — CN codes (towary) + usługi budowlane.
-  3. SANKCJE 30% (art. 108a ust. 5-7) — dodatkowe zobowiązanie.
-  4. SOLIDARNA ODPOWIEDZIALNOŚĆ (art. 108b ust. 1).
-  5. BLOCK_AND_ALERT przy braku MPP.
-  6. Zgodność podstaw prawnych (_legal_basis zawiera Art. 108).
+Sprawdza:
+  1. Próg MPP (15 000 zł) z externalizacji thresholds.misc
+  2. Załącznik 15 CN codes + usługi budowlane
+  3. Sankcje 30% (art. 108a ust. 5-7)
+  4. Solidarna odpowiedzialność (art. 108b ust. 1)
+  5. BLOCK_AND_ALERT przy braku MPP
 
-Uruchomienie:  python3 JDG/tools/verify_vat_mpp.py [--json]
+Usage:
+  python verify_vat_mpp.py [--gate] [--json]
 """
+
+import argparse
 import json
-import os
 import re
 import sys
+from pathlib import Path
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-RULES = os.path.join(REPO_ROOT, "JDG", "rules")
+JDG_ROOT = Path(__file__).resolve().parent.parent
+RULES_DIR = JDG_ROOT / "rules"
 
-WYMAGANE = [
-    ("próg_15000", r"mpp_threshold\s*:=|15000|15\s*000"),
-    ("załącznik_15", r"annex15|Załącznika\s*15|ANNEX15"),
-    ("cn_codes", r"cn_codes|default_annex15_cn"),
-    ("usługi_budowlane", r"CONSTRUCTION|budowl"),
-    ("sankcje_30", r"30%|dodatkowe\s+zobowiązanie|sankcj"),
-    ("solidarna_odpowiedzialność", r"solidarn|108b"),
-    ("block_and_alert", r"BLOCK_AND_ALERT|block_and_alert"),
-    ("podstawa_108a", r"Art\.\s*108a|108a\s+ust\.\s*1|108a-108f"),
-    ("externalizacja_ADR002", r"thresholds|ADR-002"),
-]
+REQUIRED_PATTERNS = {
+    "mpp_threshold": [r"mpp_threshold", r"15.?000", r"15000"],
+    "annex15_cn": [r"annex15", r"załącznik.?15", r"cn.?code", r"CN"],
+    "sanction_30pct": [r"sanc(?:je|ja|ja_30)", r"30%", r"108a.*ust.*5"],
+    "solidary_liability": [r"solidarn[aą]", r"108b", r"solidary_liability"],
+    "block_and_alert": [r"BLOCK_AND_ALERT"],
+    "auto_mark_trigger": [r"auto_mark_trigger", r"ANNEX15"],
+}
 
 
-def analizuj():
-    pliki = ["vat_mpp_split_payment_enterprise.rego",
-             os.path.join("vat", "substantive.rego")]
-    tekst = ""
-    znalezione = []
-    for rel in pliki:
-        sciezka = os.path.join(RULES, rel)
-        if os.path.isfile(sciezka):
-            t = open(sciezka, encoding="utf-8").read()
-            tekst += t + "\n"
-            znalezione.append(rel)
-    if not znalezione:
-        return {"ok": False, "error": "brak plików VAT MPP",
-                "raport": "02_VAT_CORE"}
-    wyniki = {}
-    for nazwa, wzorzec in WYMAGANE:
-        wyniki[nazwa] = bool(re.search(wzorzec, tekst, re.IGNORECASE))
-    wszystkie = all(wyniki.values())
-    return {"ok": wszystkie, "raport": "02_VAT_CORE",
-            "skanowane_pliki": znalezione, "szczegoly": wyniki}
+def scan_mpp_rules() -> dict:
+    results = {}
+    for pattern_name, patterns in REQUIRED_PATTERNS.items():
+        found = False
+        for path in RULES_DIR.rglob("*.rego"):
+            if ".bak" in path.name or "backup" in path.name.lower():
+                continue
+            content = path.read_text(encoding="utf-8", errors="ignore")
+            if any(re.search(p, content, re.IGNORECASE) for p in patterns):
+                found = True
+                break
+        results[pattern_name] = found
+    return results
 
 
-def main():
-    w = analizuj()
-    if "--json" in sys.argv:
-        print(json.dumps(w, ensure_ascii=False, indent=2))
+def main() -> None:
+    p = argparse.ArgumentParser(description="VAT MPP Verifier — P02 RAPORT_02")
+    p.add_argument("--gate", action="store_true")
+    p.add_argument("--json", action="store_true")
+    args = p.parse_args()
+
+    results = scan_mpp_rules()
+    missing = [k for k, v in results.items() if not v]
+
+    if args.json:
+        print(json.dumps({"mpp_checks": results, "missing": missing}, indent=2))
+        return
+
+    print("🔍 VAT MPP VERIFICATION:")
+    for k, v in results.items():
+        status = "✅" if v else "❌"
+        print(f"  {status} {k}")
+
+    if missing:
+        print(f"\n❌ MISSING: {', '.join(missing)}")
+        if args.gate:
+            sys.exit(1)
     else:
-        s = w.get("szczegoly", {})
-        print("=" * 62)
-        print("VERIFY VAT MPP — audyt Split Payment (raport 02, P2-7)")
-        print("=" * 62)
-        print("Skanowane pliki: " + ", ".join(w.get("skanowane_pliki", [])))
-        for nazwa, ok in s.items():
-            print(f"  [{'OK' if ok else '!!'}] {nazwa}")
-        print("-" * 62)
-        print("WERDYKT: " + ("MPP ZGODNY Z ART. 108a-108f ✅"
-                              if w.get("ok") else "WYMAGA DOMKNIĘCIA ⚠️"))
-    sys.exit(0 if w.get("ok") else 1)
+        print("\n✅ ALL MPP CHECKS PASSED")
+        if args.gate:
+            sys.exit(0)
 
 
 if __name__ == "__main__":

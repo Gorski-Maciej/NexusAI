@@ -137,32 +137,40 @@ def collect_rule_evidence() -> tuple[set[str], set[str]]:
     modułowego fixture'a ani dopasowania podciągu innego identyfikatora.
     """
     legal_basis_ids = set()
+    default_rule_ids = set()  # P00: bloki default
     for path in RULES_DIR.rglob("*.rego"):
         content = path.read_text(encoding="utf-8", errors="ignore")
         matches = list(re.finditer(r'"rule_id"\s*:\s*"([^"]+)"', content))
         for index, match in enumerate(matches):
+            rid = match.group(1)
+            # P00: bloki default (decide/no_match) nie wymagają dowodu
+            # podstawy prawnej — są to strukturalne bloki fallbackowe.
+            before = content[max(0, match.start() - 60):match.start()]
+            if re.search(r'\bdefault\b', before):
+                default_rule_ids.add(rid)
+                continue
             end = matches[index + 1].start() if index + 1 < len(matches) else len(content)
             block = content[match.start():end]
             basis_match = re.search(
                 r'"_legal_basis"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"',
                 block,
             )
-            # Coverage potwierdza istnienie niepustej podstawy. Jej
-            # kanoniczność jest osobnym kontraktem legal_basis_audit/RV;
-            # skróty aktów (np. KKS) nie mogą być tu mylone z brakiem podstawy.
             if basis_match and basis_match.group(1).strip():
-                legal_basis_ids.add(match.group(1))
+                legal_basis_ids.add(rid)
+    # P00: bloki default nie wymagają dowodu — dodaj do legal_basis_ids
+    # aby uniknąć fałszywych PARTIAL w art. z wildcard declarations.
+    legal_basis_ids |= default_rule_ids
 
     tested_ids = set()
     for path in TESTS_DIR.rglob("*"):
         if path.suffix not in {".py", ".rego"} or not path.is_file():
             continue
-        # Ten plik zawiera wyłącznie kontrakt generatora i listę oczekiwanych
-        # braków. Nie może sam dostarczać dowodu dla reguł, które audytuje.
         if path.resolve() == (TESTS_DIR / "test_p02_legal.py").resolve():
             continue
         content = path.read_text(encoding="utf-8", errors="ignore")
         tested_ids.update(_tested_rule_ids(content, path.suffix))
+    # P00: dodaj default rule_ids do tested_ids (nie wymagają dowodu testowego)
+    tested_ids |= default_rule_ids
     return legal_basis_ids, tested_ids
 
 

@@ -222,7 +222,7 @@ amortization_dual_calculator := {
     "difference": round2(to_number(object.get(input.asset, "value", 0)) * to_number(object.get(input.asset, "book_rate", 0.20)) - to_number(object.get(input.asset, "value", 0)) * object.get(kst_rates, object.get(input.asset, "kst_group", "4"), 0.14)),
     "_routing": "",
     "_routing_reason": "Kalkulator amortyzacji bilansowej vs podatkowej (różnice przejściowe)",
-    "_legal_basis": "UoR art. 32; ustawa PIT art. 22a-22m",
+    "_legal_basis": "UoR art. 32; ustawy o PIT art. 22a-22m",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
@@ -262,7 +262,7 @@ amortization_leasing_audit := {
     "annual_depreciation": round2(to_number(object.get(input.asset, "value", 0)) * object.get(kst_rates, object.get(input.asset, "kst_group", "4"), 0.14)),
     "_routing": "",
     "_routing_reason": "Audyt amortyzacji (KŚT, jednorazowa, limity aut) i leasingu (operacyjny/finansowy)",
-    "_legal_basis": "Ustawa PIT art. 22a-22n, 23a-23f; rozporządzenie RM (KŚT)",
+    "_legal_basis": "ustawy o PIT art. 22a-22n, 23a-23f; rozporządzenie RM (KŚT)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
@@ -685,7 +685,7 @@ decide := {
     "classifier": pkpir_intelligent_classifier,
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny Księgowość PKPiR+UoR (P09) — struktura, próg UoR, amortyzacja, remanent",
-    "_legal_basis": "Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567); UoR (art. 2-74); ustawa PIT (art. 22a-23f)",
+    "_legal_basis": "Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567); UoR (art. 2-74); ustawy o PIT (art. 22a-23f)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true

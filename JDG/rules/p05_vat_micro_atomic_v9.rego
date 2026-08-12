@@ -184,7 +184,7 @@ temporal_projection := {
     },
     "_routing": "REPORT",
     "_routing_reason": "Projekcja pełnej temporalności VAT: stawki 2024/2025/2026, SLIM VAT 3 (90 dni), KSeF 2026-02-01 — F2/F1 V2",
-    "_legal_basis": "ADR-003 (temporalność) + F2 V2 + rozp. MF 4.12.2024 (stawki 2026)",
+    "_legal_basis": "ADR-003 (temporalność) + F2 V2 + rozporządzenia MF 4.12.2024 (stawki 2026)",
     "_warnings": [sprintf("Temporalność: SLIM VAT 3 (90 dni: %d), KSeF od %s, limit zwolnienia %d PLN. Stawki: 23/8/5/0 z wersjami progów.", [bad_debt_days, ksef_mandatory_from, exemption_limit])]
 } {
     object.get(input.jdg_entrepreneur, "p05_temporal_check", false) == true

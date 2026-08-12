@@ -253,7 +253,7 @@ else := {
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("Art. 80-83 KKS — %s", [offense_type]),
     "_legal_basis": legal_basis,
-    "_warnings": [sprintf("KKS Art. %s — %s. Kara: grzywna do %d stawek. %s", [art_ref, offense_desc, max_rates, action])]
+    "_legal_basis":"Kodeksu karnego skarbowego","_warnings": [sprintf("KKS Art. %s — %s. Kara: grzywna do %d stawek. %s", [art_ref, offense_desc, max_rates, action])]
 } {
     # Art. 80: Niepobranie podatku przez płatnika
     withholding_failure := object.get(input.jdg_entrepreneur, "tax_withholding_failure", false)

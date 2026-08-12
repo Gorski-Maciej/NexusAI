@@ -605,7 +605,7 @@ else := verdict {
         "excise_alcohol_has_certificate": has_certificate,
         "excise_alcohol_is_denatured": is_denatured,
         "_routing": proc_routing, "_routing_reason": proc_routing_reason,
-        "_legal_basis": "Art. 30 ust. 7 pkt 2 Ustawy o podatku akcyzowym; Rozp. MF ws. zwolnień",
+        "_legal_basis": "Art. 30 ust. 7 pkt 2 Ustawy o podatku akcyzowym; rozporządzenia MF ws. zwolnień",
         "_warnings": [sprintf("🧪 AKCYZA ALKOHOL LAB./MED.: %s — %.4f hl 100%%. Stawka normalna: %.0f PLN/hl = %.2f PLN. Stawka ZWOLNIONA: 0 PLN. Oszczędność: %.2f PLN! %s. Wymagane: świadectwo odbioru lub denaturat.",
             [alcohol_use, volume_hl_100pct, normal_rate, normal_excise, savings, cert_note])]
     }

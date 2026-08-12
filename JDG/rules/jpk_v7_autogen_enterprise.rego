@@ -245,7 +245,7 @@ else := {
     "jpk_gtu_codes_full": all_gtu_codes,
     "_routing": gtu_routing,
     "_routing_reason": gtu_routing_reason,
-    "_legal_basis": "Art. 106e ust. 1 pkt 18a VAT; Zalacznik nr 15 do ustawy VAT",
+    "_legal_basis": "Art. 106e ust. 1 pkt 18a VAT; Zalacznik nr 15 do ustawy o VAT",
     "_warnings": build_gtu_warnings(assigned_gtu, all_gtu_codes)
 } {
     input.jpk_v7_assign_gtu == true

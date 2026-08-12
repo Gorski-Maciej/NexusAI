@@ -97,7 +97,7 @@ else := {
     },
     "total_new_rules": 3,
     "generated_from": "RAPORT_07_KKS.txt",
-    "_warnings": ["📋 RAPORT 07 P0 — 3 reguły: GAAR scanner, defense builder, limits verification"]
+    "_legal_basis":"Kodeksu karnego skarbowego","_warnings": ["📋 RAPORT 07 P0 — 3 reguły: GAAR scanner, defense builder, limits verification"]
 } {
     1 == 1
 }

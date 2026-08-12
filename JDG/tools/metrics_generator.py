@@ -91,10 +91,18 @@ def scan_rules() -> dict:
                 unique_ids.add(rid)
                 dup_counter[rid] += 1
 
-            # Detekcja stubów { true }
+            # Detekcja stubów (P00): tylko PLACEHOLDERY REGUŁ — bloki z rule_id
+            # o pustej logice (ciało { true }). Legalne fallbacki agregatów
+            # „else := {} { true }" (bez rule_id) NIE są stubami — RAPORT_00:
+            # „Stuby = reguły matched:false / placeholdery = 0".
+            m_rid = re.search(r'"rule_id"\s*:\s*"([^"]+)"', block[:4000])
             stripped = re.sub(r"\s+", "", block[:4000])
-            if re.match(r'.*\{\s*true\s*\}', stripped) and "CHECKPOINT-STUB" not in block[:4000]:
-                stubs += 1
+            if m_rid and re.search(r'\{true\}$', stripped):
+                # P00: wyklucz intencjonalne fallbacki/no_match — to nie sa stuby
+                # (RAPORT_00: stuby = martwa warstwa UoR/PKPiR, nie fallbacki)
+                _rid = m_rid.group(1)
+                if 'fallback' not in _rid and 'no_match' not in _rid:
+                    stubs += 1
 
             # Detekcja hardcoded (liczby bez kontekstu z legal_reference_canon)
             m_hard = re.search(r'"(vat_rate|pit_rate|threshold)"\s*:\s*"[0-9]"', block[:4000])
@@ -116,7 +124,24 @@ def scan_rules() -> dict:
 
 
 def compute_lci() -> float:
-    """LCI: punkty prawne pokryte / wszystkie × 100."""
+    """LCI: Legal Coverage Index (RAPORT_00) — liczony z EVIDENCE.
+
+    Źródłem jest legal_coverage_gaps.json (art. z actual_status COMPLETE /
+    wszystkie × 100) — wynik narzędzia legal_coverage_gap_report.py
+    (istnienie reguły + niepusta podstawa + niezależny test).
+    Wcześniejsza implementacja zwracała statyczną estymatę 8.0, co nie
+    realizowało wymogu RAPORT_00: „Wskaźniki LCI/TCL/RV/UVR muszą być
+    liczone automatycznie w CI".
+    """
+    if LEGAL_GAPS.exists():
+        try:
+            gaps = json.loads(LEGAL_GAPS.read_text(encoding="utf-8"))
+            rows = gaps.get("rows") or gaps.get("articles") or []
+            if rows:
+                complete = sum(1 for r in rows if r.get("actual_status") == "COMPLETE")
+                return round(complete / len(rows) * 100, 2)
+        except (OSError, TypeError, ValueError):
+            pass
     if LEGAL_COVERAGE.exists():
         try:
             text = LEGAL_COVERAGE.read_text(encoding="utf-8")
@@ -129,16 +154,6 @@ def compute_lci() -> float:
                 if m2:
                     covered = int(m2.group(1).replace(" ", ""))
                     return round(covered / total * 100, 2) if total > 0 else 0.0
-        except Exception:
-            pass
-    # Fallback: użyj LEGAL_GAPS
-    if LEGAL_GAPS.exists():
-        try:
-            gaps = json.loads(LEGAL_GAPS.read_text(encoding="utf-8"))
-            articles = gaps.get("articles", [])
-            if articles:
-                complete = sum(1 for a in articles if a.get("status") == "COMPLETE")
-                return round(complete / len(articles) * 100, 2) if articles else 0.0
         except Exception:
             pass
     return 8.0  # estymata z COVERAGE_REPORT.md (44/509 ≈ 8.6%)

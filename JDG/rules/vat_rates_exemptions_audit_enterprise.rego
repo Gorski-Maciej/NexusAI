@@ -89,7 +89,7 @@ rate_mismatch := {
     "mismatch": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Stawka VAT w fakturze niezgodna z mapą stawek (PKWiU/CN) — ryzyko błędnej stawki",
-    "_legal_basis": "Art. 41 ust. 1-2a VAT + Rozp. MF z 4.12.2024 r.",
+    "_legal_basis": "Art. 41 ust. 1-2a VAT + rozporządzenia MF z 4.12.2024 r.",
     "_warnings": [sprintf("Rozbieżność stawki: faktura %s, oczekiwana %s wg mapy (kategoria %s). Zweryfikuj PKWiU/CN.", [object.get(input.invoice, "vat_rate", ""), mapped_vat_rate, object.get(input.invoice, "category_code", "")])]
 } {
     input.invoice.vat_rate
