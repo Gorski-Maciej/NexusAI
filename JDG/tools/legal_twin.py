@@ -68,11 +68,38 @@ ACT_KEYWORDS = [
     # in act headers and "KKS" in rule provenance. Keep both forms linked.
     ("karnym skarbowym", ["kks"]),
     ("karny skarbowy", ["kks"]),
+    # Kodeks cywilny — reguły używają „KC" (prokura art. 109¹-109⁸, e-Signature
+    # art. 77²/78¹) i pełnej nazwy z łącznikiem „Kodeks cywilny".
+    ("kodeks cywilny", ["kc"]),
+    # Kodeks karny — konsekwencje skazań (zakaz prowadzenia działalności art. 41).
+    ("kodeks karny", ["kk"]),
+    ("kodeksem karnym", ["kk"]),
+    # eIDAS — podpisy elektroniczne (art. 6/25-26/28), skrót „eIDAS".
+    # ACT_HEADER_RE obcina nazwę na pierwszym nawiasie („(UE) nr 910/2014…"),
+    # więc fraza-klucz to początek tytułu rozporządzenia UE.
+    ("parlamentu europejskiego i rady", ["eidas"]),
+    ("identyfikacji elektronicznej i usług zaufania", ["eidas"]),
+    # Ordynacja podatkowa: „OP" jako skrót obok „OrdPU" (esig art. 126 § 5/20a).
+    # Uwaga: „ op" (spacja przed) — nie „op", żeby uniknąć fałszywych trafień
+    # typu „stopa"/„opłata".
+    ("ordynacja podatkowa", ["ordynacj", "ordpu", " op"]),
+    ("ordynacji podatkowej", ["ordynacj", "ordpu", " op"]),
     ("czynności cywilnoprawnych", ["pcc"]),
+    ("podatkach i opłatach lokalnych", ["lokalnych"]),
+    ("podatku akcyzowym", ["akcyz"]),
+    ("wyrobach akcyzowych", ["akcyz"]),
     ("rachunkowości", ["uor", "rachunkowości"]),
     ("przedsiębiorców", ["przedsiębiorc"]),
-    ("ordynacji podatkowej", ["ordynacj"]),
-    ("zryczałtowanym", ["ryczałt", "ryczalt"]),
+    ("centralnej ewidencji i informacji o działalności gospodarczej", ["ceidg"]),
+    ("zarządzie sukcesyjnym", ["sukcesj", "zarządzie sukcesyjnym"]),
+    ("prawa budowlanego", ["budowlan"]),
+    ("prawem budowlanym", ["budowlan"]),
+    ("prawo budowlane", ["budowlan"]),
+    # Ordynacja podatkowa: nominative form appears in the act header while
+    # rule provenance uses both inflections and the "OrdPU" abbreviation.
+    ("ordynacja podatkowa", ["ordynacj", "ordpu"]),
+    ("ordynacji podatkowej", ["ordynacj", "ordpu"]),
+    ("zryczałtowanym", ["ryczał", "ryczałt", "ryczalt"]),  # rdzeń „ryczał" łapie fleksję: ryczałcie/ryczałt/ryczałtu
     ("opieki zdrowotnej", ["zdrowotn"]),
     ("zasiłkach pieniężnych", ["zasiłk"]),
     ("rehabilitacji zawodowej", ["rehabilitacj"]),
@@ -147,20 +174,33 @@ def scan_rule_legal_basis() -> list[dict]:
 
 def article_match(node_article: str, rule_article: str) -> bool:
     """Znormalizowane porównanie artykułów: zakresy („5-14") i pełne refy
-    („21.1.148") dopasowują się do artykułów reguł („5", „21.1")."""
+    („21.1.148") dopasowują się do artykułów reguł („5", „21.1").
+
+    Porównanie opiera się na NUMERYCZNYM PREFIKSIE artykułu (zgodnie z
+    konwencją bramek dowodowych, np. kks_report07_gate._article_covers):
+    „81-81b" pokrywa reguły o art. 81/81b, „14a-14d" — reguły art. 14x,
+    „117b" — reguły art. 117ba. Bez tego zakresy z sufiksami literowymi
+    (67a-67e, 81-81b, 14a-14d, 117ba) nigdy nie łapałyby reguł."""
     ap = [p for p in re.split(r"[.\-]", node_article) if p]
     bp = [p for p in re.split(r"[.\-]", rule_article) if p]
     if not ap or not bp:
         return False
-    if ap[0] != bp[0]:
-        return False
+
+    def _num(part: str) -> int:
+        m = re.match(r"\d+", part)
+        return int(m.group(0)) if m else 0
+
+    # Range nodes („120-129", „22-25", „81-81b") are matched BEFORE the
+    # single-part check: a 3-digit range like „120-129" must cover rules
+    # referencing art. 126 (numeric prefix alone would compare 120 vs 126
+    # and reject the range).
     if "-" in node_article and len(ap) == 2:
-        try:
-            lo, hi = int(ap[0]), int(ap[1])
-            return lo <= int(bp[0]) <= hi
-        except ValueError:
-            return False
-    return ap[:min(len(ap), len(bp))] == bp[:min(len(ap), len(bp))]
+        return _num(ap[0]) <= _num(bp[0]) <= _num(ap[1])
+    if _num(ap[0]) != _num(bp[0]):
+        return False
+    # Single-part match: prefix on the numeric part; letter suffixes are
+    # allowed to overlap („14a" node covers reguły „14b", „117b" — „117ba").
+    return ap[0].startswith(bp[0]) or bp[0].startswith(ap[0])
 
 
 def build_lkg() -> dict:

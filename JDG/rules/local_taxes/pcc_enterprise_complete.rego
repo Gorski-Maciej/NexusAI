@@ -29,7 +29,7 @@ package jdg.local_taxes.pcc_enterprise
 import data.jdg.helpers
 
 default decide := {
-    "matched": false, "rule_id": "jdg.local_taxes.pcc.no_match",
+    "matched": false, "rule_id": "jdg.local_taxes.pcc_enterprise.no_match",
     "package": "jdg.local_taxes.pcc_enterprise", "priority": 1599
 }
 
@@ -53,7 +53,8 @@ decide := {
     "_routing": pcc_routing,
     "_routing_reason": sprintf("PCC od umowy sprzedaży %.0f PLN — stawka %.1f%% = %.2f PLN [%s]", [market_value, pcc_rate, pcc_tax, pcc_reason]),
     "_legal_basis": "Art. 1 ust. 1 pkt 1, Art. 6-7 ustawy o PCC",
-    "_warnings": [sprintf("PCC — UMOWA SPRZEDAŻY. Wartość rynkowa: %.2f PLN. %s. Stawka: %.1f%%. Podatek: %.2f PLN. Złóż PCC-3 w ciągu 14 dni od zawarcia umowy! UWAGA: Jeśli sprzedawca jest VAT-owcem i wystawia fakturę VAT → PCC NIE obowiązuje (Art. 2 pkt 4 PCC)!", [market_value, pcc_reason, pcc_rate, pcc_tax])]
+    "_warnings": [sprintf("PCC — UMOWA SPRZEDAŻY. Wartość rynkowa: %.2f PLN. %s. Stawka: %.1f%%. Podatek: %.2f PLN. Złóż PCC-3 w ciągu 14 dni od zawarcia umowy! UWAGA: Jeśli sprzedawca jest VAT-owcem i wystawia fakturę VAT → PCC NIE obowiązuje (Art. 2 pkt 4 PCC)!", [market_value, pcc_reason, pcc_rate, pcc_tax])],
+    "valid_from": "2001-01-01", "valid_to": null,
 } {
     input.invoice.direction == "PURCHASE"
     input.invoice.transaction_type in {"CIVIL_LAW_SALE", "PRIVATE_SALE", "CAR_PURCHASE_PRIVATE"}
@@ -275,7 +276,8 @@ else := {
     "_routing": "",
     "_routing_reason": sprintf("Podatek od środków transportu: DMC %.0f kg — %.2f PLN/rok", [dmv, annual_tax]),
     "_legal_basis": "Art. 8-14 ustawy o podatkach i opłatach lokalnych",
-    "_warnings": [sprintf("PODATEK OD ŚRODKÓW TRANSPORTU — Samochód ciężarowy DMC %.0f kg. Podatek roczny: %.2f PLN. Złóż DT-1 do 15 lutego. Płatność w 2 ratach: do 15 lutego i 15 września.", [dmv, annual_tax])]
+    "_warnings": [sprintf("PODATEK OD ŚRODKÓW TRANSPORTU — Samochód ciężarowy DMC %.0f kg. Podatek roczny: %.2f PLN. Złóż DT-1 do 15 lutego. Płatność w 2 ratach: do 15 lutego i 15 września.", [dmv, annual_tax])],
+    "valid_from": "2002-01-01", "valid_to": null,
 } {
     input.jdg_entrepreneur.has_heavy_vehicle == true
     dmv := object.get(input.jdg_entrepreneur, "vehicle_dmv_kg", 3500)
@@ -464,7 +466,8 @@ else := {
     "pcc_transaction_type":"INSTALLMENT_SALE","pcc_rate_pct":2.0,"pcc_tax_due_pln":pcc_tax,
     "_routing":"TRIAGE_QUEUE","_routing_reason":"PCC od sprzedaży ratalnej — 2% od całej wartości",
     "_legal_basis":"Art. 6 ust. 1 pkt 1 ustawy o PCC",
-    "_warnings":[sprintf("PCC — SPRZEDAŻ RATALNA. Całkowita wartość: %.2f PLN. PCC 2%% = %.2f PLN (płacisz od CAŁEJ wartości z góry, nie od rat!). Złóż PCC-3 w 14 dni od zawarcia umowy.",[total_value,pcc_tax])]
+    "_warnings":[sprintf("PCC — SPRZEDAŻ RATALNA. Całkowita wartość: %.2f PLN. PCC 2%% = %.2f PLN (płacisz od CAŁEJ wartości z góry, nie od rat!). Złóż PCC-3 w 14 dni od zawarcia umowy.",[total_value,pcc_tax])],
+    "valid_from":"2001-01-01","valid_to":null,
 } {
     input.invoice.transaction_type in {"INSTALLMENT_SALE","LEASE_WITH_PURCHASE_OPTION"}
     total_value:=object.get(input.invoice,"amount_gross",0)
@@ -943,6 +946,7 @@ else := {
 # ── L846: excise_registration_akcr — Obowiązek rejestracji AKC-R ──
 else := {
     "matched":true,"rule_id":"jdg.local_taxes.excise.akcr_registration",
+    "valid_from":"2009-03-01","valid_to":null,
     "package":"jdg.local_taxes.pcc_enterprise","priority":846,
     "excise_registration_required":true,"excise_registration_form":"AKC-R",
     "excise_akcr_filed":akcr_ok,

@@ -4,7 +4,7 @@
 
 package jdg.micro.ceidg
 
-default decide := {"matched":false,"rule_id":"jdg.micro.ceidg.no_match","package":"jdg.micro.ceidg","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.micro.ceidg.plan33.no_match","package":"jdg.micro.ceidg","priority":99999}
 
 # jdg.ceidg.r1 — `ceidg_registration_obligation`: Kazda JDG musi byc zarejestrowana w CEIDG → Obowiazek
 decide :=   {"matched":true,"rule_id":"jdg.ceidg.r1","package":"jdg.micro.ceidg","priority":5200,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Kazda JDG musi byc zarejestrowana w CEIDG","_legal_basis":"Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)","_warnings":["[MICRO] Kazda JDG musi byc zarejestrowana w CEIDG"]} {

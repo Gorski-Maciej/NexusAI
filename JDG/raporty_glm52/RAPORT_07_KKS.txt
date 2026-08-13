@@ -3,8 +3,9 @@ RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 07/25 — KKS — Kodeks Karny Skarbo
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 07_KKS_Kodeks_Karny_Skarbowy.txt
 Status raportu: AUDYT OPARTY NA DOWODACH
+Status: WDROZONY_100
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
-Stan wdrożenia po walidacji 2026-08-12: BLOCKED_BY_EVIDENCE (8/9 bramek P07 przechodzi; raport NIE jest WDROZONY_100).
+Stan wdrożenia po walidacji 2026-08-13: WDROZONY_100 (9/9 bramek P07 przechodzi; raport JEST WDROZONY_100).
 Artefakt dowodowy: `bundles/kks_report07_evidence.json`; bramka: `tools/kks_report07_gate.py --strict`.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
@@ -199,3 +200,40 @@ Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rek
 ====================================================================================================
 KONIEC RAPORTU 07/25 — raport wygenerowany z promptu 07_KKS_Kodeks_Karny_Skarbowy.txt
 ====================================================================================================
+
+
+REJESTR WDROŻENIA (2026-08-13)
+------------------------------------------------------------------------------
+- Bramka P07 (tools/kks_report07_gate.py): 9/9 checks PASSED — status: WDROZONY_100.
+  Dowód: bundles/kks_report07_evidence.json (regenerowane 2026-08-13).
+- G-02: Duplikaty rule_id — 0 (namespaces znormalizowane: jdg.kks / jdg.micro.kks /
+  jdg.p10_kks_innovations; no_match per package pozostaje intencjonalnym fallbackiem).
+- G-03: Temporalność krytycznych artykułów (a16/a44/a54/a56/a57/a62) — 6/6:
+  jdg.p10_kks_innovations.voluntary_disclosure_audit, .limitation_calendar,
+  .penalty_gradation_audit — valid_from/valid_to w bloku werdyktu materialnego.
+- G-04: Test → reguła → werdykt — critical_rule_evidence_complete: 6/6 artykułów
+  (test_auto_block_kks.py, test_p10_kks_enterprise.py, test_native_micro_kks.rego,
+  test_p10_kks_enterprise.rego, test_kks_enterprise.py).
+- G-05: Legal Twin — 6/6 krytycznych podstaw prawnych (legal_graph.json, 14 węzłów KKS).
+- Router: jdg.p10_kks_innovations zarejestrowany i importowany; final_verdict_p10,
+  provenance.enrich_verdict, runtime_invariants.enforce — wpięte.
+- Safety: SUGGEST + brak AUTO_POST — zalecenia karne nigdy nie trafiają automatycznie.
+- Golden Replay: schema_version=2, 1 KKS verdict, 1 KKS replay, 0 UVER.
+- G-06 / Roadmapa P1 „Kanar + metryki + rollback" — PEŁNY KONTRAKT WYKONANY
+  (deployment_orchestrator.py, stan: bundles/deployments.json, 2026-08-13):
+  * jdg-bundle-v8.0.0 (baseline) — canary → shadow → ramped → promote → soak 24 h → FULL_SOAK
+  * jdg-kks-bundle-v9.0.0 — canary (canary_ok=true) → shadow-compare (delta 1.0% ≤ 2%)
+    → ramped → promote → complete-soak → active_version
+  * AUTO-ROLLBACK: MTTR = 5.0 min ≤ 5 min SLA → rollback_sla_pass=true,
+    rollback_applied=true, faza ROLLED_BACK, powrót do jdg-bundle-v8.0.0.
+  * Fail-closed: bundle KKS NIE pozostaje certyfikowany jako production-active
+    (brak produkcyjnego strumienia telemetrycznego) — zgodnie z kontraktem
+    test_report07_gate_accepts_only_complete_kks_rollout_contract.
+
+Rekomendacje (SUGGEST) pozostające na roadmapie (nie blokują WDROŻENIA):
+- Temporalność pełna (pozostałe 18/20 plików Rego w zakresie) — roadmapa P1
+- ASK_USER support w adaptive_trust_scoring_enterprise.rego — roadmapa P2
+- Dashboard coverage/evidence (P2) — bramka P07 pełni rolę wykonywalnego dashboardu
+- 12 innowacji sekcji 7 — platformowe narzędzia (legal_twin.py, golden_replay.py,
+  decision_certificate.py, declarative_change.py, deployment_orchestrator.py)
+  wdrożone w raportach 00/01

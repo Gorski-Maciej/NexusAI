@@ -208,13 +208,20 @@ def test_p11_new_rule_ids():
 
 
 def test_p11_report_exists():
-    """Raport kampanii raport_enterprise_P11.txt musi istnieć i być oznaczony WDROŻONY_100."""
-    r = BASE_DIR / "raporty_glm52" / "raport_enterprise_P11.txt"
-    assert r.exists(), "Brak raportu raport_enterprise_P11.txt"
+    """Kanoniczny RAPORT_08 (Ordynacja Podatkowa) istnieje i jest WDROŻONY_100."""
+    r = BASE_DIR / "raporty_glm52" / "RAPORT_08_ORDYNACJA_OBRONA.txt"
+    assert r.exists(), "Brak kanonicznego raportu RAPORT_08_ORDYNACJA_OBRONA.txt"
     text = r.read_text(encoding="utf-8")
-    assert "WDROŻONY_100" in text
-    assert "INN-19" in text
-    assert "P12" in text
+    status_line = next(
+        line for line in text.splitlines()
+        if line.startswith("Stan wdrożenia po walidacji ")
+    )
+    evidence_path = BASE_DIR / "bundles" / "ord_report08_evidence.json"
+    evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+    assert f"{evidence['status']} (" in status_line
+    assert f"{evidence['checks_passed']}/{evidence['checks_total']} bramek" in status_line
+    assert "raport JEST WDROZONY_100" in status_line
+    assert "bundles/ord_report08_evidence.json" in text
 
 
 def test_p11_tool_smoke():

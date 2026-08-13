@@ -6,7 +6,7 @@
 package jdg.crossborder
 import data.jdg.helpers
 
-default decide := {"matched":false,"rule_id":"jdg.crossborder.no_match","package":"jdg.crossborder","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.crossborder.plan23_ue.no_match","package":"jdg.crossborder","priority":99999}
 
 # jdg.crossborder.vat_ue_registration_mandatory — Blokada transakcji wewnątrzwspólnotowych bez VAT-UE
 decide :=   {"matched":true,"rule_id":"jdg.crossborder.vat_ue_registration_mandatory","package":"jdg.crossborder","priority":43,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"BLOCK_AND_ALERT","_routing_reason":"Blokada transakcji wewnątrzwspólnotowych bez VAT-UE","_legal_basis":"Art. 97 ust. 1-3 VAT","_warnings":["Brak rejestracji VAT-UE — wymagany VAT-R przed transakcją"]} {

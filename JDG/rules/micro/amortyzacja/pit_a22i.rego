@@ -24,6 +24,7 @@ default decide := {
 decide := {
     "matched": true, "rule_id": "jdg.micro.amort_a22i.r1",
     "package": "jdg.micro.amort_a22i", "priority": 81101,
+    "valid_from": "2025-01-01", "valid_to": null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 100,

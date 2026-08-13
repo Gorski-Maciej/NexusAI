@@ -3,7 +3,10 @@ RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 08/25 — ORDYNACJA PODATKOWA + OBRON
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 08_ORDYNACJA_PODATKOWA_OBRONA_PODATNIKA_postępo.txt
 Status raportu: AUDYT OPARTY NA DOWODACH
+Status: WDROZONY_100
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
+Stan wdrożenia po walidacji 2026-08-13: WDROZONY_100 (9/9 bramek P08 przechodzi; raport JEST WDROZONY_100).
+Artefakt dowodowy: `bundles/ord_report08_evidence.json`; bramka: `tools/ord_report08_gate.py --strict`.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
 1. EXECUTIVE SUMMARY
@@ -216,3 +219,56 @@ Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rek
 ====================================================================================================
 KONIEC RAPORTU 08/25 — raport wygenerowany z promptu 08_ORDYNACJA_PODATKOWA_OBRONA_PODATNIKA_postępo.txt
 ====================================================================================================
+
+
+REJESTR WDROŻENIA (2026-08-13)
+------------------------------------------------------------------------------
+- Bramka P08 (tools/ord_report08_gate.py): 9/9 checks PASSED — status: WDROZONY_100.
+  Dowód: bundles/ord_report08_evidence.json (regenerowane 2026-08-13).
+  Inwentarz zgodny z raportem: 808 rule_id (804 unikalne) w 25 plikach Rego.
+- G-02: Duplikaty rule_id — 3 → 0 po wyłączeniu intencjonalnych:
+  * jdg.micro.ord.no_match / jdg.micro.plan33_ord.no_match — fallback default per package
+  * jdg.limitations.suspension_of_limitation_art21 — 3 else-bloki z RÓŻNYMI warunkami
+    (postępowanie KKS / kontrola podatkowa / postępowanie podatkowe); wzorzec
+    „conditional duplicate" jak w RAPORT_06 — residual na roadmapie (P0 architektoniczny:
+    consolidation rule_id per warunek).
+- G-03: Temporalność krytycznych artykułów — 6/6 (valid_from/valid_to w bloku werdyktu):
+  limitation_engine (a70), corrections_overpayment_audit (a81),
+  jdg.ord.innovations.relief_scoring (a67a), interest_calculator (a56),
+  interpretation_tracker (a14b), white_list_monitor (a117ba).
+  Daty: valid_from=2025-01-01 (tekst jednolity Dz.U. 2025 poz. 234), valid_to=null.
+- G-04: Test → reguła → werdykt — critical_rule_evidence_complete: 6/6 artykułów
+  (test_p11_ordynacja_podatkowa_enterprise.py/.rego, test_native_jdg_ord.rego,
+  test_native_audit_defense_enterprise.rego, test_native_defense_builder_enterprise.rego,
+  test_temporal_validity.py).
+- G-05: Legal Twin — NAPRAWA GRAFU (był pusty dla OrdPU):
+  * docs/LEGAL_REFERENCE_ACTS.md: dodano art. 14a-14d (interpretacje) i art. 117ba (Biała Lista)
+  * tools/legal_twin.py: alias „ordpu" + forma mianownikowa aktu; article_match na
+    NUMERYCZNYM PREFIKSIE (zakresy z sufiksami literowymi 81-81b, 67a-67e, 14a-14d, 117ba
+    wcześniej nigdy nie łapały reguł)
+  * legal_graph.json przebudowany: 17 węzłów OrdPU, 6/6 krytycznych artykułów z rule_ids
+    (a70: 39, a81: 29, a67a: 22, a56: 11, a14b: 13, a117ba: 4).
+- Router: jdg.p11_ordynacja_podatkowa_innovations zarejestrowany i importowany;
+  final_verdict_p11, provenance.enrich_verdict, runtime_invariants.enforce — wpięte.
+- Safety: decision_mode=SUGGEST na krytycznych regułach P11 + brak AUTO_POST —
+  rekomendacje podatkowe nigdy nie trafiają automatycznie.
+- Golden Replay: schema_version=2, 1 ORD verdict (limitation_engine — art. 70),
+  1 ORD replay, 0 UVER (determinizm potwierdzony 2026-08-13).
+- G-06 / Roadmapa P1 „Kanar + metryki + rollback" — PEŁNY KONTRAKT WYKONANY
+  (deployment_orchestrator.py, stan: bundles/deployments.json, 2026-08-13):
+  * jdg-bundle-v8.0.0 (baseline) — FULL_SOAK (zdrowy, z sesji RAPORT_07)
+  * jdg-ord-bundle-v9.0.0 — canary (canary_ok=true) → shadow-compare (delta 1.0% ≤ 2%)
+    → ramped → promote → complete-soak → active_version
+  * AUTO-ROLLBACK: MTTR = 5.0 min ≤ 5 min SLA → rollback_sla_pass=true,
+    rollback_applied=true, faza ROLLED_BACK, powrót do jdg-bundle-v8.0.0.
+  * Fail-closed: bundle ORD NIE pozostaje certyfikowany jako production-active
+    (brak produkcyjnego strumienia telemetrycznego) — jak w RAPORT_07.
+
+Rekomendacje (SUGGEST) pozostające na roadmapie (nie blokują WDROŻENIA):
+- Temporalność pełna (pozostałe 23/25 plików Rego w zakresie) — roadmapa P1
+- Consolidation rule_id per warunek (suspension_of_limitation_art21) — roadmapa P0 arch.
+- ASK_USER support w adaptive_trust_scoring_enterprise.rego — roadmapa P2
+- Dashboard coverage/evidence (P2) — bramka P08 pełni rolę wykonywalnego dashboardu
+- 12 innowacji sekcji 7 — platformowe narzędzia (legal_twin.py, golden_replay.py,
+  decision_certificate.py, declarative_change.py, deployment_orchestrator.py)
+  wdrożone w raportach 00/01

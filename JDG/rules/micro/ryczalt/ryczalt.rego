@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Definicja ryczałtu: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -71,7 +71,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Definicja ryczałtu: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_condition_met", false) == true
@@ -99,7 +99,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Definicja ryczałtu: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a4_r3_pass", false) == true
@@ -127,7 +127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Definicja ryczałtu: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a4_r4_checks", false) == true
@@ -155,7 +155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Definicja ryczałtu: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_applies", false) == false
@@ -183,7 +183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Definicja ryczałtu: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_2", false) == false
@@ -211,7 +211,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Definicja ryczałtu: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ryczalt_a4_exception", false) == true
@@ -239,7 +239,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Definicja ryczałtu: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ryczalt_a4_exception_2", false) == true
@@ -267,7 +267,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Definicja ryczałtu: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ryczalt", false) == true
@@ -295,7 +295,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Definicja ryczałtu: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ryczalt", false) == true
@@ -323,7 +323,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Definicja ryczałtu: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "ryczalt_deadline_required", false) == true
@@ -354,7 +354,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Definicja ryczałtu",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Definicja ryczałtu: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a4_violation", false) == true
@@ -387,7 +387,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Limit przychodu 2 mln EUR: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -415,7 +415,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Limit przychodu 2 mln EUR: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_condition_met", false) == true
@@ -443,7 +443,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Limit przychodu 2 mln EUR: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a6_r3_pass", false) == true
@@ -471,7 +471,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Limit przychodu 2 mln EUR: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a6_r4_checks", false) == true
@@ -499,7 +499,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Limit przychodu 2 mln EUR: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_applies", false) == false
@@ -527,7 +527,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Limit przychodu 2 mln EUR: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_2", false) == false
@@ -555,7 +555,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Limit przychodu 2 mln EUR: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ryczalt_a6_exception", false) == true
@@ -583,7 +583,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Limit przychodu 2 mln EUR: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ryczalt_a6_exception_2", false) == true
@@ -611,7 +611,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Limit przychodu 2 mln EUR: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ryczalt", false) == true
@@ -639,7 +639,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Limit przychodu 2 mln EUR: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ryczalt", false) == true
@@ -672,7 +672,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -700,7 +700,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_condition_met", false) == true
@@ -728,7 +728,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a8_r3_pass", false) == true
@@ -756,7 +756,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a8_r4_checks", false) == true
@@ -784,7 +784,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_applies", false) == false
@@ -812,7 +812,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_2", false) == false
@@ -840,7 +840,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ryczalt_a8_exception", false) == true
@@ -868,7 +868,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ryczalt_a8_exception_2", false) == true
@@ -896,7 +896,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ryczalt", false) == true
@@ -924,7 +924,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ryczalt", false) == true
@@ -952,7 +952,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "ryczalt_deadline_required", false) == true
@@ -983,7 +983,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Wyłączenia z ryczałtu",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a8_violation", false) == true
@@ -1011,7 +1011,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: edge case — nietypowa sytuacja wymagająca uwagi"]
 } {
     object.get(input.invoice, "ryczalt_a8_edge_case", false) == true
@@ -1039,7 +1039,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: drugi edge case — rzadki scenariusz"]
 } {
     object.get(input.invoice, "ryczalt_a8_edge_case_2", false) == true
@@ -1067,7 +1067,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Wyłączenia z ryczałtu: walidacja formalna — sprawdź dokumenty"]
 } {
     object.get(input.invoice, "ryczalt_validation_required", false) == true
@@ -1100,7 +1100,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1128,7 +1128,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_condition_met", false) == true
@@ -1156,7 +1156,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a12_r3_pass", false) == true
@@ -1184,7 +1184,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a12_r4_checks", false) == true
@@ -1212,7 +1212,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_applies", false) == false
@@ -1240,7 +1240,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_2", false) == false
@@ -1268,7 +1268,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ryczalt_a12_exception", false) == true
@@ -1296,7 +1296,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ryczalt_a12_exception_2", false) == true
@@ -1324,7 +1324,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ryczalt", false) == true
@@ -1352,7 +1352,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ryczalt", false) == true
@@ -1380,7 +1380,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "ryczalt_deadline_required", false) == true
@@ -1411,7 +1411,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Stawki per PKWiU",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a12_violation", false) == true
@@ -1439,7 +1439,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: edge case — nietypowa sytuacja wymagająca uwagi"]
 } {
     object.get(input.invoice, "ryczalt_a12_edge_case", false) == true
@@ -1467,7 +1467,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: drugi edge case — rzadki scenariusz"]
 } {
     object.get(input.invoice, "ryczalt_a12_edge_case_2", false) == true
@@ -1495,7 +1495,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: walidacja formalna — sprawdź dokumenty"]
 } {
     object.get(input.invoice, "ryczalt_validation_required", false) == true
@@ -1523,7 +1523,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1551,7 +1551,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_condition_met", false) == true
@@ -1579,7 +1579,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Stawki per PKWiU: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a12_r18_pass", false) == true
@@ -1612,7 +1612,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Ewidencja ryczałtowa: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1640,7 +1640,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Ewidencja ryczałtowa: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_condition_met", false) == true
@@ -1668,7 +1668,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Ewidencja ryczałtowa: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a15_r3_pass", false) == true
@@ -1696,7 +1696,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Ewidencja ryczałtowa: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a15_r4_checks", false) == true
@@ -1724,7 +1724,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Ewidencja ryczałtowa: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_applies", false) == false
@@ -1752,7 +1752,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Ewidencja ryczałtowa: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_2", false) == false
@@ -1780,7 +1780,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Ewidencja ryczałtowa: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ryczalt_a15_exception", false) == true
@@ -1808,7 +1808,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Ewidencja ryczałtowa: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ryczalt_a15_exception_2", false) == true
@@ -1836,7 +1836,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Ewidencja ryczałtowa: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ryczalt", false) == true
@@ -1864,7 +1864,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Ewidencja ryczałtowa: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ryczalt", false) == true
@@ -1897,7 +1897,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — stawki: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1925,7 +1925,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — stawki: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_condition_met", false) == true
@@ -1953,7 +1953,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — stawki: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a21_r3_pass", false) == true
@@ -1981,7 +1981,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — stawki: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a21_r4_checks", false) == true
@@ -2009,7 +2009,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — stawki: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_applies", false) == false
@@ -2037,7 +2037,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — stawki: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_2", false) == false
@@ -2065,7 +2065,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — stawki: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ryczalt_a21_exception", false) == true
@@ -2093,7 +2093,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — stawki: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ryczalt_a21_exception_2", false) == true
@@ -2121,7 +2121,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — stawki: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ryczalt", false) == true
@@ -2149,7 +2149,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — stawki: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ryczalt", false) == true
@@ -2177,7 +2177,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — stawki: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "ryczalt_deadline_required", false) == true
@@ -2208,7 +2208,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Karta podatkowa — stawki",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — stawki: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a21_violation", false) == true
@@ -2241,7 +2241,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — warunki: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2269,7 +2269,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — warunki: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_condition_met", false) == true
@@ -2297,7 +2297,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — warunki: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a27_r3_pass", false) == true
@@ -2325,7 +2325,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — warunki: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a27_r4_checks", false) == true
@@ -2353,7 +2353,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — warunki: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_applies", false) == false
@@ -2381,7 +2381,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — warunki: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_2", false) == false
@@ -2409,7 +2409,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — warunki: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ryczalt_a27_exception", false) == true
@@ -2437,7 +2437,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — warunki: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ryczalt_a27_exception_2", false) == true
@@ -2465,7 +2465,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — warunki: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ryczalt", false) == true
@@ -2493,7 +2493,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — warunki: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ryczalt", false) == true
@@ -2521,7 +2521,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — warunki: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "ryczalt_deadline_required", false) == true
@@ -2552,7 +2552,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Karta podatkowa — warunki",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Karta podatkowa — warunki: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a27_violation", false) == true
@@ -2585,7 +2585,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Utrata prawa do ryczałtu: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2613,7 +2613,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Utrata prawa do ryczałtu: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_condition_met", false) == true
@@ -2641,7 +2641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Utrata prawa do ryczałtu: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a30_r3_pass", false) == true
@@ -2669,7 +2669,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Utrata prawa do ryczałtu: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ryczalt_a30_r4_checks", false) == true
@@ -2697,7 +2697,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Utrata prawa do ryczałtu: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_applies", false) == false
@@ -2725,7 +2725,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Utrata prawa do ryczałtu: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ryczalt_exclusion_2", false) == false
@@ -2753,7 +2753,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Utrata prawa do ryczałtu: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ryczalt_a30_exception", false) == true
@@ -2781,7 +2781,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Utrata prawa do ryczałtu: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ryczalt_a30_exception_2", false) == true
@@ -2815,7 +2815,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a22_u1_p1_check", false) == true
@@ -2842,7 +2842,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a22_u2_p2_check", false) == true
@@ -2869,7 +2869,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a22_u3_p3_check", false) == true
@@ -2896,7 +2896,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a22_u4_p4_check", false) == true
@@ -2923,7 +2923,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a23_u1_p2_check", false) == true
@@ -2950,7 +2950,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a23_u2_p3_check", false) == true
@@ -2977,7 +2977,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a23_u3_p4_check", false) == true
@@ -3004,7 +3004,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a23_u5_p1_check", false) == true
@@ -3031,7 +3031,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a24_u1_p3_check", false) == true
@@ -3058,7 +3058,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a24_u2_p4_check", false) == true
@@ -3085,7 +3085,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a24_u4_p1_check", false) == true
@@ -3112,7 +3112,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a24_u5_p2_check", false) == true
@@ -3139,7 +3139,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a25_u1_p4_check", false) == true
@@ -3166,7 +3166,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a25_u3_p1_check", false) == true
@@ -3193,7 +3193,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a25_u4_p2_check", false) == true
@@ -3220,7 +3220,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a25_u5_p3_check", false) == true
@@ -3247,7 +3247,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a26_u2_p1_check", false) == true
@@ -3274,7 +3274,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a26_u3_p2_check", false) == true
@@ -3301,7 +3301,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a26_u4_p3_check", false) == true
@@ -3328,7 +3328,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a26_u5_p4_check", false) == true
@@ -3355,7 +3355,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a27_u1_p1_check", false) == true
@@ -3382,7 +3382,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a27_u2_p2_check", false) == true
@@ -3409,7 +3409,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a27_u3_p3_check", false) == true
@@ -3436,7 +3436,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a27_u4_p4_check", false) == true
@@ -3463,7 +3463,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a28_u1_p2_check", false) == true
@@ -3490,7 +3490,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a28_u2_p3_check", false) == true
@@ -3517,7 +3517,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a28_u3_p4_check", false) == true
@@ -3544,7 +3544,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a28_u5_p1_check", false) == true
@@ -3571,7 +3571,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a29_u1_p3_check", false) == true
@@ -3598,7 +3598,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a29_u2_p4_check", false) == true
@@ -3625,7 +3625,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a29_u4_p1_check", false) == true
@@ -3652,7 +3652,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a29_u5_p2_check", false) == true
@@ -3679,7 +3679,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a30_u1_p4_check", false) == true
@@ -3706,7 +3706,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a30_u3_p1_check", false) == true
@@ -3733,7 +3733,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a30_u4_p2_check", false) == true
@@ -3760,7 +3760,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a30_u5_p3_check", false) == true
@@ -3787,7 +3787,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a31_u2_p1_check", false) == true
@@ -3814,7 +3814,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a31_u3_p2_check", false) == true
@@ -3841,7 +3841,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a31_u4_p3_check", false) == true
@@ -3868,7 +3868,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a31_u5_p4_check", false) == true
@@ -3895,7 +3895,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a32_u1_p1_check", false) == true
@@ -3922,7 +3922,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a32_u2_p2_check", false) == true
@@ -3949,7 +3949,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a32_u3_p3_check", false) == true
@@ -3976,7 +3976,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a32_u4_p4_check", false) == true
@@ -4003,7 +4003,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a33_u1_p2_check", false) == true
@@ -4030,7 +4030,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a33_u2_p3_check", false) == true
@@ -4057,7 +4057,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a33_u3_p4_check", false) == true
@@ -4084,7 +4084,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a33_u5_p1_check", false) == true
@@ -4111,7 +4111,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a34_u4_p1_check", false) == true
@@ -4138,7 +4138,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
+    "_legal_basis": "Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ryc_a34_u5_p2_check", false) == true

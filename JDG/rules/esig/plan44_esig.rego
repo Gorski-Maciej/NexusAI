@@ -9,7 +9,7 @@ import data.jdg.helpers
 default decide := {"matched":false,"rule_id":"jdg.esig.no_match","package":"jdg.esig","priority":99999}
 
 # jdg.esig.qualified_signature_requirement — P1900: Kwalifikowany podpis — deklaracje, odwołania, pełnomocnictwa
-decide :=   {"matched":true,"rule_id":"jdg.esig.qualified_signature_requirement","package":"jdg.esig","priority":1900,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Kwalifikowany podpis elektroniczny — wymagany dla odwołań, pełnomocnictw, deklaracji","_legal_basis":"Art. 126 § 5 OP, eIDAS","_warnings":["Odwołania i pełnomocnictwa wymagają kwalifikowanego podpisu elektronicznego"]} {
+decide :=   {"matched":true,"rule_id":"jdg.esig.qualified_signature_requirement","package":"jdg.esig","priority":1900,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Kwalifikowany podpis elektroniczny — wymagany dla odwołań, pełnomocnictw, deklaracji","_legal_basis":"Art. 126 § 5 OP, eIDAS","_warnings":["Odwołania i pełnomocnictwa wymagają kwalifikowanego podpisu elektronicznego"],"valid_from":"2016-07-01","valid_to":null,"decision_mode":"SUGGEST"} {
     object.get(input.document, "electronic_signature_required", false) == true
 }
 

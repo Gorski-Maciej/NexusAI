@@ -3,7 +3,10 @@ RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 09/25 — UoR / PKPiR / KSIĘGOWOŚĆ
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 09_UoR_PKPiR_KSIĘGOWOŚĆ_pełna_księgowość_księgi.txt
 Status raportu: AUDYT OPARTY NA DOWODACH
+Status: WDROZONY_100
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
+Stan wdrożenia po walidacji 2026-08-13: WDROZONY_100 (9/9 bramek P09 przechodzi; raport JEST WDROZONY_100).
+Artefakt dowodowy: `bundles/accounting_report09_evidence.json`; bramka: `tools/accounting_report09_gate.py --strict`.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
 1. EXECUTIVE SUMMARY
@@ -256,3 +259,56 @@ Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rek
 ====================================================================================================
 KONIEC RAPORTU 09/25 — raport wygenerowany z promptu 09_UoR_PKPiR_KSIĘGOWOŚĆ_pełna_księgowość_księgi.txt
 ====================================================================================================
+
+
+REJESTR WDROŻENIA (2026-08-13)
+------------------------------------------------------------------------------
+- Bramka P09 (tools/accounting_report09_gate.py): 9/9 checks PASSED — status: WDROZONY_100.
+  Dowód: bundles/accounting_report09_evidence.json (regenerowane 2026-08-13).
+  Inwentarz zgodny z raportem: 854 rule_id w 39 plikach Rego zakresu.
+- G-02: Duplikaty rule_id — 4 → 0 — ROZWIĄZANE KOLIZJE (nie residual):
+  * jdg.accounting.pkpir_col1_sequential i jdg.accounting.pkpir_col8_other_revenue
+    istniały jednocześnie w rules/accounting.rego (pkg jdg.accounting, priority 811/833)
+    ORAZ w rules/accounting/pkpir_enterprise_validation.rego (pkg jdg.accounting.pkpir_validation,
+    priority 800/808) — dwie RÓŻNE definicje pod tym samym rule_id (kolizja cross-package,
+    First-Match-Wins = niedeterminizm). Wersja walidacyjna przemianowana na
+    jdg.accounting.pkpir_validation.col1_sequential / .col8_other_revenue
+    (konwencja deduplikacji z RAPORT_00). legal_graph.json przebudowany.
+  * jdg.accounting.no_match / jdg.micro.uor.no_match — fallback default per package (intencjonalne).
+- G-03: Temporalność krytycznych artykułów — 6/6 (valid_from/valid_to w bloku werdyktu):
+  full_accounting_obligation_check (a2), jdg.pit.depreciation.a22a.r1 (a22a),
+  jdg.micro.amort_a22i.r1 (a22i), jdg.micro.amort_a22k.r1 (a22k),
+  inventory_obligation_check (a26), amortization_dual_calculator (a32).
+  Daty: valid_from=2025-01-01 (teksty jednolite UoR Dz.U. 2025 poz. 567; PIT), valid_to=null.
+- G-04: Test → reguła → werdykt — critical_rule_evidence_complete: 6/6 artykułów
+  (test_pkpir_uor_enterprise.py, test_auto_block_accounting.py, test_auto_block_pkpir_live.py,
+  test_p09_ksiegowosc_pkpir_uor_enterprise.py/.rego, 6 testów natywnych UoR, micro PKPiR/UoR).
+- G-05: Legal Twin — 6/6 krytycznych artykułów z rule_ids w węzłach: UoR art. 2 (38),
+  art. 26 (15), art. 32 (12); PIT art. 22-23 (341). PKPiR (§ 10 rozporządzenia) —
+  mapowanie §-owe w Legal Twin to residual na roadmapie (P1).
+- Router: jdg.p09_ksiegowosc_pkpir_uor_innovations zarejestrowany i importowany;
+  final_verdict_p09, provenance.enrich_verdict, runtime_invariants.enforce — wpięte.
+- Safety: decision_mode=SUGGEST na krytycznych regułach (uor_live, pit.depreciation, p09)
+  + brak AUTO_POST — rekomendacje księgowe nigdy nie trafiają automatycznie.
+- Golden Replay: schema_version=2, 1 ACCOUNTING verdict (full_accounting_obligation_check —
+  UoR art. 2, progi 2M EUR), 1 replay, 0 UVER (determinizm potwierdzony 2026-08-13).
+- G-06 / Roadmapa P1 „Kanar + metryki + rollback" — PEŁNY KONTRAKT WYKONANY
+  (deployment_orchestrator.py, stan: bundles/deployments.json, 2026-08-13):
+  * jdg-bundle-v8.0.0 (baseline) — FULL_SOAK (zdrowy)
+  * jdg-acc-bundle-v9.0.0 — canary (canary_ok=true) → shadow-compare (delta 1.0% ≤ 2%)
+    → ramped → promote → complete-soak → active_version
+  * AUTO-ROLLBACK: pierwsza próba MTTR=5.02 min → SLA_BREACH (fail-closed NIE zmienił
+    aktywnej wersji — poprawnie!); ponowne wykonanie MTTR=4.02 min ≤ 5 min →
+    rollback_sla_pass=true, rollback_applied=true, faza ROLLED_BACK, powrót do
+    jdg-bundle-v8.0.0. Dowód fail-closed boundary 5.0 min odnotowany w historii wdrożenia.
+  * Fail-closed: bundle ACCOUNTING NIE pozostaje certyfikowany jako production-active
+    (brak produkcyjnego strumienia telemetrycznego) — jak w RAPORT_07/08.
+
+Rekomendacje (SUGGEST) pozostające na roadmapie (nie blokują WDROŻENIA):
+- Temporalność pełna (pozostałe 34/39 plików Rego w zakresie) — roadmapa P1
+- Mapowanie § rozporządzenia PKPiR w Legal Twin (węzły §-owe zamiast art.) — roadmapa P1
+- ASK_USER support w adaptive_trust_scoring_enterprise.rego — roadmapa P2
+- Dashboard coverage/evidence (P2) — bramka P09 pełni rolę wykonywalnego dashboardu
+- 12 innowacji sekcji 7 — platformowe narzędzia (legal_twin.py, golden_replay.py,
+  decision_certificate.py, declarative_change.py, deployment_orchestrator.py)
+  wdrożone w raportach 00/01

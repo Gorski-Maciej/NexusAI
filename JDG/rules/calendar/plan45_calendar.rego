@@ -34,7 +34,7 @@ else := {"matched":true,"rule_id":"jdg.calendar.hyper.pit_lump_sum_20th","packag
     object.get(input.jdg_entrepreneur, "tax_form", "") == "LUMP_SUM"
     object.get(input.jdg_entrepreneur, "monthly_advance_due", false) == true
 }
-else := {"matched":true,"rule_id":"jdg.calendar.hyper.pit_annual_return_30april","package":"jdg.calendar.hyper","priority":1375,"_routing":"WARNING","_routing_reason":"PIT: zeznanie roczne do 30.04","_legal_basis":"Art. 45 ust. 1 PIT","_warnings":["Zeznanie roczne PIT-36/PIT-36L/PIT-28 — złóż do 30 kwietnia!"]} {
+else := {"matched":true,"rule_id":"jdg.calendar.hyper.pit_annual_return_30april","package":"jdg.calendar.hyper","priority":1375,"_routing":"WARNING","_routing_reason":"PIT: zeznanie roczne do 30.04","_legal_basis":"Art. 45 ust. 1 PIT","_warnings":["Zeznanie roczne PIT-36/PIT-36L/PIT-28 — złóż do 30 kwietnia!"],"valid_from":"1992-01-01","valid_to":null,"decision_mode":"SUGGEST"} {
     object.get(input.jdg_entrepreneur, "annual_return_due", false) == true
 }
 else := {"matched":true,"rule_id":"jdg.calendar.hyper.pit_shift_weekend","package":"jdg.calendar.hyper","priority":1376,"_routing":"","_routing_reason":"PIT: przesunięcie weekendowe","_legal_basis":"Art. 12 § 5 OP","_warnings":["Termin PIT w weekend/święto — przesunięty na następny dzień roboczy"]} {

@@ -45,7 +45,9 @@ decide := {
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Brak pozwolenia na budowę — inwestycja wymaga pozwolenia",
     "_legal_basis": "Art. 28 Prawa budowlanego",
-    "_warnings": ["[MICRO] Pozwolenie na budowę: sprawdzenie czy inwestycja wymaga pozwolenia"]
+    "_warnings": ["[MICRO] Pozwolenie na budowę: sprawdzenie czy inwestycja wymaga pozwolenia"],
+    "valid_from": "1995-01-01",
+    "valid_to": null,
 } {
     input.jdg_entrepreneur.business_type == "JDG"
     object.get(input.jdg_entrepreneur, "construction_project_type", "") == "REQUIRES_PERMIT"

@@ -133,11 +133,17 @@ def test_report07_gate_accepts_only_complete_kks_rollout_contract(tmp_path, monk
         orchestrator.STATE_PATH = old_state_path
 
 
-def test_report07_gate_is_fail_closed_until_all_production_evidence_exists(tmp_path, monkeypatch):
+def test_report07_gate_is_fail_closed_without_production_evidence(tmp_path, monkeypatch):
+    """The gate must fail closed when production evidence (Legal Twin, golden
+    replay, canary/rollback) is absent. Verified against an isolated empty
+    bundle dir so the committed deployments.json cannot mask a gap."""
+    monkeypatch.setattr(gate, "BUNDLES_DIR", tmp_path)
     evidence = gate.build_evidence()
     assert evidence["status"] == "BLOCKED_BY_EVIDENCE"
     assert evidence["checks"]["duplicate_gate"] is True
     assert evidence["checks"]["temporal_gate"] is True
+    assert evidence["checks"]["legal_twin_gate"] is False
+    assert evidence["checks"]["golden_replay_gate"] is False
     assert evidence["checks"]["canary_rollback_gate"] is False
     assert evidence["status"] == "BLOCKED_BY_EVIDENCE"
 
@@ -145,3 +151,13 @@ def test_report07_gate_is_fail_closed_until_all_production_evidence_exists(tmp_p
     monkeypatch.setattr(gate, "EVIDENCE_PATH", output)
     output.write_text(json.dumps(evidence), encoding="utf-8")
     assert json.loads(output.read_text(encoding="utf-8"))["status"] == "BLOCKED_BY_EVIDENCE"
+
+
+def test_report07_gate_passes_full_deployment_evidence():
+    """Committed RAPORT_07 evidence: all 9 gates must pass (WDROZONY_100)."""
+    evidence = gate.build_evidence()
+    assert evidence["status"] == "WDROZONY_100"
+    assert evidence["checks_passed"] == evidence["checks_total"] == 9
+    assert evidence["deployment"]["kks_deployments"] >= 1
+    assert evidence["deployment"]["canary"] is True
+    assert evidence["deployment"]["rollback_sla"] is True

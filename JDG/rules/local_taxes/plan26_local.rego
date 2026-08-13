@@ -6,7 +6,7 @@
 package jdg.local_taxes
 import data.jdg.helpers
 
-default decide := {"matched":false,"rule_id":"jdg.local_taxes.no_match","package":"jdg.local_taxes","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.local_taxes.plan26_local.no_match","package":"jdg.local_taxes","priority":99999}
 
 # jdg.local_taxes.pcc_purchase_from_private — PCC 2% od zakupu od osoby prywatnej >1000 PLN
 decide :=   {"matched":true,"rule_id":"jdg.local_taxes.pcc_purchase_from_private","package":"jdg.local_taxes","priority":1300,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"PCC 2% od zakupu od osoby prywatnej >1000 PLN","_legal_basis":"Ustawa o PCC, Art. 1-2, Art. 7","_warnings":["Zakup od osoby prywatnej — PCC-3 w 14 dni, stawka 2%"]} {

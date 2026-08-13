@@ -1,0 +1,439 @@
+{
+  "report": "RAPORT_10_CROSSBORDER",
+  "method": "evidence-first; no inference from filenames",
+  "inventory": {
+    "files": [
+      {
+        "path": "rules/_crossborder_rates.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/cbam_full.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/cfc_auto_classifier.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/cross_domain_intelligence_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 16,
+        "legal_basis_count": 15,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/cross_jurisdiction_ruling_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/crossborder/exit_tax_cfc_complete.rego",
+        "exists": true,
+        "rule_id_count": 17,
+        "legal_basis_count": 16,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/crossborder/plan23_ue.rego",
+        "exists": true,
+        "rule_id_count": 9,
+        "legal_basis_count": 8,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/crossborder/post_brexit.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/crossborder.rego",
+        "exists": true,
+        "rule_id_count": 32,
+        "legal_basis_count": 31,
+        "temporal": true,
+        "critical_temporal_rule_count": 5,
+        "package_declared": true
+      },
+      {
+        "path": "rules/dac8_report_generator.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/international.rego",
+        "exists": true,
+        "rule_id_count": 17,
+        "legal_basis_count": 16,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/international_expanded.rego",
+        "exists": true,
+        "rule_id_count": 24,
+        "legal_basis_count": 23,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/mdr/mdr_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 19,
+        "legal_basis_count": 18,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/mdr/mdr_hallmarks.rego",
+        "exists": true,
+        "rule_id_count": 21,
+        "legal_basis_count": 20,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/mdr/plan44_mdr.rego",
+        "exists": true,
+        "rule_id_count": 11,
+        "legal_basis_count": 10,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/mdr/plan45_mdr.rego",
+        "exists": true,
+        "rule_id_count": 43,
+        "legal_basis_count": 42,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/mdr_auto_generator.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/mdr_dac6_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/crossborder/crossborder.rego",
+        "exists": true,
+        "rule_id_count": 193,
+        "legal_basis_count": 192,
+        "temporal": true,
+        "critical_temporal_rule_count": 7,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_cb.rego",
+        "exists": true,
+        "rule_id_count": 21,
+        "legal_basis_count": 20,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_mdr.rego",
+        "exists": true,
+        "rule_id_count": 11,
+        "legal_basis_count": 10,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_tp.rego",
+        "exists": true,
+        "rule_id_count": 16,
+        "legal_basis_count": 15,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p12_crossborder_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 27,
+        "legal_basis_count": 26,
+        "temporal": true,
+        "critical_temporal_rule_count": 6,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p13_crossborder_innovations_v8.rego",
+        "exists": true,
+        "rule_id_count": 14,
+        "legal_basis_count": 12,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p3233_innovations.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/tp/plan44_tp.rego",
+        "exists": true,
+        "rule_id_count": 10,
+        "legal_basis_count": 9,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/tp/plan45_tp.rego",
+        "exists": true,
+        "rule_id_count": 53,
+        "legal_basis_count": 52,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/vida_drr_full.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/wdt_document_tracker.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      }
+    ],
+    "files_total": 29,
+    "files_present": 29,
+    "rule_ids_total": 596,
+    "rule_ids_unique": 596,
+    "duplicate_rule_ids": [],
+    "duplicate_count": 0,
+    "temporal_files": 3,
+    "critical_temporal_rule_count": 7,
+    "critical_temporal_evidence": {
+      "a20": true,
+      "a23o": true,
+      "a23zf": true,
+      "a29": true,
+      "a30da": true,
+      "a30f": true,
+      "a86r": true
+    },
+    "temporal_coverage_pct": 10.34
+  },
+  "tests": {
+    "files_declared": 11,
+    "files_present": 11,
+    "critical_rule_markers": {
+      "a20": true,
+      "a23o": true,
+      "a23zf": true,
+      "a29": true,
+      "a30da": true,
+      "a30f": true,
+      "a86r": true
+    },
+    "critical_rule_marker_aliases": {
+      "a20": [
+        "jdg.crossborder.import_services_tax_point",
+        "jdg.micro.crossborder.a20.r1",
+        "a20",
+        "MLI"
+      ],
+      "a23o": [
+        "jdg.p12_crossborder_innovations.tp_documentation_calculator",
+        "jdg.micro.crossborder.a23o.r1",
+        "tp_documentation",
+        "Ceny transferowe"
+      ],
+      "a23zf": [
+        "jdg.p12_crossborder_innovations.tp_documentation_calculator",
+        "jdg.micro.crossborder.a23zf.r1",
+        "local_file",
+        "23zf"
+      ],
+      "a29": [
+        "jdg.crossborder.import_services_tax_base",
+        "jdg.micro.crossborder.a29.r1",
+        "wht",
+        "WHT"
+      ],
+      "a30da": [
+        "jdg.p12_crossborder_innovations.exit_tax_calculator",
+        "jdg.micro.crossborder.a30da.r1",
+        "exit_tax",
+        "30da"
+      ],
+      "a30f": [
+        "jdg.p12_crossborder_innovations.cfc_calculator",
+        "jdg.micro.crossborder.a30f.r1",
+        "cfc_calculator",
+        "CFC"
+      ],
+      "a86r": [
+        "jdg.p12_crossborder_innovations.mdr_report_generator",
+        "jdg.micro.crossborder.a86r.r1",
+        "mdr_report",
+        "MDR"
+      ]
+    },
+    "critical_articles_referenced": {
+      "a20": false,
+      "a23o": true,
+      "a23zf": false,
+      "a29": false,
+      "a30da": false,
+      "a30f": false,
+      "a86r": false
+    },
+    "critical_rule_evidence_complete": true,
+    "native_rego_test_present": true,
+    "pytest_test_present": true
+  },
+  "legal_twin": {
+    "present": true,
+    "xb_nodes": 41,
+    "critical_basis_refs": 7,
+    "critical_basis_rule_ids": {
+      "a20": [
+        "jdg.crossborder.import_services_tax_point"
+      ],
+      "a23o": [
+        "jdg.p12_crossborder_innovations.tp_documentation_calculator"
+      ],
+      "a23zf": [
+        "jdg.p12_crossborder_innovations.tp_documentation_calculator"
+      ],
+      "a29": [
+        "jdg.crossborder.import_services_tax_base"
+      ],
+      "a30da": [
+        "jdg.crossborder.import_services_tax_base",
+        "jdg.p12_crossborder_innovations.cfc_calculator"
+      ],
+      "a30f": [
+        "jdg.crossborder.import_services_tax_base",
+        "jdg.p12_crossborder_innovations.cfc_calculator"
+      ],
+      "a86r": [
+        "jdg.p12_crossborder_innovations.mdr_report_generator"
+      ]
+    },
+    "critical_articles_required": 7,
+    "indexes": {
+      "LCI": 62.73,
+      "TCL": 100.0,
+      "RV": 26.02
+    }
+  },
+  "router": {
+    "main_router_present": true,
+    "p12_imported": true,
+    "p12_registered": true,
+    "p12_final_verdict_wired": true,
+    "crossborder_imported": true,
+    "international_imported": true,
+    "provenance_wired": true,
+    "runtime_invariants_wired": true
+  },
+  "safety": {
+    "package_present": true,
+    "suggest_mode_declared": true,
+    "ask_user_supported_elsewhere": false,
+    "no_auto_post_contract": true
+  },
+  "golden_replay": {
+    "present": true,
+    "schema_version": 2,
+    "xb_verdicts": 1,
+    "replays": 6,
+    "xb_replays": 2,
+    "unexplained_replays": 0,
+    "xb_unexplained_replays": 0
+  },
+  "deployment": {
+    "present": true,
+    "xb_deployments": 1,
+    "canary": true,
+    "rollback_sla": true,
+    "production_active": false,
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "checks": {
+    "all_report_rule_files_present": true,
+    "duplicate_gate": true,
+    "critical_tests_mapped": true,
+    "temporal_gate": true,
+    "legal_twin_gate": true,
+    "router_gate": true,
+    "recommendation_safety_gate": true,
+    "golden_replay_gate": true,
+    "canary_rollback_gate": true
+  },
+  "checks_passed": 9,
+  "checks_total": 9,
+  "status": "WDROZONY_100"
+}

@@ -10,7 +10,7 @@ import data.jdg.helpers
 default decide := {"matched":false,"rule_id":"jdg.conviction.hyper.no_match","package":"jdg.conviction.hyper","priority":99999}
 
 # ══ R1546-R1550: Professional Consequences ══
-decide := {"matched":true,"rule_id":"jdg.conviction.hyper.business_ban_art41kk","package":"jdg.conviction.hyper","priority":1546,"_routing":"BLOCK_AND_ALERT","_routing_reason":"KKS: zakaz prowadzenia działalności","_legal_basis":"Art. 41 KK","_warnings":["Skazanie KKS z zakazem prowadzenia działalności — NIE możesz prowadzić JDG!"]} {
+decide := {"matched":true,"rule_id":"jdg.conviction.hyper.business_ban_art41kk","package":"jdg.conviction.hyper","priority":1546,"_routing":"BLOCK_AND_ALERT","_routing_reason":"KKS: zakaz prowadzenia działalności","_legal_basis":"Art. 41 KK","_warnings":["Skazanie KKS z zakazem prowadzenia działalności — NIE możesz prowadzić JDG!"],"valid_from":"1998-09-01","valid_to":null,"decision_mode":"SUGGEST"} {
     object.get(input.jdg_entrepreneur, "business_ban_active", false) == true
 }
 else := {"matched":true,"rule_id":"jdg.conviction.hyper.license_revocation","package":"jdg.conviction.hyper","priority":1547,"_routing":"BLOCK_AND_ALERT","_routing_reason":"KKS: utrata licencji zawodowej","_legal_basis":"Art. 41 KK","_warnings":["Skazanie KKS — ryzyko utraty licencji zawodowej (doradca podatkowy, adwokat)"]} {

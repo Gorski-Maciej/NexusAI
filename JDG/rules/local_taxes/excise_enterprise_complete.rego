@@ -563,7 +563,8 @@ else := verdict {
         "excise_exemption_label": exemption_label,
         "_routing": excise_routing, "_routing_reason": excise_routing_reason,
         "_legal_basis": "Art. 30-32, 31b Ustawy o podatku akcyzowym",
-        "_warnings": [sprintf("✅ ZWOLNIENIE AKCYZOWE: %s. %sPamiętaj o przechowywaniu dokumentacji przez 5 lat! Kontrole US/UC mogą weryfikować zasadność zwolnienia.", [exemption_label, doc_note])]
+        "_warnings": [sprintf("✅ ZWOLNIENIE AKCYZOWE: %s. %sPamiętaj o przechowywaniu dokumentacji przez 5 lat! Kontrole US/UC mogą weryfikować zasadność zwolnienia.", [exemption_label, doc_note])],
+        "valid_from": "2009-03-01", "valid_to": null,
     }
 
     doc_note := "⚠️ BRAK DOKUMENTACJI! " { has_documentation == false }

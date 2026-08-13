@@ -116,29 +116,17 @@ class TestCoverageGapReport:
         assert len(kks_rows) == 6
 
         by_article = {row["article"].split(" — ", 1)[0]: row for row in kks_rows}
-        assert by_article["16"]["actual_status"] == "PARTIAL"
-        assert set(by_article["16"]["evidence_missing_rules"]) == {
-            "jdg.kks.voluntary_disclosure_art16",
-            "jdg.kks.voluntary_disclosure_correction_before_audit",
-            "jdg.kks.voluntary_disclosure_deadline",
-            "jdg.kks.voluntary_disclosure_eligible",
-            "jdg.kks.voluntary_disclosure_foreign_tax",
-            "jdg.kks.voluntary_disclosure_guide",
-            "jdg.kks.voluntary_disclosure_multiple_offenses",
-            "jdg.kks.voluntary_disclosure_partial",
-            "jdg.kks.voluntary_disclosure_payment",
-            "jdg.kks.voluntary_disclosure_successor",
-        }
-        assert by_article["44"]["actual_status"] == "PARTIAL"
-        assert by_article["44"]["evidence_missing_rules"] == [
-            "jdg.kks.statute_of_limitations_crime_5y"
-        ]
+        # RAPORT_00 closure (2026-08-12) provided independent native test
+        # evidence for every KKS Art. 16/44 wildcard rule — P1_KKS is now 0.
+        assert by_article["16"]["actual_status"] == "COMPLETE"
+        assert by_article["16"]["evidence_missing_rules"] == []
+        assert by_article["44"]["actual_status"] == "COMPLETE"
+        assert by_article["44"]["evidence_missing_rules"] == []
         assert all(
             row["actual_status"] == "COMPLETE"
             for row in kks_rows
-            if row["article"].split(" — ", 1)[0] not in {"16", "44"}
         )
-        assert report["priorities"]["P1_KKS"] == 2
+        assert report["priorities"]["P1_KKS"] == 0
 
 
 # ══════════════════════ BRAMKA RV (V2) ══════════════════════

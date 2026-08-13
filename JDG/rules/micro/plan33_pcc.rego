@@ -4,7 +4,7 @@
 
 package jdg.micro.pcc
 
-default decide := {"matched":false,"rule_id":"jdg.micro.pcc.no_match","package":"jdg.micro.pcc","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.micro.pcc.plan33.no_match","package":"jdg.micro.pcc","priority":99999}
 
 # jdg.pcc.a1.r1 — `pcc_subject_loan`: Umowa pozyczki → 0.5%
 decide :=   {"matched":true,"rule_id":"jdg.pcc.a1.r1","package":"jdg.micro.pcc","priority":4000,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Umowa pozyczki","_legal_basis":"Art. 1 ust. 1 pkt 1 + Art. 7","_warnings":[]} {

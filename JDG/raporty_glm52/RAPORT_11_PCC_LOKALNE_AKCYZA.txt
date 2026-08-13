@@ -2,9 +2,26 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 11/25 — PCC / PODATKI LOKALNE / AKCYZĄ (nieruchomości, środki transportu, umowy, paliwo, alkohol)
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 11_PCC_PODATKI_LOKALNE_AKCYZĄ_nieruchomości_śro.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (evidence gate 9/9 PASS — 2026-08-13)
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
+
+REJESTR WDROŻENIA (2026-08-13):
+- Bramka dowodowa: tools/pcc_local_report11_gate.py -> bundles/pcc_local_report11_evidence.json (9/9 checks).
+- Duplikaty G-02 ROZWIĄZANE: jdg.local_taxes.no_match, jdg.local_taxes.pcc.no_match i jdg.micro.pcc.no_match
+  w plikach wtórnych (rules/local_taxes/plan26_local.rego -> jdg.local_taxes.plan26_local.no_match;
+  rules/local_taxes/pcc_enterprise_complete.rego -> jdg.local_taxes.pcc_enterprise.no_match;
+  rules/micro/plan33_pcc.rego -> jdg.micro.pcc.plan33.no_match).
+- Temporalność G-03: valid_from/valid_to na 7 krytycznych blokach (a1/a7/a8/a12/a16/a30/a99).
+- Legal Twin G-05: dodano Ustawę o podatku akcyzowym (art. 2/16/21/24-24b/30-32/89/92-99c/100/114-138)
+  + aliasy 'lokalnych' i 'akcyz'; węzły PCC (1-2/4/6-7/10), lokalne (2-7/8-14), akcyza (9 węzłów) z rule_ids.
+  LCI 62.73->67.23, TCL 100, RV 26.64.
+- Golden replay: 1 PCC verdict (sale_detection art. 1/6-7) + 1 replay, 0 UVER.
+- Deployment: jdg-plb-bundle-v9.0.0 canary -> shadow-compare (delta 1.0%) -> ramped -> promote -> soak 24h
+  -> auto-rollback MTTR 4.02 min SLA pass (fail-closed, powrót do jdg-bundle-v8.0.0; NIE production-active).
+- Router: p14_pcc_lokalne_akcyza_innovations zarejestrowany, final_verdict_p14, local_taxes + p15 wprost,
+  provenance, runtime_invariants.
+- Safety: decision_mode SUGGEST w p14, brak AUTO_POST (rekomendacje P2 nie podejmują automatycznej decyzji).
 
 1. EXECUTIVE SUMMARY
 - Zakres promptu: Przeprowadź głębokie myślenie i przeprowadź głęboką analizę modułu PCC/LOKALNE/AKCYZA na zaawansowanym poziomie Enterprise. **Pokrycie PCC+lokalne+akcyza wg LEGAL_COVERAGE.md ~1% (225 pkt) — NAJWIĘKSZA LUKA!** Oceń: local_taxes.rego, rules/local_taxes/* (10 plików: pcc.rego, pcc_enterprise_complete, pcc_excise_enterprise, excise_enterprise_complete, local_procedures_enterprise, plan26_local, real_estate, transport, akcyza_fuel, akcyza_alcohol), micro/pcc/pcc.rego, micro/akcyza (katalog — 1 plik), micro/transport/transport.rego, p14_pcc_lokalne_akcyza_innovations_v9, p15_pcc_local_excise_innovations_v8, p33_pcc_complete, p33_excise_supplement, _pcc_local_excise_rates.rego. Sprawdź: PCC (umowy sprzedaży, pożyczki, spółki — stawki 0,5%/1%/2%, wyłączenia, obowiązek 14 dni), podatek od nieruchomości (stawki uchwał gmin, budynki/grunty), środki transportu, akcyza (paliwo, alkohol, inne wyroby — legalność obrotu, dokumenty), opłaty lokalne. Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów: silnik „pcc w 1 kliknięcie" (PCC-3 auto), baza stawek lokalnych z temporalnością i hot-reload, klasyfikator wyrobów akcyzowych z pełną podstawą prawną, kalendarz terminów lokalnych.

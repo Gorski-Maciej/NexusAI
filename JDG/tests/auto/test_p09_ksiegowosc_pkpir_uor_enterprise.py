@@ -214,13 +214,20 @@ def test_p09_cross_domain_rule_ids():
 
 
 def test_p09_report_exists():
-    """Raport kampanii raport_enterprise_P09.txt musi istnieć i być oznaczony WDROŻONY_100."""
-    r = BASE_DIR / "raporty_glm52" / "raport_enterprise_P09.txt"
-    assert r.exists(), "Brak raportu raport_enterprise_P09.txt"
+    """Kanoniczny RAPORT_09 (UoR/PKPiR/Księgowość) istnieje i jest WDROŻONY_100."""
+    r = BASE_DIR / "raporty_glm52" / "RAPORT_09_UOR_KSIEGOWOSC.txt"
+    assert r.exists(), "Brak kanonicznego raportu RAPORT_09_UOR_KSIEGOWOSC.txt"
     text = r.read_text(encoding="utf-8")
-    assert "WDROŻONY_100" in text
-    assert "INN-20" in text
-    assert "P10" in text
+    status_line = next(
+        line for line in text.splitlines()
+        if line.startswith("Stan wdrożenia po walidacji ")
+    )
+    evidence_path = BASE_DIR / "bundles" / "accounting_report09_evidence.json"
+    evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+    assert f"{evidence['status']} (" in status_line
+    assert f"{evidence['checks_passed']}/{evidence['checks_total']} bramek" in status_line
+    assert "raport JEST WDROZONY_100" in status_line
+    assert "bundles/accounting_report09_evidence.json" in text
 
 
 def test_p09_tool_smoke():

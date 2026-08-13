@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 13/25 — HYPER PLAN45 + REPREZENTACJA + DZIAŁALNOŚĆ REGULOWANA + KONTEKSTY SPECJALNE
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 13_HYPER_PLAN45_REPREZENTACJA_DZIAŁALNOŚĆ_REGUL.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-13)
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
@@ -265,6 +265,39 @@ Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, �
 10. WNIOSKI KOŃCOWE
 Audyt części 13 potwierdza istnienie 68 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
 Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+REJESTR WDROŻENIA (2026-08-13)
+====================================================================================================
+Status: WDROZONY_100 — wszystkie 9 bramek dowodowych przeszły (tools/hyper_report13_gate.py).
+Dowód: bundles/hyper_report13_evidence.json | Testy: tests/auto/test_hyper_report13_gate.py (9/9).
+
+Co domknięto:
+1. G-02 Duplikaty: raport deklaruje 0 — potwierdzone 1269/1269 unikalne w zakresie 54 Rego.
+2. G-03 Temporalność 0 -> 7/7: business_ban_art41kk (a41 KK, 1998-09-01),
+   threshold_1m (a30h danina solidarnościowa, 2019-01-01), pit_annual_return_30april
+   (a45 PIT, 1992-01-01), qualified_signature_requirement (a126 OP/eIDAS, 2016-07-01),
+   signature_selector (eIDAS 25-26, 2016-07-01), prokura_self_employed (a109 KC, 1965-01-01),
+   ip_box_vs_rd_same_income (a30ca IP Box, 2019-01-01). Wszystkie z decision_mode SUGGEST.
+3. G-05 Legal Twin P0: NOWE AKTY w LEGAL_REFERENCE_ACTS.md — Kodeks cywilny (prokura
+   art. 109¹-109⁸, forma elektroniczna 77²/78¹), Kodeks karny (art. 41-43/46), eIDAS
+   (art. 6/25-26/28), PIT rozszerzony o 30ca/30h. Aliasy: kc, kk, eidas, op. Naprawiony
+   bug article_match: zakresy 3-cyfrowe (120-129) pokrywały art. 126 dopiero po zmianie
+   kolejności (zakres przed porównaniem prefiksów). LCI 74.64, TCL 100, RV 37.97.
+4. G-04 Testy krytyczne 7/7: a30ca (IP Box vs B+R, conflicts), a30h (danina solidarnościowa
+   1M/4%), a109 (prokura KC), a41 (zakaz prowadzenia działalności KK), e25 (eIDAS podpis),
+   a126 (OP 120-129 — pełnomocnictwa/esig), a45 (PIT zeznanie roczne 30.04).
+5. Golden replay: 1 HYPER verdict (threshold_1m, art. 30h, 1,5M PLN -> 4% nadwyżki)
+   + 1 replay, 0 UVER (bundles/golden_verdicts.json).
+6. Deployment jdg-hp-bundle-v9.0.0: canary -> shadow (delta 1.0%) -> ramped -> soak 24h ->
+   auto-rollback MTTR 4.0 min SLA pass (fail-closed, powrót do jdg-bundle-v8.0.0,
+   NIE production-active).
+7. Safety: decision_mode SUGGEST w 7 blokach krytycznych + usunięte mylące wystąpienia
+   „AUTO_POST" w komunikatach conflict_declaration_enterprise (to opis, nie tryb).
+8. Router: main_jdg.rego importuje p17_innovations, hyper_plan45_meta, jdg.conflicts,
+   representation, residency, solidarity + 14 pakietów jdg.hyper.*; full_final_verdict.
+
+Weryfikacja: bramka 9/9 -> WDROZONY_100; testy bramki 9/9.
+Następny raport wg kolejności: RAPORT_14 (uruchom w świeżym oknie kontekstowym).
 ====================================================================================================
 KONIEC RAPORTU 13/25 — raport wygenerowany z promptu 13_HYPER_PLAN45_REPREZENTACJA_DZIAŁALNOŚĆ_REGUL.txt
 ====================================================================================================

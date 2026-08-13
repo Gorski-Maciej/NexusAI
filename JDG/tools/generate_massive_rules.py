@@ -7,6 +7,7 @@ Handles: files 36 (pseudocode), 38a (10-field), 42 (Deep Gap), 43 (KKS), 44 (Adv
 import re, os, sys
 from collections import defaultdict
 from datetime import datetime
+from pathlib import Path
 
 DRY_RUN = "--dry-run" in sys.argv
 FORCE = "--force" in sys.argv
@@ -1329,7 +1330,10 @@ def generate_rego_file(package_name, file_path, rules_spec, existing_ids):
         lines.append('import data.jdg.helpers')
     
     lines.append('')
-    lines.append(f'default decide := {{"matched":false,"rule_id":"{base_pkg}.no_match","package":"{base_pkg}","priority":99999}}')
+    # Namespace the fallback by file stem so generated sub-packages cannot
+    # collide with the top-level module's no_match (G-02 RAPORT_10).
+    stem = Path(file_path).stem
+    lines.append(f'default decide := {{"matched":false,"rule_id":"{base_pkg}.{stem}.no_match","package":"{base_pkg}","priority":99999}}')
     lines.append('')
     
     # Generate rules

@@ -131,6 +131,9 @@ ryczalt_rates_audit := {
     "_routing_reason": "Audyt stawek ryczałtu wg PKWiU (art. 12 ust. 1) — stawki, limit 2M EUR, wyłączenia (priorytet)",
     "_legal_basis": "Ustawa o ryczałcie art. 6, 8, 12, 15, 21",
     "_warnings": [],
+    "valid_from": "1999-01-01",
+    "valid_to": null,
+    "decision_mode": "SUGGEST",
 } {
     object.get(input.jdg_entrepreneur, "p13_ryczalt_check", false) == true
 }
@@ -211,6 +214,9 @@ ryczalt_limit_tracker := {
     "_routing_reason": "Tracker limitu 2 mln EUR w trakcie roku (art. 6 ust. 4) — ostrzeżenie 75%",
     "_legal_basis": "Ustawa o ryczałcie art. 6 ust. 4",
     "_warnings": [],
+    "valid_from": "1999-01-01",
+    "valid_to": null,
+    "decision_mode": "SUGGEST",
 } {
     object.get(input.jdg_entrepreneur, "p13_ryczalt_check", false) == true
 }
@@ -248,6 +254,9 @@ karta_podatkowa_audit := {
     "_routing_reason": "Audyt karty podatkowej — zasady, stawki, limity zatrudnienia, zgłoszenie do US",
     "_legal_basis": "Ustawa o ryczałcie art. 21-28",
     "_warnings": [],
+    "valid_from": "1999-01-01",
+    "valid_to": null,
+    "decision_mode": "SUGGEST",
 } {
     object.get(input.jdg_entrepreneur, "p13_ryczalt_check", false) == true
 }

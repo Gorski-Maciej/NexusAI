@@ -45,7 +45,10 @@ else := {
     "_routing":"TRIAGE_QUEUE",
     "_routing_reason":"Prokura samoistna — pełnomocnik działa samodzielnie",
     "_legal_basis":"Art. 109¹-109⁸ KC",
-    "_warnings":["Prokura samoistna — jeden prokurent może działać samodzielnie. Wymagany wpis w CEIDG (jeśli JDG) lub KRS."]
+    "_warnings":["Prokura samoistna — jeden prokurent może działać samodzielnie. Wymagany wpis w CEIDG (jeśli JDG) lub KRS."],
+    "valid_from":"1965-01-01",
+    "valid_to":null,
+    "decision_mode":"SUGGEST",
 } {
     object.get(input.jdg_entrepreneur, "prokura_type", "") == "SELF_EMPLOYED"
     object.get(input.jdg_entrepreneur, "prokura_registered", false) == true

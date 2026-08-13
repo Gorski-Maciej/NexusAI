@@ -1,0 +1,421 @@
+{
+  "report": "RAPORT_11_PCC_LOKALNE_AKCYZA",
+  "method": "evidence-first; no inference from filenames",
+  "inventory": {
+    "files": [
+      {
+        "path": "rules/_pcc_local_excise_rates.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/local_taxes/akcyza_alcohol.rego",
+        "exists": true,
+        "rule_id_count": 21,
+        "legal_basis_count": 20,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/local_taxes/akcyza_fuel.rego",
+        "exists": true,
+        "rule_id_count": 19,
+        "legal_basis_count": 18,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/local_taxes/excise_enterprise_complete.rego",
+        "exists": true,
+        "rule_id_count": 16,
+        "legal_basis_count": 15,
+        "temporal": true,
+        "critical_temporal_rule_count": 3,
+        "package_declared": true
+      },
+      {
+        "path": "rules/local_taxes/local_procedures_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 16,
+        "legal_basis_count": 15,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/local_taxes/pcc.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/local_taxes/pcc_enterprise_complete.rego",
+        "exists": true,
+        "rule_id_count": 52,
+        "legal_basis_count": 51,
+        "temporal": true,
+        "critical_temporal_rule_count": 6,
+        "package_declared": true
+      },
+      {
+        "path": "rules/local_taxes/pcc_excise_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 19,
+        "legal_basis_count": 18,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/local_taxes/plan26_local.rego",
+        "exists": true,
+        "rule_id_count": 7,
+        "legal_basis_count": 6,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/local_taxes/real_estate.rego",
+        "exists": true,
+        "rule_id_count": 3,
+        "legal_basis_count": 2,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/local_taxes/transport.rego",
+        "exists": true,
+        "rule_id_count": 2,
+        "legal_basis_count": 1,
+        "temporal": true,
+        "critical_temporal_rule_count": 2,
+        "package_declared": true
+      },
+      {
+        "path": "rules/local_taxes.rego",
+        "exists": true,
+        "rule_id_count": 28,
+        "legal_basis_count": 27,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/akcyza/akcyza.rego",
+        "exists": true,
+        "rule_id_count": 133,
+        "legal_basis_count": 132,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/pcc/pcc.rego",
+        "exists": true,
+        "rule_id_count": 90,
+        "legal_basis_count": 89,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_agricultural_tax.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_pcc.rego",
+        "exists": true,
+        "rule_id_count": 60,
+        "legal_basis_count": 59,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_prop_transport.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/transport/transport.rego",
+        "exists": true,
+        "rule_id_count": 45,
+        "legal_basis_count": 44,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p14_pcc_lokalne_akcyza_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 25,
+        "legal_basis_count": 24,
+        "temporal": true,
+        "critical_temporal_rule_count": 7,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p15_pcc_local_excise_innovations_v8.rego",
+        "exists": true,
+        "rule_id_count": 14,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p33_excise_supplement.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p33_pcc_complete.rego",
+        "exists": true,
+        "rule_id_count": 7,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/pcc/pcc_companies.rego",
+        "exists": true,
+        "rule_id_count": 20,
+        "legal_basis_count": 19,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/pcc/pcc_loans.rego",
+        "exists": true,
+        "rule_id_count": 16,
+        "legal_basis_count": 15,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/pcc/pcc_rates.rego",
+        "exists": true,
+        "rule_id_count": 26,
+        "legal_basis_count": 25,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/pcc/pcc_sales.rego",
+        "exists": true,
+        "rule_id_count": 26,
+        "legal_basis_count": 25,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/pcc/plan42_pcc.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 4,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      }
+    ],
+    "files_total": 27,
+    "files_present": 27,
+    "rule_ids_total": 674,
+    "rule_ids_unique": 674,
+    "duplicate_rule_ids": [],
+    "duplicate_count": 0,
+    "temporal_files": 4,
+    "critical_temporal_rule_count": 7,
+    "critical_temporal_evidence": {
+      "a1": true,
+      "a7": true,
+      "a8": true,
+      "a12": true,
+      "a16": true,
+      "a30": true,
+      "a99": true
+    },
+    "temporal_coverage_pct": 14.81
+  },
+  "tests": {
+    "files_declared": 9,
+    "files_present": 9,
+    "critical_rule_markers": {
+      "a1": true,
+      "a7": true,
+      "a8": true,
+      "a12": true,
+      "a16": true,
+      "a30": true,
+      "a99": true
+    },
+    "critical_rule_marker_aliases": {
+      "a1": [
+        "jdg.local_taxes.pcc.sale_detection",
+        "jdg.micro.pcc.a1.r1",
+        "umowy sprzedaży",
+        "PCC"
+      ],
+      "a7": [
+        "jdg.local_taxes.pcc.installment_sale",
+        "jdg.pcc.rate_changes.a7.r5",
+        "a7",
+        "PCC"
+      ],
+      "a8": [
+        "jdg.local_taxes.transport.truck_over_3_5t",
+        "jdg.micro.transport.a4.r1",
+        "transport_tax_calculator",
+        "środków transportowych"
+      ],
+      "a12": [
+        "jdg.local_taxes.transport.tax_applicable",
+        "jdg.micro.transport.a4.r1",
+        "DT-1",
+        "transport_tax"
+      ],
+      "a16": [
+        "jdg.local_taxes.excise.akcr_registration",
+        "jdg.micro.akcyza.a16.r1",
+        "AKC-R",
+        "excise_fuel"
+      ],
+      "a30": [
+        "jdg.local_taxes.excise.exemption_verification",
+        "jdg.micro.akcyza.a30.r1",
+        "excise_fuel_calculator",
+        "paliwo"
+      ],
+      "a99": [
+        "jdg.p14_pcc_lokalne_akcyza_innovations.excise_alcohol_calculator",
+        "jdg.micro.akcyza.a99.r1",
+        "alkohol",
+        "excise_alcohol"
+      ]
+    },
+    "critical_articles_referenced": {
+      "a1": true,
+      "a7": true,
+      "a8": true,
+      "a12": false,
+      "a16": false,
+      "a30": true,
+      "a99": true
+    },
+    "critical_rule_evidence_complete": true,
+    "native_rego_test_present": true,
+    "pytest_test_present": true
+  },
+  "legal_twin": {
+    "present": true,
+    "plb_nodes": 15,
+    "critical_basis_refs": 7,
+    "critical_basis_rule_ids": {
+      "a1": [
+        "jdg.local_taxes.pcc.sale_detection"
+      ],
+      "a7": [
+        "jdg.local_taxes.pcc.installment_sale"
+      ],
+      "a8": [
+        "jdg.local_taxes.transport.tax_applicable",
+        "jdg.local_taxes.transport.truck_over_3_5t"
+      ],
+      "a12": [
+        "jdg.local_taxes.transport.tax_applicable",
+        "jdg.local_taxes.transport.truck_over_3_5t"
+      ],
+      "a16": [
+        "jdg.local_taxes.excise.akcr_registration"
+      ],
+      "a30": [
+        "jdg.local_taxes.excise.exemption_verification"
+      ],
+      "a99": [
+        "jdg.p14_pcc_lokalne_akcyza_innovations.excise_alcohol_calculator"
+      ]
+    },
+    "critical_articles_required": 7,
+    "indexes": {
+      "LCI": 67.23,
+      "TCL": 100.0,
+      "RV": 26.64
+    }
+  },
+  "router": {
+    "main_router_present": true,
+    "p14_imported": true,
+    "p14_registered": true,
+    "p14_final_verdict_wired": true,
+    "local_taxes_imported": true,
+    "p15_imported": true,
+    "provenance_wired": true,
+    "runtime_invariants_wired": true
+  },
+  "safety": {
+    "package_present": true,
+    "suggest_mode_declared": true,
+    "ask_user_supported_elsewhere": false,
+    "no_auto_post_contract": true
+  },
+  "golden_replay": {
+    "present": true,
+    "schema_version": 2,
+    "plb_verdicts": 1,
+    "replays": 7,
+    "plb_replays": 1,
+    "unexplained_replays": 0,
+    "plb_unexplained_replays": 0
+  },
+  "deployment": {
+    "present": true,
+    "plb_deployments": 1,
+    "canary": true,
+    "rollback_sla": true,
+    "production_active": false,
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "checks": {
+    "all_report_rule_files_present": true,
+    "duplicate_gate": true,
+    "critical_tests_mapped": true,
+    "temporal_gate": true,
+    "legal_twin_gate": true,
+    "router_gate": true,
+    "recommendation_safety_gate": true,
+    "golden_replay_gate": true,
+    "canary_rollback_gate": true
+  },
+  "checks_passed": 9,
+  "checks_total": 9,
+  "status": "WDROZONY_100"
+}

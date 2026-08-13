@@ -21,7 +21,7 @@ default decide := {
 # ------------------------------------------------------------------------------
 
 # --- P800: Col 1 — Sequential numbering ---
-decide := {"matched":true,"rule_id":"jdg.accounting.pkpir_col1_sequential",
+decide := {"matched":true,"rule_id":"jdg.accounting.pkpir_validation.col1_sequential",
 "package":"jdg.accounting.pkpir_validation","priority":800,
 "pkpir_column":1,"pkpir_field_name":"Lp. (liczba porządkowa)",
 "pkpir_entry_number":entry_num,
@@ -202,7 +202,7 @@ else := {"matched":true,"rule_id":"jdg.accounting.pkpir_col7_sold_goods",
 }
 
 # --- P808: Col 8 — Other revenue ---
-else := {"matched":true,"rule_id":"jdg.accounting.pkpir_col8_other_revenue",
+else := {"matched":true,"rule_id":"jdg.accounting.pkpir_validation.col8_other_revenue",
 "package":"jdg.accounting.pkpir_validation","priority":808,
 "pkpir_column":8,"pkpir_field_name":"Pozostałe przychody",
 "pkpir_other_revenue":other_rev,

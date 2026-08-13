@@ -44,7 +44,9 @@ decide := {
     "_routing": "",
     "_routing_reason": "",
     "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
-    "_warnings": ["[MICRO] Ceny transferowe — dokumentacja: sprawdzenie czy przepis ma zastosowanie do JDG"]
+    "_warnings": ["[MICRO] Ceny transferowe — dokumentacja: sprawdzenie czy przepis ma zastosowanie do JDG"],
+    "valid_from": "2024-01-01",
+    "valid_to": null
 } {
     input.jdg_entrepreneur.business_type == "JDG"
 }

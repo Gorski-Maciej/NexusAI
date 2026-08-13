@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 12/25 — RYCZAŁT / CEIDG / PRAWO PRZEDSIĘBIORCÓW / SUKCESJA / BUDOWNICTWO / CYKL ŻYCIA FIRMY
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 12_RYCZAŁT_CEIDG_PRAWO_PRZEDSIĘBIORCÓW_SUKCESJA.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-13)
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
@@ -191,6 +191,40 @@ Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, �
 10. WNIOSKI KOŃCOWE
 Audyt części 12 potwierdza istnienie 31 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
 Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+REJESTR WDROŻENIA (2026-08-13)
+====================================================================================================
+Status: WDROZONY_100 — wszystkie 9 bramek dowodowych przeszły (tools/lifecycle_report12_gate.py).
+Dowód: bundles/lifecycle_report12_evidence.json | Testy: tests/auto/test_lifecycle_report12_gate.py (9/9).
+
+Co domknięto:
+1. G-02 Duplikaty 4 -> 0: jdg.micro.sukcesja.ksef.r1/r2/r3 (2x definicja w sukcesja.rego:
+   priorytet 150051-53 vs 210602-04) -> wtórne warianty renamed na jdg.micro.sukcesja.ksef_plan26.rX;
+   jdg.micro.ceidg.no_match (plan33_ceidg.rego) namespace-renamed. Policy Registry przebudowany (12123 reguł).
+2. G-03 Temporalność 0 -> 7/7: ryczalt_rates_audit (a12, 1999-01-01), ryczalt_limit_tracker (a6,
+   1999-01-01), karta_podatkowa_audit (a21, 1999-01-01) w p13; max_suspension_block (a22 PP,
+   2018-04-30) + succession_no_manager_grace (a3 u.z.s., 2018-11-19) w business.rego;
+   micro.ceidg.a5.r1 (2018-11-01), micro.sukcesja.a3.r1 (2018-11-19), micro.budownictwo.a1.r1
+   (art. 28 PB, 1995-01-01).
+3. G-05 Legal Twin P0: _legal_basis we wszystkich blokach micro (ryczalt 155, ceidg 42, pp 147,
+   sukcesja 140) wzbogacone o Art. X (kanoniczna podstawa, artykuł z rule_id). Dodane akty:
+   CEIDG (art. 5-7/12-15), sukcesja (3-4/12/13/14-15), Prawo budowlane (21a/28/29-30/36a/37/42/45),
+   Prawo przedsiębiorców (4-5/6/14/18/22-25). Aliasy: ryczał (fleksja!), ceidg, sukcesyjny,
+   budowlanego. LCI 73.02 -> 76.98, RV 29.1, TCL 100.
+4. G-04 Testy krytyczne 7/7: a12 (stawki PKWiU art. 12), a6 (limit 2M EUR art. 6), a21 (karta
+   podatkowa), a5 (CEIDG), a22 (zawieszenie PP), a3 (sukcesja), a28 (pozwolenie na budowę).
+5. Golden replay: 1 RYCZAŁT verdict (ryczalt_rate_calculator, art. 12, PKWiU 6201 -> 8,5%)
+   + 1 replay, 0 UVER (bundles/golden_verdicts.json).
+6. Deployment jdg-lc-bundle-v9.0.0: canary -> shadow (delta 1.0%) -> ramped -> soak 24h ->
+   auto-rollback MTTR 4.0 min SLA pass (fail-closed, powrót do jdg-bundle-v8.0.0,
+   NIE production-active).
+7. Safety: decision_mode SUGGEST w p13 (ryczalt_rates_audit, ryczalt_limit_tracker,
+   karta_podatkowa_audit) + brak AUTO_POST w zakresie.
+8. Router: main_jdg.rego importuje jdg.p13_ryczalt_cykl_zycia_innovations i
+   jdg.p16_rodo_aml_security_innovations; full_final_verdict (safe_merge).
+
+Weryfikacja: bramka 9/9 -> WDROZONY_100; testy bramki 9/9.
+Następny raport wg kolejności: RAPORT_13 (uruchom w świeżym oknie kontekstowym).
 ====================================================================================================
 KONIEC RAPORTU 12/25 — raport wygenerowany z promptu 12_RYCZAŁT_CEIDG_PRAWO_PRZEDSIĘBIORCÓW_SUKCESJA.txt
 ====================================================================================================

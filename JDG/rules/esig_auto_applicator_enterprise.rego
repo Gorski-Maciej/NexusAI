@@ -219,7 +219,10 @@ decide := {
     "_routing": sig_routing,
     "_routing_reason": sig_reason,
     "_legal_basis": "eIDAS Art. 25-26; Art. 126 § 5 OrdPU",
-    "_warnings": [sprintf("🔏 PODPIS WYBRANY: %s — %s", [selected_type, rationale])]
+    "_warnings": [sprintf("🔏 PODPIS WYBRANY: %s — %s", [selected_type, rationale])],
+    "valid_from": "2016-07-01",
+    "valid_to": null,
+    "decision_mode": "SUGGEST",
 } {
     input.esig_select_signature == true
     has_qualified := object.get(input.jdg_entrepreneur, "has_qualified_signature", false)

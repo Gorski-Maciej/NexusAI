@@ -114,7 +114,7 @@ decide := {
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Wykryto konflikt domen bez reguły rozstrzygającej — wymagana decyzja człowieka",
     "_legal_basis": "P02 Sekcja 2 — Deterministic Conflict Hierarchy",
-    "_warnings": ["Konflikt bez rozstrzygnięcia: nie można AUTO_POST — decyzja wymaga weryfikacji."]
+    "_warnings": ["Konflikt bez rozstrzygnięcia: nie można auto-postować — decyzja wymaga weryfikacji."]
 } {
     object.get(input.jdg_entrepreneur, "conflict_check", false) == true
     count([c | some c in active_conflicts; object.get(c, "resolution_rule", "") == ""]) > 0
@@ -147,7 +147,7 @@ else := {
     "active_conflicts": [],
     "conflict_count": 0,
     "_routing": "REPORT",
-    "_routing_reason": "Brak aktywnych konfliktów domen — decyzja może przejść AUTO_POST",
+    "_routing_reason": "Brak aktywnych konfliktów domen — decyzja może przejść do publikacji po weryfikacji",
     "_legal_basis": "P02 Sekcja 2",
     "_warnings": []
 } {

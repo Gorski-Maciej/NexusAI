@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja przedsiębiorcy: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -71,7 +71,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja przedsiębiorcy: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pp_condition_met", false) == true
@@ -99,7 +99,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja przedsiębiorcy: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a3_r3_pass", false) == true
@@ -127,7 +127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja przedsiębiorcy: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a3_r4_checks", false) == true
@@ -155,7 +155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja przedsiębiorcy: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pp_exclusion_applies", false) == false
@@ -183,7 +183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja przedsiębiorcy: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pp_exclusion_2", false) == false
@@ -211,7 +211,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja przedsiębiorcy: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pp_a3_exception", false) == true
@@ -239,7 +239,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja przedsiębiorcy: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pp_a3_exception_2", false) == true
@@ -267,7 +267,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja przedsiębiorcy: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_pp", false) == true
@@ -295,7 +295,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja przedsiębiorcy: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_pp", false) == true
@@ -328,7 +328,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja działalności gospodarczej: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -356,7 +356,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja działalności gospodarczej: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pp_condition_met", false) == true
@@ -384,7 +384,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja działalności gospodarczej: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a4_r3_pass", false) == true
@@ -412,7 +412,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja działalności gospodarczej: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a4_r4_checks", false) == true
@@ -440,7 +440,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja działalności gospodarczej: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pp_exclusion_applies", false) == false
@@ -468,7 +468,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja działalności gospodarczej: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pp_exclusion_2", false) == false
@@ -496,7 +496,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja działalności gospodarczej: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pp_a4_exception", false) == true
@@ -524,7 +524,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja działalności gospodarczej: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pp_a4_exception_2", false) == true
@@ -552,7 +552,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja działalności gospodarczej: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_pp", false) == true
@@ -580,7 +580,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Definicja działalności gospodarczej: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_pp", false) == true
@@ -613,7 +613,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Działalność nieewidencjonowana: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -641,7 +641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Działalność nieewidencjonowana: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pp_condition_met", false) == true
@@ -669,7 +669,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Działalność nieewidencjonowana: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a5_r3_pass", false) == true
@@ -697,7 +697,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Działalność nieewidencjonowana: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a5_r4_checks", false) == true
@@ -725,7 +725,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Działalność nieewidencjonowana: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pp_exclusion_applies", false) == false
@@ -753,7 +753,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Działalność nieewidencjonowana: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pp_exclusion_2", false) == false
@@ -781,7 +781,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Działalność nieewidencjonowana: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pp_a5_exception", false) == true
@@ -809,7 +809,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Działalność nieewidencjonowana: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pp_a5_exception_2", false) == true
@@ -837,7 +837,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Działalność nieewidencjonowana: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_pp", false) == true
@@ -865,7 +865,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Działalność nieewidencjonowana: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_pp", false) == true
@@ -893,7 +893,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Działalność nieewidencjonowana: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "pp_deadline_required", false) == true
@@ -924,7 +924,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Działalność nieewidencjonowana",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Działalność nieewidencjonowana: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a5_violation", false) == true
@@ -957,7 +957,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Prawa przedsiębiorcy: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -985,7 +985,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Prawa przedsiębiorcy: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pp_condition_met", false) == true
@@ -1013,7 +1013,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Prawa przedsiębiorcy: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a14_r3_pass", false) == true
@@ -1041,7 +1041,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Prawa przedsiębiorcy: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a14_r4_checks", false) == true
@@ -1069,7 +1069,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Prawa przedsiębiorcy: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pp_exclusion_applies", false) == false
@@ -1097,7 +1097,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Prawa przedsiębiorcy: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pp_exclusion_2", false) == false
@@ -1125,7 +1125,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Prawa przedsiębiorcy: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pp_a14_exception", false) == true
@@ -1153,7 +1153,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Prawa przedsiębiorcy: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pp_a14_exception_2", false) == true
@@ -1186,7 +1186,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Obowiązki przedsiębiorcy: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1214,7 +1214,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Obowiązki przedsiębiorcy: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pp_condition_met", false) == true
@@ -1242,7 +1242,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Obowiązki przedsiębiorcy: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a17_r3_pass", false) == true
@@ -1270,7 +1270,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Obowiązki przedsiębiorcy: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a17_r4_checks", false) == true
@@ -1298,7 +1298,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Obowiązki przedsiębiorcy: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pp_exclusion_applies", false) == false
@@ -1326,7 +1326,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Obowiązki przedsiębiorcy: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pp_exclusion_2", false) == false
@@ -1354,7 +1354,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Obowiązki przedsiębiorcy: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pp_a17_exception", false) == true
@@ -1382,7 +1382,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Obowiązki przedsiębiorcy: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pp_a17_exception_2", false) == true
@@ -1415,7 +1415,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie działalności: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1443,7 +1443,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie działalności: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pp_condition_met", false) == true
@@ -1471,7 +1471,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie działalności: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a22_r3_pass", false) == true
@@ -1499,7 +1499,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie działalności: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a22_r4_checks", false) == true
@@ -1527,7 +1527,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie działalności: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pp_exclusion_applies", false) == false
@@ -1555,7 +1555,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie działalności: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pp_exclusion_2", false) == false
@@ -1583,7 +1583,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie działalności: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pp_a22_exception", false) == true
@@ -1611,7 +1611,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie działalności: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pp_a22_exception_2", false) == true
@@ -1639,7 +1639,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie działalności: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_pp", false) == true
@@ -1667,7 +1667,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie działalności: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_pp", false) == true
@@ -1700,7 +1700,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie — konsekwencje: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1728,7 +1728,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie — konsekwencje: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pp_condition_met", false) == true
@@ -1756,7 +1756,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie — konsekwencje: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a23_r3_pass", false) == true
@@ -1784,7 +1784,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie — konsekwencje: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a23_r4_checks", false) == true
@@ -1812,7 +1812,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie — konsekwencje: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pp_exclusion_applies", false) == false
@@ -1840,7 +1840,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie — konsekwencje: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pp_exclusion_2", false) == false
@@ -1868,7 +1868,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie — konsekwencje: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pp_a23_exception", false) == true
@@ -1896,7 +1896,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Zawieszenie — konsekwencje: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pp_a23_exception_2", false) == true
@@ -1929,7 +1929,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Wznowienie działalności: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1957,7 +1957,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Wznowienie działalności: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pp_condition_met", false) == true
@@ -1985,7 +1985,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Wznowienie działalności: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a25_r3_pass", false) == true
@@ -2013,7 +2013,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Wznowienie działalności: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a25_r4_checks", false) == true
@@ -2041,7 +2041,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Wznowienie działalności: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pp_exclusion_applies", false) == false
@@ -2069,7 +2069,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Wznowienie działalności: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pp_exclusion_2", false) == false
@@ -2097,7 +2097,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Wznowienie działalności: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pp_a25_exception", false) == true
@@ -2125,7 +2125,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Wznowienie działalności: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pp_a25_exception_2", false) == true
@@ -2158,7 +2158,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] CEIDG — zmiana wpisu: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2186,7 +2186,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] CEIDG — zmiana wpisu: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pp_condition_met", false) == true
@@ -2214,7 +2214,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] CEIDG — zmiana wpisu: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a34_r3_pass", false) == true
@@ -2242,7 +2242,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] CEIDG — zmiana wpisu: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a34_r4_checks", false) == true
@@ -2270,7 +2270,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] CEIDG — zmiana wpisu: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pp_exclusion_applies", false) == false
@@ -2298,7 +2298,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] CEIDG — zmiana wpisu: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pp_exclusion_2", false) == false
@@ -2326,7 +2326,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] CEIDG — zmiana wpisu: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pp_a34_exception", false) == true
@@ -2354,7 +2354,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] CEIDG — zmiana wpisu: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pp_a34_exception_2", false) == true
@@ -2382,7 +2382,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] CEIDG — zmiana wpisu: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_pp", false) == true
@@ -2410,7 +2410,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] CEIDG — zmiana wpisu: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_pp", false) == true
@@ -2443,7 +2443,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Kontrola przedsiębiorcy: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2471,7 +2471,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Kontrola przedsiębiorcy: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pp_condition_met", false) == true
@@ -2499,7 +2499,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Kontrola przedsiębiorcy: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a36_r3_pass", false) == true
@@ -2527,7 +2527,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Kontrola przedsiębiorcy: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pp_a36_r4_checks", false) == true
@@ -2555,7 +2555,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Kontrola przedsiębiorcy: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pp_exclusion_applies", false) == false
@@ -2583,7 +2583,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Kontrola przedsiębiorcy: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pp_exclusion_2", false) == false
@@ -2611,7 +2611,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Kontrola przedsiębiorcy: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pp_a36_exception", false) == true
@@ -2639,7 +2639,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Kontrola przedsiębiorcy: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pp_a36_exception_2", false) == true
@@ -2673,7 +2673,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a40_u1_p1_check", false) == true
@@ -2700,7 +2700,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a40_u2_p2_check", false) == true
@@ -2727,7 +2727,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a41_u1_p2_check", false) == true
@@ -2754,7 +2754,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a41_u3_p3_check", false) == true
@@ -2781,7 +2781,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a41_u4_p4_check", false) == true
@@ -2808,7 +2808,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a41_u5_p1_check", false) == true
@@ -2835,7 +2835,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a42_u2_p3_check", false) == true
@@ -2862,7 +2862,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a42_u3_p4_check", false) == true
@@ -2889,7 +2889,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a42_u4_p1_check", false) == true
@@ -2916,7 +2916,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a42_u5_p2_check", false) == true
@@ -2943,7 +2943,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a43_u1_p3_check", false) == true
@@ -2970,7 +2970,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a43_u2_p4_check", false) == true
@@ -2997,7 +2997,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a43_u3_p1_check", false) == true
@@ -3024,7 +3024,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a43_u4_p2_check", false) == true
@@ -3051,7 +3051,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a44_u1_p4_check", false) == true
@@ -3078,7 +3078,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a44_u2_p1_check", false) == true
@@ -3105,7 +3105,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a44_u3_p2_check", false) == true
@@ -3132,7 +3132,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a44_u5_p3_check", false) == true
@@ -3159,7 +3159,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a45_u1_p1_check", false) == true
@@ -3186,7 +3186,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a45_u2_p2_check", false) == true
@@ -3213,7 +3213,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a45_u4_p3_check", false) == true
@@ -3240,7 +3240,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a45_u5_p4_check", false) == true
@@ -3267,7 +3267,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a46_u1_p2_check", false) == true
@@ -3294,7 +3294,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a46_u3_p3_check", false) == true
@@ -3321,7 +3321,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a46_u4_p4_check", false) == true
@@ -3348,7 +3348,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 46 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 46: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a46_u5_p1_check", false) == true
@@ -3375,7 +3375,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a47_u2_p3_check", false) == true
@@ -3402,7 +3402,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a47_u3_p4_check", false) == true
@@ -3429,7 +3429,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a47_u4_p1_check", false) == true
@@ -3456,7 +3456,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 47 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 47: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a47_u5_p2_check", false) == true
@@ -3483,7 +3483,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a48_u1_p3_check", false) == true
@@ -3510,7 +3510,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a48_u2_p4_check", false) == true
@@ -3537,7 +3537,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a48_u3_p1_check", false) == true
@@ -3564,7 +3564,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 48 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 48: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a48_u4_p2_check", false) == true
@@ -3591,7 +3591,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a49_u1_p4_check", false) == true
@@ -3618,7 +3618,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a49_u2_p1_check", false) == true
@@ -3645,7 +3645,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a49_u3_p2_check", false) == true
@@ -3672,7 +3672,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 49 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 49: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a49_u5_p3_check", false) == true
@@ -3699,7 +3699,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a50_u1_p1_check", false) == true
@@ -3726,7 +3726,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a50_u2_p2_check", false) == true
@@ -3753,7 +3753,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a50_u4_p3_check", false) == true
@@ -3780,7 +3780,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 50 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 50: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a50_u5_p4_check", false) == true
@@ -3807,7 +3807,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a51_u1_p2_check", false) == true
@@ -3834,7 +3834,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a51_u3_p3_check", false) == true
@@ -3861,7 +3861,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a51_u4_p4_check", false) == true
@@ -3888,7 +3888,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 51 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 51: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a51_u5_p1_check", false) == true
@@ -3915,7 +3915,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a52_u2_p3_check", false) == true
@@ -3942,7 +3942,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a52_u3_p4_check", false) == true
@@ -3969,7 +3969,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a52_u4_p1_check", false) == true
@@ -3996,7 +3996,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 52 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "_warnings": ["[MICRO] Art. 52: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pp_a52_u5_p2_check", false) == true

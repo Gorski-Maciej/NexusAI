@@ -13,7 +13,7 @@ import future.keywords.in
 
 default decide := {
     "matched": false,
-    "rule_id": "jdg.international.no_match",
+    "rule_id": "jdg.international.expanded.no_match",
     "package": "jdg.international",
     "priority": 999999
 }

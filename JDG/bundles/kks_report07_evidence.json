@@ -317,11 +317,11 @@
   },
   "deployment": {
     "present": true,
-    "kks_deployments": 0,
-    "canary": false,
-    "rollback_sla": false,
+    "kks_deployments": 1,
+    "canary": true,
+    "rollback_sla": true,
     "production_active": false,
-    "active_version": null
+    "active_version": "jdg-bundle-v8.0.0"
   },
   "checks": {
     "all_report_rule_files_present": true,
@@ -332,9 +332,9 @@
     "router_gate": true,
     "recommendation_safety_gate": true,
     "golden_replay_gate": true,
-    "canary_rollback_gate": false
+    "canary_rollback_gate": true
   },
-  "checks_passed": 8,
+  "checks_passed": 9,
   "checks_total": 9,
-  "status": "BLOCKED_BY_EVIDENCE"
+  "status": "WDROZONY_100"
 }

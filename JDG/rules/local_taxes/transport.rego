@@ -52,6 +52,7 @@ decide := {
     "transport_tax_declaration": "DT-1",
     "transport_tax_due_annually": true,
     "transport_tax_deadline": "do_15_lutego_za_dany_rok",
+    "valid_from": "2002-01-01", "valid_to": null,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Pojazd ciężarowy >3.5t — obowiązek podatku od środków transportowych",
     "_legal_basis": "Ustawa o podatkach i opłatach lokalnych, Rozdział 3 (Art. 8-14)",

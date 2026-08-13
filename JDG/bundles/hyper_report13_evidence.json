@@ -1,0 +1,693 @@
+{
+  "report": "RAPORT_13_HYPER_CYKL_FIRMY",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "duplicate_free": true,
+    "critical_tests_mapped": true,
+    "critical_temporal": true,
+    "legal_twin_critical": true,
+    "router_wired": true,
+    "safety_suggest": true,
+    "golden_replay_ok": true,
+    "canary_rollback_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "inventory": {
+    "files": [
+      {
+        "path": "rules/_edge_cases_conflicts_rates.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/advertising/plan44_advertising.rego",
+        "exists": true,
+        "rule_id_count": 10,
+        "legal_basis_count": 9,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/advertising/plan45_advertising.rego",
+        "exists": true,
+        "rule_id_count": 38,
+        "legal_basis_count": 37,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/calendar/plan44_calendar.rego",
+        "exists": true,
+        "rule_id_count": 7,
+        "legal_basis_count": 6,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/calendar/plan45_calendar.rego",
+        "exists": true,
+        "rule_id_count": 36,
+        "legal_basis_count": 35,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/calendar_notifier_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/conflict_declaration_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 10,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/conflicts.rego",
+        "exists": true,
+        "rule_id_count": 28,
+        "legal_basis_count": 27,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/conviction/plan44_conviction.rego",
+        "exists": true,
+        "rule_id_count": 7,
+        "legal_basis_count": 6,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/conviction/plan45_conviction.rego",
+        "exists": true,
+        "rule_id_count": 31,
+        "legal_basis_count": 30,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/conviction_checker_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/esig/plan44_esig.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/esig/plan45_esig.rego",
+        "exists": true,
+        "rule_id_count": 37,
+        "legal_basis_count": 36,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/esig_auto_applicator_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 4,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/family/plan44_family.rego",
+        "exists": true,
+        "rule_id_count": 11,
+        "legal_basis_count": 10,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/family/plan45_family.rego",
+        "exists": true,
+        "rule_id_count": 52,
+        "legal_basis_count": 51,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/force_majeure/plan44_force_majeure.rego",
+        "exists": true,
+        "rule_id_count": 9,
+        "legal_basis_count": 8,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/force_majeure/plan45_force_majeure.rego",
+        "exists": true,
+        "rule_id_count": 33,
+        "legal_basis_count": 32,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/fx/plan44_fx.rego",
+        "exists": true,
+        "rule_id_count": 10,
+        "legal_basis_count": 9,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/fx/plan45_fx.rego",
+        "exists": true,
+        "rule_id_count": 47,
+        "legal_basis_count": 46,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/insurance/plan44_insurance.rego",
+        "exists": true,
+        "rule_id_count": 7,
+        "legal_basis_count": 6,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/insurance/plan45_insurance.rego",
+        "exists": true,
+        "rule_id_count": 29,
+        "legal_basis_count": 28,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/audit/plan45.rego",
+        "exists": true,
+        "rule_id_count": 26,
+        "legal_basis_count": 25,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/deadlines/plan45.rego",
+        "exists": true,
+        "rule_id_count": 57,
+        "legal_basis_count": 56,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/edelivery/plan45.rego",
+        "exists": true,
+        "rule_id_count": 22,
+        "legal_basis_count": 15,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/family/plan45.rego",
+        "exists": true,
+        "rule_id_count": 22,
+        "legal_basis_count": 21,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/force_majeure/plan45.rego",
+        "exists": true,
+        "rule_id_count": 22,
+        "legal_basis_count": 17,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/fx/plan45.rego",
+        "exists": true,
+        "rule_id_count": 25,
+        "legal_basis_count": 16,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/general/plan45.rego",
+        "exists": true,
+        "rule_id_count": 101,
+        "legal_basis_count": 100,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/limits/plan45.rego",
+        "exists": true,
+        "rule_id_count": 34,
+        "legal_basis_count": 33,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/mdr/plan45.rego",
+        "exists": true,
+        "rule_id_count": 39,
+        "legal_basis_count": 38,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/misc/plan45.rego",
+        "exists": true,
+        "rule_id_count": 50,
+        "legal_basis_count": 49,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/procurement/plan45.rego",
+        "exists": true,
+        "rule_id_count": 22,
+        "legal_basis_count": 15,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/sanctions/plan45.rego",
+        "exists": true,
+        "rule_id_count": 52,
+        "legal_basis_count": 51,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/solidarity/plan45.rego",
+        "exists": true,
+        "rule_id_count": 12,
+        "legal_basis_count": 11,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jdg/hyper/wis/plan45.rego",
+        "exists": true,
+        "rule_id_count": 19,
+        "legal_basis_count": 18,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p17_edge_conflicts_innovations_v8.rego",
+        "exists": true,
+        "rule_id_count": 13,
+        "legal_basis_count": 12,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/payments/plan44_payments.rego",
+        "exists": true,
+        "rule_id_count": 10,
+        "legal_basis_count": 9,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/payments/plan45_payments.rego",
+        "exists": true,
+        "rule_id_count": 51,
+        "legal_basis_count": 50,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/procurement/plan44_procurement.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/procurement/plan45_procurement.rego",
+        "exists": true,
+        "rule_id_count": 39,
+        "legal_basis_count": 38,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/regulated/plan44_regulated.rego",
+        "exists": true,
+        "rule_id_count": 9,
+        "legal_basis_count": 8,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/regulated/plan45_regulated.rego",
+        "exists": true,
+        "rule_id_count": 33,
+        "legal_basis_count": 32,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/regulated_compliance_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 1,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/representation.rego",
+        "exists": true,
+        "rule_id_count": 10,
+        "legal_basis_count": 9,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/representation/plan26_prokura.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 5,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/residency/plan44_residency.rego",
+        "exists": true,
+        "rule_id_count": 11,
+        "legal_basis_count": 10,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/residency/plan45_residency.rego",
+        "exists": true,
+        "rule_id_count": 49,
+        "legal_basis_count": 48,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/seasonal/plan44_seasonal.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/seasonal/plan45_seasonal.rego",
+        "exists": true,
+        "rule_id_count": 29,
+        "legal_basis_count": 28,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/solidarity/plan44_solidarity.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/solidarity/plan45_solidarity.rego",
+        "exists": true,
+        "rule_id_count": 29,
+        "legal_basis_count": 28,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/taxfree/plan44_taxfree.rego",
+        "exists": true,
+        "rule_id_count": 7,
+        "legal_basis_count": 6,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/taxfree/plan45_taxfree.rego",
+        "exists": true,
+        "rule_id_count": 39,
+        "legal_basis_count": 38,
+        "temporal": false,
+        "package_declared": true
+      }
+    ],
+    "files_total": 54,
+    "files_present": 54,
+    "rule_ids_total": 1269,
+    "rule_ids_unique": 1269,
+    "duplicate_rule_ids": [],
+    "duplicate_count": 0,
+    "temporal_files": 7,
+    "critical_temporal_rule_count": 7,
+    "critical_temporal_evidence": {
+      "a30ca": true,
+      "a30h": true,
+      "a109": true,
+      "a41": true,
+      "e25": true,
+      "a126": true,
+      "a45": true
+    },
+    "temporal_coverage_pct": 12.96
+  },
+  "test_evidence": {
+    "files_declared": 23,
+    "files_present": 23,
+    "critical_rule_markers": {
+      "a30ca": true,
+      "a30h": true,
+      "a109": true,
+      "a41": true,
+      "e25": true,
+      "a126": true,
+      "a45": true
+    },
+    "critical_rule_marker_aliases": {
+      "a30ca": [
+        "jdg.conflicts.ip_box_vs_rd_same_income",
+        "ip_box_vs_rd",
+        "30ca",
+        "IP Box"
+      ],
+      "a30h": [
+        "jdg.solidarity.hyper.threshold_1m",
+        "threshold_1m",
+        "30h",
+        "danina solidarnościowa"
+      ],
+      "a109": [
+        "jdg.representation.prokura_self_employed",
+        "jdg.representation.prokura_joint",
+        "prokura",
+        "109"
+      ],
+      "a41": [
+        "jdg.conviction.hyper.business_ban_art41kk",
+        "business_ban_art41kk",
+        "41 KK",
+        "zakaz prowadzenia działalności"
+      ],
+      "e25": [
+        "jdg.esig_auto.signature_selector",
+        "jdg.esig.qualified_signature_requirement",
+        "eIDAS",
+        "signature_selector"
+      ],
+      "a126": [
+        "jdg.esig.qualified_signature_requirement",
+        "jdg.esig.hyper.qualified_exceptions",
+        "qualified_exceptions",
+        "eIDAS"
+      ],
+      "a45": [
+        "jdg.calendar.hyper.pit_annual_return_30april",
+        "pit_annual_return_30april",
+        "30 kwietnia",
+        "zeznanie roczne"
+      ]
+    },
+    "critical_articles_referenced": {
+      "a30ca": false,
+      "a30h": false,
+      "a109": false,
+      "a41": false,
+      "e25": true,
+      "a126": false,
+      "a45": true
+    },
+    "critical_rule_evidence_complete": true,
+    "native_rego_test_present": true,
+    "pytest_test_present": true
+  },
+  "legal_twin": {
+    "nodes_count": 138,
+    "covered_nodes": 103,
+    "indexes": {
+      "LCI": 74.64,
+      "TCL": 100.0,
+      "RV": 37.97
+    },
+    "critical_articles_with_rules": {
+      "a30ca": true,
+      "a30h": true,
+      "a109": true,
+      "a41": true,
+      "e25": true,
+      "a126": true,
+      "a45": true
+    },
+    "critical_rule_ids_in_graph": {
+      "a30ca": [
+        "jdg.conflicts.ip_box_vs_rd_same_income",
+        "jdg.pit.a30ca.r1",
+        "jdg.pit.a30ca.r2",
+        "jdg.pit.a30ca.r3",
+        "jdg.pit.a30ca.r4",
+        "jdg.pit.a30ca.r5",
+        "jdg.pit.a30ca.r6",
+        "jdg.pit.a30ca.r7",
+        "jdg.pit.a30ca.r8",
+        "jdg.pit.a30ca.r9",
+        "jdg.pit.a30ca.r10"
+      ],
+      "a30h": [
+        "jdg.solidarity.hyper.threshold_1m"
+      ],
+      "a109": [
+        "jdg.representation.prokura_self_employed",
+        "jdg.representation.prokura_joint",
+        "jdg.representation.prokura_branch",
+        "jdg.representation.prokura_unregistered"
+      ],
+      "a41": [
+        "jdg.conviction.hyper.business_ban_art41kk",
+        "jdg.hyper.limits.kks.conviction.business_ban_art41kk"
+      ],
+      "e25": [
+        "jdg.esig_auto.signature_selector"
+      ],
+      "a126": [
+        "jdg.esig.qualified_signature_requirement",
+        "jdg.esig.hyper.qualified_exceptions"
+      ],
+      "a45": [
+        "jdg.calendar.hyper.pit_annual_return_30april"
+      ]
+    },
+    "critical_node_articles": {
+      "a30ca": [
+        {
+          "legal_node_id": "LKG-0028",
+          "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
+          "article": "30c",
+          "rule_count": 58
+        }
+      ],
+      "a30h": [
+        {
+          "legal_node_id": "LKG-0030",
+          "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
+          "article": "30h",
+          "rule_count": 62
+        }
+      ],
+      "a109": [
+        {
+          "legal_node_id": "LKG-0033",
+          "act": "Ustawa z dnia 23 kwietnia 1964 r. – Kodeks cywilny",
+          "article": "109",
+          "rule_count": 5
+        }
+      ],
+      "a41": [
+        {
+          "legal_node_id": "LKG-0036",
+          "act": "Ustawa z dnia 6 czerwca 1997 r. – Kodeks karny",
+          "article": "41",
+          "rule_count": 12
+        }
+      ],
+      "e25": [
+        {
+          "legal_node_id": "LKG-0041",
+          "act": "Rozporządzenie Parlamentu Europejskiego i Rady",
+          "article": "25",
+          "rule_count": 2
+        }
+      ],
+      "a126": [
+        {
+          "legal_node_id": "LKG-0096",
+          "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
+          "article": "120-129",
+          "rule_count": 16
+        }
+      ],
+      "a45": [
+        {
+          "legal_node_id": "LKG-0032",
+          "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
+          "article": "45",
+          "rule_count": 32
+        }
+      ]
+    },
+    "critical_articles_required": 7
+  },
+  "router": {
+    "router_files": [
+      "rules/main_jdg.rego",
+      "rules/router.rego",
+      "rules/router_v2.rego",
+      "rules/provenance.rego"
+    ],
+    "p17_package_registered": true,
+    "hyper_meta_registered": true,
+    "conflicts_registered": true,
+    "final_verdict": true,
+    "provenance_joined": true
+  },
+  "safety": {
+    "suggest_mode_present": true,
+    "no_auto_post": true
+  },
+  "replay": {
+    "golden_verdicts_total": 9,
+    "hyper_verdicts": 1,
+    "replays_total": 9,
+    "unmatched_replays": [],
+    "unmatched_count": 0,
+    "replay_verified": true
+  },
+  "deployment": {
+    "bundle": "jdg-hp-bundle-v9.0.0",
+    "phase": "ROLLED_BACK",
+    "rollout_pct": 100,
+    "quality": 100.0,
+    "error_rate": 0.0,
+    "rollback_reason": "G-06 fail-closed verification: incident SLA 5 min",
+    "soak_completed_at": "2026-08-15T12:00:00+00:00",
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "generated_at": "2026-08-13T12:35:32.801324+00:00"
+}

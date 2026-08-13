@@ -34,6 +34,10 @@ import future.keywords.if
 
 default decide := {"matched": false, "rule_id": "jdg.p14_pcc_lokalne_akcyza_innovations.no_match", "package": "jdg.p14_pcc_lokalne_akcyza_innovations", "priority": 999999}
 
+# RAPORT_11 rekomendacja P2 (TOP 10 pkt 10): warstwa P14 jest doradcza —
+# nigdy nie podejmuje automatycznej decyzji podatkowej (tryb SUGGEST).
+decision_mode := "SUGGEST"
+
 # ── Źródła danych: progi z data.jdg.thresholds (ADR-002 — zero hardcode) ──────
 thresholds := object.get(data.jdg, "thresholds", {})
 pcc_local_limits := object.get(thresholds, "pcc_local_excise", {
@@ -146,6 +150,8 @@ pcc3_generator := {
     "_routing_reason": "Auto-generator PCC-3 (INN-01) — kwota, termin 14 dni, formularz",
     "_legal_basis": "Ustawa o PCC art. 10",
     "_warnings": [],
+    "valid_from": "2001-01-01",
+    "valid_to": null,
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
 }
@@ -339,6 +345,8 @@ excise_alcohol_calculator := {
     "_routing_reason": "Kalkulator akcyzy na alkohol (INN-08) — stawki 2026, skład podatkowy",
     "_legal_basis": "Ustawa o podatku akcyzowym art. 92-96",
     "_warnings": [],
+    "valid_from": "2009-03-01",
+    "valid_to": null,
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
 }

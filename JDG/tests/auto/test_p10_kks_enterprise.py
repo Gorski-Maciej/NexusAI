@@ -230,7 +230,12 @@ def test_p10_report_exists():
     evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
     assert f"{evidence['status']} (" in status_line
     assert f"{evidence['checks_passed']}/{evidence['checks_total']} bramek" in status_line
-    assert "raport NIE jest WDROZONY_100" in status_line
+    expected = (
+        "raport JEST WDROZONY_100"
+        if evidence["status"] == "WDROZONY_100"
+        else "raport NIE jest WDROZONY_100"
+    )
+    assert expected in status_line
     assert "bundles/kks_report07_evidence.json" in text
 
 

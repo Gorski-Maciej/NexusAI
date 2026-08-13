@@ -769,7 +769,8 @@ else := {
     "business_status":"","tax_point":"EARLIER_OF_DELIVERY_OR_PAYMENT",
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 19a ust. 1 VAT",
-    "_warnings":["Import usług — obowiązek VAT powstaje w dacie wykonania usługi LUB zapłaty (wcześniejsza). JPK_V7 w okresie powstania obowiązku."]
+    "_warnings":["Import usług — obowiązek VAT powstaje w dacie wykonania usługi LUB zapłaty (wcześniejsza). JPK_V7 w okresie powstania obowiązku."],
+    "valid_from":"2014-01-01","valid_to":null
 } {
     input.invoice.procedure=="IMPORT_SERVICES"
 }
@@ -802,7 +803,8 @@ else := {
     "business_status":"","tax_base":"NET_AMOUNT_DUE_TO_SUPPLIER",
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 29a ust. 1 VAT",
-    "_warnings":["Podstawa opodatkowania importu usług = kwota netto należna dostawcy. Nie uwzględniaj własnych kosztów dodatkowych."]
+    "_warnings":["Podstawa opodatkowania importu usług = kwota netto należna dostawcy. Nie uwzględniaj własnych kosztów dodatkowych."],
+    "valid_from":"2014-01-01","valid_to":null
 } {
     input.invoice.procedure=="IMPORT_SERVICES"
 }

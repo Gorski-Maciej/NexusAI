@@ -38,6 +38,10 @@ import future.keywords.if
 
 default decide := {"matched": false, "rule_id": "jdg.p12_crossborder_innovations.no_match", "package": "jdg.p12_crossborder_innovations", "priority": 999999}
 
+# RAPORT_10 rekomendacja P2 (TOP 10 pkt 10): warstwa P12 jest doradcza —
+# nigdy nie podejmuje automatycznej decyzji podatkowej (tryb SUGGEST).
+decision_mode := "SUGGEST"
+
 # ── Źródła danych: progi z data.jdg.thresholds (ADR-002 — zero hardcode) ──────
 thresholds := object.get(data.jdg, "thresholds", {})
 cross_limits := object.get(thresholds, "crossborder", {
@@ -190,6 +194,8 @@ place_of_supply_calculator := {
     "_routing_reason": "Auto-kalkulator miejsca świadczenia per usługa (art. 28a-28o VAT)",
     "_legal_basis": "Ustawa o VAT art. 28a-28o",
     "_warnings": [],
+    "valid_from": "2010-01-01",
+    "valid_to": null,
 } {
     object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
 }
@@ -234,6 +240,8 @@ mdr_auto_detector := {
     "_routing_reason": "Auto-detektor schematów MDR z analizy transakcji (hallmarks A-E)",
     "_legal_basis": "OrdPU art. 86a-86o; Dyrektywa DAC6",
     "_warnings": [],
+    "valid_from": "2019-01-01",
+    "valid_to": null,
 } {
     object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
 }
@@ -269,6 +277,8 @@ tp_cfc_residency_audit := {
     "_routing_reason": "Audyt TP/CFC/rezydencji/FX — dokumentacje, progi, metody",
     "_legal_basis": "PIT art. 3, 23zf, 24c, 30f",
     "_warnings": [],
+    "valid_from": "2024-01-01",
+    "valid_to": null,
 } {
     object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
 }
@@ -375,6 +385,8 @@ tp_documentation_calculator := {
     "_routing_reason": "Kalkulator TP — progi dokumentacji lokalnej/master (art. 23zf PIT)",
     "_legal_basis": "Art. 23zf PIT",
     "_warnings": [],
+    "valid_from": "2024-01-01",
+    "valid_to": null,
 } {
     object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
 }
@@ -391,6 +403,8 @@ mdr_report_generator := {
     "_routing_reason": "Auto-raport MDR — formularz MDR-1 (OrdPU art. 86a-86o)",
     "_legal_basis": "OrdPU art. 86a-86o",
     "_warnings": [],
+    "valid_from": "2019-01-01",
+    "valid_to": null,
 } {
     object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
 }
@@ -410,6 +424,8 @@ fx_difference_calculator := {
     "_routing_reason": "Kalkulator różnic kursowych — metoda podatkowa (art. 24c PIT)",
     "_legal_basis": "Art. 24c PIT",
     "_warnings": [],
+    "valid_from": "2004-01-01",
+    "valid_to": null,
 } {
     object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
 }
@@ -429,6 +445,8 @@ cfc_calculator := {
     "_routing_reason": "Kalkulator CFC — progi 50%/33%/14,25% (art. 30f PIT)",
     "_legal_basis": "Art. 30f PIT",
     "_warnings": [],
+    "valid_from": "2015-01-01",
+    "valid_to": null,
 } {
     object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
 }
@@ -469,6 +487,8 @@ exit_tax_calculator := {
     "_routing_reason": "Kalkulator exit tax — próg 4M, stawka 19% (art. 30da-30db PIT)",
     "_legal_basis": "Art. 30da-30db PIT",
     "_warnings": [],
+    "valid_from": "2019-01-01",
+    "valid_to": null,
 } {
     object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true
 }

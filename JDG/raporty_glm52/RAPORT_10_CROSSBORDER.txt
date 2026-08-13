@@ -2,9 +2,22 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 10/25 — CROSS-BORDER / TP / MDR-DAC6 / CFC / ViDA / CBAM / DAC8 (transakcje zagraniczne)
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 10_CROSS-BORDER_TP_MDR-DAC6_CFC_ViDA_CBAM_DAC8_.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (evidence gate 9/9 PASS — 2026-08-13)
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
+
+REJESTR WDROŻENIA (2026-08-13):
+- Bramka dowodowa: tools/crossborder_report10_gate.py -> bundles/crossborder_report10_evidence.json (9/9 checks).
+- Duplikaty G-02 ROZWIĄZANE: jdg.crossborder.no_match i jdg.international.no_match w plikach generowanych
+  (rules/crossborder/plan23_ue.rego -> jdg.crossborder.plan23_ue.no_match; rules/international_expanded.rego
+  -> jdg.international.expanded.no_match) + generator tools/generate_massive_rules.py (namespace per file stem).
+- Temporalność G-03: valid_from/valid_to na 7 krytycznych blokach (a20/a23o/a23zf/a29/a30da/a30f/a86r).
+- Legal Twin G-05: węzły VAT 28a-28o, PIT 23m-23zf/30f, OrdPU 86 z rule_ids (LCI 62.73, TCL 100, RV 26.02).
+- Golden replay: 1 CROSS-BORDER verdict (cfc_calculator art. 30f) + 1 replay, 0 UVER.
+- Deployment: jdg-xb-bundle-v9.0.0 canary -> shadow-compare (delta 1.0%) -> ramped -> promote -> soak 24h
+  -> auto-rollback MTTR 4.0 min SLA pass (fail-closed, powrót do jdg-bundle-v8.0.0; NIE production-active).
+- Router: p12_crossborder_innovations zarejestrowany, final_verdict_p12, provenance, runtime_invariants.
+- Safety: decision_mode SUGGEST w p12, brak AUTO_POST (rekomendacje P2 nie podejmują automatycznej decyzji).
 
 1. EXECUTIVE SUMMARY
 - Zakres promptu: Przeprowadź głębokie myślenie i przeprowadź głęboką analizę modułu CROSS-BORDER na zaawansowanym poziomie Enterprise. **Pokrycie cross-border wg LEGAL_COVERAGE.md <2% — jedna z największych luk!** Oceń: crossborder.rego, international.rego, international_expanded.rego, rules/crossborder/* (exit_tax_cfc_complete, plan23_ue, post_brexit), micro/crossborder/crossborder.rego, p12_crossborder_innovations_v9, p13_crossborder_innovations_v8, vida_drr_full.rego, cbam_full.rego, dac8_report_generator.rego, cfc_auto_classifier.rego, mdr_auto_generator.rego, mdr_dac6_enterprise.rego, wdt_document_tracker.rego, cross_jurisdiction_ruling_enterprise.rego, cross_domain_intelligence_enterprise.rego, p3233_innovations.rego, rules/tp/* (plan44_tp, plan45_tp), rules/mdr/* (mdr_enterprise, mdr_hallmarks, plan44_mdr, plan45_mdr), _crossborder_rates.rego. Sprawdź: WDT (30 dni, limit eksportowy), WNT, eksport pośredni, import usług (reverse charge), miejsce świadczenia (Art. 28a–28o), kursy NBP (temporalność), TP (transakcje z podmiotami powiązanymi, dokumentacja), MDR/DAC6 (schemata, hallmarks, terminy 30 dni), CFC (próg 50%/33%), ViDA/DRR, CBAM, DAC8 (krypto). Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów: automatyczny klasyfikator transakcji transgranicznych z łańcuchem podstaw prawnych, tracker WDT z alarmem 30 dni, auto-generator dokumentacji TP, harmonizacja z kursami NBP z pełnym time-travel.

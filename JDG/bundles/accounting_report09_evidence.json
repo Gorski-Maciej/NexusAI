@@ -1,0 +1,525 @@
+{
+  "report": "RAPORT_09_UOR_KSIEGOWOSC",
+  "method": "evidence-first; no inference from filenames",
+  "inventory": {
+    "files": [
+      {
+        "path": "rules/_pkpir_rates.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/_uor_rates.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/accounting/depreciation_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 12,
+        "legal_basis_count": 11,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/accounting/depreciation_enterprise_complete.rego",
+        "exists": true,
+        "rule_id_count": 30,
+        "legal_basis_count": 29,
+        "temporal": true,
+        "critical_temporal_rule_count": 3,
+        "package_declared": true
+      },
+      {
+        "path": "rules/accounting/pkpir_enterprise_live.rego",
+        "exists": true,
+        "rule_id_count": 13,
+        "legal_basis_count": 12,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/accounting/pkpir_enterprise_validation.rego",
+        "exists": true,
+        "rule_id_count": 35,
+        "legal_basis_count": 34,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/accounting/pkpir_enterprise_validator.rego",
+        "exists": true,
+        "rule_id_count": 22,
+        "legal_basis_count": 21,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/accounting/plan23_leasing.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/accounting/plan42_pkpir.rego",
+        "exists": true,
+        "rule_id_count": 2,
+        "legal_basis_count": 1,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/accounting/uor_enterprise_live.rego",
+        "exists": true,
+        "rule_id_count": 12,
+        "legal_basis_count": 11,
+        "temporal": true,
+        "critical_temporal_rule_count": 2,
+        "package_declared": true
+      },
+      {
+        "path": "rules/accounting.rego",
+        "exists": true,
+        "rule_id_count": 74,
+        "legal_basis_count": 74,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/amortyzacja/pit_a22a.rego",
+        "exists": true,
+        "rule_id_count": 11,
+        "legal_basis_count": 10,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/amortyzacja/pit_a22i.rego",
+        "exists": true,
+        "rule_id_count": 10,
+        "legal_basis_count": 9,
+        "temporal": true,
+        "critical_temporal_rule_count": 2,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/amortyzacja/pit_a22k.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": true,
+        "critical_temporal_rule_count": 3,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/amortyzacja/pit_a22n.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/pkpir/pkpir.rego",
+        "exists": true,
+        "rule_id_count": 12,
+        "legal_basis_count": 11,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/pkpir/pkpir_kolumny.rego",
+        "exists": true,
+        "rule_id_count": 13,
+        "legal_basis_count": 12,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/pkpir/pkpir_korekty.rego",
+        "exists": true,
+        "rule_id_count": 10,
+        "legal_basis_count": 9,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/pkpir/pkpir_koszty.rego",
+        "exists": true,
+        "rule_id_count": 12,
+        "legal_basis_count": 11,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/pkpir/pkpir_nkup.rego",
+        "exists": true,
+        "rule_id_count": 12,
+        "legal_basis_count": 11,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/pkpir/pkpir_przychody.rego",
+        "exists": true,
+        "rule_id_count": 12,
+        "legal_basis_count": 11,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/pkpir/pkpir_remanent.rego",
+        "exists": true,
+        "rule_id_count": 10,
+        "legal_basis_count": 9,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_uor.rego",
+        "exists": true,
+        "rule_id_count": 26,
+        "legal_basis_count": 25,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/uor/uor.rego",
+        "exists": true,
+        "rule_id_count": 149,
+        "legal_basis_count": 148,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 28,
+        "legal_basis_count": 27,
+        "temporal": true,
+        "critical_temporal_rule_count": 4,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p11_accounting_pkpir_innovations_v8.rego",
+        "exists": true,
+        "rule_id_count": 14,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p12_uor_innovations_v8.rego",
+        "exists": true,
+        "rule_id_count": 14,
+        "legal_basis_count": 12,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 31,
+        "legal_basis_count": 30,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p33_uor_supplement.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/pkpir_to_uor_transformer.rego",
+        "exists": true,
+        "rule_id_count": 7,
+        "legal_basis_count": 6,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/uor/plan42_uor.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/uor/uor_assets.rego",
+        "exists": true,
+        "rule_id_count": 34,
+        "legal_basis_count": 33,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/uor/uor_books.rego",
+        "exists": true,
+        "rule_id_count": 53,
+        "legal_basis_count": 52,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/uor/uor_closing.rego",
+        "exists": true,
+        "rule_id_count": 26,
+        "legal_basis_count": 25,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/uor/uor_costs.rego",
+        "exists": true,
+        "rule_id_count": 27,
+        "legal_basis_count": 26,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/uor/uor_financial_stmt.rego",
+        "exists": true,
+        "rule_id_count": 28,
+        "legal_basis_count": 27,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/uor/uor_inventory.rego",
+        "exists": true,
+        "rule_id_count": 18,
+        "legal_basis_count": 17,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/uor/uor_obligation.rego",
+        "exists": true,
+        "rule_id_count": 31,
+        "legal_basis_count": 30,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      },
+      {
+        "path": "rules/uor/uor_revenue.rego",
+        "exists": true,
+        "rule_id_count": 30,
+        "legal_basis_count": 29,
+        "temporal": false,
+        "critical_temporal_rule_count": 0,
+        "package_declared": true
+      }
+    ],
+    "files_total": 39,
+    "files_present": 39,
+    "rule_ids_total": 854,
+    "rule_ids_unique": 851,
+    "duplicate_rule_ids": [],
+    "duplicate_count": 0,
+    "temporal_files": 5,
+    "critical_temporal_rule_count": 6,
+    "critical_temporal_evidence": {
+      "a2": true,
+      "a22a": true,
+      "a22i": true,
+      "a22k": true,
+      "a26": true,
+      "a32": true
+    },
+    "temporal_coverage_pct": 12.82
+  },
+  "tests": {
+    "files_declared": 13,
+    "files_present": 13,
+    "critical_rule_markers": {
+      "a2": true,
+      "a22a": true,
+      "a22i": true,
+      "a22k": true,
+      "a26": true,
+      "a32": true
+    },
+    "critical_rule_marker_aliases": {
+      "a2": [
+        "jdg.uor_live.full_accounting_obligation_check",
+        "jdg.micro.uor.a2.r1",
+        "uor_full_accounting_required",
+        "full_accounting_obligation"
+      ],
+      "a22a": [
+        "jdg.pit.depreciation.a22a.r1",
+        "jdg.micro.amort_a22a.r1",
+        "depreciation_method",
+        "depreciation"
+      ],
+      "a22i": [
+        "jdg.micro.amort_a22i.r1",
+        "jdg.pit.depreciation.a22i",
+        "liniowa",
+        "LINEAR"
+      ],
+      "a22k": [
+        "jdg.micro.amort_a22k.r1",
+        "jdg.pit.depreciation.a22k",
+        "one_time",
+        "ONE_OFF"
+      ],
+      "a26": [
+        "jdg.uor_live.inventory_obligation_check",
+        "jdg.micro.uor.a26.r1",
+        "inwentaryz",
+        "inventory_obligation"
+      ],
+      "a32": [
+        "jdg.p09_ksiegowosc_pkpir_uor_innovations.amortization_dual_calculator",
+        "jdg.micro.uor.a32.r1",
+        "amortization_dual",
+        "kst_depreciation"
+      ]
+    },
+    "critical_articles_referenced": {
+      "a2": true,
+      "a22a": false,
+      "a22i": false,
+      "a22k": false,
+      "a26": true,
+      "a32": false
+    },
+    "critical_rule_evidence_complete": true,
+    "native_rego_test_present": true,
+    "pytest_test_present": true
+  },
+  "legal_twin": {
+    "present": true,
+    "acc_nodes": 17,
+    "critical_basis_refs": 6,
+    "critical_basis_rule_ids": {
+      "a2": [
+        "jdg.micro.uor.a2.r1",
+        "jdg.uor_live.full_accounting_obligation_check"
+      ],
+      "a22a": [
+        "jdg.micro.amort_a22a.r1",
+        "jdg.micro.amort_a22i.r1",
+        "jdg.micro.amort_a22k.r1",
+        "jdg.pit.depreciation.a22a.r1"
+      ],
+      "a22i": [
+        "jdg.micro.amort_a22a.r1",
+        "jdg.micro.amort_a22i.r1",
+        "jdg.micro.amort_a22k.r1",
+        "jdg.pit.depreciation.a22a.r1"
+      ],
+      "a22k": [
+        "jdg.micro.amort_a22a.r1",
+        "jdg.micro.amort_a22i.r1",
+        "jdg.micro.amort_a22k.r1",
+        "jdg.pit.depreciation.a22a.r1"
+      ],
+      "a26": [
+        "jdg.micro.uor.a26.r1",
+        "jdg.uor_live.inventory_obligation_check"
+      ],
+      "a32": [
+        "jdg.micro.uor.a32.r1",
+        "jdg.p09_ksiegowosc_pkpir_uor_innovations.amortization_dual_calculator"
+      ]
+    },
+    "critical_articles_required": 6,
+    "indexes": {
+      "LCI": 61.32,
+      "TCL": 100.0,
+      "RV": 22.74
+    }
+  },
+  "router": {
+    "main_router_present": true,
+    "p09_imported": true,
+    "p09_registered": true,
+    "p09_final_verdict_wired": true,
+    "provenance_wired": true,
+    "runtime_invariants_wired": true
+  },
+  "safety": {
+    "package_present": true,
+    "suggest_mode_declared": true,
+    "ask_user_supported_elsewhere": false,
+    "no_auto_post_contract": true
+  },
+  "golden_replay": {
+    "present": true,
+    "schema_version": 2,
+    "acc_verdicts": 1,
+    "replays": 5,
+    "acc_replays": 1,
+    "unexplained_replays": 0,
+    "acc_unexplained_replays": 0
+  },
+  "deployment": {
+    "present": true,
+    "acc_deployments": 1,
+    "canary": true,
+    "rollback_sla": true,
+    "production_active": false,
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "checks": {
+    "all_report_rule_files_present": true,
+    "duplicate_gate": true,
+    "critical_tests_mapped": true,
+    "temporal_gate": true,
+    "legal_twin_gate": true,
+    "router_gate": true,
+    "recommendation_safety_gate": true,
+    "golden_replay_gate": true,
+    "canary_rollback_gate": true
+  },
+  "checks_passed": 9,
+  "checks_total": 9,
+  "status": "WDROZONY_100"
+}

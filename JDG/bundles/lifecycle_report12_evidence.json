@@ -1,0 +1,411 @@
+{
+  "report": "RAPORT_12_RYCZALT_CYKL_ZYCIE",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "duplicate_free": true,
+    "critical_tests_mapped": true,
+    "critical_temporal": true,
+    "legal_twin_critical": true,
+    "router_wired": true,
+    "safety_suggest": true,
+    "golden_replay_ok": true,
+    "canary_rollback_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "inventory": {
+    "files": [
+      {
+        "path": "rules/_business_lifecycle_rates.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/business/gig_economy.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/business/plan26_suspension_succession.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/business/strategic_intelligence.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/business.rego",
+        "exists": true,
+        "rule_id_count": 24,
+        "legal_basis_count": 23,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/lifecycle_manager_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 4,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/budownictwo/budownictwo.rego",
+        "exists": true,
+        "rule_id_count": 65,
+        "legal_basis_count": 64,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/ceidg/ceidg.rego",
+        "exists": true,
+        "rule_id_count": 43,
+        "legal_basis_count": 42,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_ceidg.rego",
+        "exists": true,
+        "rule_id_count": 16,
+        "legal_basis_count": 15,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_ryc.rego",
+        "exists": true,
+        "rule_id_count": 159,
+        "legal_basis_count": 158,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_succ.rego",
+        "exists": true,
+        "rule_id_count": 21,
+        "legal_basis_count": 20,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/pp/pp.rego",
+        "exists": true,
+        "rule_id_count": 148,
+        "legal_basis_count": 147,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/ryczalt/ryczalt.rego",
+        "exists": true,
+        "rule_id_count": 156,
+        "legal_basis_count": 155,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/sukcesja/sukcesja.rego",
+        "exists": true,
+        "rule_id_count": 141,
+        "legal_basis_count": 140,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p13_ryczalt_cykl_zycia_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 26,
+        "legal_basis_count": 25,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p16_business_lifecycle_innovations_v8.rego",
+        "exists": true,
+        "rule_id_count": 14,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/restructuring.rego",
+        "exists": true,
+        "rule_id_count": 13,
+        "legal_basis_count": 12,
+        "temporal": false,
+        "package_declared": true
+      }
+    ],
+    "files_total": 17,
+    "files_present": 17,
+    "rule_ids_total": 850,
+    "rule_ids_unique": 850,
+    "duplicate_rule_ids": [],
+    "duplicate_count": 0,
+    "temporal_files": 5,
+    "critical_temporal_rule_count": 7,
+    "critical_temporal_evidence": {
+      "a12": true,
+      "a6": true,
+      "a21": true,
+      "a5": true,
+      "a22": true,
+      "a3": true,
+      "a28": true
+    },
+    "temporal_coverage_pct": 29.41
+  },
+  "test_evidence": {
+    "files_declared": 12,
+    "files_present": 12,
+    "critical_rule_markers": {
+      "a12": true,
+      "a6": true,
+      "a21": true,
+      "a5": true,
+      "a22": true,
+      "a3": true,
+      "a28": true
+    },
+    "critical_rule_marker_aliases": {
+      "a12": [
+        "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_rates_audit",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_rate_calculator",
+        "jdg.micro.ryczalt.a12.r1",
+        "art. 12",
+        "PKWiU"
+      ],
+      "a6": [
+        "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_limit_tracker",
+        "jdg.micro.ryczalt.a6.r1",
+        "limit 2 mln EUR",
+        "art. 6"
+      ],
+      "a21": [
+        "jdg.p13_ryczalt_cykl_zycia_innovations.karta_podatkowa_audit",
+        "jdg.micro.ryczalt.a21.r1",
+        "karta_podatkowa",
+        "karta podatkowa"
+      ],
+      "a5": [
+        "jdg.micro.ceidg.a5.r1",
+        "jdg.business.ceidg_registration_check",
+        "CEIDG",
+        "ceidg"
+      ],
+      "a22": [
+        "jdg.business.max_suspension_block",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.suspension_audit",
+        "zawieszen",
+        "art. 22-25"
+      ],
+      "a3": [
+        "jdg.business.succession_no_manager_grace",
+        "jdg.micro.sukcesja.a3.r1",
+        "zarządzie sukcesyjnym",
+        "succession"
+      ],
+      "a28": [
+        "jdg.micro.budownictwo.a1.r1",
+        "Art. 28 Prawa budowlanego",
+        "budowlane_pozwolenie",
+        "pozwolenie na budowę"
+      ]
+    },
+    "critical_articles_referenced": {
+      "a12": true,
+      "a6": true,
+      "a21": true,
+      "a5": true,
+      "a22": true,
+      "a3": true,
+      "a28": true
+    },
+    "critical_rule_evidence_complete": true,
+    "native_rego_test_present": true,
+    "pytest_test_present": true
+  },
+  "legal_twin": {
+    "nodes_count": 126,
+    "covered_nodes": 97,
+    "indexes": {
+      "LCI": 76.98,
+      "TCL": 100.0,
+      "RV": 29.1
+    },
+    "critical_articles_with_rules": {
+      "a12": true,
+      "a6": true,
+      "a21": true,
+      "a5": true,
+      "a22": true,
+      "a3": true,
+      "a28": true
+    },
+    "critical_rule_ids_in_graph": {
+      "a12": [
+        "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_rates_audit"
+      ],
+      "a6": [
+        "jdg.micro.ryczalt.a6.r1",
+        "jdg.micro.ryczalt.a6.r10",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_limit_tracker"
+      ],
+      "a21": [
+        "jdg.micro.ryczalt.a21.r1",
+        "jdg.micro.ryczalt.a21.r10",
+        "jdg.micro.ryczalt.a21.r11",
+        "jdg.micro.ryczalt.a21.r12",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.karta_podatkowa_audit"
+      ],
+      "a5": [
+        "jdg.business.ceidg_registration_check",
+        "jdg.micro.ceidg.no_match",
+        "jdg.micro.ceidg.a5.r1",
+        "jdg.micro.ceidg.a5.r2",
+        "jdg.micro.ceidg.a5.r3",
+        "jdg.micro.ceidg.a5.r4",
+        "jdg.micro.ceidg.a5.r5",
+        "jdg.micro.ceidg.a5.r6",
+        "jdg.micro.ceidg.a5.r7",
+        "jdg.micro.ceidg.a5.r8",
+        "jdg.micro.ceidg.a5data.r1",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.ceidg_audit",
+        "jdg.autoform.ceidg1_autofill",
+        "jdg.p16_innovations.ceidg_auto_file"
+      ],
+      "a22": [
+        "jdg.business.max_suspension_block",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.suspension_audit"
+      ],
+      "a3": [
+        "jdg.business.succession_manager_appointment",
+        "jdg.business.succession_no_manager_grace",
+        "jdg.business.succession_no_manager_expiry",
+        "jdg.micro.sukcesja.a3.r1",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.succession_audit",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.succession_tracker",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.succession_step_guide",
+        "jdg.p16_innovations.succession_readiness"
+      ],
+      "a28": [
+        "jdg.micro.budownictwo.a1.r1",
+        "jdg.p15_srodowisko_bdo_innovations.budowlane_pozwolenie_calculator"
+      ]
+    },
+    "critical_node_articles": {
+      "a12": [
+        {
+          "legal_node_id": "LKG-0032",
+          "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
+          "article": "6-12",
+          "rule_count": 31
+        }
+      ],
+      "a6": [
+        {
+          "legal_node_id": "LKG-0032",
+          "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
+          "article": "6-12",
+          "rule_count": 31
+        }
+      ],
+      "a21": [
+        {
+          "legal_node_id": "LKG-0033",
+          "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
+          "article": "21-30",
+          "rule_count": 17
+        }
+      ],
+      "a5": [
+        {
+          "legal_node_id": "LKG-0006",
+          "act": "Ustawa z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej",
+          "article": "5-7",
+          "rule_count": 16
+        }
+      ],
+      "a22": [
+        {
+          "legal_node_id": "LKG-0004",
+          "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców",
+          "article": "22-25",
+          "rule_count": 27
+        }
+      ],
+      "a3": [
+        {
+          "legal_node_id": "LKG-0101",
+          "act": "Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej",
+          "article": "3-4",
+          "rule_count": 17
+        }
+      ],
+      "a28": [
+        {
+          "legal_node_id": "LKG-0105",
+          "act": "Ustawa z dnia 7 lipca 1994 r. – Prawo budowlane",
+          "article": "28",
+          "rule_count": 4
+        }
+      ]
+    },
+    "critical_articles_required": 7
+  },
+  "router": {
+    "router_files": [
+      "rules/main_jdg.rego",
+      "rules/router.rego",
+      "rules/router_v2.rego",
+      "rules/provenance.rego"
+    ],
+    "p13_package_registered": true,
+    "p16_package_registered": true,
+    "final_verdict": true,
+    "provenance_joined": true
+  },
+  "safety": {
+    "suggest_mode_present": true,
+    "no_auto_post": true,
+    "p13_suggest": true
+  },
+  "replay": {
+    "golden_verdicts_total": 8,
+    "lifecycle_verdicts": 1,
+    "replays_total": 8,
+    "unmatched_replays": [],
+    "unmatched_count": 0,
+    "replay_verified": true
+  },
+  "deployment": {
+    "bundle": "jdg-lc-bundle-v9.0.0",
+    "phase": "ROLLED_BACK",
+    "rollout_pct": 100,
+    "quality": 100.0,
+    "error_rate": 0.0,
+    "rollback_reason": "G-06 fail-closed verification: incident SLA 5 min",
+    "soak_completed_at": "2026-08-15T12:00:00+00:00",
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "generated_at": "2026-08-13T11:52:40.040680+00:00"
+}

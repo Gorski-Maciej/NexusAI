@@ -8,7 +8,7 @@ import data.jdg.helpers
 
 default decide := {"matched":false,"rule_id":"jdg.solidarity.hyper.no_match","package":"jdg.solidarity.hyper","priority":99999}
 
-decide := {"matched":true,"rule_id":"jdg.solidarity.hyper.threshold_1m","package":"jdg.solidarity.hyper","priority":1043,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Danina solidarnościowa: próg 1M PLN","_legal_basis":"Art. 30h ust. 1 PIT","_warnings":["Dochód przekroczył 1M PLN — danina solidarnościowa 4% od nadwyżki!"]} {
+decide := {"matched":true,"rule_id":"jdg.solidarity.hyper.threshold_1m","package":"jdg.solidarity.hyper","priority":1043,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Danina solidarnościowa: próg 1M PLN","_legal_basis":"Art. 30h ust. 1 PIT","_warnings":["Dochód przekroczył 1M PLN — danina solidarnościowa 4% od nadwyżki!"],"valid_from":"2019-01-01","valid_to":null,"decision_mode":"SUGGEST"} {
     object.get(input.jdg_entrepreneur, "annual_income", 0) > 1000000
 }
 else := {"matched":true,"rule_id":"jdg.solidarity.hyper.base_calculation","package":"jdg.solidarity.hyper","priority":1044,"_routing":"","_routing_reason":"Podstawa = dochód - 1M PLN","_legal_basis":"Art. 30h ust. 1 PIT","_warnings":["Podstawa daniny = suma dochodów - 1 000 000 PLN"]} {

@@ -63,7 +63,10 @@ decide := {
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Konflikt IP Box vs B+R — ten sam dochód objęty dwiema ulgami",
     "_legal_basis": "Art. 30ca ust. 3 PIT, Art. 26e PIT",
-    "_warnings": ["IP BOX vs B+R: ten sam przychód z kwalifikowanego IP nie może być jednocześnie objęty IP Box (5%) i ulgą B+R. Wybierz JEDNĄ ulgę dla tego składnika."]
+    "_warnings": ["IP BOX vs B+R: ten sam przychód z kwalifikowanego IP nie może być jednocześnie objęty IP Box (5%) i ulgą B+R. Wybierz JEDNĄ ulgę dla tego składnika."],
+    "valid_from": "2019-01-01",
+    "valid_to": null,
+    "decision_mode": "SUGGEST",
 } {
     input.jdg_entrepreneur.has_rd_status == true
     input.invoice.expense_type == "IP_INCOME"

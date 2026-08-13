@@ -91,6 +91,7 @@ decision_kind := "obligation" if {
 # UOR-001 — Art. 2.
 decide := object.union(base_verdict, {
     "matched": true, "rule_id": "jdg.uor_live.full_accounting_obligation_check", "package": "jdg.uor_live", "priority": 9201,
+    "decision_mode": "SUGGEST", "valid_from": "2025-01-01", "valid_to": null,
     "pit_form": pit_form, "uor_full_accounting_required": required, "uor_threshold_eur": uor_threshold_eur,
     "uor_annual_revenue_eur": annual_eur, "uor_annual_revenue_pln": revenue_pln, "uor_cumulative_revenue_eur": cumulative_eur,
     "uor_threshold_pct": floor(cumulative_eur / uor_threshold_eur * 100), "uor_early_warning_active": early_warning,
@@ -129,7 +130,7 @@ decide := object.union(base_verdict, {"matched": true, "rule_id": "jdg.uor_live.
 }
 
 # UOR-026 — Art. 26-27.
-decide := object.union(base_verdict, {"matched": true, "rule_id": "jdg.uor_live.inventory_obligation_check", "package": "jdg.uor_live", "priority": 9205, "uor_inventory_required": true, "uor_inventory_complete": complete, "uor_inventory_overdue": bool_not(complete),    "_routing": route, "_routing_reason": "UoR Art.26-27: inwentaryzacja roczna", "_legal_basis": "Art. 26-27 UoR", "_warnings": ["UoR: inwentaryzacja roczna"]}) if {
+decide := object.union(base_verdict, {"matched": true, "rule_id": "jdg.uor_live.inventory_obligation_check", "package": "jdg.uor_live", "priority": 9205, "decision_mode": "SUGGEST", "valid_from": "2025-01-01", "valid_to": null, "uor_inventory_required": true, "uor_inventory_complete": complete, "uor_inventory_overdue": bool_not(complete),    "_routing": route, "_routing_reason": "UoR Art.26-27: inwentaryzacja roczna", "_legal_basis": "Art. 26-27 UoR", "_warnings": ["UoR: inwentaryzacja roczna"]}) if {
     decision_kind == "inventory"
     complete := all_true(object.get(input.jdg_entrepreneur, "uor_physical_count_done", false), object.get(input.jdg_entrepreneur, "uor_balance_confirmation_done", false), object.get(input.jdg_entrepreneur, "uor_document_verification_done", false))
     route := inventory_route(complete)
