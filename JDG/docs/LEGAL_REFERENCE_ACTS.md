@@ -13,7 +13,7 @@ Ustawa z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalnoś
 VAT
 
 Źródło Temat Kluczowe artykuły
-Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.) Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie Art. 5-14 (czynności opodatkowane), art. 15-18 (podatnicy, rejestracja VAT-R), art. 19a-21 (obowiązek podatkowy), art. 28a-28o (miejsce świadczenia usług), art. 29a-32 (podstawa opodatkowania), art. 41-42 (stawki VAT), art. 43 (zwolnienia przedmiotowe), art. 86-96 (odliczenia VAT), art. 106a-106n (faktury, KSeF), art. 108a-108f (split payment), art. 113 (zwolnienie podmiotowe do 200 000 PLN), art. 120 (procedury szczególne – marża)
+Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.) Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie Art. 5-14 (czynności opodatkowane), art. 15-18 (podatnicy, rejestracja VAT-R), art. 19a-21 (obowiązek podatkowy), art. 28a-28o (miejsce świadczenia usług), art. 29a-32 (podstawa opodatkowania), art. 41-42 (stawki VAT), art. 42a-42h (WIS — wiążąca informacja stawkowa), art. 43 (zwolnienia przedmiotowe), art. 82 (deklaracje VAT, JPK_V7), art. 86-96 (odliczenia VAT), art. 99 (JPK_VAT), art. 106a-106n (faktury, KSeF), art. 108a-108f (split payment), art. 113 (zwolnienie podmiotowe do 200 000 PLN), art. 120 (procedury szczególne – marża)
 Rozporządzenie Ministra Finansów z dnia 4 grudnia 2024 r. w sprawie obniżonych stawek VAT Towary i usługi objęte stawkami 8% i 5% Całość rozporządzenia – lista towarów i usług z obniżonymi stawkami
 
 PIT
@@ -78,6 +78,8 @@ Ustawa o VAT, art. 96 Rejestracja VAT-R (przed pierwszą czynnością) i wyrejes
 Ustawa o VAT, art. 96b Biała Lista VAT – obowiązek weryfikacji kontrahenta przed przelewem powyżej 15 000 PLN Art. 96b
 Ustawa o VAT, art. 103 Terminy płatności VAT – do 25. dnia następnego miesiąca Art. 103
 Ustawa o VAT, art. 106e ust. 5 Paragon z NIP do 450 PLN brutto jako faktura uproszczona Art. 106e ust. 5
+Ustawa z dnia 18 listopada 2020 r. o doręczeniach elektronicznych (tekst jednolity: Dz.U. 2024 poz. 1045) Adres do doręczeń elektronicznych, skrzynka e-Doręczeń, równoważność doręczenia elektronicznego, obowiązek dla podmiotów wpisanych do CEIDG Art. 8, art. 9, art. 155
+Ustawa z dnia 17 lutego 2005 r. o informatyzacji działalności podmiotów realizujących zadania publiczne (tekst jednolity: Dz.U. 2024 poz. 1382) ePUAP, podpis elektroniczny w kontaktach z urzędami, auto-aplikacja podpisu Art. 3, art. 16, art. 20a
 
 6. Ordynacja podatkowa
 
@@ -110,6 +112,13 @@ Ustawa z dnia 7 lipca 1994 r. – Prawo budowlane (tekst jednolity: Dz.U. 2025 p
 Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (tekst jednolity: Dz.U. 2025 poz. 789) Podatek PCC od umów cywilnoprawnych (np. zakup auta od osoby prywatnej – 2%, PCC-3 w ciągu 14 dni). Transakcje VAT są wyłączone z PCC Art. 1-2 (przedmiot opodatkowania), art. 4 (obowiązek podatkowy), art. 6-7 (stawki 1-2%), art. 10 (deklaracja PCC-3)
 Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (tekst jednolity: Dz.U. 2025 poz. 1234) Podatek od nieruchomości – wyższa stawka dla lokali firmowych (~33 zł/m² vs ~1,15 zł/m² mieszkalnego). Deklaracja DN-1. Podatek od środków transportowych – samochody ciężarowe >3.5t Art. 2-7 (podatek od nieruchomości), art. 8-14 (podatek od środków transportowych)
 Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym (tekst jednolity: Dz.U. 2025 poz. 1220, ze zmianami na 2026 r.) Akcyza od wyrobów energetycznych (paliwa), alkoholu, tytoniu i innych wyrobów – legalność obrotu, dokumenty (e-DD), znaki akcyzy Art. 2 (wyroby akcyzowe), art. 16 (przedmiot opodatkowania), art. 21 (moment powstania obowiązku), art. 24-24b (rejestracja podatnika), art. 30-32 (stawki paliwowe), art. 89 (zwolnienia paliwowe), art. 92-99c (alkohol, tytoń, wyroby), art. 100 (obowiązek dokumentacyjny), art. 114-138 (kontrola i obrót)
+
+9a. RODO, AML i środowisko (BDO)
+
+Źródło Temat Kluczowe artykuły
+Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych (RODO) Ochrona danych osobowych — obowiązki administratora, prawa osób, sankcje Art. 5, art. 6, art. 7, art. 9, art. 13, art. 15, art. 17, art. 19, art. 20, art. 22, art. 24, art. 25, art. 28, art. 30, art. 32, art. 33, art. 34, art. 35, art. 37, art. 44-49, art. 82, art. 83
+Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu (tekst jednolity: Dz.U. 2025 poz. 213, ze zmianami na 2026 r.) Obowiązki AML — CBDD, beneficjenci rzeczywiści, STR/GIIF, progi transakcyjne, sankcje Art. 2, art. 28a, art. 28-34, art. 34, art. 74-80, art. 153
+Ustawa z dnia 14 grudnia 2012 r. o odpadach (tekst jednolity: Dz.U. 2025 poz. 321, ze zmianami na 2026 r.) BDO — rejestracja, ewidencja, KPO, transport, zezwolenia, opakowania Art. 17-18, art. 41-48, art. 49-55, art. 66-74, art. 194, art. 233
 
 10. Akty pomocnicze i interpretacje
 

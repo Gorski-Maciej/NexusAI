@@ -40,6 +40,7 @@ default decide := {
 decide := {
     "matched": true, "rule_id": "jdg.rodo_extended.erasure_automation",
     "package": "jdg.rodo_extended", "priority": 1640,
+    "valid_from": "2018-05-25", "valid_to": null, "decision_mode": "SUGGEST",
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -138,6 +139,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.rodo_extended.subprocessor_chain_audit",
     "package": "jdg.rodo_extended", "priority": 1644,
+    "valid_from": "2018-05-25", "valid_to": null, "decision_mode": "SUGGEST",
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -371,6 +373,7 @@ else := {
 else := {
     "matched": true, "rule_id": "jdg.rodo_extended.sanctions_uodo",
     "package": "jdg.rodo_extended", "priority": 1654,
+    "valid_from": "2018-05-25", "valid_to": null, "decision_mode": "SUGGEST",
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,

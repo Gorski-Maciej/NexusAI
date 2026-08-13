@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 14/25 — RODO / AML-CBDD / BDO / ŚRODOWISKO / SEKURYTYZACJA (bezpieczeństwo i zgodność)
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 14_RODO_AML-CBDD_BDO_ŚRODOWISKO_SEKURYTYZACJA_b.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-13)
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
@@ -230,6 +230,45 @@ Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, �
 10. WNIOSKI KOŃCOWE
 Audyt części 14 potwierdza istnienie 45 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
 Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+REJESTR WDROŻENIA (2026-08-13)
+====================================================================================================
+Status: WDROZONY_100 — wszystkie 9 bramek dowodowych przeszły (tools/rodo_aml_bdo_report14_gate.py).
+Dowód: bundles/rodo_aml_bdo_report14_evidence.json | Testy: tests/auto/test_rodo_aml_bdo_report14_gate.py (9/9).
+
+Co domknięto:
+1. G-02 Duplikaty: raport deklarował 2 (jdg.micro.rodo.no_match, jdg.rodo.no_match) —
+   ROZWIĄZANE namespace-rename: plan33_rodo.rego → jdg.micro.rodo.plan33_no_match,
+   plan42_rodo.rego → jdg.rodo.plan42_no_match. Wynik: 0 kolizji w zakresie 28 Rego.
+2. G-03 Temporalność 0 -> 7/7: erasure_automation (Art. 17 RODO, 2018-05-25),
+   subprocessor_chain_audit (Art. 28 RODO, 2018-05-25), rodo_register_automation
+   (Art. 30 RODO, 2018-05-25), sanctions_uodo (Art. 83 RODO, 2018-05-25),
+   aml_risk_scoring_transaction (Art. 34 u.AML, 2018-07-13), str_gijf_auto_submission
+   (Art. 74-80 u.AML, 2018-07-13), bdo_registration_detector (Art. 49-53 UoO,
+   2013-01-23). Wszystkie z decision_mode SUGGEST.
+3. G-05 Legal Twin P0: NOWE AKTY w LEGAL_REFERENCE_ACTS.md — RODO (UE 2016/679,
+   art. 5/6/7/9/13/15/17/19/20/22/24/25/28/30/32/33/34/35/37/44-49/82/83),
+   ustawa AML (art. 2/28a/28-34/34/74-80/153), ustawa o odpadach — BDO
+   (art. 17-18/41-48/49-55/66-74/194/233). Naprawiony parser aktów UE:
+   ACT_HEADER_RE zachowuje pierwszy nawias „(UE) 2016/679"/„(UE) nr 910/2014"
+   — jednoznacznie odróżnia RODO od eIDAS. Aliasy: rodo/aml/uoo/odpad.
+   LKG: 24 akty, 172 węzły, LCI 76.74, TCL 100, RV 39.13.
+4. G-04 Testy krytyczne 7/7: a17 (erasure), a28 (podprocesorzy), a30 (rejestr
+   czynności), a83 (sankcje), a34 (AML transakcje 15 000 EUR), a74 (STR/GIIF),
+   a49 (BDO rejestracja).
+5. Golden replay: 1 RODO verdict (rodo_sanctions_calculator, Art. 83 RODO,
+   20 mln EUR/4%) + 1 replay, 0 UVER (bundles/golden_verdicts.json).
+6. Deployment jdg-rab-bundle-v9.0.0: canary -> shadow (delta 1.0%) -> ramped ->
+   soak 24h -> auto-rollback MTTR 4.0 min SLA pass (fail-closed, powrót do
+   jdg-bundle-v8.0.0, NIE production-active).
+7. Safety: decision_mode SUGGEST w 7 blokach krytycznych; zakres R14 wolny od
+   „AUTO_POST" (tryb opisowy występuje wyłącznie poza pakietami RODO/AML/BDO).
+8. Router: main_jdg.rego importuje jdg.rodo / jdg.rodo_extended /
+   jdg.security.fortress / jdg.p15_srodowisko_bdo_innovations /
+   jdg.p16_rodo_aml_security_innovations + full_final_verdict.
+
+Weryfikacja: bramka 9/9 -> WDROZONY_100; testy bramki 9/9.
+Następny raport wg kolejności: RAPORT_15 (uruchom w świeżym oknie kontekstowym).
 ====================================================================================================
 KONIEC RAPORTU 14/25 — raport wygenerowany z promptu 14_RODO_AML-CBDD_BDO_ŚRODOWISKO_SEKURYTYZACJA_b.txt
 ====================================================================================================

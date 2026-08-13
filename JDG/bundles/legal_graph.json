@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-08-13T12:28:16.851914+00:00",
-  "acts_count": 21,
-  "nodes_count": 138,
-  "covered_nodes": 103,
+  "generated_at": "2026-08-13T16:32:03.278635+00:00",
+  "acts_count": 26,
+  "nodes_count": 181,
+  "covered_nodes": 135,
   "indexes": {
-    "LCI": 74.64,
+    "LCI": 74.59,
     "TCL": 100.0,
-    "RV": 37.97
+    "RV": 39.43
   },
   "slo": {
     "LCI_MIN": 99,
@@ -988,6 +988,21 @@
       "legal_node_id": "LKG-0014",
       "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
       "act_dz_u": "2025 poz. 456",
+      "article": "42a-42h",
+      "article_label": "Art. 42a-42h",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0015",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+      "act_dz_u": "2025 poz. 456",
       "article": "43",
       "article_label": "Art. 43",
       "node_type": "ARTICLE",
@@ -1087,7 +1102,28 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0015",
+      "legal_node_id": "LKG-0016",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+      "act_dz_u": "2025 poz. 456",
+      "article": "82",
+      "article_label": "Art. 82",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.kks.unpaid_vat_penalty_30pct_p452",
+        "jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_v7_auto_generator",
+        "jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_audit",
+        "jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_cross_validation",
+        "jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_deadline_calendar"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0017",
       "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
       "act_dz_u": "2025 poz. 456",
       "article": "86-96",
@@ -1382,7 +1418,54 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0016",
+      "legal_node_id": "LKG-0018",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+      "act_dz_u": "2025 poz. 456",
+      "article": "99",
+      "article_label": "Art. 99",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.accounting.vat_jpk_consistency",
+        "jdg.accounting.vat_monthly_close",
+        "jdg.business.suspension_vat_zero",
+        "jdg.edge_cases.deadline_vat_declaration_25th",
+        "jdg.edge_cases.deadline_vat_quarterly_25th",
+        "jdg.edge_cases.seasonal_vat_zero",
+        "jdg.hyper.deadlines.tax.vat7_quarterly_25th",
+        "jdg.hyper.limits.seasonal.vat.zero_returns_in_suspension",
+        "jdg.jpk.no_match",
+        "jdg.jpk.filing_deadlines_detailed",
+        "jdg.jpk_v7.vat7_declaration_autogen",
+        "jdg.jpk_v7.v7k_quarterly_support",
+        "jdg.ksef_jpk.jpk_v7m",
+        "jdg.vat.a99.r10",
+        "jdg.vat.a99.r3",
+        "jdg.vat.a99.r6",
+        "jdg.vat.a99.r7",
+        "jdg.vat.a99.r8",
+        "jdg.vat.a99.r9",
+        "jdg.vat.a99.r1",
+        "jdg.vat.a99.r2",
+        "jdg.vat.a99.r4",
+        "jdg.vat.a99.r5",
+        "jdg.p03_vat_macro_innovations.law_change_forecast",
+        "jdg.p03_vat_macro_innovations.obligations_calendar",
+        "jdg.p22_innovations.tourist_taxfree_jpk_integration",
+        "jdg.seasonal.vat_consequences",
+        "jdg.seasonal.hyper.vat_zero_returns_suspension",
+        "jdg.taxfree.hyper.tourist_taxfree_jpk_v7_marking",
+        "jdg.vat_cashflow.no_match",
+        "jdg.vat_cashflow.three_month_forecast"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0019",
       "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
       "act_dz_u": "2025 poz. 456",
       "article": "106a-106n",
@@ -1476,7 +1559,7 @@
         "jdg.micro.budownictwo.a2.r3",
         "jdg.micro.budownictwo.a7.r10",
         "jdg.micro.budownictwo.a7.r11",
-        "jdg.micro.ksef.no_match",
+        "jdg.micro.ksef.plan33_no_match",
         "jdg.ksef.a106na.r10",
         "jdg.ksef.a106na.r11",
         "jdg.ksef.a106na.r12",
@@ -1630,7 +1713,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0017",
+      "legal_node_id": "LKG-0020",
       "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
       "act_dz_u": "2025 poz. 456",
       "article": "108a-108f",
@@ -1696,7 +1779,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0018",
+      "legal_node_id": "LKG-0021",
       "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
       "act_dz_u": "2025 poz. 456",
       "article": "113",
@@ -1761,7 +1844,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0019",
+      "legal_node_id": "LKG-0022",
       "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
       "act_dz_u": "2025 poz. 456",
       "article": "120",
@@ -1802,7 +1885,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0020",
+      "legal_node_id": "LKG-0023",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "10",
@@ -1831,7 +1914,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0021",
+      "legal_node_id": "LKG-0024",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "14",
@@ -1975,7 +2058,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0022",
+      "legal_node_id": "LKG-0025",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "22-23",
@@ -2622,7 +2705,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0023",
+      "legal_node_id": "LKG-0026",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "23m-23zf",
@@ -2637,7 +2720,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0024",
+      "legal_node_id": "LKG-0027",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "24",
@@ -2719,7 +2802,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0025",
+      "legal_node_id": "LKG-0028",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "26-26h",
@@ -2946,7 +3029,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0026",
+      "legal_node_id": "LKG-0029",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "27",
@@ -3079,7 +3162,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0027",
+      "legal_node_id": "LKG-0030",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "30a",
@@ -3116,7 +3199,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0028",
+      "legal_node_id": "LKG-0031",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "30c",
@@ -3190,7 +3273,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0029",
+      "legal_node_id": "LKG-0032",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "30f",
@@ -3229,7 +3312,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0030",
+      "legal_node_id": "LKG-0033",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "30h",
@@ -3307,7 +3390,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0031",
+      "legal_node_id": "LKG-0034",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "44",
@@ -3378,7 +3461,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0032",
+      "legal_node_id": "LKG-0035",
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
       "act_dz_u": "2025 poz. 789",
       "article": "45",
@@ -3426,7 +3509,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0033",
+      "legal_node_id": "LKG-0036",
       "act": "Ustawa z dnia 23 kwietnia 1964 r. – Kodeks cywilny",
       "act_dz_u": "2025 poz. 733",
       "article": "109",
@@ -3447,7 +3530,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0034",
+      "legal_node_id": "LKG-0037",
       "act": "Ustawa z dnia 23 kwietnia 1964 r. – Kodeks cywilny",
       "act_dz_u": "2025 poz. 733",
       "article": "77",
@@ -3465,7 +3548,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0035",
+      "legal_node_id": "LKG-0038",
       "act": "Ustawa z dnia 23 kwietnia 1964 r. – Kodeks cywilny",
       "act_dz_u": "2025 poz. 733",
       "article": "78",
@@ -3483,7 +3566,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0036",
+      "legal_node_id": "LKG-0039",
       "act": "Ustawa z dnia 6 czerwca 1997 r. – Kodeks karny",
       "act_dz_u": "2025 poz. 544",
       "article": "41",
@@ -3511,7 +3594,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0037",
+      "legal_node_id": "LKG-0040",
       "act": "Ustawa z dnia 6 czerwca 1997 r. – Kodeks karny",
       "act_dz_u": "2025 poz. 544",
       "article": "42",
@@ -3526,7 +3609,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0038",
+      "legal_node_id": "LKG-0041",
       "act": "Ustawa z dnia 6 czerwca 1997 r. – Kodeks karny",
       "act_dz_u": "2025 poz. 544",
       "article": "43",
@@ -3541,7 +3624,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0039",
+      "legal_node_id": "LKG-0042",
       "act": "Ustawa z dnia 6 czerwca 1997 r. – Kodeks karny",
       "act_dz_u": "2025 poz. 544",
       "article": "46",
@@ -3556,8 +3639,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0040",
-      "act": "Rozporządzenie Parlamentu Europejskiego i Rady",
+      "legal_node_id": "LKG-0043",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) nr 910/2014 z dnia 23 lipca 2014 r. w sprawie identyfikacji elektronicznej i usług zaufania",
       "act_dz_u": "",
       "article": "6",
       "article_label": "Art. 6",
@@ -3573,8 +3656,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0041",
-      "act": "Rozporządzenie Parlamentu Europejskiego i Rady",
+      "legal_node_id": "LKG-0044",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) nr 910/2014 z dnia 23 lipca 2014 r. w sprawie identyfikacji elektronicznej i usług zaufania",
       "act_dz_u": "",
       "article": "25",
       "article_label": "Art. 25",
@@ -3591,8 +3674,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0042",
-      "act": "Rozporządzenie Parlamentu Europejskiego i Rady",
+      "legal_node_id": "LKG-0045",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) nr 910/2014 z dnia 23 lipca 2014 r. w sprawie identyfikacji elektronicznej i usług zaufania",
       "act_dz_u": "",
       "article": "26",
       "article_label": "Art. 26",
@@ -3606,8 +3689,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0043",
-      "act": "Rozporządzenie Parlamentu Europejskiego i Rady",
+      "legal_node_id": "LKG-0046",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) nr 910/2014 z dnia 23 lipca 2014 r. w sprawie identyfikacji elektronicznej i usług zaufania",
       "act_dz_u": "",
       "article": "28",
       "article_label": "Art. 28",
@@ -3623,7 +3706,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0044",
+      "legal_node_id": "LKG-0047",
       "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
       "act_dz_u": "2025 poz. 234",
       "article": "6-12",
@@ -3764,7 +3847,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0045",
+      "legal_node_id": "LKG-0048",
       "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
       "act_dz_u": "2025 poz. 234",
       "article": "21-30",
@@ -3878,7 +3961,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0046",
+      "legal_node_id": "LKG-0049",
       "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
       "act_dz_u": "2025 poz. 234",
       "article": "26e",
@@ -3893,7 +3976,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0047",
+      "legal_node_id": "LKG-0050",
       "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
       "act_dz_u": "2025 poz. 234",
       "article": "18d",
@@ -3908,7 +3991,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0048",
+      "legal_node_id": "LKG-0051",
       "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
       "act_dz_u": "2025 poz. 234",
       "article": "26g",
@@ -3923,7 +4006,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0049",
+      "legal_node_id": "LKG-0052",
       "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
       "act_dz_u": "2025 poz. 234",
       "article": "38e",
@@ -3938,7 +4021,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0050",
+      "legal_node_id": "LKG-0053",
       "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
       "act_dz_u": "2025 poz. 234",
       "article": "30c",
@@ -3953,7 +4036,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0051",
+      "legal_node_id": "LKG-0054",
       "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
       "act_dz_u": "2025 poz. 234",
       "article": "24d",
@@ -3968,7 +4051,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0052",
+      "legal_node_id": "LKG-0055",
       "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
       "act_dz_u": "2025 poz. 234",
       "article": "26h",
@@ -3983,7 +4066,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0053",
+      "legal_node_id": "LKG-0056",
       "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
       "act_dz_u": "2025 poz. 234",
       "article": "26",
@@ -3998,7 +4081,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0054",
+      "legal_node_id": "LKG-0057",
       "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
       "act_dz_u": "2025 poz. 234",
       "article": "21",
@@ -4013,7 +4096,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0055",
+      "legal_node_id": "LKG-0058",
       "act": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych",
       "act_dz_u": "2025 poz. 345",
       "article": "6",
@@ -4028,7 +4111,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0056",
+      "legal_node_id": "LKG-0059",
       "act": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych",
       "act_dz_u": "2025 poz. 345",
       "article": "18-19",
@@ -4059,7 +4142,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0057",
+      "legal_node_id": "LKG-0060",
       "act": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych",
       "act_dz_u": "2025 poz. 345",
       "article": "22",
@@ -4074,7 +4157,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0058",
+      "legal_node_id": "LKG-0061",
       "act": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych",
       "act_dz_u": "2025 poz. 345",
       "article": "36",
@@ -4089,7 +4172,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0059",
+      "legal_node_id": "LKG-0062",
       "act": "Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych",
       "act_dz_u": "2025 poz. 890",
       "article": "79-81",
@@ -4141,7 +4224,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0060",
+      "legal_node_id": "LKG-0063",
       "act": "Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych",
       "act_dz_u": "2025 poz. 890",
       "article": "18a",
@@ -4158,7 +4241,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0061",
+      "legal_node_id": "LKG-0064",
       "act": "Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych",
       "act_dz_u": "2025 poz. 890",
       "article": "18c",
@@ -4173,7 +4256,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0062",
+      "legal_node_id": "LKG-0065",
       "act": "Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych",
       "act_dz_u": "2025 poz. 890",
       "article": "5",
@@ -4188,7 +4271,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0063",
+      "legal_node_id": "LKG-0066",
       "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
       "act_dz_u": "2025 poz. 567",
       "article": "2",
@@ -4242,7 +4325,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0064",
+      "legal_node_id": "LKG-0067",
       "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
       "act_dz_u": "2025 poz. 567",
       "article": "4",
@@ -4294,7 +4377,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0065",
+      "legal_node_id": "LKG-0068",
       "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
       "act_dz_u": "2025 poz. 567",
       "article": "20-21",
@@ -4327,7 +4410,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0066",
+      "legal_node_id": "LKG-0069",
       "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
       "act_dz_u": "2025 poz. 567",
       "article": "22",
@@ -4370,7 +4453,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0067",
+      "legal_node_id": "LKG-0070",
       "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
       "act_dz_u": "2025 poz. 567",
       "article": "26",
@@ -4401,7 +4484,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0068",
+      "legal_node_id": "LKG-0071",
       "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
       "act_dz_u": "2025 poz. 567",
       "article": "28",
@@ -4458,7 +4541,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0069",
+      "legal_node_id": "LKG-0072",
       "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
       "act_dz_u": "2025 poz. 567",
       "article": "32",
@@ -4486,7 +4569,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0070",
+      "legal_node_id": "LKG-0073",
       "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
       "act_dz_u": "2025 poz. 567",
       "article": "74",
@@ -4515,8 +4598,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0071",
-      "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów",
+      "legal_node_id": "LKG-0074",
+      "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
       "act_dz_u": "",
       "article": "24a",
       "article_label": "Art. 24a",
@@ -4530,8 +4613,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0072",
-      "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów",
+      "legal_node_id": "LKG-0075",
+      "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
       "act_dz_u": "",
       "article": "15",
       "article_label": "Art. 15",
@@ -4545,8 +4628,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0073",
-      "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów",
+      "legal_node_id": "LKG-0076",
+      "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
       "act_dz_u": "",
       "article": "109",
       "article_label": "Art. 109",
@@ -4560,8 +4643,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0074",
-      "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów",
+      "legal_node_id": "LKG-0077",
+      "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
       "act_dz_u": "",
       "article": "99",
       "article_label": "Art. 99",
@@ -4575,8 +4658,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0075",
-      "act": "Rozporządzenie Ministra Finansów z dnia 15 lipca 2025 r. w sprawie JPK_VAT z deklaracją Struktura JPK_V7M",
+      "legal_node_id": "LKG-0078",
+      "act": "Rozporządzenie Ministra Finansów z dnia 15 lipca 2025 r. w sprawie JPK_VAT z deklaracją Struktura JPK_V7M (miesięczny) i JPK_V7K",
       "act_dz_u": "",
       "article": "45",
       "article_label": "Art. 45",
@@ -4590,8 +4673,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0076",
-      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej",
+      "legal_node_id": "LKG-0079",
+      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
       "act_dz_u": "",
       "article": "89b",
       "article_label": "Art. 89b",
@@ -4605,8 +4688,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0077",
-      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej",
+      "legal_node_id": "LKG-0080",
+      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
       "act_dz_u": "",
       "article": "87",
       "article_label": "Art. 87",
@@ -4620,8 +4703,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0078",
-      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej",
+      "legal_node_id": "LKG-0081",
+      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
       "act_dz_u": "",
       "article": "96",
       "article_label": "Art. 96",
@@ -4635,8 +4718,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0079",
-      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej",
+      "legal_node_id": "LKG-0082",
+      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
       "act_dz_u": "",
       "article": "96b",
       "article_label": "Art. 96b",
@@ -4650,8 +4733,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0080",
-      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej",
+      "legal_node_id": "LKG-0083",
+      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
       "act_dz_u": "",
       "article": "103",
       "article_label": "Art. 103",
@@ -4665,8 +4748,8 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0081",
-      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej",
+      "legal_node_id": "LKG-0084",
+      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
       "act_dz_u": "",
       "article": "106e",
       "article_label": "Art. 106e",
@@ -4680,7 +4763,99 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0082",
+      "legal_node_id": "LKG-0085",
+      "act": "Ustawa z dnia 18 listopada 2020 r. o doręczeniach elektronicznych",
+      "act_dz_u": "2024 poz. 1045",
+      "article": "8",
+      "article_label": "Art. 8",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0086",
+      "act": "Ustawa z dnia 18 listopada 2020 r. o doręczeniach elektronicznych",
+      "act_dz_u": "2024 poz. 1045",
+      "article": "9",
+      "article_label": "Art. 9",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0087",
+      "act": "Ustawa z dnia 18 listopada 2020 r. o doręczeniach elektronicznych",
+      "act_dz_u": "2024 poz. 1045",
+      "article": "155",
+      "article_label": "Art. 155",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0088",
+      "act": "Ustawa z dnia 17 lutego 2005 r. o informatyzacji działalności podmiotów realizujących zadania publiczne",
+      "act_dz_u": "2024 poz. 1382",
+      "article": "3",
+      "article_label": "Art. 3",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0089",
+      "act": "Ustawa z dnia 17 lutego 2005 r. o informatyzacji działalności podmiotów realizujących zadania publiczne",
+      "act_dz_u": "2024 poz. 1382",
+      "article": "16",
+      "article_label": "Art. 16",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.epuap.integration_s22_s4"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0090",
+      "act": "Ustawa z dnia 17 lutego 2005 r. o informatyzacji działalności podmiotów realizujących zadania publiczne",
+      "act_dz_u": "2024 poz. 1382",
+      "article": "20a",
+      "article_label": "Art. 20a",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0091",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "14a-14d",
@@ -4706,7 +4881,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0083",
+      "legal_node_id": "LKG-0092",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "16-16b",
@@ -4718,7 +4893,6 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [
-        "jdg.epuap.integration_s22_s4",
         "jdg.kks.voluntary_disclosure_correction_before_audit",
         "jdg.kks.voluntary_disclosure_foreign_tax",
         "jdg.liability.no_match",
@@ -4735,7 +4909,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0084",
+      "legal_node_id": "LKG-0093",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "20-21",
@@ -4764,7 +4938,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0085",
+      "legal_node_id": "LKG-0094",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "48",
@@ -4787,7 +4961,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0086",
+      "legal_node_id": "LKG-0095",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "51",
@@ -4808,7 +4982,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0087",
+      "legal_node_id": "LKG-0096",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "53-56",
@@ -4849,7 +5023,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0088",
+      "legal_node_id": "LKG-0097",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "67a-67e",
@@ -4914,7 +5088,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0089",
+      "legal_node_id": "LKG-0098",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "70-71",
@@ -4979,7 +5153,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0090",
+      "legal_node_id": "LKG-0099",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "72-80",
@@ -5028,7 +5202,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0091",
+      "legal_node_id": "LKG-0100",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "81-81b",
@@ -5079,7 +5253,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0092",
+      "legal_node_id": "LKG-0101",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "86",
@@ -5279,7 +5453,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0093",
+      "legal_node_id": "LKG-0102",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "87",
@@ -5296,7 +5470,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0094",
+      "legal_node_id": "LKG-0103",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "117b",
@@ -5316,7 +5490,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0095",
+      "legal_node_id": "LKG-0104",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "119a",
@@ -5357,7 +5531,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0096",
+      "legal_node_id": "LKG-0105",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "120-129",
@@ -5389,7 +5563,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0097",
+      "legal_node_id": "LKG-0106",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "138a-138o",
@@ -5429,7 +5603,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0098",
+      "legal_node_id": "LKG-0107",
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
       "act_dz_u": "2025 poz. 234",
       "article": "193a",
@@ -5461,7 +5635,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0099",
+      "legal_node_id": "LKG-0108",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "16",
@@ -5516,7 +5690,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0100",
+      "legal_node_id": "LKG-0109",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "44",
@@ -5544,7 +5718,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0101",
+      "legal_node_id": "LKG-0110",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "54",
@@ -5613,7 +5787,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0102",
+      "legal_node_id": "LKG-0111",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "56",
@@ -5667,7 +5841,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0103",
+      "legal_node_id": "LKG-0112",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "57",
@@ -5704,7 +5878,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0104",
+      "legal_node_id": "LKG-0113",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "62",
@@ -5772,7 +5946,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0105",
+      "legal_node_id": "LKG-0114",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "77",
@@ -5814,7 +5988,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0106",
+      "legal_node_id": "LKG-0115",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "22-25",
@@ -5861,7 +6035,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0107",
+      "legal_node_id": "LKG-0116",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "14",
@@ -5876,7 +6050,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0108",
+      "legal_node_id": "LKG-0117",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "22",
@@ -5891,7 +6065,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0109",
+      "legal_node_id": "LKG-0118",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "30c",
@@ -5908,7 +6082,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0110",
+      "legal_node_id": "LKG-0119",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "99",
@@ -5923,7 +6097,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0111",
+      "legal_node_id": "LKG-0120",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "47",
@@ -5940,7 +6114,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0112",
+      "legal_node_id": "LKG-0121",
       "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
       "act_dz_u": "2025 poz. 678",
       "article": "9",
@@ -5955,7 +6129,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0113",
+      "legal_node_id": "LKG-0122",
       "act": "Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej",
       "act_dz_u": "2025 poz. 1234",
       "article": "3-4",
@@ -5988,7 +6162,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0114",
+      "legal_node_id": "LKG-0123",
       "act": "Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej",
       "act_dz_u": "2025 poz. 1234",
       "article": "12",
@@ -6102,7 +6276,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0115",
+      "legal_node_id": "LKG-0124",
       "act": "Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej",
       "act_dz_u": "2025 poz. 1234",
       "article": "13",
@@ -6117,7 +6291,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0116",
+      "legal_node_id": "LKG-0125",
       "act": "Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej",
       "act_dz_u": "2025 poz. 1234",
       "article": "14-15",
@@ -6144,7 +6318,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0117",
+      "legal_node_id": "LKG-0126",
       "act": "Ustawa z dnia 7 lipca 1994 r. – Prawo budowlane",
       "act_dz_u": "2025 poz. 1101",
       "article": "28",
@@ -6164,7 +6338,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0118",
+      "legal_node_id": "LKG-0127",
       "act": "Ustawa z dnia 7 lipca 1994 r. – Prawo budowlane",
       "act_dz_u": "2025 poz. 1101",
       "article": "29-30",
@@ -6181,7 +6355,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0119",
+      "legal_node_id": "LKG-0128",
       "act": "Ustawa z dnia 7 lipca 1994 r. – Prawo budowlane",
       "act_dz_u": "2025 poz. 1101",
       "article": "36a",
@@ -6198,7 +6372,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0120",
+      "legal_node_id": "LKG-0129",
       "act": "Ustawa z dnia 7 lipca 1994 r. – Prawo budowlane",
       "act_dz_u": "2025 poz. 1101",
       "article": "37",
@@ -6215,7 +6389,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0121",
+      "legal_node_id": "LKG-0130",
       "act": "Ustawa z dnia 7 lipca 1994 r. – Prawo budowlane",
       "act_dz_u": "2025 poz. 1101",
       "article": "42",
@@ -6233,7 +6407,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0122",
+      "legal_node_id": "LKG-0131",
       "act": "Ustawa z dnia 7 lipca 1994 r. – Prawo budowlane",
       "act_dz_u": "2025 poz. 1101",
       "article": "45",
@@ -6250,7 +6424,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0123",
+      "legal_node_id": "LKG-0132",
       "act": "Ustawa z dnia 7 lipca 1994 r. – Prawo budowlane",
       "act_dz_u": "2025 poz. 1101",
       "article": "21a",
@@ -6267,7 +6441,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0124",
+      "legal_node_id": "LKG-0133",
       "act": "Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych",
       "act_dz_u": "2025 poz. 789",
       "article": "1-2",
@@ -6386,7 +6560,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0125",
+      "legal_node_id": "LKG-0134",
       "act": "Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych",
       "act_dz_u": "2025 poz. 789",
       "article": "4",
@@ -6406,7 +6580,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0126",
+      "legal_node_id": "LKG-0135",
       "act": "Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych",
       "act_dz_u": "2025 poz. 789",
       "article": "6-7",
@@ -6454,7 +6628,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0127",
+      "legal_node_id": "LKG-0136",
       "act": "Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych",
       "act_dz_u": "2025 poz. 789",
       "article": "10",
@@ -6488,7 +6662,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0128",
+      "legal_node_id": "LKG-0137",
       "act": "Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych",
       "act_dz_u": "2025 poz. 1234",
       "article": "2-7",
@@ -6520,7 +6694,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0129",
+      "legal_node_id": "LKG-0138",
       "act": "Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych",
       "act_dz_u": "2025 poz. 1234",
       "article": "8-14",
@@ -6574,7 +6748,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0130",
+      "legal_node_id": "LKG-0139",
       "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
       "act_dz_u": "2025 poz. 1220",
       "article": "2",
@@ -6592,7 +6766,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0131",
+      "legal_node_id": "LKG-0140",
       "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
       "act_dz_u": "2025 poz. 1220",
       "article": "16",
@@ -6610,7 +6784,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0132",
+      "legal_node_id": "LKG-0141",
       "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
       "act_dz_u": "2025 poz. 1220",
       "article": "21",
@@ -6629,7 +6803,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0133",
+      "legal_node_id": "LKG-0142",
       "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
       "act_dz_u": "2025 poz. 1220",
       "article": "24-24b",
@@ -6647,7 +6821,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0134",
+      "legal_node_id": "LKG-0143",
       "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
       "act_dz_u": "2025 poz. 1220",
       "article": "30-32",
@@ -6669,7 +6843,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0135",
+      "legal_node_id": "LKG-0144",
       "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
       "act_dz_u": "2025 poz. 1220",
       "article": "89",
@@ -6714,7 +6888,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0136",
+      "legal_node_id": "LKG-0145",
       "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
       "act_dz_u": "2025 poz. 1220",
       "article": "92-99c",
@@ -6755,7 +6929,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0137",
+      "legal_node_id": "LKG-0146",
       "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
       "act_dz_u": "2025 poz. 1220",
       "article": "100",
@@ -6772,7 +6946,7 @@
       "threshold_keys": []
     },
     {
-      "legal_node_id": "LKG-0138",
+      "legal_node_id": "LKG-0147",
       "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
       "act_dz_u": "2025 poz. 1220",
       "article": "114-138",
@@ -6789,10 +6963,691 @@
         "jdg.p33_excise_supplement.banderoles"
       ],
       "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0148",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "5",
+      "article_label": "Art. 5",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.rodo_erasure.r3",
+        "jdg.micro.rodo_zatrudnienie.r4",
+        "jdg.p16_rodo_aml_security_innovations.rodo_by_design_anonymizer",
+        "jdg.rodo.data_retention_policy",
+        "jdg.rodo.data_retention",
+        "jdg.rodo_extended.data_minimization_audit",
+        "jdg.rodo_extended.cross_domain_retention"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0149",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "6",
+      "article_label": "Art. 6",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.edge_cases.document_destruction_procedure",
+        "jdg.micro.rodo_ai_marketing.r3",
+        "jdg.micro.rodo_ai_marketing.r4",
+        "jdg.micro.rodo_ai_marketing.r5",
+        "jdg.rodo.marketing_consent",
+        "jdg.rodo.cctv_monitoring",
+        "jdg.rodo_extended.marketing_b2b_vs_b2c"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0150",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "7",
+      "article_label": "Art. 7",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.environmental.greenwashing_flag",
+        "jdg.micro.rodo_zatrudnienie.r3",
+        "jdg.p14_innovations.consent_lifecycle",
+        "jdg.rodo_extended.employee_consent_validity"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0151",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "9",
+      "article_label": "Art. 9",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0152",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "13",
+      "article_label": "Art. 13",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.rodo.employee_data_protection"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0153",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "15",
+      "article_label": "Art. 15",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.p14_innovations.dsar_auto_processor",
+        "jdg.rodo.dsar_access_request"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0154",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "17",
+      "article_label": "Art. 17",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.rodo_erasure.no_match",
+        "jdg.micro.rodo_erasure.r1",
+        "jdg.micro.rodo_erasure.r2",
+        "jdg.rodo_extended.no_match",
+        "jdg.rodo_extended.erasure_automation",
+        "jdg.rodo_extended.erasure_exception_accounting"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0155",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "19",
+      "article_label": "Art. 19",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0156",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "20",
+      "article_label": "Art. 20",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.rodo.data_portability"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0157",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "22",
+      "article_label": "Art. 22",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.rodo_ai_marketing.no_match",
+        "jdg.micro.rodo_ai_marketing.r1",
+        "jdg.micro.rodo_ai_marketing.r2",
+        "jdg.micro.rodo_zatrudnienie.r2",
+        "jdg.rodo_extended.employee_sobriety_testing",
+        "jdg.rodo_extended.ai_profiling_art22"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0158",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "24",
+      "article_label": "Art. 24",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.rodo_sankcje.r4",
+        "jdg.micro.rodo_sankcje.r5",
+        "jdg.p16_rodo_aml_security_innovations.self_audit_engine",
+        "jdg.p16_rodo_aml_security_innovations.rodo_deadline_calendar",
+        "jdg.rodo_extended.annual_compliance_review"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0159",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "25",
+      "article_label": "Art. 25",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.p14_innovations.privacy_by_design"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0160",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "28",
+      "article_label": "Art. 28",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.rodo_podprocesorzy.no_match",
+        "jdg.micro.rodo_podprocesorzy.r1",
+        "jdg.p16_rodo_aml_security_innovations.subprocessor_saas_map",
+        "jdg.rodo.processor_agreement",
+        "jdg.rodo_extended.subprocessor_chain_audit"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0161",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "30",
+      "article_label": "Art. 30",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.p16_rodo_aml_security_innovations.rodo_audit",
+        "jdg.p16_rodo_aml_security_innovations.rodo_register_automation",
+        "jdg.rodo.plan42_no_match",
+        "jdg.rodo.dpa_registration_check",
+        "jdg.rodo.no_match",
+        "jdg.rodo.data_processing_register"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0162",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "32",
+      "article_label": "Art. 32",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.rodo_erasure.r4",
+        "jdg.rodo_extended.pseudonymization_encryption"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0163",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "33",
+      "article_label": "Art. 33",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.rodo_podprocesorzy.r3",
+        "jdg.p14_innovations.breach_auto_drafter",
+        "jdg.p16_rodo_aml_security_innovations.breach_72h_tracker",
+        "jdg.p16_rodo_aml_security_innovations.rodo_breach_assistant",
+        "jdg.p16_rodo_aml_security_innovations.compliance_dashboard_ui",
+        "jdg.rodo.data_breach_notification",
+        "jdg.rodo_extended.data_breach_register"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0164",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "34",
+      "article_label": "Art. 34",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0165",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "35",
+      "article_label": "Art. 35",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.rodo.dpia_required"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0166",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "37",
+      "article_label": "Art. 37",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.rodo.dpo_requirement"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0167",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "44-49",
+      "article_label": "Art. 44-49",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.rodo_podprocesorzy.r2",
+        "jdg.p14_innovations.cross_border_blocker",
+        "jdg.rodo.data_transfer_eog",
+        "jdg.rodo_extended.subprocessor_third_country"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0168",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "82",
+      "article_label": "Art. 82",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.rodo_podprocesorzy.r4",
+        "jdg.rodo_extended.processor_liability"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0169",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "act_dz_u": "",
+      "article": "83",
+      "article_label": "Art. 83",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.rodo_sankcje.no_match",
+        "jdg.micro.rodo_sankcje.r1",
+        "jdg.micro.rodo_sankcje.r2",
+        "jdg.micro.rodo_sankcje.r3",
+        "jdg.p14_innovations.no_match",
+        "jdg.p14_innovations.gdpr_auto_compliance",
+        "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator",
+        "jdg.p16_rodo_aml_security_innovations.penalty_simulator",
+        "jdg.rodo_extended.sanctions_uodo"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0170",
+      "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+      "act_dz_u": "2025 poz. 213",
+      "article": "2",
+      "article_label": "Art. 2",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.aml_ryzyko.no_match",
+        "jdg.micro.aml_ryzyko.r1",
+        "jdg.p16_rodo_aml_security_innovations.beneficiary_verifier",
+        "jdg.p16_rodo_aml_security_innovations.crbr_registry_api",
+        "jdg.p16_rodo_aml_security_innovations.aml_obligation_detector"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0171",
+      "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+      "act_dz_u": "2025 poz. 213",
+      "article": "28a",
+      "article_label": "Art. 28a",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.p16_rodo_aml_security_innovations.aml_audit",
+        "jdg.p16_rodo_aml_security_innovations.aml_risk_scoring_client",
+        "jdg.p16_rodo_aml_security_innovations.aml_risk_panel"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0172",
+      "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+      "act_dz_u": "2025 poz. 213",
+      "article": "28-34",
+      "article_label": "Art. 28-34",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.aml_ryzyko.r2",
+        "jdg.micro.aml_ryzyko.r3",
+        "jdg.p14_innovations.aml_risk_matrix",
+        "jdg.p14_innovations.aml_kyc_onboarding",
+        "jdg.p16_rodo_aml_security_innovations.aml_risk_scoring_transaction",
+        "jdg.p16_rodo_aml_security_innovations.aml_sanctions_screening"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0173",
+      "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+      "act_dz_u": "2025 poz. 213",
+      "article": "34",
+      "article_label": "Art. 34",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0174",
+      "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+      "act_dz_u": "2025 poz. 213",
+      "article": "74-80",
+      "article_label": "Art. 74-80",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.p16_rodo_aml_security_innovations.str_gijf_auto_submission"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0175",
+      "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+      "act_dz_u": "2025 poz. 213",
+      "article": "153",
+      "article_label": "Art. 153",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0176",
+      "act": "Ustawa z dnia 14 grudnia 2012 r. o odpadach",
+      "act_dz_u": "2025 poz. 321",
+      "article": "17-18",
+      "article_label": "Art. 17-18",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.p15_srodowisko_bdo_innovations.product_fee_tracker",
+        "jdg.p15_srodowisko_bdo_innovations.product_fee_material_map"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0177",
+      "act": "Ustawa z dnia 14 grudnia 2012 r. o odpadach",
+      "act_dz_u": "2025 poz. 321",
+      "article": "41-48",
+      "article_label": "Art. 41-48",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.environmental.bdo.ewc_hazardous",
+        "jdg.environmental.bdo.dgo_permit",
+        "jdg.micro.bdo_ewc.r2",
+        "jdg.micro.bdo_zezwolenia.no_match",
+        "jdg.micro.bdo_zezwolenia.r1",
+        "jdg.micro.bdo_zezwolenia.r2"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0178",
+      "act": "Ustawa z dnia 14 grudnia 2012 r. o odpadach",
+      "act_dz_u": "2025 poz. 321",
+      "article": "49-55",
+      "article_label": "Art. 49-55",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.environmental.bdo.no_match",
+        "jdg.environmental.bdo.registration_micro",
+        "jdg.environmental.bdo.registration_small",
+        "jdg.environmental.bdo.registration_update",
+        "jdg.environmental.bdo.de_registration",
+        "jdg.environmental.bdo_registration_required",
+        "jdg.local.bdo_registration_check",
+        "jdg.micro.bdo_rejestracja.no_match",
+        "jdg.micro.bdo_rejestracja.r1",
+        "jdg.micro.bdo_rejestracja.r2",
+        "jdg.micro.bdo_rejestracja.r3",
+        "jdg.micro.bdo_rejestracja.r4",
+        "jdg.micro.bdo_rejestracja.r5",
+        "jdg.micro.bdo_rejestracja.r6",
+        "jdg.micro.bdo_rejestracja.r7",
+        "jdg.p15_srodowisko_bdo_innovations.bdo_audit",
+        "jdg.p15_srodowisko_bdo_innovations.bdo_assistant",
+        "jdg.p15_srodowisko_bdo_innovations.bdo_online_registration",
+        "jdg.p15_srodowisko_bdo_innovations.bdo_registration_detector"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0179",
+      "act": "Ustawa z dnia 14 grudnia 2012 r. o odpadach",
+      "act_dz_u": "2025 poz. 321",
+      "article": "66-74",
+      "article_label": "Art. 66-74",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.environmental.bdo.ledger_quarterly_deadline",
+        "jdg.environmental.bdo.kpo_electronic",
+        "jdg.environmental.bdo_waste_ledger",
+        "jdg.environmental.waste_transport_card",
+        "jdg.local.bdo_waste_transfer_card",
+        "jdg.micro.bdo_ewidencja.no_match",
+        "jdg.micro.bdo_ewidencja.r1",
+        "jdg.micro.bdo_ewidencja.r2",
+        "jdg.micro.bdo_ewidencja.r3",
+        "jdg.micro.bdo_ewidencja.r4",
+        "jdg.micro.bdo_ewidencja.r6",
+        "jdg.micro.bdo_ewidencja.r7",
+        "jdg.micro.bdo_ewidencja.r8",
+        "jdg.micro.budownictwo.a5.r9",
+        "jdg.p15_srodowisko_bdo_innovations.kpo_generator",
+        "jdg.p15_srodowisko_bdo_innovations.bdo_deadline_tracker",
+        "jdg.p15_srodowisko_bdo_innovations.bdo_api_integration",
+        "jdg.p15_srodowisko_bdo_innovations.zero_click_bdo"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0180",
+      "act": "Ustawa z dnia 14 grudnia 2012 r. o odpadach",
+      "act_dz_u": "2025 poz. 321",
+      "article": "194",
+      "article_label": "Art. 194",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.environmental.bdo.sanction_administrative",
+        "jdg.micro.bdo_rejestracja.r8",
+        "jdg.micro.bdo_zezwolenia.r4"
+      ],
+      "threshold_keys": []
+    },
+    {
+      "legal_node_id": "LKG-0181",
+      "act": "Ustawa z dnia 14 grudnia 2012 r. o odpadach",
+      "act_dz_u": "2025 poz. 321",
+      "article": "233",
+      "article_label": "Art. 233",
+      "node_type": "ARTICLE",
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "ISAP",
+      "status": "OBOWIAZUJACY",
+      "rule_ids": [
+        "jdg.micro.bdo_transport.r3"
+      ],
+      "threshold_keys": []
     }
   ],
   "rules_scanned": 12123,
   "uncovered_articles": [
+    "42a-42h",
     "23m-23zf",
     "42",
     "43",
@@ -6823,10 +7678,20 @@
     "96b",
     "103",
     "106e",
+    "8",
+    "9",
+    "155",
+    "3",
+    "20a",
     "14",
     "22",
     "99",
     "9",
-    "13"
+    "13",
+    "9",
+    "19",
+    "34",
+    "34",
+    "153"
   ]
 }

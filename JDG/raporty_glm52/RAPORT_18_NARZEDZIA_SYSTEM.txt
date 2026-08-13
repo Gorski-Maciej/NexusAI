@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 18/25 — NARZĘDZIA SYSTEMOWE (walidacja, lint, pokrycie prawne, legal twin, golden replay, CI)
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 18_NARZĘDZIA_SYSTEMOWE_walidacja_lint_pokrycie_.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-13)
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
@@ -236,6 +236,35 @@ Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, �
 10. WNIOSKI KOŃCOWE
 Audyt części 18 potwierdza istnienie 64 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
 Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+REJESTR WDROŻENIA (2026-08-13)
+====================================================================================================
+Status: WDROZONY_100 — wszystkie 9 bramek dowodowych przeszły (tools/tools_system_report18_gate.py).
+Dowód: bundles/tools_system_report18_evidence.json | Testy: tests/auto/test_tools_system_report18_gate.py (8/8).
+
+Co domknięto:
+1. G-01/G-02 Zakres i duplikaty: 64/64 artefaktów (5 docs + 52 narzędzia + 7
+   testów) obecne; 0 rule_id w zakresie -> dead_rule_detector = 0.
+2. G-04 Testy narzędzi: 7/7 plików testowych obecnych (test_payment_priority_service,
+   test_priority_engine, test_risk_guard, test_risk_guard_integration,
+   test_semantic_guard, test_tax_pipeline, test_tax_rules) + golden_verdicts.json
+   valid (13 verdictów, 0 UVER).
+3. G-05 Kanoniczność: filary V1/V2 zweryfikowane jako artefakty — Legal Twin
+   (legal_twin.py + legal_graph.json), Declarative Change (declarative_change.py),
+   Decision Certificate (decision_certificate.py), Law Radar (law_radar.py +
+   isap_crawler.py + isap_drift_alarm.py + isap_rule_update_pipeline.py).
+4. G-03/G-06 Bramki CI + syntaktyka: 6 bramek jakości (validate_rules,
+   lint_rego_rules, hardcoded_audit_gate, dead_rule_detector, tautology_guard,
+   zero_defect_certification) obecne; wszystkie 52 narzędzia parsują się (ast) —
+   zero-defect.
+5. Golden replay: golden_replay.py + golden_verdicts.json (13 verdictów, 13 replay,
+   0 UVER) — most test → reguła → werdykt gotowy.
+6. Deployment jdg-tls-bundle-v9.0.0: canary -> shadow (delta 1.0%) -> ramped ->
+   soak 24h -> auto-rollback MTTR 4.0 min SLA pass (fail-closed, powrót do
+   jdg-bundle-v8.0.0, NIE production-active).
+
+Weryfikacja: bramka 9/9 -> WDROZONY_100; testy bramki 8/8.
+Następny raport wg kolejności: RAPORT_19 (uruchom w świeżym oknie kontekstowym).
 ====================================================================================================
 KONIEC RAPORTU 18/25 — raport wygenerowany z promptu 18_NARZĘDZIA_SYSTEMOWE_walidacja_lint_pokrycie_.txt
 ====================================================================================================

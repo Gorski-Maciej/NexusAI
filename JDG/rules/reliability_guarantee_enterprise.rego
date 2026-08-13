@@ -87,6 +87,7 @@ decide := {
     "rule_id": "jdg.reliability_guarantee.provenance_gate",
     "package": "jdg.reliability_guarantee",
     "priority": 200,
+    "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
     "reliability": {
         "reproducibility_fingerprint": reproducibility_fingerprint,
         "provenance_complete": false,
@@ -108,6 +109,7 @@ else := {
     "rule_id": "jdg.reliability_guarantee.fallback_ladder_gate",
     "package": "jdg.reliability_guarantee",
     "priority": 210,
+    "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
     "reliability": {
         "reproducibility_fingerprint": reproducibility_fingerprint,
         "provenance_complete": has_full_provenance,
@@ -129,6 +131,7 @@ else := {
     "rule_id": "jdg.reliability_guarantee.determinism_warning",
     "package": "jdg.reliability_guarantee",
     "priority": 220,
+    "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
     "reliability": {
         "reproducibility_fingerprint": reproducibility_fingerprint,
         "provenance_complete": has_full_provenance,

@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 09/25 — UoR / PKPiR / KSIĘGOWOŚĆ (pełna księgowość, księgi, kolumny PKPiR, amortyzacja, transformacja)
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 09_UoR_PKPiR_KSIĘGOWOŚĆ_pełna_księgowość_księgi.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-13)
 Status: WDROZONY_100
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 Stan wdrożenia po walidacji 2026-08-13: WDROZONY_100 (9/9 bramek P09 przechodzi; raport JEST WDROZONY_100).

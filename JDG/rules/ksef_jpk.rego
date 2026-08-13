@@ -49,6 +49,7 @@ decide := {
 decide := {
     "matched":true,"rule_id":"jdg.ksef_jpk.ksef_mandatory",
     "package":"jdg.ksef_jpk","priority":950,
+    "valid_from":"2026-02-01","valid_to":null,"decision_mode":"SUGGEST",
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
@@ -139,6 +140,7 @@ else := {
 else := {
     "matched":true,"rule_id":"jdg.ksef_jpk.ksef_offline_recovery",
     "package":"jdg.ksef_jpk","priority":960,
+    "valid_from":"2026-02-01","valid_to":null,"decision_mode":"SUGGEST",
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
@@ -154,6 +156,7 @@ else := {
 else := {
     "matched":true,"rule_id":"jdg.ksef_jpk.jpk_v7m",
     "package":"jdg.ksef_jpk","priority":970,
+    "valid_from":"2020-10-01","valid_to":null,"decision_mode":"SUGGEST",
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
@@ -189,6 +192,7 @@ else := {
 else := {
     "matched":true,"rule_id":"jdg.ksef_jpk.jpk_pkpir",
     "package":"jdg.ksef_jpk","priority":980,
+    "valid_from":"2016-07-01","valid_to":null,"decision_mode":"SUGGEST",
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,

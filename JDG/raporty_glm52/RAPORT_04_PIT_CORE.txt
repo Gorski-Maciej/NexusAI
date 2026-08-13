@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 04/25 — PIT — CORE (MACRO) + ULGI (skala, liniowy, KUP, NKUP, amortyzacja, ulgi Art. 21–26h, IP Box)
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 04_PIT_CORE.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-12)
 Status: WDROZONY_100
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.

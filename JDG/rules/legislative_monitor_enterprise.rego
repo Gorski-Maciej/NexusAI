@@ -35,6 +35,7 @@ decide := {
     "rule_id": "jdg.legislative.change_detection",
     "package": "jdg.legislative_monitor",
     "priority": 1950,
+    "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,

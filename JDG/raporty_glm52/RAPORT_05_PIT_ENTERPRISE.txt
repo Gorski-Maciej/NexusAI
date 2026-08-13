@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 05/25 — PIT — ENTERPRISE (deklaracje PIT-36/36L/28, estoński CIT, exit tax, transformacje, optymalizacja)
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 05_PIT_ENTERPRISE.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-12)
 Status: WDROZONY_100
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.

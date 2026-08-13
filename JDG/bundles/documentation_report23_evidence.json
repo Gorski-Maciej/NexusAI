@@ -1,0 +1,43 @@
+{
+  "report": "RAPORT_23_DOKUMENTACJA",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "dr_bcp_section_present": true,
+    "role_model_present": true,
+    "slo_section_present": true,
+    "golden_replay_ready": true,
+    "canary_rollback_ok": true
+  },
+  "gate_summary": {
+    "passed": 6,
+    "total": 6
+  },
+  "scope": {
+    "docs_total": 37,
+    "docs_present": 37,
+    "missing": []
+  },
+  "sections": {
+    "dr_bcp": true,
+    "role_model": true,
+    "slo": true,
+    "all": true
+  },
+  "replay": {
+    "valid": true,
+    "verdicts": 13,
+    "replays": 13,
+    "unmatched": [],
+    "unmatched_count": 0
+  },
+  "deployment": {
+    "bundle": "jdg-doc-bundle-v9.0.0",
+    "phase": "ROLLED_BACK",
+    "rollback_reason": "RAPORT_23 fail-closed: no production telemetry for documentation artifacts; exercise rollback SLA boundary",
+    "rollback_mttr_minutes": 4.0,
+    "rollback_sla_pass": true,
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "generated_at": "2026-08-13T18:52:52.178515+00:00"
+}

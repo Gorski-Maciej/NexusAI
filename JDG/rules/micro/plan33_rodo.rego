@@ -4,7 +4,7 @@
 
 package jdg.micro.rodo
 
-default decide := {"matched":false,"rule_id":"jdg.micro.rodo.no_match","package":"jdg.micro.rodo","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.micro.rodo.plan33_no_match","package":"jdg.micro.rodo","priority":99999}
 
 # jdg.micro.rodo.r1 — `rodo_applicable_to_jdg`: JDG przetwarza dane osobowe klientow/pracownikow -> RODO ma zastosowanie
 decide :=   {"matched":true,"rule_id":"jdg.micro.rodo.r1","package":"jdg.micro.rodo","priority":6900,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"JDG przetwarza dane osobowe klientow/pracownikow -> RODO ma zastosowanie","_legal_basis":"RODO — Rozporządzenie UE 2016/679","_warnings":["[MICRO] JDG przetwarza dane osobowe klientow/pracownikow -> RODO ma zastosowanie"]} {

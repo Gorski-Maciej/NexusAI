@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 07/25 — KKS — Kodeks Karny Skarbowy (czynny żal, sankcje, kary, obrona, GAAR, sanctions)
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 07_KKS_Kodeks_Karny_Skarbowy.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-13)
 Status: WDROZONY_100
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 Stan wdrożenia po walidacji 2026-08-13: WDROZONY_100 (9/9 bramek P07 przechodzi; raport JEST WDROZONY_100).

@@ -4,7 +4,7 @@
 
 package jdg.micro.ksef
 
-default decide := {"matched":false,"rule_id":"jdg.micro.ksef.no_match","package":"jdg.micro.ksef","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.micro.ksef.plan33_no_match","package":"jdg.micro.ksef","priority":99999}
 
 # jdg.ksef.a106na.r10 — `ksef_vat_exempt_exception`: Podatnicy zwolnieni z VAT -> wyłączeni z KSeF (do 2026-04-01) → Wyjątek
 # v7.0 AUDIT FIX (P18 LUKA-K4): Od 2026-04-01 zwolnieni RÓWNIEŻ podlegają KSeF. Wyjątek tylko przed tą datą.

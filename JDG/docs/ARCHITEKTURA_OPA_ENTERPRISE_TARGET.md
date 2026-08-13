@@ -381,6 +381,22 @@ Wymóg użytkownika: OPA musi być **inteligentnym systemem**. Inteligencja nie 
 
 **Proces zmian:** PR-based (GitOps), 4-eyes, template'y, checklisty automatyczne, SLA odpowiedzi na incydent: P0 ≤ 15 min, P1 ≤ 1 h. **Szkolenia:** symulacje zmiany prawa („game days") co kwartał; katalog wzorców reguł (recipes) — dodawanie reguły bez dokumentacji to zła praktyka.
 
+### 12.1. Model ról operatorów (RBAC / SoD / 4-eyes)
+| Rola operatora | Uprawnienia | Ograniczenia (SoD) |
+|---|---|---|
+| Autor reguły | pisze `.rego` + manifest + testy w PR | nie może recenzować ani wdrażać własnej zmiany |
+| Recenzent (Legal/Policy) | review diffu prawnego i `_legal_basis` | nie może wdrażać |
+| Operator wdrożenia | uruchamia canary→rollout→rollback | nie jest autorem ani recenzentem danej zmiany |
+| Auditor | odczyt-only WORM, ścieżka dowodu | brak prawa zapisu |
+- **BLOCKER** wymaga 4-eyes (autor + recenzent + operator + audyt wtórny); **MFA** obowiązkowe dla operatorów i auditorów.
+
+### 12.2. DR/BCP — ciągłość działania i odzyskiwanie (RTO/RPO)
+- **RTO ≤ 15 min** (odzyskanie usługi decyzyjnej), **RPO ≤ 5 min** (maks. utrata werdyktów/logów).
+- **Backup:** codzienny snapshot `rules/` + `bundles/` + RuleStore (SQLite/DuckDB) + legal_graph LKG; retencja 50 lat (pracownicze) / bezterminowo (audytowe) na WORM.
+- **Restore:** replikacja bundle na ≥2 strefach; klucze HSM offline dla DR (poza repo); procedura przywrócenia z `healthy_versions.json` (auto-rollback do ostatniej zdrowej wersji).
+- **Runbooki:** P0 awaria węzła → failover ≤ 15 min; dryf legislacyjny krytyczny → hotfix parametru ≤ 15 min (wersjonowane dane progów, bez redeploy reguł).
+- **Testy DR:** kwartalne „game days" (chaos: kill node, corrupt bundle, expired key, WORM tamper) — scenariusz auto-rollback ≤ 5 min musi przechodzić.
+
 ---
 
 ## 13. Porównanie: stan obecny (JDG) → cel (ENTERPRISE)
@@ -396,8 +412,8 @@ Wymóg użytkownika: OPA musi być **inteligentnym systemem**. Inteligencja nie 
 | Testy natywne | częściowo (103+ pliki, plan do Q4 2026) | ≥ 95% pakietów, golden replay, mutation |
 | Adaptacja prawa | crawl codzienny, cel 24 h | monitoring 24/7, AI-reader, 24 h rutynowo / 4 h P0, parametr 15 min |
 | Obserwowalność | health + telemetria | pełne SLO/SLI, traceability chain, pętla jakości |
-| DR/BCP | brak opisu | RTO 15 min, RPO 5 min, game days kwartalne |
-| Operacje | brak modelu ról operatorów | RBAC/SoD/4-eyes/MFA, runbooki |
+| DR/BCP | §12.2 (RTO/RPO, backup, runbooki, game days) | RTO 15 min, RPO 5 min, game days kwartalne |
+| Operacje | §12.1 (model ról operatorów RBAC/SoD/4-eyes) | RBAC/SoD/4-eyes/MFA, runbooki |
 
 ---
 

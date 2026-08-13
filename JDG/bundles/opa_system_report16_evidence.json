@@ -1,0 +1,304 @@
+{
+  "report": "RAPORT_16_SYSTEM_OPA",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "duplicate_free": true,
+    "critical_tests_mapped": true,
+    "critical_temporal": true,
+    "legal_basis_canonical": true,
+    "router_wired": true,
+    "safety_suggest": true,
+    "golden_replay_ok": true,
+    "canary_rollback_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "inventory": {
+    "files": [
+      {
+        "path": "rules/decision_core_completeness_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 6,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/p24_innovations_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 30,
+        "legal_basis_count": 29,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p01_core_architecture_innovations_v8.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p01_fundament_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 3,
+        "legal_basis_count": 2,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p02_decision_core_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 2,
+        "legal_basis_count": 1,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p03_orchestrator_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 2,
+        "legal_basis_count": 1,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p14_compliance_innovations_v8.rego",
+        "exists": true,
+        "rule_id_count": 13,
+        "legal_basis_count": 12,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 31,
+        "legal_basis_count": 43,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p20_neural_mesh_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 29,
+        "legal_basis_count": 36,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p21_innovations_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 49,
+        "legal_basis_count": 48,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p21_opa_system_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 2,
+        "legal_basis_count": 22,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p22_innovations_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 49,
+        "legal_basis_count": 48,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p22_validation_tools_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 2,
+        "legal_basis_count": 22,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p23_innovations_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 21,
+        "legal_basis_count": 20,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p23_test_rego_ci_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 2,
+        "legal_basis_count": 22,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p24_audyt_kompletny_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 2,
+        "legal_basis_count": 27,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p24_innovations_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 30,
+        "legal_basis_count": 28,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p34_innovations_engine.rego",
+        "exists": true,
+        "rule_id_count": 17,
+        "legal_basis_count": 16,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p34_remaining_fixes.rego",
+        "exists": true,
+        "rule_id_count": 15,
+        "legal_basis_count": 14,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p35_cross_act_coherence.rego",
+        "exists": true,
+        "rule_id_count": 11,
+        "legal_basis_count": 10,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p35_innovations_engine.rego",
+        "exists": true,
+        "rule_id_count": 17,
+        "legal_basis_count": 16,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p35_system_gaps.rego",
+        "exists": true,
+        "rule_id_count": 12,
+        "legal_basis_count": 11,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/reliability_guarantee_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 4,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/rule_lifecycle_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 4,
+        "temporal": true,
+        "package_declared": true
+      }
+    ],
+    "files_total": 24,
+    "files_present": 24,
+    "rule_ids_total": 363,
+    "rule_ids_unique": 363,
+    "duplicate_rule_ids": [],
+    "duplicate_count": 0,
+    "temporal_files": 12,
+    "critical_temporal_rule_count": 7,
+    "critical_temporal_evidence": {
+      "auto_rollback": true,
+      "shadow_activation": true,
+      "ab_rollout": true,
+      "provenance_gate": true,
+      "determinism_warning": true,
+      "opa_system": true,
+      "test_shield": true
+    },
+    "temporal_coverage_pct": 50.0
+  },
+  "test_evidence": {
+    "files_declared": 14,
+    "files_present": 14,
+    "critical_rule_markers": {
+      "auto_rollback": true,
+      "shadow_activation": true,
+      "ab_rollout": true,
+      "provenance_gate": true,
+      "determinism_warning": true,
+      "opa_system": true,
+      "test_shield": true
+    },
+    "critical_rule_evidence_complete": true,
+    "native_rego_test_present": true,
+    "pytest_test_present": true
+  },
+  "legal_canonical": {
+    "critical_legal_basis": {
+      "auto_rollback": true,
+      "shadow_activation": true,
+      "ab_rollout": true,
+      "provenance_gate": true,
+      "determinism_warning": true,
+      "opa_system": true,
+      "test_shield": true
+    },
+    "critical_canonical_reference": {
+      "auto_rollback": true,
+      "shadow_activation": true,
+      "ab_rollout": true,
+      "provenance_gate": true,
+      "determinism_warning": true,
+      "opa_system": true,
+      "test_shield": true
+    },
+    "adr_references_present": true,
+    "critical_rules_required": 7
+  },
+  "router": {
+    "rule_lifecycle_registered": true,
+    "reliability_registered": true,
+    "p21_registered": true,
+    "p22_registered": true,
+    "p23_registered": true,
+    "p34_registered": true,
+    "final_verdict": true
+  },
+  "safety": {
+    "suggest_mode_present": true,
+    "auto_post_mode_present": false,
+    "no_auto_post_mode": true
+  },
+  "replay": {
+    "golden_verdicts_total": 12,
+    "system_verdicts": 1,
+    "replays_total": 12,
+    "unmatched_replays": [],
+    "unmatched_count": 0,
+    "replay_verified": true
+  },
+  "deployment": {
+    "bundle": "jdg-sop-bundle-v9.0.0",
+    "phase": "ROLLED_BACK",
+    "rollout_pct": 100,
+    "quality": 100.0,
+    "error_rate": 0.0,
+    "rollback_reason": "RAPORT_16 fail-closed: no production telemetry for OPA-system (lifecycle/canary/CI); exercise rollback SLA boundary",
+    "soak_completed_at": "2026-08-15T12:00:00+00:00",
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "generated_at": "2026-08-13T16:57:43.395626+00:00"
+}

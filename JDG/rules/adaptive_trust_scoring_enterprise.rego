@@ -150,6 +150,7 @@ decide := {
     "rule_id": "jdg.adaptive_trust.auto_post_gate",
     "package": "jdg.adaptive_trust",
     "priority": 100,
+    "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
     "trust": {
         "base": base_trust_score,
         "final": final_trust_score(main_package),
@@ -176,6 +177,7 @@ else := {
     "rule_id": "jdg.adaptive_trust.suggest_gate",
     "package": "jdg.adaptive_trust",
     "priority": 110,
+    "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
     "trust": {
         "base": base_trust_score,
         "final": final_trust_score(main_package),

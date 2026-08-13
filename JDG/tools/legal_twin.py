@@ -75,10 +75,23 @@ ACT_KEYWORDS = [
     ("kodeks karny", ["kk"]),
     ("kodeksem karnym", ["kk"]),
     # eIDAS — podpisy elektroniczne (art. 6/25-26/28), skrót „eIDAS".
-    # ACT_HEADER_RE obcina nazwę na pierwszym nawiasie („(UE) nr 910/2014…"),
-    # więc fraza-klucz to początek tytułu rozporządzenia UE.
-    ("parlamentu europejskiego i rady", ["eidas"]),
+    # ACT_HEADER_RE zachowuje pierwszy nawias „(UE) nr 910/2014", więc numer
+    # rozporządzenia jednoznacznie odróżnia eIDAS od RODO (2016/679).
+    ("910/2014", ["eidas"]),
     ("identyfikacji elektronicznej i usług zaufania", ["eidas"]),
+    # RODO — rozporządzenie 2016/679; reguły używają skrótu „RODO" oraz numeru
+    # rozporządzenia („2016/679") w _legal_basis (np. „Art. 30 RODO (Rozporządzenie
+    # 2016/679)"). Nazwa aktu zawiera też frazy ochrony danych osobowych.
+    ("2016/679", ["rodo"]),
+    ("ochrony osób fizycznych", ["rodo"]),
+    ("przetwarzaniem danych osobowych", ["rodo"]),
+    # Ustawa AML — reguły używają „u.AML"/„Ustawy AML"/„AML" (CBDD, STR, UBO).
+    ("praniu pieniędzy", ["aml"]),
+    ("przeciwdziałaniu praniu", ["aml"]),
+    # Ustawa o odpadach (BDO) — reguły używają „UoO"/„Ustawy o odpadach".
+    ("odpadach", ["uoo", "odpad"]),
+    ("odpadami", ["uoo", "odpad"]),
+    ("odpadów", ["uoo", "odpad"]),
     # Ordynacja podatkowa: „OP" jako skrót obok „OrdPU" (esig art. 126 § 5/20a).
     # Uwaga: „ op" (spacja przed) — nie „op", żeby uniknąć fałszywych trafień
     # typu „stopa"/„opłata".
@@ -95,6 +108,11 @@ ACT_KEYWORDS = [
     ("prawa budowlanego", ["budowlan"]),
     ("prawem budowlanym", ["budowlan"]),
     ("prawo budowlane", ["budowlan"]),
+    # Ustawa o doręczeniach elektronicznych (e-Doręczenia) — reguły P17 używają
+    # pełnej nazwy „Ustawa o doręczeniach elektronicznych" oraz skrótu „e-Doręczenia".
+    ("doręczeniach elektronicznych", ["edelivery", "doręczeni", "e-doręczenia"]),
+    # Ustawa o informatyzacji — ePUAP, podpis elektroniczny, auto-aplikacja.
+    ("informatyzacji", ["informatyzacj", "epuap"]),
     # Ordynacja podatkowa: nominative form appears in the act header while
     # rule provenance uses both inflections and the "OrdPU" abbreviation.
     ("ordynacja podatkowa", ["ordynacj", "ordpu"]),
@@ -120,8 +138,9 @@ def act_aliases(act_name: str) -> list[str]:
 
 ACT_HEADER_RE = re.compile(
     r"^\s*(?:\d+\.\s*)?"                       # opcjonalna numeracja „1. "
-    r"((?:Ustawa z dnia \d{1,2} \w+ \d{4} r\.|Rozporządzenie\s+[^()]*?)"
-    r"[^()]*?)(?:\(|$)",
+    r"((?:Ustawa z dnia \d{1,2} \w+ \d{4} r\.|Rozporządzenie[^()]*)"
+    r"(?:[(][^)]*[)])?[^()]*?)"                 # pierwszy nawias (np. (UE) 2016/679)
+    r"(?:[(]|$)",
     re.IGNORECASE,
 )
 

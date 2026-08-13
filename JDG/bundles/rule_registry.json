@@ -1,1 +1,314 @@
-{}
+{
+  "jdg.adaptive_trust.auto_post_gate": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.adaptive_trust.auto_post_gate",
+        "title": "Adaptive trust — auto-post gate (rekomendacja SUGGEST)",
+        "legal_basis": "P02 Sekcja 1",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "WARNING",
+        "owner": "policy-engineer",
+        "domain": "other",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  },
+  "jdg.kks.statute_of_limitations_art44": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.kks.statute_of_limitations_art44",
+        "title": "KKS przedawnienie art. 44",
+        "legal_basis": "Art. 44 KKS",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "BLOCKER",
+        "owner": "policy-engineer",
+        "domain": "kks",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  },
+  "jdg.ksef_jpk.ksef_mandatory": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.ksef_jpk.ksef_mandatory",
+        "title": "KSeF obowiązek e-fakturowania (art. 106na)",
+        "legal_basis": "Art. 106na VAT",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "BLOCKER",
+        "owner": "policy-engineer",
+        "domain": "ksef",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  },
+  "jdg.local_taxes.pcc.sale_detection": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.local_taxes.pcc.sale_detection",
+        "title": "PCC wykrycie sprzedaży",
+        "legal_basis": "Ustawa o PCC",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "BLOCKER",
+        "owner": "policy-engineer",
+        "domain": "pcc",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  },
+  "jdg.p11_ordynacja_podatkowa_innovations.limitation_engine": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.p11_ordynacja_podatkowa_innovations.limitation_engine",
+        "title": "Ordynacja podatkowa — silnik przedawnienia",
+        "legal_basis": "Art. 70 OrdPU",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "BLOCKER",
+        "owner": "policy-engineer",
+        "domain": "ordpu",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  },
+  "jdg.p12_crossborder_innovations.cfc_calculator": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.p12_crossborder_innovations.cfc_calculator",
+        "title": "CFC kalkulator (cross-border)",
+        "legal_basis": "Art. 24a CIT",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "BLOCKER",
+        "owner": "policy-engineer",
+        "domain": "crossborder",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  },
+  "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_rate_calculator": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_rate_calculator",
+        "title": "Ryczałt — kalkulator stawki",
+        "legal_basis": "Ustawa o zryczałtowanym podatku",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "BLOCKER",
+        "owner": "policy-engineer",
+        "domain": "other",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  },
+  "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator",
+        "title": "RODO kalkulator sankcji",
+        "legal_basis": "Art. 83 RODO",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "BLOCKER",
+        "owner": "policy-engineer",
+        "domain": "rodo",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  },
+  "jdg.pit.a30c.r1": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.pit.a30c.r1",
+        "title": "PIT art. 30c",
+        "legal_basis": "Art. 30c PIT",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "BLOCKER",
+        "owner": "policy-engineer",
+        "domain": "pit",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  },
+  "jdg.pit.advances_returns.loss_carry_forward": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.pit.advances_returns.loss_carry_forward",
+        "title": "PIT rozliczenie straty",
+        "legal_basis": "Art. 9 ust. 3 PIT",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "BLOCKER",
+        "owner": "policy-engineer",
+        "domain": "pit",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  },
+  "jdg.rule_lifecycle.auto_rollback": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.rule_lifecycle.auto_rollback",
+        "title": "Auto-rollback (fail-closed)",
+        "legal_basis": "ADR-001 / P01 Sekcja 2",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "BLOCKER",
+        "owner": "policy-engineer",
+        "domain": "other",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  },
+  "jdg.solidarity.hyper.threshold_1m": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.solidarity.hyper.threshold_1m",
+        "title": "Danina solidarnościowa próg 1 mln",
+        "legal_basis": "Art. 30h PIT",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "BLOCKER",
+        "owner": "policy-engineer",
+        "domain": "other",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  },
+  "jdg.uor_live.full_accounting_obligation_check": {
+    "versions": [
+      {
+        "version": "1.0.0",
+        "rule_id": "jdg.uor_live.full_accounting_obligation_check",
+        "title": "UoR obowiązek pełnej księgowości",
+        "legal_basis": "Art. 2 UoR",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "severity": "BLOCKER",
+        "owner": "policy-engineer",
+        "domain": "uor",
+        "tests": [],
+        "thresholds": [],
+        "impact_rules": [],
+        "rollout_pct": 100,
+        "status": "ACTIVE",
+        "error_rate": 0.0,
+        "supersedes": null,
+        "registered_at": "2026-08-13"
+      }
+    ],
+    "suspend_reason": null
+  }
+}

@@ -1,0 +1,681 @@
+{
+  "report": "RAPORT_15_KSEF_JPK_DEKLARACJE",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "duplicate_free": true,
+    "critical_tests_mapped": true,
+    "critical_temporal": true,
+    "legal_twin_critical": true,
+    "router_wired": true,
+    "safety_suggest": true,
+    "golden_replay_ok": true,
+    "canary_rollback_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "inventory": {
+    "files": [
+      {
+        "path": "rules/_compliance_rates.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 1,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/corrections.rego",
+        "exists": true,
+        "rule_id_count": 20,
+        "legal_basis_count": 19,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/cross_declaration_validator_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 4,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/edelivery/plan44_edelivery.rego",
+        "exists": true,
+        "rule_id_count": 9,
+        "legal_basis_count": 8,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/edelivery/plan45_edelivery.rego",
+        "exists": true,
+        "rule_id_count": 42,
+        "legal_basis_count": 41,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/edelivery_gateway_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/edelivery_gateway_v2_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 2,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/epuap_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/gtu_completeness_checker_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jpk/plan26_deadlines.rego",
+        "exists": true,
+        "rule_id_count": 2,
+        "legal_basis_count": 1,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jpk_cit.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 4,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jpk_corrections_workflow_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jpk_kr_st_generator_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 4,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/jpk_v7_autogen_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/ksef_firewall_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/ksef_innovations_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/ksef_jpk.rego",
+        "exists": true,
+        "rule_id_count": 11,
+        "legal_basis_count": 10,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/ksef_offline_queue_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/ksef_outbox_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 5,
+        "legal_basis_count": 4,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/ksef_receipt_digest_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/ksef_resilience_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/ksef_sanction_monitor_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 3,
+        "legal_basis_count": 2,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/ksef_sandbox_harness_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/ksef_upo_tracker_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/jpk/jpk.rego",
+        "exists": true,
+        "rule_id_count": 36,
+        "legal_basis_count": 35,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/ksef/ksef.rego",
+        "exists": true,
+        "rule_id_count": 80,
+        "legal_basis_count": 79,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_jpk.rego",
+        "exists": true,
+        "rule_id_count": 71,
+        "legal_basis_count": 70,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_ksef.rego",
+        "exists": true,
+        "rule_id_count": 75,
+        "legal_basis_count": 74,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 30,
+        "legal_basis_count": 49,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/wis/plan44_wis.rego",
+        "exists": true,
+        "rule_id_count": 9,
+        "legal_basis_count": 8,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/wis/plan45_wis.rego",
+        "exists": true,
+        "rule_id_count": 36,
+        "legal_basis_count": 35,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/wis_api_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/wis_autorequester_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 1,
+        "temporal": false,
+        "package_declared": true
+      }
+    ],
+    "files_total": 33,
+    "files_present": 33,
+    "rule_ids_total": 506,
+    "rule_ids_unique": 506,
+    "duplicate_rule_ids": [],
+    "duplicate_count": 0,
+    "temporal_files": 2,
+    "critical_temporal_rule_count": 7,
+    "critical_temporal_evidence": {
+      "106na": true,
+      "99": true,
+      "193a": true,
+      "42a": true,
+      "106j": true,
+      "82": true,
+      "106nb": true
+    },
+    "temporal_coverage_pct": 6.06
+  },
+  "test_evidence": {
+    "files_declared": 16,
+    "files_present": 16,
+    "critical_rule_markers": {
+      "106na": true,
+      "99": true,
+      "193a": true,
+      "42a": true,
+      "106j": true,
+      "82": true,
+      "106nb": true
+    },
+    "critical_rule_marker_aliases": {
+      "106na": [
+        "jdg.ksef_jpk.ksef_mandatory",
+        "ksef_mandatory",
+        "Art. 106na"
+      ],
+      "99": [
+        "jdg.ksef_jpk.jpk_v7m",
+        "jpk_v7m",
+        "Art. 99"
+      ],
+      "193a": [
+        "jdg.ksef_jpk.jpk_pkpir",
+        "jpk_pkpir",
+        "Art. 193a"
+      ],
+      "42a": [
+        "jdg.p17_ksef_jpk_edeklaracje_innovations.wis_auto_requester",
+        "wis_auto_requester",
+        "Art. 42a"
+      ],
+      "106j": [
+        "jdg.p17_ksef_jpk_edeklaracje_innovations.ksef_corrections_e2e",
+        "ksef_corrections_e2e",
+        "Art. 106j"
+      ],
+      "82": [
+        "jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_v7_auto_generator",
+        "jpk_v7_auto_generator",
+        "Art. 82"
+      ],
+      "106nb": [
+        "jdg.ksef_jpk.ksef_offline_recovery",
+        "ksef_offline_recovery",
+        "Art. 106nb"
+      ]
+    },
+    "critical_articles_referenced": {
+      "106na": true,
+      "99": true,
+      "193a": false,
+      "42a": false,
+      "106j": true,
+      "82": true,
+      "106nb": false
+    },
+    "critical_rule_evidence_complete": true,
+    "native_rego_test_present": true,
+    "pytest_test_present": true
+  },
+  "legal_twin": {
+    "nodes_count": 181,
+    "covered_nodes": 135,
+    "indexes": {
+      "LCI": 74.59,
+      "TCL": 100.0,
+      "RV": 39.43
+    },
+    "critical_articles_with_rules": {
+      "106na": true,
+      "99": true,
+      "193a": true,
+      "42a": true,
+      "106j": true,
+      "82": true,
+      "106nb": true
+    },
+    "critical_markers_in_graph": {
+      "106na": true,
+      "99": true,
+      "193a": true,
+      "42a": true,
+      "106j": true,
+      "82": true,
+      "106nb": true
+    },
+    "critical_node_articles": {
+      "106na": [
+        {
+          "legal_node_id": "LKG-0002",
+          "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców",
+          "article": "6",
+          "rule_count": 2
+        },
+        {
+          "legal_node_id": "LKG-0006",
+          "act": "Ustawa z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej",
+          "article": "5-7",
+          "rule_count": 18
+        },
+        {
+          "legal_node_id": "LKG-0008",
+          "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+          "article": "5-14",
+          "rule_count": 142
+        },
+        {
+          "legal_node_id": "LKG-0043",
+          "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) nr 910/2014 z dnia 23 lipca 2014 r. w sprawie identyfikacji elektronicznej i usług zaufania",
+          "article": "6",
+          "rule_count": 1
+        },
+        {
+          "legal_node_id": "LKG-0047",
+          "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
+          "article": "6-12",
+          "rule_count": 125
+        },
+        {
+          "legal_node_id": "LKG-0135",
+          "act": "Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych",
+          "article": "6-7",
+          "rule_count": 32
+        },
+        {
+          "legal_node_id": "LKG-0137",
+          "act": "Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych",
+          "article": "2-7",
+          "rule_count": 16
+        },
+        {
+          "legal_node_id": "LKG-0149",
+          "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+          "article": "6",
+          "rule_count": 7
+        }
+      ],
+      "99": [
+        {
+          "legal_node_id": "LKG-0008",
+          "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+          "article": "5-14",
+          "rule_count": 142
+        },
+        {
+          "legal_node_id": "LKG-0047",
+          "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
+          "article": "6-12",
+          "rule_count": 125
+        },
+        {
+          "legal_node_id": "LKG-0138",
+          "act": "Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych",
+          "article": "8-14",
+          "rule_count": 38
+        }
+      ],
+      "193a": [
+        {
+          "legal_node_id": "LKG-0017",
+          "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+          "article": "86-96",
+          "rule_count": 279
+        },
+        {
+          "legal_node_id": "LKG-0145",
+          "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
+          "article": "92-99c",
+          "rule_count": 25
+        }
+      ],
+      "42a": [
+        {
+          "legal_node_id": "LKG-0066",
+          "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
+          "article": "2",
+          "rule_count": 38
+        },
+        {
+          "legal_node_id": "LKG-0133",
+          "act": "Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych",
+          "article": "1-2",
+          "rule_count": 103
+        },
+        {
+          "legal_node_id": "LKG-0137",
+          "act": "Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych",
+          "article": "2-7",
+          "rule_count": 16
+        },
+        {
+          "legal_node_id": "LKG-0139",
+          "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
+          "article": "2",
+          "rule_count": 2
+        },
+        {
+          "legal_node_id": "LKG-0170",
+          "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+          "article": "2",
+          "rule_count": 5
+        }
+      ],
+      "106j": [
+        {
+          "legal_node_id": "LKG-0002",
+          "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców",
+          "article": "6",
+          "rule_count": 2
+        },
+        {
+          "legal_node_id": "LKG-0006",
+          "act": "Ustawa z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej",
+          "article": "5-7",
+          "rule_count": 18
+        },
+        {
+          "legal_node_id": "LKG-0008",
+          "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+          "article": "5-14",
+          "rule_count": 142
+        },
+        {
+          "legal_node_id": "LKG-0043",
+          "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) nr 910/2014 z dnia 23 lipca 2014 r. w sprawie identyfikacji elektronicznej i usług zaufania",
+          "article": "6",
+          "rule_count": 1
+        },
+        {
+          "legal_node_id": "LKG-0047",
+          "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
+          "article": "6-12",
+          "rule_count": 125
+        },
+        {
+          "legal_node_id": "LKG-0135",
+          "act": "Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych",
+          "article": "6-7",
+          "rule_count": 32
+        },
+        {
+          "legal_node_id": "LKG-0137",
+          "act": "Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych",
+          "article": "2-7",
+          "rule_count": 16
+        },
+        {
+          "legal_node_id": "LKG-0149",
+          "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+          "article": "6",
+          "rule_count": 7
+        }
+      ],
+      "82": [
+        {
+          "legal_node_id": "LKG-0066",
+          "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
+          "article": "2",
+          "rule_count": 38
+        },
+        {
+          "legal_node_id": "LKG-0133",
+          "act": "Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych",
+          "article": "1-2",
+          "rule_count": 103
+        },
+        {
+          "legal_node_id": "LKG-0137",
+          "act": "Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych",
+          "article": "2-7",
+          "rule_count": 16
+        },
+        {
+          "legal_node_id": "LKG-0139",
+          "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
+          "article": "2",
+          "rule_count": 2
+        },
+        {
+          "legal_node_id": "LKG-0170",
+          "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+          "article": "2",
+          "rule_count": 5
+        }
+      ],
+      "106nb": [
+        {
+          "legal_node_id": "LKG-0002",
+          "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców",
+          "article": "6",
+          "rule_count": 2
+        },
+        {
+          "legal_node_id": "LKG-0006",
+          "act": "Ustawa z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej",
+          "article": "5-7",
+          "rule_count": 18
+        },
+        {
+          "legal_node_id": "LKG-0008",
+          "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+          "article": "5-14",
+          "rule_count": 142
+        },
+        {
+          "legal_node_id": "LKG-0043",
+          "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) nr 910/2014 z dnia 23 lipca 2014 r. w sprawie identyfikacji elektronicznej i usług zaufania",
+          "article": "6",
+          "rule_count": 1
+        },
+        {
+          "legal_node_id": "LKG-0047",
+          "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
+          "article": "6-12",
+          "rule_count": 125
+        },
+        {
+          "legal_node_id": "LKG-0135",
+          "act": "Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych",
+          "article": "6-7",
+          "rule_count": 32
+        },
+        {
+          "legal_node_id": "LKG-0137",
+          "act": "Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych",
+          "article": "2-7",
+          "rule_count": 16
+        },
+        {
+          "legal_node_id": "LKG-0149",
+          "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+          "article": "6",
+          "rule_count": 7
+        }
+      ]
+    },
+    "critical_articles_required": 7
+  },
+  "router": {
+    "router_files": [
+      "rules/main_jdg.rego",
+      "rules/provenance.rego"
+    ],
+    "ksef_jpk_registered": true,
+    "jpk_v7_autogen_registered": true,
+    "wis_api_registered": true,
+    "epuap_registered": true,
+    "p17_package_registered": true,
+    "final_verdict": true,
+    "provenance_joined": true
+  },
+  "safety": {
+    "suggest_mode_present": true,
+    "no_auto_post": true
+  },
+  "replay": {
+    "golden_verdicts_total": 11,
+    "ksef_verdicts": 1,
+    "replays_total": 11,
+    "unmatched_replays": [],
+    "unmatched_count": 0,
+    "replay_verified": true
+  },
+  "deployment": {
+    "bundle": "jdg-kjp-bundle-v9.0.0",
+    "phase": "ROLLED_BACK",
+    "rollout_pct": 100,
+    "quality": 100.0,
+    "error_rate": 0.0,
+    "rollback_reason": "RAPORT_15 fail-closed: no production telemetry for KSeF/JPK/e-Deklaracje; exercise rollback SLA boundary",
+    "soak_completed_at": "2026-08-15T12:00:00+00:00",
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "generated_at": "2026-08-13T16:40:56.549909+00:00"
+}

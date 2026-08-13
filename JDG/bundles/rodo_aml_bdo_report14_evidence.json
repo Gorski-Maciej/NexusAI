@@ -1,0 +1,481 @@
+{
+  "report": "RAPORT_14_RODO_AML_BDO",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "duplicate_free": true,
+    "critical_tests_mapped": true,
+    "critical_temporal": true,
+    "legal_twin_critical": true,
+    "router_wired": true,
+    "safety_suggest": true,
+    "golden_replay_ok": true,
+    "canary_rollback_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "inventory": {
+    "files": [
+      {
+        "path": "rules/compliance/aml_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 1,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/environmental/bdo_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 24,
+        "legal_basis_count": 23,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/environmental.rego",
+        "exists": true,
+        "rule_id_count": 15,
+        "legal_basis_count": 14,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/aml/aml.rego",
+        "exists": true,
+        "rule_id_count": 126,
+        "legal_basis_count": 125,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/aml/aml_cbdd.rego",
+        "exists": true,
+        "rule_id_count": 7,
+        "legal_basis_count": 6,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/aml/aml_ryzyko.rego",
+        "exists": true,
+        "rule_id_count": 9,
+        "legal_basis_count": 8,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/aml/aml_str_gif.rego",
+        "exists": true,
+        "rule_id_count": 9,
+        "legal_basis_count": 8,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/aml/aml_transakcje.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/bdo/bdo_ewc.rego",
+        "exists": true,
+        "rule_id_count": 10,
+        "legal_basis_count": 9,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/bdo/bdo_ewidencja.rego",
+        "exists": true,
+        "rule_id_count": 10,
+        "legal_basis_count": 9,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/bdo/bdo_rejestracja.rego",
+        "exists": true,
+        "rule_id_count": 10,
+        "legal_basis_count": 9,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/bdo/bdo_transport.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/bdo/bdo_weee_baterie.rego",
+        "exists": true,
+        "rule_id_count": 7,
+        "legal_basis_count": 6,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/bdo/bdo_zezwolenia.rego",
+        "exists": true,
+        "rule_id_count": 8,
+        "legal_basis_count": 7,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/plan33_rodo.rego",
+        "exists": true,
+        "rule_id_count": 11,
+        "legal_basis_count": 10,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/rodo/rodo.rego",
+        "exists": true,
+        "rule_id_count": 41,
+        "legal_basis_count": 40,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/rodo/rodo_ai_marketing.rego",
+        "exists": true,
+        "rule_id_count": 7,
+        "legal_basis_count": 6,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/rodo/rodo_erasure.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/rodo/rodo_podprocesorzy.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/rodo/rodo_sankcje.rego",
+        "exists": true,
+        "rule_id_count": 7,
+        "legal_basis_count": 6,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/rodo/rodo_zatrudnienie.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/micro/srodowisko/srodowisko.rego",
+        "exists": true,
+        "rule_id_count": 49,
+        "legal_basis_count": 48,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p15_srodowisko_bdo_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 33,
+        "legal_basis_count": 35,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/p16_rodo_aml_security_innovations_v9.rego",
+        "exists": true,
+        "rule_id_count": 34,
+        "legal_basis_count": 57,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/rodo/plan42_rodo.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/rodo.rego",
+        "exists": true,
+        "rule_id_count": 13,
+        "legal_basis_count": 12,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/rodo_extended.rego",
+        "exists": true,
+        "rule_id_count": 18,
+        "legal_basis_count": 17,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/security/security_fortress_v8.rego",
+        "exists": true,
+        "rule_id_count": 20,
+        "legal_basis_count": 19,
+        "temporal": true,
+        "package_declared": true
+      }
+    ],
+    "files_total": 28,
+    "files_present": 28,
+    "rule_ids_total": 507,
+    "rule_ids_unique": 507,
+    "duplicate_rule_ids": [],
+    "duplicate_count": 0,
+    "temporal_files": 4,
+    "critical_temporal_rule_count": 7,
+    "critical_temporal_evidence": {
+      "a17": true,
+      "a28": true,
+      "a30": true,
+      "a83": true,
+      "a34": true,
+      "a74": true,
+      "a49": true
+    },
+    "temporal_coverage_pct": 14.29
+  },
+  "test_evidence": {
+    "files_declared": 12,
+    "files_present": 12,
+    "critical_rule_markers": {
+      "a17": true,
+      "a28": true,
+      "a30": true,
+      "a83": true,
+      "a34": true,
+      "a74": true,
+      "a49": true
+    },
+    "critical_rule_marker_aliases": {
+      "a17": [
+        "jdg.rodo_extended.erasure_automation",
+        "erasure",
+        "Art. 17 RODO",
+        "usunięcie"
+      ],
+      "a28": [
+        "jdg.rodo_extended.subprocessor_chain_audit",
+        "jdg.p16_rodo_aml_security_innovations.subprocessor_saas_map",
+        "subprocessor",
+        "Art. 28"
+      ],
+      "a30": [
+        "jdg.p16_rodo_aml_security_innovations.rodo_register_automation",
+        "rodo_register_automation",
+        "rejestr czynności",
+        "Art. 30"
+      ],
+      "a83": [
+        "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator",
+        "jdg.rodo_extended.sanctions_uodo",
+        "Art. 83",
+        "sankcj"
+      ],
+      "a34": [
+        "jdg.p16_rodo_aml_security_innovations.aml_risk_scoring_transaction",
+        "aml_risk_scoring_transaction",
+        "Art. 34",
+        "15000"
+      ],
+      "a74": [
+        "jdg.p16_rodo_aml_security_innovations.str_gijf_auto_submission",
+        "str_gijf",
+        "Art. 74",
+        "GIIF"
+      ],
+      "a49": [
+        "jdg.p15_srodowisko_bdo_innovations.bdo_registration_detector",
+        "bdo_registration_detector",
+        "Art. 49",
+        "rejestracja BDO"
+      ]
+    },
+    "critical_articles_referenced": {
+      "a17": true,
+      "a28": true,
+      "a30": true,
+      "a83": true,
+      "a34": false,
+      "a74": true,
+      "a49": false
+    },
+    "critical_rule_evidence_complete": true,
+    "native_rego_test_present": true,
+    "pytest_test_present": true
+  },
+  "legal_twin": {
+    "nodes_count": 172,
+    "covered_nodes": 132,
+    "indexes": {
+      "LCI": 76.74,
+      "TCL": 100.0,
+      "RV": 39.13
+    },
+    "critical_articles_with_rules": {
+      "a17": true,
+      "a28": true,
+      "a30": true,
+      "a83": true,
+      "a34": true,
+      "a74": true,
+      "a49": true
+    },
+    "critical_rule_ids_in_graph": {
+      "a17": [
+        "jdg.micro.rodo_erasure.no_match",
+        "jdg.micro.rodo_erasure.r1",
+        "jdg.micro.rodo_erasure.r2",
+        "jdg.rodo_extended.erasure_automation",
+        "jdg.rodo_extended.erasure_exception_accounting"
+      ],
+      "a28": [
+        "jdg.p16_rodo_aml_security_innovations.subprocessor_saas_map",
+        "jdg.rodo_extended.subprocessor_chain_audit"
+      ],
+      "a30": [
+        "jdg.p16_rodo_aml_security_innovations.rodo_register_automation"
+      ],
+      "a83": [
+        "jdg.micro.rodo_sankcje.no_match",
+        "jdg.micro.rodo_sankcje.r1",
+        "jdg.micro.rodo_sankcje.r2",
+        "jdg.micro.rodo_sankcje.r3",
+        "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator",
+        "jdg.rodo_extended.sanctions_uodo"
+      ],
+      "a34": [
+        "jdg.p16_rodo_aml_security_innovations.aml_risk_scoring_transaction"
+      ],
+      "a74": [
+        "jdg.p16_rodo_aml_security_innovations.str_gijf_auto_submission"
+      ],
+      "a49": [
+        "jdg.p15_srodowisko_bdo_innovations.bdo_registration_detector"
+      ]
+    },
+    "critical_node_articles": {
+      "a17": [
+        {
+          "legal_node_id": "LKG-0145",
+          "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+          "article": "17",
+          "rule_count": 6
+        }
+      ],
+      "a28": [
+        {
+          "legal_node_id": "LKG-0151",
+          "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+          "article": "28",
+          "rule_count": 5
+        }
+      ],
+      "a30": [
+        {
+          "legal_node_id": "LKG-0152",
+          "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+          "article": "30",
+          "rule_count": 6
+        }
+      ],
+      "a83": [
+        {
+          "legal_node_id": "LKG-0160",
+          "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+          "article": "83",
+          "rule_count": 9
+        }
+      ],
+      "a34": [
+        {
+          "legal_node_id": "LKG-0163",
+          "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+          "article": "28-34",
+          "rule_count": 6
+        }
+      ],
+      "a74": [
+        {
+          "legal_node_id": "LKG-0165",
+          "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+          "article": "74-80",
+          "rule_count": 1
+        }
+      ],
+      "a49": [
+        {
+          "legal_node_id": "LKG-0169",
+          "act": "Ustawa z dnia 14 grudnia 2012 r. o odpadach",
+          "article": "49-55",
+          "rule_count": 19
+        }
+      ]
+    },
+    "critical_articles_required": 7
+  },
+  "router": {
+    "router_files": [
+      "rules/main_jdg.rego",
+      "rules/router.rego",
+      "rules/router_v2.rego",
+      "rules/provenance.rego"
+    ],
+    "p16_package_registered": true,
+    "p15_package_registered": true,
+    "rodo_package_registered": true,
+    "security_fortress_registered": true,
+    "final_verdict": true,
+    "provenance_joined": true
+  },
+  "safety": {
+    "suggest_mode_present": true,
+    "no_auto_post": true
+  },
+  "replay": {
+    "golden_verdicts_total": 10,
+    "rodo_verdicts": 4,
+    "replays_total": 10,
+    "unmatched_replays": [],
+    "unmatched_count": 0,
+    "replay_verified": true
+  },
+  "deployment": {
+    "bundle": "jdg-rab-bundle-v9.0.0",
+    "phase": "ROLLED_BACK",
+    "rollout_pct": 100,
+    "quality": 100.0,
+    "error_rate": 0.0,
+    "rollback_reason": "RAPORT_14 fail-closed: no production telemetry for RODO/AML/BDO; exercise rollback SLA boundary",
+    "soak_completed_at": "2026-08-15T12:00:00+00:00",
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "generated_at": "2026-08-13T16:16:32.287394+00:00"
+}

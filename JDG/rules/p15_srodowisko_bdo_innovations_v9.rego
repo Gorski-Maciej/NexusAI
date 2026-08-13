@@ -715,6 +715,7 @@ bdo_registration_detector := {
     "rule_id": "jdg.p15_srodowisko_bdo_innovations.bdo_registration_detector",
     "package": "jdg.p15_srodowisko_bdo_innovations",
     "priority": 1183,
+    "valid_from": "2013-01-23", "valid_to": null, "decision_mode": "SUGGEST",
     "matched": true,
     "activity_desc": activity,
     "generates_waste": generates_waste,

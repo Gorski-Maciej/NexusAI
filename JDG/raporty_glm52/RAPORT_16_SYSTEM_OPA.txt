@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 16/25 — SYSTEM OPA — INNOWACJE P18–P35 (OPA jako rozbudowany SYSTEM, automatyzacja, walidacja, audyt)
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 16_SYSTEM_OPA_INNOWACJE_P18_P35.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-13)
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
@@ -207,6 +207,38 @@ Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, �
 10. WNIOSKI KOŃCOWE
 Audyt części 16 potwierdza istnienie 39 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
 Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+REJESTR WDROŻENIA (2026-08-13)
+====================================================================================================
+Status: WDROZONY_100 — wszystkie 9 bramek dowodowych przeszły (tools/opa_system_report16_gate.py).
+Dowód: bundles/opa_system_report16_evidence.json | Testy: tests/auto/test_opa_system_report16_gate.py (9/9).
+
+Co domknięto:
+1. G-02 Duplikaty: 0/363 (raport deklarował 0) — podtrzymane; dead_rule_detector = 0.
+2. G-03 Temporalność 8 -> 17/25 plików: dodano valid_from/valid_to + decision_mode
+   SUGGEST na 7 krytycznych blokach systemu OPA: auto_rollback, shadow_activation,
+   ab_rollout (jdg.rule_lifecycle), provenance_gate, determinism_warning
+   (jdg.reliability_guarantee), opa_system (jdg.p21_opa_system_innovations),
+   test_shield (jdg.p23_test_rego_ci_innovations).
+3. G-05 Kanoniczność podstaw: 7/7 krytycznych reguł ma _legal_basis z odwołaniem
+   kanonicznym (ADR-001/002/006/013, P01 Sekcja 2/4, ISAP). Bramka sprawdza
+   decision_mode AUTO_POST = 0 („AUTO_POST" występuje wyłącznie opisowo).
+4. G-04 Testy krytyczne 7/7: auto_rollback, shadow_activation, ab_rollout,
+   provenance_gate, determinism_warning, opa_system, test_shield — pokryte w
+   test_p01_fundament / test_p21_opa_system / test_p23_test_rego_ci (pytest + rego).
+5. Golden replay: 1 SYSTEM verdict (jdg.rule_lifecycle.auto_rollback,
+   P01 Sekcja 2 self-healing) + 1 replay, 0 UVER (bundles/golden_verdicts.json).
+6. Deployment jdg-sop-bundle-v9.0.0: canary -> shadow (delta 1.0%) -> ramped ->
+   soak 24h -> auto-rollback MTTR 4.0 min SLA pass (fail-closed, powrót do
+   jdg-bundle-v8.0.0, NIE production-active).
+7. Safety: decision_mode SUGGEST w 7 blokach krytycznych; brak reguły z
+   decision_mode AUTO_POST.
+8. Router: main_jdg.rego importuje jdg.rule_lifecycle / jdg.reliability_guarantee /
+   jdg.p21_opa_system_innovations / jdg.p22_validation_tools_innovations /
+   jdg.p23_test_rego_ci_innovations / jdg.p34_innovations + full_final_verdict.
+
+Weryfikacja: bramka 9/9 -> WDROZONY_100; testy bramki 9/9.
+Następny raport wg kolejności: RAPORT_17 (uruchom w świeżym oknie kontekstowym).
 ====================================================================================================
 KONIEC RAPORTU 16/25 — raport wygenerowany z promptu 16_SYSTEM_OPA_INNOWACJE_P18_P35.txt
 ====================================================================================================

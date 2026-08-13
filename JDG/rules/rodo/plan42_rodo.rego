@@ -6,7 +6,7 @@
 package jdg.rodo
 import data.jdg.helpers
 
-default decide := {"matched":false,"rule_id":"jdg.rodo.no_match","package":"jdg.rodo","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.rodo.plan42_no_match","package":"jdg.rodo","priority":99999}
 
 # jdg.rodo.dpa_registration_check — Obowiązek rejestracji DPA w UODO
 decide :=   {"matched":true,"rule_id":"jdg.rodo.dpa_registration_check","package":"jdg.rodo","priority":1610,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"TRIAGE_QUEUE","_routing_reason":"Obowiązek rejestracji DPA w UODO","_legal_basis":"Art. 30, 36 RODO","_warnings":["JDG przetwarza dane osobowe — sprawdź obowiązek rejestracji w UODO"]} {

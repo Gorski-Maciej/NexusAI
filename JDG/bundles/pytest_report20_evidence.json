@@ -1,0 +1,58 @@
+{
+  "report": "RAPORT_20_TESTY_PYTEST",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "duplicate_free": true,
+    "test_syntax_ok": true,
+    "risk_guard_imports_resolve": true,
+    "risk_guard_tests_pass": true,
+    "golden_replay_ready": true,
+    "canary_rollback_ok": true
+  },
+  "gate_summary": {
+    "passed": 7,
+    "total": 7
+  },
+  "scope": {
+    "docs_total": 5,
+    "docs_present": 5,
+    "unit_tests_total": 36,
+    "unit_tests_present": 36,
+    "auto_block_total": 54,
+    "auto_block_present": 54,
+    "missing": []
+  },
+  "syntax": {
+    "syntax_errors": [],
+    "syntax_ok": true,
+    "files_checked": 132
+  },
+  "imports": {
+    "broken_imports": [],
+    "imports_ok": true
+  },
+  "pytest": {
+    "exit_code": 0,
+    "passed": true,
+    "stdout_tail": "..................                                                       [100%]\n18 passed in 2.95s",
+    "stderr_tail": ""
+  },
+  "replay": {
+    "valid": true,
+    "verdicts": 13,
+    "replays": 13,
+    "unmatched": [],
+    "unmatched_count": 0
+  },
+  "deployment": {
+    "bundle": "jdg-tst-bundle-v9.0.0",
+    "phase": "ROLLED_BACK",
+    "rollout_pct": 100,
+    "rollback_reason": "RAPORT_20 fail-closed: no production telemetry for pytest suite (unit/integration); exercise rollback SLA boundary",
+    "rollback_mttr_minutes": 4.0,
+    "rollback_sla_pass": true,
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "generated_at": "2026-08-13T18:08:45.656443+00:00"
+}

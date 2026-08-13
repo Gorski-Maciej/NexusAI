@@ -4,7 +4,7 @@
 
 package jdg.micro.jpk
 
-default decide := {"matched":false,"rule_id":"jdg.micro.jpk.no_match","package":"jdg.micro.jpk","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.micro.jpk.plan33_no_match","package":"jdg.micro.jpk","priority":99999}
 
 # jdg.jpk.a99.r11 — `jpk_v7m_monthly_structure`: JPK_V7M dla czynnych podatników VAT (miesięcznie) -> struktura JPK_VAT → Miesięczna deklaracja
 decide :=   {"matched":true,"rule_id":"jdg.jpk.a99.r11","package":"jdg.micro.jpk","priority":5900,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"JPK_V7M dla czynnych podatników VAT (miesięcznie) -> struktura JPK_VAT","_legal_basis":"§ 2 rozp. JPK_VAT","_warnings":["[MICRO] JPK_V7M dla czynnych podatników VAT (miesięcznie) -> struktura JPK_VAT"]} {

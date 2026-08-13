@@ -1,0 +1,121 @@
+{
+  "report": "RAPORT_19_NARZEDZIA_DOMENY",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "duplicate_free": true,
+    "generators_present": true,
+    "zus_kks_toolkit_present": true,
+    "domain_toolkits_present": true,
+    "auditors_present": true,
+    "tools_syntax_ok": true,
+    "golden_replay_ready": true,
+    "canary_rollback_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "scope": {
+    "docs_total": 5,
+    "docs_present": 5,
+    "rego_tests_total": 5,
+    "rego_tests_present": 5,
+    "pytest_total": 6,
+    "pytest_present": 6,
+    "tools_total": 82,
+    "tools_present": 82,
+    "missing": []
+  },
+  "categories": {
+    "generators": {
+      "present": true,
+      "files": [
+        "tools/generate_micro_rules.py",
+        "tools/generate_massive_rules.py",
+        "tools/generate_from_plan50.py",
+        "tools/parse_plan33_and_generate.py",
+        "tools/generate_test_suite.py",
+        "tools/generate_enterprise_tests.py"
+      ]
+    },
+    "zus_kks_toolkit": {
+      "present": true,
+      "files": [
+        "tools/zus_atom_linter.py",
+        "tools/zus_completeness_engine.py",
+        "tools/zus_atom_test_matrix.py",
+        "tools/cross_act_zus_checker.py",
+        "tools/contribution_base_validator.py",
+        "tools/zus_naming_unifier.py",
+        "tools/kks_penalty_simulator.py",
+        "tools/kks_voluntary_disclosure.py",
+        "tools/kks_limitations_calendar.py",
+        "tools/kks_risk_scorer.py",
+        "tools/p10_kks_micro_toolkit.py",
+        "tools/p10_kks_test_generator.py"
+      ]
+    },
+    "domain_toolkits": {
+      "present": true,
+      "files": [
+        "tools/p11_accounting_toolkit.py",
+        "tools/p12_uor_toolkit.py",
+        "tools/p12_uor_accounting_toolkit.py",
+        "tools/p13_crossborder_toolkit.py",
+        "tools/p14_compliance_toolkit.py",
+        "tools/p15_local_taxes_toolkit.py",
+        "tools/p15_pcc_local_excise_toolkit.py",
+        "tools/p16_business_lifecycle_toolkit.py",
+        "tools/p17_edge_cases_conflicts_toolkit.py"
+      ]
+    },
+    "auditors": {
+      "present": true,
+      "files": [
+        "tools/ordpu_auditor.py",
+        "tools/kks_penalty_auditor.py",
+        "tools/ksiegowosc_pkpir_uor_auditor.py",
+        "tools/crossborder_auditor.py",
+        "tools/ryczalt_lifecycle_auditor.py",
+        "tools/pcc_local_excise_auditor.py",
+        "tools/bdo_environment_auditor.py",
+        "tools/ksef_jpk_edeklaracje_auditor.py",
+        "tools/hr_swiadczenia_auditor.py",
+        "tools/neural_mesh_innovations_auditor.py",
+        "tools/opa_system_auditor.py",
+        "tools/zus_macro_auditor.py",
+        "tools/zus_micro_auditor.py",
+        "tools/rodo_aml_security_auditor.py",
+        "tools/automatyzacja_ksiegowosci_auditor.py",
+        "tools/validation_tools_auditor.py",
+        "tools/test_rego_ci_auditor.py",
+        "tools/audyt_kompletny_auditor.py",
+        "tools/vat_micro_auditor.py",
+        "tools/pit_micro_amortization_auditor.py"
+      ]
+    }
+  },
+  "syntax": {
+    "syntax_errors": [],
+    "syntax_ok": true
+  },
+  "replay": {
+    "valid": true,
+    "verdicts": 13,
+    "replays": 13,
+    "unmatched": [],
+    "unmatched_count": 0
+  },
+  "deployment": {
+    "bundle": "jdg-tld-bundle-v9.0.0",
+    "phase": "ROLLED_BACK",
+    "rollout_pct": 100,
+    "quality": 100.0,
+    "error_rate": 0.0,
+    "rollback_reason": "RAPORT_19 fail-closed: no production telemetry for domain tooling (generators/auditors/ZUS/KKS); exercise rollback SLA boundary",
+    "soak_completed_at": "2026-08-15T12:00:00+00:00",
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "generated_at": "2026-08-13T17:38:45.583015+00:00"
+}

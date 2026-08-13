@@ -1,0 +1,83 @@
+{
+  "report": "RAPORT_18_NARZEDZIA_SYSTEM",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "duplicate_free": true,
+    "ci_gates_present": true,
+    "legal_twin_ready": true,
+    "declarative_change_ready": true,
+    "law_radar_ready": true,
+    "golden_replay_ready": true,
+    "tools_syntax_ok": true,
+    "canary_rollback_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "scope": {
+    "tools_total": 52,
+    "tools_present": 52,
+    "tests_total": 7,
+    "tests_present": 7,
+    "docs_total": 5,
+    "docs_present": 5,
+    "missing": []
+  },
+  "ci_gates": {
+    "ci_gate_tools": {
+      "tools/validate_rules.py": true,
+      "tools/lint_rego_rules.py": true,
+      "tools/hardcoded_audit_gate.py": true,
+      "tools/dead_rule_detector.py": true,
+      "tools/tautology_guard.py": true,
+      "tools/zero_defect_certification.py": true
+    },
+    "ci_gates_present": true
+  },
+  "pillars": {
+    "legal_twin": {
+      "tools/legal_twin.py": true,
+      "bundles/legal_graph.json": true
+    },
+    "declarative_change": {
+      "tools/declarative_change.py": true
+    },
+    "decision_certificate": {
+      "tools/decision_certificate.py": true
+    },
+    "law_radar": {
+      "tools/law_radar.py": true,
+      "tools/isap_crawler.py": true,
+      "tools/isap_drift_alarm.py": true,
+      "tools/isap_rule_update_pipeline.py": true
+    },
+    "golden_replay": {
+      "tools/golden_replay.py": true,
+      "bundles/golden_verdicts.json": true
+    }
+  },
+  "syntax": {
+    "syntax_errors": [],
+    "syntax_ok": true
+  },
+  "replay": {
+    "valid": true,
+    "verdicts": 13,
+    "replays": 13,
+    "unmatched": [],
+    "unmatched_count": 0
+  },
+  "deployment": {
+    "bundle": "jdg-tls-bundle-v9.0.0",
+    "phase": "ROLLED_BACK",
+    "rollout_pct": 100,
+    "quality": 100.0,
+    "error_rate": 0.0,
+    "rollback_reason": "RAPORT_18 fail-closed: no production telemetry for system tooling (validate/lint/legal-twin/replay); exercise rollback SLA boundary",
+    "soak_completed_at": "2026-08-15T12:00:00+00:00",
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "generated_at": "2026-08-13T17:25:56.821710+00:00"
+}

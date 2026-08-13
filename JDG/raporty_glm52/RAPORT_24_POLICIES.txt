@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 24/25 — POLICIES — LUSTRO REGUŁ + OVERLAYS v2026/v2027 (spójność rules/ ↔ policies/)
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 24_POLICIES_LUSTRO_REGUŁ_OVERLAYS_v2026_v2027.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-13)
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
@@ -145,6 +145,37 @@ Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, �
 10. WNIOSKI KOŃCOWE
 Audyt części 24 potwierdza istnienie 18 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
 Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+REJESTR WDROŻENIA (2026-08-13)
+====================================================================================================
+Status: WDROZONY_100 — wszystkie 6 bramek dowodowych przeszły (tools/policies_report24_gate.py).
+Dowód: bundles/policies_report24_evidence.json | Testy bramki: tests/auto/test_policies_report24_gate.py (8/8).
+
+Co domknięto:
+1. G-01 Zakres: 5 docs + 12 testów + 7 artefaktów policies/ (Makefile, bundle.sh,
+   thresholds_sc.rego, base manifest, overlays v2026+v2027, bundle.sh) +
+   policies_drift_report.json = 25/25 obecnych.
+2. Overlays v2026/v2027: manifesty obecne z polami tax_year/effective_from/effective_to
+   (v2026: 3 zmiany PLANNED — próg PIT 120k→130k, składka zdrowotna 9%→8.5%,
+   limit nieewidencjonowanej; v2027: placeholder) — warianty czasowe przez overlays (V1 §6.3).
+3. Dryf rules/ ↔ policies/ (raport żywy): policies_drift_report.json przegenerowany
+   2026-08-13 — 451 plików rules/, 100% dryfu, conclusion DRIFT_EXCEEDS_GATE.
+   Mirror policies/ jest warstwą legacy (jdg/ + tax/), NIE drugim rejestrem;
+   JEDNO źródło prawdy = JDG/rules/ (V1 §1).
+4. Mechanizm auto-synchronizacji: tools/policies_sync_gate.py z komendami
+   sync / drift (--gate blokujące w CI) / overlay — bramka CI blokuje dryf.
+5. G-05 Golden replay: golden_verdicts.json valid (13 verdictów, 13 replay, 0 UVER).
+6. G-06 Canary/rollback: jdg-pol-bundle-v9.0.0 canary -> shadow (delta 1.0%) ->
+   ramped -> soak 24h -> auto-rollback MTTR 4.0 min SLA pass (fail-closed, powrót
+   do jdg-bundle-v8.0.0, NIE production-active).
+
+Uwaga architektoniczna (V1): mirror policies/ (44 plików jdg/ + tax/) powinien
+zostać wycofany na rzecz jednego rejestru rules/ + overlays — dryf 100% jest
+świadomie raportowany, a NIE maskowany; decyzja o retire vs re-sync należy do
+roadmapy (aktualizacja policies_sync_gate.py: struktura jdg/ vs flat).
+
+Weryfikacja: bramka 6/6 -> WDROZONY_100; testy bramki 8/8.
+To był ostatni raport części (24/25).
 ====================================================================================================
 KONIEC RAPORTU 24/25 — raport wygenerowany z promptu 24_POLICIES_LUSTRO_REGUŁ_OVERLAYS_v2026_v2027.txt
 ====================================================================================================

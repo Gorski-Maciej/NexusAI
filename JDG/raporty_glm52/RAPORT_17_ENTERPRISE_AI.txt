@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 17/25 — ENTERPRISE AI — INTELIGENCJA SYSTEMU (Neural Mesh, Adaptive Trust, Strategie, Bankowość PSD2)
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 17_ENTERPRISE_AI_INTELIGENCJA_SYSTEMU.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-13)
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
@@ -206,6 +206,38 @@ Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, �
 10. WNIOSKI KOŃCOWE
 Audyt części 17 potwierdza istnienie 22 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
 Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+REJESTR WDROŻENIA (2026-08-13)
+====================================================================================================
+Status: WDROZONY_100 — wszystkie 9 bramek dowodowych przeszły (tools/enterprise_ai_report17_gate.py).
+Dowód: bundles/enterprise_ai_report17_evidence.json | Testy: tests/auto/test_enterprise_ai_report17_gate.py (9/9).
+
+Co domknięto:
+1. G-02 Duplikaty: 0/90 (raport deklarował 0) — podtrzymane; dead_rule_detector = 0.
+2. G-03 Temporalność 0 -> 7/7: valid_from/valid_to + decision_mode SUGGEST na
+   7 krytycznych blokach AI: auto_post_gate + suggest_gate (jdg.adaptive_trust),
+   global_domain_health (jdg.neural_mesh), split_payment_preparation (jdg.banking),
+   tax_liability_forecast_90d (jdg.cashflow), transformation_jdg_to_spzoo
+   (jdg.strategic_advisor), change_detection (jdg.legislative_monitor).
+3. G-05 Kanoniczność podstaw: 7/7 krytycznych reguł ma _legal_basis z odwołaniem
+   kanonicznym (P02 Sekcja 1, Neural Mesh, Art. 108a VAT/MPP, Art. 44/103/47,
+   Art. 551-584 KSH/30c PIT, Art. 4 OrdPU/vacatio legis).
+4. G-04 Testy krytyczne 7/7: auto_post_gate, suggest_gate, global_domain_health,
+   split_payment_preparation, tax_liability_forecast_90d, transformation_jdg_to_spzoo,
+   change_detection — pokryte w test_native_* (rego) + test_p02_decision_core.
+5. Golden replay: 1 AI verdict (jdg.adaptive_trust.auto_post_gate, P02 Sekcja 1)
+   + 1 replay, 0 UVER (bundles/golden_verdicts.json).
+6. Deployment jdg-eai-bundle-v9.0.0: canary -> shadow (delta 1.0%) -> ramped ->
+   soak 24h -> auto-rollback MTTR 4.0 min SLA pass (fail-closed, powrót do
+   jdg-bundle-v8.0.0, NIE production-active).
+7. Safety: reguła graniczna utrzymana — inteligencja może rekomendować AUTO_POST
+   (jako _routing), ale decision_mode AUTO_POST = 0; decyzja zostaje SUGGEST.
+8. Router: main_jdg.rego importuje jdg.adaptive_trust / jdg.neural_mesh /
+   jdg.banking / jdg.cashflow_predictor / jdg.strategic_advisor /
+   jdg.legislative_monitor + full_final_verdict.
+
+Weryfikacja: bramka 9/9 -> WDROZONY_100; testy bramki 9/9.
+Następny raport wg kolejności: RAPORT_18 (uruchom w świeżym oknie kontekstowym).
 ====================================================================================================
 KONIEC RAPORTU 17/25 — raport wygenerowany z promptu 17_ENTERPRISE_AI_INTELIGENCJA_SYSTEMU.txt
 ====================================================================================================

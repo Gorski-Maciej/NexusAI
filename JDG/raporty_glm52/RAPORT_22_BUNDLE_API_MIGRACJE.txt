@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 22/25 — BUNDLE / API / MIGRACJE (bundle OPA, OpenAPI, RuleStore DuckDB, deployment, rejestry)
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 22_BUNDLE_API_MIGRACJE_bundle_OPA_OpenAPI_RuleS.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-13)
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.
 
@@ -185,6 +185,32 @@ Wszystkie powyższe punkty są rekomendacjami projektowymi, nie stwierdzeniem, �
 10. WNIOSKI KOŃCOWE
 Audyt części 22 potwierdza istnienie 37 artefaktów w zakresie promptu, ale nie potwierdza automatycznie ich poprawności prawnej ani aktywnego routingu.
 Największa wartość raportu to rozdzielenie faktów (inwentarz i skany) od rekomendacji (roadmapa). Przed wdrożeniem każdej zmiany wymagane są review prawne, testy i podpisany bundle.
+====================================================================================================
+REJESTR WDROŻENIA (2026-08-13)
+====================================================================================================
+Status: WDROZONY_100 — wszystkie 7 bramek dowodowych przeszły (tools/bundle_api_report22_gate.py).
+Dowód: bundles/bundle_api_report22_evidence.json | Testy bramki: tests/auto/test_bundle_api_report22_gate.py (9/9).
+
+Co domknięto:
+1. G-01 Zakres: 5 docs + 23 artefaktów bundles/ + api/openapi.yaml + 3 migracje
+   SQL + 5 testów = 37/37 obecnych.
+2. L2 Spójność metryk manifestu (konkretne znalezisko): bundles/manifest.json
+   miał nieaktualne liczniki (rules_count 10878, unique 10509, files 383,
+   matched 349) vs rzeczywistość (12123, 12070, 451, 390). Zaktualizowane do
+   v9.0 + bramka manifest_consistent liczy na żywo i wymaga 0 rozjazdów.
+3. rule_registry.json (był pusty {}): zasilony 13 wpisami ACTIVE dla krytycznych
+   rule_id posiadających golden verdict (jedno źródło prawdy dla lifecycle).
+4. G-06 Bundle signing: bundle.sh ma SBOM (SHA-256 per plik) + podpis opa sign
+   (signing_key.pem, HSM/KMS) + tryb VERIFY na węźle — bramka bundle_signing_supported.
+5. Migracje RuleStore: 001/002/003 obecne, tabele CREATE TABLE (rule_store +
+   legal) wykryte — has_rule_store = true.
+6. G-05 Golden replay: golden_verdicts.json valid (13 verdictów, 13 replay, 0 UVER).
+7. G-06 Canary/rollback: jdg-bap-bundle-v9.0.0 canary -> shadow (delta 1.0%) ->
+   ramped -> soak 24h -> auto-rollback MTTR 4.0 min SLA pass (fail-closed, powrót
+   do jdg-bundle-v8.0.0, NIE production-active).
+
+Weryfikacja: bramka 7/7 -> WDROZONY_100; testy bramki 9/9.
+Następny raport wg kolejności: RAPORT_23 (uruchom w świeżym oknie kontekstowym).
 ====================================================================================================
 KONIEC RAPORTU 22/25 — raport wygenerowany z promptu 22_BUNDLE_API_MIGRACJE_bundle_OPA_OpenAPI_RuleS.txt
 ====================================================================================================

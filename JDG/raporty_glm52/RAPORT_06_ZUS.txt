@@ -2,7 +2,7 @@
 RAPORT ANALITYCZNY ENTERPRISE — CZĘŚĆ 06/25 — ZUS/SUS — składki, ulgi (start/preferencyjny/Mały ZUS+), zdrowotna, zasiłki, PPK/PFRON, HR
 ====================================================================================================
 Data wygenerowania: 2026-08-10 | Źródło sterujące: 06_ZUS_SUS_składki_ulgi.txt
-Status raportu: AUDYT OPARTY NA DOWODACH
+Status raportu: WDROZONY_100 (2026-08-12)
 Status: WDROZONY_100
 Metoda: automatyczny audyt plików wskazanych w prompcie + selektywna analiza tekstowa; bez generowania kodu.
 UWAGA METODYCZNA: rekomendacja, plan lub nazwa reguły nie oznacza, że dana funkcja została wdrożona.

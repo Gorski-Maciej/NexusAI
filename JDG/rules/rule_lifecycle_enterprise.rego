@@ -155,6 +155,7 @@ decide := {
     "rule_id": "jdg.rule_lifecycle.auto_rollback",
     "package": "jdg.rule_lifecycle",
     "priority": 130,
+    "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
     "rollback_required": [rb |
         some v in candidate_versions
         object.get(v, "error_rate", 0.0) > rollback_error_threshold
@@ -183,6 +184,7 @@ else := {
     "rule_id": "jdg.rule_lifecycle.shadow_activation",
     "package": "jdg.rule_lifecycle",
     "priority": 110,
+    "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
     "shadow_versions": [{"rule": v.rule_id, "version": v.version} | some v in shadow_versions],
     "shadow_candidate_rules": [v.rule_id | some v in shadow_versions],
     "mode": "SHADOW",
@@ -201,6 +203,7 @@ else := {
     "rule_id": "jdg.rule_lifecycle.ab_rollout",
     "package": "jdg.rule_lifecycle",
     "priority": 120,
+    "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
     "rollout": [rollout |
         some v in candidate_versions
         rollout := {

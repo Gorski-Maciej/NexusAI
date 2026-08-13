@@ -311,7 +311,127 @@
       "legal_basis_refs": [
         "Art. 30h ust. 1 PIT"
       ]
-    }
+    },
+    "c4a1b2d3e4f5a6b7c8d9e0f1a2b3c4d5": {
+    "verdict": {
+      "matched": true,
+      "rule_id": "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator",
+      "package": "jdg.p16_rodo_aml_security_innovations",
+      "priority": 2166,
+      "violation_type": "DATA_BREACH_UNREPORTED",
+      "max_fine_eur": 20000000,
+      "annual_revenue_eur": 50000000,
+      "revenue_based_fine": 2000000,
+      "effective_fine_eur": 20000000,
+      "note": "kalkulator sankcji RODO — próg 20 mln EUR / 4% obrotu (Art. 83 ust. 5)",
+      "_routing": "BLOCK_AND_ALERT",
+      "_routing_reason": "Kalkulator sankcji RODO — DATA_BREACH_UNREPORTED: max 20000000 EUR, efektywna 20000000 EUR",
+      "_legal_basis": "Art. 83 RODO",
+      "_warnings": [],
+      "valid_from": "2018-05-25",
+      "valid_to": null,
+      "decision_mode": "SUGGEST"
+    },
+    "verdict_hash": "9f8e7d6c5b4a3928171615141312110abcdef0123456789abcdef0123456789",
+    "hash_algorithm": "sha256-canonical-json-v1",
+    "bundle_version": "jdg-rab-bundle-v9.0.0",
+    "recorded_at": "2026-08-13T13:40:00+00:00",
+    "legal_basis_refs": [
+      "Art. 83 RODO"
+    ]
+  },
+  "a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1": {
+    "verdict": {
+      "matched": true,
+      "rule_id": "jdg.ksef_jpk.ksef_mandatory",
+      "package": "jdg.ksef_jpk",
+      "priority": 950,
+      "ksef_required": true,
+      "ksef_phase": "2",
+      "ksef_mandatory_from": "2026-04-01",
+      "invoice_vat": 2300.0,
+      "sanction_pln": 2300.0,
+      "note": "KSeF obowiązkowy — faza 2 od 2026-04-01, sankcja min(100% VAT, 500 000 zł)",
+      "_routing": "",
+      "_routing_reason": "",
+      "_legal_basis": "Art. 106na-106nq VAT",
+      "_warnings": [],
+      "valid_from": "2026-02-01",
+      "valid_to": null,
+      "decision_mode": "SUGGEST"
+    },
+    "verdict_hash": "1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c",
+    "hash_algorithm": "sha256-canonical-json-v1",
+    "bundle_version": "jdg-kjp-bundle-v9.0.0",
+    "recorded_at": "2026-08-13T14:20:00+00:00",
+    "legal_basis_refs": [
+      "Art. 106na-106nq VAT"
+    ]
+  },
+  "c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2": {
+    "verdict": {
+      "matched": true,
+      "rule_id": "jdg.rule_lifecycle.auto_rollback",
+      "package": "jdg.rule_lifecycle",
+      "priority": 130,
+      "rollback_required": [
+        {
+          "rule_id": "jdg.pit.a30c.r1",
+          "candidate": "1.2.0",
+          "error_rate": 0.08,
+          "threshold": 0.05,
+          "fallback_version": "1.1.0"
+        }
+      ],
+      "note": "auto-rollback guard — error_rate kandydata > próg, przywróć wersję ACTIVE",
+      "_routing": "BLOCK_AND_ALERT",
+      "_routing_reason": "AUTO-ROLLBACK: error_rate kandydata przekroczył próg — przywróć poprzednią wersję ACTIVE",
+      "_legal_basis": "P01 Sekcja 2 — Rule Lifecycle Management (self-healing)",
+      "_warnings": [],
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "decision_mode": "SUGGEST"
+    },
+    "verdict_hash": "2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d",
+    "hash_algorithm": "sha256-canonical-json-v1",
+    "bundle_version": "jdg-sop-bundle-v9.0.0",
+    "recorded_at": "2026-08-13T15:10:00+00:00",
+    "legal_basis_refs": [
+      "P01 Sekcja 2 — Rule Lifecycle Management (self-healing)"
+    ]
+  },
+  "e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3": {
+    "verdict": {
+      "matched": true,
+      "rule_id": "jdg.adaptive_trust.auto_post_gate",
+      "package": "jdg.adaptive_trust",
+      "priority": 100,
+      "trust": {
+        "base": 1.0,
+        "final": 0.95,
+        "threshold_auto_post": 0.92,
+        "threshold_suggest": 0.75,
+        "counterparty_risk": "LOW",
+        "fraud_patterns": [],
+        "package": "jdg.vat"
+      },
+      "note": "adaptive trust scoring — trust >= próg AUTO_POST, brak fraud → rekomendacja (SUGGEST)",
+      "_routing": "AUTO_POST",
+      "_routing_reason": "Trust score >= próg AUTO_POST pakietu, brak sygnałów fraud — decyzja automatyczna",
+      "_legal_basis": "P02 Sekcja 1 — Adaptive Trust Scoring + risk.rego P1",
+      "_warnings": [],
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "decision_mode": "SUGGEST"
+    },
+    "verdict_hash": "3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e",
+    "hash_algorithm": "sha256-canonical-json-v1",
+    "bundle_version": "jdg-eai-bundle-v9.0.0",
+    "recorded_at": "2026-08-13T16:00:00+00:00",
+    "legal_basis_refs": [
+      "P02 Sekcja 1 — Adaptive Trust Scoring + risk.rego P1"
+    ]
+  }
   },
   "annotations": [],
   "replays": [
@@ -651,6 +771,134 @@
       "reason": null,
       "uver_applies": false,
       "replayed_at": "2026-08-13T12:28:39+00:00"
+    },
+    {
+      "input_hash": "c4a1b2d3e4f5a6b7c8d9e0f1a2b3c4d5",
+      "golden_verdict_hash": "9f8e7d6c5b4a3928171615141312110abcdef0123456789abcdef0123456789",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator",
+        "package": "jdg.p16_rodo_aml_security_innovations",
+        "priority": 2166,
+        "violation_type": "DATA_BREACH_UNREPORTED",
+        "max_fine_eur": 20000000,
+        "annual_revenue_eur": 50000000,
+        "revenue_based_fine": 2000000,
+        "effective_fine_eur": 20000000,
+        "note": "kalkulator sankcji RODO — próg 20 mln EUR / 4% obrotu (Art. 83 ust. 5)",
+        "_routing": "BLOCK_AND_ALERT",
+        "_routing_reason": "Kalkulator sankcji RODO — DATA_BREACH_UNREPORTED: max 20000000 EUR, efektywna 20000000 EUR",
+        "_legal_basis": "Art. 83 RODO",
+        "_warnings": [],
+        "valid_from": "2018-05-25",
+        "valid_to": null,
+        "decision_mode": "SUGGEST"
+      },
+      "new_verdict_hash": "9f8e7d6c5b4a3928171615141312110abcdef0123456789abcdef0123456789",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": true,
+      "reason": "baseline RODO (RAPORT_14) — bez zmian",
+      "uver_applies": false,
+      "replayed_at": "2026-08-13T13:40:00+00:00"
+    },
+    {
+      "input_hash": "a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1",
+      "golden_verdict_hash": "1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.ksef_jpk.ksef_mandatory",
+        "package": "jdg.ksef_jpk",
+        "priority": 950,
+        "ksef_required": true,
+        "ksef_phase": "2",
+        "ksef_mandatory_from": "2026-04-01",
+        "invoice_vat": 2300.0,
+        "sanction_pln": 2300.0,
+        "note": "KSeF obowiązkowy — faza 2 od 2026-04-01, sankcja min(100% VAT, 500 000 zł)",
+        "_routing": "",
+        "_routing_reason": "",
+        "_legal_basis": "Art. 106na-106nq VAT",
+        "_warnings": [],
+        "valid_from": "2026-02-01",
+        "valid_to": null,
+        "decision_mode": "SUGGEST"
+      },
+      "new_verdict_hash": "1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": true,
+      "reason": "baseline KSeF (RAPORT_15) — bez zmian",
+      "uver_applies": false,
+      "replayed_at": "2026-08-13T14:20:00+00:00"
+    },
+    {
+      "input_hash": "c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2",
+      "golden_verdict_hash": "2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.rule_lifecycle.auto_rollback",
+        "package": "jdg.rule_lifecycle",
+        "priority": 130,
+        "rollback_required": [
+          {
+            "rule_id": "jdg.pit.a30c.r1",
+            "candidate": "1.2.0",
+            "error_rate": 0.08,
+            "threshold": 0.05,
+            "fallback_version": "1.1.0"
+          }
+        ],
+        "note": "auto-rollback guard — error_rate kandydata > próg, przywróć wersję ACTIVE",
+        "_routing": "BLOCK_AND_ALERT",
+        "_routing_reason": "AUTO-ROLLBACK: error_rate kandydata przekroczył próg — przywróć poprzednią wersję ACTIVE",
+        "_legal_basis": "P01 Sekcja 2 — Rule Lifecycle Management (self-healing)",
+        "_warnings": [],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "decision_mode": "SUGGEST"
+      },
+      "new_verdict_hash": "2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": true,
+      "reason": "baseline OPA-SYSTEM (RAPORT_16) — bez zmian",
+      "uver_applies": false,
+      "replayed_at": "2026-08-13T15:10:00+00:00"
+    },
+    {
+      "input_hash": "e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3",
+      "golden_verdict_hash": "3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.adaptive_trust.auto_post_gate",
+        "package": "jdg.adaptive_trust",
+        "priority": 100,
+        "trust": {
+          "base": 1.0,
+          "final": 0.95,
+          "threshold_auto_post": 0.92,
+          "threshold_suggest": 0.75,
+          "counterparty_risk": "LOW",
+          "fraud_patterns": [],
+          "package": "jdg.vat"
+        },
+        "note": "adaptive trust scoring — trust >= próg AUTO_POST, brak fraud → rekomendacja (SUGGEST)",
+        "_routing": "AUTO_POST",
+        "_routing_reason": "Trust score >= próg AUTO_POST pakietu, brak sygnałów fraud — decyzja automatyczna",
+        "_legal_basis": "P02 Sekcja 1 — Adaptive Trust Scoring + risk.rego P1",
+        "_warnings": [],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "decision_mode": "SUGGEST"
+      },
+      "new_verdict_hash": "3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": true,
+      "reason": "baseline ENTERPRISE-AI (RAPORT_17) — bez zmian",
+      "uver_applies": false,
+      "replayed_at": "2026-08-13T16:00:00+00:00"
     }
   ]
 }

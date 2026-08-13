@@ -1,0 +1,92 @@
+{
+  "report": "RAPORT_22_BUNDLE_API_MIGRACJE",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "manifest_consistent": true,
+    "rule_registry_populated": true,
+    "bundle_signing_supported": true,
+    "migrations_present": true,
+    "golden_replay_ready": true,
+    "canary_rollback_ok": true
+  },
+  "gate_summary": {
+    "passed": 7,
+    "total": 7
+  },
+  "scope": {
+    "docs_total": 5,
+    "docs_present": 5,
+    "bundles_total": 23,
+    "bundles_present": 23,
+    "api_total": 1,
+    "api_present": 1,
+    "migrations_total": 3,
+    "migrations_present": 3,
+    "tests_total": 5,
+    "tests_present": 5,
+    "missing": []
+  },
+  "manifest": {
+    "actual": {
+      "files_count": 451,
+      "rules_count": 12123,
+      "unique_rule_ids": 12070,
+      "files_with_matched_true": 390
+    },
+    "declared": {
+      "files_count": 451,
+      "rules_count": 12123,
+      "unique_rule_ids": 12070,
+      "files_with_matched_true": 390
+    },
+    "mismatches": {},
+    "consistent": true
+  },
+  "rule_registry": {
+    "rule_ids": 13,
+    "active": 13,
+    "populated": true
+  },
+  "bundle_signature": {
+    "signing_supported": true,
+    "verification_supported": true,
+    "sbom_supported": true,
+    "all": true
+  },
+  "migrations": {
+    "tables_found": [
+      "CREATE TABLE IF NOT EXISTS decision_certificates",
+      "CREATE TABLE IF NOT EXISTS draft_law_radar",
+      "CREATE TABLE IF NOT EXISTS golden_verdicts",
+      "CREATE TABLE IF NOT EXISTS invariants",
+      "CREATE TABLE IF NOT EXISTS isap_history",
+      "CREATE TABLE IF NOT EXISTS jdg_conflict_registry",
+      "CREATE TABLE IF NOT EXISTS jdg_explanation_cache",
+      "CREATE TABLE IF NOT EXISTS jdg_legal_cartography",
+      "CREATE TABLE IF NOT EXISTS jdg_prediction_history",
+      "CREATE TABLE IF NOT EXISTS jdg_stale_rules_registry",
+      "CREATE TABLE IF NOT EXISTS jdg_tax_thresholds",
+      "CREATE TABLE IF NOT EXISTS jdg_verdict_audit",
+      "CREATE TABLE IF NOT EXISTS legal_graph",
+      "CREATE TABLE IF NOT EXISTS rule_versions"
+    ],
+    "has_rule_store": true
+  },
+  "replay": {
+    "valid": true,
+    "verdicts": 13,
+    "replays": 13,
+    "unmatched": [],
+    "unmatched_count": 0
+  },
+  "deployment": {
+    "bundle": "jdg-bap-bundle-v9.0.0",
+    "phase": "ROLLED_BACK",
+    "rollback_reason": "RAPORT_22 fail-closed: no production telemetry for bundle/API/migrations control plane; exercise rollback SLA boundary",
+    "rollback_mttr_minutes": 4.0,
+    "rollback_sla_pass": true,
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "generated_at": "2026-08-13T18:46:29.145697+00:00"
+}

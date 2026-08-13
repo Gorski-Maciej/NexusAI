@@ -1,0 +1,207 @@
+{
+  "report": "RAPORT_17_ENTERPRISE_AI",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "duplicate_free": true,
+    "critical_tests_mapped": true,
+    "critical_temporal": true,
+    "legal_basis_canonical": true,
+    "router_wired": true,
+    "safety_suggest": true,
+    "golden_replay_ok": true,
+    "canary_rollback_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "inventory": {
+    "files": [
+      {
+        "path": "rules/adaptive_trust_scoring_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/banking_automation_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 15,
+        "legal_basis_count": 14,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/cashflow_tax_predictor_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 7,
+        "legal_basis_count": 6,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/decision_composer_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 3,
+        "legal_basis_count": 2,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/form_optimizer_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/hyper_plan45_meta_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 4,
+        "legal_basis_count": 3,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/legislative_impact_analyzer_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/legislative_monitor_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 6,
+        "legal_basis_count": 5,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/neural_mesh_v2_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 16,
+        "legal_basis_count": 15,
+        "temporal": false,
+        "package_declared": true
+      },
+      {
+        "path": "rules/neural_rule_mesh_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 20,
+        "legal_basis_count": 19,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/strategic_advisor_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 9,
+        "legal_basis_count": 8,
+        "temporal": true,
+        "package_declared": true
+      },
+      {
+        "path": "rules/strategic_roadmap_enterprise.rego",
+        "exists": true,
+        "rule_id_count": 0,
+        "legal_basis_count": 0,
+        "temporal": false,
+        "package_declared": true
+      }
+    ],
+    "files_total": 12,
+    "files_present": 12,
+    "rule_ids_total": 90,
+    "rule_ids_unique": 90,
+    "duplicate_rule_ids": [],
+    "duplicate_count": 0,
+    "temporal_files": 7,
+    "critical_temporal_rule_count": 7,
+    "critical_temporal_evidence": {
+      "auto_post_gate": true,
+      "suggest_gate": true,
+      "global_domain_health": true,
+      "split_payment_preparation": true,
+      "tax_liability_forecast_90d": true,
+      "transformation_jdg_to_spzoo": true,
+      "change_detection": true
+    },
+    "temporal_coverage_pct": 58.33
+  },
+  "test_evidence": {
+    "files_declared": 9,
+    "files_present": 9,
+    "critical_rule_markers": {
+      "auto_post_gate": true,
+      "suggest_gate": true,
+      "global_domain_health": true,
+      "split_payment_preparation": true,
+      "tax_liability_forecast_90d": true,
+      "transformation_jdg_to_spzoo": true,
+      "change_detection": true
+    },
+    "critical_rule_evidence_complete": true,
+    "native_rego_test_present": true,
+    "pytest_test_present": true
+  },
+  "legal_canonical": {
+    "critical_legal_basis": {
+      "auto_post_gate": true,
+      "suggest_gate": true,
+      "global_domain_health": true,
+      "split_payment_preparation": true,
+      "tax_liability_forecast_90d": true,
+      "transformation_jdg_to_spzoo": true,
+      "change_detection": true
+    },
+    "critical_canonical_reference": {
+      "auto_post_gate": true,
+      "suggest_gate": true,
+      "global_domain_health": true,
+      "split_payment_preparation": true,
+      "tax_liability_forecast_90d": true,
+      "transformation_jdg_to_spzoo": true,
+      "change_detection": true
+    },
+    "critical_rules_required": 7
+  },
+  "router": {
+    "adaptive_trust_registered": true,
+    "neural_mesh_registered": true,
+    "banking_registered": true,
+    "cashflow_registered": true,
+    "strategic_registered": true,
+    "legislative_registered": true,
+    "final_verdict": true
+  },
+  "safety": {
+    "suggest_mode_present": true,
+    "auto_post_mode_present": false,
+    "no_auto_post_mode": true
+  },
+  "replay": {
+    "golden_verdicts_total": 13,
+    "ai_verdicts": 1,
+    "replays_total": 13,
+    "unmatched_replays": [],
+    "unmatched_count": 0,
+    "replay_verified": true
+  },
+  "deployment": {
+    "bundle": "jdg-eai-bundle-v9.0.0",
+    "phase": "ROLLED_BACK",
+    "rollout_pct": 100,
+    "quality": 100.0,
+    "error_rate": 0.0,
+    "rollback_reason": "RAPORT_17 fail-closed: no production telemetry for Enterprise-AI (adaptive trust/neural mesh/PSD2); exercise rollback SLA boundary",
+    "soak_completed_at": "2026-08-15T12:00:00+00:00",
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "generated_at": "2026-08-13T17:11:48.716598+00:00"
+}
