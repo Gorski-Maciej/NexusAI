@@ -1,5 +1,5 @@
 {
-  "report": "RAPORT_07_KKS",
+  "report": "RAPORT_06_ZUS",
   "status": "WDROZONY_100",
   "gates": {
     "scope_files_present": true,
@@ -16,11 +16,9 @@
     "passed": 9,
     "total": 9
   },
-  "checks_passed": 9,
-  "checks_total": 9,
   "scope": {
     "files": {
-      "r07_rego": true,
+      "r06_rego": true,
       "main_jdg": true,
       "pytest": true,
       "native_rego": true,
@@ -29,48 +27,50 @@
     "files_total": 5,
     "files_present": 5,
     "report_present": true,
-    "kks_core_files_declared": 13,
-    "kks_core_files_present": 13
+    "zus_core_files_declared": 18,
+    "zus_core_files_present": 18
   },
   "innovations": {
     "required_innovations": [
-      "voluntary_disclosure_one_click",
-      "checklist_art16",
-      "zawiadomienie_o_przestepstwie",
-      "wplata_uszczuplenia",
-      "missing_documents",
-      "penalty_calculator_temporal",
-      "fine_calculated",
-      "fine_limit_absolute",
-      "statute_barred",
-      "limitation_years",
-      "transaction_risk_predictor",
-      "score_0_100",
-      "risk_level",
-      "BLOCK_AND_ALERT",
-      "unreal_entity"
+      "health_whatif_4form",
+      "scale_annual",
+      "linear_annual",
+      "lump_annual",
+      "card_annual",
+      "best_form",
+      "lump_base_multiplier",
+      "zus_relief_tracker",
+      "remaining_months",
+      "EXPIRING",
+      "EXPIRED",
+      "ULGA_START",
+      "PREFERENCYJNY",
+      "MALY_ZUS_PLUS",
+      "sus_a6a",
+      "personal_child_care",
+      "other_parent_insured"
     ],
     "missing_innovations": [],
     "innovations_complete": true,
     "legal_basis_markers": [
-      "Art. 16 KKS (czynny żal)",
-      "Art. 23, 25, 27, 44 KKS",
-      "Art. 54, 56, 57, 62 KKS",
-      "Dz.U. 1999 nr 83 poz. 930"
+      "Art. 81 ustawy o świadczeniach opieki zdrowotnej (Dz.U. 2025 poz. 890)",
+      "Art. 18a i 18c ustawy o SUS (Dz.U. 2025 poz. 345)",
+      "Art. 6a ust. 1-3 ustawy o SUS (Dz.U. 2025 poz. 345)",
+      "rozp. MPiPS ws. podstawy wymiaru (2025-12-30)"
     ],
     "missing_legal_markers": [],
     "legal_basis_complete": true,
     "decide_report_rule": true,
     "activation_flag": true,
     "default_no_match": true,
-    "one_click_pack": true,
-    "temporal_penalty": true
+    "four_form_comparator": true,
+    "desert_a6a_closed": true
   },
   "thresholds": {
     "thresholds_via_data": true,
-    "fine_limit_externalized": true,
-    "limitation_externalized": true,
-    "daily_rates_externalized": true
+    "rates_externalized": true,
+    "deduction_limit_externalized": true,
+    "relief_months_externalized": true
   },
   "duplicates": {
     "rule_ids_total": 5,
@@ -81,7 +81,7 @@
   "router": {
     "import_present": true,
     "package_decisions_entry": true,
-    "final_verdict_p32": true,
+    "final_verdict_p31": true,
     "post_merge_present": true,
     "invariants_enforced": true,
     "final_verdict_public": true
@@ -90,24 +90,24 @@
     "pytest_present": true,
     "native_rego_present": true,
     "marker_hits": {
-      "voluntary_disclosure_one_click": true,
-      "penalty_calculator_temporal": true,
-      "transaction_risk_predictor": true,
-      "checklist_art16": true,
-      "statute_barred": true,
-      "BLOCK_AND_ALERT": true,
-      "r07_kks_check": true
+      "health_whatif_4form": true,
+      "zus_relief_tracker": true,
+      "sus_a6a": true,
+      "ULGA_START": true,
+      "MALY_ZUS_PLUS": true,
+      "best_form": true,
+      "r06_zus_check": true
     },
     "markers_complete": true,
     "pytest_test_functions": 16,
-    "native_test_functions": 11
+    "native_test_functions": 12
   },
   "replay": {
-    "golden_verdicts_total": 20,
-    "kks_verdicts": 1,
-    "kks_replays": 1,
+    "golden_verdicts_total": 19,
+    "zus_verdicts": 1,
+    "zus_replays": 1,
     "uver_count": 0,
     "replay_verified": true
   },
-  "generated_at": "2026-08-14T20:43:21.924045+00:00"
+  "generated_at": "2026-08-14T20:22:29.593009+00:00"
 }

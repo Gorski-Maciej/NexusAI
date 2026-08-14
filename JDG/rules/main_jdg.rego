@@ -357,6 +357,25 @@ import data.jdg.p24_audyt_kompletny_innovations
 # POST-MERGE runtime invariants (F2 V2, ADR-022) + decision certificate (F4).
 import data.jdg.p03_orchestrator_innovations
 import data.jdg.runtime_invariants
+# ── PAS 18o: R01 GLM52 Orkiestrator + Rdzeń Silnika (2026-08-14) ──
+# Deterministic routing path trace, 25-field verdict completeness, decision cache,
+# time-travel guard, safe_merge integrity (INV-042), priority conflicts (INV-018).
+import data.jdg.r01_orchestrator_core_innovations
+# ── PAS 18p: R02 GLM52 VAT CORE (MACRO) + ENTERPRISE (2026-08-14) ──
+# Real-time exemption limit tracker (art. 113), auto-GTU (Zał. 15), art. 91
+# multi-year correction schedule automation.
+import data.jdg.r02_vat_core_innovations
+# ── PAS 18q: R03 GLM52 VAT WARSTWA MICRO (2026-08-14) ──
+# Article coverage monitor (30 kluczowych artykułów), micro↔macro binding,
+# micro↔macro consistency (INV-018) + atomowe uzupełnienie 5 artykułów
+# (a28b/a87/a91/a106a/a106i — jdg.micro.vat.r03).
+import data.jdg.r03_vat_micro_innovations
+import data.jdg.r04_pit_core_innovations
+import data.jdg.r05_pit_enterprise_innovations
+import data.jdg.r06_zus_innovations
+import data.jdg.r07_kks_innovations
+import data.jdg.r08_ordynacja_obrona_innovations
+import data.jdg.micro.vat.r03 as micro_vat_r03
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
@@ -1368,6 +1387,18 @@ _package_decisions := {
     # ── PAS 18m: P03 GLM52 Orkiestrator + Infra (2026-08-08) ──
     "jdg.p03_orchestrator_innovations": p03_orchestrator_innovations.decide,
     "jdg.runtime_invariants": runtime_invariants.report,
+    # ── PAS 18o: R01 GLM52 Orkiestrator + Rdzeń Silnika (2026-08-14) ──
+    "jdg.r01_orchestrator_core_innovations": r01_orchestrator_core_innovations.decide,
+    # ── PAS 18p: R02 GLM52 VAT CORE + ENTERPRISE (2026-08-14) ──
+    "jdg.r02_vat_core_innovations": r02_vat_core_innovations.decide,
+    # ── PAS 18q: R03 GLM52 VAT WARSTWA MICRO (2026-08-14) ──
+    "jdg.r03_vat_micro_innovations": r03_vat_micro_innovations.decide,
+    "jdg.r04_pit_core_innovations": r04_pit_core_innovations.decide,
+    "jdg.r05_pit_enterprise_innovations": r05_pit_enterprise_innovations.decide,
+    "jdg.r06_zus_innovations": r06_zus_innovations.decide,
+    "jdg.r07_kks_innovations": r07_kks_innovations.decide,
+    "jdg.r08_ordynacja_obrona_innovations": r08_ordynacja_obrona_innovations.decide,
+    "jdg.micro.vat.r03": micro_vat_r03.decide,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
     "jdg.p23_innovations": p23_innovations.decide,
@@ -1701,6 +1732,111 @@ final_verdict_p25 = safe_merge(final_verdict_p24,
     ))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18o: R01 GLM52 ORKIESTRATOR + RDZEŃ SILNIKA — Post-Provenance Merge
+# Prompt 01/25 (RAPORT_01_ORKIESTRATOR_RDZEN.txt): deterministyczny routing z
+# debugowaniem ścieżki, cache decyzji, time-travel guard, safe_merge integrity
+# (INV-042), zderzenia priorytetów (INV-018), kompletność werdyktu 25-polowego.
+# Pakiet REPORT-owy — aktywowany flagą input.jdg_entrepreneur.r01_orchestrator_core_check
+# (w normalnym ruchu no_match). Nie nadpisuje decyzji (safe_merge — werdykt p25
+# ma priorytet).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p26 = safe_merge(final_verdict_p25,
+    safe_merge(r01_orchestrator_core_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18p: R02 GLM52 VAT CORE (MACRO) + ENTERPRISE — Post-Provenance Merge
+# Prompt 02/25 (RAPORT_02_VAT_CORE.txt): real-time exemption limit tracker
+# (art. 113 — 200 000 PLN, projekcja YTD), auto-GTU (Zał. nr 15 ustawy o VAT),
+# korekta wieloletnia art. 91 (harmonogram 5/10 lat). Pakiet REPORT-owy —
+# aktywowany flagą input.jdg_entrepreneur.r02_vat_core_check (w normalnym ruchu
+# no_match). Nie nadpisuje decyzji (safe_merge — werdykt p26 ma priorytet).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p27 = safe_merge(final_verdict_p26,
+    safe_merge(r02_vat_core_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18q: R03 GLM52 VAT WARSTWA MICRO — Post-Provenance Merge
+# Prompt 03/25 (RAPORT_03_VAT_MICRO.txt): article coverage monitor, micro↔macro
+# binding, micro↔macro consistency (INV-018). Pakiety REPORT-owe — aktywowane
+# flagami input.jdg_entrepreneur.r03_vat_micro_check / vat_a28b_check / ...
+# (w normalnym ruchu no_match). Nie nadpisują decyzji (safe_merge).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p28 = safe_merge(final_verdict_p27,
+    safe_merge(r03_vat_micro_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18r: R04 GLM52 PIT CORE — Post-Provenance Merge
+# Prompt 04/25 (RAPORT_04_PIT_CORE.txt): 3-drogowy symulator ulg (B+R vs IP Box
+# vs robotyzacja), jednorazowa amortyzacja 100k (art. 22k ust. 7-12), niskocenne
+# 10k (art. 22f ust. 3), kalkulator optymalnej składki zdrowotnej. Pakiet
+# REPORT-owy — aktywowany flagą input.jdg_entrepreneur.r04_pit_core_check / ...
+# (w normalnym ruchu no_match). Nie nadpisuje decyzji (safe_merge).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p29 = safe_merge(final_verdict_p28,
+    safe_merge(r04_pit_core_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18s: R05 GLM52 PIT ENTERPRISE — Post-Provenance Merge
+# Prompt 05/25 (RAPORT_05_PIT_ENTERPRISE.txt): autopilot roczny z Decision
+# Certificate (F4), prognoza formy 3-letnia, scoring decyzji strategicznych,
+# harmonizacja JPK_CIT/JPK_V7M. Pakiet REPORT-owy — aktywowany flagą
+# input.jdg_entrepreneur.r05_pit_enterprise_check / ... (w normalnym ruchu
+# no_match). Nie nadpisuje decyzji (safe_merge).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p30 = safe_merge(final_verdict_p29,
+    safe_merge(r05_pit_enterprise_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18t: R06 GLM52 ZUS/SUS — Post-Provenance Merge
+# Prompt 06/25 (RAPORT_06_ZUS.txt): 4-formowy kalkulator składki zdrowotnej,
+# tracker ulg ZUS z alarmami terminów (art. 18a/18c), domknięcie art. 6a
+# (pustynia zus_micro_inventory). Pakiet REPORT-owy — aktywowany flagą
+# input.jdg_entrepreneur.r06_zus_check / ... (w normalnym ruchu no_match).
+# Nie nadpisuje decyzji (safe_merge).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p31 = safe_merge(final_verdict_p30,
+    safe_merge(r06_zus_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18u: R07 GLM52 KKS — Post-Provenance Merge
+# Prompt 07/25 (RAPORT_07_KKS.txt): czynny żal one-click z pełną dokumentacją,
+# kalkulator kar z temporalnością (art. 44 — 5 lat), predykcja ryzyka karnego
+# per transakcja (art. 54/56/57/62). Pakiet REPORT-owy — aktywowany flagą
+# input.jdg_entrepreneur.r07_kks_check / ... (w normalnym ruchu no_match).
+# Nie nadpisuje decyzji (safe_merge).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p32 = safe_merge(final_verdict_p31,
+    safe_merge(r07_kks_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18v: R08 GLM52 ORDYNACJA + OBRONA PODATNIKA — Post-Provenance Merge
+# Prompt 08/25 (RAPORT_08_ORDYNACJA_OBRONA.txt): kalkulator odsetek z pełną
+# temporalnością (harmonogram stóp per okres), asystent postępowania z 3
+# poziomami alertów per termin, auto-generator korespondencji z US z podstawą
+# prawną, predykcja wyroków WSA/NSA, monitor przedawnień z dowodem (art. 70).
+# Pakiet REPORT-owy — aktywowany flagą input.jdg_entrepreneur.r08_ordynacja_check
+# / ... (w normalnym ruchu no_match). Nie nadpisuje decyzji (safe_merge).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p33 = safe_merge(final_verdict_p32,
+    safe_merge(r08_ordynacja_obrona_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -1714,7 +1850,7 @@ final_verdict_p25 = safe_merge(final_verdict_p24,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-final_verdict_post_merge = object.union(final_verdict_p25,
+final_verdict_post_merge = object.union(final_verdict_p33,
     {"_routing_context": routing_context})
 
 final_verdict_enforced = object.union(final_verdict_post_merge,

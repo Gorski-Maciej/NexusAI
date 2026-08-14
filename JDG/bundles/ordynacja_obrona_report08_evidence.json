@@ -1,0 +1,129 @@
+{
+  "report": "RAPORT_08_ORDYNACJA_OBRONA",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "report_present": true,
+    "innovations_complete": true,
+    "legal_basis_canonical": true,
+    "thresholds_externalized": true,
+    "duplicate_free": true,
+    "router_wired": true,
+    "tests_present": true,
+    "golden_replay_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "checks_passed": 9,
+  "checks_total": 9,
+  "scope": {
+    "files": {
+      "r08_rego": true,
+      "main_jdg": true,
+      "pytest": true,
+      "native_rego": true,
+      "report": true
+    },
+    "files_total": 5,
+    "files_present": 5,
+    "report_present": true,
+    "ord_core_files_declared": 25,
+    "ord_core_files_present": 25
+  },
+  "innovations": {
+    "required_innovations": [
+      "interest_calculator_temporal",
+      "int_temp_schedule",
+      "int_temp_total",
+      "int_effective_rate_pct",
+      "CORRECTION_7DAYS",
+      "int_reduced_savings",
+      "proceeding_deadline_alerts_3lvl",
+      "pr_alert_level",
+      "RED",
+      "AMBER",
+      "GREEN",
+      "BLOCK_AND_ALERT",
+      "next_action",
+      "correspondence_autopack",
+      "corr_legal_basis",
+      "corr_ready",
+      "corr_missing_fields",
+      "judgment_predictor_wsa_nsa",
+      "judg_probability_favorable",
+      "judg_confidence",
+      "limitation_evidence_monitor",
+      "lim_evidence_certificate",
+      "decision_hash",
+      "statute_barred"
+    ],
+    "missing_innovations": [],
+    "innovations_complete": true,
+    "legal_basis_markers": [
+      "art. 53-56",
+      "art. 70 § 1",
+      "art. 14b",
+      "art. 223",
+      "art. 117ba",
+      "KKS art. 16"
+    ],
+    "missing_legal_markers": [],
+    "legal_basis_complete": true,
+    "decide_report_rule": true,
+    "activation_flag": true,
+    "default_no_match": true,
+    "temporal_interest": true,
+    "three_level_alerts": true,
+    "correspondence_legal": true,
+    "judgment_predictor": true,
+    "limitation_evidence": true
+  },
+  "thresholds": {
+    "thresholds_via_data": true,
+    "interest_rate_externalized": true,
+    "limitation_externalized": true,
+    "deadlines_externalized": true
+  },
+  "duplicates": {
+    "rule_ids_total": 6,
+    "rule_ids_unique": 6,
+    "duplicates": [],
+    "duplicate_count": 0
+  },
+  "router": {
+    "import_present": true,
+    "package_decisions_entry": true,
+    "final_verdict_p33": true,
+    "post_merge_present": true,
+    "invariants_enforced": true,
+    "final_verdict_public": true
+  },
+  "tests": {
+    "pytest_present": true,
+    "native_rego_present": true,
+    "marker_hits": {
+      "interest_calculator_temporal": true,
+      "proceeding_deadline_alerts_3lvl": true,
+      "correspondence_autopack": true,
+      "judgment_predictor_wsa_nsa": true,
+      "limitation_evidence_monitor": true,
+      "r08_ordynacja_check": true,
+      "BLOCK_AND_ALERT": true,
+      "117ba": true,
+      "statute_barred": true
+    },
+    "markers_complete": true,
+    "pytest_test_functions": 18,
+    "native_test_functions": 0
+  },
+  "replay": {
+    "golden_verdicts_total": 21,
+    "ord_verdicts": 1,
+    "ord_replays": 1,
+    "uver_count": 0,
+    "replay_verified": true
+  },
+  "generated_at": "2026-08-14T21:08:29.843302+00:00"
+}

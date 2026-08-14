@@ -1,0 +1,289 @@
+==============================================================================
+RAPORT WDROŻENIOWY ENTERPRISE — KKS — KODEKS KARNY SKARBOWY
+(czynny żal, sankcje, kary, obrona, GAAR, sanctions)
+Seria: 07/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
+Status: WDROZONY_100 (2026-08-14)
+==============================================================================
+
+════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY (1 strona)
+════════════════════════════════════════════════════════════════════════════
+
+Raport wdraża Prompt 07/25 (JDG/prompty_glm52/07_KKS_Kodeks_Karny_Skarbowy.txt)
+— wzmocnienie modułu KKS (czynny żal, sankcje, kary, obrona, GAAR) na
+poziomie ENTERPRISE. Priorytet promptu: CZYNNY ŻAL (art. 16) + art. 54/56/57/62.
+
+Audyt 6-stronny (prawo / reguła / testy / system / dane / werdykt) objął:
+kks.rego (2612 — ~63 tys. tokenów), _kks_micro_rates (185),
+penalty_ai_enterprise (181), sanctions_optimization_enterprise (505),
+sanctions_supplements_enterprise (145), gaar_shield_enterprise (156),
+p09_kks_macro_innovations_v8 (246), p10_kks_innovations_v9 (607),
+rules/kks/* (enterprise_penalties 569, kks_innovations_v8 717,
+kks_extensions 103, plan42 69, plan43 114, plan44 19, _macro_rates 242),
+micro/kks/kks.rego (13373), risk/plan26_kks (29) — łącznie ~20 000 linii +
+legal_coverage_gaps.json.
+
+WERYFIKACJA POKRYCIA (legal_coverage_gaps.json — prompt twierdził „5 luk P1"):
+  • Art. 16 (czynny żal) — COMPLETE (jdg.kks.voluntary_disclosure_*)
+  • Art. 44 (przedawnienie 5 lat) — COMPLETE (jdg.kks.statute_of_limitations_*)
+  • Art. 54 (uchylanie się od opodatkowania) — COMPLETE (tax_evasion_*)
+  • Art. 56 (nierzetelne księgi) — COMPLETE (unreliable_books_*)
+  • Art. 57 (nierzetelna ewidencja VAT) — COMPLETE (unreliable_vat_*)
+  • Art. 62 (puste faktury) — COMPLETE (empty_invoice_*)
+  → 6/6 COMPLETE — roszczenie promptu o „5 luk P1" jest NIEAKTUALNE
+  (luki domknięte w P09/P10).
+
+WARSTWA KKS — ZWERYFIKOWANA (już wdrożona P09/P10 v8/v9):
+  • Kary i grzywny: stawki dzienne, górny limit 500 000 zł (kks.rego +
+    enterprise_penalties + p10 INN-01 penalty_calculator).
+  • Przedawnienie karalności (art. 44 — 5 lat) + zatarcie (art. 45):
+    p10 INN-05 limitation_calendar + conviction_expungement_tracker.
+  • Czynny żal (art. 16) + dobrowolne poddanie się (art. 17): p09
+    voluntary_disclosure_gen + p10 voluntary_disclosure_assistant.
+  • Silnik minimalizacji kary 4-ścieżkowy (p10 INN-02) + symulator ryzyka
+    (INN-03) + risk_dashboard_5y + integrity_score_monitor (kks_innovations_v8).
+  • GAAR shield (3-test analyzer, round-tripping detector), sanctions
+    optimization (art. 54 graduation, penalty decision tree, risk calculator),
+    penalty_ai enterprise, sanctions supplements.
+  • Micro: micro/kks/kks.rego (13373 linii) + _kks_micro_rates.
+
+LUKI ZIDENTYFIKOWANE I DOMKNIĘTE W TYM RAPORCIE:
+  1. Czynny żal miał asystenta (P10) — brak ZINTEGROWANEGO pakietu
+     „w jednym kliknięciu" z pełną dokumentacją (checklist art. 16 + pakiet
+     dokumentów + termin + ryzyko).
+  2. Kalkulator kar (P10 INN-01) — rozszerzenie o temporalność: przedawnienie
+     art. 44 (5 lat), okno decyzyjne, limity z thresholds.
+  3. BRAK predykcji ryzyka karnego PER TRANSAKCJA (P10 risk_score_simulator
+     był globalny) — scoring transakcyjny z routingiem PASS/WARN/BLOCK_AND_ALERT.
+
+NOWE ULEPSZENIA WDROŻONE W TYM RAPORCIE (pakiet jdg.r07_kks_innovations):
+  R07-INN-01 voluntary_disclosure_one_click — automatyczny „czynny żal w
+     jednym kliknięciu" z pełną dokumentacją: readiness, checklist art. 16
+     (zawiadomienie + ujawnienie + wpłata uszczuplenia), missing_documents,
+     deadline_days, organ_notified guard.
+  R07-INN-02 penalty_calculator_temporal — kalkulator kar z temporalnością:
+     stawki dzienne × liczba stawek (1-720), limit bezwzględny 500 000 zł,
+     przedawnienie karalności art. 44 (5 lat) — statute_barred, okno decyzyjne.
+  R07-INN-03 transaction_risk_predictor — silnik predykcji ryzyka karnego
+     PER TRANSAKCJA: scoring 0-100 wg czynników (brak faktury 35, firma-
+     przykrywka 40, przekroczenie limitu gotówki 15, ryzyko fałszywej
+     deklaracji 25, niekompletna dokumentacja 10) + routing PASS/WARN/
+     BLOCK_AND_ALERT (nigdy nie wykonuje transakcji).
+
+TOP 10 REKOMENDACJI (priorytety P0/P1/P2):
+
+  P0-1  Czynny żal art. 16            — WDROŻONE (p09/p10 + R07-INN-01)
+  P0-2  Kary i grzywny (limit 500k)   — WDROŻONE (kks.rego + p10 INN-01)
+  P0-3  Przedawnienie art. 44 (5 lat) — WDROŻONE (p10 INN-05 + R07-INN-02)
+  P0-4  Puste faktury art. 62         — WDROŻONE (empty_invoice_*)
+  P1-5  Czynny żal one-click (R07-INN-01) — WDROŻONE (nowe)
+  P1-6  Kalkulator kar z temporalnością (R07-INN-02) — WDROŻONE (nowe)
+  P1-7  Ryzyko karne per transakcja (R07-INN-03) — WDROŻONE (nowe)
+  P1-8  Minimalizacja kary 4-ścieżkowa— WDROŻONE (p10 INN-02)
+  P2-9  GAAR shield (3-test, round-trip) — WDROŻONE (gaar_shield)
+  P2-10 Monitoring sankcji (risk dashboard) — WDROŻONE (kks_innovations_v8)
+
+════════════════════════════════════════════════════════════════════════════
+2. DIAGRAM MERMAID — ARCHITEKTURA DECYZJI KKS
+════════════════════════════════════════════════════════════════════════════
+
+```mermaid
+flowchart TD
+    IN[INPUT KKS] --> VD[R07 voluntary_disclosure_one_click art.16]
+    IN --> PC[R07 penalty_calculator_temporal art.44]
+    IN --> TR[R07 transaction_risk_predictor art.54/56/57/62]
+    IN --> KKS[kks.rego kary 500k / art.54/56/57/62]
+    IN --> MIN[p10 penalty_minimization 4-sciezki]
+    IN --> GAAR[gaar_shield 3-test + round-tripping]
+    IN --> SAN[penalty_ai + sanctions_optimization]
+    VD -->|PAKIET GOTOWY| GATE[PASS-0 / TRIAGE]
+    PC -->|kara + przedawnienie| GATE
+    TR -->|BLOCK_AND_ALERT| GATE
+    KKS --> GATE
+    MIN --> GATE
+    GAAR --> GATE
+    GATE --> SAFE[safe_merge → final_verdict_p32]
+    SAFE --> PM[POST-MERGE + invariants + certificate]
+```
+
+════════════════════════════════════════════════════════════════════════════
+3. TABELA POKRYCIA: ARTYKUŁ → REGUŁY → STATUS
+════════════════════════════════════════════════════════════════════════════
+
+| Artykuł KKS                   | Reguły istniejące                    | Status |
+|-------------------------------|--------------------------------------|--------|
+| Art. 16 (czynny żal)          | p09/p10 voluntary_disclosure + R07   | A      |
+| Art. 17 (dobrowolne poddanie) | p10 (art. 17) + R07 checklist        | A      |
+| Art. 23/25/27 (kary)          | kks.rego + enterprise_penalties      | A      |
+| Art. 44 (przedawnienie 5 lat) | p10 INN-05 + R07-INN-02              | A      |
+| Art. 45 (zatarcie)            | p10 conviction_expungement_tracker   | A      |
+| Art. 54 (uchylanie się)       | kks.rego (tax_evasion_*) + R07-INN-03| A      |
+| Art. 56 (nierzetelne księgi)  | kks.rego (unreliable_books_*)        | A      |
+| Art. 57 (ewidencja VAT)       | kks.rego (unreliable_vat_*)          | A      |
+| Art. 62 (puste faktury)       | kks.rego (empty_invoice_*) + p09     | A      |
+| GAAR (Ordynacja 119a)         | gaar_shield (3-test + round-trip)    | A      |
+
+STATUS: 10/10 A — pełne pokrycie KKS (legal_coverage_gaps: 6/6 COMPLETE).
+
+════════════════════════════════════════════════════════════════════════════
+4. WDROŻONE INNOWACJE (kod w rules/r07_kks_innovations_v9.rego)
+════════════════════════════════════════════════════════════════════════════
+
+R07-INN-01 voluntary_disclosure_one_click — czynny żal w jednym kliknięciu
+  • Host dostarcza disclosure_pack: {offense_type, revenue_impact,
+    documents, organ_notified}.
+  • checklist_art16: zawiadomienie_o_przestepstwie + ujawnienie_istotnych_
+    okoliczności + wplata_uszczuplenia (art. 16 KKS).
+  • ready = komplet dokumentów AND NOT organ_notified AND uszczuplenie > 0;
+    deadline_days (7 — thresholds); missing_documents — fail-closed.
+  • Korzyść: księgowy generuje kompletny pakiet czynnego żalu w 1 kroku
+    — z checklistą i terminem (zanim organ się dowie).
+
+R07-INN-02 penalty_calculator_temporal — kalkulator kar z temporalnością
+  • Grzywna = stawki dzienne × liczba stawek (standard 60, wykroczenie 10);
+    cap 500 000 zł (fine_limit_absolute — thresholds).
+  • Przedawnienie karalności (art. 44 KKS — 5 lat): statute_barred —
+    okno decyzyjne dla obrony.
+  • Korzyść: pełny obraz kary + przedawnienia w jednym werdykcie.
+
+R07-INN-03 transaction_risk_predictor — ryzyko karne per transakcja
+  • Scoring 0-100: base 10 + brak faktury 35 + firma-przykrywka 40 +
+    przekroczenie limitu gotówki 15 + ryzyko fałszywej deklaracji 25 +
+    niekompletna dokumentacja 10.
+  • Routing: PASS (<30) / WARN (<60) / BLOCK_AND_ALERT (≥60) — nigdy nie
+    wykonuje transakcji; ryzyko per transakcja (P10 miał globalny symulator).
+  • Korzyść: prewencja karnego ryzyka na poziomie pojedynczej transakcji.
+
+GŁÓWNA REGUŁA: decide = jdg.r07_kks_innovations.kks_report
+  (priority 325, _routing REPORT, aktywowana flagą
+  input.jdg_entrepreneur.r07_kks_check; w normalnym ruchu no_match).
+
+════════════════════════════════════════════════════════════════════════════
+5. INTEGRACJA Z ORKIESTRATOREM (main_jdg.rego)
+════════════════════════════════════════════════════════════════════════════
+
+  • import data.jdg.r07_kks_innovations
+  • _package_decisions["jdg.r07_kks_innovations"] = decide
+  • final_verdict_p32 = safe_merge(final_verdict_p31,
+    safe_merge(r07_kks_innovations.decide, fallback.decide))
+  • final_verdict_post_merge = object.union(final_verdict_p32,
+    {"_routing_context": routing_context})
+  • final_verdict_enforced = object.union(final_verdict_post_merge,
+    runtime_invariants.enforce(final_verdict_post_merge))
+  • final_verdict = final_verdict_enforced
+
+════════════════════════════════════════════════════════════════════════════
+6. OPA JAKO SYSTEM — WZMOCNIENIE CONTROL PLANE W DOMENIE KKS
+════════════════════════════════════════════════════════════════════════════
+
+  • Czynny żal (INN-01) — zmiana terminu (art. 16) = thresholds.kks.
+    disclosure_deadline_days (hot-reload < 1 min, V1 §7).
+  • Kary (INN-02) — zmiana limitu 500 000 zł / stawek dziennych / lat
+    przedawnienia = dane thresholds.kks (fine_daily_rate_min/max,
+    fine_limit_absolute, limitation_years) — zero rekompilacji (ADR-002).
+  • Ryzyko (INN-03) — zmiana wag czynników = dane; reguły bez edycji.
+  • Cykl życia SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK, kanary i auto-rollback
+    (SLA ≤ 15 min, MTTR ≤ 5 min) — jdg-kks7-bundle-v9.0.0 w deployments.json
+    (oryginalny jdg-kks-bundle-v9.0.0 z serii R08-R24 zachowany).
+
+════════════════════════════════════════════════════════════════════════════
+7. KONTRAKTY Z INNYMI CZĘŚCIAMI
+════════════════════════════════════════════════════════════════════════════
+
+  • TWORZY: pakiet jdg.r07_kks_innovations (rule_ids: .kks_report,
+    .voluntary_disclosure_one_click, .penalty_calculator_temporal,
+    .transaction_risk_predictor, .no_match) + ścieżka final_verdict_p32.
+  • ZALEŻY od: jdg.main (routing_context, _package_decisions),
+    jdg.thresholds.kks (fine rates, fine_limit_absolute, limitation_years,
+    disclosure_deadline_days), jdg.runtime_invariants, warstwa KKS
+    (kks.rego, enterprise_penalties, p09/p10, sanctions_optimization,
+    gaar_shield, penalty_ai, micro/kks).
+  • NIE koliduje: brak duplikatów rule_id; pakiet REPORT-owy (no_match w
+    normalnym ruchu). Części powiązane: 00, 08, 02.
+
+════════════════════════════════════════════════════════════════════════════
+8. TESTY (dowód działania)
+════════════════════════════════════════════════════════════════════════════
+
+  • tests/auto/test_r07_kks_enterprise.py (pytest) — pakiet, 3 innowacje,
+    limity/terminy externalizowane, wiring main_jdg (p32), golden replay.
+  • tests/rego/test_r07_kks_enterprise.rego (natywny Rego) — scenariusze:
+    czynny żal (ready / missing / organ_notified), kalkulator kar (standard /
+    wykroczenie / cap 500k / przedawnienie), ryzyko transakcji (LOW-PASS /
+    CRITICAL-BLOCK / MEDIUM-WARN), raport KKS.
+  • tests/test_p03_orchestrator_enterprise.py + tests/auto/test_r01_... +
+    test_r02_... + test_r03_... + test_r04_... + test_r05_... +
+    test_r06_... (wiring p32).
+  • Golden replay: 20/20 verdictów, 0 UVER (w tym 1 KKS).
+  • OPA niedostępny w środowisku → kontrola strukturalna + pytest + golden hash
+    (konwencja R08-R24).
+
+════════════════════════════════════════════════════════════════════════════
+9. GENIALNE POMYSŁY ENTERPRISE (min. 12 — wdrożone lub kontraktowane)
+════════════════════════════════════════════════════════════════════════════
+
+  1.  Czynny żal one-click (R07-INN-01) — pakiet dokumentów + checklista.
+  2.  Kalkulator kar z temporalnością (R07-INN-02) — przedawnienie art. 44.
+  3.  Predykcja ryzyka karnego per transakcja (R07-INN-03) — BLOCK_AND_ALERT.
+  4.  Kalkulator kary z uzasadnieniem (p10 INN-01) — stawki dzienne.
+  5.  Silnik minimalizacji kary 4-ścieżkowy (p10 INN-02).
+  6.  Asystent „czy warto złożyć czynny żal" (p10 INN-04).
+  7.  Kalendarz przedawnień + tracker zatarcia (p10 INN-05).
+  8.  Risk dashboard 5-letni (kks_innovations_v8) — monitoring sankcji.
+  9.  Integrity score monitor (kks_innovations_v8) — wiarygodność podatnika.
+  10. GAAR shield 3-test + round-tripping detector (gaar_shield).
+  11. Sanctions optimization decision tree (sanctions_optimization).
+  12. Penalty AI enterprise — wsparcie AI w wymiarze kary.
+  13. KSeF compliance shield (kks_innovations_v8).
+  14. Zero-hardcode thresholds.kks — wszystkie limity/terminy przez dane.
+  15. Golden replay + evidence gate 9/9 -> WDROZONY_100 (R07).
+
+════════════════════════════════════════════════════════════════════════════
+10. MAPA DROGOWA
+════════════════════════════════════════════════════════════════════════════
+
+| # | Zadanie                                   | Priorytet | Czas  | Wpływ | Ryzyko |
+|---|-------------------------------------------|-----------|-------|-------|--------|
+| 1 | Czynny żal art. 16                        | P0        | done  | WYSOKI| NISKIE |
+| 2 | Kary i grzywny (limit 500k)               | P0        | done  | WYSOKI| NISKIE |
+| 3 | Przedawnienie art. 44                     | P0        | done  | WYSOKI| NISKIE |
+| 4 | Puste faktury art. 62                     | P0        | done  | WYSOKI| NISKIE |
+| 5 | Czynny żal one-click (R07-INN-01)         | P1        | done  | WYSOKI| NISKIE |
+| 6 | Kalkulator kar temporalny (R07-INN-02)    | P1        | done  | ŚREDNI| NISKIE |
+| 7 | Ryzyko per transakcja (R07-INN-03)        | P1        | done  | WYSOKI| NISKIE |
+| 8 | Minimalizacja 4-ścieżkowa + GAAR          | P1        | done  | ŚREDNI| NISKIE |
+| 9 | Golden replay KKS                         | P2        | done  | ŚREDNI| NISKIE |
+| 10| Evidence gate 9/9 -> WDROZONY_100         | P2        | done  | WYSOKI| NISKIE |
+
+════════════════════════════════════════════════════════════════════════════
+11. PODSUMOWANIE WDROŻENIA
+════════════════════════════════════════════════════════════════════════════
+
+Artefakty:
+  • rules/r07_kks_innovations_v9.rego (nowy pakiet, 3 innowacje)
+  • rules/main_jdg.rego (wiring: import, _package_decisions, final_verdict_p32,
+    final_verdict_post_merge)
+  • tests/auto/test_r07_kks_enterprise.py (pytest) +
+    tests/rego/test_r07_kks_enterprise.rego (natywny Rego)
+  • tests/test_p03_orchestrator_enterprise.py + tests/auto/test_r01_... +
+    test_r02_... + test_r03_... + test_r04_... + test_r05_... +
+    test_r06_... (wiring p32)
+  • tools/kks_report07_gate.py + bundles/kks_report07_evidence.json
+  • bundles/golden_verdicts.json (+1 KKS verdict + replay; 20/20/0 UVER)
+  • bundles/deployments.json (jdg-kks7-bundle-v9.0.0 — canary→shadow→ramped→
+    soak→auto-rollback; fail-closed, NIE production-active; oryginalny
+    jdg-kks-bundle-v9.0.0 z serii R08-R24 zachowany)
+
+Evidence gate: 9/9 PASSED -> WDROZONY_100 (2026-08-14).
+
+Stan wdrożenia po walidacji WDROZONY_100 (9/9 bramek) — raport JEST WDROZONY_100.
+Dowód: bundles/kks_report07_evidence.json (kks_report07_gate.py --strict PASS).
+
+WERYFIKACJA:
+  • pytest R07 + R06 + R05 + R04 + R03 + R02 + R01 + P03 + P01 + VAT + PIT +
+    ZUS + KKS: zielone.
+  • Golden replay: 20 verdictów / 20 replay / 0 UVER.
+  • Struktura Rego: zbalansowane nawiasy, unikalne rule_id, package OK.
+
+Kolejny Prompt: JDG/prompty_glm52/08_ORDYNACJA_PODATKOWA_OBRONA_PODATNIKA_postępo.txt
+==============================================================================

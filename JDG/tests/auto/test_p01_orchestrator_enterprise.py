@@ -104,10 +104,18 @@ class TestP01Determinism:
     def test_verdict_fields_consistent(self):
         """All verdict paths must include standard fields (matched, rule_id, package)."""
         main = (RULES_DIR / "main_jdg.rego").read_text(encoding="utf-8")
+        # main_jdg scala werdykty przez referencje .decide — pola kanoniczne definiują
+        # pakiety produkujące werdykty (fallback = słownik 25-polowy, risk, r01 core).
+        producers = "\n".join(
+            (RULES_DIR / p).read_text(encoding="utf-8")
+            for p in ("fallback.rego", "risk.rego", "r01_orchestrator_core_innovations_v9.rego")
+        )
         required_fields = ["matched", "rule_id", "package"]
         for field in required_fields:
-            count = main.count(f'"{field}"')
-            assert count > 0, f"main_jdg.rego missing field '{field}' in verdicts"
+            assert f'"{field}"' in producers, \
+                f"werdykty JDG bez pola '{field}' w pakietach produkcyjnych"
+        # main_jdg podpina werdykty do publicznego kontraktu OPA/API
+        assert "final_verdict = final_verdict_enforced" in main
 
 
 # ═══════════════════════════════════════════════════════════════════════════

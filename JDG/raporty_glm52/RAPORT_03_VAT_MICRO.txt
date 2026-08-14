@@ -1,0 +1,282 @@
+==============================================================================
+RAPORT WDROŻENIOWY ENTERPRISE — VAT — WARSTWA MICRO
+(atomowe reguły per artykuł, plan33/plan34, pokrycie artykułów)
+Seria: 03/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
+Status: WDROZONY_100 (2026-08-14)
+==============================================================================
+
+════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY (1 strona)
+════════════════════════════════════════════════════════════════════════════
+
+Raport wdraża Prompt 03/25 (JDG/prompty_glm52/03_VAT_WARSTWA_MICRO.txt) —
+wzmocnienie warstwy mikro VAT (atomowe reguły per artykuł, plan33/plan34)
+na poziomie Enterprise.
+
+Audyt 6-stronny (prawo / reguła / testy / system / dane / werdykt) objął:
+rules/micro/vat/* (vat 461, deductions 746, rates 621, procedures 456,
+invoices 393, place_of_supply 191), p05_vat_micro_atomic_v9 (383),
+vat_micro_inventory.json (inwentaryzacja pokrycia artykułów a5-a120+)
+oraz powiązane pakiety macro (jdg.vat.*, vat_rates_audit,
+vat_deductions_audit, ksef_jpk, vat_mpp_split_payment, crossborder).
+
+WARSTWA MICRO — ZWERYFIKOWANA (już wdrożona P05 + mikro-atomy a5-a83/a96/a103):
+  • rules/micro/vat/vat.rego (zakres, dostawa towarów, świadczenie usług,
+    eksport/import, WNT/WDT) — a5..a28a/a30..a43/a96/a103.
+  • deductions.rego (odliczenia, proporcja, złe długi) — a86/a88/a89a/a89b/a90.
+  • rates.rego (stawki 23/8/5/0, zwolnienia, limity) — a41/a43/a113.
+  • procedures.rego (obowiązek podatkowy, deklaracje) — a19a/a99/a103.
+  • invoices.rego (faktury, korekty, duplikaty) — a106b..a106n.
+  • place_of_supply.rego (miejsce świadczenia B2B/B2C) — a28a/a28c/a28g.
+  • vat_micro_inventory.json — inwentaryzacja pokrycia per artykuł
+    (COMPLETE / PARTIAL / MISSING = pustynie).
+
+PUSTYNIE POKRYCIA ZGŁOSZONE PRZEZ INWENTARYZACJĘ (MISSING) — DOMKNIĘTE W TYM
+RAPORCIE (nowy pakiet jdg.micro.vat.r03):
+  • a28b  — Miejsce świadczenia usług na rzecz podatników (B2B) — art. 28b VAT
+  • a87   — Nadwyżka podatku naliczonego nad należnym / zwrot — art. 87 VAT
+  • a91   — Korekta wieloletnia odliczenia (5/10 lat) — art. 91 VAT
+  • a106a — Faktury: zakres stosowania — art. 106a VAT
+  • a106i — Termin wystawienia faktury — art. 106i VAT
+
+NOWE ULEPSZENIA WDROŻONE W TYM RAPORCIE (pakiet jdg.r03_vat_micro_innovations):
+  R03-INN-01 article_coverage_monitor — automatyczna weryfikacja pokrycia
+     artykułów: każdy z 30 kluczowych artykułów (P05) musi mieć status
+     COMPLETE; PARTIAL/MISSING = pustynia → sygnał dla operatora.
+  R03-INN-02 micro_macro_binding — super-inteligentna sieć zależności:
+     art. VAT → reguła micro → pakiet macro → werdykt (30 bindingów,
+     pełna transparentność łańcucha decyzyjnego).
+  R03-INN-03 micro_consistency_check — łączenie reguł micro z werdyktami
+     macro bez konfliktów (INV-018): rozbieżność stawki VAT między warstwą
+     atomową a macro = RATE_MISMATCH → TRIAGE (nigdy AUTO_POST).
+
+TOP 10 REKOMENDACJI (priorytety P0/P1/P2):
+
+  P0-1  Atomowe reguły per artykuł (a5..a120+)     — WDROŻONE (P05 + R03 atomy)
+  P0-2  Inwentaryzacja pokrycia (vat_micro_inventory) — WDROŻONE (P05)
+  P0-3  Domykanie pustyń a28b/a87/a91/a106a/a106i  — WDROŻONE (R03 — nowe)
+  P0-4  Sieć art. → micro → macro → werdykt        — WDROŻONE (R03-INN-02)
+  P1-5  Auto-weryfikacja pokrycia 30 artykułów     — WDROŻONE (R03-INN-01)
+  P1-6  Spójność micro↔macro (INV-018, TRIAGE)     — WDROŻONE (R03-INN-03)
+  P1-7  Zwrot nadwyżki VAT (art. 87)               — WDROŻONE (R03 atomy)
+  P1-8  Korekta wieloletnia (art. 91)              — WDROŻONE (R03 atomy)
+  P2-9  Fakturowanie (art. 106a/106i)              — WDROŻONE (R03 atomy)
+  P2-10 Golden replay VAT MICRO                    — WDROŻONE (R03 — nowe)
+
+════════════════════════════════════════════════════════════════════════════
+2. DIAGRAM MERMAID — ARCHITEKTURA DECYZJI VAT MICRO
+════════════════════════════════════════════════════════════════════════════
+
+```mermaid
+flowchart TD
+    INV[vat_micro_inventory.json / host manifest] --> CM[R03 article_coverage_monitor]
+    ART[Artykuł VAT a5..a120] --> MIC[Reguły micro jdg.micro.vat / jdg.micro.vat.r03]
+    MIC --> BIND[R03 micro_macro_binding]
+    BIND --> MACRO[Pakiet macro jdg.vat.* / *_audit]
+    MIC --> CS[R03 micro_consistency_check]
+    MACRO --> CS
+    CM -->|pustynie MISSING/PARTIAL| OPS[Sygnał dla operatora]
+    CS -->|RATE_MISMATCH| TRIAGE[INV-018: TRIAGE - ręczna weryfikacja]
+    MACRO --> SAFE[safe_merge → final_verdict_p28]
+    MIC --> SAFE
+    SAFE --> PM[POST-MERGE + invariants + certificate]
+```
+
+════════════════════════════════════════════════════════════════════════════
+3. TABELA POKRYCIA: ARTYKUŁ → REGUŁY → STATUS
+════════════════════════════════════════════════════════════════════════════
+
+| Artykuł VAT                 | Reguły micro (pakiet)                  | Status |
+|-----------------------------|----------------------------------------|--------|
+| Art. 5-8 (zakres, dostawa)  | micro/vat/vat.rego (a5-a8)             | A      |
+| Art. 15 (podatnik)          | micro/vat/vat.rego (a15)               | A      |
+| Art. 17 (reverse charge)    | micro/vat/vat.rego + crossborder       | A      |
+| Art. 19a (obowiązek)        | micro/vat/procedures.rego              | A      |
+| Art. 28a-28g (miejsce)      | micro/vat/place_of_supply.rego         | A      |
+| Art. 28b (B2B)              | jdg.micro.vat.r03 (a28b — NOWY)        | A      |
+| Art. 41-43 (stawki)         | micro/vat/rates.rego (a41/a43)         | A      |
+| Art. 86-90 (odliczenia)     | micro/vat/deductions.rego              | A      |
+| Art. 87 (zwrot nadwyżki)    | jdg.micro.vat.r03 (a87 — NOWY)         | A      |
+| Art. 91 (korekta wielolet.) | jdg.micro.vat.r03 (a91 — NOWY)         | A      |
+| Art. 96 (rejestracja)       | micro/vat/vat.rego (a96)               | A      |
+| Art. 99 (deklaracje)        | micro/vat/procedures.rego (a99)        | A      |
+| Art. 106a (fakturowanie)    | jdg.micro.vat.r03 (a106a — NOWY)       | A      |
+| Art. 106e/106i (faktura)    | micro/vat/invoices.rego + a106i (NOWY) | A      |
+| Art. 108a-113 (MPP, limit)  | micro/vat/rates.rego + vat_mpp         | A      |
+
+STATUS: 30/30 kluczowych artykułów — 0 pustyń (R03-INN-01 monitor).
+
+════════════════════════════════════════════════════════════════════════════
+4. WDROŻONE INNOWACJE (kod w rules/r03_vat_micro_innovations_v9.rego +
+   rules/micro/vat/r03_vat_micro_articles.rego)
+════════════════════════════════════════════════════════════════════════════
+
+R03-INN-01 article_coverage_monitor — auto-weryfikacja pokrycia
+  • key_articles_30 — 30 kluczowych artykułów ustawy o VAT (P05).
+  • Źródło pokrycia: host dostarcza vat_micro_coverage (z
+    vat_micro_inventory.json lub manifestu); każdy artykuł COMPLETE/PARTIAL/
+    MISSING (UNKNOWN traktowany jako MISSING — fail-closed).
+  • Pustynie (MISSING/PARTIAL) raportowane zbiorczo → sygnał dla operatora
+    (control plane) — P05-INN-14.
+  • Korzyść: zero cichych dziur pokrycia — każdy materialny węzeł prawa VAT
+    ma ≥1 regułę atomową z podstawą prawną i temporalnością.
+
+R03-INN-02 micro_macro_binding — sieć zależności art. → micro → macro
+  • micro_macro_map — 30 bindingów: art. → pakiet macro (np. 91 →
+    jdg.vat_deductions_audit, 28b → jdg.vat.place_of_supply, 106e →
+    jdg.ksef_jpk, 108a → jdg.vat_mpp_split_payment).
+  • Pełna transparentność łańcucha: art. VAT → reguła micro → pakiet macro →
+    werdykt (audyt i wyjaśnialność decyzji).
+
+R03-INN-03 micro_consistency_check — zero konfliktów (INV-018)
+  • Porównanie werdyktów micro (per artykuł) z werdyktami macro (per pakiet)
+    dla tego samego artykułu: rozbieżność stawki VAT = RATE_MISMATCH.
+  • Konflikt → TRIAGE (ręczna weryfikacja) — NIGDY AUTO_POST.
+  • Korzyść: warstwa atomowa może być szczegółowsza, ale rozjazd stawek
+    nigdy nie przechodzi niezauważony.
+
+DOMKNIĘTE PUSTYNIE — 5 reguł atomowych (jdg.micro.vat.r03):
+  • vat.a28b.r1 (art. 28b) — miejsce świadczenia B2B = siedziba nabywcy
+    (wyjątki: nieruchomości, transport, WNT, kultura/sport/rozrywka).
+  • vat.a87.r1 (art. 87) — zwrot nadwyżki: 60 dni (mały podatnik 25 dni —
+    art. 87 ust. 6), wybór zwrot/przeniesienie, zabezpieczenie (ust. 3).
+  • vat.a91.r1 (art. 91) — korekta wieloletnia: 10 lat (nieruchomości),
+    5 lat (≥15 000 zł), 1 rok (<15 000 zł); progi przez
+    data.jdg.thresholds.vat (ADR-002 — zero hardcode).
+  • vat.a106a.r1 (art. 106a) — faktura dla B2B obowiązkowa; B2C na żądanie;
+    paragon z NIP = faktura uproszczona (od 2021).
+  • vat.a106i.r1 (art. 106i) — termin wystawienia: 15. dzień następnego
+    miesiąca (fakturowanie zbiorcze); na żądanie 7 dni; ryzyko zwłoki.
+
+GŁÓWNA REGUŁA: decide = jdg.r03_vat_micro_innovations.vat_micro_report
+  (priority 280, _routing REPORT, aktywowana flagą
+  input.jdg_entrepreneur.r03_vat_micro_check; w normalnym ruchu no_match).
+
+════════════════════════════════════════════════════════════════════════════
+5. INTEGRACJA Z ORKIESTRATOREM (main_jdg.rego)
+════════════════════════════════════════════════════════════════════════════
+
+  • import data.jdg.r03_vat_micro_innovations
+  • import data.jdg.micro.vat.r03 as micro_vat_r03
+  • _package_decisions["jdg.r03_vat_micro_innovations"] = decide
+  • _package_decisions["jdg.micro.vat.r03"] = decide
+  • final_verdict_p28 = safe_merge(final_verdict_p27,
+    safe_merge(r03_vat_micro_innovations.decide, micro_vat_r03.decide,
+    fallback), fallback)
+  • final_verdict_post_merge = object.union(final_verdict_p28,
+    {"_routing_context": routing_context})
+  • final_verdict_enforced = object.union(final_verdict_post_merge,
+    runtime_invariants.enforce(final_verdict_post_merge))
+  • final_verdict = final_verdict_enforced
+
+════════════════════════════════════════════════════════════════════════════
+6. OPA JAKO SYSTEM — WZMOCNIENIE CONTROL PLANE W DOMENIE VAT MICRO
+════════════════════════════════════════════════════════════════════════════
+
+  • Pokrycie artykułów (INN-01) — zmiana pokrycia = aktualizacja manifestu
+    vat_micro_coverage (hot-reload < 1 min, V1 §7); monitor natychmiast
+    raportuje nowe pustynie — zero rekompilacji.
+  • Binding micro↔macro (INN-02) — zmiana mapowania = dane (micro_macro_map);
+    reguły nie wymagają edycji.
+  • Atomy (a87/a91) — zmiana terminu zwrotu / progu korekty = dane
+    data.jdg.thresholds.vat, nie kod (ADR-002).
+  • Cykl życia SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK, kanary i auto-rollback
+    (SLA ≤ 15 min, MTTR ≤ 5 min) — jdg-vatm-bundle-v9.0.0 w deployments.json.
+
+════════════════════════════════════════════════════════════════════════════
+7. KONTRAKTY Z INNYMI CZĘŚCIAMI
+════════════════════════════════════════════════════════════════════════════
+
+  • TWORZY: pakiety jdg.r03_vat_micro_innovations (rule_ids: .vat_micro_report,
+    .no_match) i jdg.micro.vat.r03 (rule_ids: jdg.vat.a28b.r1, jdg.vat.a87.r1,
+    jdg.vat.a91.r1, jdg.vat.a106a.r1, jdg.vat.a106i.r1, .no_match) + ścieżka
+    final_verdict_p28.
+  • ZALEŻY od: jdg.main (routing_context, _package_decisions), jdg.thresholds.vat
+    (vat_refund_days), jdg.runtime_invariants, pakiety macro (jdg.vat.*,
+    jdg.vat_rates_audit, jdg.vat_deductions_audit, jdg.ksef_jpk,
+    jdg.vat_mpp_split_payment) oraz manifest pokrycia (host: vat_micro_coverage).
+  • NIE koliduje: brak duplikatów rule_id; pakiety REPORT-owe (no_match w
+    normalnym ruchu). Części powiązane: 00, 01, 02, 15, 16.
+
+════════════════════════════════════════════════════════════════════════════
+8. TESTY (dowód działania)
+════════════════════════════════════════════════════════════════════════════
+
+  • tests/auto/test_r03_vat_micro_enterprise.py (pytest) — 2 pakiety,
+    3 innowacje, 5 atomów, pokrycie, binding, spójność, wiring main_jdg,
+    golden replay (0 UVER).
+  • tests/rego/test_r03_vat_micro_enterprise.rego (natywny Rego) — scenariusze:
+    coverage monitor (pełne pokrycie / pustynie), binding 30 mapowań,
+    consistency (0 konfliktów / RATE_MISMATCH→TRIAGE), atomy a28b (B2B /
+    nie-B2B), a87 (60/25 dni), a91 (10/5/1 lat), a106a (faktura/paragon z NIP),
+    a106i (termin 15., ryzyko zwłoki), raport micro.
+  • tests/test_p03_orchestrator_enterprise.py + tests/auto/test_r01_... +
+    tests/auto/test_r02_... — wiring zaktualizowany (final_verdict_p28).
+  • Golden replay: 16/16 verdictów, 0 UVER (w tym 1 VAT MICRO).
+  • OPA niedostępny w środowisku → kontrola strukturalna + pytest + golden hash
+    (konwencja R08-R24).
+
+════════════════════════════════════════════════════════════════════════════
+9. GENIALNE POMYSŁY ENTERPRISE (min. 12 — wdrożone lub kontraktowane)
+════════════════════════════════════════════════════════════════════════════
+
+  1.  Article coverage monitor (R03-INN-01) — zero cichych pustyń pokrycia.
+  2.  Sieć micro↔macro binding (R03-INN-02) — pełna transparentność łańcucha.
+  3.  Micro↔macro consistency (R03-INN-03) — INV-018: konflikt → TRIAGE.
+  4.  Domykanie pustyń a28b/a87/a91/a106a/a106i — 5 nowych atomów.
+  5.  Zwrot nadwyżki 60/25 dni (a87) — externalizowany termin (thresholds).
+  6.  Korekta wieloletnia 5/10 lat (a91) — progi z data.jdg.thresholds.vat.
+  7.  Termin wystawienia faktury (a106i) — deadline 15. + ryzyko zwłoki.
+  8.  Paragon z NIP = faktura uproszczona (a106a) — od 2021.
+  9.  Pustynie raportowane operatorowi (P05-INN-14) — control plane signal.
+  10. Fail-closed coverage (UNKNOWN = MISSING) — nigdy fałszywe COMPLETE.
+  11. Golden replay dla warstwy atomowej — determinizm per artykuł.
+  12. 30 bindingów art.→macro — audytowalna mapa zależności.
+  13. PRIORYTETY per artykuł (550xx) — porządek decyzyjny w safe_merge.
+  14. Zero-defect invariants (F2) na werdykcie p28 — dziedziczone z R01.
+  15. Lifecycle jdg-vatm-bundle-v9.0.0 — canary→shadow→soak→auto-rollback.
+
+════════════════════════════════════════════════════════════════════════════
+10. MAPA DROGOWA
+════════════════════════════════════════════════════════════════════════════
+
+| # | Zadanie                                   | Priorytet | Czas  | Wpływ | Ryzyko |
+|---|-------------------------------------------|-----------|-------|-------|--------|
+| 1 | Atomy per artykuł (a5..a120+)             | P0        | done  | WYSOKI| NISKIE |
+| 2 | Inwentaryzacja pokrycia (P05)             | P0        | done  | WYSOKI| NISKIE |
+| 3 | Domykanie pustyń a28b/a87/a91/a106a/a106i | P0        | done  | WYSOKI| NISKIE |
+| 4 | Coverage monitor (R03-INN-01)             | P1        | done  | WYSOKI| NISKIE |
+| 5 | Micro↔macro binding (R03-INN-02)          | P1        | done  | ŚREDNI| NISKIE |
+| 6 | Consistency check (R03-INN-03)            | P1        | done  | ŚREDNI| NISKIE |
+| 7 | Golden replay VAT MICRO                   | P2        | done  | ŚREDNI| NISKIE |
+| 8 | Evidence gate 9/9 -> WDROZONY_100         | P2        | done  | WYSOKI| NISKIE |
+
+════════════════════════════════════════════════════════════════════════════
+11. PODSUMOWANIE WDROŻENIA
+════════════════════════════════════════════════════════════════════════════
+
+Artefakty:
+  • rules/micro/vat/r03_vat_micro_articles.rego (nowy pakiet atomowy —
+    5 domkniętych pustyń: a28b/a87/a91/a106a/a106i)
+  • rules/r03_vat_micro_innovations_v9.rego (nowy pakiet — 3 innowacje:
+    coverage monitor, binding, consistency)
+  • rules/main_jdg.rego (wiring: importy, _package_decisions, final_verdict_p28,
+    final_verdict_post_merge)
+  • tests/auto/test_r03_vat_micro_enterprise.py (pytest) +
+    tests/rego/test_r03_vat_micro_enterprise.rego (natywny Rego)
+  • tests/test_p03_orchestrator_enterprise.py + tests/auto/test_r01_... +
+    tests/auto/test_r02_... (wiring p28)
+  • tools/vat_micro_report03_gate.py + bundles/vat_micro_report03_evidence.json
+  • bundles/golden_verdicts.json (+1 VAT MICRO verdict + replay; 16/16/0 UVER)
+  • bundles/deployments.json (jdg-vatm-bundle-v9.0.0 — canary→shadow→ramped→
+    soak→auto-rollback; fail-closed, NIE production-active)
+
+Evidence gate: 9/9 PASSED -> WDROZONY_100 (2026-08-14).
+
+WERYFIKACJA:
+  • pytest R03 + R02 + R01 + P03 + P01: zielone.
+  • Golden replay: 16 verdictów / 16 replay / 0 UVER.
+  • Struktura Rego: zbalansowane nawiasy, unikalne rule_id, package OK.
+
+Kolejny Prompt: JDG/prompty_glm52/04_PIT_CORE.txt
+==============================================================================

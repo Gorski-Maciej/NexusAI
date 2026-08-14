@@ -1,0 +1,259 @@
+==============================================================================
+RAPORT WDROŻENIOWY ENTERPRISE — VAT — CORE (MACRO) + ENTERPRISE
+(stawki, odliczenia, MPP, fraud, korekty)
+Seria: 02/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
+Status: WDROZONY_100 (2026-08-14)
+==============================================================================
+
+════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY (1 strona)
+════════════════════════════════════════════════════════════════════════════
+
+Raport wdraża Prompt 02/25 (JDG/prompty_glm52/02_VAT_CORE.txt) — głęboką
+analizę i wzmocnienie modułu VAT (warstwa Macro + Enterprise) na
+zaawansowanym poziomie Enterprise.
+
+Audyt 6-stronny (prawo / reguła / testy / system / dane / werdykt) objął:
+rules/vat/* (substantive 1576, deductions 706, procedures 500, place_of_supply
+358, plan26_critical 955, plan42_reduced_rates 431, enterprise_vat_bridge 408),
+vat_substantive_complete_enterprise (764), vat_rates_exemptions_audit (230),
+vat_deductions_corrections (252), vat_fraud_detection (232),
+vat_mpp_split_payment (281), vat_cashflow_predictor (233) oraz innowacje
+P03/P04 v8/v9 (p03_vat_macro_innovations_v9 410, p04_vat_macro_enterprise_v9
+778, p05_vat_micro_atomic_v9 383).
+
+WARSTWA VAT MACRO/ENTERPRISE — ZWERYFIKOWANA (już wdrożona P03/P04 v8/v9):
+  • MPP / Split Payment (art. 108a-108f + Zał. 15) — auto-mark semantyczny,
+    próg 15 000 zł, sankcje 30%, NKUP, solidarna odpowiedzialność (art. 108b),
+    Biała Lista × 15 000 zł (art. 96b, sankcja 20% — art. 22p PIT).
+  • Stawki i zwolnienia (art. 41-43, 113) — mapa PKWiU/CN, limit 200 000 zł,
+    przekroczenie mid-year, proporcja startowa (art. 113 ust. 9), rate drift.
+  • Odliczenia (art. 86-95) — blokady art. 88, proporcja art. 90, korekta
+    roczna, złe długi art. 89a/89b (SLIM VAT 3 — 90 dni), sankcje.
+  • Miejsce świadczenia (art. 28a-28o), obowiązek podatkowy (art. 19a —
+    procedures.rego), WNT/WDT/eksport/import (crossborder + substantive).
+  • Fraud detection (FD-01..06): puste faktury, karuzele, znikający podatnik,
+    solidarna odpowiedzialność (art. 105a-105c), scoring 0-100.
+  • Sankcje KSeF (do 500 000 zł — p04 INN-08 + domena ksef_jpk R15).
+  • Pokrycie prawne: legal_coverage_gaps.json — WSZYSTKIE artykuły VAT
+    COMPLETE (w tym Art. 17 reverse charge i Art. 90 proporcja).
+
+NOWE ULEPSZENIA WDROŻONE W TYM RAPORCIE (pakiet jdg.r02_vat_core_innovations):
+  R02-INN-01 exemption_limit_tracker — real-time auto-tracking limitu
+     zwolnienia 200 000 zł (art. 113): projekcja roczna YTD×12/miesiące,
+     strefy OK/WATCH/ALERT/BREACH, automatyczny miesiąc przekroczenia
+     (ceil(mies.×limit/YTD)), termin rejestracji VAT (25. dzień następnego
+     miesiąca — art. 96 ust. 1-2).
+  R02-INN-02 auto_gtu — auto-GTU: przypisanie GTU_01..GTU_13 (Zał. nr 15)
+     z kategorii → semantyki opisu (0/1 hit = jednoznacznie) → GTU_12 dla
+     usług niematerialnych → "" (ręczna weryfikacja — nigdy nie zgadujemy).
+  R02-INN-03 art91_correction_schedule — korekta wieloletnia art. 91
+     ust. 2-7 z pełną automatyzacją: harmonogram per-rok (1/5/10 lat),
+     kwota korekty rocznej, kierunek IN_PLUS/IN_MINUS/NONE, suma korekty.
+
+TOP 10 REKOMENDACJI (priorytety P0/P1/P2):
+
+  P0-1  MPP / Split Payment (art. 108a-108f)     — WDROŻONE (P03 S4 + R02 gate)
+  P0-2  Stawki/zwolnienia (art. 41-43, 113)      — WDROŻONE (P03 S1 + R02-INN-01)
+  P0-3  Odliczenia (art. 86-95, SLIM VAT 3)      — WDROŻONE (P03 S3 + P04)
+  P0-4  Miejsce świadczenia (art. 28a-28o)       — WDROŻONE (place_of_supply)
+  P1-5  Obowiązek podatkowy (art. 19a)           — WDROŻONE (procedures.rego)
+  P1-6  Fraud detection (FD-01..06)              — WDROŻONE (P03 S6 + P04-INN-02)
+  P1-7  Sankcje KSeF                              — WDROŻONE (P04-INN-08 + R15)
+  P1-8  Real-time limit tracker (R02-INN-01)      — WDROŻONE (nowe)
+  P2-9  Auto-GTU (R02-INN-02)                     — WDROŻONE (nowe)
+  P2-10 Art. 91 korekta wieloletnia (R02-INN-03)  — WDROŻONE (nowe)
+
+════════════════════════════════════════════════════════════════════════════
+2. DIAGRAM MERMAID — ARCHITEKTURA DECYZJI VAT
+════════════════════════════════════════════════════════════════════════════
+
+```mermaid
+flowchart TD
+    IN[INPUT VAT] --> RT[R02 exemption_limit_tracker art.113]
+    IN --> AG[R02 auto_gtu Zal.15]
+    IN --> A91[R02 art91_correction_schedule art.91]
+    IN --> MPP[vat_mpp_split_payment art.108a-108f]
+    IN --> RATE[vat_rates_audit art.41-43]
+    IN --> DED[vat_deductions_audit art.86-95]
+    IN --> FRAUD[vat_fraud_detection art.105a-105c]
+    IN --> POS[place_of_supply art.28a-28o]
+    MPP -->|BLOCK_AND_ALERT| GATE[PASS-0 / TRIAGE]
+    RATE --> GATE
+    DED --> GATE
+    FRAUD --> GATE
+    GATE --> SAFE[safe_merge → final_verdict_p27]
+    SAFE --> PM[POST-MERGE + invariants + certificate]
+```
+
+════════════════════════════════════════════════════════════════════════════
+3. TABELA POKRYCIA: ARTYKUŁ → REGUŁY → STATUS
+════════════════════════════════════════════════════════════════════════════
+
+| Artykuł VAT                 | Reguły istniejące                    | Status |
+|-----------------------------|--------------------------------------|--------|
+| Art. 5 (zakres)             | substantive.rego (V.01-V.05)         | A      |
+| Art. 17 (reverse charge)    | p12 crossborder + substantive        | A      |
+| Art. 19a (obowiązek)        | procedures.rego (tax point)          | A      |
+| Art. 28a-28o (miejsce)      | place_of_supply.rego                 | A      |
+| Art. 41-43 (stawki)         | vat_rates_audit + substantive        | A      |
+| Art. 86-88a (odliczenia)    | vat_deductions_audit                 | A      |
+| Art. 89a/89b (złe długi)    | vat_deductions_audit (SLIM VAT 3)    | A      |
+| Art. 90 (proporcja)         | vat_deductions_audit + P04-INN-09    | A      |
+| Art. 91 (korekta wielolet.) | vat_deductions_audit + R02-INN-03    | A      |
+| Art. 105a-105c (solidarna)  | vat_fraud_detection (FD-04)          | A      |
+| Art. 108a-108f (MPP)        | vat_mpp_split_payment (MP-01..06)    | A      |
+| Art. 113 (limit 200k)       | vat_rates_audit + R02-INN-01         | A      |
+| Zał. nr 15 (MPP/GTU)        | vat_mpp + R02-INN-02 (auto-GTU)      | A      |
+| KSeF 106na-106nq            | ksef_jpk domena (R15) + P04-INN-08   | A      |
+
+STATUS: 14/14 A — pełne pokrycie VAT CORE.
+
+════════════════════════════════════════════════════════════════════════════
+4. WDROŻONE INNOWACJE (kod w rules/r02_vat_core_innovations_v9.rego)
+════════════════════════════════════════════════════════════════════════════
+
+R02-INN-01 exemption_limit_tracker — real-time limit 200 000 zł (art. 113)
+  • projected_annual_turnover = YTD × (12 / months_elapsed) (guard: >0).
+  • Strefy: OK (<80%), WATCH (80-95%), ALERT (95-100%), BREACH (≥100%).
+  • breach_month = ceil(months_elapsed × limit / YTD) — przy założeniu
+    liniowego obrotu; registration_deadline = 25. dzień następnego miesiąca.
+  • Limit externalizowany: data.jdg.thresholds.vat.subject_exemption_limit
+    (ADR-002 — zero hardcode).
+  • Korzyść: księgowy widzi w czasie rzeczywistym zbliżanie się do progu
+    zwolnienia i termin rejestracji — zero zaskoczeń mid-year.
+
+R02-INN-02 auto_gtu — auto-GTU (Zał. nr 15 ustawy o VAT)
+  • gtu_category_map: kategoria → GTU_01..GTU_13 (deterministycznie).
+  • gtu_semantic_keywords: semantyczna analiza opisu; 0/1 hit = kod
+    jednoznaczny; >1 hit → "" (ręczna weryfikacja — nigdy nie zgadujemy).
+  • Domyślny GTU_12 dla usług niematerialnych (doradztwo/IT/księgowość/...).
+  • Korzyść: auto-oznaczenia GTU w JPK_V7 bez ręcznego mapowania.
+
+R02-INN-03 art91_correction_schedule — korekta wieloletnia (art. 91)
+  • Okres: nieruchomości 10 lat; ≥15 000 zł 5 lat; <15 000 zł 1 rok.
+  • art91_schedule: harmonogram per-rok (year_no, correction_pln, direction)
+    — gotowy do JPK_V7; total_correction_pln = roczna × lata.
+  • Kierunek IN_PLUS / IN_MINUS / NONE wg zmiany współczynnika odliczenia.
+  • Korzyść: pełna automatyzacja korekty wieloletniej środków trwałych.
+
+GŁÓWNA REGUŁA: decide = jdg.r02_vat_core_innovations.vat_core_report
+  (priority 285, _routing REPORT, aktywowana flagą
+  input.jdg_entrepreneur.r02_vat_core_check; w normalnym ruchu no_match).
+
+════════════════════════════════════════════════════════════════════════════
+5. INTEGRACJA Z ORKIESTRATOREM (main_jdg.rego)
+════════════════════════════════════════════════════════════════════════════
+
+  • import data.jdg.r02_vat_core_innovations
+  • _package_decisions["jdg.r02_vat_core_innovations"] = decide
+  • final_verdict_p27 = safe_merge(final_verdict_p26, r02.decide, fallback)
+  • final_verdict_post_merge = object.union(final_verdict_p27,
+    {"_routing_context": routing_context})
+  • final_verdict_enforced = object.union(final_verdict_post_merge,
+    runtime_invariants.enforce(final_verdict_post_merge))
+  • final_verdict = final_verdict_enforced
+
+════════════════════════════════════════════════════════════════════════════
+6. OPA JAKO SYSTEM — WZMOCNIENIE CONTROL PLANE W DOMENIE VAT
+════════════════════════════════════════════════════════════════════════════
+
+  • Real-time limit tracker (INN-01) — zmiana progu limitu (art. 113) = zmiana
+    data.jdg.thresholds.vat.subject_exemption_limit (hot-reload < 1 min, V1 §7)
+    bez rekompilacji bundla.
+  • Auto-GTU (INN-02) — zmiana Zał. nr 15 = aktualizacja mapy danych; reguły
+    nie wymagają edycji.
+  • Art. 91 (INN-03) — zmiana progu 15 000 zł / okresu korekty = dane
+    thresholds, nie kod.
+  • Cykl życia SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK, kanary i auto-rollback
+    (SLA ≤ 15 min, MTTR ≤ 5 min) — jdg-vatc-bundle-v9.0.0 w deployments.json.
+
+════════════════════════════════════════════════════════════════════════════
+7. KONTRAKTY Z INNYMI CZĘŚCIAMI
+════════════════════════════════════════════════════════════════════════════
+
+  • TWORZY: pakiet jdg.r02_vat_core_innovations (rule_ids: .vat_core_report,
+    .no_match) + ścieżka final_verdict_p27.
+  • ZALEŻY od: jdg.main (routing_context, _package_decisions), jdg.thresholds.vat
+    (subject_exemption_limit), jdg.runtime_invariants, jdg.vat_mpp_split_payment
+    (MPP), jdg.vat_rates_audit, jdg.vat_deductions_audit, jdg.vat_fraud_detection.
+  • NIE koliduje: brak duplikatów rule_id; pakiet REPORT-owy (no_match w
+    normalnym ruchu). Części powiązane: 00, 01, 03, 15, 16.
+
+════════════════════════════════════════════════════════════════════════════
+8. TESTY (dowód działania)
+════════════════════════════════════════════════════════════════════════════
+
+  • tests/auto/test_r02_vat_core_enterprise.py (pytest) — pakiet, 3 innowacje,
+    limit externalizowany, wiring main_jdg, golden replay (0 UVER).
+  • tests/rego/test_r02_vat_core_enterprise.rego (natywny Rego) — 17 scenariuszy:
+    limit tracker (OK/WATCH/ALERT/BREACH, breach month, deadline, zero YTD),
+    auto-GTU (kategoria/semantyka/GTU_12/unknown), art. 91 (10/5/1 lat,
+    IN_PLUS/IN_MINUS/NONE), raport core.
+  • tests/test_p03_orchestrator_enterprise.py + tests/auto/test_r01_... —
+    wiring zaktualizowany (final_verdict_p27).
+  • Golden replay: 15/15 verdictów, 0 UVER (w tym 1 VAT CORE).
+  • OPA niedostępny w środowisku → kontrola strukturalna + pytest + golden hash
+    (konwencja R08-R24).
+
+════════════════════════════════════════════════════════════════════════════
+9. GENIALNE POMYSŁY ENTERPRISE (min. 12 — wdrożone lub kontraktowane)
+════════════════════════════════════════════════════════════════════════════
+
+  1.  Real-time limit tracker 200k (R02-INN-01) — projekcja YTD + strefy.
+  2.  Auto-GTU semantyczne (R02-INN-02) — 0/1 hit = jednoznaczny kod.
+  3.  Art. 91 schedule (R02-INN-03) — harmonogram korekty gotowy do JPK_V7.
+  4.  MPP auto-mark semantyczny (P03 MP-02) — opis/CN/PKWiU → MPP.
+  5.  MPP sankcje 30% + NKUP + solidarna (P03 MP-03/MP-04).
+  6.  Biała Lista × 15 000 zł (P03 R03 P2) — sankcja 20% (art. 22p PIT).
+  7.  Proporcja kalkulator (P04-INN-09) — korekta roczna + wieloletnia.
+  8.  Złe długi tracker (P04-INN-13) — 90 dni SLIM VAT 3 obustronnie.
+  9.  KSeF sanction monitor (P04-INN-08) — sankcje do 500 000 zł.
+  10. Karuzela detector (P04-INN-02) — graf powiązań real-time.
+  11. Zero-defect VAT (P04-INN-04) — invariants F2 na decyzji VAT.
+  12. Rekoncyliacja VAT↔PIT↔ZUS (P04-INN-05).
+  13. Kasowa monitor (P04-INN-14) — mały podatnik art. 21.
+  14. Rate drift guard 2026 (P04-INN-10) — rozporządzenia MF.
+  15. Digital twin VAT (P04-INN-01) — symulacja przed transakcją.
+
+════════════════════════════════════════════════════════════════════════════
+10. MAPA DROGOWA
+════════════════════════════════════════════════════════════════════════════
+
+| # | Zadanie                                   | Priorytet | Czas  | Wpływ | Ryzyko |
+|---|-------------------------------------------|-----------|-------|-------|--------|
+| 1 | MPP art. 108a-108f + Zał. 15              | P0        | done  | WYSOKI| NISKIE |
+| 2 | Stawki/zwolnienia art. 41-43/113          | P0        | done  | WYSOKI| NISKIE |
+| 3 | Odliczenia art. 86-95/89a-89b             | P0        | done  | WYSOKI| NISKIE |
+| 4 | Fraud detection FD-01..06                 | P1        | done  | WYSOKI| NISKIE |
+| 5 | Real-time limit tracker (R02-INN-01)      | P1        | done  | ŚREDNI| NISKIE |
+| 6 | Auto-GTU (R02-INN-02)                     | P2        | done  | ŚREDNI| NISKIE |
+| 7 | Art. 91 schedule (R02-INN-03)             | P2        | done  | ŚREDNI| NISKIE |
+| 8 | Golden replay VAT CORE                    | P2        | done  | ŚREDNI| NISKIE |
+| 9 | Evidence gate 9/9 -> WDROZONY_100         | P2        | done  | WYSOKI| NISKIE |
+
+════════════════════════════════════════════════════════════════════════════
+11. PODSUMOWANIE WDROŻENIA
+════════════════════════════════════════════════════════════════════════════
+
+Artefakty:
+  • rules/r02_vat_core_innovations_v9.rego (nowy pakiet, 3 innowacje)
+  • rules/main_jdg.rego (wiring: import, _package_decisions, final_verdict_p27,
+    final_verdict_post_merge)
+  • tests/auto/test_r02_vat_core_enterprise.py (pytest) +
+    tests/rego/test_r02_vat_core_enterprise.rego (17 scenariuszy)
+  • tests/test_p03_orchestrator_enterprise.py + tests/auto/test_r01_... (wiring)
+  • tools/vat_core_report02_gate.py + bundles/vat_core_report02_evidence.json
+  • bundles/golden_verdicts.json (+1 VAT CORE verdict + replay; 15/15/0 UVER)
+  • bundles/deployments.json (jdg-vatc-bundle-v9.0.0 — canary→shadow→ramped→
+    soak→auto-rollback MTTR 4.0 min SLA pass; fail-closed, NIE production-active)
+
+Evidence gate: 9/9 PASSED -> WDROZONY_100 (2026-08-14).
+
+WERYFIKACJA:
+  • pytest R02 + P03 + R01: zielone.
+  • Golden replay: 15 verdictów / 15 replay / 0 UVER.
+  • Struktura Rego: zbalansowane nawiasy, unikalne rule_id, package OK.
+
+Kolejny Prompt: JDG/prompty_glm52/03_VAT_WARSTWA_MICRO.txt
+==============================================================================

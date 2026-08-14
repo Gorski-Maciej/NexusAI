@@ -1,29 +1,26 @@
 #!/usr/bin/env python3
-"""RAPORT_07 KKS — Kodeks Karny Skarbowy — evidence gate.
+"""RAPORT_02 VAT — CORE (MACRO) + ENTERPRISE — evidence gate.
 
-Mirrors tools/zus_report06_gate.py .. enterprise_ai_report17_gate.py.
-Prompt 07/25 (KKS — czynny żal, sankcje, kary, obrona, GAAR, sanctions)
-is implemented as the R07 KKS innovations package:
+Mirrors tools/orchestrator_core_report01_gate.py .. enterprise_ai_report17_gate.py.
+Prompt 02/25 (VAT — CORE + ENTERPRISE — stawki, odliczenia, MPP, fraud, korekty)
+is implemented as the R02 VAT core-innovations package:
 
-  R07-INN-01 voluntary_disclosure_one_click — czynny żal w jednym kliknięciu
-                                               z pełną dokumentacją (art. 16)
-  R07-INN-02 penalty_calculator_temporal    — kalkulator kar z temporalnością
-                                               (stawki dzienne, limit 500k,
-                                               przedawnienie art. 44 — 5 lat)
-  R07-INN-03 transaction_risk_predictor     — predykcja ryzyka karnego per
-                                               transakcja (art. 54/56/57/62)
+  R02-INN-01 exemption_limit_tracker   — real-time auto-tracking limitu 200 000 PLN
+                                         (art. 113): projekcja YTD, strefy, breach month
+  R02-INN-02 auto_gtu                  — auto-GTU (Zał. nr 15, GTU_01..GTU_13)
+  R02-INN-03 art91_correction_schedule — korekta wieloletnia art. 91 (5/10 lat)
 
-Plus wiring in main_jdg.rego (final_verdict_p32), golden verdict + replay
-and tests (pytest + native Rego). The KKS layer (kks.rego 2612, micro/kks
-13373, kks/*, p09/p10 innovations, sanctions_optimization, gaar_shield,
-penalty_ai) is already implemented — verified here (art. 16/44/54/56/57/62
-COMPLETE wg legal_coverage_gaps.json).
+Plus wiring in main_jdg.rego (final_verdict_p27), golden verdict + replay
+(1 VAT CORE, 0 UVER) and tests (pytest + native Rego). The VAT macro/enterprise
+core (MPP art. 108a-108f, stawki art. 41-43/113, odliczenia art. 86-95/89a-89b,
+fraud detection FD-01..06, place of supply art. 28a-28o, tax point art. 19a)
+is already implemented by P03/P04 (v8/v9) — verified here.
 
 Usage (from ``JDG/``)::
 
-    python tools/kks_report07_gate.py --json
-    python tools/kks_report07_gate.py --write
-    python tools/kks_report07_gate.py --strict
+    python tools/vat_core_report02_gate.py --json
+    python tools/vat_core_report02_gate.py --write
+    python tools/vat_core_report02_gate.py --strict
 """
 
 from __future__ import annotations
@@ -39,52 +36,49 @@ from typing import Any
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 BUNDLES_DIR = BASE_DIR / "bundles"
-REPORT_PATH = BASE_DIR / "raporty_glm52" / "RAPORT_07_KKS.txt"
-EVIDENCE_PATH = BUNDLES_DIR / "kks_report07_evidence.json"
+REPORT_PATH = BASE_DIR / "raporty_glm52" / "RAPORT_02_VAT_CORE.txt"
+EVIDENCE_PATH = BUNDLES_DIR / "vat_core_report02_evidence.json"
 
-R07_REGO = "rules/r07_kks_innovations_v9.rego"
+R02_REGO = "rules/r02_vat_core_innovations_v9.rego"
 MAIN_REGO = "rules/main_jdg.rego"
-PYTEST = "tests/auto/test_r07_kks_enterprise.py"
-NATIVE_REGO = "tests/rego/test_r07_kks_enterprise.rego"
+PYTEST = "tests/auto/test_r02_vat_core_enterprise.py"
+NATIVE_REGO = "tests/rego/test_r02_vat_core_enterprise.rego"
 
-# Warstwa KKS (P09/P10 + kks/* + micro) — weryfikowana
-KKS_CORE_FILES = [
-    "rules/kks.rego",
-    "rules/_kks_micro_rates.rego",
-    "rules/penalty_ai_enterprise.rego",
-    "rules/sanctions_optimization_enterprise.rego",
-    "rules/sanctions_supplements_enterprise.rego",
-    "rules/gaar_shield_enterprise.rego",
-    "rules/p09_kks_macro_innovations_v8.rego",
-    "rules/p10_kks_innovations_v9.rego",
-    "rules/kks/enterprise_penalties.rego",
-    "rules/kks/kks_innovations_v8.rego",
-    "rules/kks/kks_extensions_enterprise.rego",
-    "rules/micro/kks/kks.rego",
-    "rules/risk/plan26_kks.rego",
+# Warstwa VAT Macro/Enterprise (P03/P04 v8/v9) — już wdrożona, weryfikowana
+VAT_CORE_FILES = [
+    "rules/vat/substantive.rego",
+    "rules/vat/deductions.rego",
+    "rules/vat/procedures.rego",
+    "rules/vat/place_of_supply.rego",
+    "rules/vat_substantive_complete_enterprise.rego",
+    "rules/vat_rates_exemptions_audit_enterprise.rego",
+    "rules/vat_deductions_corrections_enterprise.rego",
+    "rules/vat_fraud_detection_enterprise.rego",
+    "rules/vat_mpp_split_payment_enterprise.rego",
+    "rules/p03_vat_macro_innovations_v9.rego",
+    "rules/p04_vat_macro_enterprise_v9.rego",
+    "rules/p05_vat_micro_atomic_v9.rego",
 ]
 
 REQUIRED_INNOVATIONS = [
-    "voluntary_disclosure_one_click", "checklist_art16",
-    "zawiadomienie_o_przestepstwie", "wplata_uszczuplenia", "missing_documents",
-    "penalty_calculator_temporal", "fine_calculated", "fine_limit_absolute",
-    "statute_barred", "limitation_years",
-    "transaction_risk_predictor", "score_0_100", "risk_level",
-    "BLOCK_AND_ALERT", "unreal_entity",
+    "exemption_limit", "projected_annual_turnover", "exemption_limit_zone",
+    "exemption_breach_month", "exemption_limit_tracker",
+    "gtu_category_map", "gtu_semantic_keywords", "auto_gtu_code", "auto_gtu",
+    "art91_period_years", "art91_annual_correction", "art91_direction",
+    "art91_schedule", "art91_correction_schedule",
 ]
 
+# Markery innowacji w testach
 TEST_MARKERS = [
-    "voluntary_disclosure_one_click", "penalty_calculator_temporal",
-    "transaction_risk_predictor", "checklist_art16", "statute_barred",
-    "BLOCK_AND_ALERT", "r07_kks_check",
+    "exemption_limit_tracker", "auto_gtu", "art91_correction_schedule",
+    "GTU_02", "breach_month", "period_years",
 ]
 
 # Podstawy prawne wymagane w nowym pakiecie (kanoniczne)
 REQUIRED_LEGAL_MARKERS = [
-    "Art. 16 KKS (czynny żal)",
-    "Art. 23, 25, 27, 44 KKS",
-    "Art. 54, 56, 57, 62 KKS",
-    "Dz.U. 1999 nr 83 poz. 930",
+    "Art. 113 ust. 1, 5, 9",
+    "Zał. nr 15",
+    "Art. 91 ust. 2-7",
 ]
 
 
@@ -102,25 +96,25 @@ def _rule_ids(text: str) -> list[str]:
 
 def _scope_evidence() -> dict[str, Any]:
     files = {
-        "r07_rego": _read(R07_REGO),
+        "r02_rego": _read(R02_REGO),
         "main_jdg": _read(MAIN_REGO),
         "pytest": _read(PYTEST),
         "native_rego": _read(NATIVE_REGO),
         "report": _read(str(REPORT_PATH.relative_to(BASE_DIR))),
     }
-    kks_core_present = sum(bool(_read(f)) for f in KKS_CORE_FILES)
+    vat_core_present = sum(bool(_read(f)) for f in VAT_CORE_FILES)
     return {
         "files": {name: bool(text) for name, text in files.items()},
         "files_total": len(files),
         "files_present": sum(bool(text) for text in files.values()),
         "report_present": bool(files["report"]),
-        "kks_core_files_declared": len(KKS_CORE_FILES),
-        "kks_core_files_present": kks_core_present,
+        "vat_core_files_declared": len(VAT_CORE_FILES),
+        "vat_core_files_present": vat_core_present,
     }
 
 
 def _innovation_evidence() -> dict[str, Any]:
-    text = _read(R07_REGO)
+    text = _read(R02_REGO)
     missing = [fn for fn in REQUIRED_INNOVATIONS if fn not in text]
     legal = [m for m in REQUIRED_LEGAL_MARKERS if m not in text]
     return {
@@ -130,26 +124,22 @@ def _innovation_evidence() -> dict[str, Any]:
         "legal_basis_markers": REQUIRED_LEGAL_MARKERS,
         "missing_legal_markers": legal,
         "legal_basis_complete": not legal,
-        "decide_report_rule": "jdg.r07_kks_innovations.kks_report" in text,
-        "activation_flag": "r07_kks_check" in text,
-        "default_no_match": "jdg.r07_kks_innovations.no_match" in text,
-        "one_click_pack": "checklist_art16" in text and "missing_documents" in text,
-        "temporal_penalty": "statute_barred" in text and "limitation_years" in text,
+        "decide_report_rule": "jdg.r02_vat_core_innovations.vat_core_report" in text,
+        "activation_flag": "r02_vat_core_check" in text,
+        "default_no_match": "jdg.r02_vat_core_innovations.no_match" in text,
     }
 
 
-def _thresholds_evidence() -> dict[str, Any]:
-    text = _read(R07_REGO)
+def _limit_externalized_evidence() -> dict[str, Any]:
+    text = _read(R02_REGO)
     return {
-        "thresholds_via_data": "_th_kks" in text,
-        "fine_limit_externalized": 'object.get(_th_kks, "fine_limit_absolute", 500000)' in text,
-        "limitation_externalized": 'object.get(_th_kks, "limitation_years", 5)' in text,
-        "daily_rates_externalized": "fine_daily_rate_min" in text and "fine_daily_rate_max" in text,
+        "limit_from_thresholds": 'object.get(data.jdg.thresholds.vat, "subject_exemption_limit", 200000)' in text,
+        "zero_hardcode": "subject_exemption_limit" in text,
     }
 
 
 def _duplicate_evidence() -> dict[str, Any]:
-    text = _read(R07_REGO)
+    text = _read(R02_REGO)
     ids = _rule_ids(text)
     dups = sorted(rid for rid, count in Counter(ids).items() if count > 1)
     return {
@@ -162,15 +152,18 @@ def _duplicate_evidence() -> dict[str, Any]:
 
 def _router_evidence() -> dict[str, Any]:
     joined = _read(MAIN_REGO)
-    # POST-MERGE cel zmienia się wraz z kolejnymi raportami (p31 → p32 → p33…).
+    # POST-MERGE cel zmienia się wraz z kolejnymi raportami (p26 → p27 → p28…).
+    # Bramka weryfikuje, że R02 jest wpięty (p27 istnieje) oraz że łańcuch
+    # POST-MERGE kończy się na invariants + certyfikacie — niezależnie od tego,
+    # czy kolejne raporty dodały p28+.
     post_merge_target = re.search(
         r"final_verdict_post_merge = object\.union\(final_verdict_p(\d+)", joined
     )
     return {
-        "import_present": "import data.jdg.r07_kks_innovations" in joined,
-        "package_decisions_entry": '"jdg.r07_kks_innovations": r07_kks_innovations.decide' in joined,
-        "final_verdict_p32": "final_verdict_p32 = safe_merge(final_verdict_p31," in joined,
-        "post_merge_present": post_merge_target is not None and int(post_merge_target.group(1)) >= 32,
+        "import_present": "import data.jdg.r02_vat_core_innovations" in joined,
+        "package_decisions_entry": '"jdg.r02_vat_core_innovations": r02_vat_core_innovations.decide' in joined,
+        "final_verdict_p27": "final_verdict_p27 = safe_merge(final_verdict_p26," in joined,
+        "post_merge_present": post_merge_target is not None and int(post_merge_target.group(1)) >= 27,
         "invariants_enforced": "runtime_invariants.enforce(final_verdict_post_merge)" in joined,
         "final_verdict_public": "final_verdict = final_verdict_enforced" in joined,
     }
@@ -197,27 +190,27 @@ def _replay_evidence() -> dict[str, Any]:
     replays = golden.get("replays", [])
     if not isinstance(replays, list):
         replays = []
-    kks_verdicts = {
+    vat_verdicts = {
         h: v
         for h, v in verdicts.items()
-        if "r07_kks_innovations" in json.dumps(v, ensure_ascii=False)
+        if "r02_vat_core_innovations" in json.dumps(v, ensure_ascii=False)
     }
-    kks_hashes = {v.get("verdict_hash") for v in kks_verdicts.values()}
-    kks_replays = [r for r in replays if r.get("golden_verdict_hash") in kks_hashes]
-    uver = [r for r in kks_replays if r.get("uver_applies")]
+    vat_hashes = {v.get("verdict_hash") for v in vat_verdicts.values()}
+    vat_replays = [r for r in replays if r.get("golden_verdict_hash") in vat_hashes]
+    uver = [r for r in vat_replays if r.get("uver_applies")]
     return {
         "golden_verdicts_total": len(verdicts),
-        "kks_verdicts": len(kks_verdicts),
-        "kks_replays": len(kks_replays),
+        "vat_core_verdicts": len(vat_verdicts),
+        "vat_core_replays": len(vat_replays),
         "uver_count": len(uver),
-        "replay_verified": len(kks_verdicts) >= 1 and len(kks_replays) >= 1 and len(uver) == 0,
+        "replay_verified": len(vat_verdicts) >= 1 and len(vat_replays) >= 1 and len(uver) == 0,
     }
 
 
 def build_evidence() -> dict[str, Any]:
     scope = _scope_evidence()
     innovations = _innovation_evidence()
-    thresholds = _thresholds_evidence()
+    limit = _limit_externalized_evidence()
     dup = _duplicate_evidence()
     router = _router_evidence()
     tests = _test_evidence()
@@ -225,16 +218,14 @@ def build_evidence() -> dict[str, Any]:
 
     gates = {
         "scope_files_present": scope["files_present"] == scope["files_total"]
-        and scope["kks_core_files_present"] == scope["kks_core_files_declared"],
+        and scope["vat_core_files_present"] == scope["vat_core_files_declared"],
         "report_present": scope["report_present"],
         "innovations_complete": innovations["innovations_complete"]
         and innovations["decide_report_rule"]
         and innovations["activation_flag"]
-        and innovations["default_no_match"]
-        and innovations["one_click_pack"]
-        and innovations["temporal_penalty"],
+        and innovations["default_no_match"],
         "legal_basis_canonical": innovations["legal_basis_complete"],
-        "thresholds_externalized": all(thresholds.values()),
+        "limit_externalized": limit["limit_from_thresholds"] and limit["zero_hardcode"],
         "duplicate_free": dup["duplicate_count"] == 0,
         "router_wired": all(router.values()),
         "tests_present": tests["pytest_present"]
@@ -246,16 +237,13 @@ def build_evidence() -> dict[str, Any]:
     total = len(gates)
     status = "WDROZONY_100" if passed == total else "NIEPELNY"
     return {
-        "report": "RAPORT_07_KKS",
+        "report": "RAPORT_02_VAT_CORE",
         "status": status,
         "gates": gates,
         "gate_summary": {"passed": passed, "total": total},
-        # Kompatybilność z test_p10_kks_enterprise.py (kanoniczny format R08-R24)
-        "checks_passed": passed,
-        "checks_total": total,
         "scope": scope,
         "innovations": innovations,
-        "thresholds": thresholds,
+        "limit_externalized": limit,
         "duplicates": dup,
         "router": router,
         "tests": tests,
@@ -265,7 +253,7 @@ def build_evidence() -> dict[str, Any]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="RAPORT_07 evidence gate")
+    parser = argparse.ArgumentParser(description="RAPORT_02 evidence gate")
     parser.add_argument("--json", action="store_true", help="print evidence as JSON")
     parser.add_argument("--write", action="store_true", help="write evidence bundle")
     parser.add_argument("--strict", action="store_true", help="fail if not WDROZONY_100")
@@ -281,7 +269,7 @@ def main() -> int:
         print(json.dumps(evidence, indent=2, ensure_ascii=False))
     else:
         print(
-            f"RAPORT_07: {evidence['status']} "
+            f"RAPORT_02: {evidence['status']} "
             f"({evidence['gate_summary']['passed']}/{evidence['gate_summary']['total']})"
         )
         for gate, ok in evidence["gates"].items():

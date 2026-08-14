@@ -1,29 +1,31 @@
 #!/usr/bin/env python3
-"""RAPORT_07 KKS — Kodeks Karny Skarbowy — evidence gate.
+"""RAPORT_05 PIT — ENTERPRISE — evidence gate.
 
-Mirrors tools/zus_report06_gate.py .. enterprise_ai_report17_gate.py.
-Prompt 07/25 (KKS — czynny żal, sankcje, kary, obrona, GAAR, sanctions)
-is implemented as the R07 KKS innovations package:
+Mirrors tools/pit_core_report04_gate.py .. enterprise_ai_report17_gate.py.
+Prompt 05/25 (PIT — ENTERPRISE — deklaracje PIT-36/36L/28, estoński CIT,
+exit tax, transformacje, optymalizacja) is implemented as the R05 PIT
+enterprise-innovations package:
 
-  R07-INN-01 voluntary_disclosure_one_click — czynny żal w jednym kliknięciu
-                                               z pełną dokumentacją (art. 16)
-  R07-INN-02 penalty_calculator_temporal    — kalkulator kar z temporalnością
-                                               (stawki dzienne, limit 500k,
-                                               przedawnienie art. 44 — 5 lat)
-  R07-INN-03 transaction_risk_predictor     — predykcja ryzyka karnego per
-                                               transakcja (art. 54/56/57/62)
+  R05-INN-01 annual_autopilot          — autopilot roczny z Decision
+                                         Certificate (F4: decision_hash,
+                                         bundle/rule/threshold wersje)
+  R05-INN-02 form_transition_3y        — symulator formy z prognozą 3-letnią
+                                         (skala/liniowy/ryczałt/estoński CIT)
+  R05-INN-03 strategic_decision_score  — scoring decyzji strategicznych
+                                         z podstawą prawną (0-100 + risk)
+  R05-INN-04 jpk_harmonization         — harmonizacja deklaracji rocznej
+                                         z JPK_CIT i JPK_V7M
 
-Plus wiring in main_jdg.rego (final_verdict_p32), golden verdict + replay
-and tests (pytest + native Rego). The KKS layer (kks.rego 2612, micro/kks
-13373, kks/*, p09/p10 innovations, sanctions_optimization, gaar_shield,
-penalty_ai) is already implemented — verified here (art. 16/44/54/56/57/62
-COMPLETE wg legal_coverage_gaps.json).
+Plus wiring in main_jdg.rego (final_verdict_p30), golden verdict + replay
+and tests (pytest + native Rego). The PIT enterprise layer (annual_declaration,
+estonian_cit, exit_tax_mdr, form_transition_simulator, tax_optimization,
+decision_scoring, p16_autoform) is already implemented — verified here.
 
 Usage (from ``JDG/``)::
 
-    python tools/kks_report07_gate.py --json
-    python tools/kks_report07_gate.py --write
-    python tools/kks_report07_gate.py --strict
+    python tools/pit_enterprise_report05_gate.py --json
+    python tools/pit_enterprise_report05_gate.py --write
+    python tools/pit_enterprise_report05_gate.py --strict
 """
 
 from __future__ import annotations
@@ -39,52 +41,49 @@ from typing import Any
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 BUNDLES_DIR = BASE_DIR / "bundles"
-REPORT_PATH = BASE_DIR / "raporty_glm52" / "RAPORT_07_KKS.txt"
-EVIDENCE_PATH = BUNDLES_DIR / "kks_report07_evidence.json"
+REPORT_PATH = BASE_DIR / "raporty_glm52" / "RAPORT_05_PIT_ENTERPRISE.txt"
+EVIDENCE_PATH = BUNDLES_DIR / "pit_enterprise_report05_evidence.json"
 
-R07_REGO = "rules/r07_kks_innovations_v9.rego"
+R05_REGO = "rules/r05_pit_enterprise_innovations_v9.rego"
 MAIN_REGO = "rules/main_jdg.rego"
-PYTEST = "tests/auto/test_r07_kks_enterprise.py"
-NATIVE_REGO = "tests/rego/test_r07_kks_enterprise.rego"
+PYTEST = "tests/auto/test_r05_pit_enterprise_enterprise.py"
+NATIVE_REGO = "tests/rego/test_r05_pit_enterprise_enterprise.rego"
 
-# Warstwa KKS (P09/P10 + kks/* + micro) — weryfikowana
-KKS_CORE_FILES = [
-    "rules/kks.rego",
-    "rules/_kks_micro_rates.rego",
-    "rules/penalty_ai_enterprise.rego",
-    "rules/sanctions_optimization_enterprise.rego",
-    "rules/sanctions_supplements_enterprise.rego",
-    "rules/gaar_shield_enterprise.rego",
-    "rules/p09_kks_macro_innovations_v8.rego",
-    "rules/p10_kks_innovations_v9.rego",
-    "rules/kks/enterprise_penalties.rego",
-    "rules/kks/kks_innovations_v8.rego",
-    "rules/kks/kks_extensions_enterprise.rego",
-    "rules/micro/kks/kks.rego",
-    "rules/risk/plan26_kks.rego",
+# Warstwa PIT Enterprise (P05-P16 + enterprise) — weryfikowana
+PIT_ENTERPRISE_FILES = [
+    "rules/annual_declaration_enterprise.rego",
+    "rules/form_transition_simulator_enterprise.rego",
+    "rules/p16_autoform_generator_enterprise.rego",
+    "rules/p16_estonian_cit_enterprise.rego",
+    "rules/p16_entrepreneur_test_enterprise.rego",
+    "rules/p16_enhanced_sca_enterprise.rego",
+    "rules/exit_tax_mdr_enterprise.rego",
+    "rules/tax_optimization_enterprise.rego",
+    "rules/decision_scoring_enterprise.rego",
+    "rules/form_optimizer_enterprise.rego",
+    "rules/jpk_cit.rego",
 ]
 
 REQUIRED_INNOVATIONS = [
-    "voluntary_disclosure_one_click", "checklist_art16",
-    "zawiadomienie_o_przestepstwie", "wplata_uszczuplenia", "missing_documents",
-    "penalty_calculator_temporal", "fine_calculated", "fine_limit_absolute",
-    "statute_barred", "limitation_years",
-    "transaction_risk_predictor", "score_0_100", "risk_level",
-    "BLOCK_AND_ALERT", "unreal_entity",
+    "annual_autopilot", "decision_certificate", "decision_hash",
+    "expected_declaration", "form_transition_3y", "cumulative_tax_3y",
+    "best_form_3y", "strategic_decision_score", "score_0_100", "risk_level",
+    "jpk_harmonization", "revenue_delta", "revenue_consistent",
 ]
 
 TEST_MARKERS = [
-    "voluntary_disclosure_one_click", "penalty_calculator_temporal",
-    "transaction_risk_predictor", "checklist_art16", "statute_barred",
-    "BLOCK_AND_ALERT", "r07_kks_check",
+    "annual_autopilot", "form_transition_3y", "strategic_decision_score",
+    "jpk_harmonization", "decision_certificate", "best_form_3y",
+    "r05_pit_enterprise_check", "PIT-36", "PIT-36L", "PIT-28",
 ]
 
 # Podstawy prawne wymagane w nowym pakiecie (kanoniczne)
 REQUIRED_LEGAL_MARKERS = [
-    "Art. 16 KKS (czynny żal)",
-    "Art. 23, 25, 27, 44 KKS",
-    "Art. 54, 56, 57, 62 KKS",
-    "Dz.U. 1999 nr 83 poz. 930",
+    "Art. 44, 45 PIT",
+    "Art. 9a, 27, 30c PIT",
+    "rozporządzenie MF ws. wzorów zeznań PIT (2025-12-30)",
+    "Dz.U. 2025 poz. 789",
+    "JPK_CIT",
 ]
 
 
@@ -102,25 +101,25 @@ def _rule_ids(text: str) -> list[str]:
 
 def _scope_evidence() -> dict[str, Any]:
     files = {
-        "r07_rego": _read(R07_REGO),
+        "r05_rego": _read(R05_REGO),
         "main_jdg": _read(MAIN_REGO),
         "pytest": _read(PYTEST),
         "native_rego": _read(NATIVE_REGO),
         "report": _read(str(REPORT_PATH.relative_to(BASE_DIR))),
     }
-    kks_core_present = sum(bool(_read(f)) for f in KKS_CORE_FILES)
+    pit_ent_present = sum(bool(_read(f)) for f in PIT_ENTERPRISE_FILES)
     return {
         "files": {name: bool(text) for name, text in files.items()},
         "files_total": len(files),
         "files_present": sum(bool(text) for text in files.values()),
         "report_present": bool(files["report"]),
-        "kks_core_files_declared": len(KKS_CORE_FILES),
-        "kks_core_files_present": kks_core_present,
+        "pit_enterprise_files_declared": len(PIT_ENTERPRISE_FILES),
+        "pit_enterprise_files_present": pit_ent_present,
     }
 
 
 def _innovation_evidence() -> dict[str, Any]:
-    text = _read(R07_REGO)
+    text = _read(R05_REGO)
     missing = [fn for fn in REQUIRED_INNOVATIONS if fn not in text]
     legal = [m for m in REQUIRED_LEGAL_MARKERS if m not in text]
     return {
@@ -130,26 +129,26 @@ def _innovation_evidence() -> dict[str, Any]:
         "legal_basis_markers": REQUIRED_LEGAL_MARKERS,
         "missing_legal_markers": legal,
         "legal_basis_complete": not legal,
-        "decide_report_rule": "jdg.r07_kks_innovations.kks_report" in text,
-        "activation_flag": "r07_kks_check" in text,
-        "default_no_match": "jdg.r07_kks_innovations.no_match" in text,
-        "one_click_pack": "checklist_art16" in text and "missing_documents" in text,
-        "temporal_penalty": "statute_barred" in text and "limitation_years" in text,
+        "decide_report_rule": "jdg.r05_pit_enterprise_innovations.pit_enterprise_report" in text,
+        "activation_flag": "r05_pit_enterprise_check" in text,
+        "default_no_match": "jdg.r05_pit_enterprise_innovations.no_match" in text,
+        "certificate_f4": "decision_certificate" in text and "hash_algorithm" in text and "bundle_version" in text,
+        "three_year_forecast": "cumulative_tax_3y" in text and "best_form_3y" in text,
     }
 
 
 def _thresholds_evidence() -> dict[str, Any]:
-    text = _read(R07_REGO)
+    text = _read(R05_REGO)
     return {
-        "thresholds_via_data": "_th_kks" in text,
-        "fine_limit_externalized": 'object.get(_th_kks, "fine_limit_absolute", 500000)' in text,
-        "limitation_externalized": 'object.get(_th_kks, "limitation_years", 5)' in text,
-        "daily_rates_externalized": "fine_daily_rate_min" in text and "fine_daily_rate_max" in text,
+        "thresholds_via_data": "_th_pit" in text,
+        "rates_externalized": "scale_lower_rate" in text and "linear_rate" in text and "estonian_cit_rate" in text,
+        "tax_reducing_externalized": 'object.get(_th_pit, "tax_reducing_amount", 3600)' in text,
+        "jpk_tolerance_externalized": 'object.get(_th_pit, "jpk_tolerance_pln", 100)' in text,
     }
 
 
 def _duplicate_evidence() -> dict[str, Any]:
-    text = _read(R07_REGO)
+    text = _read(R05_REGO)
     ids = _rule_ids(text)
     dups = sorted(rid for rid, count in Counter(ids).items() if count > 1)
     return {
@@ -162,15 +161,15 @@ def _duplicate_evidence() -> dict[str, Any]:
 
 def _router_evidence() -> dict[str, Any]:
     joined = _read(MAIN_REGO)
-    # POST-MERGE cel zmienia się wraz z kolejnymi raportami (p31 → p32 → p33…).
+    # POST-MERGE cel zmienia się wraz z kolejnymi raportami (p29 → p30 → p31…).
     post_merge_target = re.search(
         r"final_verdict_post_merge = object\.union\(final_verdict_p(\d+)", joined
     )
     return {
-        "import_present": "import data.jdg.r07_kks_innovations" in joined,
-        "package_decisions_entry": '"jdg.r07_kks_innovations": r07_kks_innovations.decide' in joined,
-        "final_verdict_p32": "final_verdict_p32 = safe_merge(final_verdict_p31," in joined,
-        "post_merge_present": post_merge_target is not None and int(post_merge_target.group(1)) >= 32,
+        "import_present": "import data.jdg.r05_pit_enterprise_innovations" in joined,
+        "package_decisions_entry": '"jdg.r05_pit_enterprise_innovations": r05_pit_enterprise_innovations.decide' in joined,
+        "final_verdict_p30": "final_verdict_p30 = safe_merge(final_verdict_p29," in joined,
+        "post_merge_present": post_merge_target is not None and int(post_merge_target.group(1)) >= 30,
         "invariants_enforced": "runtime_invariants.enforce(final_verdict_post_merge)" in joined,
         "final_verdict_public": "final_verdict = final_verdict_enforced" in joined,
     }
@@ -197,20 +196,20 @@ def _replay_evidence() -> dict[str, Any]:
     replays = golden.get("replays", [])
     if not isinstance(replays, list):
         replays = []
-    kks_verdicts = {
+    pit_verdicts = {
         h: v
         for h, v in verdicts.items()
-        if "r07_kks_innovations" in json.dumps(v, ensure_ascii=False)
+        if "r05_pit_enterprise_innovations" in json.dumps(v, ensure_ascii=False)
     }
-    kks_hashes = {v.get("verdict_hash") for v in kks_verdicts.values()}
-    kks_replays = [r for r in replays if r.get("golden_verdict_hash") in kks_hashes]
-    uver = [r for r in kks_replays if r.get("uver_applies")]
+    pit_hashes = {v.get("verdict_hash") for v in pit_verdicts.values()}
+    pit_replays = [r for r in replays if r.get("golden_verdict_hash") in pit_hashes]
+    uver = [r for r in pit_replays if r.get("uver_applies")]
     return {
         "golden_verdicts_total": len(verdicts),
-        "kks_verdicts": len(kks_verdicts),
-        "kks_replays": len(kks_replays),
+        "pit_enterprise_verdicts": len(pit_verdicts),
+        "pit_enterprise_replays": len(pit_replays),
         "uver_count": len(uver),
-        "replay_verified": len(kks_verdicts) >= 1 and len(kks_replays) >= 1 and len(uver) == 0,
+        "replay_verified": len(pit_verdicts) >= 1 and len(pit_replays) >= 1 and len(uver) == 0,
     }
 
 
@@ -225,14 +224,14 @@ def build_evidence() -> dict[str, Any]:
 
     gates = {
         "scope_files_present": scope["files_present"] == scope["files_total"]
-        and scope["kks_core_files_present"] == scope["kks_core_files_declared"],
+        and scope["pit_enterprise_files_present"] == scope["pit_enterprise_files_declared"],
         "report_present": scope["report_present"],
         "innovations_complete": innovations["innovations_complete"]
         and innovations["decide_report_rule"]
         and innovations["activation_flag"]
         and innovations["default_no_match"]
-        and innovations["one_click_pack"]
-        and innovations["temporal_penalty"],
+        and innovations["certificate_f4"]
+        and innovations["three_year_forecast"],
         "legal_basis_canonical": innovations["legal_basis_complete"],
         "thresholds_externalized": all(thresholds.values()),
         "duplicate_free": dup["duplicate_count"] == 0,
@@ -246,13 +245,10 @@ def build_evidence() -> dict[str, Any]:
     total = len(gates)
     status = "WDROZONY_100" if passed == total else "NIEPELNY"
     return {
-        "report": "RAPORT_07_KKS",
+        "report": "RAPORT_05_PIT_ENTERPRISE",
         "status": status,
         "gates": gates,
         "gate_summary": {"passed": passed, "total": total},
-        # Kompatybilność z test_p10_kks_enterprise.py (kanoniczny format R08-R24)
-        "checks_passed": passed,
-        "checks_total": total,
         "scope": scope,
         "innovations": innovations,
         "thresholds": thresholds,
@@ -265,7 +261,7 @@ def build_evidence() -> dict[str, Any]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="RAPORT_07 evidence gate")
+    parser = argparse.ArgumentParser(description="RAPORT_05 evidence gate")
     parser.add_argument("--json", action="store_true", help="print evidence as JSON")
     parser.add_argument("--write", action="store_true", help="write evidence bundle")
     parser.add_argument("--strict", action="store_true", help="fail if not WDROZONY_100")
@@ -281,7 +277,7 @@ def main() -> int:
         print(json.dumps(evidence, indent=2, ensure_ascii=False))
     else:
         print(
-            f"RAPORT_07: {evidence['status']} "
+            f"RAPORT_05: {evidence['status']} "
             f"({evidence['gate_summary']['passed']}/{evidence['gate_summary']['total']})"
         )
         for gate, ok in evidence["gates"].items():

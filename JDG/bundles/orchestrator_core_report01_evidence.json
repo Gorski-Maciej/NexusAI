@@ -1,0 +1,96 @@
+{
+  "report": "RAPORT_01_ORKIESTRATOR_RDZEN",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "report_present": true,
+    "innovations_complete": true,
+    "verdict_25_field_complete": true,
+    "duplicate_free": true,
+    "router_wired": true,
+    "tests_present": true,
+    "golden_replay_ok": true,
+    "runtime_semantics": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "scope": {
+    "files": {
+      "r01_rego": true,
+      "main_jdg": true,
+      "pytest": true,
+      "native_rego": true,
+      "report": true
+    },
+    "files_total": 5,
+    "files_present": 5,
+    "report_present": true
+  },
+  "innovations": {
+    "required_innovations": [
+      "select_path",
+      "routing_path_trace",
+      "verdict_25_fields",
+      "missing_verdict_fields",
+      "verdict_complete",
+      "cache_input_hash",
+      "decision_cache_runtime",
+      "time_travel_guard",
+      "immutable_allowlist",
+      "safe_merge_integrity",
+      "priority_conflicts",
+      "priority_conflict_report"
+    ],
+    "missing_innovations": [],
+    "innovations_complete": true,
+    "decide_report_rule": true,
+    "activation_flag": true,
+    "default_no_match": true
+  },
+  "verdict_25_field": {
+    "canonical_count": 25,
+    "missing_fields": [],
+    "complete": true
+  },
+  "duplicates": {
+    "rule_ids_total": 2,
+    "rule_ids_unique": 2,
+    "duplicates": [],
+    "duplicate_count": 0
+  },
+  "router": {
+    "import_present": true,
+    "package_decisions_entry": true,
+    "final_verdict_p26": true,
+    "post_merge_on_or_after_p26": true,
+    "invariants_enforced": true,
+    "final_verdict_public": true
+  },
+  "tests": {
+    "pytest_present": true,
+    "native_rego_present": true,
+    "marker_hits": {
+      "routing_path_trace": true,
+      "SHARDED_DOMESTIC_SALE": true,
+      "verdict_25_fields": true,
+      "decision_cache_runtime": true,
+      "time_travel_guard": true,
+      "safe_merge_integrity": true,
+      "priority_conflicts": true
+    },
+    "markers_complete": true,
+    "pytest_test_functions": 18,
+    "native_test_functions": 21
+  },
+  "replay": {
+    "golden_verdicts_total": 15,
+    "orchestrator_verdicts": 1,
+    "orchestrator_replays": 1,
+    "unmatched_replays": [],
+    "uver_count": 0,
+    "replay_verified": true
+  },
+  "generated_at": "2026-08-14T19:11:03.486380+00:00"
+}

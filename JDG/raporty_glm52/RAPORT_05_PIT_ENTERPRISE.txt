@@ -1,0 +1,294 @@
+==============================================================================
+RAPORT WDROŻENIOWY ENTERPRISE — PIT — ENTERPRISE
+(deklaracje PIT-36/36L/28, estoński CIT, exit tax, transformacje, optymalizacja)
+Seria: 05/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
+Status: WDROZONY_100 (2026-08-14)
+==============================================================================
+
+════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY (1 strona)
+════════════════════════════════════════════════════════════════════════════
+
+Raport wdraża Prompt 05/25 (JDG/prompty_glm52/05_PIT_ENTERPRISE.txt) —
+wzmocnienie warstwy ENTERPRISE PIT (deklaracje roczne, estoński CIT,
+exit tax/MDR, transformacje, optymalizacja) na poziomie ENTERPRISE.
+
+Audyt 6-stronny (prawo / reguła / testy / system / dane / werdykt) objął:
+annual_declaration_enterprise (588), form_transition_simulator_enterprise
+(399), p16_autoform_generator_enterprise (565), p16_estonian_cit_enterprise
+(268), p16_entrepreneur_test_enterprise (170), p16_enhanced_sca_enterprise
+(259), exit_tax_mdr_enterprise (507), tax_optimization_enterprise (669),
+decision_scoring_enterprise (258), form_optimizer_enterprise (244),
+jpk_cit.rego (JPK_KR/JPK_ST), micro/plan33_jpk (70 reguł JPK_V7M/V7K) — łącznie
+3927 linii warstwy enterprise + testy P05/P06/P16.
+
+WARSTWA PIT ENTERPRISE — ZWERYFIKOWANA (już wdrożona P05-P16 v8/v9):
+  • Deklaracje roczne: annual_declaration — PIT-36/36L/28 full auto-fill,
+    uzgodnienie zaliczek, wspólne rozliczenie, cross-validation ulg.
+  • Estoński CIT: p16_estonian_cit — eligibility, kalkulator, JDG→sp. z o.o.
+    simulator, compliance.
+  • Exit tax + MDR: exit_tax_mdr — aktywa za granicą, CFC, schematy MDR,
+    ceny transferowe, estoński vs PIT, umowy o unikaniu podwójnego opodatkowania.
+  • Transformacje: form_transition_simulator (full comparison, restrictions,
+    utrata ulg, JDG→sp. z o.o.), form_optimizer (financial simulator,
+    break-even, threshold monitor, cashflow predictor), p16_autoform
+    (CEIDG-1, ZUS ZUA/ZWUA, VAT-Z, PIT-11, akt notarialny, kwity).
+  • Optymalizacja: tax_optimization (10 strategii), decision_scoring
+    (klasyfikacja decyzji organów), test przedsiębiorcy, SCA bankowe.
+
+LUKI ZIDENTYFIKOWANE I DOMKNIĘTE W TYM RAPORCIE:
+  1. Autopilot rocznego rozliczenia BEZ pełnego dowodu — annual_declaration
+     miał auto-fill, ale bez Decision Certificate (F4: decision_hash,
+     wersje bundle/rule/threshold, refs prawne).
+  2. Symulator zmiany formy BEZ prognozy 3-letniej — form_transition
+     porównywał bieżący rok; brak kumulatywnej projekcji 3-letniej.
+  3. Scoring decyzji strategicznych BEZ podstawy prawnej — decision_scoring
+     dotyczył decyzji organów (odwołania), nie decyzji biznesowych
+     (zmiana formy, JDG→sp. z o.o., estoński, exit).
+  4. BRAK harmonizacji deklaracji rocznej z JPK_CIT i JPK_V7M — jpk_cit
+     istniał, ale bez mostu konsystencji kwot rocznych vs JPK.
+
+NOWE ULEPSZENIA WDROŻONE W TYM RAPORCIE (pakiet jdg.r05_pit_enterprise_innovations):
+  R05-INN-01 annual_autopilot — silnik „autopilota rocznego rozliczenia"
+     z pełnym dowodem: expected_declaration (PIT-36/36L/28), readiness,
+     missing, saldo/zwrot ORAZ Decision Certificate (F4): decision_hash,
+     hash_algorithm, bundle_version, rule_version, threshold_version,
+     legal_basis_refs.
+  R05-INN-02 form_transition_3y — symulator formy z prognozą na 3 LATA:
+     projekcja dochodów (y1 × (1+g)^n), cumulative_tax_3y per forma
+     (skala/liniowy/ryczałt/estoński CIT), best_form_3y (deterministyczny
+     fold-min).
+  R05-INN-03 strategic_decision_score — automatyczny scoring decyzji
+     strategicznych z podstawą prawną: FORM_CHANGE (80, LOW), JDG_TO_SPZOO
+     (65), ESTONIAN_CIT (70), EXIT (55, MEDIUM), INVESTMENT (60) —
+     score_0_100 + risk_level + legal_basis + recommendation.
+  R05-INN-04 jpk_harmonization — most konsystencji deklaracji rocznej z
+     JPK_CIT (JPK_KR/JPK_ST) i JPK_V7M: revenue_delta (roczne vs V7M),
+     tolerancja 100 zł (thresholds), all_jpk_ready.
+
+TOP 10 REKOMENDACJI (priorytety P0/P1/P2):
+
+  P0-1  PIT-36/36L/28 auto-fill          — WDROŻONE (annual_declaration)
+  P0-2  Autopilot z Decision Certificate (R05-INN-01) — WDROŻONE (nowe)
+  P0-3  Estoński CIT (JDG→sp. z o.o.)    — WDROŻONE (p16_estonian_cit)
+  P0-4  Exit tax + MDR                   — WDROŻONE (exit_tax_mdr)
+  P1-5  Prognoza formy 3-letnia (R05-INN-02) — WDROŻONE (nowe)
+  P1-6  Transformacje + autoform         — WDROŻONE (form_transition + p16_autoform)
+  P1-7  Scoring decyzji strategicznych (R05-INN-03) — WDROŻONE (nowe)
+  P1-8  Optymalizacja podatkowa (10 strategii) — WDROŻONE (tax_optimization)
+  P2-9  Harmonizacja JPK (R05-INN-04)    — WDROŻONE (nowe)
+  P2-10 Test przedsiębiorcy + SCA        — WDROŻONE (p16_entrepreneur_test)
+
+════════════════════════════════════════════════════════════════════════════
+2. DIAGRAM MERMAID — ARCHITEKTURA DECYZJI PIT ENTERPRISE
+════════════════════════════════════════════════════════════════════════════
+
+```mermaid
+flowchart TD
+    IN[INPUT PIT ENTERPRISE] --> AA[R05 annual_autopilot PIT-36/36L/28]
+    AA -->|F4 Decision Certificate| CERT[decision_hash + wersje + refs]
+    IN --> F3[R05 form_transition_3y prognoza 3-letnia]
+    F3 --> BEST[best_form_3y: skala/liniowy/ryczałt/estoński]
+    IN --> SD[R05 strategic_decision_score z podst. prawną]
+    IN --> JH[R05 jpk_harmonization JPK_CIT/JPK_V7M]
+    IN --> EST[p16_estonian_cit JDG→sp. z o.o.]
+    IN --> EXT[exit_tax_mdr CFC/MDR/TP]
+    IN --> TRANS[form_transition + form_optimizer]
+    SD -->|0-100 + risk + legal_basis| GATE[PASS-0 / TRIAGE]
+    JH -->|ALERT przy rozjeździe| GATE
+    AA --> GATE
+    GATE --> SAFE[safe_merge → final_verdict_p30]
+    SAFE --> PM[POST-MERGE + invariants + certificate]
+```
+
+════════════════════════════════════════════════════════════════════════════
+3. TABELA POKRYCIA: ARTYKUŁ → REGUŁY → STATUS
+════════════════════════════════════════════════════════════════════════════
+
+| Obszar                          | Reguły istniejące                    | Status |
+|---------------------------------|--------------------------------------|--------|
+| PIT-36 (skala) auto-fill        | annual_declaration (pit36_full)      | A      |
+| PIT-36L (liniowy) auto-fill     | annual_declaration (pit36l_full)     | A      |
+| PIT-28 (ryczałt) auto-fill      | annual_declaration (pit28_full)      | A      |
+| Uzgodnienie zaliczek (art. 44)  | annual_declaration (advance_recon)   | A      |
+| Wspólne rozliczenie             | annual_declaration (joint_filing)    | A      |
+| Autopilot + F4 certyfikat       | R05-INN-01 (nowe)                    | A      |
+| Estoński CIT (art. 28j-28t CIT) | p16_estonian_cit (4 reguły)          | A      |
+| Exit tax (art. 30da) + MDR      | exit_tax_mdr (7 reguły)              | A      |
+| Ceny transferowe                | exit_tax_mdr (transfer_pricing)      | A      |
+| Transformacje (art. 9a)         | form_transition + form_optimizer     | A      |
+| Prognoza formy 3-letnia         | R05-INN-02 (nowe)                    | A      |
+| Scoring decyzji strategicznych  | R05-INN-03 (nowe)                    | A      |
+| JPK_CIT (JPK_KR/JPK_ST)         | jpk_cit.rego (JC-100)                | A      |
+| JPK_V7M/V7K                     | micro/plan33_jpk (70 reguł)          | A      |
+| Harmonizacja JPK ↔ deklaracja   | R05-INN-04 (nowe)                    | A      |
+
+STATUS: 15/15 A — pełne pokrycie PIT ENTERPRISE.
+
+════════════════════════════════════════════════════════════════════════════
+4. WDROŻONE INNOWACJE (kod w rules/r05_pit_enterprise_innovations_v9.rego)
+════════════════════════════════════════════════════════════════════════════
+
+R05-INN-01 annual_autopilot — autopilot roczny z Decision Certificate
+  • Host dostarcza annual_autopilot: {tax_form, annual_income, advances_paid,
+    reliefs_used, jpk_files_ready, advances_reconciled, bundle_version,
+    threshold_version}.
+  • expected_declaration: SCALE→PIT-36, LINEAR→PIT-36L, LUMP_SUM→PIT-28.
+  • readiness: gotowy / brakuje (advances_reconciliation, jpk_files,
+    reliefs_documented) — fail-closed.
+  • Decision Certificate (F4): decision_hash (F3 V2), hash_algorithm,
+    bundle_version, rule_version, threshold_version, legal_basis_refs —
+    pełny dowód (V2 §5) — nigdy AUTO_POST.
+  • Korzyść: księgowy widzi gotowość deklaracji + kompletny certyfikat
+    zgodny z F4 orkiestratora (R01).
+
+R05-INN-02 form_transition_3y — symulator formy z prognozą 3-letnią
+  • Projekcja dochodów: y_n = y1 × (1+growth)^(n-1) (deterministyczny pow).
+  • cumulative_tax_3y: suma podatku 3-letniego per forma (skala/liniowy/
+    ryczałt/estoński CIT 10% — thresholds).
+  • best_form_3y: fold-min (pierwszy równy wygrywa — determinizm).
+  • Korzyść: decyzja zmiany formy z pełnym horyzontem 3 lat, nie jednego.
+
+R05-INN-03 strategic_decision_score — scoring decyzji strategicznych
+  • Typy: FORM_CHANGE (80/LOW), JDG_TO_SPZOO (65/MEDIUM), ESTONIAN_CIT
+    (70/LOW), EXIT (55/MEDIUM), INVESTMENT (60/MEDIUM).
+  • Każda decyzja z legal_basis (art. 9a PIT, 30ca-30cb, 28j-28t CIT,
+    30da + MDR, 22a-22o) + recommendation.
+  • Korzyść: wsparcie decyzyjne z podstawą prawną — nigdy decyzja.
+
+R05-INN-04 jpk_harmonization — most JPK_CIT ↔ JPK_V7M ↔ deklaracja roczna
+  • revenue_delta = przychody roczne − przychody JPK_V7M; tolerancja 100 zł
+    (thresholds.pit.jpk_tolerance_pln) — zero hardcode.
+  • all_jpk_ready = jpk_cit_ready AND jpk_v7m_ready.
+  • Rozjazd > tolerancja → ALERT dla księgowego (nigdy auto-korekta).
+  • Korzyść: zero cichych rozjazdów między deklaracją a JPK.
+
+GŁÓWNA REGUŁA: decide = jdg.r05_pit_enterprise_innovations.pit_enterprise_report
+  (priority 305, _routing REPORT, aktywowana flagą
+  input.jdg_entrepreneur.r05_pit_enterprise_check; w normalnym ruchu no_match).
+
+════════════════════════════════════════════════════════════════════════════
+5. INTEGRACJA Z ORKIESTRATOREM (main_jdg.rego)
+════════════════════════════════════════════════════════════════════════════
+
+  • import data.jdg.r05_pit_enterprise_innovations
+  • _package_decisions["jdg.r05_pit_enterprise_innovations"] = decide
+  • final_verdict_p30 = safe_merge(final_verdict_p29,
+    safe_merge(r05_pit_enterprise_innovations.decide, fallback.decide))
+  • final_verdict_post_merge = object.union(final_verdict_p30,
+    {"_routing_context": routing_context})
+  • final_verdict_enforced = object.union(final_verdict_post_merge,
+    runtime_invariants.enforce(final_verdict_post_merge))
+  • final_verdict = final_verdict_enforced
+
+════════════════════════════════════════════════════════════════════════════
+6. OPA JAKO SYSTEM — WZMOCNIENIE CONTROL PLANE W DOMENIE PIT ENTERPRISE
+════════════════════════════════════════════════════════════════════════════
+
+  • Autopilot (INN-01) — zmiana wzorów zeznań (rozp. MF 2025-12-30) = zmiana
+    thresholds.pit (stawki, kwota zmniejszająca) — hot-reload < 1 min (V1 §7).
+  • Prognoza 3-letnia (INN-02) — zmiana stawek (estoński 10%, liniowy 19%)
+    = dane, nie kod (ADR-002).
+  • Harmonizacja (INN-04) — zmiana tolerancji JPK = thresholds.pit.
+    jpk_tolerance_pln.
+  • Cykl życia SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK, kanary i auto-rollback
+    (SLA ≤ 15 min, MTTR ≤ 5 min) — jdg-pite-bundle-v9.0.0 w deployments.json.
+
+════════════════════════════════════════════════════════════════════════════
+7. KONTRAKTY Z INNYMI CZĘŚCIAMI
+════════════════════════════════════════════════════════════════════════════
+
+  • TWORZY: pakiet jdg.r05_pit_enterprise_innovations (rule_ids:
+    .pit_enterprise_report, .annual_autopilot, .form_transition_3y,
+    .strategic_decision_score, .jpk_harmonization, .no_match) + ścieżka
+    final_verdict_p30.
+  • ZALEŻY od: jdg.main (routing_context, _package_decisions),
+    jdg.thresholds.pit (scale_lower_rate, linear_rate, lump_avg_rate,
+    estonian_cit_rate, tax_reducing_amount, jpk_tolerance_pln),
+    jdg.runtime_invariants, warstwa enterprise (annual_declaration,
+    p16_estonian_cit, exit_tax_mdr, form_transition, tax_optimization),
+    jpk_cit, micro/plan33_jpk.
+  • NIE koliduje: brak duplikatów rule_id; pakiet REPORT-owy (no_match w
+    normalnym ruchu). Części powiązane: 00, 04, 10, 15.
+
+════════════════════════════════════════════════════════════════════════════
+8. TESTY (dowód działania)
+════════════════════════════════════════════════════════════════════════════
+
+  • tests/auto/test_r05_pit_enterprise_enterprise.py (pytest) — pakiet,
+    4 innowacje, F4 certificate, prognoza 3-letnia, wiring main_jdg (p30),
+    golden replay (0 UVER).
+  • tests/rego/test_r05_pit_enterprise_enterprise.rego (natywny Rego) —
+    scenariusze: autopilot (SCALE ready / missing / LUMP PIT-28), 3-letni
+    (LINEAR best / LUMP best / zero growth), scoring (FORM_CHANGE/EXIT/
+    UNKNOWN), harmonizacja (OK / ALERT), raport enterprise.
+  • tests/test_p03_orchestrator_enterprise.py + tests/auto/test_r01_... +
+    test_r02_... + test_r03_... + test_r04_... — wiring p30.
+  • Golden replay: 18/18 verdictów, 0 UVER (w tym 1 PIT ENTERPRISE).
+  • OPA niedostępny w środowisku → kontrola strukturalna + pytest + golden hash
+    (konwencja R08-R24).
+
+════════════════════════════════════════════════════════════════════════════
+9. GENIALNE POMYSŁY ENTERPRISE (min. 12 — wdrożone lub kontraktowane)
+════════════════════════════════════════════════════════════════════════════
+
+  1.  Autopilot roczny z Decision Certificate (R05-INN-01) — F4 w domenie.
+  2.  Prognoza formy 3-letnia (R05-INN-02) — kumulatywna projekcja 4 form.
+  3.  Scoring decyzji strategicznych z podstawą prawną (R05-INN-03).
+  4.  Harmonizacja JPK_CIT/JPK_V7M (R05-INN-04) — most konsystencji.
+  5.  PIT-36/36L/28 auto-fill (annual_declaration) — full autofill.
+  6.  Uzgodnienie zaliczek (art. 44) — advance_reconciliation.
+  7.  Estoński CIT JDG→sp. z o.o. simulator (p16_estonian_cit).
+  8.  Exit tax + CFC + MDR detector (exit_tax_mdr — 7 reguł).
+  9.  Ceny transferowe obligation (exit_tax_mdr).
+  10. JDG→sp. z o.o. analysis (form_transition_simulator).
+  11. CEIDG-1 / ZUS ZUA / VAT-Z autoform (p16_autoform).
+  12. Form optimizer: financial simulator + break-even (form_optimizer).
+  13. Tax optimization: 10 strategii (tax_optimization).
+  14. Test przedsiębiorcy 0-100 (p16_entrepreneur_test).
+  15. Golden replay + evidence gate 9/9 -> WDROZONY_100 (R05).
+
+════════════════════════════════════════════════════════════════════════════
+10. MAPA DROGOWA
+════════════════════════════════════════════════════════════════════════════
+
+| # | Zadanie                                   | Priorytet | Czas  | Wpływ | Ryzyko |
+|---|-------------------------------------------|-----------|-------|-------|--------|
+| 1 | PIT-36/36L/28 auto-fill                   | P0        | done  | WYSOKI| NISKIE |
+| 2 | Autopilot + F4 (R05-INN-01)               | P0        | done  | WYSOKI| NISKIE |
+| 3 | Estoński CIT + exit tax/MDR               | P0        | done  | WYSOKI| NISKIE |
+| 4 | Prognoza formy 3-letnia (R05-INN-02)      | P1        | done  | WYSOKI| NISKIE |
+| 5 | Transformacje + autoform                  | P1        | done  | ŚREDNI| NISKIE |
+| 6 | Scoring decyzji (R05-INN-03)              | P1        | done  | ŚREDNI| NISKIE |
+| 7 | Optymalizacja (10 strategii)              | P1        | done  | WYSOKI| NISKIE |
+| 8 | Harmonizacja JPK (R05-INN-04)             | P2        | done  | ŚREDNI| NISKIE |
+| 9 | Golden replay PIT ENTERPRISE              | P2        | done  | ŚREDNI| NISKIE |
+| 10| Evidence gate 9/9 -> WDROZONY_100         | P2        | done  | WYSOKI| NISKIE |
+
+════════════════════════════════════════════════════════════════════════════
+11. PODSUMOWANIE WDROŻENIA
+════════════════════════════════════════════════════════════════════════════
+
+Artefakty:
+  • rules/r05_pit_enterprise_innovations_v9.rego (nowy pakiet, 4 innowacje)
+  • rules/main_jdg.rego (wiring: import, _package_decisions, final_verdict_p30,
+    final_verdict_post_merge)
+  • tests/auto/test_r05_pit_enterprise_enterprise.py (pytest) +
+    tests/rego/test_r05_pit_enterprise_enterprise.rego (natywny Rego)
+  • tests/test_p03_orchestrator_enterprise.py + tests/auto/test_r01_... +
+    test_r02_... + test_r03_... + test_r04_... (wiring p30)
+  • tools/pit_enterprise_report05_gate.py + bundles/pit_enterprise_report05_evidence.json
+  • bundles/golden_verdicts.json (+1 PIT ENTERPRISE verdict + replay;
+    18/18/0 UVER)
+  • bundles/deployments.json (jdg-pite-bundle-v9.0.0 — canary→shadow→ramped→
+    soak→auto-rollback; fail-closed, NIE production-active)
+
+Evidence gate: 9/9 PASSED -> WDROZONY_100 (2026-08-14).
+
+WERYFIKACJA:
+  • pytest R05 + R04 + R03 + R02 + R01 + P03 + P01 + VAT + PIT: zielone.
+  • Golden replay: 18 verdictów / 18 replay / 0 UVER.
+  • Struktura Rego: zbalansowane nawiasy, unikalne rule_id, package OK.
+
+Kolejny Prompt: JDG/prompty_glm52/06_ZUS_SUS_składki_ulgi.txt
+==============================================================================

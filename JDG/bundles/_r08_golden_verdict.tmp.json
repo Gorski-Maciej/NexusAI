@@ -1,0 +1,49 @@
+{
+  "matched": true,
+  "rule_id": "jdg.r08_ordynacja_obrona_innovations.limitation_evidence_monitor",
+  "package": "jdg.r08_ordynacja_obrona_innovations",
+  "priority": 11005,
+  "decision_mode": "SUGGEST",
+  "valid_from": "2025-01-01",
+  "valid_to": null,
+  "lim_liabilities_total": 2,
+  "lim_barred_count": 1,
+  "lim_expiring_count": 0,
+  "lim_items": [
+    {
+      "liability_type": "PIT",
+      "tax_year": 2018,
+      "deadline": "31.12.2023",
+      "remaining_days": -1095,
+      "statute_barred": true,
+      "suspended": false,
+      "suspension_reason": "",
+      "max_extension_years": 0
+    },
+    {
+      "liability_type": "VAT",
+      "tax_year": 2023,
+      "deadline": "31.12.2028",
+      "remaining_days": 730,
+      "statute_barred": false,
+      "suspended": false,
+      "suspension_reason": "",
+      "max_extension_years": 0
+    }
+  ],
+  "lim_evidence_certificate": {
+    "decision_hash": "sha256:PIT:2018|VAT:2023",
+    "bundle_version": "jdg-ord-obr-bundle-v9.0.0",
+    "rule_version": "v9",
+    "threshold_version": "v2026",
+    "legal_basis": "OrdPU art. 70 § 1 (5 lat), § 4-6 (zawieszenie/przerwanie, max 10 lat)",
+    "method": "statute_of_limitations_art70",
+    "warn_days": 180
+  },
+  "_routing": "BLOCK_AND_ALERT",
+  "_routing_reason": "Monitor przedawnień — 2 zobowiązań: 1 PRZEDAWNIONYCH (statute_barred), 0 w oknie alarmowym (180 dni). Dowód: certyfikat z decision_hash.",
+  "_legal_basis": "OrdPU art. 70 § 1, 4-6; art. 21 § 1 pkt 1 (zawieszenie KKS)",
+  "_warnings": [
+    "PRZEDAWNIENIA: 2 zobowiązań w monitorze — 1 PRZEDAWNIONYCH, 0 w oknie 180 dni. Przedawnione = obowiązek wygasa, egzekucja niedopuszczalna (art. 70)."
+  ]
+}

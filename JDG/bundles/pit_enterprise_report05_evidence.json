@@ -1,5 +1,5 @@
 {
-  "report": "RAPORT_07_KKS",
+  "report": "RAPORT_05_PIT_ENTERPRISE",
   "status": "WDROZONY_100",
   "gates": {
     "scope_files_present": true,
@@ -16,11 +16,9 @@
     "passed": 9,
     "total": 9
   },
-  "checks_passed": 9,
-  "checks_total": 9,
   "scope": {
     "files": {
-      "r07_rego": true,
+      "r05_rego": true,
       "main_jdg": true,
       "pytest": true,
       "native_rego": true,
@@ -29,59 +27,58 @@
     "files_total": 5,
     "files_present": 5,
     "report_present": true,
-    "kks_core_files_declared": 13,
-    "kks_core_files_present": 13
+    "pit_enterprise_files_declared": 11,
+    "pit_enterprise_files_present": 11
   },
   "innovations": {
     "required_innovations": [
-      "voluntary_disclosure_one_click",
-      "checklist_art16",
-      "zawiadomienie_o_przestepstwie",
-      "wplata_uszczuplenia",
-      "missing_documents",
-      "penalty_calculator_temporal",
-      "fine_calculated",
-      "fine_limit_absolute",
-      "statute_barred",
-      "limitation_years",
-      "transaction_risk_predictor",
+      "annual_autopilot",
+      "decision_certificate",
+      "decision_hash",
+      "expected_declaration",
+      "form_transition_3y",
+      "cumulative_tax_3y",
+      "best_form_3y",
+      "strategic_decision_score",
       "score_0_100",
       "risk_level",
-      "BLOCK_AND_ALERT",
-      "unreal_entity"
+      "jpk_harmonization",
+      "revenue_delta",
+      "revenue_consistent"
     ],
     "missing_innovations": [],
     "innovations_complete": true,
     "legal_basis_markers": [
-      "Art. 16 KKS (czynny żal)",
-      "Art. 23, 25, 27, 44 KKS",
-      "Art. 54, 56, 57, 62 KKS",
-      "Dz.U. 1999 nr 83 poz. 930"
+      "Art. 44, 45 PIT",
+      "Art. 9a, 27, 30c PIT",
+      "rozporządzenie MF ws. wzorów zeznań PIT (2025-12-30)",
+      "Dz.U. 2025 poz. 789",
+      "JPK_CIT"
     ],
     "missing_legal_markers": [],
     "legal_basis_complete": true,
     "decide_report_rule": true,
     "activation_flag": true,
     "default_no_match": true,
-    "one_click_pack": true,
-    "temporal_penalty": true
+    "certificate_f4": true,
+    "three_year_forecast": true
   },
   "thresholds": {
     "thresholds_via_data": true,
-    "fine_limit_externalized": true,
-    "limitation_externalized": true,
-    "daily_rates_externalized": true
+    "rates_externalized": true,
+    "tax_reducing_externalized": true,
+    "jpk_tolerance_externalized": true
   },
   "duplicates": {
-    "rule_ids_total": 5,
-    "rule_ids_unique": 5,
+    "rule_ids_total": 6,
+    "rule_ids_unique": 6,
     "duplicates": [],
     "duplicate_count": 0
   },
   "router": {
     "import_present": true,
     "package_decisions_entry": true,
-    "final_verdict_p32": true,
+    "final_verdict_p30": true,
     "post_merge_present": true,
     "invariants_enforced": true,
     "final_verdict_public": true
@@ -90,24 +87,27 @@
     "pytest_present": true,
     "native_rego_present": true,
     "marker_hits": {
-      "voluntary_disclosure_one_click": true,
-      "penalty_calculator_temporal": true,
-      "transaction_risk_predictor": true,
-      "checklist_art16": true,
-      "statute_barred": true,
-      "BLOCK_AND_ALERT": true,
-      "r07_kks_check": true
+      "annual_autopilot": true,
+      "form_transition_3y": true,
+      "strategic_decision_score": true,
+      "jpk_harmonization": true,
+      "decision_certificate": true,
+      "best_form_3y": true,
+      "r05_pit_enterprise_check": true,
+      "PIT-36": true,
+      "PIT-36L": true,
+      "PIT-28": true
     },
     "markers_complete": true,
-    "pytest_test_functions": 16,
-    "native_test_functions": 11
+    "pytest_test_functions": 17,
+    "native_test_functions": 13
   },
   "replay": {
-    "golden_verdicts_total": 20,
-    "kks_verdicts": 1,
-    "kks_replays": 1,
+    "golden_verdicts_total": 18,
+    "pit_enterprise_verdicts": 1,
+    "pit_enterprise_replays": 1,
     "uver_count": 0,
     "replay_verified": true
   },
-  "generated_at": "2026-08-14T20:43:21.924045+00:00"
+  "generated_at": "2026-08-14T20:10:17.095625+00:00"
 }

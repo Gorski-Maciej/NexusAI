@@ -313,125 +313,661 @@
       ]
     },
     "c4a1b2d3e4f5a6b7c8d9e0f1a2b3c4d5": {
-    "verdict": {
-      "matched": true,
-      "rule_id": "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator",
-      "package": "jdg.p16_rodo_aml_security_innovations",
-      "priority": 2166,
-      "violation_type": "DATA_BREACH_UNREPORTED",
-      "max_fine_eur": 20000000,
-      "annual_revenue_eur": 50000000,
-      "revenue_based_fine": 2000000,
-      "effective_fine_eur": 20000000,
-      "note": "kalkulator sankcji RODO — próg 20 mln EUR / 4% obrotu (Art. 83 ust. 5)",
-      "_routing": "BLOCK_AND_ALERT",
-      "_routing_reason": "Kalkulator sankcji RODO — DATA_BREACH_UNREPORTED: max 20000000 EUR, efektywna 20000000 EUR",
-      "_legal_basis": "Art. 83 RODO",
-      "_warnings": [],
-      "valid_from": "2018-05-25",
-      "valid_to": null,
-      "decision_mode": "SUGGEST"
-    },
-    "verdict_hash": "9f8e7d6c5b4a3928171615141312110abcdef0123456789abcdef0123456789",
-    "hash_algorithm": "sha256-canonical-json-v1",
-    "bundle_version": "jdg-rab-bundle-v9.0.0",
-    "recorded_at": "2026-08-13T13:40:00+00:00",
-    "legal_basis_refs": [
-      "Art. 83 RODO"
-    ]
-  },
-  "a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1": {
-    "verdict": {
-      "matched": true,
-      "rule_id": "jdg.ksef_jpk.ksef_mandatory",
-      "package": "jdg.ksef_jpk",
-      "priority": 950,
-      "ksef_required": true,
-      "ksef_phase": "2",
-      "ksef_mandatory_from": "2026-04-01",
-      "invoice_vat": 2300.0,
-      "sanction_pln": 2300.0,
-      "note": "KSeF obowiązkowy — faza 2 od 2026-04-01, sankcja min(100% VAT, 500 000 zł)",
-      "_routing": "",
-      "_routing_reason": "",
-      "_legal_basis": "Art. 106na-106nq VAT",
-      "_warnings": [],
-      "valid_from": "2026-02-01",
-      "valid_to": null,
-      "decision_mode": "SUGGEST"
-    },
-    "verdict_hash": "1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c",
-    "hash_algorithm": "sha256-canonical-json-v1",
-    "bundle_version": "jdg-kjp-bundle-v9.0.0",
-    "recorded_at": "2026-08-13T14:20:00+00:00",
-    "legal_basis_refs": [
-      "Art. 106na-106nq VAT"
-    ]
-  },
-  "c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2": {
-    "verdict": {
-      "matched": true,
-      "rule_id": "jdg.rule_lifecycle.auto_rollback",
-      "package": "jdg.rule_lifecycle",
-      "priority": 130,
-      "rollback_required": [
-        {
-          "rule_id": "jdg.pit.a30c.r1",
-          "candidate": "1.2.0",
-          "error_rate": 0.08,
-          "threshold": 0.05,
-          "fallback_version": "1.1.0"
-        }
-      ],
-      "note": "auto-rollback guard — error_rate kandydata > próg, przywróć wersję ACTIVE",
-      "_routing": "BLOCK_AND_ALERT",
-      "_routing_reason": "AUTO-ROLLBACK: error_rate kandydata przekroczył próg — przywróć poprzednią wersję ACTIVE",
-      "_legal_basis": "P01 Sekcja 2 — Rule Lifecycle Management (self-healing)",
-      "_warnings": [],
-      "valid_from": "2026-01-01",
-      "valid_to": null,
-      "decision_mode": "SUGGEST"
-    },
-    "verdict_hash": "2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d",
-    "hash_algorithm": "sha256-canonical-json-v1",
-    "bundle_version": "jdg-sop-bundle-v9.0.0",
-    "recorded_at": "2026-08-13T15:10:00+00:00",
-    "legal_basis_refs": [
-      "P01 Sekcja 2 — Rule Lifecycle Management (self-healing)"
-    ]
-  },
-  "e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3": {
-    "verdict": {
-      "matched": true,
-      "rule_id": "jdg.adaptive_trust.auto_post_gate",
-      "package": "jdg.adaptive_trust",
-      "priority": 100,
-      "trust": {
-        "base": 1.0,
-        "final": 0.95,
-        "threshold_auto_post": 0.92,
-        "threshold_suggest": 0.75,
-        "counterparty_risk": "LOW",
-        "fraud_patterns": [],
-        "package": "jdg.vat"
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator",
+        "package": "jdg.p16_rodo_aml_security_innovations",
+        "priority": 2166,
+        "violation_type": "DATA_BREACH_UNREPORTED",
+        "max_fine_eur": 20000000,
+        "annual_revenue_eur": 50000000,
+        "revenue_based_fine": 2000000,
+        "effective_fine_eur": 20000000,
+        "note": "kalkulator sankcji RODO — próg 20 mln EUR / 4% obrotu (Art. 83 ust. 5)",
+        "_routing": "BLOCK_AND_ALERT",
+        "_routing_reason": "Kalkulator sankcji RODO — DATA_BREACH_UNREPORTED: max 20000000 EUR, efektywna 20000000 EUR",
+        "_legal_basis": "Art. 83 RODO",
+        "_warnings": [],
+        "valid_from": "2018-05-25",
+        "valid_to": null,
+        "decision_mode": "SUGGEST"
       },
-      "note": "adaptive trust scoring — trust >= próg AUTO_POST, brak fraud → rekomendacja (SUGGEST)",
-      "_routing": "AUTO_POST",
-      "_routing_reason": "Trust score >= próg AUTO_POST pakietu, brak sygnałów fraud — decyzja automatyczna",
-      "_legal_basis": "P02 Sekcja 1 — Adaptive Trust Scoring + risk.rego P1",
-      "_warnings": [],
-      "valid_from": "2026-01-01",
-      "valid_to": null,
-      "decision_mode": "SUGGEST"
+      "verdict_hash": "9f8e7d6c5b4a3928171615141312110abcdef0123456789abcdef0123456789",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-rab-bundle-v9.0.0",
+      "recorded_at": "2026-08-13T13:40:00+00:00",
+      "legal_basis_refs": [
+        "Art. 83 RODO"
+      ]
     },
-    "verdict_hash": "3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e",
-    "hash_algorithm": "sha256-canonical-json-v1",
-    "bundle_version": "jdg-eai-bundle-v9.0.0",
-    "recorded_at": "2026-08-13T16:00:00+00:00",
-    "legal_basis_refs": [
-      "P02 Sekcja 1 — Adaptive Trust Scoring + risk.rego P1"
-    ]
-  }
+    "a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.ksef_jpk.ksef_mandatory",
+        "package": "jdg.ksef_jpk",
+        "priority": 950,
+        "ksef_required": true,
+        "ksef_phase": "2",
+        "ksef_mandatory_from": "2026-04-01",
+        "invoice_vat": 2300.0,
+        "sanction_pln": 2300.0,
+        "note": "KSeF obowiązkowy — faza 2 od 2026-04-01, sankcja min(100% VAT, 500 000 zł)",
+        "_routing": "",
+        "_routing_reason": "",
+        "_legal_basis": "Art. 106na-106nq VAT",
+        "_warnings": [],
+        "valid_from": "2026-02-01",
+        "valid_to": null,
+        "decision_mode": "SUGGEST"
+      },
+      "verdict_hash": "1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-kjp-bundle-v9.0.0",
+      "recorded_at": "2026-08-13T14:20:00+00:00",
+      "legal_basis_refs": [
+        "Art. 106na-106nq VAT"
+      ]
+    },
+    "c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.rule_lifecycle.auto_rollback",
+        "package": "jdg.rule_lifecycle",
+        "priority": 130,
+        "rollback_required": [
+          {
+            "rule_id": "jdg.pit.a30c.r1",
+            "candidate": "1.2.0",
+            "error_rate": 0.08,
+            "threshold": 0.05,
+            "fallback_version": "1.1.0"
+          }
+        ],
+        "note": "auto-rollback guard — error_rate kandydata > próg, przywróć wersję ACTIVE",
+        "_routing": "BLOCK_AND_ALERT",
+        "_routing_reason": "AUTO-ROLLBACK: error_rate kandydata przekroczył próg — przywróć poprzednią wersję ACTIVE",
+        "_legal_basis": "P01 Sekcja 2 — Rule Lifecycle Management (self-healing)",
+        "_warnings": [],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "decision_mode": "SUGGEST"
+      },
+      "verdict_hash": "2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-sop-bundle-v9.0.0",
+      "recorded_at": "2026-08-13T15:10:00+00:00",
+      "legal_basis_refs": [
+        "P01 Sekcja 2 — Rule Lifecycle Management (self-healing)"
+      ]
+    },
+    "e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.adaptive_trust.auto_post_gate",
+        "package": "jdg.adaptive_trust",
+        "priority": 100,
+        "trust": {
+          "base": 1.0,
+          "final": 0.95,
+          "threshold_auto_post": 0.92,
+          "threshold_suggest": 0.75,
+          "counterparty_risk": "LOW",
+          "fraud_patterns": [],
+          "package": "jdg.vat"
+        },
+        "note": "adaptive trust scoring — trust >= próg AUTO_POST, brak fraud → rekomendacja (SUGGEST)",
+        "_routing": "AUTO_POST",
+        "_routing_reason": "Trust score >= próg AUTO_POST pakietu, brak sygnałów fraud — decyzja automatyczna",
+        "_legal_basis": "P02 Sekcja 1 — Adaptive Trust Scoring + risk.rego P1",
+        "_warnings": [],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "decision_mode": "SUGGEST"
+      },
+      "verdict_hash": "3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-eai-bundle-v9.0.0",
+      "recorded_at": "2026-08-13T16:00:00+00:00",
+      "legal_basis_refs": [
+        "P02 Sekcja 1 — Adaptive Trust Scoring + risk.rego P1"
+      ]
+    },
+    "097b6a0581afb9f3916ac24be5eb4009": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r01_orchestrator_core_innovations.orchestrator_core_report",
+        "package": "jdg.r01_orchestrator_core_innovations",
+        "priority": 290,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "selected_path": "SHARDED_DOMESTIC_SALE",
+        "routing_context": {
+          "tax_form": "SCALE",
+          "transaction_type": "DOMESTIC_SALE",
+          "entity_status": "ACTIVE",
+          "evaluation_date": "2026-08-14",
+          "is_cross_border": false
+        },
+        "deterministic": true,
+        "time_travel_active": false,
+        "time_travel_consistent": true,
+        "safe_merge_integrity_ok": true,
+        "priority_conflict_count": 0,
+        "_routing": "REPORT",
+        "_routing_reason": "R01 Orkiestrator: trace sciezki routingu O(1) dla DOMESTIC_SALE (SHARDED_DOMESTIC_SALE)",
+        "_legal_basis": "R01 GLM52 (Orkiestrator + Rdzen Silnika) + ADR-001..009/017/022 + INV-018/025/037/040/042",
+        "_warnings": []
+      },
+      "verdict_hash": "791c95e8974c2697456183134f40047232babf86004fe722ee7f8a446b3fca88",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-orc-bundle-v9.0.0",
+      "recorded_at": "2026-08-14T18:44:55+00:00",
+      "legal_basis_refs": [
+        "ADR-001",
+        "ADR-002",
+        "ADR-009",
+        "ADR-017",
+        "ADR-022",
+        "INV-018",
+        "INV-025",
+        "INV-037",
+        "INV-040",
+        "INV-042"
+      ]
+    },
+    "484eff2b36693e4ab8fb8330853a8024": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r02_vat_core_innovations.vat_core_report",
+        "package": "jdg.r02_vat_core_innovations",
+        "priority": 285,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "exemption_limit": 200000,
+        "exemption_zone": "WATCH",
+        "projected_annual_turnover": 180000,
+        "auto_gtu": "GTU_02",
+        "art91_period_years": 5,
+        "_routing": "REPORT",
+        "_routing_reason": "R02 VAT CORE: real-time limit tracker (art. 113), auto-GTU (Zal. 15), korekta wieloletnia art. 91",
+        "_legal_basis": "Art. 41-43, 86-95, 91, 108a-108f, 113 VAT + Zal. nr 15 ustawy o VAT + SLIM VAT 3",
+        "_warnings": []
+      },
+      "verdict_hash": "5745c014a28eb63518c740de2de989a9d0bc2508e37c741cd7572ad3f170fbf4",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-vatc-bundle-v9.0.0",
+      "recorded_at": "2026-08-14T19:07:20+00:00",
+      "legal_basis_refs": [
+        "Art.113",
+        "Art.91",
+        "Art.108a",
+        "Zal.15",
+        "Art.41",
+        "Art.43",
+        "Art.86"
+      ]
+    },
+    "ff6d3f668285191a7a3794976ba3119e": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r03_vat_micro_innovations.vat_micro_report",
+        "package": "jdg.r03_vat_micro_innovations",
+        "priority": 280,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "vat_micro": {
+          "article_coverage": {
+            "key_articles_total": 30,
+            "covered": 3,
+            "partial": 0,
+            "missing_count": 27
+          },
+          "micro_macro_binding": {
+            "bindings_total": 30
+          },
+          "micro_consistency": {
+            "conflict_count": 0,
+            "matched_micro_articles": 1
+          }
+        },
+        "_routing": "REPORT",
+        "_routing_reason": "R03 VAT MICRO: pokrycie artykułów, sieć micro↔macro, spójność werdyktów",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173 + P05 (pustynie artykułów)",
+        "_warnings": [
+          "Raport VAT MICRO — aktywowany wyłącznie flagą r03_vat_micro_check"
+        ]
+      },
+      "verdict_hash": "f50151b12778165885d545ac9d83b23a3b6399f24b72ff31f7e1a841d9c0fabd",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-vatm-bundle-v9.0.0",
+      "recorded_at": "2026-08-14T19:24:58+00:00",
+      "legal_basis_refs": [
+        "Art.28b",
+        "Art.87",
+        "Art.91",
+        "Art.106a",
+        "Art.106i",
+        "Art.5"
+      ]
+    },
+    "51620692baf18da71be1862dc8c3d1ad": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r04_pit_core_innovations.pit_core_report",
+        "package": "jdg.r04_pit_core_innovations",
+        "priority": 295,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "pit_core": {
+          "relief_whatif": {
+            "br_costs": 100000,
+            "ipbox_income": 10000,
+            "robotization_costs": 10000,
+            "marginal_rate": 0.32,
+            "br_saving": 32000,
+            "ipbox_saving": 2700,
+            "robot_saving": 1600,
+            "best_relief": "BR",
+            "max_saving": 32000
+          },
+          "one_off_amortization": {
+            "eligible": true,
+            "small_taxpayer": true,
+            "kst_group": "3",
+            "asset_value": 80000,
+            "annual_limit": 100000,
+            "one_off_deduction": 80000,
+            "remaining_limit": 20000
+          },
+          "low_value_amortization": {
+            "eligible": true,
+            "asset_value": 8000,
+            "threshold": 10000,
+            "one_off_cost": 8000
+          },
+          "health_optimizer": {
+            "annual_income": 60000,
+            "annual_revenue": 70000,
+            "health_scale": 5400,
+            "health_linear": 5400,
+            "health_lump": 540,
+            "best_form": "SCALE"
+          }
+        },
+        "_routing": "REPORT",
+        "_routing_reason": "R04 PIT CORE: 3-drogowy symulator ulg (B+R/IP Box/robotyzacja), jednorazowa amortyzacja 100k, niskocenne 10k, optymalna składka",
+        "_legal_basis": "Ustawa o PIT (Dz.U. 2025 poz. 789) Art. 22f, 22k, 26e, 26gb, 27, 30ca, 44, 45",
+        "_warnings": [
+          "Raport PIT CORE — aktywowany wyłącznie flagą r04_pit_core_check"
+        ]
+      },
+      "verdict_hash": "450877cca7d10a9e73cb35eb395cde48cbfb0985a48989b60c83a6adb0558df1",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-pitc-bundle-v9.0.0",
+      "recorded_at": "2026-08-14T19:47:56+00:00",
+      "legal_basis_refs": [
+        "Art.22f",
+        "Art.22k",
+        "Art.26e",
+        "Art.26gb",
+        "Art.27",
+        "Art.30ca",
+        "Art.44"
+      ]
+    },
+    "916f023dfb742b776982b2725ebb6283": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r05_pit_enterprise_innovations.pit_enterprise_report",
+        "package": "jdg.r05_pit_enterprise_innovations",
+        "priority": 305,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "pit_enterprise": {
+          "annual_autopilot": {
+            "tax_form": "SCALE",
+            "expected_declaration": "PIT-36",
+            "ready": true,
+            "missing": [],
+            "expected_tax": 6000,
+            "advances_paid": 5000,
+            "balance_due": 1000,
+            "overpayment": 0,
+            "decision_certificate": {
+              "decision_hash": "compute-by-host",
+              "hash_algorithm": "sha256-canonical-json-v1",
+              "bundle_version": "jdg-pite-bundle-v9.0.0",
+              "rule_version": "jdg.r05.annual_autopilot.v9",
+              "threshold_version": "2026.1",
+              "legal_basis_refs": [
+                "Art. 45 PIT",
+                "Art. 44 PIT",
+                "rozp. MF wzory zeznań 2025-12-30"
+              ]
+            }
+          },
+          "form_3y_forecast": {
+            "current_form": "SCALE",
+            "year1_income": 400000,
+            "growth_rate": 0.1,
+            "cumulative_tax_3y": {
+              "SCALE": 144000,
+              "LINEAR": 228000,
+              "LUMP_SUM": 102000,
+              "ESTONIAN_CIT": 120000
+            },
+            "best_form_3y": "LUMP_SUM"
+          },
+          "strategic_scoring": {
+            "decision_type": "FORM_CHANGE",
+            "score_0_100": 80,
+            "risk_level": "LOW",
+            "legal_basis": "Art. 9a PIT (wybór formy opodatkowania)"
+          },
+          "jpk_harmonization": {
+            "annual_revenue": 500000,
+            "jpk_v7m_revenue": 500050,
+            "revenue_delta": -50,
+            "revenue_consistent": true,
+            "jpk_cit_ready": true,
+            "jpk_v7m_ready": true,
+            "all_jpk_ready": true
+          }
+        },
+        "_routing": "REPORT",
+        "_routing_reason": "R05 PIT ENTERPRISE: autopilot roczny z Decision Certificate, prognoza formy 3-letnia, scoring decyzji strategicznych, harmonizacja JPK",
+        "_legal_basis": "Ustawa o PIT (Dz.U. 2025 poz. 789) Art. 9a, 30ca, 44, 45 + rozp. MF wzory zeznań (2025-12-30) + JPK_CIT + JPK_V7M",
+        "_warnings": [
+          "Raport PIT ENTERPRISE — aktywowany wyłącznie flagą r05_pit_enterprise_check"
+        ]
+      },
+      "verdict_hash": "b52e798ffb32164214e4f5ecb12f2e617128a355d9153fb12348ba484b9f5ebd",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-pite-bundle-v9.0.0",
+      "recorded_at": "2026-08-14T20:08:51+00:00",
+      "legal_basis_refs": [
+        "Art.9a",
+        "Art.30ca",
+        "Art.44",
+        "Art.45",
+        "rozp.MF.wzory.zeznan",
+        "JPK_CIT",
+        "JPK_V7M"
+      ]
+    },
+    "58ccd998905459ceba2b86aaeaf4e9c2": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r06_zus_innovations.zus_report",
+        "package": "jdg.r06_zus_innovations",
+        "priority": 315,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "zus": {
+          "health_whatif": {
+            "annual_income": 50000,
+            "annual_revenue": 50000,
+            "scale_annual": 4500,
+            "linear_annual": 2450,
+            "lump_annual": 3055.92,
+            "lump_base_multiplier": 0.6,
+            "card_annual": 5039.28,
+            "best_form": "LINEAR",
+            "linear_deduction_limit": 14100
+          },
+          "relief_tracker": {
+            "relief_type": "ULGA_START",
+            "months_since_start": 2,
+            "max_months": 6,
+            "remaining_months": 4,
+            "status": "ACTIVE",
+            "alarms": []
+          },
+          "sus_a6a": {
+            "personal_child_care": true,
+            "other_parent_insured": false,
+            "eligible": true
+          }
+        },
+        "_routing": "REPORT",
+        "_routing_reason": "R06 ZUS: kalkulator składki zdrowotnej 4-formowy, tracker ulg z alarmami, domknięcie art. 6a",
+        "_legal_basis": "Ustawa o SUS (Dz.U. 2025 poz. 345) Art. 6a, 18a, 18c + u. zdrowotna (Dz.U. 2025 poz. 890) art. 81",
+        "_warnings": [
+          "Raport ZUS — aktywowany wyłącznie flagą r06_zus_check"
+        ]
+      },
+      "verdict_hash": "9245a47dbd2df7387d827f95b72e0b1066590964ce20c638d4c1b64b88e02eba",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-zus-bundle-v9.0.0",
+      "recorded_at": "2026-08-14T20:20:57+00:00",
+      "legal_basis_refs": [
+        "Art.6a",
+        "Art.18a",
+        "Art.18c",
+        "Art.81",
+        "rozp.MPiPS.2025-12-30"
+      ]
+    },
+    "88e716159dda6409f383092b1466c7d8": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r07_kks_innovations.kks_report",
+        "package": "jdg.r07_kks_innovations",
+        "priority": 325,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "kks": {
+          "voluntary_disclosure": {
+            "offense_type": "TAX_EVASION",
+            "revenue_impact": 15000,
+            "ready": true,
+            "missing_documents": [],
+            "deadline_days": 7,
+            "organ_notified": false,
+            "checklist_art16": {
+              "zawiadomienie_o_przestepstwie": true,
+              "ujawnienie_istotnych_okolicznosci": true,
+              "wplata_uszczuplenia": true
+            }
+          },
+          "penalty_calculator": {
+            "daily_stakes": 200,
+            "stakes_count": 60,
+            "fine_calculated": 12000,
+            "fine_limit_absolute": 500000,
+            "minor_case": false,
+            "statute_barred": false,
+            "limitation_years": 5
+          },
+          "transaction_risk": {
+            "score_0_100": 10,
+            "risk_level": "LOW",
+            "routing": "PASS",
+            "factors": {
+              "invoice_missing": false,
+              "unreal_entity": false,
+              "cash_limit_exceeded": false,
+              "false_declaration_risk": false,
+              "docs_complete": true
+            }
+          }
+        },
+        "_routing": "REPORT",
+        "_routing_reason": "R07 KKS: czynny żal one-click z dokumentacją, kalkulator kar z temporalnością, predykcja ryzyka per transakcja",
+        "_legal_basis": "KKS (Dz.U. 1999 nr 83 poz. 930 ze zm.) Art. 16, 17, 23, 25, 27, 44, 54, 56, 57, 62",
+        "_warnings": [
+          "Raport KKS — aktywowany wyłącznie flagą r07_kks_check"
+        ]
+      },
+      "verdict_hash": "c6d2d62144985aec67354509fe6e95c39eb3bb0a368d70395cd4ff27e27d1da0",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-kks-bundle-v9.0.0",
+      "recorded_at": "2026-08-14T20:32:36+00:00",
+      "legal_basis_refs": [
+        "Art.16",
+        "Art.17",
+        "Art.23",
+        "Art.44",
+        "Art.54",
+        "Art.56",
+        "Art.57",
+        "Art.62"
+      ]
+    },
+    "e3a7344d2552f62a90c64a474867f8e6": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r08_ordynacja_obrona_innovations.limitation_evidence_monitor",
+        "package": "jdg.r08_ordynacja_obrona_innovations",
+        "priority": 11005,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "lim_liabilities_total": 2,
+        "lim_barred_count": 1,
+        "lim_expiring_count": 0,
+        "lim_items": [
+          {
+            "liability_type": "PIT",
+            "tax_year": 2018,
+            "deadline": "31.12.2023",
+            "remaining_days": -1095,
+            "statute_barred": true,
+            "suspended": false,
+            "suspension_reason": "",
+            "max_extension_years": 0
+          },
+          {
+            "liability_type": "VAT",
+            "tax_year": 2023,
+            "deadline": "31.12.2028",
+            "remaining_days": 730,
+            "statute_barred": false,
+            "suspended": false,
+            "suspension_reason": "",
+            "max_extension_years": 0
+          }
+        ],
+        "lim_evidence_certificate": {
+          "decision_hash": "sha256:PIT:2018|VAT:2023",
+          "bundle_version": "jdg-ord-obr-bundle-v9.0.0",
+          "rule_version": "v9",
+          "threshold_version": "v2026",
+          "legal_basis": "OrdPU art. 70 § 1 (5 lat), § 4-6 (zawieszenie/przerwanie, max 10 lat)",
+          "method": "statute_of_limitations_art70",
+          "warn_days": 180
+        },
+        "_routing": "BLOCK_AND_ALERT",
+        "_routing_reason": "Monitor przedawnień — 2 zobowiązań: 1 PRZEDAWNIONYCH (statute_barred), 0 w oknie alarmowym (180 dni). Dowód: certyfikat z decision_hash.",
+        "_legal_basis": "OrdPU art. 70 § 1, 4-6; art. 21 § 1 pkt 1 (zawieszenie KKS)",
+        "_warnings": [
+          "PRZEDAWNIENIA: 2 zobowiązań w monitorze — 1 PRZEDAWNIONYCH, 0 w oknie 180 dni. Przedawnione = obowiązek wygasa, egzekucja niedopuszczalna (art. 70)."
+        ]
+      },
+      "verdict_hash": "b06060640e193735a5335940ed395cf48961c7ba1a8b12bf4d7510e4870a6050",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "unknown",
+      "recorded_at": "2026-08-14T21:03:20+00:00",
+      "legal_basis_refs": []
+    }
   },
   "annotations": [],
   "replays": [
@@ -899,6 +1435,517 @@
       "reason": "baseline ENTERPRISE-AI (RAPORT_17) — bez zmian",
       "uver_applies": false,
       "replayed_at": "2026-08-13T16:00:00+00:00"
+    },
+    {
+      "input_hash": "097b6a0581afb9f3916ac24be5eb4009",
+      "golden_verdict_hash": "791c95e8974c2697456183134f40047232babf86004fe722ee7f8a446b3fca88",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r01_orchestrator_core_innovations.orchestrator_core_report",
+        "package": "jdg.r01_orchestrator_core_innovations",
+        "priority": 290,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "selected_path": "SHARDED_DOMESTIC_SALE",
+        "routing_context": {
+          "tax_form": "SCALE",
+          "transaction_type": "DOMESTIC_SALE",
+          "entity_status": "ACTIVE",
+          "evaluation_date": "2026-08-14",
+          "is_cross_border": false
+        },
+        "deterministic": true,
+        "time_travel_active": false,
+        "time_travel_consistent": true,
+        "safe_merge_integrity_ok": true,
+        "priority_conflict_count": 0,
+        "_routing": "REPORT",
+        "_routing_reason": "R01 Orkiestrator: trace sciezki routingu O(1) dla DOMESTIC_SALE (SHARDED_DOMESTIC_SALE)",
+        "_legal_basis": "R01 GLM52 (Orkiestrator + Rdzen Silnika) + ADR-001..009/017/022 + INV-018/025/037/040/042",
+        "_warnings": []
+      },
+      "new_verdict_hash": "791c95e8974c2697456183134f40047232babf86004fe722ee7f8a446b3fca88",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-14T18:44:55+00:00"
+    },
+    {
+      "input_hash": "484eff2b36693e4ab8fb8330853a8024",
+      "golden_verdict_hash": "5745c014a28eb63518c740de2de989a9d0bc2508e37c741cd7572ad3f170fbf4",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r02_vat_core_innovations.vat_core_report",
+        "package": "jdg.r02_vat_core_innovations",
+        "priority": 285,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "exemption_limit": 200000,
+        "exemption_zone": "WATCH",
+        "projected_annual_turnover": 180000,
+        "auto_gtu": "GTU_02",
+        "art91_period_years": 5,
+        "_routing": "REPORT",
+        "_routing_reason": "R02 VAT CORE: real-time limit tracker (art. 113), auto-GTU (Zal. 15), korekta wieloletnia art. 91",
+        "_legal_basis": "Art. 41-43, 86-95, 91, 108a-108f, 113 VAT + Zal. nr 15 ustawy o VAT + SLIM VAT 3",
+        "_warnings": []
+      },
+      "new_verdict_hash": "5745c014a28eb63518c740de2de989a9d0bc2508e37c741cd7572ad3f170fbf4",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-14T19:07:20+00:00"
+    },
+    {
+      "input_hash": "ff6d3f668285191a7a3794976ba3119e",
+      "golden_verdict_hash": "f50151b12778165885d545ac9d83b23a3b6399f24b72ff31f7e1a841d9c0fabd",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r03_vat_micro_innovations.vat_micro_report",
+        "package": "jdg.r03_vat_micro_innovations",
+        "priority": 280,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "vat_micro": {
+          "article_coverage": {
+            "key_articles_total": 30,
+            "covered": 3,
+            "partial": 0,
+            "missing_count": 27
+          },
+          "micro_macro_binding": {
+            "bindings_total": 30
+          },
+          "micro_consistency": {
+            "conflict_count": 0,
+            "matched_micro_articles": 1
+          }
+        },
+        "_routing": "REPORT",
+        "_routing_reason": "R03 VAT MICRO: pokrycie artykułów, sieć micro↔macro, spójność werdyktów",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173 + P05 (pustynie artykułów)",
+        "_warnings": [
+          "Raport VAT MICRO — aktywowany wyłącznie flagą r03_vat_micro_check"
+        ]
+      },
+      "new_verdict_hash": "f50151b12778165885d545ac9d83b23a3b6399f24b72ff31f7e1a841d9c0fabd",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-14T19:24:59+00:00"
+    },
+    {
+      "input_hash": "51620692baf18da71be1862dc8c3d1ad",
+      "golden_verdict_hash": "450877cca7d10a9e73cb35eb395cde48cbfb0985a48989b60c83a6adb0558df1",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r04_pit_core_innovations.pit_core_report",
+        "package": "jdg.r04_pit_core_innovations",
+        "priority": 295,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "pit_core": {
+          "relief_whatif": {
+            "br_costs": 100000,
+            "ipbox_income": 10000,
+            "robotization_costs": 10000,
+            "marginal_rate": 0.32,
+            "br_saving": 32000,
+            "ipbox_saving": 2700,
+            "robot_saving": 1600,
+            "best_relief": "BR",
+            "max_saving": 32000
+          },
+          "one_off_amortization": {
+            "eligible": true,
+            "small_taxpayer": true,
+            "kst_group": "3",
+            "asset_value": 80000,
+            "annual_limit": 100000,
+            "one_off_deduction": 80000,
+            "remaining_limit": 20000
+          },
+          "low_value_amortization": {
+            "eligible": true,
+            "asset_value": 8000,
+            "threshold": 10000,
+            "one_off_cost": 8000
+          },
+          "health_optimizer": {
+            "annual_income": 60000,
+            "annual_revenue": 70000,
+            "health_scale": 5400,
+            "health_linear": 5400,
+            "health_lump": 540,
+            "best_form": "SCALE"
+          }
+        },
+        "_routing": "REPORT",
+        "_routing_reason": "R04 PIT CORE: 3-drogowy symulator ulg (B+R/IP Box/robotyzacja), jednorazowa amortyzacja 100k, niskocenne 10k, optymalna składka",
+        "_legal_basis": "Ustawa o PIT (Dz.U. 2025 poz. 789) Art. 22f, 22k, 26e, 26gb, 27, 30ca, 44, 45",
+        "_warnings": [
+          "Raport PIT CORE — aktywowany wyłącznie flagą r04_pit_core_check"
+        ]
+      },
+      "new_verdict_hash": "450877cca7d10a9e73cb35eb395cde48cbfb0985a48989b60c83a6adb0558df1",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-14T19:47:56+00:00"
+    },
+    {
+      "input_hash": "916f023dfb742b776982b2725ebb6283",
+      "golden_verdict_hash": "b52e798ffb32164214e4f5ecb12f2e617128a355d9153fb12348ba484b9f5ebd",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r05_pit_enterprise_innovations.pit_enterprise_report",
+        "package": "jdg.r05_pit_enterprise_innovations",
+        "priority": 305,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "pit_enterprise": {
+          "annual_autopilot": {
+            "tax_form": "SCALE",
+            "expected_declaration": "PIT-36",
+            "ready": true,
+            "missing": [],
+            "expected_tax": 6000,
+            "advances_paid": 5000,
+            "balance_due": 1000,
+            "overpayment": 0,
+            "decision_certificate": {
+              "decision_hash": "compute-by-host",
+              "hash_algorithm": "sha256-canonical-json-v1",
+              "bundle_version": "jdg-pite-bundle-v9.0.0",
+              "rule_version": "jdg.r05.annual_autopilot.v9",
+              "threshold_version": "2026.1",
+              "legal_basis_refs": [
+                "Art. 45 PIT",
+                "Art. 44 PIT",
+                "rozp. MF wzory zeznań 2025-12-30"
+              ]
+            }
+          },
+          "form_3y_forecast": {
+            "current_form": "SCALE",
+            "year1_income": 400000,
+            "growth_rate": 0.1,
+            "cumulative_tax_3y": {
+              "SCALE": 144000,
+              "LINEAR": 228000,
+              "LUMP_SUM": 102000,
+              "ESTONIAN_CIT": 120000
+            },
+            "best_form_3y": "LUMP_SUM"
+          },
+          "strategic_scoring": {
+            "decision_type": "FORM_CHANGE",
+            "score_0_100": 80,
+            "risk_level": "LOW",
+            "legal_basis": "Art. 9a PIT (wybór formy opodatkowania)"
+          },
+          "jpk_harmonization": {
+            "annual_revenue": 500000,
+            "jpk_v7m_revenue": 500050,
+            "revenue_delta": -50,
+            "revenue_consistent": true,
+            "jpk_cit_ready": true,
+            "jpk_v7m_ready": true,
+            "all_jpk_ready": true
+          }
+        },
+        "_routing": "REPORT",
+        "_routing_reason": "R05 PIT ENTERPRISE: autopilot roczny z Decision Certificate, prognoza formy 3-letnia, scoring decyzji strategicznych, harmonizacja JPK",
+        "_legal_basis": "Ustawa o PIT (Dz.U. 2025 poz. 789) Art. 9a, 30ca, 44, 45 + rozp. MF wzory zeznań (2025-12-30) + JPK_CIT + JPK_V7M",
+        "_warnings": [
+          "Raport PIT ENTERPRISE — aktywowany wyłącznie flagą r05_pit_enterprise_check"
+        ]
+      },
+      "new_verdict_hash": "b52e798ffb32164214e4f5ecb12f2e617128a355d9153fb12348ba484b9f5ebd",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-14T20:08:51+00:00"
+    },
+    {
+      "input_hash": "58ccd998905459ceba2b86aaeaf4e9c2",
+      "golden_verdict_hash": "9245a47dbd2df7387d827f95b72e0b1066590964ce20c638d4c1b64b88e02eba",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r06_zus_innovations.zus_report",
+        "package": "jdg.r06_zus_innovations",
+        "priority": 315,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "zus": {
+          "health_whatif": {
+            "annual_income": 50000,
+            "annual_revenue": 50000,
+            "scale_annual": 4500,
+            "linear_annual": 2450,
+            "lump_annual": 3055.92,
+            "lump_base_multiplier": 0.6,
+            "card_annual": 5039.28,
+            "best_form": "LINEAR",
+            "linear_deduction_limit": 14100
+          },
+          "relief_tracker": {
+            "relief_type": "ULGA_START",
+            "months_since_start": 2,
+            "max_months": 6,
+            "remaining_months": 4,
+            "status": "ACTIVE",
+            "alarms": []
+          },
+          "sus_a6a": {
+            "personal_child_care": true,
+            "other_parent_insured": false,
+            "eligible": true
+          }
+        },
+        "_routing": "REPORT",
+        "_routing_reason": "R06 ZUS: kalkulator składki zdrowotnej 4-formowy, tracker ulg z alarmami, domknięcie art. 6a",
+        "_legal_basis": "Ustawa o SUS (Dz.U. 2025 poz. 345) Art. 6a, 18a, 18c + u. zdrowotna (Dz.U. 2025 poz. 890) art. 81",
+        "_warnings": [
+          "Raport ZUS — aktywowany wyłącznie flagą r06_zus_check"
+        ]
+      },
+      "new_verdict_hash": "9245a47dbd2df7387d827f95b72e0b1066590964ce20c638d4c1b64b88e02eba",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-14T20:20:58+00:00"
+    },
+    {
+      "input_hash": "88e716159dda6409f383092b1466c7d8",
+      "golden_verdict_hash": "c6d2d62144985aec67354509fe6e95c39eb3bb0a368d70395cd4ff27e27d1da0",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r07_kks_innovations.kks_report",
+        "package": "jdg.r07_kks_innovations",
+        "priority": 325,
+        "vat_rate": "",
+        "rounding_level": "",
+        "gtu_code": "",
+        "vat_exemption": "",
+        "procedure": "",
+        "pit_form": "",
+        "pit_rate": "",
+        "pit_bracket": "",
+        "pit_annual_return_type": "",
+        "kus_qualification": "",
+        "kus_percent": 0,
+        "zus_social_base_type": "",
+        "zus_health_rate": "",
+        "business_status": "",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "kks": {
+          "voluntary_disclosure": {
+            "offense_type": "TAX_EVASION",
+            "revenue_impact": 15000,
+            "ready": true,
+            "missing_documents": [],
+            "deadline_days": 7,
+            "organ_notified": false,
+            "checklist_art16": {
+              "zawiadomienie_o_przestepstwie": true,
+              "ujawnienie_istotnych_okolicznosci": true,
+              "wplata_uszczuplenia": true
+            }
+          },
+          "penalty_calculator": {
+            "daily_stakes": 200,
+            "stakes_count": 60,
+            "fine_calculated": 12000,
+            "fine_limit_absolute": 500000,
+            "minor_case": false,
+            "statute_barred": false,
+            "limitation_years": 5
+          },
+          "transaction_risk": {
+            "score_0_100": 10,
+            "risk_level": "LOW",
+            "routing": "PASS",
+            "factors": {
+              "invoice_missing": false,
+              "unreal_entity": false,
+              "cash_limit_exceeded": false,
+              "false_declaration_risk": false,
+              "docs_complete": true
+            }
+          }
+        },
+        "_routing": "REPORT",
+        "_routing_reason": "R07 KKS: czynny żal one-click z dokumentacją, kalkulator kar z temporalnością, predykcja ryzyka per transakcja",
+        "_legal_basis": "KKS (Dz.U. 1999 nr 83 poz. 930 ze zm.) Art. 16, 17, 23, 25, 27, 44, 54, 56, 57, 62",
+        "_warnings": [
+          "Raport KKS — aktywowany wyłącznie flagą r07_kks_check"
+        ]
+      },
+      "new_verdict_hash": "c6d2d62144985aec67354509fe6e95c39eb3bb0a368d70395cd4ff27e27d1da0",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-14T20:32:37+00:00"
+    },
+    {
+      "input_hash": "e3a7344d2552f62a90c64a474867f8e6",
+      "golden_verdict_hash": "b06060640e193735a5335940ed395cf48961c7ba1a8b12bf4d7510e4870a6050",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r08_ordynacja_obrona_innovations.limitation_evidence_monitor",
+        "package": "jdg.r08_ordynacja_obrona_innovations",
+        "priority": 11005,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "lim_liabilities_total": 2,
+        "lim_barred_count": 1,
+        "lim_expiring_count": 0,
+        "lim_items": [
+          {
+            "liability_type": "PIT",
+            "tax_year": 2018,
+            "deadline": "31.12.2023",
+            "remaining_days": -1095,
+            "statute_barred": true,
+            "suspended": false,
+            "suspension_reason": "",
+            "max_extension_years": 0
+          },
+          {
+            "liability_type": "VAT",
+            "tax_year": 2023,
+            "deadline": "31.12.2028",
+            "remaining_days": 730,
+            "statute_barred": false,
+            "suspended": false,
+            "suspension_reason": "",
+            "max_extension_years": 0
+          }
+        ],
+        "lim_evidence_certificate": {
+          "decision_hash": "sha256:PIT:2018|VAT:2023",
+          "bundle_version": "jdg-ord-obr-bundle-v9.0.0",
+          "rule_version": "v9",
+          "threshold_version": "v2026",
+          "legal_basis": "OrdPU art. 70 § 1 (5 lat), § 4-6 (zawieszenie/przerwanie, max 10 lat)",
+          "method": "statute_of_limitations_art70",
+          "warn_days": 180
+        },
+        "_routing": "BLOCK_AND_ALERT",
+        "_routing_reason": "Monitor przedawnień — 2 zobowiązań: 1 PRZEDAWNIONYCH (statute_barred), 0 w oknie alarmowym (180 dni). Dowód: certyfikat z decision_hash.",
+        "_legal_basis": "OrdPU art. 70 § 1, 4-6; art. 21 § 1 pkt 1 (zawieszenie KKS)",
+        "_warnings": [
+          "PRZEDAWNIENIA: 2 zobowiązań w monitorze — 1 PRZEDAWNIONYCH, 0 w oknie 180 dni. Przedawnione = obowiązek wygasa, egzekucja niedopuszczalna (art. 70)."
+        ]
+      },
+      "new_verdict_hash": "b06060640e193735a5335940ed395cf48961c7ba1a8b12bf4d7510e4870a6050",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-14T21:04:28+00:00"
     }
   ]
 }

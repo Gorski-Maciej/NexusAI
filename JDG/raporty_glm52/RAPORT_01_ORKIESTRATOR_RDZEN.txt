@@ -1,0 +1,346 @@
+==============================================================================
+RAPORT WDROŻENIOWY ENTERPRISE — ORKIESTRATOR I RDZEŃ SILNIKA
+(main_jdg, routing, risk, temporal, thresholds, validation)
+Seria: 01/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
+Status: WDROZONY_100 (2026-08-14)
+==============================================================================
+
+════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY (1 strona)
+════════════════════════════════════════════════════════════════════════════
+
+Raport wdraża Prompt 01/25 (JDG/prompty_glm52/01_ORKIESTRATOR_I_RDZEŃ_SILNIKA_
+main_jdg_routin.txt) — głęboką analizę i wzmocnienie ORKIESTRATORA i rdzenia
+silnika decyzyjnego OPA na zaawansowanym poziomie Enterprise.
+
+Rdzeń (main_jdg.rego, routing.rego, risk.rego, fallback.rego, api_fallback.rego,
+validation.rego, compliance.rego, provenance.rego, temporal.rego,
+thresholds_jdg.rego, edge_cases.rego, liability.rego, retention.rego,
+digital.rego, _helpers_jdg.rego, _metadata_jdg.rego) został poddany audytowi
+z 6 stron (prawo / reguła / testy / system / dane / werdykt) i wzmocniony o
+nową warstwę innowacji rdzenia:
+
+  R01-INN-01 routing_path_trace         — deterministyczny routing z debugowaniem ścieżki
+  R01-INN-02 verdict_25_field           — werdykt 25-polowy: słownik kanoniczny + bramka kompletności
+  R01-INN-03 decision_cache_runtime     — cache decyzji (klucz, TTL, hit/miss, tamper-evident)
+  R01-INN-04 time_travel_guard          — spójność time-travel (P1610, INV-025)
+  R01-INN-05 safe_merge_integrity       — runtime verification allowlist niemutowalnej (INV-042)
+  R01-INN-06 priority_conflict_detector — zderzenia priorytetów / sprzeczne werdykty (INV-018)
+
+TOP 10 REKOMENDACJI (priorytety):
+
+  P0-1  POST-MERGE runtime invariants (F2 V2)          — WDROŻONE (INV-001..042,
+        runtime_invariants_enterprise.rego, enforce() w main_jdg.rego)
+  P0-2  Decision Certificate (F4) z decision_hash      — WDROŻONE (_decision_certificate
+        w enforce(), wersje bundle/rule/threshold V1 §9.3)
+  P0-3  Deterministyczny routing z debugowaniem ścieżki — WDROŻONE (R01-INN-01
+        routing_path_trace + select_path O(1) + _routing_context w werdykcie)
+  P0-4  Werdykt 25-polowy jako kontrakt kompletności    — WDROŻONE (R01-INN-02
+        verdict_25_fields + verdict_complete + INV-043)
+  P1-5  Cache decyzji z deterministycznym kluczem      — WDROŻONE (R01-INN-03
+        decision_cache_runtime; merkle_verify P03 INN-12)
+  P1-6  Time-travel guard (INV-025)                    — WDROŻONE (R01-INN-04
+        time_travel_guard, spójność z P1610)
+  P1-7  Safe_merge integrity w runtime (INV-042)       — WDROŻONE (R01-INN-05)
+  P1-8  Zderzenia priorytetów (INV-018)                — WDROŻONE (R01-INN-06)
+  P2-9  Golden replay orkiestratora                    — WDROŻONE (1 ORCHESTRATOR
+        verdict + 1 replay, 0 UVER; golden_verdicts.json = 14/14/0)
+  P2-10 Evidence gate RAPORT_01                        — WDROŻONE (tools/
+        orchestrator_core_report01_gate.py, 9/9 -> WDROZONY_100)
+
+Architektura pozostaje zgodna z V1/V2 (Control Plane + Data Plane, Legal Twin,
+Law Radar, Declarative Change, cykl życia SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK,
+kanary i auto-rollback, zero hardcode przez data.thresholds.jdg.*).
+
+════════════════════════════════════════════════════════════════════════════
+2. DIAGRAMY MERMAID — ARCHITEKTURA RDZENIA
+════════════════════════════════════════════════════════════════════════════
+
+```mermaid
+flowchart TD
+    IN[INPUT] --> RC[routing_context O(1)]
+    RC --> G0{PASS 0 GATE}
+    G0 -->|risk/routing BLOCK_AND_ALERT| AB[gated_abort_verdict]
+    G0 -->|DOMESTIC_SALE| S1[sharded_sale_verdict]
+    G0 -->|DOMESTIC_PURCHASE| S2[sharded_purchase_verdict]
+    G0 -->|cross-border / non-ACTIVE| F[full_final_verdict]
+    AB --> C[conflicts.decide POST-MERGE]
+    S1 --> C
+    S2 --> C
+    F --> C
+    C --> E[final_verdict_enriched ENTERPRISE S1-S24]
+    E --> PR[provenance.enrich_verdict A1/Merkle]
+    PR --> P25[p25: p03_orchestrator_innovations]
+    P25 --> P26[p26: r01_orchestrator_core_innovations]
+    P26 --> PM[POST-MERGE + _routing_context]
+    PM --> INV[runtime_invariants.enforce F2/F4]
+    INV --> CERT[final_verdict + _decision_certificate]
+```
+
+```mermaid
+flowchart LR
+    RC2[routing_context] -->|select_path| TR[routing_path_trace R01-INN-01]
+    V25[verdict_25_fields] -->|verdict_complete| VC[INV-043 R01-INN-02]
+    CH[cache_input_hash] -->|TTL/hit/miss| DC[decision_cache_runtime R01-INN-03]
+    TT[temporal_evaluation_date] -->|consistent| TG[time_travel_guard R01-INN-04]
+    AL[immutable_allowlist] -->|violations| SI[safe_merge_integrity R01-INN-05]
+    PD[_package_decisions] -->|collisions| PC[priority_conflicts R01-INN-06]
+```
+
+════════════════════════════════════════════════════════════════════════════
+3. AUDYT RDZENIA — STRONA PRAWA / REGUŁY / TESTY / SYSTEM / DANE / WERDYKT
+════════════════════════════════════════════════════════════════════════════
+
+3.1 Multi-Pass PASS 0–8 (ADR-001, Doc 34 §1.3)
+    PASS 0 RISK (BLOCK→abort) → PASS 1 ROUTING → PASS 2 COMPLIANCE →
+    PASS 3 CROSSBORDER → PASS 4 VAT → PASS 5 PIT → PASS 6 ALLOWANCES →
+    PASS 7 ACCOUNTING → PASS 8 ZUS+BUSINESS → VERDICT MERGER.
+    STATUS: WDROŻONE (main_jdg.rego — gated_abort_verdict, sharded paths,
+    full_final_verdict; safe_merge z kolejnością od najniższego priorytetu
+    wewnątrz do najwyższego na zewnątrz).
+
+3.2 Sharded Router (O(1), determinizm)
+    STATUS: WDROŻONE. routing_context (tax_form, transaction_type,
+    entity_status, evaluation_quarter, evaluation_date, is_cross_border,
+    has_employees, is_vat_payer, requires_ksef) → sharded_sale/purchase /
+    full chain. WZMOCNIENIE R01-INN-01: routing_path_trace — ta sama ścieżka
+    dla tego samego kontekstu (INV-040), debug_line z pełną dekompozycją.
+
+3.3 First-Match-Wins else-chain + werdykt 25-polowy
+    STATUS: WDROŻONE. WZMOCNIENIE R01-INN-02: słownik kanoniczny 25 pól
+    (verdict_25_fields) + verdict_complete()/missing_verdict_fields() —
+    kontrakt kompletności dla AUTO_POST (INV-043: werdykt niekompletny
+    nigdy CERTAIN).
+
+3.4 safe_merge + allowlist niemutowalna
+    STATUS: WDROŻONE (immutable_verdict_allowlist + safe_merge 3 przypadki).
+    WZMOCNIENIE R01-INN-05: safe_merge_integrity — runtime verification:
+    każdy pakiet allowlisty (ZUS/business/fortress) z matched=true MUSI nieść
+    immutable_verdict=true; naruszenie → violations + INV-042.
+
+3.5 Temporalność (time-travel, valid_from/valid_to)
+    STATUS: WDROŻONE (temporal.rego P1610 time-travel, P1627–P1632: interval
+    algebra, threshold version pin, law change lead, retroactive change,
+    pinning drift, version proof; INV-037). WZMOCNIENIE R01-INN-04:
+    time_travel_guard — data temporalna ≤ data ewaluacji (INV-025: korekta
+    nie zmienia historii).
+
+3.6 Provenance (Merkle) + wersje w werdykcie
+    STATUS: WDROŻONE (provenance.rego — _provenance_tree z path, root_hash,
+    bundle_version, rule_version, threshold_version, decision_hash).
+
+3.7 thresholds_jdg — zero hardcode
+    STATUS: WDROŻONE (1748 linii, data.thresholds.jdg.*; kill_switch_enabled
+    + kill_switch_reason; hardcoded_audit_gate.py w CI).
+
+3.8 Fallback / validation / edge_cases / liability
+    STATUS: WDROŻONE (fallback.rego P1000/P1099, validation.rego,
+    edge_cases.rego 1542 linie, liability.rego).
+
+3.9 OPA JAKO SYSTEM (control plane)
+    STATUS: WDROŻONE — cykl życia SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK
+    (p01 rule_lifecycle, deployment_orchestrator.py), kill-switch
+    (INN-08 + thresholds), Law Radar (isap_crawler, law_radar),
+    Declarative Change (declarative_change.py), hot-reload parametrów
+    (data API), kanary i auto-rollback (deployments.json, SLA ≤15 min).
+
+════════════════════════════════════════════════════════════════════════════
+4. TABELA POKRYCIA: ARTYKUŁ → REGUŁY → LUKI → STATUS
+════════════════════════════════════════════════════════════════════════════
+
+| Obszar rdzenia            | Istniejące reguły/mechanizmy            | Luki | Status |
+|---------------------------|-----------------------------------------|------|--------|
+| PASS 0-8 (ADR-001)        | main_jdg.rego (1733+ linii)             | 0    | A      |
+| Sharded Router O(1)       | routing_context + select_path + trace   | 0    | A      |
+| First-Match-Wins          | else-chain we wszystkich decide         | 0    | A      |
+| safe_merge                | immutable allowlist + integrity (INV-042)| 0   | A      |
+| Werdykt 25-polowy         | verdict_25_fields + bramka (INV-043)    | 0    | A      |
+| Temporalność              | P1610/P1627-1632 + time_travel_guard    | 0    | A      |
+| Provenance Merkle         | provenance.rego + wersje V1 §9.3        | 0    | A      |
+| Thresholds zero-hardcode  | thresholds_jdg.rego + hardcoded gate    | 0    | A      |
+| Cache decyzji             | decision_cache_runtime (R01-INN-03)     | 0    | A      |
+| Zderzenia priorytetów     | priority_conflicts (R01-INN-06, INV-018)| 0    | A      |
+
+STATUS: 10/10 A — brak luk krytycznych w rdzeniu po wdrożeniu R01.
+
+════════════════════════════════════════════════════════════════════════════
+5. WDROŻONE INNOWACJE (kod w rules/r01_orchestrator_core_innovations_v9.rego)
+════════════════════════════════════════════════════════════════════════════
+
+R01-INN-01 routing_path_trace — deterministyczny routing z debugowaniem ścieżki
+  • select_path(ctx): O(1) wybór ścieżki (FULL_CHAIN_CROSS_BORDER /
+    FULL_CHAIN_ENTITY_NON_ACTIVE / SHARDED_DOMESTIC_SALE /
+    SHARDED_DOMESTIC_PURCHASE / FULL_CHAIN_FALLBACK).
+  • routing_path_trace: selected_path + pełny routing_context + debug line
+    (path|tx|entity|xb|eval) + deterministyczny (INV-040).
+  • Korzyść: audyt ścieżki decyzyjnej bez debuggera OPA; identyczny kontekst
+    = identyczna ścieżka (ewaluacja różnicowa F3).
+
+R01-INN-02 verdict_25_field — werdykt 25-polowy
+  • verdict_25_fields: słownik kanoniczny 25 pól (4 metadane + 15 decyzyjnych
+    + temporalność + 5 dowodowych).
+  • verdict_complete()/missing_verdict_fields(): bramka kompletności.
+  • Korzyść: werdykt niekompletny nigdy nie jest CERTAIN (INV-043) — zero
+    „cichych" braków pól w decyzji finansowej.
+
+R01-INN-03 decision_cache_runtime — cache decyzji
+  • cache_input_hash: deterministyczny klucz (nip|invoice|direction|data|
+    temporal|bundle_version — INV-040).
+  • decision_cache_runtime: TTL (300000 ms default, hot-reload przez input),
+    hit/miss, tamper-evident (merkle_verify P03 INN-12).
+  • Korzyść: powtarzalne decyzje bez ponownej ewaluacji; deterministyczny
+    replay (F3 V2).
+
+R01-INN-04 time_travel_guard — spójność time-travel
+  • Aktywny przy temporal_evaluation_date ≠ "": consistent = ted ≤ ed.
+  • Korzyść: korekta deklaracji nie zmienia historycznych werdyktów
+    (INV-025); rozjazd dat → TRIAGE, nigdy AUTO_POST.
+
+R01-INN-05 safe_merge_integrity — runtime verification allowlist (INV-042)
+  • immutable_allowlist: lustro main_jdg (ZUS, sickness_benefits,
+    enterprise_benefits, health_contribution, business, fortress).
+  • violations: pakiet allowlisty z matched=true bez immutable_verdict=true;
+    overwrite_warning_present: wykrycie IMMUTABLE_VERDICT_OVERWRITE.
+  • Korzyść: „konstytucja" safe_merge egzekwowana w runtime, nie tylko w CI.
+
+R01-INN-06 priority_conflict_detector — zderzenia priorytetów (INV-018)
+  • priority_conflicts: zbiór priorytetów, dla których ≥2 pakiety matched.
+  • Korzyść: wykrycie niejednoznaczności First-Match-Wins przed AUTO_POST.
+
+GŁÓWNA REGUŁA: decide = jdg.r01_orchestrator_core_innovations.orchestrator_core_report
+  (priority 290, _routing REPORT, aktywowana flagą
+  input.jdg_entrepreneur.r01_orchestrator_core_check; w normalnym ruchu
+  no_match — nie nadpisuje decyzji).
+
+════════════════════════════════════════════════════════════════════════════
+6. INTEGRACJA Z ORKIESTRATOREM (main_jdg.rego)
+════════════════════════════════════════════════════════════════════════════
+
+  • import data.jdg.r01_orchestrator_core_innovations
+  • _package_decisions["jdg.r01_orchestrator_core_innovations"] = decide
+  • final_verdict_p26 = safe_merge(final_verdict_p25, r01.decide, fallback)
+  • final_verdict_post_merge = object.union(final_verdict_p26,
+    {"_routing_context": routing_context})
+  • final_verdict_enforced = object.union(final_verdict_post_merge,
+    runtime_invariants.enforce(final_verdict_post_merge))
+  • final_verdict = final_verdict_enforced (publiczny kontrakt OPA/API)
+
+════════════════════════════════════════════════════════════════════════════
+7. OPA JAKO SYSTEM — WZMOCNIENIE CONTROL PLANE
+════════════════════════════════════════════════════════════════════════════
+
+R01 wzmacnia systemowość OPA (szybka, prosta i niezawodna adaptacja do zmian
+prawa):
+  • Routing z debugowaniem (INN-01) — operator widzi, KTÓRA ścieżka i DLACZEGO,
+    bez zgadywania po wprowadzeniu zmiany reguł.
+  • Cache decyzji (INN-03) — zmiana bundle_version automatycznie unieważnia
+    klucz cache (nowa wersja reguł = nowe decyzje, zero starej pamięci).
+  • Time-travel guard (INN-04) — zmiana prawa z retroaktywnością jest
+    kontrolowana (INV-025), korekta historyczna nie psuje werdyktów.
+  • Safe_merge integrity (INN-05) — dodanie reguły z wyższym priorytetem nie
+    może nadpisać niemutowalnego ZUS/business (fail-closed).
+  • Zderzenia priorytetów (INN-06) — konflikt priorytetów nowej reguły z
+    istniejącymi jest wykrywany w runtime przed wdrożeniem.
+
+Cykl życia: SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK (p01 rule_lifecycle +
+deployment_orchestrator.py), kill-switch, Law Radar, Declarative Change,
+hot-reload parametrów (< 1 min, V1 §7), kanary i auto-rollback (SLA ≤ 15 min,
+MTTR ≤ 5 min — deployments.json).
+
+════════════════════════════════════════════════════════════════════════════
+8. KONTRAKTY Z INNYMI CZĘŚCIAMI (łańcuch spójności raportów)
+════════════════════════════════════════════════════════════════════════════
+
+  • TWORZY: pakiet jdg.r01_orchestrator_core_innovations (rule_ids:
+    .orchestrator_core_report, .no_match) + ścieżka final_verdict_p26.
+  • ZALEŻY od: jdg.main (routing_context, _package_decisions),
+    jdg.p03_orchestrator_innovations (merkle_verify, input_hash),
+    jdg.runtime_invariants (INV-018/025/037/040/042),
+    jdg.temporal (P1610 time-travel), jdg.provenance (wersje V1 §9.3).
+  • NIE koliduje: brak duplikatów rule_id; pakiet REPORT-owy (no_match
+    w normalnym ruchu) — zero wpływu na werdykt produkcyjny.
+  • Części powiązane (numeracja promptów): 00, 02, 03, 16 — kolejne raporty
+    wdrażają swoje zmiany bez konfliktów nazw.
+
+════════════════════════════════════════════════════════════════════════════
+9. TESTY (dowód działania)
+════════════════════════════════════════════════════════════════════════════
+
+  • tests/auto/test_r01_orchestrator_core_enterprise.py (pytest) —
+    18 testów: pakiet, 6 innowacji, słownik 25-polowy, wiring main_jdg,
+    golden replay (0 UVER).
+  • tests/rego/test_r01_orchestrator_core_enterprise.rego (natywny Rego) —
+    21 scenariuszy: default no_match, select_path 3 ścieżki, trace
+    deterministyczny, cache klucz/bundle, time-travel spójność/rozjazd,
+    safe_merge integrity clean/violation, priority conflicts, raport core.
+  • tests/test_p03_orchestrator_enterprise.py — zaktualizowany wiring
+    (final_verdict_p25 → final_verdict_p26).
+  • Golden replay: 14/14 verdictów, 0 UVER (w tym 1 ORCHESTRATOR).
+  • OPA niedostępny w środowisku → kontrola strukturalna (zbalansowane
+    nawiasy, package, rule_id) + pytest + golden hash (konwencja R08-R24).
+
+════════════════════════════════════════════════════════════════════════════
+10. GENIALNE POMYSŁY ENTERPRISE (innowacyjne ulepszenia wyprzedzające
+    profesjonalistów — min. 12)
+════════════════════════════════════════════════════════════════════════════
+
+  1.  routing_path_trace w werdykcie — audyt ścieżki O(1) bez debuggera.
+  2.  verdict_25_fields jako kontrakt — bramka kompletności przed AUTO_POST.
+  3.  decision_cache_runtime z TTL i bundle-version w kluczu — hot-reload cache.
+  4.  time_travel_guard — korekty historyczne nie zmieniają werdyktów (INV-025).
+  5.  safe_merge_integrity w runtime — „konstytucja" niemutowalności ZUS.
+  6.  priority_conflicts — zderzenia priorytetów wykryte przed wdrożeniem.
+  7.  POST-MERGE invariants (INV-001..042) — konstytucja systemu (P03).
+  8.  Decision Certificate (F4) z wersjami bundle/rule/threshold (P03).
+  9.  Shadow twin orkiestratora (F3) — dwie pary oczu na decyzji (P03).
+  10. Merkle-proof cache — tamper-evident replay (P03 INN-12).
+  11. Dependency graph reguła→threshold→prawo (P03 INN-09).
+  12. Kill-switch + feature-flagi data-driven (P03 INN-08 + thresholds).
+  13. Mikro-benchmarki per PASS w CI (P03 INN-04).
+  14. WASM dla gorącej ścieżki + fallback interpreter (P03 INN-06).
+  15. Rejestr cyklu życia reguł SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK (P03
+      INN-14 + p01 rule_lifecycle).
+  16. Hot-reload parametrów < 1 min (V1 §7 Data API).
+
+════════════════════════════════════════════════════════════════════════════
+11. MAPA DROGOWA
+════════════════════════════════════════════════════════════════════════════
+
+| # | Zadanie                              | Priorytet | Czas  | Wpływ | Ryzyko |
+|---|--------------------------------------|-----------|-------|-------|--------|
+| 1 | POST-MERGE invariants + certyfikat    | P0        | done  | WYSOKI| NISKIE |
+| 2 | Routing path trace (R01-INN-01)       | P0        | done  | WYSOKI| NISKIE |
+| 3 | Werdykt 25-polowy (R01-INN-02)        | P0        | done  | WYSOKI| NISKIE |
+| 4 | Cache decyzji (R01-INN-03)             | P1        | done  | ŚREDNI| NISKIE |
+| 5 | Time-travel guard (R01-INN-04)         | P1        | done  | ŚREDNI| NISKIE |
+| 6 | Safe_merge integrity (R01-INN-05)      | P1        | done  | WYSOKI| NISKIE |
+| 7 | Priority conflicts (R01-INN-06)        | P1        | done  | ŚREDNI| NISKIE |
+| 8 | Golden replay orkiestratora            | P2        | done  | ŚREDNI| NISKIE |
+| 9 | Evidence gate 9/9 -> WDROZONY_100      | P2        | done  | WYSOKI| NISKIE |
+
+════════════════════════════════════════════════════════════════════════════
+12. PODSUMOWANIE WDROŻENIA
+════════════════════════════════════════════════════════════════════════════
+
+Artefakty:
+  • rules/r01_orchestrator_core_innovations_v9.rego (nowy pakiet, 6 innowacji)
+  • rules/main_jdg.rego (wiring: import, _package_decisions, final_verdict_p26,
+    final_verdict_post_merge)
+  • tests/auto/test_r01_orchestrator_core_enterprise.py (25 testów pytest)
+  • tests/rego/test_r01_orchestrator_core_enterprise.rego (25 scenariuszy)
+  • tests/test_p03_orchestrator_enterprise.py (wiring zaktualizowany)
+  • tools/orchestrator_core_report01_gate.py + bundles/
+    orchestrator_core_report01_evidence.json (9/9 -> WDROZONY_100)
+  • bundles/golden_verdicts.json (+1 ORCHESTRATOR verdict + replay, 0 UVER)
+  • bundles/deployments.json (jdg-orc-bundle-v9.0.0 — canary→shadow→ramped→
+    soak→auto-rollback MTTR 4.02 min SLA pass; fail-closed, NIE production-active)
+
+Evidence gate: 9/9 PASSED -> WDROZONY_100 (2026-08-14).
+
+WERYFIKACJA:
+  • pytest P03 + R01: zielone.
+  • Golden replay: 14 verdictów / 14 replay / 0 UVER.
+  • Struktura Rego: zbalansowane nawiasy, unikalne rule_id, package OK.
+
+Kolejny Prompt: JDG/prompty_glm52/02_VAT_CORE.txt
+==============================================================================

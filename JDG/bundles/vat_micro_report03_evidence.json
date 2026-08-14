@@ -1,0 +1,117 @@
+{
+  "report": "RAPORT_03_VAT_MICRO",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "report_present": true,
+    "innovations_complete": true,
+    "legal_basis_canonical": true,
+    "deserts_closed": true,
+    "duplicate_free": true,
+    "router_wired": true,
+    "tests_present": true,
+    "golden_replay_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "scope": {
+    "files": {
+      "r03_rego": true,
+      "micro_rego": true,
+      "main_jdg": true,
+      "pytest": true,
+      "native_rego": true,
+      "report": true
+    },
+    "files_total": 6,
+    "files_present": 6,
+    "report_present": true,
+    "micro_existing_files_declared": 9,
+    "micro_existing_files_present": 9
+  },
+  "innovations": {
+    "required_innovations": [
+      "article_coverage_monitor",
+      "key_articles_30",
+      "article_coverage_status",
+      "micro_macro_binding",
+      "micro_macro_map",
+      "micro_consistency_check",
+      "micro_macro_conflicts",
+      "RATE_MISMATCH"
+    ],
+    "missing_innovations": [],
+    "innovations_complete": true,
+    "legal_basis_markers": [
+      "Art. 28b ust. 1 VAT",
+      "Art. 87 ust. 1, 2 i 6 VAT",
+      "Art. 91 ust. 2-7 VAT",
+      "Art. 106a ust. 1 i 3 VAT",
+      "Art. 106i ust. 1, 3 i 5 VAT"
+    ],
+    "missing_legal_markers": [],
+    "legal_basis_complete": true,
+    "decide_report_rule": true,
+    "activation_flag": true,
+    "default_no_match": true
+  },
+  "deserts": {
+    "desert_articles": [
+      "a28b",
+      "a87",
+      "a91",
+      "a106a",
+      "a106i"
+    ],
+    "missing_activation_flags": [],
+    "missing_rule_ids": [],
+    "deserts_closed": true,
+    "micro_rule_ids_total": 6,
+    "thresholds_externalized": true
+  },
+  "duplicates": {
+    "rule_ids_total": 8,
+    "rule_ids_unique": 8,
+    "duplicates": [],
+    "duplicate_count": 0
+  },
+  "router": {
+    "import_innovations": true,
+    "import_micro_r03": true,
+    "package_decisions_innovations": true,
+    "package_decisions_micro": true,
+    "final_verdict_p28": true,
+    "post_merge_present": true,
+    "invariants_enforced": true,
+    "final_verdict_public": true
+  },
+  "tests": {
+    "pytest_present": true,
+    "native_rego_present": true,
+    "marker_hits": {
+      "article_coverage_monitor": true,
+      "micro_macro_binding": true,
+      "micro_consistency_check": true,
+      "jdg.vat.a28b.r1": true,
+      "jdg.vat.a87.r1": true,
+      "jdg.vat.a91.r1": true,
+      "jdg.vat.a106a.r1": true,
+      "jdg.vat.a106i.r1": true,
+      "BUYER_ESTABLISHMENT": true,
+      "15TH_DAY_NEXT_MONTH": true
+    },
+    "markers_complete": true,
+    "pytest_test_functions": 21,
+    "native_test_functions": 19
+  },
+  "replay": {
+    "golden_verdicts_total": 17,
+    "vat_micro_verdicts": 1,
+    "vat_micro_replays": 1,
+    "uver_count": 0,
+    "replay_verified": true
+  },
+  "generated_at": "2026-08-14T19:52:53.948272+00:00"
+}
