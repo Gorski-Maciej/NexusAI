@@ -6,7 +6,8 @@ GENERATOR SERII 25 PROMPTÓW GLM 5.2 — NEXUSAI JDG ENTERPRISE
 Cel: wygenerowanie plików .txt (jeden Prompt = jeden plik txt) do katalogu
   JDG/prompty_glm52/  — każdy Prompt kieruje model GLM 5.2 do przeanalizowania
   JEDNEJ części katalogu JDG i wygenerowania OGROMNEGO RAPORTU ENTERPRISE
-  (bez generowania kodu!), zapisywanego w JDG/raporty_glm52/.
+  (Z GENEROWANIEM INTELIGENTNEGO KODU — kod jest włączony do raportu),
+  zapisywanego w JDG/raporty_glm52/.
 
 Reguły projektowe (wg wymagań użytkownika):
   1. GLM 5.2 ma okno 1M tokenów -> dane wejściowe (pliki do przeczytania)
@@ -14,7 +15,8 @@ Reguły projektowe (wg wymagań użytkownika):
      skalibrowana poniżej tego limitu; duże pliki JSON są oznaczone jako
      "czytaj selektywnie".
   2. Każdy Prompt zawiera linki do plików (GitHub) — GLM NIE szuka plików.
-  3. NIE GENERUJ KODU — tylko raporty .txt.
+  3. GLM GENERUJE INTELIGENTNY KOD — każdy raport .txt zawiera GOTOWE DO
+     WDROŻENIA fragmenty kodu (Rego/Python/SQL/JSON), wdrażające ulepszenia.
   4. Obowiązkowe frazy (każda >= 4x w każdym prompcie):
      - "Przeprowadź głębokie myślenie"
      - "przeprowadź głęboką analizę"
@@ -137,6 +139,103 @@ TEST_KEYWORDS = {
 }
 
 
+# ---------------------------------------------------------------------------
+# KOMBINACJE PRZEKROJOWE — rdzeń systemu, sąsiednie domeny, dane/dowody, dokumentacja
+# Każda część serii otrzymuje: STRONA SYSTEMU (rdzeń) + STRONA PRZEKROJOWA (cross)
+# + STRONA DANYCH (evidence/metr yki) + STRONA DOKUMENTACJI (moduł P02–P24).
+# ---------------------------------------------------------------------------
+CORE_SYSTEM = [
+    "main_jdg.rego", "routing.rego", "temporal.rego", "thresholds_jdg.rego",
+    "validation.rego", "provenance.rego", "fallback.rego", "risk.rego",
+    "_helpers_jdg.rego", "_metadata_jdg.rego",
+]
+
+# num części -> pliki evidence/metr yk (bundles/), weryfikujące daną część
+EVIDENCJA = {
+    0: ["bundles/metrics_pewnosci.json", "bundles/metrics.json"],
+    1: ["bundles/golden_verdicts.json", "bundles/healthy_versions.json"],
+    2: ["bundles/metrics.json", "bundles/legal_coverage_gaps.json"],
+    3: ["bundles/vat_micro_inventory.json"],
+    4: ["bundles/pit_micro_inventory.json"],
+    5: ["bundles/pit_micro_inventory.json"],
+    6: ["bundles/zus_micro_inventory.json"],
+    7: ["bundles/kks_report07_evidence.json"],
+    8: ["bundles/ord_report08_evidence.json"],
+    9: ["bundles/accounting_report09_evidence.json"],
+    10: ["bundles/crossborder_report10_evidence.json"],
+    11: ["bundles/pcc_local_report11_evidence.json"],
+    12: ["bundles/lifecycle_report12_evidence.json"],
+    13: ["bundles/hyper_report13_evidence.json"],
+    14: ["bundles/rodo_aml_bdo_report14_evidence.json"],
+    15: ["bundles/ksef_jpk_report15_evidence.json"],
+    16: ["bundles/opa_system_report16_evidence.json"],
+    17: ["bundles/enterprise_ai_report17_evidence.json"],
+    18: ["bundles/tools_system_report18_evidence.json"],
+    19: ["bundles/domain_tools_report19_evidence.json"],
+    20: ["bundles/pytest_report20_evidence.json"],
+    21: ["bundles/native_rego_report21_evidence.json"],
+    22: ["bundles/bundle_api_report22_evidence.json"],
+    23: ["bundles/documentation_report23_evidence.json"],
+    24: ["bundles/policies_report24_evidence.json"],
+}
+
+# num części -> dokument modułu (docs/) opisujący tę część
+DOKUMENT = {
+    0: ["docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md", "docs/UNIFIED_PLAN.md"],
+    1: ["docs/OPA_REGO_DEVELOPER_GUIDE.md", "docs/RULE_LIFECYCLE.md"],
+    2: ["docs/VAT_MACRO_P03.md"],
+    3: ["docs/VAT_MICRO_P04.md"],
+    4: ["docs/PIT_MACRO_P05.md", "docs/PIT_MICRO_P06.md"],
+    5: ["docs/PIT_AUDYT_R04.md"],
+    6: ["docs/ZUS_MACRO_P07.md", "docs/ZUS_MICRO_P08.md"],
+    7: ["docs/KKS_P10.md"],
+    8: ["docs/ORDYNACJA_PODATKOWA_P11.md"],
+    9: ["docs/KSIEGOWOSC_PKPIR_UOR_P09.md"],
+    10: ["docs/CROSSBORDER_P12.md"],
+    11: ["docs/PCC_LOKALNE_AKCYZA_P14.md"],
+    12: ["docs/RYCZALT_CYKL_ZYCIE_P13.md"],
+    13: ["docs/KATALOG_REGUL.md"],
+    14: ["docs/SRODOWISKO_BDO_P15.md", "docs/RODO_AML_BEZPIECZENSTWO_P16.md"],
+    15: ["docs/KSEF_JPK_EDEKLARACJE_P17.md"],
+    16: ["docs/OPA_JAKO_SYSTEM_P21.md", "docs/NARZEDZIA_WALIDACJI_P22.md"],
+    17: ["docs/NEURAL_MESH_INNOWACJE_P20.md"],
+    18: ["docs/NARZEDZIA_WALIDACJI_P22.md"],
+    19: ["docs/NARZEDZIA_WALIDACJI_P22.md"],
+    20: ["docs/TESTY_REGO_CI_P23.md"],
+    21: ["docs/TESTY_REGO_CI_P23.md"],
+    22: ["docs/API_REFERENCJA.md", "docs/STRUKTURA_PROJEKTU.md"],
+    23: ["docs/INWENTARYZACJA_PLIKOW.md"],
+    24: ["docs/MANIFEST_2_0.md"],
+}
+
+# num części -> pliki reguł z SĄSIEDNICH domen przecinających się z tą częścią
+CROSS = {
+    2: ["rules/kks.rego", "rules/corrections.rego", "rules/ksef_jpk.rego", "rules/edge_cases.rego"],
+    3: ["rules/vat/substantive.rego", "rules/ksef_jpk.rego"],
+    4: ["rules/accounting.rego", "rules/zus.rego"],
+    5: ["rules/jpk_cit.rego", "rules/crossborder/exit_tax_cfc_complete.rego"],
+    6: ["rules/employer.rego", "rules/pit/kup.rego", "rules/accounting.rego"],
+    7: ["rules/liability.rego", "rules/statute_of_limitations.rego", "rules/audit/plan45_audit.rego"],
+    8: ["rules/kks.rego", "rules/retention.rego"],
+    9: ["rules/pit/kup.rego", "rules/risk.rego"],
+    10: ["rules/vat/substantive.rego", "rules/fx/plan45_fx.rego", "rules/liability.rego"],
+    11: ["rules/crossborder.rego", "rules/local_taxes.rego"],
+    12: ["rules/pit/forms.rego", "rules/business/plan26_suspension_succession.rego"],
+    13: ["rules/conflicts.rego", "rules/edge_cases.rego", "rules/calendar/plan45_calendar.rego"],
+    14: ["rules/risk.rego", "rules/environmental.rego"],
+    15: ["rules/vat/substantive.rego", "rules/kks.rego", "rules/validation.rego"],
+    16: ["rules/main_jdg.rego", "rules/provenance.rego", "rules/thresholds_jdg.rego"],
+    17: ["rules/main_jdg.rego", "rules/decision_core_completeness_enterprise.rego"],
+    18: ["rules/main_jdg.rego"],
+    19: ["rules/main_jdg.rego"],
+    20: ["rules/main_jdg.rego", "tests/README.md"],
+    21: ["rules/main_jdg.rego", "tests/README.md"],
+    22: ["rules/main_jdg.rego"],
+    23: ["rules/main_jdg.rego", "docs/ARCHITECTURE.md"],
+    24: ["rules/main_jdg.rego", "root:policies/tests/sc_main_test.rego"],
+}
+
+
 def znajdz_testy(num: int):
     """Zwraca listę ścieżek JDG/tests/ (łącznie z podkatalogiem rego/) pasujących do domeny części (max 12)."""
     if not os.path.isdir(TESTS_DIR):
@@ -166,8 +265,10 @@ def znajdz_testy(num: int):
     return pasujace[:12]
 
 
-def kombinacje_przekrojowe(num: int):
-    """Sekcja łącząca reguły domeny z testami domenowymi i wieloaspektową analizą."""
+def kombinacje_przekrojowe(num: int, przekroj: dict | None = None):
+    """Sekcja łącząca reguły domeny z testami domenowymi, rdzeniem systemu, plikami
+    przekrojowymi (sąsiednie domeny), danymi/dowodami i dokumentacją modułu."""
+    przekroj = przekroj or {}
     testy = znajdz_testy(num)
     out = [
         "## 🔀 KOMBINACJE PRZEKROJOWE — ANALIZUJ Z KAŻDEJ STRONY OPA (WYMÓG):",
@@ -181,7 +282,35 @@ def kombinacje_przekrojowe(num: int):
         "6. **Strona WERDYKTU** — determinizm, czas wykonania, pełny dowód (Decision Certificate), provenance.",
         "Każdą lukę zgłoś łącznie: artykuł ustawy → brakująca reguła → brakujący test → wpływ na werdykt. "
         "To jest **zaawansowany poziom Enterprise**: super-inteligentna sieć zależności już od jednej reguły.",
+        "",
+        "### 🏗️ STRONA SYSTEMU — RDZEŃ SILNIKA (przeczytaj WYBIÓRCZO, łącznie ≤ 8 000 tokenów):",
+        "Każda reguła Twojej domeny żyje wewnątrz orkiestratora. Przeanalizuj, jak Twoja domena łączy się z rdzeniem:",
     ]
+    out.append(links(CORE_SYSTEM))
+    out.append("- Czytaj wybiórczo: nagłówki PASS-ów, słownik werdyktu 25-polowego, mechanizmy safe_merge/First-Match-Wins,"
+               " temporalność (time-travel) i provenance — tylko fragmenty bezpośrednio powiązane z Twoją domeną.")
+    cross = przekroj.get("cross", [])
+    if cross:
+        out.append("")
+        out.append("### 🔗 STRONA PRZEKROJOWA — SĄSIEDNIE DOMENY (przeczytaj WYBIÓRCZO, łącznie ≤ 6 000 tokenów):")
+        out.append("- To pliki reguł z INNYCH domen, które przecinają się z Twoją częścią (wspólne rule_id, podstawy prawne,"
+                   " konflikty, sankcje, korekty, temporalność). Przeanalizuj interfejsy między domenami — gdzie Twoja"
+                   " domena woła lub jest wołana przez sąsiadów, gdzie powstają konflikty i duplikaty.")
+        out.append(links(cross))
+    evid = przekroj.get("evidence", [])
+    if evid:
+        out.append("")
+        out.append("### 📊 STRONA DANYCH I DOWODÓW (przeczytaj SELEKTYWNIE — statystyki i kluczowe wiersze):")
+        out.append("- Evidence-gates, metryki pewności i słownik kanoniczny: zweryfikuj liczby, które cytujesz,"
+                   " i porównaj je z raportem master 00 (niespójności metryk = sygnał ostrzegawczy).")
+        out.append(links(evid))
+    dok = przekroj.get("docs", [])
+    if dok:
+        out.append("")
+        out.append("### 📘 STRONA DOKUMENTACJI MODUŁU (przeczytaj i oceń spójność z kodem):")
+        out.append("- Dokument modułu opisuje tę część: sprawdź, czy dokumentacja nie rozjechała się z regułami"
+                   " (liczby, rule_id, statusy pokrycia).")
+        out.append(links(dok))
     if testy:
         out.append("")
         out.append("### 🧪 TESTY DOMENOWE — PRZECZYTAJ JE RÓWNIEŻ (kombinacja reguły ↔ testy):")
@@ -240,21 +369,34 @@ def naglowek(num, total, tytul):
 def krytyczne_zasady(raport_nazwa):
     return (
         "## ⚠️ KRYTYCZNE ZASADY (przeczytaj, zrozum i ZAPAMIĘTAJ):\n"
-        "1. **NIE GENERUJ KODU** — Twoim zadaniem jest wyłącznie analiza i wygenerowanie "
-        "**OGROMNEGO, ROZBUDOWANEGO RAPORTU ANALITYCZNEGO** w formacie plain text (.txt).\n"
-        "2. **NIE MODYFIKUJ PLIKÓW** — analizujesz istniejący kod/dokumentację, nie tworzysz nowego.\n"
+        "1. **GENERUJ INTELIGENTNY KOD** — Twoim zadaniem jest głęboka analiza i wygenerowanie "
+        "**OGROMNEGO, ROZBUDOWANEGO RAPORTU WDROŻENIOWEGO ENTERPRISE** w formacie plain text (.txt), "
+        "w którym KAŻDE ulepszenie, wzmocnienie i poprawka jest opatrzona **KOMPLETNYM, GOTOWYM DO "
+        "WDROŻENIA KODEM** (Rego dla reguł OPA; Python/SQL/JSON tam, gdzie dotyczy narzędzi, migracji "
+        "i danych). Raport ma być samowystarczalny: zespół developerski wdraża go bez zgadywania.\n"
+        "2. **NIE MODYFIKUJ PLIKÓW** — analizujesz istniejący kod/dokumentację, nie zmieniasz repozytorium. "
+        "Wszystkie zmiany przekazujesz WYŁĄCZNIE jako kod w raporcie.\n"
         f"3. Raport zapisz jako plik: `JDG/raporty_glm52/{raport_nazwa}` (plain text .txt, kodowanie UTF-8).\n"
         "4. **BUDŻET KONTEKSTU (WAŻNE):** Twoje okno kontekstowe ma 1 000 000 tokenów. "
         "Dane i informacje, które przeczytasz i zapamiętasz z plików, mogą zająć **maksymalnie 50% okna "
         "(~500 000 tokenów)**. Pozostałą część okna ZAREZERWUJ na: głębokie myślenie, głęboką analizę, "
-        "wyprowadzanie wniosków, projektowanie rozwiązań i generowanie raportu. "
+        "wyprowadzanie wniosków, projektowanie rozwiązań i generowanie raportu z kodem. "
         "Jeśli zestaw plików jest duży — czytaj selektywnie (nagłówki, kluczowe reguły, statystyki), "
         "zachowując budżet 50%.\n"
         "5. Pracuj WYŁĄCZNIE na plikach wskazanych poniżej — linki są podane wprost, "
         "nie szukaj plików po omacku. Jeśli brakuje kontekstu, odwołaj się do PLIKÓW ŚWIĘTYCH.\n"
-        "6. Cel Twojej pracy: osiągnąć **zaawansowany poziom Enterprise** w każdym wymiarze. Pracuj na "
+        "6. **JAKOŚĆ KODU W RAPORCIE:** każdy wygenerowany fragment Rego musi (a) przechodzić `opa check`, "
+        "(b) mieć unikalny `rule_id` w formacie `jdg.<domena>.<kategoria>` zgodny ze słownikiem raportu "
+        "master 00, (c) zawierać kanoniczną podstawę prawną `_legal_basis` (wg docs/Bbb i "
+        "legal_reference_canon.json), (d) mieć `valid_from`/`valid_to` (temporalność) i priorytet, "
+        "(e) NIE zawierać hardcode'owanych wartości (stawki/progi/limity przez `data.thresholds.jdg.*`), "
+        "(f) być spójny z First-Match-Wins else-chain i werdyktem 25-polowym, (g) mieć dołączony test "
+        "(natywny Rego `test_*` lub pytest), (h) NIE duplikować istniejących rule_id. Przed zaproponowaniem "
+        "nowej reguły ZAWSZE sprawdź, czy nie istnieje już (audyt anty-duplikacyjny — wzorzec z pliku Bb).\n"
+        "7. Cel Twojej pracy: osiągnąć **zaawansowany poziom Enterprise** w każdym wymiarze. Pracuj na "
         "**zaawansowanym poziomie Enterprise**, a każda rekomendacja ma reprezentować **poziom ENTERPRISE**, "
-        "którego nie powstydziłby się najlepszy ekspert branżowy.\n"
+        "którego nie powstydziłby się najlepszy ekspert branżowy — precyzja, profesjonalizm, zero "
+        "nieporozumień i zero wątpliwości co do reguł i ich podstaw prawnych.\n"
     )
 
 
@@ -270,6 +412,57 @@ def swiete():
         "„docs/Bbb\" zawiera akty prawne (rok 2026), z którymi reguły OPA MUSZĄ być zgodne. "
         "Każdą rekomendację odnieś do tych plików. Rozwijaj moduł na **zaawansowanym poziomie Enterprise**, "
         "osiągając **poziom ENTERPRISE** w każdym aspekcie: regułach, systemie, testach i dokumentacji.\n"
+    )
+
+
+def wzorce():
+    """PLIKI WZORCOWE — cztery prompty źródłowe, na których stylu MUSISZ się oprzeć."""
+    return (
+        "## 🗂️ PLIKI WZORCOWE (przeczytaj PRZED analizą — to źródła stylu i standardów Twojej pracy):\n"
+        "- „Louh\" — wzorzec celu: zwięzła misja + frazy głębokiego myślenia; pokazuje, jak formułować "
+        "ambitne zadanie (analiza pokrycia pracy księgowego, sieć reguł inteligentnie rozbudowana).\n"
+        "- „Bb\" — wzorzec PROCESU: audyt jednego pliku → audyt katalogu przed generowaniem czegokolwiek, "
+        "zero duplikacji, wdrażanie element po elemencie z ostrożnością. Zastosuj go: zanim zaproponujesz "
+        "nową regułę, sprawdź czy nie istnieje; każdą zmianę umieść w kontekście całego katalogu JDG.\n"
+        "- „Jllug\" — wzorzec STANDARDÓW ENTERPRISE: kompletna dokumentacja techniczna klasy enterprise "
+        "(sekcje, diagramy Mermaid, samowystarczalność, spójność terminologii, PWE). Użyj tych standardów "
+        "przy budowie sekcji raportu i opisów rozwiązań.\n"
+        "- „Jnkkk\" — wzorzec STRUKTURY PROMPTU I RAPORTU: persona eksperta, krytyczne zasady, lista plików, "
+        "cel analizy z priorytetami, format raportu (Executive Summary, diagramy Mermaid, tabele pokrycia, "
+        "genialne pomysły, mapa drogowa). Skopiuj tę dyscyplinę strukturalną 1:1.\n"
+        "- https://github.com/Gorski-Maciej/NexusAI/blob/main/Louh\n"
+        "- https://github.com/Gorski-Maciej/NexusAI/blob/main/Bb\n"
+        "- https://github.com/Gorski-Maciej/NexusAI/blob/main/Jllug\n"
+        "- https://github.com/Gorski-Maciej/NexusAI/blob/main/Jnkkk\n"
+        "> Twoja praca = połączenie: cel Louh + proces Bb + standardy Jllug + struktura Jnkkk. "
+        "Wykorzystaj WSZYSTKIE cztery wzorce do stworzenia tego jednego raportu — na **zaawansowanym "
+        "poziomie Enterprise**, z **innowacyjnymi ulepszeniami wyprzedzającymi profesjonalistów**.\n"
+    )
+
+
+def kod_w_raporcie():
+    """Wymóg GENEROWANIA INTELIGENTNEGO KODU w raporcie (nowy standard serii)."""
+    return (
+        "## 💻 GENERUJ INTELIGENTNY KOD (wymóg nadrzędny — KAŻDE ulepszenie ma swój kod):\n"
+        "Nie wystarczy opisać problemu — wygeneruj **pełny, gotowy do wdrożenia kod** dla każdej "
+        "rekomendacji (P0/P1/P2), zgodnie z zasadami jakości z KRYTYCZNYCH ZASAD pkt 6:\n"
+        "1. **Reguły Rego** — kompletne bloki `decide :=` z `rule_id`, `_legal_basis` (kanoniczna, wg "
+        "docs/Bbb), `valid_from`/`valid_to`, priorytetem, `_routing` i komentarzem do artykułu/ustępu. "
+        "Kod musi być zgodny z First-Match-Wins i werdyktem 25-polowym (słownik z raportu master 00).\n"
+        "2. **Testy** — dla każdej nowej/zmienionej reguły dołącz natywny test Rego (`test_*`) LUB "
+        "pytest; dla reguł krytycznych oba. Testy mają dowodzić: happy path, granice (limity, progi), "
+        "przypadki negatywne (no_match), temporalność (przed/po `valid_from`).\n"
+        "3. **Narzędzia Python / SQL / JSON** — gdy ulepszenie dotyczy tools/, migrations/ lub bundles/, "
+        "wygeneruj pełny kod (skrypt, migrację, manifest, regułę danych thresholds) z obsługą błędów "
+        "i logowaniem wg konwencji projektu.\n"
+        "4. **Kontrakty z innymi częściami** — każdy nowy `rule_id`/pakiet wypisz w sekcji KONTRAKTY, "
+        "aby kolejne prompty wdrażały swoje zmiany bez konfliktów (łańcuch spójności raportów).\n"
+        "5. Kod ma reprezentować **poziom ENTERPRISE**: zero hardcode (wartości przez thresholds), zero "
+        "duplikatów (audyt anty-duplikacyjny wg wzorca Bb), pełna podstawy prawna, temporalność, "
+        "determinizm, możliwość kanarkowego wdrożenia i auto-rollbacku (cykl życia SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK).\n"
+        "6. Jeśli dana rekomendacja NIE wymaga kodu (np. proces, decyzja architektoniczna), opisz ją "
+        "precyzyjnie, ale dla KAŻDEJ reguły prawnej, której dotyczy, wygeneruj przynajmniej szkic "
+        "reguły z pełną podstawą prawną.\n"
     )
 
 
@@ -349,18 +542,21 @@ def system_opa():
 def format_raportu(tytul):
     return (
         "## 📐 FORMAT RAPORTU (obowiązkowy):\n"
-        f"- Tytuł: „RAPORT ANALITYCZNY ENTERPRISE — {tytul}\"\n"
+        f"- Tytuł: „RAPORT WDROŻENIOWY ENTERPRISE — {tytul}\"\n"
         "- Dokument musi reprezentować **zaawansowany poziom Enterprise** i **poziom ENTERPRISE** — "
         "precyzja, zero nieporozumień, zero wątpliwości co do reguł i ich podstaw prawnych.\n"
+        "- **KAŻDE ulepszenie zawiera GOTOWY DO WDROŻENIA KOD** (sekcja 💻 GENERUJ INTELIGENTNY KOD) — "
+        "raport jest samowystarczalny dla zespołu wdrożeniowego.\n"
         "- Executive Summary (1 strona) z TOP 10 rekomendacji (priorytety P0/P1/P2)\n"
         "- Diagramy Mermaid (przepływy decyzyjne, architektura, zależności między regułami)\n"
         "- Tabele pokrycia: artykuł ustawy → reguły istniejące → luki → status (A/B/C)\n"
-        "- Sekcja „OPA JAKO SYSTEM\" — wzmocnienie control plane / adaptacji do zmian prawa\n"
+        "- Sekcja „OPA JAKO SYSTEM\" — wzmocnienie control plane / szybkiej, prostej i niezawodnej "
+        "adaptacji do zmian prawa (dodawanie/zmiana/usuwanie reguł bez trudności)\n"
         "- Sekcja „KONTRAKTY Z INNYMI CZĘŚCIAMI\" — spójność łańcucha raportów\n"
         "- Sekcja „GENIALNE POMYSŁY ENTERPRISE\" — **innowacyjne ulepszenia wyprzedzające profesjonalistów** "
-        "(min. 12 pomysłów, każdy z opisem działania i korzyści)\n"
+        "(min. 12 pomysłów, każdy z opisem działania, korzyścią i kodem)\n"
         "- Mapa drogowa: uszeregowane wg krytyczności, szacowany czas naprawy, wpływ, ryzyko błędnej decyzji\n"
-        "- Minimalna długość: 25–40 stron tekstu (bardzo rozbudowany raport; im więcej precyzyjnych, "
+        "- Minimalna długość: 30–50 stron tekstu (bardzo rozbudowany raport; im więcej precyzyjnych, "
         "działających na wyobraźnię rozwiązań klasy **poziom ENTERPRISE**, tym lepiej)\n"
         "- Język: polski (terminologia techniczna może być angielska)\n"
     )
@@ -370,21 +566,25 @@ def zakonczenie(next_prompt):
     if next_prompt == "KONIEC_SERII":
         return (
             "## 🧹 NA ZAKOŃCZENIE PRACY (WYKONAJ DOKŁADNIE):\n"
-            "1. Zapisz kompletny raport jako plik `.txt` w `JDG/raporty_glm52/` (nazwa podana w ZASADACH).\n"
+            "1. Zapisz kompletny raport (z kodem) jako plik `.txt` w `JDG/raporty_glm52/` "
+            "(nazwa podana w ZASADACH).\n"
             "2. **WYCZYŚĆ OKNO KONTEKSTOWE** — zakończ pracę, zapomnij o tej analizie (nowa, czysta sesja).\n"
-            "3. **To był OSTATNI prompt serii (00–24).** Po wdrożeniu wzmocnień i poprawek ze wszystkich "
-            "25 raportów silnik reguł podatkowych OPA osiąga najwyższy zaawansowany poziom ENTERPRISE — "
-            "ufortyfikowaną fortecę niechybnej pewności, odporną na błędy, niedopatrzenia i zmiany prawa.\n"
+            "3. **To był OSTATNI prompt serii (00–24).** Po wdrożeniu wzmocnień, poprawek i KODU ze "
+            "wszystkich 25 raportów silnik reguł podatkowych OPA osiąga najwyższy zaawansowany poziom "
+            "ENTERPRISE — ufortyfikowaną fortecę niechybnej pewności, odporną na wszystkie braki, błędy "
+            "i niedopatrzenia, reprezentującą wyłącznie precyzję, profesjonalizm i zero nieporozumień, "
+            "zaskakującą największych ekspertów swoją niezawodnością i szybką adaptacją do zmian prawa.\n"
             "4. Jeśli chcesz ulepszać dalej, wygeneruj nową serię raportów w oparciu o raport master 00 "
             "(JDG/raporty_glm52/RAPORT_00_FUNDAMENT_ARCHITEKTURA.txt) jako nowy fundament.\n"
         )
     return (
         "## 🧹 NA ZAKOŃCZENIE PRACY (WYKONAJ DOKŁADNIE):\n"
-        "1. Zapisz kompletny raport jako plik `.txt` w `JDG/raporty_glm52/` (nazwa podana w ZASADACH).\n"
-        "2. **WYCZYŚĆ OKNO KONTEKSTOWE** — zakończ pracę, zapomnij o tej analizie (nowa, czysta sesja). "
-        "Dzięki temu GLM 5.2 płynnie przejdzie do następnego Promptu z pełną pojemnością okna.\n"
-        f"3. Następny Prompt do wklejenia: `JDG/prompty_glm52/{next_prompt}`\n"
-        "4. Powtórz procedurę dla każdego kolejnego Promptu, aż do ostatniego (24_POLICIES).\n"
+            "1. Zapisz kompletny raport (z kodem) jako plik `.txt` w `JDG/raporty_glm52/` "
+            "(nazwa podana w ZASADACH).\n"
+            "2. **WYCZYŚĆ OKNO KONTEKSTOWE** — zakończ pracę, zapomnij o tej analizie (nowa, czysta sesja). "
+            "Dzięki temu GLM 5.2 płynnie przejdzie do następnego Promptu z pełną pojemnością okna.\n"
+            f"3. Następny Prompt do wklejenia: `JDG/prompty_glm52/{next_prompt}`\n"
+            "4. Powtórz procedurę dla każdego kolejnego Promptu, aż do ostatniego (24_POLICIES).\n"
     )
 
 
@@ -395,22 +595,29 @@ def buduj_prompt(num, total, tytul, persona, raport_nazwa, focus, kategorie, rel
     p.append("")
     p.append(krytyczne_zasady(raport_nazwa))
     p.append(swiete())
+    p.append(wzorce())
+    p.append(kod_w_raporcie())
     p.append(zrodla_prawa())
     p.append("## 🎯 CEL ANALIZY TEJ CZĘŚCI:\n" + focus + "\n")
     p.append("## 📂 PLIKI DO PRZECZYTANIA I PRZEANALIZOWANIA (linki — nie szukaj innych):\n")
     for kat, paths in kategorie:
         p.append(f"### {kat}\n" + links(paths) + "\n")
-    p.append(kombinacje_przekrojowe(num))
+    p.append(kombinacje_przekrojowe(
+        num,
+        {"cross": CROSS.get(num, []), "evidence": EVIDENCJA.get(num, []), "docs": DOKUMENT.get(num, [])},
+    ))
     if uwagi:
         p.append("### ⚠️ UWAGI DO ZESTAWU PLIKÓW\n" + uwagi + "\n")
     p.append(powiazane(related))
     p.append(system_opa())
     p.append(metodologia())
     p.append(format_raportu(tytul))
-    p.append("## ⚠️ PRZYPOMNIENIE:\nNIE GENERUJ KODU REGO. NIE MODYFIKUJ PLIKÓW. "
-             "Generujesz WYŁĄCZNIE OGROMNY RAPORT ANALITYCZNY .txt klasy ENTERPRISE. "
+    p.append("## ⚠️ PRZYPOMNIENIE:\nGENERUJESZ INTELIGENTNY KOD — raport .txt zawiera GOTOWE DO WDROŻENIA "
+             "fragmenty kodu (Rego/Python/SQL/JSON) dla każdego ulepszenia. NIE MODYFIKUJ PLIKÓW w repozytorium. "
+             "Generujesz OGROMNY RAPORT WDROŻENIOWY .txt klasy ENTERPRISE (30–50 stron) z pełnym kodem. "
              "**Przeprowadź głębokie myślenie** i **przeprowadź głęboką analizę** na **zaawansowanym poziomie "
-             "Enterprise** — ten raport ma reprezentować najwyższy **poziom ENTERPRISE**.\n")
+             "Enterprise** — ten raport ma reprezentować najwyższy **poziom ENTERPRISE** z **innowacyjnymi "
+             "ulepszeniami wyprzedzającymi profesjonalistów**.\n")
     p.append(zakonczenie(next_prompt))
     return "\n".join(p) + "\n"
 
@@ -543,13 +750,16 @@ CZESCI.append(dict(
           "rules/micro/vat/proportion_vat.rego", "rules/micro/vat/wdt_export_import.rego"]),
         ("VAT MICRO LOOSE (rules/micro/)", ["rules/micro/plan33_vat.rego", "rules/micro/plan34_vat.rego",
           "rules/micro/plan33_prop.rego"]),
-        ("REFERENCJE (bundles/ — ⚠️ czytaj SELEKTYWNIE: stats/by_act/wiersze VAT)", ["bundles/legal_basis_audit.json",
-          "bundles/vat_micro_inventory.json"]),
+        ("REFERENCJE (bundles/ — ⚠️ czytaj SELEKTYWNIE)", ["bundles/vat_micro_inventory.json"]),
     ],
     related=["00, 02, 01"],
     next="04_PIT_CORE.txt",
-    uwagi=("`legal_basis_audit.json` (~3 MB) i `vat_micro_inventory.json` czytaj SELEKTYWNIE — tylko sekcje "
-           "statystyk i wiersze dotyczące VAT (grep po „VAT\"/„vat\")."),
+    uwagi=("⚠️ BUDŻET (twardy limit): `rules/micro/vat/vat.rego` ma ~28,7 tys. linii (~290 tys. tokenów) — "
+           "NIE czytaj go w całości; przeczytaj WYŁĄCZNIE fragmenty: nagłówki pakietów, reprezentatywne "
+           "reguły per artykuł (5, 7, 15, 17, 19a, 28b, 41, 43, 86, 88, 89a/89b, 90, 106e, 106na, 108a, "
+           "113), wzorzec else-chain i priorytetów oraz komentarze `_legal_basis` — łącznie maksymalnie "
+           "~30 000 tokenów z tego pliku. `vat_micro_inventory.json` (58 KB) możesz przeczytać w całości. "
+           "Zachowaj budżet 50% okna kontekstowego."),
 ))
 
 # ============================= 04 PIT CORE =============================
@@ -568,7 +778,8 @@ CZESCI.append(dict(
            "advances_returns, transitions, plan23/plan26, art21_exemptions_enterprise, ipbox_enterprise, "
            "rd_relief_enterprise, thermo_relief_enterprise, donation_relief_enterprise, "
            "cross_relief_optimizer_enterprise, tax_loss_harvesting_enterprise, family_estonian_enterprise, "
-           "elearning, tax_form_transition_intelligence), allowances.rego i nkup_enterprise_complete.rego. "
+           "missing_reliefs_enterprise, declaration_extensions_enterprise, elearning, "
+           "tax_form_transition_intelligence), allowances.rego i nkup_enterprise_complete.rego. "
            "Wymyśl innowacyjne ulepszenia wyprzedzające profesjonalistów: symulator „co by było gdyby\" ulg "
            "(B+R vs IP Box vs robotyzacja), optymalizator formy opodatkowania, predykcja zaliczek, kalkulator "
            "optymalnej składki — jako rekomendacje (nigdy decyzje automatyczne)."),
@@ -581,7 +792,8 @@ CZESCI.append(dict(
           "rules/pit/rd_relief_enterprise.rego", "rules/pit/thermo_relief_enterprise.rego",
           "rules/pit/donation_relief_enterprise.rego", "rules/pit/cross_relief_optimizer_enterprise.rego",
           "rules/pit/tax_loss_harvesting_enterprise.rego", "rules/pit/family_estonian_enterprise.rego",
-          "rules/pit/elearning.rego", "rules/pit/tax_form_transition_intelligence.rego"]),
+          "rules/pit/elearning.rego", "rules/pit/tax_form_transition_intelligence.rego",
+          "rules/pit/missing_reliefs_enterprise.rego", "rules/pit/declaration_extensions_enterprise.rego"]),
         ("PIT TOP-LEVEL (rules/)", ["allowances.rego", "nkup_enterprise_complete.rego",
           "rules/allowances/plan23_reliefs.rego"]),
         ("INNOWACJE PIT (rules/ — p04–p07)", ["p04_pit_macro_innovations_v8.rego", "p05_pit_innovations_v8.rego",
@@ -594,7 +806,11 @@ CZESCI.append(dict(
     ],
     related=["00, 05, 06, 09"],
     next="05_PIT_ENTERPRISE.txt",
-    uwagi=("`pit_micro_inventory.json` czytaj selektywnie (statystyki + wiersze PIT)."),
+    uwagi=("⚠️ BUDŻET (twardy limit): `rules/micro/pit/pit.rego` ma ~22,7 tys. linii (~230 tys. tokenów) — "
+           "NIE czytaj go w całości; przeczytaj WYŁĄCZNIE fragmenty (nagłówki pakietów, reguły per artykuł: "
+           "9, 14, 21, 22, 23, 26e, 26h, 27, 30c, 30ca, 44, wzorzec else-chain i `_legal_basis`) — łącznie "
+           "maksymalnie ~30 000 tokenów z tego pliku. `pit_micro_inventory.json` (71 KB) możesz przeczytać "
+           "w całości. Zachowaj budżet 50% okna kontekstowego."),
 ))
 
 # ============================= 05 PIT ENTERPRISE =============================
@@ -649,10 +865,10 @@ CZESCI.append(dict(
         ("ZUS TOP-LEVEL (rules/)", ["zus.rego", "employer.rego", "mpips.rego", "ppk_pfron_enterprise.rego",
           "solidarity_auto_calc_enterprise.rego", "insurance_tracker_enterprise.rego",
           "p19_hr_swiadczenia_innovations_v9.rego"]),
-        ("ZUS CORE (rules/zus/)", ["rules/zus/plan23_interactions.rego", "rules/zus/plan42_benefits.rego",
+        ("ZUS CORE (rules/zus/)", [          "rules/zus/plan23_interactions.rego", "rules/zus/plan42_benefits.rego",
           "rules/zus/enterprise_benefits.rego", "rules/zus/sickness_benefits_enterprise.rego",
           "rules/zus/health_contribution_enterprise.rego", "rules/zus/health_precision_engine_v8.rego",
-          "rules/zus/cumulative_revenue_engine.rego"]),
+          "rules/zus/cumulative_revenue_engine.rego", "rules/zus/zus_extensions_enterprise.rego"]),
         ("ZUS MICRO SUS (rules/micro/sus/ — 16 plików)", ["rules/micro/sus/sus.rego", "rules/micro/sus/sus_a6.rego",
           "rules/micro/sus/sus_a6b.rego", "rules/micro/sus/sus_a9.rego", "rules/micro/sus/sus_a11.rego",
           "rules/micro/sus/sus_a13.rego", "rules/micro/sus/sus_a14.rego", "rules/micro/sus/sus_a18.rego",
@@ -704,8 +920,8 @@ CZESCI.append(dict(
           "gaar_shield_enterprise.rego", "p33_ordpu_kks_supplement.rego", "p09_kks_macro_innovations_v8.rego",
           "p10_kks_micro_innovations_v8.rego", "p10_kks_innovations_v9.rego"]),
         ("KKS CORE (rules/kks/)", ["rules/kks/_kks_macro_rates.rego", "rules/kks/enterprise_penalties.rego",
-          "rules/kks/kks_innovations_v8.rego", "rules/kks/plan42_detailed.rego", "rules/kks/plan43_decomposition.rego",
-          "rules/kks/plan44_kks_conviction.rego"]),
+          "rules/kks/kks_innovations_v8.rego", "rules/kks/plan42_detailed.rego",          "rules/kks/plan43_decomposition.rego",
+          "rules/kks/plan44_kks_conviction.rego", "rules/kks/kks_extensions_enterprise.rego"]),
         ("KKS MICRO + RISK (rules/micro/, rules/risk/)", ["rules/micro/kks/kks.rego", "rules/risk/plan26_kks.rego",
           "rules/micro/plan33_kks.rego"]),
         ("REFERENCJE (bundles/ — ⚠️ czytaj SELEKTYWNIE)", ["bundles/legal_coverage_gaps.json"]),
@@ -1287,15 +1503,18 @@ CZESCI.append(dict(
           "test_risk_guard.py", "test_risk_guard_integration.py", "test_rodo_enterprise.py",
           "test_semantic_guard.py", "test_strategic_v2_modules.py", "test_tax_pipeline.py", "test_tax_rules.py",
           "test_tax_audit.py", "test_temporal_manager.py", "test_temporal_validity.py"]),
-        ("TESTY AUTO-BLOKOWE (JDG/tests/auto/ — katalog, 55 plików)", ["tests/auto/ (katalog — wszystkie "
-          "test_auto_block_*.py, czytaj selektywnie wybrane reprezentatywne pliki)"]),
+        ("TESTY AUTO-BLOKOWE (JDG/tests/auto/ — reprezentatywna próbka)", ["tests/auto/test_auto_block_vat.py",
+          "tests/auto/test_auto_block_zus.py", "tests/auto/test_auto_block_kks.py",
+          "tests/auto/test_auto_block_pit.py", "tests/auto/test_auto_block_tax_interaction.py",
+          "tests/auto/test_auto_block_ksef_jpk.py", "tests/auto/test_auto_block_local_taxes.py",
+          "tests/auto/test_auto_block_accounting.py"]),
     ],
     related=["00, 16, 21, 01"],
     next="21_TESTY_NATIVE_REGON.txt",
-    uwagi=("Katalog tests/auto/ liczy ~55 plików — nie czytaj wszystkich w całości; wybierz reprezentatywne "
-           "(np. test_auto_block_vat.py, test_auto_block_zus.py, test_auto_block_kks.py) i oceń wzorzec. "
-           "Liczba plików w tests/ bywa różna (35–42 w tests/ + ~55 w tests/auto/) — podaj w raporcie faktyczne "
-           "liczby z chwili analizy."),
+    uwagi=("⚠️ BUDŻET: tests/auto/ liczy ~100 plików (~31 tys. linii) — NIE czytaj katalogu w całości. "
+           "Przeanalizuj wyłącznie reprezentatywną próbkę powyżej (8 plików) i oceń wzorzec testów "
+           "auto-blowych (asercje, pokrycie domen, no_match). W raporcie podaj faktyczne liczby plików "
+           "i linii z chwili analizy (nie wklejaj całych plików do raportu)."),
 ))
 
 # ============================= 21 TESTY NATYWNE REGO =============================
@@ -1353,18 +1572,22 @@ CZESCI.append(dict(
           "bundles/policies_drift_report.json", "bundles/healthy_versions.json", "bundles/rule_registry.json",
           "bundles/legal_reference_canon.json", "bundles/legal_coverage_gaps.json", "bundles/coverage_deserts.json",
           "bundles/legal_change_calendar.json", "bundles/accounting_compliance.json", "bundles/hardcoded_audit.json"]),
-        ("REJESTRY WIELKIE (⚠️ 3–5 MB — czytaj TYLKO stats/by_act/priorytety i ograniczoną liczbę wierszy!)",
-          ["bundles/policy_registry.json", "bundles/legal_basis_audit.json", "bundles/legal_basis_v2_report.json",
-          "bundles/vat_micro_inventory.json", "bundles/pit_micro_inventory.json", "bundles/zus_micro_inventory.json"]),
+        ("REJESTRY WIELKIE (⚠️ NIE CZYTAJ W CAŁOŚCI — tylko stats/by_act/priorytety, patrz UWAGI)",
+          ["bundles/policy_registry.json", "bundles/legal_basis_audit.json", "bundles/legal_basis_v2_report.json"]),
+        ("INWENTARYZACJE MIKRO (⚠️ małe pliki — możesz czytać w całości)", ["bundles/vat_micro_inventory.json",
+          "bundles/pit_micro_inventory.json", "bundles/zus_micro_inventory.json"]),
         ("API (JDG/api/)", ["api/openapi.yaml"]),
         ("MIGRACJE (JDG/migrations/)", ["migrations/001_jdg_rule_store.sql", "migrations/002_jdg_enterprise_v7.sql",
           "migrations/003_jdg_v8_legal_twin.sql"]),
     ],
     related=["00, 16, 18, 24"],
     next="23_DOKUMENTACJA.txt",
-    uwagi=("legal_basis_audit.json (~3 MB), legal_basis_v2_report.json (~3 MB), policy_registry.json (~5 MB) — "
-           "czytaj TYLKO sekcje: stats, by_act, priority_details i ograniczoną liczbę wierszy. Nie mieszczą się "
-           "w całości w budżecie 50% okna!"),
+    uwagi=("⚠️ BUDŻET (bardzo ważne): policy_registry.json (~5 MB ≈ 1,2 mln tokenów), legal_basis_audit.json "
+           "(~2,9 MB) i legal_basis_v2_report.json (~3,2 MB) NIE mieszczą się w całości w oknie kontekstowym. "
+           "Dla KAŻDEGO z tych trzech plików przeczytaj WYŁĄCZNIE: (a) sekcje stats/aggregates (pierwsze "
+           "~300 linii), (b) sekcję by_act/priority_details ograniczoną do ~200 wierszy — łącznie maks. "
+           "~3 000 tokenów na plik. Małe inwentaryzacje (vat/pit/zus_micro_inventory, 58–80 KB) możesz "
+           "przeczytać w całości. Celem jest zebranie STATYSTYK i STRUKTURY, nie pełnej treści."),
 ))
 
 # ============================= 23 DOKUMENTACJA =============================
@@ -1586,9 +1809,13 @@ def main():
               "## SPIS CZĘŚCI (plik -> tytuł)\n"
               + "\n".join(f"- {nazwa_pliku(c['num'], c['tytul'])}  |  {c['tytul']}" for c in CZESCI) + "\n\n"
               "## ZASADY\n"
-              "- Prompty NIE generują kodu — tylko ogromne raporty analityczne .txt (25–40 stron).\n"
+              "- Prompty GENERUJĄ INTELIGENTNY KOD — każdy raport .txt (30–50 stron) zawiera GOTOWE DO\n"
+              "  WDROŻENIA fragmenty kodu (Rego/Python/SQL/JSON) dla każdego ulepszenia. Po wdrożeniu kodu\n"
+              "  z raportów silnik reguł podatkowych OPA ma osiągnąć najwyższy zaawansowany poziom ENTERPRISE.\n"
               "- W każdym prompcie frazy obowiązkowe ≥4x (głębokie myślenie, głęboka analiza, poziom ENTERPRISE,\n"
               "  zaawansowany poziom Enterprise, innowacyjne ulepszenia wyprzedzające profesjonalistów).\n"
+              "- Każdy prompt odwołuje się do 4 PLIKÓW WZORCOWYCH (Louh, Bb, Jllug, Jnkkk — style procesu,\n"
+              "  standardów dokumentacji i struktury raportu) oraz do PLIKÓW ŚWIĘTYCH (V1/V2 + docs/Bbb).\n"
               "- Spójność łańcucha: każda część czyta raport master 00 i raporty części powiązanych oraz\n"
               "  publikuje sekcję KONTRAKTY Z INNYMI CZĘŚCIAMI.\n"
               "- Regenerator: python3 JDG/tools/generate_glm52_prompty.py\n")
