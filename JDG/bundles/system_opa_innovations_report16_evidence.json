@@ -1,0 +1,124 @@
+{
+  "report": "RAPORT_16_SYSTEM_OPA",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "report_present": true,
+    "innovations_complete": true,
+    "legal_basis_canonical": true,
+    "thresholds_externalized": true,
+    "duplicate_free": true,
+    "router_wired": true,
+    "tests_present": true,
+    "golden_replay_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "checks_passed": 9,
+  "checks_total": 9,
+  "scope": {
+    "files": {
+      "r16_rego": true,
+      "main_jdg": true,
+      "thresholds": true,
+      "pytest": true,
+      "native_rego": true,
+      "report": true
+    },
+    "files_total": 6,
+    "files_present": 6,
+    "report_present": true,
+    "sop_core_files_declared": 10,
+    "sop_core_files_present": 10
+  },
+  "innovations": {
+    "required_innovations": [
+      "rule_lifecycle_monitor",
+      "rl_should_rollback",
+      "rl_phase",
+      "validation_quality_monitor",
+      "vq_zero_defect",
+      "vq_defects",
+      "test_shield_monitor",
+      "ts_shield_ok",
+      "ts_mutation_ok",
+      "reliability_determinism_monitor",
+      "rb_reliable",
+      "rb_provenance_ok",
+      "isap_pipeline_monitor",
+      "ip_sla_breach",
+      "ip_sla_hours"
+    ],
+    "missing_innovations": [],
+    "innovations_complete": true,
+    "legal_basis_markers": [
+      "ADR-016",
+      "ADR-022",
+      "ADR-006",
+      "ADR-002",
+      "ISAP"
+    ],
+    "missing_legal_markers": [],
+    "legal_basis_complete": true,
+    "decide_report_rule": true,
+    "activation_flag": true,
+    "default_no_match": true,
+    "rule_lifecycle": true,
+    "validation_quality": true,
+    "test_shield": true,
+    "reliability": true,
+    "isap_pipeline": true
+  },
+  "thresholds": {
+    "thresholds_via_data": true,
+    "rollback_externalized": true,
+    "mutation_externalized": true,
+    "isap_sla_externalized": true,
+    "sop_block_present": true
+  },
+  "duplicates": {
+    "rule_ids_total": 6,
+    "rule_ids_unique": 6,
+    "duplicates": [],
+    "duplicate_count": 0
+  },
+  "router": {
+    "import_present": true,
+    "package_decisions_entry": true,
+    "final_verdict_p41": true,
+    "post_merge_present": true,
+    "invariants_enforced": true,
+    "final_verdict_public": true
+  },
+  "tests": {
+    "pytest_present": true,
+    "native_rego_present": true,
+    "marker_hits": {
+      "rule_lifecycle_monitor": true,
+      "validation_quality_monitor": true,
+      "test_shield_monitor": true,
+      "reliability_determinism_monitor": true,
+      "isap_pipeline_monitor": true,
+      "r16_system_opa_check": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "ADR-016": true,
+      "ADR-022": true,
+      "ADR-006": true,
+      "ISAP": true
+    },
+    "markers_complete": true,
+    "pytest_test_functions": 14,
+    "native_test_functions": 13
+  },
+  "replay": {
+    "golden_verdicts_total": 29,
+    "sop_verdicts": 1,
+    "sop_replays": 1,
+    "uver_count": 0,
+    "replay_verified": true
+  },
+  "generated_at": "2026-08-15T21:30:25.029260+00:00"
+}

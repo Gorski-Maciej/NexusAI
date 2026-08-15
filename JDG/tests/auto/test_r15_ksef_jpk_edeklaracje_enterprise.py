@@ -2,7 +2,7 @@
 
 Prompt 15/25 is implemented as the R15 KSeF/JPK innovations package
 (rules/r15_ksef_jpk_edeklaracje_innovations_v9.rego) wired into main_jdg.rego
-(final_verdict_p40). Tests mirror the R01..R14 conventions:
+(final_verdict_p41). Tests mirror the R01..R14 conventions:
 
   R15-INN-01 ksef_firewall_monitor       — firewall KSeF (art. 106na)
   R15-INN-02 jpk_reconciliation_checker  — korelacja VAT-7/JPK_V7M (art. 82/99)
@@ -98,8 +98,8 @@ def test_r15_main_router_wired_p40():
     src = _read(MAIN_REGO)
     assert "import data.jdg.r15_ksef_jpk_edeklaracje_innovations" in src
     assert '"jdg.r15_ksef_jpk_edeklaracje_innovations": r15_ksef_jpk_edeklaracje_innovations.decide' in src
-    assert "final_verdict_p40 = safe_merge(final_verdict_p39" in src
-    assert "final_verdict_post_merge = object.union(final_verdict_p40" in src
+    assert "final_verdict_p41 = safe_merge(final_verdict_p40" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p41" in src
 
 
 # ── R15-INN-01: ksef_firewall_monitor ────────────────────────────────────────
@@ -159,7 +159,7 @@ def test_inn05_wis_request():
 
 def test_invariants_after_r15():
     src = _read(MAIN_REGO)
-    assert "final_verdict_post_merge = object.union(final_verdict_p40" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p41" in src
     assert "final_verdict_enforced = object.union(final_verdict_post_merge" in src
     assert "_decision_certificate" in src or "decision_certificate" in src
     assert "_certainty_guard" in src

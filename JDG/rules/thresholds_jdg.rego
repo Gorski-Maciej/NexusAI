@@ -959,6 +959,32 @@ ksef_jpk := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# SYSTEM OPA THRESHOLDS — RAPORT_16 (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+system_opa := {
+    # Cykl życia reguły / rollout
+    "canary_percent": 5,                         # kanarek 5% ruchu
+    "rollback_error_threshold": 0.01,            # błąd > 1% → auto-rollback
+    "rollback_quality_threshold": 0.95,          # jakość ≥ 95% → zatrzymaj kanary
+
+    # Walidacja / CI
+    "mutation_score_min": 70,                    # min wynik mutacji %
+    "zero_defect_gates": 7,                      # kryteriów certyfikacji
+    "coverage_min_pct": 90,                      # min pokrycie testami %
+    "stub_threshold": 10,                        # alert przy > 10 stubów na plik
+    "hardcoded_threshold": 10,                   # alert przy > 10 hardcode'ów na plik
+
+    # Pipeline ISAP→produkcja
+    "isap_sla_hours": 24,                        # standardowy termin adaptacji
+    "isap_p0_hours": 4,                          # priorytet P0
+    "hot_reload_minutes": 15,                    # parametr hot-reload ≤ 15 min
+
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # LOCAL TAXES / OPŁATY LOKALNE (Klasa IX — Blind Spot §1.1 z STRATEGIC_IMPROVEMENTS_7000)
 # ═══════════════════════════════════════════════════════════════════════════════
 # Stawki 2026 wg obwieszczenia MF. Gminy mogą ustalać niższe stawki uchwałą.

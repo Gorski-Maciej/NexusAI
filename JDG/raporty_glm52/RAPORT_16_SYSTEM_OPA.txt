@@ -5,6 +5,36 @@ Seria: 16/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
 Status: WDROZONY_100 (2026-08-15)
 ==============================================================================
 
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę System OPA (rule_lifecycle_enterprise +
+reliability_guarantee_enterprise + p21/p22/p23/p24 + p34 + p35), która jest
+kompletna. Dodatkowo, w ramach kampanii GLM 5.2 (seria R01→R24), wdrożono
+NOWY pakiet innowacji:
+
+  rules/r16_system_opa_innovations_v9.rego (5 INN):
+    R16-INN-01 rule_lifecycle_monitor — cykl życia reguły (SHADOW→
+                                       CANDIDATE→ACTIVE→DEPRECATED→RETIRED→
+                                       PURGED) z auto-rollback (ADR-016..021)
+    R16-INN-02 validation_quality_monitor — jakość walidacji (tautologie,
+                                       dead-rules, hardcode) → zero-defect
+                                       (ADR-006/022)
+    R16-INN-03 test_shield_monitor — tarcza CI (mutation ≥70%, coverage
+                                       ≥90%, zero defect) (ADR-022)
+    R16-INN-04 reliability_determinism_monitor — niezawodność (provenance
+                                       gate, determinizm, fallback ladder)
+                                       (ADR-006/V2 F3)
+    R16-INN-05 isap_pipeline_monitor — pipeline ISAP→produkcja (SLA ≤24h,
+                                       P0 ≤4h) (ADR-002/V2 F5)
+
+  Wiring: main_jdg.rego final_verdict_p41 = safe_merge(final_verdict_p40,
+  safe_merge(r16_system_opa_innovations.decide, fallback.decide));
+  thresholds.system_opa w thresholds_jdg.rego (zero hardcode).
+
+  Evidence: bundles/system_opa_innovations_report16_evidence.json
+  (9/9) — tools/system_opa_innovations_report16_gate.py --strict
+  PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
 ════════════════════════════════════════════════════════════════════════════
 1. EXECUTIVE SUMMARY (1 strona)
 ════════════════════════════════════════════════════════════════════════════

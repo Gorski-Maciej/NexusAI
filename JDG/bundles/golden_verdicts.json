@@ -1170,6 +1170,34 @@
       "bundle_version": "jdg-kjp2-bundle-v9.0.0",
       "recorded_at": "2026-08-15T20:59:54.541836+00:00",
       "legal_basis_refs": []
+    },
+    "9e66410ba096d13557f185412a2965103e0ea5db6f6d881f4c0f3129c51cb64b": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r16_system_opa_innovations.rule_lifecycle_monitor",
+        "package": "jdg.r16_system_opa_innovations",
+        "priority": 11041,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "rl_phase": "ACTIVE",
+        "rl_error_rate": 0.05,
+        "rl_rollout_pct": 100,
+        "rl_should_rollback": true,
+        "rl_rollback_error_threshold": 0.01,
+        "rl_canary_percent": 5,
+        "_routing": "BLOCK_AND_ALERT",
+        "_routing_reason": "Cykl życia — faza ACTIVE, error_rate 0.0500 (próg 0.0100), rollout 100%. AUTO-ROLLBACK — error_rate przekroczony.",
+        "_legal_basis": "ADR-016..021 (cykl życia reguły, canary, auto-rollback), V2 F3 (golden replay)",
+        "_warnings": [
+          "LIFECYCLE: faza ACTIVE — AUTO-ROLLBACK (error przekroczony)."
+        ]
+      },
+      "verdict_hash": "cba8e0cead35ebf8b6eb9bc876ba11ac391cc42625d68fffc425b01e20dbd4fa",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-sop2-bundle-v9.0.0",
+      "recorded_at": "2026-08-15T21:18:16.986665+00:00",
+      "legal_basis_refs": []
     }
   },
   "annotations": [],
@@ -2380,6 +2408,38 @@
       "reason": null,
       "uver_applies": false,
       "replayed_at": "2026-08-15T20:59:54.541836+00:00"
+    },
+    {
+      "input_hash": "9e66410ba096d13557f185412a2965103e0ea5db6f6d881f4c0f3129c51cb64b",
+      "golden_verdict_hash": "cba8e0cead35ebf8b6eb9bc876ba11ac391cc42625d68fffc425b01e20dbd4fa",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r16_system_opa_innovations.rule_lifecycle_monitor",
+        "package": "jdg.r16_system_opa_innovations",
+        "priority": 11041,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "rl_phase": "ACTIVE",
+        "rl_error_rate": 0.05,
+        "rl_rollout_pct": 100,
+        "rl_should_rollback": true,
+        "rl_rollback_error_threshold": 0.01,
+        "rl_canary_percent": 5,
+        "_routing": "BLOCK_AND_ALERT",
+        "_routing_reason": "Cykl życia — faza ACTIVE, error_rate 0.0500 (próg 0.0100), rollout 100%. AUTO-ROLLBACK — error_rate przekroczony.",
+        "_legal_basis": "ADR-016..021 (cykl życia reguły, canary, auto-rollback), V2 F3 (golden replay)",
+        "_warnings": [
+          "LIFECYCLE: faza ACTIVE — AUTO-ROLLBACK (error przekroczony)."
+        ]
+      },
+      "new_verdict_hash": "cba8e0cead35ebf8b6eb9bc876ba11ac391cc42625d68fffc425b01e20dbd4fa",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": true,
+      "reason": "Baseline nowej kampanii R16 — determinizm potwierdzony (identyczny werdykt).",
+      "uver_applies": false,
+      "replayed_at": "2026-08-15T21:18:16.986665+00:00"
     }
   ]
 }
