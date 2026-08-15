@@ -762,6 +762,36 @@ accounting := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# CROSS-BORDER / TP / MDR / CFC / EXIT TAX THRESHOLDS — RAPORT_10 (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+crossborder := {
+    # Art. 42 ust. 12 VAT — dowód wywozu WDT (30 dni)
+    "wdt_documentation_days": 30,               # 30 dni na zebranie dowodu
+
+    # Art. 86a OrdPU — raportowanie MDR/DAC6 (30 dni)
+    "mdr_deadline_days": 30,                    # 30 dni na MDR-1
+
+    # Art. 23o/23zf PIT — dokumentacja cen transferowych
+    "tp_local_file_pln": 500000,                # lokalna dokumentacja od 500k
+    "tp_master_file_pln": 200000000,            # master file od 200M (grupa)
+
+    # Art. 3 ust. 1a PIT — rezydencja podatkowa
+    "residency_days": 183,                      # 183 dni
+
+    # Art. 30f PIT — CFC
+    "cfc_ownership_min_pct": 0.50,              # >50% udziałów
+    "cfc_passive_income_pct": 0.33,             # >33% dochodu pasywnego
+    "cfc_tax_rate_threshold_pct": 0.1425,       # <14.25% podatku zagranicznego
+
+    # Art. 30da PIT — Exit tax
+    "exit_tax_threshold_pln": 4000000,          # próg 4 000 000 PLN
+    "exit_tax_rate_pct": 0.19,                  # 19%
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # BUSINESS / CEIDG THRESHOLDS
 # ═══════════════════════════════════════════════════════════════════════════════
 

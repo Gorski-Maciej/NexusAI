@@ -5,6 +5,33 @@ Seria: 10/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
 Status: WDROZONY_100 (2026-08-15)
 ==============================================================================
 
+────────────────────────────────────────────────────────────────────────────────
+UZUPEŁNIENIE KAMPANII GLM 5.2 (2026-08-15) — NOWY PAKIET R10
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę cross-border (p12 v9.1 INN-01..17 + p13 +
+crossborder/* + international* + micro/crossborder + mdr/* + tp/*), która jest
+kompletna (7/7 krytycznych artykułów COMPLETE). Dodatkowo, w ramach kampanii
+GLM 5.2 (seria R01→R24), wdrożono NOWY pakiet innowacji:
+
+  rules/r10_crossborder_innovations_v9.rego (5 INN):
+    R10-INN-01 wdt_deadline_alert_monitor — monitor 30 dni dowodu wywozu WDT
+                                             (art. 42 ust. 12 VAT, 3 poziomy alertów)
+    R10-INN-02 mdr_risk_scorer          — scorer ryzyka MDR/DAC6 (hallmark A-E
+                                             × cross-border × main-benefit 0-100)
+    R10-INN-03 tp_threshold_simulator   — symulator dokumentacji TP (500k/200M
+                                             + projekcja forward)
+    R10-INN-04 cfc_profit_attribution   — przypisanie dochodu CFC (50%/33%/14,25%)
+    R10-INN-05 fx_time_travel_reconciler— różnice kursowe time-travel (kursy NBP
+                                             per okres)
+
+  Wiring: main_jdg.rego final_verdict_p35 = safe_merge(final_verdict_p34,
+  safe_merge(r10_crossborder_innovations.decide, fallback.decide));
+  thresholds.crossborder w thresholds_jdg.rego (zero hardcode).
+
+  Evidence: bundles/crossborder_innovations_report10_evidence.json (9/9) —
+  tools/crossborder_innovations_report10_gate.py --strict PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
 ════════════════════════════════════════════════════════════════════════════
 1. EXECUTIVE SUMMARY (1 strona)
 ════════════════════════════════════════════════════════════════════════════

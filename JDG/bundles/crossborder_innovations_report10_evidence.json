@@ -1,0 +1,130 @@
+{
+  "report": "RAPORT_10_CROSSBORDER",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "report_present": true,
+    "innovations_complete": true,
+    "legal_basis_canonical": true,
+    "thresholds_externalized": true,
+    "duplicate_free": true,
+    "router_wired": true,
+    "tests_present": true,
+    "golden_replay_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "checks_passed": 9,
+  "checks_total": 9,
+  "scope": {
+    "files": {
+      "r10_rego": true,
+      "main_jdg": true,
+      "thresholds": true,
+      "pytest": true,
+      "native_rego": true,
+      "report": true
+    },
+    "files_total": 6,
+    "files_present": 6,
+    "report_present": true,
+    "cb_core_files_declared": 26,
+    "cb_core_files_present": 26
+  },
+  "innovations": {
+    "required_innovations": [
+      "wdt_deadline_alert_monitor",
+      "wdt_red_count",
+      "wdt_missing_count",
+      "wdt_documentation_days",
+      "mdr_risk_scorer",
+      "mdr_risk_score",
+      "mdr_hallmark_score",
+      "mdr_confidence",
+      "mdr_recommendation",
+      "tp_threshold_simulator",
+      "tp_local_required",
+      "tp_master_required",
+      "tp_months_to_local",
+      "cfc_profit_attribution",
+      "cfc_applies",
+      "cfc_attributed_base_pln",
+      "cfc_control_met",
+      "cfc_low_tax_met",
+      "fx_time_travel_reconciler",
+      "fx_schedule",
+      "fx_realized_diff_pln",
+      "fx_effective_rate"
+    ],
+    "missing_innovations": [],
+    "innovations_complete": true,
+    "legal_basis_markers": [
+      "art. 42",
+      "art. 86a-86r",
+      "art. 23o",
+      "art. 23zf",
+      "art. 30f",
+      "art. 24c"
+    ],
+    "missing_legal_markers": [],
+    "legal_basis_complete": true,
+    "decide_report_rule": true,
+    "activation_flag": true,
+    "default_no_match": true,
+    "wdt_monitor": true,
+    "mdr_scorer": true,
+    "tp_simulator": true,
+    "cfc_attribution": true,
+    "fx_time_travel": true
+  },
+  "thresholds": {
+    "thresholds_via_data": true,
+    "wdt_days_externalized": true,
+    "tp_externalized": true,
+    "cfc_externalized": true,
+    "crossborder_block_present": true
+  },
+  "duplicates": {
+    "rule_ids_total": 6,
+    "rule_ids_unique": 6,
+    "duplicates": [],
+    "duplicate_count": 0
+  },
+  "router": {
+    "import_present": true,
+    "package_decisions_entry": true,
+    "final_verdict_p35": true,
+    "post_merge_present": true,
+    "invariants_enforced": true,
+    "final_verdict_public": true
+  },
+  "tests": {
+    "pytest_present": true,
+    "native_rego_present": true,
+    "marker_hits": {
+      "wdt_deadline_alert_monitor": true,
+      "mdr_risk_scorer": true,
+      "tp_threshold_simulator": true,
+      "cfc_profit_attribution": true,
+      "fx_time_travel_reconciler": true,
+      "r10_crossborder_check": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "art. 30f": true,
+      "art. 42": true
+    },
+    "markers_complete": true,
+    "pytest_test_functions": 16,
+    "native_test_functions": 0
+  },
+  "replay": {
+    "golden_verdicts_total": 23,
+    "cb_verdicts": 1,
+    "cb_replays": 1,
+    "uver_count": 0,
+    "replay_verified": true
+  },
+  "generated_at": "2026-08-15T19:25:38.062077+00:00"
+}

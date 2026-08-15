@@ -379,6 +379,10 @@ import data.jdg.r08_ordynacja_obrona_innovations
 # Symulator progu UoR (2M EUR + projekcja), uzgodnienie 3-drożne PKPiR↔VAT↔bank,
 # optymalizator amortyzacji, monitor inwentaryzacji, auto-pakiet sprawozdania.
 import data.jdg.r09_ksiegowosc_pkpir_uor_innovations
+# ── PAS 18x: R10 GLM52 CROSS-BORDER / TP / MDR-DAC6 / CFC / ViDA / CBAM (2026-08-15) ──
+# Monitor 30 dni dowodu WDT, scorer ryzyka MDR/DAC6, symulator TP, przypisanie
+# dochodu CFC, różnice kursowe z time-travel (kursy NBP per okres).
+import data.jdg.r10_crossborder_innovations
 import data.jdg.micro.vat.r03 as micro_vat_r03
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1403,6 +1407,7 @@ _package_decisions := {
     "jdg.r07_kks_innovations": r07_kks_innovations.decide,
     "jdg.r08_ordynacja_obrona_innovations": r08_ordynacja_obrona_innovations.decide,
     "jdg.r09_ksiegowosc_pkpir_uor_innovations": r09_ksiegowosc_pkpir_uor_innovations.decide,
+    "jdg.r10_crossborder_innovations": r10_crossborder_innovations.decide,
     "jdg.micro.vat.r03": micro_vat_r03.decide,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
@@ -1856,6 +1861,19 @@ final_verdict_p34 = safe_merge(final_verdict_p33,
     ))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18x: R10 GLM52 CROSS-BORDER / TP / MDR-DAC6 / CFC — Post-Provenance Merge
+# Prompt 10/25 (RAPORT_10_CROSSBORDER.txt): monitor terminu 30 dni dowodu WDT,
+# scorer ryzyka MDR/DAC6 (hallmark A-E), symulator dokumentacji TP (500k/200M),
+# przypisanie dochodu CFC, różnice kursowe z time-travel. Pakiet REPORT-owy —
+# aktywowany flagą input.jdg_entrepreneur.r10_crossborder_check / ... (w
+# normalnym ruchu no_match). Nie nadpisuje decyzji (safe_merge).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p35 = safe_merge(final_verdict_p34,
+    safe_merge(r10_crossborder_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -1869,7 +1887,7 @@ final_verdict_p34 = safe_merge(final_verdict_p33,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-final_verdict_post_merge = object.union(final_verdict_p34,
+final_verdict_post_merge = object.union(final_verdict_p35,
     {"_routing_context": routing_context})
 
 final_verdict_enforced = object.union(final_verdict_post_merge,
