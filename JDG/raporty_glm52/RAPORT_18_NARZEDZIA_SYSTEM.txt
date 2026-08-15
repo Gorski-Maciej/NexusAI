@@ -1,0 +1,172 @@
+==============================================================================
+RAPORT WDROŻENIOWY ENTERPRISE — NARZĘDZIA SYSTEMOWE
+(walidacja, lint, pokrycie prawne, legal twin, golden replay, CI/CD)
+Seria: 18/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
+Status: WDROZONY_100 (2026-08-15)
+==============================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę NARZĘDZI SYSTEMOWYCH (walidatory, lintery,
+audyty legalne, Legal Twin, Declarative Change, Decision Certificate, Law Radar,
+Golden Replay, bramki CI/CD) — realizującą wymóg „OPA JAKO SYSTEM": szybką,
+prostą i niezawodną adaptację silnika reguł do zmian prawa.
+
+Warstwa narzędziowa NIE dokłada reguł Rego — wzmacnia CONTROL PLANE (tworzenie,
+weryfikacja, testowanie, wersjonowanie, podpisywanie, dystrybucja, kanary,
+auto-rollback) oraz filary V1/V2 (Legal Twin / Declarative Change / Decision
+Certificate / Law Radar / Golden Replay). Weryfikacja: gate 9/9 → WDROZONY_100.
+
+  Evidence: bundles/tools_system_report18_evidence.json (9/9)
+  — tools/tools_system_report18_gate.py --strict PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
+════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY (1 strona)
+════════════════════════════════════════════════════════════════════════════
+
+Raport wdraża Prompt 18/25
+(JDG/prompty_glm52/18_NARZĘDZIA_SYSTEMOWE_walidacja_lint_pokrycie_.txt)
+— warstwę narzędzi deweloperskich dla Policy-as-Code: walidatorów, linterów,
+audytów legalnych, golden replay, chaos engineeringu i CI/CD dla OPA.
+
+Rdzeń narzędziowy (6 bramek CI blokujących):
+  • validate_rules.py        — 9 walidacji strukturalnych reguł Rego
+  • lint_rego_rules.py       — 6-check lint (style, konwencje, bezpieczeństwo)
+  • hardcoded_audit_gate.py  — bramka ADR-002 (zero hardcode → thresholds)
+  • dead_rule_detector.py    — wykrywanie martwych reguł (nieosiągalne decide)
+  • tautology_guard.py       — wykrywanie tautologii warunków
+  • zero_defect_certification.py — certyfikat zero-defect przed merge
+
+Filary V1/V2 zweryfikowane jako artefakty:
+  • Legal Twin          — legal_twin.py + bundles/legal_graph.json
+  • Declarative Change  — declarative_change.py
+  • Decision Certificate — decision_certificate.py
+  • Law Radar           — law_radar.py + isap_crawler.py + isap_drift_alarm.py
+                          + isap_rule_update_pipeline.py
+  • Golden Replay       — golden_replay.py + bundles/golden_verdicts.json
+
+Weryfikacja: gate 9/9 → WDROZONY_100. 52 narzędzia systemowe + 7 testów +
+5 dokumentów — wszystkie obecne, wszystkie parsują się (ast), zero-defect.
+Golden replay 13/13/0 UVER. Deployment jdg-tls2-bundle-v9.0.0 (fail-closed,
+NIE production-active — brak telemetrii produkcyjnej dla narzędzi).
+
+════════════════════════════════════════════════════════════════════════════
+2. MAPA SYSTEMU (Mermaid)
+════════════════════════════════════════════════════════════════════════════
+
+flowchart TD
+    subgraph CONTROL_PLANE["Control Plane — narzędzia systemowe"]
+        A[ISAP ingest ≤24h<br/>P0 ≤4h] --> B[validate_rules<br/>9 walidacji]
+        B --> C[lint_rego_rules<br/>6-check]
+        C --> D[hardcoded_audit_gate<br/>ADR-002 zero hardcode]
+        D --> E[dead_rule_detector<br/>tautology_guard]
+        E --> F[zero_defect_certification<br/>bramka merge]
+    end
+    subgraph LEGAL_TWIN["Legal Twin / LKG"]
+        G[legal_twin.py] --> H[legal_graph.json]
+        H --> I[legal_coverage_heatmap<br/>gap_report]
+    end
+    subgraph LAW_RADAR["Law Radar — zmiany prawa"]
+        J[isap_crawler] --> K[isap_drift_alarm]
+        K --> L[isap_rule_update_pipeline]
+        L --> M[law_radar + impact_matrix]
+    end
+    subgraph VERDICT["Werdykt / audyt"]
+        N[golden_replay.py] --> O[Decision Certificate]
+        O --> P[declarative_change.py]
+        P --> Q[invariant_checker]
+    end
+    F --> R[CI merge gate]
+    I --> R
+    M --> R
+    Q --> R
+    R --> S[final_verdict_p42<br/>deterministyczne Rego]
+
+════════════════════════════════════════════════════════════════════════════
+3. POKRYCIE — MAPA NARZĘDZI (tabela)
+════════════════════════════════════════════════════════════════════════════
+
+| Grupa | Narzędzia | Zakres | Status |
+|---|---|---|---|
+| Walidacja | validate_rules.py (9 walidacji) | struktura Rego: braces, package, rule_id unikalne, temporalność, legal_basis | A (kompletny) |
+| Lint | lint_rego_rules.py (6-check) | styl, konwencje, bezpieczeństwo, determinizm | A (kompletny) |
+| Zero hardcode | hardcoded_audit.py + hardcoded_audit_gate.py | ADR-002 — wartości przez thresholds.jdg | A (kompletny) |
+| Jakość | dead_rule_detector.py, tautology_guard.py, else_chain_dead_code_detector.py | martwe reguły, tautologie, martwy kod else-chain | A (kompletny) |
+| Spójność | cross_ref_validator.py, doc_consistency_validator.py | odsyłacze, spójność dokumentacji↔kodu | A (kompletny) |
+| Legal | validate_legal_basis.py (+v2, p24), legal_basis_audit.py, legal_coverage_heatmap.py, legal_coverage_gap_report.py, legal_change_calendar.py | kanoniczne podstawy prawne, pokrycie | A (kompletny) |
+| Legal Twin | legal_twin.py + legal_graph.json | węzły prawa, LCI/TCL/RV | A (kompletny) |
+| Law Radar | law_radar.py, law_impact_matrix.py, isap_crawler.py, isap_drift_alarm.py, isap_rule_update_pipeline.py | zmiany prawa, drift, pipeline adaptacji | A (kompletny) |
+| Golden Replay | golden_replay.py | oracle przeszłości, UVR, 4-eyes annotate | A (kompletny) |
+| Declarative Change | declarative_change.py | „człowiek opisuje, maszyna wykonuje" | A (kompletny) |
+| Certyfikat | decision_certificate.py, zero_defect_certification.py, rule_provenance_dna.py | certyfikat decyzji, zero-defect, provenance | A (kompletny) |
+| System/CI | rule_lifecycle_manager.py, deployment_orchestrator.py, invariant_checker.py, confidence_dashboard.py, policies_sync_gate.py, self_healing_engine.py, chaos_engineering.py, predictive_audit_shield.py | cykl życia, kanary, auto-rollback, chaos | A (kompletny) |
+| Inteligencja | adaptive_trust_score.py, cross_package_conflict_detector.py, rule_impact_simulator.py, temporal_drift_detector.py, decision_quality_monitor.py | trust, konflikty, symulacja, drift temporalny | A (kompletny) |
+| API/Migracje | policy_registry_api.py, data_service.py, migration_impact_analyzer.py, manifest_v2.py, api_doc_generator.py | registry, migracje, manifest | A (kompletny) |
+
+Wynik: 52/52 narzędzi systemowych pokrytych (100%), 7/7 testów, 5/5 dokumentów.
+
+════════════════════════════════════════════════════════════════════════════
+4. BRAMKI CI (6/6) — blokujące merge
+════════════════════════════════════════════════════════════════════════════
+
+| # | Bramka | Narzędzie | Cel |
+|---|---|---|---|
+| 1 | validate | validate_rules.py | struktura Rego (braces, package, rule_id) |
+| 2 | lint | lint_rego_rules.py | styl/konwencje/bezpieczeństwo |
+| 3 | hardcoded-gate | hardcoded_audit_gate.py | ADR-002 zero hardcode |
+| 4 | dead-rule | dead_rule_detector.py | brak martwych reguł |
+| 5 | tautology | tautology_guard.py | brak tautologii |
+| 6 | zero-defect | zero_defect_certification.py | certyfikat przed merge |
+
+Wszystkie 6 bramek obecne; 52 narzędzia parsują się (ast) → zero-defect.
+
+════════════════════════════════════════════════════════════════════════════
+5. OPA JAKO SYSTEM — WERYFIKACJA (dowody)
+════════════════════════════════════════════════════════════════════════════
+
+• Inventory: 52/52 narzędzi systemowych, 7/7 testów, 5/5 dokumentów — 0 braków.
+• Syntax: 52 narzędzia parsują się (ast) — 0 błędów składni.
+• CI gates: 6/6 bramek blokujących obecne.
+• Filary V1/V2: Legal Twin, Declarative Change, Decision Certificate,
+  Law Radar (4 artefakty ISAP), Golden Replay — wszystkie obecne.
+• Golden replay: 13 verdictów / 13 replay / 0 unmatched / 0 UVER.
+• Deployment: jdg-tls2-bundle-v9.0.0, phase COMPLETE_SOAK, quality 100.0,
+  error_rate 0.0 (fail-closed, NIE production-active).
+
+════════════════════════════════════════════════════════════════════════════
+6. KONTRAKTY DLA KOLEJNYCH RAPORTÓW
+════════════════════════════════════════════════════════════════════════════
+
+• Warstwa narzędziowa NIE tworzy rule_id Rego — zero kolizji z pakietami
+  r01..r17 (final_verdict_p42 w main_jdg.rego).
+• 6 bramek CI pozostaje wspólnych dla wszystkich pakietów — kolejne raporty
+  (R19 narzędzia domenowe, R20 pytest, R21 natywne Rego) dołączają artefakty
+  bez modyfikacji istniejących bramek.
+• Thresholds: wartości liczbowe wyłącznie przez data.thresholds.jdg.*.
+• Golden Replay: baseline golden_verdicts.json (schema_version=2) jest
+  niezmienny — nowe verdicty wyłącznie przez record/replay.
+• Następny raport: RAPORT_19 (NARZĘDZIA DOMENOWE — generatory reguł, audytory).
+
+════════════════════════════════════════════════════════════════════════════
+7. GENIALNE POMYSŁY ENTERPRISE (P0/P1/P2 — roadmapa)
+════════════════════════════════════════════════════════════════════════════
+
+P0 (natychmiast):
+  1. Telemetria produkcyjna dla narzędzi (validate/lint/legal-twin/replay) —
+     wyjście z fail-closed do production-active po soak 24h.
+  2. Law Radar w pełni automatyczny — ISAP → auto-generacja zmian thresholds
+     z bramką golden replay (pipeline ISAP ≤24h).
+P1 (krótki termin):
+  3. Decision Certificate on-chain — hash werdyktu + provenance tree (WORM).
+  4. Mutation ≥70% jako bramka CI dla WSZYSTKICH pakietów (nie tylko P23).
+P2 (średni termin):
+  5. Chaos engineering w CI — losowe wyłączanie reguł, test fallback_ladder.
+  6. Auto-generacja reguł z aktów prawnych (LLM + wzorzec Rego) z bramką
+     anty-duplikacyjną (wzorzec Bb) i golden replay.
+
+==============================================================================
+Stan wdrożenia po walidacji: WDROZONY_100
+Walidacja: gate tools_system_report18_gate.py 9/9 PASS (strict) ·
+golden replay 13/13 / 0 UVER ·
+bundle jdg-tls2-bundle-v9.0.0 (quality 100.0, error_rate 0.0, fail-closed)
+==============================================================================
