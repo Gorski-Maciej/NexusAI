@@ -1113,6 +1113,35 @@
       "bundle_version": "jdg-hp2-bundle-v9.0.0",
       "recorded_at": "2026-08-15T20:27:14.847346+00:00",
       "legal_basis_refs": []
+    },
+    "90ac46ac8a39baaa0f03f4ddc56b06227360921478b3b9bc57573b4d6858c5a6": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r14_rodo_aml_bdo_innovations.aml_transaction_risk_scorer",
+        "package": "jdg.r14_rodo_aml_bdo_innovations",
+        "priority": 11032,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "at_amount_eur": 20000,
+        "at_cash": true,
+        "at_high_risk_country": false,
+        "at_over_threshold": true,
+        "at_risk_score": 2,
+        "at_high_risk": true,
+        "at_threshold_eur": 15000,
+        "_routing": "BLOCK_AND_ALERT",
+        "_routing_reason": "Scoring AML — transakcja 20000.00 EUR (próg 15000), gotówka=true, kraj HR=false. Ryzyko 2/3. WYSOKIE — weryfikacja wzmożona (CDD).",
+        "_legal_basis": "ustawa AML art. 34 (transakcje > 15 000 EUR), art. 72 (próg gotówkowy), art. 74-80 (STR)",
+        "_warnings": [
+          "AML: transakcja 20000.00 EUR — ryzyko 2/3. WZMOCNIONA CDD."
+        ]
+      },
+      "verdict_hash": "2570761b93549b02de10864194546735942d2329cf8f739c47ad0d3928f677b6",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-rab2-bundle-v9.0.0",
+      "recorded_at": "2026-08-15T20:41:32.197209+00:00",
+      "legal_basis_refs": []
     }
   },
   "annotations": [],
@@ -2258,6 +2287,39 @@
       "reason": null,
       "uver_applies": false,
       "replayed_at": "2026-08-15T20:27:14.847346+00:00"
+    },
+    {
+      "input_hash": "90ac46ac8a39baaa0f03f4ddc56b06227360921478b3b9bc57573b4d6858c5a6",
+      "golden_verdict_hash": "2570761b93549b02de10864194546735942d2329cf8f739c47ad0d3928f677b6",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r14_rodo_aml_bdo_innovations.aml_transaction_risk_scorer",
+        "package": "jdg.r14_rodo_aml_bdo_innovations",
+        "priority": 11032,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "at_amount_eur": 20000,
+        "at_cash": true,
+        "at_high_risk_country": false,
+        "at_over_threshold": true,
+        "at_risk_score": 2,
+        "at_high_risk": true,
+        "at_threshold_eur": 15000,
+        "_routing": "BLOCK_AND_ALERT",
+        "_routing_reason": "Scoring AML — transakcja 20000.00 EUR (próg 15000), gotówka=true, kraj HR=false. Ryzyko 2/3. WYSOKIE — weryfikacja wzmożona (CDD).",
+        "_legal_basis": "ustawa AML art. 34 (transakcje > 15 000 EUR), art. 72 (próg gotówkowy), art. 74-80 (STR)",
+        "_warnings": [
+          "AML: transakcja 20000.00 EUR — ryzyko 2/3. WZMOCNIONA CDD."
+        ]
+      },
+      "new_verdict_hash": "2570761b93549b02de10864194546735942d2329cf8f739c47ad0d3928f677b6",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-15T20:41:32.197209+00:00"
     }
   ]
 }

@@ -395,6 +395,10 @@ import data.jdg.r12_ryczalt_cykl_zycia_innovations
 # Detektor konfliktów, danina solidarnościowa, prokura, kalendarz terminów,
 # selektor podpisu kwalifikowanego.
 import data.jdg.r13_hyper_konteksty_innovations
+# ── PAS 18ac: R14 GLM52 RODO / AML-CBDD / BDO / ŚRODOWISKO (2026-08-15) ──
+# Rejestr czynności RODO, scoring AML, sankcje RODO, monitor STR/GIIF,
+# monitor obowiązków BDO.
+import data.jdg.r14_rodo_aml_bdo_innovations
 import data.jdg.micro.vat.r03 as micro_vat_r03
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1423,6 +1427,7 @@ _package_decisions := {
     "jdg.r11_pcc_lokalne_akcyza_innovations": r11_pcc_lokalne_akcyza_innovations.decide,
     "jdg.r12_ryczalt_cykl_zycia_innovations": r12_ryczalt_cykl_zycia_innovations.decide,
     "jdg.r13_hyper_konteksty_innovations": r13_hyper_konteksty_innovations.decide,
+    "jdg.r14_rodo_aml_bdo_innovations": r14_rodo_aml_bdo_innovations.decide,
     "jdg.micro.vat.r03": micro_vat_r03.decide,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
@@ -1927,6 +1932,18 @@ final_verdict_p38 = safe_merge(final_verdict_p37,
     ))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18ad: R14 GLM52 RODO / AML-CBDD / BDO / ŚRODOWISKO (2026-08-15)
+# Rejestr czynności RODO, scoring transakcji AML, kalkulator sankcji RODO,
+# monitor STR do GIIF, monitor obowiązków BDO. Pakiet REPORT-owy — aktywowany
+# flagą input.jdg_entrepreneur.r14_rodo_aml_bdo_check (w normalnym ruchu
+# no_match). Nie nadpisuje decyzji (safe_merge).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p39 = safe_merge(final_verdict_p38,
+    safe_merge(r14_rodo_aml_bdo_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -1940,7 +1957,7 @@ final_verdict_p38 = safe_merge(final_verdict_p37,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-final_verdict_post_merge = object.union(final_verdict_p38,
+final_verdict_post_merge = object.union(final_verdict_p39,
     {"_routing_context": routing_context})
 
 final_verdict_enforced = object.union(final_verdict_post_merge,

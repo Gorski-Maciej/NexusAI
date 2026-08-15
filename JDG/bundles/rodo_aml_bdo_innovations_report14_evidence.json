@@ -1,0 +1,126 @@
+{
+  "report": "RAPORT_14_RODO_AML_BDO",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "report_present": true,
+    "innovations_complete": true,
+    "legal_basis_canonical": true,
+    "thresholds_externalized": true,
+    "duplicate_free": true,
+    "router_wired": true,
+    "tests_present": true,
+    "golden_replay_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "checks_passed": 9,
+  "checks_total": 9,
+  "scope": {
+    "files": {
+      "r14_rego": true,
+      "main_jdg": true,
+      "thresholds": true,
+      "pytest": true,
+      "native_rego": true,
+      "report": true
+    },
+    "files_total": 6,
+    "files_present": 6,
+    "report_present": true,
+    "rab_core_files_declared": 29,
+    "rab_core_files_present": 29
+  },
+  "innovations": {
+    "required_innovations": [
+      "rodo_register_monitor",
+      "rg_incomplete",
+      "rg_data_categories_count",
+      "aml_transaction_risk_scorer",
+      "at_risk_score",
+      "at_high_risk",
+      "rodo_sanction_calculator",
+      "rb_upper_tier",
+      "rb_max_sanction_eur",
+      "str_gijf_deadline_monitor",
+      "sm_unfiled_count",
+      "sm_str_deadline_days",
+      "bdo_obligation_monitor",
+      "bd_unfiled_count",
+      "bd_kpo_electronic"
+    ],
+    "missing_innovations": [],
+    "innovations_complete": true,
+    "legal_basis_markers": [
+      "art. 30",
+      "art. 34",
+      "art. 83",
+      "art. 74",
+      "art. 49",
+      "art. 17"
+    ],
+    "missing_legal_markers": [],
+    "legal_basis_complete": true,
+    "decide_report_rule": true,
+    "activation_flag": true,
+    "default_no_match": true,
+    "rodo_register": true,
+    "aml_scorer": true,
+    "rodo_sanction": true,
+    "str_monitor": true,
+    "bdo_monitor": true
+  },
+  "thresholds": {
+    "thresholds_via_data": true,
+    "sanction_externalized": true,
+    "aml_externalized": true,
+    "bdo_externalized": true,
+    "rab_block_present": true
+  },
+  "duplicates": {
+    "rule_ids_total": 6,
+    "rule_ids_unique": 6,
+    "duplicates": [],
+    "duplicate_count": 0
+  },
+  "router": {
+    "import_present": true,
+    "package_decisions_entry": true,
+    "final_verdict_p39": true,
+    "post_merge_present": true,
+    "invariants_enforced": true,
+    "final_verdict_public": true
+  },
+  "tests": {
+    "pytest_present": true,
+    "native_rego_present": true,
+    "marker_hits": {
+      "rodo_register_monitor": true,
+      "aml_transaction_risk_scorer": true,
+      "rodo_sanction_calculator": true,
+      "str_gijf_deadline_monitor": true,
+      "bdo_obligation_monitor": true,
+      "r14_rodo_aml_bdo_check": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "art. 30": true,
+      "art. 34": true,
+      "art. 83": true,
+      "art. 74": true,
+      "art. 49": true
+    },
+    "markers_complete": true,
+    "pytest_test_functions": 14,
+    "native_test_functions": 11
+  },
+  "replay": {
+    "golden_verdicts_total": 27,
+    "rab_verdicts": 1,
+    "rab_replays": 1,
+    "uver_count": 0,
+    "replay_verified": true
+  },
+  "generated_at": "2026-08-15T20:48:01.628116+00:00"
+}

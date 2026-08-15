@@ -911,6 +911,31 @@ hyper_contexts := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# RODO / AML / BDO THRESHOLDS — RAPORT_14 (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+rodo_aml_bdo := {
+    # RODO — sankcje (art. 83)
+    "rodo_sanction_min_eur": 10000000,           # 10 mln EUR / 2% (art. 83 ust. 4)
+    "rodo_sanction_max_eur": 20000000,           # 20 mln EUR / 4% (art. 83 ust. 5)
+    "rodo_breach_deadline_hours": 72,            # zgłoszenie naruszenia 72h (art. 33)
+    "rodo_erasure_deadline_days": 30,            # usunięcie danych (art. 17)
+
+    # AML (ustawa AML art. 34, 72, 74-80)
+    "aml_threshold_eur": 15000,                  # transakcje > 15 000 EUR
+    "aml_str_deadline_days": 1,                  # STR do GIIF — 1 dzień roboczy
+    "aml_sanction_max_pln": 1000000,             # art. 153 u.AML
+
+    # BDO (UoO art. 49-53)
+    "bdo_registration_days": 30,                 # termin rejestracji w BDO
+    "bdo_kpo_electronic": true,                  # KPO elektroniczna
+    "bdo_fee_micro_pln": 100,                    # opłata rejestracyjna mikro
+
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # LOCAL TAXES / OPŁATY LOKALNE (Klasa IX — Blind Spot §1.1 z STRATEGIC_IMPROVEMENTS_7000)
 # ═══════════════════════════════════════════════════════════════════════════════
 # Stawki 2026 wg obwieszczenia MF. Gminy mogą ustalać niższe stawki uchwałą.

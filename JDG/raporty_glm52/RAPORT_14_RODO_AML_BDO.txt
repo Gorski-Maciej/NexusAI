@@ -5,6 +5,33 @@ Seria: 14/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
 Status: WDROZONY_100 (2026-08-15)
 ==============================================================================
 
+────────────────────────────────────────────────────────────────────────────────
+UZUPEŁNIENIE KAMPANII GLM 5.2 (2026-08-15) — NOWY PAKIET R14
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę RODO/AML/BDO/środowisko (p14/p15/p16 +
+rodo* + compliance + security_fortress + environmental + micro/rodo|aml|bdo|
+srodowisko), która jest kompletna. Dodatkowo, w ramach kampanii GLM 5.2 (seria
+R01→R24), wdrożono NOWY pakiet innowacji:
+
+  rules/r14_rodo_aml_bdo_innovations_v9.rego (5 INN):
+    R14-INN-01 rodo_register_monitor — rejestr czynności (art. 30 RODO)
+                                      z fail-closed przy brakach
+    R14-INN-02 aml_transaction_risk_scorer — scoring transakcji AML
+                                      (art. 34 — >15 000 EUR)
+    R14-INN-03 rodo_sanction_calculator — sankcje RODO (art. 83:
+                                      10M/2% vs 20M/4%)
+    R14-INN-04 str_gijf_deadline_monitor — STR do GIIF (art. 74-80,
+                                      1 dzień roboczy)
+    R14-INN-05 bdo_obligation_monitor — obowiązki BDO (art. 49-53)
+
+  Wiring: main_jdg.rego final_verdict_p39 = safe_merge(final_verdict_p38,
+  safe_merge(r14_rodo_aml_bdo_innovations.decide, fallback.decide));
+  thresholds.rodo_aml_bdo w thresholds_jdg.rego (zero hardcode).
+
+  Evidence: bundles/rodo_aml_bdo_innovations_report14_evidence.json (9/9) —
+  tools/rodo_aml_bdo_innovations_report14_gate.py --strict PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
 ════════════════════════════════════════════════════════════════════════════
 1. EXECUTIVE SUMMARY (1 strona)
 ════════════════════════════════════════════════════════════════════════════
