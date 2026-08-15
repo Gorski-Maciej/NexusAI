@@ -1027,6 +1027,34 @@
       "bundle_version": "jdg-xb2-bundle-v9.0.0",
       "recorded_at": "2026-08-15T19:19:49.853620+00:00",
       "legal_basis_refs": []
+    },
+    "6eaf7c92c1db02872bcec18490dcbe206e509eb14ce731c9ad5cd7590d5b8148": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r11_pcc_lokalne_akcyza_innovations.vat_vs_pcc_arbitrator",
+        "package": "jdg.r11_pcc_lokalne_akcyza_innovations",
+        "priority": 11020,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "arb_transaction_type": "SALE",
+        "arb_value": 500000,
+        "arb_vat_applies": false,
+        "arb_rate": 0.02,
+        "arb_pcc_excluded": false,
+        "arb_pcc_due_pln": 10000.0,
+        "_routing": "TRIAGE_QUEUE",
+        "_routing_reason": "Arbiter VAT vs PCC — typ SALE, wartość 500000.00, VAT=false. PCC: 10000.00 PLN.",
+        "_legal_basis": "ustawa o PCC art. 2 pkt 4 (wyłączenie VAT), art. 7 (stawki), art. 9 (zwolnienia), art. 10 (termin)",
+        "_warnings": [
+          "VAT/PCC: typ SALE — PCC 10000.00 PLN (stawka 2.00%)."
+        ]
+      },
+      "verdict_hash": "01966de098e5112db3668a1249db1404d77b4fbb9245f5989324cbcb40041460",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-ple-bundle-v9.0.0",
+      "recorded_at": "2026-08-15T19:42:55.969247+00:00",
+      "legal_basis_refs": []
     }
   },
   "annotations": [],
@@ -2074,6 +2102,38 @@
       "reason": null,
       "uver_applies": false,
       "replayed_at": "2026-08-15T19:19:49.853620+00:00"
+    },
+    {
+      "input_hash": "6eaf7c92c1db02872bcec18490dcbe206e509eb14ce731c9ad5cd7590d5b8148",
+      "golden_verdict_hash": "01966de098e5112db3668a1249db1404d77b4fbb9245f5989324cbcb40041460",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r11_pcc_lokalne_akcyza_innovations.vat_vs_pcc_arbitrator",
+        "package": "jdg.r11_pcc_lokalne_akcyza_innovations",
+        "priority": 11020,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "arb_transaction_type": "SALE",
+        "arb_value": 500000,
+        "arb_vat_applies": false,
+        "arb_rate": 0.02,
+        "arb_pcc_excluded": false,
+        "arb_pcc_due_pln": 10000.0,
+        "_routing": "TRIAGE_QUEUE",
+        "_routing_reason": "Arbiter VAT vs PCC — typ SALE, wartość 500000.00, VAT=false. PCC: 10000.00 PLN.",
+        "_legal_basis": "ustawa o PCC art. 2 pkt 4 (wyłączenie VAT), art. 7 (stawki), art. 9 (zwolnienia), art. 10 (termin)",
+        "_warnings": [
+          "VAT/PCC: typ SALE — PCC 10000.00 PLN (stawka 2.00%)."
+        ]
+      },
+      "new_verdict_hash": "01966de098e5112db3668a1249db1404d77b4fbb9245f5989324cbcb40041460",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-15T19:42:55.969247+00:00"
     }
   ]
 }

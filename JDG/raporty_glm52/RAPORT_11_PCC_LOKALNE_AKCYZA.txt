@@ -5,6 +5,34 @@ Seria: 11/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
 Status: WDROZONY_100 (2026-08-15)
 ==============================================================================
 
+────────────────────────────────────────────────────────────────────────────────
+UZUPEŁNIENIE KAMPANII GLM 5.2 (2026-08-15) — NOWY PAKIET R11
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę PCC/podatki lokalne/akcyza (p14 v9 + p15 +
+local_taxes/* + micro/pcc|akcyza|transport + pcc/*), która jest kompletna.
+Dodatkowo, w ramach kampanii GLM 5.2 (seria R01→R24), wdrożono NOWY pakiet
+innowacji:
+
+  rules/r11_pcc_lokalne_akcyza_innovations_v9.rego (5 INN):
+    R11-INN-01 pcc3_deadline_alert_monitor — monitor 14 dni deklaracji PCC-3
+                                             (art. 10 PCC, 3 poziomy alertów)
+    R11-INN-02 real_estate_tax_simulator  — symulator podatku od nieruchomości
+                                             (1,43/33,10 zł/m² + raty)
+    R11-INN-03 excise_product_classifier  — klasyfikator wyrobów akcyzowych
+                                             (paliwo/alkohol → stawka →
+                                             AKC-R/banderole)
+    R11-INN-04 transport_tax_deadline_monitor — monitor DN-1 (14 dni) + raty
+                                             15.03/15.05/15.09/15.11
+    R11-INN-05 vat_vs_pcc_arbitrator      — arbiter VAT vs PCC (art. 2 pkt 4)
+
+  Wiring: main_jdg.rego final_verdict_p36 = safe_merge(final_verdict_p35,
+  safe_merge(r11_pcc_lokalne_akcyza_innovations.decide, fallback.decide));
+  thresholds.pcc_local_excise w thresholds_jdg.rego (zero hardcode).
+
+  Evidence: bundles/pcc_lokalne_akcyza_report11_evidence.json (9/9) —
+  tools/pcc_lokalne_akcyza_report11_gate.py --strict PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
 ════════════════════════════════════════════════════════════════════════════
 1. EXECUTIVE SUMMARY (1 strona)
 ════════════════════════════════════════════════════════════════════════════

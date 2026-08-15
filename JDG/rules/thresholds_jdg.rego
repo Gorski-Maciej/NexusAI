@@ -784,10 +784,43 @@ crossborder := {
     "cfc_passive_income_pct": 0.33,             # >33% dochodu pasywnego
     "cfc_tax_rate_threshold_pct": 0.1425,       # <14.25% podatku zagranicznego
 
-    # Art. 30da PIT — Exit tax
-    "exit_tax_threshold_pln": 4000000,          # próg 4 000 000 PLN
+    # Art. 30da PIT — Exit tax    "exit_tax_threshold_pln": 4000000,          # próg 4 000 000 PLN
     "exit_tax_rate_pct": 0.19,                  # 19%
     "valid_from": "2025-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PCC / PODATKI LOKALNE / AKCYZĄ THRESHOLDS — RAPORT_11 (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+pcc_local_excise := {
+    # Ustawa o PCC — art. 6-7 (stawki)
+    "pcc_sale_rate": 0.02,                      # sprzedaż 2%
+    "pcc_loan_rate": 0.005,                     # pożyczka 0,5%
+    "pcc_company_rate": 0.005,                  # spółki 0,5%
+    "pcc_mortgage_rate": 0.001,                 # hipoteka 0,1%
+    "pcc_exemption_limit": 1000,                # zwolnienie ≤1000 zł (art. 9)
+    "pcc_family_loan_limit": 36120,             # pożyczka rodzinna 36 120 zł
+    "pcc3_deadline_days": 14,                   # PCC-3 14 dni (art. 10)
+
+    # Podatek od nieruchomości (stawki maksymalne 2026)
+    "land_business_rate": 1.43,                 # PLN/m² grunt biznes
+    "building_business_rate": 33.10,            # PLN/m² budynek biznes
+
+    # Podatek od środków transportowych + DN-1
+    "transport_dn1_deadline_days": 14,          # DN-1 14 dni
+
+    # Akcyza — paliwa (zł/1000l, 2026)
+    "excise_gasoline": 1566,                    # benzyna
+    "excise_diesel": 1206,                      # olej napędowy
+    "excise_lpg": 695,                          # LPG
+
+    # Akcyza — alkohol (zł/hl, 2026)
+    "excise_ethanol_per_hl": 6900,              # etanol 100%
+    "excise_beer_per_plato": 8.57,              # piwo za °Plato
+    "excise_wine_per_hl": 185,                  # wino
+    "valid_from": "2026-01-01",
     "valid_to": null,
 }
 
