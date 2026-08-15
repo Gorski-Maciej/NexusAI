@@ -5,6 +5,35 @@ Seria: 12/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
 Status: WDROZONY_100 (2026-08-15)
 ==============================================================================
 
+────────────────────────────────────────────────────────────────────────────────
+UZUPEŁNIENIE KAMPANII GLM 5.2 (2026-08-15) — NOWY PAKIET R12
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę ryczałt/cykl życia (p13 v9.4 + p16 +
+business.rego + business/* + lifecycle_manager + restructuring + micro/ryczalt|
+pp|sukcesja|ceidg|budownictwo + plan33_ryc|ceidg|succ), która jest kompletna.
+Dodatkowo, w ramach kampanii GLM 5.2 (seria R01→R24), wdrożono NOWY pakiet
+innowacji:
+
+  rules/r12_ryczalt_cykl_zycia_innovations_v9.rego (5 INN):
+    R12-INN-01 ryczalt_limit_monitor — monitor limitu 2 mln EUR (art. 6)
+                                       z 3 poziomami alertów + projekcja
+    R12-INN-02 pkwiu_rate_classifier — klasyfikator PKWiU → stawka 3%-25%
+                                       (art. 12) z walidacją stawki
+    R12-INN-03 lifecycle_phase_planner — planner faz cyklu życia JDG
+                                       z kalendarzem obowiązków
+    R12-INN-04 succession_deadline_monitor — monitor terminów sukcesji
+                                       (wpis CEIDG 14 dni, 2 lata + do 5 lat)
+    R12-INN-05 tax_form_arbitrator — arbiter formy (ryczałt/skala/liniowy)
+                                       + zawieszenie vs zamknięcie
+
+  Wiring: main_jdg.rego final_verdict_p37 = safe_merge(final_verdict_p36,
+  safe_merge(r12_ryczalt_cykl_zycia_innovations.decide, fallback.decide));
+  thresholds.business_lifecycle w thresholds_jdg.rego (zero hardcode).
+
+  Evidence: bundles/ryczalt_cykl_zycia_report12_evidence.json (9/9) —
+  tools/ryczalt_cykl_zycia_report12_gate.py --strict PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
 ════════════════════════════════════════════════════════════════════════════
 1. EXECUTIVE SUMMARY (1 strona)
 ════════════════════════════════════════════════════════════════════════════

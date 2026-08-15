@@ -1055,6 +1055,36 @@
       "bundle_version": "jdg-ple-bundle-v9.0.0",
       "recorded_at": "2026-08-15T19:42:55.969247+00:00",
       "legal_basis_refs": []
+    },
+    "756325820652928effbf53b949b6b2cbfaf90574ef4dfe14b6ab6d72e04b6dc1": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r12_ryczalt_cykl_zycia_innovations.tax_form_arbitrator",
+        "package": "jdg.r12_ryczalt_cykl_zycia_innovations",
+        "priority": 11025,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "tf_annual_revenue": 100000,
+        "tf_annual_costs": 20000,
+        "tf_profit": 80000,
+        "tf_cost_ratio": 0.2,
+        "tf_employees": 2,
+        "tf_recommended_form": "RYCZALT",
+        "tf_suspension_recommend": "KONTYNUUJ",
+        "tf_suspension_max_months": 24,
+        "_routing": "",
+        "_routing_reason": "Arbiter formy — przychód 100000.00, koszty 20000.00 (20.00%), zysk 80000.00. Rekomendacja: RYCZALT. KONTYNUUJ",
+        "_legal_basis": "ustawa o ryczałcie art. 6 (limit), art. 12 (stawki), PIT (skala/liniowy), Prawo przedsiębiorców art. 22-25 (zawieszenie)",
+        "_warnings": [
+          "FORMA: RYCZALT — kontynuuj działalność."
+        ]
+      },
+      "verdict_hash": "22c5cbbce737f559835a3e7f58908edca4c925a909de3b55834c841e1738994e",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-lc2-bundle-v9.0.0",
+      "recorded_at": "2026-08-15T20:09:01.680655+00:00",
+      "legal_basis_refs": []
     }
   },
   "annotations": [],
@@ -2134,6 +2164,40 @@
       "reason": null,
       "uver_applies": false,
       "replayed_at": "2026-08-15T19:42:55.969247+00:00"
+    },
+    {
+      "input_hash": "756325820652928effbf53b949b6b2cbfaf90574ef4dfe14b6ab6d72e04b6dc1",
+      "golden_verdict_hash": "22c5cbbce737f559835a3e7f58908edca4c925a909de3b55834c841e1738994e",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r12_ryczalt_cykl_zycia_innovations.tax_form_arbitrator",
+        "package": "jdg.r12_ryczalt_cykl_zycia_innovations",
+        "priority": 11025,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "tf_annual_revenue": 100000,
+        "tf_annual_costs": 20000,
+        "tf_profit": 80000,
+        "tf_cost_ratio": 0.2,
+        "tf_employees": 2,
+        "tf_recommended_form": "RYCZALT",
+        "tf_suspension_recommend": "KONTYNUUJ",
+        "tf_suspension_max_months": 24,
+        "_routing": "",
+        "_routing_reason": "Arbiter formy — przychód 100000.00, koszty 20000.00 (20.00%), zysk 80000.00. Rekomendacja: RYCZALT. KONTYNUUJ",
+        "_legal_basis": "ustawa o ryczałcie art. 6 (limit), art. 12 (stawki), PIT (skala/liniowy), Prawo przedsiębiorców art. 22-25 (zawieszenie)",
+        "_warnings": [
+          "FORMA: RYCZALT — kontynuuj działalność."
+        ]
+      },
+      "new_verdict_hash": "22c5cbbce737f559835a3e7f58908edca4c925a909de3b55834c841e1738994e",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-15T20:09:01.680655+00:00"
     }
   ]
 }

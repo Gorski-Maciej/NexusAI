@@ -387,6 +387,10 @@ import data.jdg.r10_crossborder_innovations
 # Monitor PCC-3 14 dni, symulator podatku od nieruchomości, klasyfikator
 # wyrobów akcyzowych, monitor DN-1, arbiter VAT vs PCC (art. 2 pkt 4).
 import data.jdg.r11_pcc_lokalne_akcyza_innovations
+# ── PAS 18z: R12 GLM52 RYCZAŁT / CEIDG / CYKL ŻYCIA (2026-08-15) ──
+# Monitor limitu 2M EUR ryczałtu, klasyfikator PKWiU, planner faz cyklu
+# życia, monitor sukcesji, arbiter formy opodatkowania.
+import data.jdg.r12_ryczalt_cykl_zycia_innovations
 import data.jdg.micro.vat.r03 as micro_vat_r03
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1413,6 +1417,7 @@ _package_decisions := {
     "jdg.r09_ksiegowosc_pkpir_uor_innovations": r09_ksiegowosc_pkpir_uor_innovations.decide,
     "jdg.r10_crossborder_innovations": r10_crossborder_innovations.decide,
     "jdg.r11_pcc_lokalne_akcyza_innovations": r11_pcc_lokalne_akcyza_innovations.decide,
+    "jdg.r12_ryczalt_cykl_zycia_innovations": r12_ryczalt_cykl_zycia_innovations.decide,
     "jdg.micro.vat.r03": micro_vat_r03.decide,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
@@ -1892,6 +1897,18 @@ final_verdict_p36 = safe_merge(final_verdict_p35,
     ))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18z2: R12 GLM52 RYCZAŁT / CEIDG / CYKL ŻYCIA (2026-08-15)
+# Monitor limitu 2 mln EUR ryczałtu, klasyfikator PKWiU, planner faz cyklu
+# życia JDG, monitor terminów sukcesji, arbiter formy opodatkowania. Pakiet
+# REPORT-owy — aktywowany flagą input.jdg_entrepreneur.r12_ryczalt_cykl_zycia_
+# check (w normalnym ruchu no_match). Nie nadpisuje decyzji (safe_merge).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p37 = safe_merge(final_verdict_p36,
+    safe_merge(r12_ryczalt_cykl_zycia_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -1905,7 +1922,7 @@ final_verdict_p36 = safe_merge(final_verdict_p35,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-final_verdict_post_merge = object.union(final_verdict_p36,
+final_verdict_post_merge = object.union(final_verdict_p37,
     {"_routing_context": routing_context})
 
 final_verdict_enforced = object.union(final_verdict_post_merge,

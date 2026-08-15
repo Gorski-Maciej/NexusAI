@@ -844,6 +844,47 @@ business := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# RYCZAŁT / CEIDG / CYKL ŻYCIA THRESHOLDS — RAPORT_12 (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+business_lifecycle := {
+    # Ustawa o ryczałcie art. 6 — limit 2 mln EUR
+    "ryczalt_limit_eur": 2000000,               # limit przychodów ryczałtu (art. 6 ust. 1)
+    "eur_pln_reference": 4.3,                   # referencyjny kurs EUR/PLN (przeliczenie)
+    "ryczalt_warning_pct": 75,                  # próg ostrzeżenia (% limitu)
+
+    # Ustawa o ryczałcie art. 12 — stawki wg PKWiU
+    "ryczalt_rate_min": 0.03,                   # minimalna stawka 3%
+    "ryczalt_rate_max": 0.25,                   # maksymalna stawka 25%
+
+    # Karta podatkowa (art. 21-28)
+    "karta_max_employees": 5,                   # limit zatrudnienia (karta podatkowa)
+
+    # CEIDG (art. 5-15)
+    "ceidg_registration_days": 7,               # wpis/zmiana CEIDG (art. 16 ust. 3 PP)
+
+    # Sukcesja (art. 3-15 u.z.s.)
+    "succession_ceidg_days": 14,                # wpis zarządcy sukcesyjnego do CEIDG
+    "succession_default_months": 24,            # 2 lata standardowo (art. 12)
+    "succession_extended_months": 60,           # do 5 lat (art. 13)
+
+    # Działalność nieewidencjonowana (art. 5-6 PP)
+    "unregistered_min_wage_pct": 0.5,           # 50% płacy minimalnej
+    "min_wage_pln": 4800.0,                     # płaca minimalna (PLN)
+
+    # Zawieszenie (art. 22-25 PP)
+    "suspension_max_months": 24,                # max 24 mies. zawieszenia
+
+    # Cykl życia JDG — fazy
+    "lifecycle_ulga_start_months": 6,           # ulga na start 0-6 mies.
+    "lifecycle_pref_zus_months": 24,            # preferencyjny ZUS 6-30 mies.
+    "lifecycle_vat_threshold_pln": 200000,      # próg VAT (art. 113 ust. 1)
+
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # LOCAL TAXES / OPŁATY LOKALNE (Klasa IX — Blind Spot §1.1 z STRATEGIC_IMPROVEMENTS_7000)
 # ═══════════════════════════════════════════════════════════════════════════════
 # Stawki 2026 wg obwieszczenia MF. Gminy mogą ustalać niższe stawki uchwałą.
