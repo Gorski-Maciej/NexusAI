@@ -5,6 +5,34 @@ Seria: 13/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
 Status: WDROZONY_100 (2026-08-15)
 ==============================================================================
 
+────────────────────────────────────────────────────────────────────────────────
+UZUPEŁNIENIE KAMPANII GLM 5.2 (2026-08-15) — NOWY PAKIET R13
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę hyper/konteksty (hyper/** 14 modułów +
+p17_edge_conflicts + hyper_plan45_meta + representation + regulated +
+conviction + esig + calendar + conflicts + 15 par plan44/45), która jest
+kompletna. Dodatkowo, w ramach kampanii GLM 5.2 (seria R01→R24), wdrożono
+NOWY pakiet innowacji:
+
+  rules/r13_hyper_konteksty_innovations_v9.rego (5 INN):
+    R13-INN-01 cross_domain_conflict_detector — konflikt IP Box vs B+R
+                                              (art. 30ca PIT)
+    R13-INN-02 solidarity_tax_monitor — danina solidarnościowa (art. 30h):
+                                              próg 1 mln PLN, 4%
+    R13-INN-03 prokura_deadline_monitor — wpis prokury 7 dni (art. 109 KC)
+    R13-INN-04 annual_deadline_calendar — terminy roczne 30 kwietnia
+                                              (art. 45 PIT) + przesunięcie
+    R13-INN-05 qualified_signature_selector — selektor podpisu (eIDAS,
+                                              art. 126 § 5 OP)
+
+  Wiring: main_jdg.rego final_verdict_p38 = safe_merge(final_verdict_p37,
+  safe_merge(r13_hyper_konteksty_innovations.decide, fallback.decide));
+  thresholds.hyper_contexts w thresholds_jdg.rego (zero hardcode).
+
+  Evidence: bundles/hyper_konteksty_report13_evidence.json (9/9) —
+  tools/hyper_konteksty_report13_gate.py --strict PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
 ════════════════════════════════════════════════════════════════════════════
 1. EXECUTIVE SUMMARY (1 strona)
 ════════════════════════════════════════════════════════════════════════════

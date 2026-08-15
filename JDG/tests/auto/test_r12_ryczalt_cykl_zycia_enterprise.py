@@ -99,7 +99,7 @@ def test_r12_main_router_wired_p37():
     assert "import data.jdg.r12_ryczalt_cykl_zycia_innovations" in src
     assert '"jdg.r12_ryczalt_cykl_zycia_innovations": r12_ryczalt_cykl_zycia_innovations.decide' in src
     assert "final_verdict_p37 = safe_merge(final_verdict_p36" in src
-    assert "final_verdict_post_merge = object.union(final_verdict_p37" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p38" in src
 
 
 # ── R12-INN-01: ryczalt_limit_monitor ────────────────────────────────────────
@@ -161,7 +161,7 @@ def test_inn05_tax_form_arbitrator():
 
 def test_invariants_after_r12():
     src = _read(MAIN_REGO)
-    assert "final_verdict_post_merge = object.union(final_verdict_p37" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p38" in src
     assert "final_verdict_enforced = object.union(final_verdict_post_merge" in src
     assert "_decision_certificate" in src or "decision_certificate" in src
     assert "_certainty_guard" in src

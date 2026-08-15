@@ -885,6 +885,32 @@ business_lifecycle := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# HYPER PLAN45 / KONTEKSTY SPECJALNE THRESHOLDS — RAPORT_13 (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+hyper_contexts := {
+    # Danina solidarnościowa (art. 30h PIT)
+    "solidarity_threshold_pln": 1000000,         # próg 1 mln PLN
+    "solidarity_rate": 0.04,                     # 4% od nadwyżki
+
+    # IP Box vs B+R (art. 30ca PIT)
+    "ip_box_rate": 0.05,                         # 5% IP Box
+    "rd_relief_rate": 0.30,                      # ulga B+R 30% (art. 26e)
+
+    # Prokura (art. 109¹-109⁸ KC)
+    "prokura_deadline_days": 7,                  # wpis prokury do CEIDG/KRS
+
+    # Terminy roczne (art. 45 PIT)
+    "pit_annual_deadline": "04-30",              # 30 kwietnia
+
+    # Podpis kwalifikowany (eIDAS art. 25-26, art. 126 § 5 OP)
+    "qualified_signature_value_threshold": 10000,  # próg wartości dokumentu (PLN)
+
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # LOCAL TAXES / OPŁATY LOKALNE (Klasa IX — Blind Spot §1.1 z STRATEGIC_IMPROVEMENTS_7000)
 # ═══════════════════════════════════════════════════════════════════════════════
 # Stawki 2026 wg obwieszczenia MF. Gminy mogą ustalać niższe stawki uchwałą.

@@ -1085,6 +1085,34 @@
       "bundle_version": "jdg-lc2-bundle-v9.0.0",
       "recorded_at": "2026-08-15T20:09:01.680655+00:00",
       "legal_basis_refs": []
+    },
+    "9f330a8d1267e4c79bb089490ad9f825dae40b1952a77b5ec6727d3214693508": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r13_hyper_konteksty_innovations.solidarity_tax_monitor",
+        "package": "jdg.r13_hyper_konteksty_innovations",
+        "priority": 11027,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "st_annual_income_pln": 2000000,
+        "st_threshold_pln": 1000000,
+        "st_excess_pln": 1000000,
+        "st_solidarity_due_pln": 40000.0,
+        "st_applies": true,
+        "st_rate": 0.04,
+        "_routing": "TRIAGE_QUEUE",
+        "_routing_reason": "Danina solidarnościowa — dochód 2000000.00, nadwyżka 1000000.00 (próg 1000000). danina 40000.00 PLN (4%).",
+        "_legal_basis": "ustawa o PIT art. 30h (danina solidarnościowa 4% od nadwyżki ponad 1 mln PLN)",
+        "_warnings": [
+          "DANINA SOLIDARNOŚCIOWA: 40000.00 PLN (4% od nadwyżki 1000000.00)."
+        ]
+      },
+      "verdict_hash": "8f0ec51f7d49cbdfc0af12ad305ecc56cafebc80cc20f86d9cd837b249c21227",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-hp2-bundle-v9.0.0",
+      "recorded_at": "2026-08-15T20:27:14.847346+00:00",
+      "legal_basis_refs": []
     }
   },
   "annotations": [],
@@ -2198,6 +2226,38 @@
       "reason": null,
       "uver_applies": false,
       "replayed_at": "2026-08-15T20:09:01.680655+00:00"
+    },
+    {
+      "input_hash": "9f330a8d1267e4c79bb089490ad9f825dae40b1952a77b5ec6727d3214693508",
+      "golden_verdict_hash": "8f0ec51f7d49cbdfc0af12ad305ecc56cafebc80cc20f86d9cd837b249c21227",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r13_hyper_konteksty_innovations.solidarity_tax_monitor",
+        "package": "jdg.r13_hyper_konteksty_innovations",
+        "priority": 11027,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "st_annual_income_pln": 2000000,
+        "st_threshold_pln": 1000000,
+        "st_excess_pln": 1000000,
+        "st_solidarity_due_pln": 40000.0,
+        "st_applies": true,
+        "st_rate": 0.04,
+        "_routing": "TRIAGE_QUEUE",
+        "_routing_reason": "Danina solidarnościowa — dochód 2000000.00, nadwyżka 1000000.00 (próg 1000000). danina 40000.00 PLN (4%).",
+        "_legal_basis": "ustawa o PIT art. 30h (danina solidarnościowa 4% od nadwyżki ponad 1 mln PLN)",
+        "_warnings": [
+          "DANINA SOLIDARNOŚCIOWA: 40000.00 PLN (4% od nadwyżki 1000000.00)."
+        ]
+      },
+      "new_verdict_hash": "8f0ec51f7d49cbdfc0af12ad305ecc56cafebc80cc20f86d9cd837b249c21227",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-15T20:27:14.847346+00:00"
     }
   ]
 }
