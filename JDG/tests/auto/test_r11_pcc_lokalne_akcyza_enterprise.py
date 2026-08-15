@@ -100,7 +100,7 @@ def test_r11_main_router_wired_p36():
     assert "import data.jdg.r11_pcc_lokalne_akcyza_innovations" in src
     assert '"jdg.r11_pcc_lokalne_akcyza_innovations": r11_pcc_lokalne_akcyza_innovations.decide' in src
     assert "final_verdict_p36 = safe_merge(final_verdict_p35" in src
-    assert "final_verdict_post_merge = object.union(final_verdict_p41" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p42" in src
 
 
 # ── R11-INN-01: pcc3_deadline_alert_monitor ──────────────────────────────────
@@ -160,7 +160,7 @@ def test_inn05_arbitrator():
 
 def test_invariants_after_r11():
     src = _read(MAIN_REGO)
-    assert "final_verdict_post_merge = object.union(final_verdict_p41" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p42" in src
     assert "final_verdict_enforced = object.union(final_verdict_post_merge" in src
     assert "_decision_certificate" in src or "decision_certificate" in src
     assert "_certainty_guard" in src

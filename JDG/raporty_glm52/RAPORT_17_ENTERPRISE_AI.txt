@@ -5,6 +5,34 @@ Seria: 17/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
 Status: WDROZONY_100 (2026-08-15)
 ==============================================================================
 
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę Enterprise AI (adaptive_trust + neural_mesh
+(+v2) + banking + cashflow + strategic_advisor (+roadmap) + legislative_monitor
+(+impact) + form_optimizer + hyper_plan45_meta + decision_composer), która jest
+kompletna. Dodatkowo, w ramach kampanii GLM 5.2 (seria R01→R24), wdrożono
+NOWY pakiet innowacji:
+
+  rules/r17_enterprise_ai_innovations_v9.rego (5 INN):
+    R17-INN-01 adaptive_trust_monitor — Trust Score → AUTO_POST (≥0.92) /
+                                       SUGGEST (≥0.75) / ASK_USER (<0.75)
+    R17-INN-02 neural_mesh_confidence_monitor — pewność synapse + konflikty
+                                       między domenami
+    R17-INN-03 cashflow_forecast_monitor — prognoza 90 dni + luka płynności
+                                       (art. 44/103/47)
+    R17-INN-04 banking_psd2_monitor — split payment MPP (art. 108a) +
+                                       batche + IBAN
+    R17-INN-05 legislative_change_monitor — zmiany legislacyjne + vacatio
+                                       legis (art. 4 OrdPU)
+
+  Wiring: main_jdg.rego final_verdict_p42 = safe_merge(final_verdict_p41,
+  safe_merge(r17_enterprise_ai_innovations.decide, fallback.decide));
+  thresholds.enterprise_ai w thresholds_jdg.rego (zero hardcode).
+
+  Evidence: bundles/enterprise_ai_innovations_report17_evidence.json
+  (9/9) — tools/enterprise_ai_innovations_report17_gate.py --strict
+  PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
 ════════════════════════════════════════════════════════════════════════════
 1. EXECUTIVE SUMMARY (1 strona)
 ════════════════════════════════════════════════════════════════════════════

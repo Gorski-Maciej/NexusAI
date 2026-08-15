@@ -985,6 +985,35 @@ system_opa := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# ENTERPRISE AI THRESHOLDS — RAPORT_17 (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+enterprise_ai := {
+    # Adaptive Trust (Trust Score progi — granica decyzyjna V1/V2)
+    "trust_auto_post_min": 0.92,                 # ≥0.92 → AUTO_POST
+    "trust_suggest_min": 0.75,                   # ≥0.75 → SUGGEST; <0.75 → ASK_USER
+
+    # Neural Rule Mesh (pewność synapse)
+    "mesh_confidence_min": 0.5,                  # min pewność propagacji synapse
+    "mesh_conflict_penalty": 0.2,                # kara za konflikt między domenami
+
+    # Cashflow & Tax Predictor
+    "forecast_horizon_days": 90,                 # horyzont prognozy (art. 44/103/47)
+    "liquidity_buffer_pct": 20,                  # min bufor płynności %
+
+    # Bankowość PSD2 / MPP (split payment)
+    "split_payment_threshold_pln": 15000,        # art. 108a MPP — próg brutto
+    "batch_max_items": 100,                      # max przelewów w batchu miesięcznym
+
+    # Monitor legislacyjny (vacatio legis)
+    "vacatio_legis_days": 14,                    # standardowa vacatio legis
+    "impact_high_threshold": 70,                 # próg wysokiego wpływu nowelizacji 0-100
+
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # LOCAL TAXES / OPŁATY LOKALNE (Klasa IX — Blind Spot §1.1 z STRATEGIC_IMPROVEMENTS_7000)
 # ═══════════════════════════════════════════════════════════════════════════════
 # Stawki 2026 wg obwieszczenia MF. Gminy mogą ustalać niższe stawki uchwałą.

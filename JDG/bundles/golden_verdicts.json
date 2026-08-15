@@ -1198,6 +1198,33 @@
       "bundle_version": "jdg-sop2-bundle-v9.0.0",
       "recorded_at": "2026-08-15T21:18:16.986665+00:00",
       "legal_basis_refs": []
+    },
+    "aa7f39a478d22b5a8d3f110e24ac19f372b143c4eef6b58c52b1981e1de18a97": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r17_enterprise_ai_innovations.adaptive_trust_monitor",
+        "package": "jdg.r17_enterprise_ai_innovations",
+        "priority": 11046,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "at_trust_score": 0.95,
+        "at_feedback_count": 40,
+        "at_mode": "AUTO_POST",
+        "at_trust_auto_post_min": 0.92,
+        "at_trust_suggest_min": 0.75,
+        "_routing": "",
+        "_routing_reason": "Adaptive Trust — score 0.950 (progi 0.92/0.75), feedback 40. Tryb AUTO_POST. Rekomendacja — decyzja zostaje w Rego.",
+        "_legal_basis": "P02 (Adaptive Trust), V1/V2 granica decyzyjna (AI rekomenduje, Rego decyduje), ADR-022 (invariants)",
+        "_warnings": [
+          "ADAPTIVE TRUST: tryb AUTO_POST. OK."
+        ]
+      },
+      "verdict_hash": "cb3f466a77881f7bf659d60048dd741fe93ff4a2a553e702fb66e1149a284825",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-eai2-bundle-v9.0.0",
+      "recorded_at": "2026-08-15T21:38:27.533544+00:00",
+      "legal_basis_refs": []
     }
   },
   "annotations": [],
@@ -2440,6 +2467,37 @@
       "reason": "Baseline nowej kampanii R16 — determinizm potwierdzony (identyczny werdykt).",
       "uver_applies": false,
       "replayed_at": "2026-08-15T21:18:16.986665+00:00"
+    },
+    {
+      "input_hash": "aa7f39a478d22b5a8d3f110e24ac19f372b143c4eef6b58c52b1981e1de18a97",
+      "golden_verdict_hash": "cb3f466a77881f7bf659d60048dd741fe93ff4a2a553e702fb66e1149a284825",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r17_enterprise_ai_innovations.adaptive_trust_monitor",
+        "package": "jdg.r17_enterprise_ai_innovations",
+        "priority": 11046,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "at_trust_score": 0.95,
+        "at_feedback_count": 40,
+        "at_mode": "AUTO_POST",
+        "at_trust_auto_post_min": 0.92,
+        "at_trust_suggest_min": 0.75,
+        "_routing": "",
+        "_routing_reason": "Adaptive Trust — score 0.950 (progi 0.92/0.75), feedback 40. Tryb AUTO_POST. Rekomendacja — decyzja zostaje w Rego.",
+        "_legal_basis": "P02 (Adaptive Trust), V1/V2 granica decyzyjna (AI rekomenduje, Rego decyduje), ADR-022 (invariants)",
+        "_warnings": [
+          "ADAPTIVE TRUST: tryb AUTO_POST. OK."
+        ]
+      },
+      "new_verdict_hash": "cb3f466a77881f7bf659d60048dd741fe93ff4a2a553e702fb66e1149a284825",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": true,
+      "reason": "Baseline nowej kampanii R17 — determinizm potwierdzony (identyczny werdykt).",
+      "uver_applies": false,
+      "replayed_at": "2026-08-15T21:38:27.533544+00:00"
     }
   ]
 }

@@ -1,0 +1,126 @@
+{
+  "report": "RAPORT_17_ENTERPRISE_AI",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "report_present": true,
+    "innovations_complete": true,
+    "legal_basis_canonical": true,
+    "thresholds_externalized": true,
+    "duplicate_free": true,
+    "router_wired": true,
+    "tests_present": true,
+    "golden_replay_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "checks_passed": 9,
+  "checks_total": 9,
+  "scope": {
+    "files": {
+      "r17_rego": true,
+      "main_jdg": true,
+      "thresholds": true,
+      "pytest": true,
+      "native_rego": true,
+      "report": true
+    },
+    "files_total": 6,
+    "files_present": 6,
+    "report_present": true,
+    "eai_core_files_declared": 12,
+    "eai_core_files_present": 12
+  },
+  "innovations": {
+    "required_innovations": [
+      "adaptive_trust_monitor",
+      "at_mode",
+      "at_trust_score",
+      "neural_mesh_confidence_monitor",
+      "nm_reliable",
+      "nm_effective",
+      "cashflow_forecast_monitor",
+      "cf_gap_alert",
+      "cf_buffer_ok",
+      "banking_psd2_monitor",
+      "bk_split_required",
+      "bk_iban_valid",
+      "legislative_change_monitor",
+      "lg_high_impact",
+      "lg_vacatio_compliant"
+    ],
+    "missing_innovations": [],
+    "innovations_complete": true,
+    "legal_basis_markers": [
+      "art. 108a",
+      "art. 44",
+      "art. 103",
+      "art. 47",
+      "art. 4",
+      "PSD2"
+    ],
+    "missing_legal_markers": [],
+    "legal_basis_complete": true,
+    "decide_report_rule": true,
+    "activation_flag": true,
+    "default_no_match": true,
+    "adaptive_trust": true,
+    "neural_mesh": true,
+    "cashflow": true,
+    "banking": true,
+    "legislative": true
+  },
+  "thresholds": {
+    "thresholds_via_data": true,
+    "trust_externalized": true,
+    "mesh_externalized": true,
+    "split_payment_externalized": true,
+    "eai_block_present": true
+  },
+  "duplicates": {
+    "rule_ids_total": 6,
+    "rule_ids_unique": 6,
+    "duplicates": [],
+    "duplicate_count": 0
+  },
+  "router": {
+    "import_present": true,
+    "package_decisions_entry": true,
+    "final_verdict_p42": true,
+    "post_merge_present": true,
+    "invariants_enforced": true,
+    "final_verdict_public": true
+  },
+  "tests": {
+    "pytest_present": true,
+    "native_rego_present": true,
+    "marker_hits": {
+      "adaptive_trust_monitor": true,
+      "neural_mesh_confidence_monitor": true,
+      "cashflow_forecast_monitor": true,
+      "banking_psd2_monitor": true,
+      "legislative_change_monitor": true,
+      "r17_enterprise_ai_check": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "AUTO_POST": true,
+      "ASK_USER": true,
+      "art. 108a": true,
+      "art. 44": true,
+      "art. 4": true
+    },
+    "markers_complete": true,
+    "pytest_test_functions": 14,
+    "native_test_functions": 15
+  },
+  "replay": {
+    "golden_verdicts_total": 30,
+    "eai_verdicts": 1,
+    "eai_replays": 1,
+    "uver_count": 0,
+    "replay_verified": true
+  },
+  "generated_at": "2026-08-15T21:42:16.415845+00:00"
+}

@@ -405,6 +405,9 @@ import data.jdg.r15_ksef_jpk_edeklaracje_innovations
 # ── PAS 18ag: R16 GLM52 SYSTEM OPA / P18-P35 (2026-08-15) ──
 # Cykl życia reguły, jakość walidacji, tarcza CI, niezawodność, pipeline ISAP.
 import data.jdg.r16_system_opa_innovations
+# ── PAS 18ah: R17 GLM52 ENTERPRISE AI (2026-08-15) ──
+# Adaptive Trust, Neural Mesh, Cashflow, Bankowość PSD2, Monitor legislacyjny.
+import data.jdg.r17_enterprise_ai_innovations
 import data.jdg.micro.vat.r03 as micro_vat_r03
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1436,6 +1439,7 @@ _package_decisions := {
     "jdg.r14_rodo_aml_bdo_innovations": r14_rodo_aml_bdo_innovations.decide,
     "jdg.r15_ksef_jpk_edeklaracje_innovations": r15_ksef_jpk_edeklaracje_innovations.decide,
     "jdg.r16_system_opa_innovations": r16_system_opa_innovations.decide,
+    "jdg.r17_enterprise_ai_innovations": r17_enterprise_ai_innovations.decide,
     "jdg.micro.vat.r03": micro_vat_r03.decide,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
@@ -1976,6 +1980,18 @@ final_verdict_p41 = safe_merge(final_verdict_p40,
     ))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18ah: R17 GLM52 ENTERPRISE AI (2026-08-15)
+# Adaptive Trust, Neural Mesh, Cashflow, Bankowość PSD2, Monitor legislacyjny.
+# Pakiet REPORT-owy — aktywowany flagą input.
+# jdg_entrepreneur.r17_enterprise_ai_check (w normalnym ruchu no_match). Nie
+# nadpisuje decyzji (safe_merge).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p42 = safe_merge(final_verdict_p41,
+    safe_merge(r17_enterprise_ai_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -1989,7 +2005,7 @@ final_verdict_p41 = safe_merge(final_verdict_p40,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-final_verdict_post_merge = object.union(final_verdict_p41,
+final_verdict_post_merge = object.union(final_verdict_p42,
     {"_routing_context": routing_context})
 
 final_verdict_enforced = object.union(final_verdict_post_merge,

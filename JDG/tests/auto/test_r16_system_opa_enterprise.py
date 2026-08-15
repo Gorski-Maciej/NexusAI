@@ -2,7 +2,7 @@
 
 Prompt 16/25 is implemented as the R16 System OPA innovations package
 (rules/r16_system_opa_innovations_v9.rego) wired into main_jdg.rego
-(final_verdict_p41). Tests mirror the R01..R15 conventions:
+(final_verdict_p42). Tests mirror the R01..R15 conventions:
 
   R16-INN-01 rule_lifecycle_monitor          — cykl życia reguły + rollback
   R16-INN-02 validation_quality_monitor      — jakość walidacji (zero-defect)
@@ -98,8 +98,8 @@ def test_r16_main_router_wired_p41():
     src = _read(MAIN_REGO)
     assert "import data.jdg.r16_system_opa_innovations" in src
     assert '"jdg.r16_system_opa_innovations": r16_system_opa_innovations.decide' in src
-    assert "final_verdict_p41 = safe_merge(final_verdict_p40" in src
-    assert "final_verdict_post_merge = object.union(final_verdict_p41" in src
+    assert "final_verdict_p42 = safe_merge(final_verdict_p41" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p42" in src
 
 
 # ── R16-INN-01: rule_lifecycle_monitor ───────────────────────────────────────
@@ -161,7 +161,7 @@ def test_inn05_isap_pipeline():
 
 def test_invariants_after_r16():
     src = _read(MAIN_REGO)
-    assert "final_verdict_post_merge = object.union(final_verdict_p41" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p42" in src
     assert "final_verdict_enforced = object.union(final_verdict_post_merge" in src
     assert "_decision_certificate" in src or "decision_certificate" in src
     assert "_certainty_guard" in src
