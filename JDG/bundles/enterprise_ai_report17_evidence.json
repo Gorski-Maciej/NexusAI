@@ -186,9 +186,9 @@
     "no_auto_post_mode": true
   },
   "replay": {
-    "golden_verdicts_total": 13,
+    "golden_verdicts_total": 21,
     "ai_verdicts": 1,
-    "replays_total": 13,
+    "replays_total": 21,
     "unmatched_replays": [],
     "unmatched_count": 0,
     "replay_verified": true
@@ -203,5 +203,5 @@
     "soak_completed_at": "2026-08-15T12:00:00+00:00",
     "active_version": "jdg-bundle-v8.0.0"
   },
-  "generated_at": "2026-08-13T17:11:48.716598+00:00"
+  "generated_at": "2026-08-15T11:45:58.103324+00:00"
 }

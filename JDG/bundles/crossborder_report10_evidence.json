@@ -355,7 +355,7 @@
   },
   "legal_twin": {
     "present": true,
-    "xb_nodes": 41,
+    "xb_nodes": 45,
     "critical_basis_refs": 7,
     "critical_basis_rule_ids": {
       "a20": [
@@ -384,9 +384,9 @@
     },
     "critical_articles_required": 7,
     "indexes": {
-      "LCI": 62.73,
+      "LCI": 74.59,
       "TCL": 100.0,
-      "RV": 26.02
+      "RV": 39.43
     }
   },
   "router": {
@@ -409,7 +409,7 @@
     "present": true,
     "schema_version": 2,
     "xb_verdicts": 1,
-    "replays": 6,
+    "replays": 21,
     "xb_replays": 2,
     "unexplained_replays": 0,
     "xb_unexplained_replays": 0

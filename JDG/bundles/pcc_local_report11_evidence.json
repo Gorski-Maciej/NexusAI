@@ -344,7 +344,8 @@
         "jdg.local_taxes.pcc.sale_detection"
       ],
       "a7": [
-        "jdg.local_taxes.pcc.installment_sale"
+        "jdg.local_taxes.pcc.installment_sale",
+        "jdg.pcc.rate_changes.a7.r5"
       ],
       "a8": [
         "jdg.local_taxes.transport.tax_applicable",
@@ -366,9 +367,9 @@
     },
     "critical_articles_required": 7,
     "indexes": {
-      "LCI": 67.23,
+      "LCI": 74.59,
       "TCL": 100.0,
-      "RV": 26.64
+      "RV": 39.43
     }
   },
   "router": {
@@ -391,7 +392,7 @@
     "present": true,
     "schema_version": 2,
     "plb_verdicts": 1,
-    "replays": 7,
+    "replays": 21,
     "plb_replays": 1,
     "unexplained_replays": 0,
     "plb_unexplained_replays": 0

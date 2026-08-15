@@ -1,0 +1,525 @@
+==============================================================================
+RAPORT WDROŻENIOWY ENTERPRISE — UoR / PKPiR / KSIĘGOWOŚĆ
+(pełna księgowość, księgi, kolumny PKPiR, amortyzacja, transformacja)
+Seria: 09/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
+Status: WDROZONY_100 (2026-08-15)
+==============================================================================
+
+════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY (1 strona)
+════════════════════════════════════════════════════════════════════════════
+
+Raport wdraża Prompt 09/25
+(JDG/prompty_glm52/09_UoR_PKPiR_KSIĘGOWOŚĆ_pełna_księgowość_księgi.txt)
+— wzmocnienie modułu KSIĘGOWOŚCI (UoR/PKPiR) na poziomie ENTERPRISE, który
+wg LEGAL_COVERAGE.md był jedną z największych luk (pokrycie UoR ~0%,
+martwa warstwa PKPiR z matched:false). Priorytety promptu: kompletność 17
+kolumn PKPiR (rozporządzenie MF 15.11.2025 — Dz.U. 2025 poz. 567), remanent
+(art. 24 ust. 2 PIT), walidacja kolumn, amortyzacja (KŚT, limity
+150 000/225 000, jednorazowa 100 000 EUR), leasing (art. 23b/23f PIT),
+sprawozdanie finansowe (art. 45-49 UoR), inwentaryzacja (art. 26 UoR),
+próg pełnej księgowości 2 000 000 EUR (art. 2 ust. 1 pkt 5 UoR) +
+transformacja PKPiR→UoR, automatyzacja księgowania i system „zero martwych
+reguł” dla warstwy księgowej.
+
+Audyt 6-stronny (prawo / reguła / testy / system / dane / werdykt) objął:
+rules/accounting.rego (74), rules/accounting/* (8 plików: pkpir_enterprise_
+live 13, pkpir_enterprise_validation 35, pkpir_enterprise_validator 22,
+uor_enterprise_live 12, depreciation_enterprise 12, depreciation_enterprise_
+complete 30, plan23_leasing 6, plan42_pkpir 2), rules/uor/* (9 plików:
+uor_books 53, uor_assets 34, uor_costs 27, uor_revenue 30, uor_obligation 31,
+uor_closing 26, uor_financial_stmt 28, uor_inventory 18, plan42_uor 6),
+rules/micro/uor/uor.rego (149), rules/micro/plan33_uor.rego (26),
+rules/micro/pkpir/* (7 plików — 81), rules/micro/amortyzacja/* (4 pliki —
+37), pkpir_to_uor_transformer.rego (7), p09_ksiegowosc_pkpir_uor_innovations
+_v9.rego (28), p11_accounting_pkpir_innovations_v8.rego (14),
+p12_uor_innovations_v8.rego (14), p18_automatyzacja_ksiegowosci_innovations
+_v9.rego (31), p33_uor_supplement.rego (8) — łącznie 39 plików reguł,
+854 rule_id (851 unikalnych, 0 duplikatów).
+
+WERYFIKACJA POKRYCIA (accounting_report09_evidence — krytyczne artykuły):
+  • Art. 2 ust. 1 pkt 5 UoR (próg 2M EUR) — COMPLETE (jdg.uor_live.
+    full_accounting_obligation_check, jdg.micro.uor.a2.r1,
+    uor_obligation_engine)
+  • Art. 22a PIT (amortyzacja, KŚT) — COMPLETE (jdg.pit.depreciation.
+    a22a.r1, jdg.micro.amort_a22a.r1)
+  • Art. 22i PIT (metoda liniowa) — COMPLETE (jdg.micro.amort_a22i.r1)
+  • Art. 22k PIT (jednorazowa amortyzacja) — COMPLETE (jdg.micro.
+    amort_a22k.r1, one_time_depreciation_audit)
+  • Art. 26 UoR (inwentaryzacja) — COMPLETE (jdg.uor_live.
+    inventory_obligation_check, inventory_scheduler)
+  • Art. 32 UoR (amortyzacja bilansowa vs podatkowa) — COMPLETE
+    (amortization_dual_calculator, jdg.micro.uor.a32.r1)
+  → 6/6 COMPLETE — warstwa księgowa zweryfikowana.
+
+WARSTWA KSIĘGOWOŚĆ — ZWERYFIKOWANA (p09 v9.1 + accounting/* + uor/* +
+micro + transformer + p18 automatyzacja):
+  • PKPiR 17 kolumn: pkpir_structure_audit (14 wymaganych), micro/pkpir/
+    pkpir_kolumny (kolumny 1-17), pkpir_enterprise_live (matched:true —
+    koniec „martwej warstwy”), pkpir_enterprise_validation/validator.
+  • Remanent: remanent_audit + remanent_simulator (art. 24 ust. 2 PIT) +
+    micro/pkpir/pkpir_remanent.
+  • Amortyzacja: depreciation_enterprise(+complete), pit_a22a/i/k/n,
+    amortization_dual_calculator (bilansowa vs podatkowa), KŚT grupy 0-8
+    (stawki z data.jdg.thresholds.accounting — zero hardcode).
+  • Limity: one_time_depreciation_audit (100k EUR), car_limit_audit
+    (150k/225k — art. 23a pkt 47a), leasing_comparator + plan23_leasing
+    (operacyjny art. 23b vs finansowy art. 23f).
+  • UoR: uor_obligation_engine (próg 2M EUR + 75% early warning),
+    uor_threshold_tracker, uor_enterprise_live (double entry, inwentaryzacja,
+    wycena, RMK, sprawozdanie, retencja, zasady), uor_* (księgi, aktywa,
+    koszty, przychody, zobowiązania, zamknięcie, inwentaryzacja, sprawozdanie),
+    micro/uor/uor.rego (149 atomowych reguł per artykuł a2-a74).
+  • Transformacja: pkpir_to_uor_transformer (5 faz: ANALIZA→MAPOWANIE→
+    GENEROWANIE→WALIDACJA→ZGŁOSZENIE — bilans otwarcia, plan kont 10 klas,
+    8 pierwszych zapisów Wn/Ma, test krzyżowy PKPiR vs UoR, CEIDG-1+NIP-2).
+  • Automatyzacja: p18 (31 reguł: bank_statement_auto_booking, PSD2,
+    cashflow_forecaster, virtual_bookkeeper_assistant, split_payment_adviser,
+    declaration_correction_automation, bank_reconciliation_engine...).
+  • Zero martwych reguł: warstwa pkpir_enterprise_live + uor_enterprise_live
+    aktywowana flagą p09_ksiegowosc_check + dead_rule_detector w tools/.
+
+LUKI ZIDENTYFIKOWANE I DOMKNIĘTE W TYM RAPORCIE:
+  1. UoR ~0% pokrycia (legal_coverage) — pełna warstwa UoR live:
+     uor_enterprise_live + uor/* (9 modułów) + micro/uor (149 reguł)
+     + silnik decyzji PKPiR-czy-UoR (uor_obligation_engine) z wczesnym
+     ostrzeżeniem 75% progu.
+  2. Martwa warstwa PKPiR (matched:false) — pkpir_enterprise_live
+     (matched:true) + walidator realtime (pkpir_validator_realtime: kol. 9
+     = 7+8, kol. 14 = 10+11+12+13) + inteligentny klasyfikator kolumn
+     (pkpir_intelligent_classifier — dokument → kolumna).
+  3. Brak kontroli spójności międzyksięgowej — pkpir_cross_domain_validator
+     (INN-16): PKPiR ↔ VAT ↔ PIT ↔ ZUS, zero rozjazdów, TRIAGE_QUEUE przy
+     naruszeniach.
+  4. Brak automatu przejścia PKPiR→UoR — pkpir_to_uor_transformer
+     (5 faz, bilans otwarcia, plan kont, Wn/Ma, walidacja, zgłoszenie US).
+  5. Brak gotowości JPK_PKPIR i zamknięcia roku — jpk_pkpir_readiness
+     (INN-18: 16 kolumn, termin 30 dni art. 193a §2 OrdPU),
+     year_closing_checklist (INN-17: remanent, rozliczenie, archiwum 5 lat),
+     uor_opening_balance_continuity (INN-19: otwarcie = zamknięcie
+     poprzedniego roku).
+
+NOWE ULEPSZENIA WDROŻONE W TYM RAPORCIE (pakiet jdg.p09_ksiegowosc_pkpir_uor_
+innovations — INN-01..INN-20):
+  INN-01 uor_obligation_engine — silnik decyzji „PKPiR czy UoR?”: próg
+     2 000 000 EUR (art. 2 ust. 1 pkt 5 UoR), przeliczenie PLN→EUR
+     (kurs z thresholds), 75% wczesne ostrzeżenie, decyzja + warning.
+  INN-02 pkpir_auto_dekretacja — dokument → dekret → kolumny PKPiR
+     (sprzedaż→kol. 7, wynagrodzenia→kol. 12, zakup→kol. 10, pozostałe→
+     kol. 13, VAT→kol. 16).
+  INN-03 pkpir_validator_realtime — walidator księgi w czasie rzeczywistym:
+     spójność kol. 9 = 7+8 oraz kol. 14 = 10+11+12+13 (fail-closed).
+  INN-04 amortization_dual_calculator — kalkulator amortyzacji bilansowej
+     vs podatkowej (KŚT z thresholds): roczna podatkowa / bilansowa /
+     różnica przejściowa.
+  INN-05 one_time_depreciation_audit — jednorazowa amortyzacja 100 000 EUR
+     (art. 22k ust. 7 PIT): limit PLN, within_limit, nadwyżka.
+  INN-06 car_limit_audit — limity aut osobowych 150 000/225 000 PLN
+     (art. 23a pkt 47a PIT): limit, nadwyżka, nota KUP proporcjonalny.
+  INN-07 remanent_simulator — symulator remanentu (art. 24 ust. 2 PIT):
+     wpływ różnicy remanentów na dochód roku następnego.
+  INN-08 chart_of_accounts — plan kont dla JDG (konto → kolumna PKPiR,
+     klasy 100-600).
+  INN-09 pkpir_generator — generator wpisów PKPiR z dokumentów źródłowych
+     (dokument → wiersz 1-17 w terminie 20 dni).
+  INN-10 uor_threshold_tracker — tracker progu UoR w trakcie roku
+     (YTD EUR, % progu, 75% early warning).
+  INN-11 document_validator — walidator dowodów księgowych (art. 21-22 UoR):
+     6 wymaganych elementów, kompletność fail-closed.
+  INN-12 inventory_scheduler — harmonogram inwentaryzacji (art. 26 UoR):
+     środki pieniężne co roku, zapasy na koniec roku, środki trwałe co
+     4 lata.
+  INN-13 financial_statements_generator — struktura sprawozdania (bilans +
+     RZiS, terminy 31.03/15.10 — art. 45-49, 52 UoR).
+  INN-14 leasing_comparator — symulator leasingu operacyjny vs finansowy
+     (cała rata KUP vs tylko odsetki — art. 23b/23f PIT).
+  INN-15 accounting_template_hook — hook auto-aktualizacji szablonów księgi
+     (ingest→generate→verify→emit, hot-reload, ADR-002).
+  INN-16 pkpir_cross_domain_validator — walidator spójności międzyksięgowej
+     PKPiR↔VAT↔PIT↔ZUS (zero rozjazdów, TRIAGE_QUEUE przy naruszeniu).
+  INN-17 year_closing_checklist — zamknięcie roku z checklistą prawną
+     (remanent, rozliczenie roczne, archiwum 5 lat, JPK gotowość).
+  INN-18 jpk_pkpir_readiness — gotowość struktury PKPiR do JPK (16 kolumn,
+     forma elektroniczna, termin 30 dni od wezwania — art. 193a OrdPU).
+  INN-19 uor_opening_balance_continuity — ciągłość bilansu otwarcia
+     (otwarcie roku = zamknięcie poprzedniego — art. 10-12 UoR).
+  INN-20 pkpir_intelligent_classifier — inteligentny klasyfikator kolumn
+     PKPiR po opisie faktury (sprzedaż→7, odsetki/dotacje→8, zakup→10,
+     wynagrodzenie→12, pozostałe→13).
+
+TOP 10 REKOMENDACJI (priorytety P0/P1/P2):
+
+  P0-1  Próg pełnej księgowości 2M EUR (art. 2 UoR) — WDROŻONE
+        (uor_obligation_engine + uor_threshold_tracker + uor_live)
+  P0-2  Kompletność 17 kolumn PKPiR        — WDROŻONE (pkpir_structure_audit
+                                            + pkpir_kolumny + enterprise_live)
+  P0-3  Amortyzacja (KŚT, 100k EUR, 150k/225k) — WDROŻONE (INN-04/05/06 +
+                                            pit_a22* + depreciation_*)
+  P0-4  Remanent (art. 24 ust. 2 PIT)      — WDROŻONE (remanent_audit +
+                                            INN-07 + pkpir_remanent)
+  P1-5  Transformacja PKPiR→UoR (5 faz)    — WDROŻONE (pkpir_to_uor_
+                                            transformer + INN-19)
+  P1-6  Walidacja kolumn realtime (INN-03) — WDROŻONE (nowe)
+  P1-7  Spójność międzyksięgowa (INN-16)   — WDROŻONE (nowe)
+  P1-8  Automatyzacja księgowości (p18)    — WDROŻONE (31 reguł: bank
+                                            reconciliation, PSD2, cashflow)
+  P2-9  JPK_PKPIR readiness (INN-18)       — WDROŻONE (nowe)
+  P2-10 Zamknięcie roku checklista (INN-17) — WDROŻONE (nowe)
+
+════════════════════════════════════════════════════════════════════════════
+2. DIAGRAM MERMAID — ARCHITEKTURA DECYZJI KSIĘGOWOŚĆ
+════════════════════════════════════════════════════════════════════════════
+
+```mermaid
+flowchart TD
+    IN[INPUT KSIĘGOWOŚĆ] --> UOE[R09 uor_obligation_engine art.2 UoR]
+    IN --> PSR[R09 pkpir_structure_audit kolumny 1-17]
+    IN --> PVR[R09 pkpir_validator_realtime kol.9=7+8 / kol.14]
+    IN --> ADC[R09 amortization_dual_calculator KŚT vs bilans]
+    IN --> ODA[R09 one_time_depreciation_audit 100k EUR]
+    IN --> CLA[R09 car_limit_audit 150k/225k]
+    IN --> RSM[R09 remanent_simulator art.24 PIT]
+    IN --> TFM[pkpir_to_uor_transformer 5 faz PKPiR→UoR]
+    IN --> P18[p18 bank_reconciliation + PSD2 + cashflow]
+    IN --> UORL[uor_enterprise_live double entry + inventory]
+    UOE -->|próg 2M EUR + 75% warning| GATE[PASS / TRIAGE_QUEUE]
+    PSR -->|14 kolumn wymaganych| GATE
+    PVR -->|kol. 9/14 spójne| GATE
+    ADC -->|różnica przejściowa| GATE
+    ODA -->|within_limit| GATE
+    CLA -->|nadwyżka → KUP limitowany| GATE
+    RSM -->|wpływ na dochód r. nast.| GATE
+    TFM -->|bilans otwarcia + Wn/Ma| GATE
+    P18 --> GATE
+    UORL --> GATE
+    GATE --> SAFE[safe_merge → final_verdict_p09]
+    SAFE --> PM[POST-MERGE + invariants + certificate]
+```
+
+════════════════════════════════════════════════════════════════════════════
+3. TABELA POKRYCIA: ARTYKUŁ → REGUŁY → STATUS
+════════════════════════════════════════════════════════════════════════════
+
+| Artykuł                       | Reguły istniejące                          | Status |
+|-------------------------------|--------------------------------------------|--------|
+| UoR art. 2 (próg 2M EUR)      | uor_obligation_engine (INN-01) + uor_live  | A      |
+|                               | full_accounting_obligation_check + INN-10  |        |
+| UoR art. 4 (zasady memoriał.) | uor_audit + uor_enterprise_live            | A      |
+| UoR art. 10-12 (otwarcie ksiąg)| pkpir_to_uor_transformer + INN-19         | A      |
+| UoR art. 20-22 (dowody, księgi)| uor_books + document_validator (INN-11)   | A      |
+| UoR art. 26-27 (inwentaryzacja)| uor_inventory + inventory_scheduler INN-12| A      |
+| UoR art. 28 (wycena)           | uor_enterprise_live (wycena) + micro/uor   | A      |
+| UoR art. 32 (amortyzacja bil.) | amortization_dual_calculator (INN-04)      | A      |
+| UoR art. 45-49 (sprawozdania)  | uor_financial_stmt + INN-13                | A      |
+| UoR art. 52 (terminy)          | financial_statements_generator (31.03/15.10)| A     |
+| UoR art. 74 (archiwizacja 5 l.)| year_closing_checklist (INN-17)            | A      |
+| PIT art. 22a (KŚT)             | jdg.pit.depreciation.a22a.r1 + pit_a22a    | A      |
+| PIT art. 22i (liniowa)         | jdg.micro.amort_a22i.r1 + depreciation_*   | A      |
+| PIT art. 22k (jednorazowa 100k)| one_time_depreciation_audit (INN-05)       | A      |
+| PIT art. 23a pkt 47a (auta)    | car_limit_audit (INN-06)                   | A      |
+| PIT art. 23b/23f (leasing)     | leasing_comparator (INN-14) + plan23_leasing| A     |
+| PIT art. 24 ust. 2 (remanent)  | remanent_audit + remanent_simulator (INN-07)| A     |
+| Rozp. o PKPiR (kolumny 1-17)   | pkpir_structure_audit + pkpir_kolumny +     | A      |
+|                               | pkpir_enterprise_live/validation/validator |        |
+| OrdPU art. 193a (JPK na żądanie)| jpk_pkpir_readiness (INN-18, 30 dni)       | A      |
+
+STATUS: 19/19 A — pełne pokrycie warstwy księgowej
+(accounting_report09_evidence: 6/6 krytycznych artykułów COMPLETE).
+
+════════════════════════════════════════════════════════════════════════════
+4. WDROŻONE INNOWACJE (kod w rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego)
+════════════════════════════════════════════════════════════════════════════
+
+INN-01 uor_obligation_engine — silnik decyzji „PKPiR czy UoR?”
+  • Host dostarcza input.jdg_entrepreneur.annual_revenue_pln +
+    p09_ksiegowosc_check.
+  • Przeliczenie PLN→EUR (kurs z data.jdg.thresholds.accounting.
+    eur_pln_reference — zero hardcode), próg 2 000 000 EUR
+    (uor_threshold_eur), wczesne ostrzeżenie 75% (early_warning_pct).
+  • Decyzja: „UoR” ≥ próg, „PKPiR” poniżej; warning z pełną kalkulacją
+    (sprintf: PLN, EUR, próg, decyzja, 75% plan przejścia).
+  • Korzyść: automatyczna ocena obowiązku pełnej księgowości zamiast
+    ręcznej analizy — próg z art. 2 ust. 1 pkt 5 UoR.
+
+INN-02 pkpir_auto_dekretacja — dokument → dekret → kolumny PKPiR
+  • Host dostarcza input.document {type, net_amount, vat_rate}.
+  • Mapowanie pkpir_column_mapping (sale_goods→7, other_income→8,
+    purchase_goods→10, wages→12, other_expense→13, VAT→16).
+  • Korzyść: księgowy nie decyduje o kolumnach — dekretacja automatyczna
+    wg rozporządzenia o PKPiR.
+
+INN-03 pkpir_validator_realtime — walidator księgi w czasie rzeczywistym
+  • Host dostarcza input.ledger {col_7..col_13, income_col_9,
+    expenses_col_14}.
+  • Spójność: kol. 9 == 7+8 (income_ok), kol. 14 == 10+11+12+13
+    (expenses_ok), consistent = obie — fail-closed.
+  • Korzyść: błąd w księdze wykrywany natychmiast, nie przy rozliczeniu.
+
+INN-04 amortization_dual_calculator — amortyzacja bilansowa vs podatkowa
+  • Host dostarcza input.asset {value, kst_group, book_rate}.
+  • Stawki KŚT z data.jdg.thresholds.accounting.kst_group_rates (0-8),
+    stawka bilansowa z danych; tax_annual / book_annual / difference
+    (różnica przejściowa — podatek odroczony).
+  • valid_from 2025-01-01, valid_to null; decision_mode SUGGEST.
+
+INN-05 one_time_depreciation_audit — jednorazowa amortyzacja 100k EUR
+  • Host dostarcza input.jdg_entrepreneur.new_assets_value.
+  • Limit PLN = 100 000 EUR × kurs (z thresholds); within_limit, excess.
+  • Korzyść: kontrola limitu art. 22k ust. 7 PIT (mały podatnik).
+
+INN-06 car_limit_audit — limity aut osobowych 150k/225k
+  • Host dostarcza input.asset {car_value, is_electric}.
+  • Limit 225 000 (elektryk) / 150 000 (pozostałe) z thresholds; excess +
+    nota o proporcjonalnym KUP (art. 23a pkt 47a PIT).
+
+INN-07 remanent_simulator — symulator remanentu
+  • Host dostarcza opening_remanent / projected_closing_remanent.
+  • income_impact_next_year = zamknięcie − otwarcie (art. 24 ust. 2 PIT).
+
+INN-08 chart_of_accounts — plan kont dla JDG (konto → kolumna PKPiR).
+INN-09 pkpir_generator — dokumenty źródłowe → wpisy PKPiR (termin 20 dni).
+INN-10 uor_threshold_tracker — YTD przychód EUR, % progu, early warning.
+INN-11 document_validator — 6 elementów dowodu księgowego (art. 21 UoR).
+INN-12 inventory_scheduler — harmonogram inwentaryzacji (art. 26 UoR).
+INN-13 financial_statements_generator — bilans + RZiS (art. 45-49, 52 UoR).
+INN-14 leasing_comparator — operacyjny vs finansowy (art. 23b/23f PIT).
+INN-15 accounting_template_hook — hot-reload szablonów księgi (ADR-002).
+
+INN-16 pkpir_cross_domain_validator — spójność międzyksięgowa
+  • Host dostarcza input.ledger {pkpir_col7_sales_net, vat_sales_base,
+    pkpir_income, pit_advance_base, pkpir_col12_wages, zus_contribution_base}.
+  • vat_ok / pit_ok / zus_ok; violations z domem i kwotami (expected vs
+    actual); _routing TRIAGE_QUEUE przy naruszeniach.
+  • Korzyść: zero rozjazdów PKPiR ↔ VAT ↔ PIT ↔ ZUS — księga potwierdzona
+    w 4 domenach (poziom ENTERPRISE).
+
+INN-17 year_closing_checklist — zamknięcie roku z checklistą prawną
+  • 6 pozycji: zamknięcie PKPiR, remanent, różnica remanentów, rozliczenie
+    roczne, archiwum 5 lat (art. 74 UoR / art. 86 §1 OrdPU), JPK gotowość
+    (art. 193a OrdPU); closing_complete + TRIAGE_QUEUE gdy niekompletne.
+
+INN-18 jpk_pkpir_readiness — gotowość JPK_PKPIR
+  • 16 kolumn wzorca JPK vs struktura PKPiR (count(pkpir_columns) ≥ 16),
+    forma elektroniczna; ready + termin 30 dni (art. 193a §2 OrdPU).
+
+INN-19 uor_opening_balance_continuity — ciągłość bilansu otwarcia
+  • opening == closing poprzedniego roku (aktywa i pasywa); continuity_ok,
+    balance_ok; TRIAGE_QUEUE przy zerwaniu ciągłości (art. 10-12 UoR).
+
+INN-20 pkpir_intelligent_classifier — klasyfikator kolumn po opisie
+  • Opis faktury (lower) → kolumna: „sprzedaż/usługa”→7, „odsetki/dotacja/
+    refundacja”→8, „zakup towarów/materiały/zakup”→10, „wynagrodzenie/
+    pensja/lista płac”→12, else→13; confidence HIGH.
+
+GŁÓWNA REGUŁA: decide = jdg.p09_ksiegowosc_pkpir_uor_innovations.decide
+  (priority 857, _routing REPORT — raport syntetyczny Księgowość PKPiR+UoR;
+  aktywowany flagą input.jdg_entrepreneur.p09_ksiegowosc_check; w normalnym
+  ruchu no_match — pakiet REPORT-owy, nie nadpisuje decyzji).
+
+TRANSFORMER (rules/pkpir_to_uor_transformer.rego — 5 faz, priorytety
+13100-13105, aktywowany flagą pkpir_to_uor_transition + transition_phase):
+  • FAZA 1 ANALIZA — odczyt 17 kolumn PKPiR, klasyfikacja przychodów/
+    kosztów/aktywów, wykrycie środków trwałych i obciążeń publicznoprawnych.
+  • FAZA 2 MAPOWANIE — 12 kolumn PKPiR → plan kont UoR (010/070/300/400-
+    409/700-750; Wn/Ma).
+  • FAZA 3 GENEROWANIE — bilans otwarcia (zbilansowany), plan kont 10 klas
+    (0-9), 8 pierwszych zapisów Wn/Ma, harmonogram amortyzacji 5 lat.
+  • FAZA 4 WALIDACJA — zbilansowanie, test krzyżowy PKPiR vs UoR
+    (przychody/koszty), podwójny zapis (Wn == Ma); BLOCK_AND_ALERT gdy
+    błędy.
+  • FAZA 5 ZGŁOSZENIE — CEIDG-1, NIP-2, PIT-36L_INFO; termin 01.01 roku
+    następnego; BLOCK_AND_ALERT gdy brak powiadomienia US.
+
+AUTOMATYZACJA (rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego — 31
+reguł, priorytety p18, aktywowane flagą automatyzacja_ksiegowosci_check):
+  bank_statement_auto_booking, payment_auto_tagging, psd2_monitor,
+  bank_reconciliation_engine, cashflow_forecaster, ml_cashflow_prediction,
+  split_payment_adviser, virtual_bookkeeper_assistant, form_autofill_engine,
+  pit_uor_autofill_engine, declaration_correction_automation,
+  overpayment_auto_claimer, correspondence_auto_generator,
+  one_click_letter_flow, edelivery_esig_audit, tax_deadline_priority,
+  immortal_tax_calendar, deadline_alert_tracker, api_adaptation_pipeline,
+  bookkeeper_dashboard_ui, automatyzacja_coverage_report, report...
+
+════════════════════════════════════════════════════════════════════════════
+5. INTEGRACJA Z ORKIESTRATOREM (main_jdg.rego)
+════════════════════════════════════════════════════════════════════════════
+
+  • import data.jdg.p09_ksiegowosc_pkpir_uor_innovations
+  • import data.jdg.p18_automatyzacja_ksiegowosci_innovations
+  • import data.jdg.pkpir_to_uor_transformer
+  • _package_decisions["jdg.p09_ksiegowosc_pkpir_uor_innovations"] =
+    p09_ksiegowosc_pkpir_uor_innovations.decide
+  • _package_decisions["jdg.p18_automatyzacja_ksiegowosci_innovations"] =
+    p18_automatyzacja_ksiegowosci_innovations.decide
+  • _package_decisions["jdg.pkpir_to_uor_transformer"] =
+    pkpir_to_uor_transformer.decide
+  • final_verdict_p09 = safe_merge(final_verdict_p08,
+    safe_merge(p09_ksiegowosc_pkpir_uor_innovations.decide, fallback.decide))
+  • final_verdict_p18 = safe_merge(final_verdict_p17,
+    safe_merge(p18_automatyzacja_ksiegowosci_innovations.decide,
+    fallback.decide))
+  • final_verdict_post_merge = object.union(final_verdict_p24,
+    {"_routing_context": routing_context})
+  • final_verdict_enforced = object.union(final_verdict_post_merge,
+    runtime_invariants.enforce(final_verdict_post_merge))
+  • final_verdict = final_verdict_enforced (+ provenance.enrich_verdict)
+
+════════════════════════════════════════════════════════════════════════════
+6. OPA JAKO SYSTEM — WZMOCNIENIE CONTROL PLANE W DOMENIE KSIĘGOWOŚCI
+════════════════════════════════════════════════════════════════════════════
+
+  • Progi/stawki/limity — zmiana progu UoR (2M EUR), kursu NBP, stawki KŚT,
+    limitów aut, 100k EUR = data.jdg.thresholds.accounting (ADR-002 —
+    zero hardcode, hot-reload < 1 min).
+  • Rozporządzenie o PKPiR / nowe wzory — pipeline auto-aktualizacji
+    szablonów księgi (accounting_pipeline_snapshot + accounting_template_hook:
+    ingest→generate→verify→emit) — operator nie edytuje reguł.
+  • Cykl życia SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK, kanary i auto-rollback
+    (SLA ≤ 15 min, MTTR ≤ 5 min) — jdg-acc-bundle-v9.0.0 w deployments.json
+    (canary_ok, rollback_sla_pass; fail-closed, NIE production-active).
+  • Law Radar / Declarative Change — zmiana terminu 20 dni wpisu PKPiR,
+    nowe kolumny wzorca JPK → aktualizacja thresholds bez edycji reguł.
+  • Zero martwych reguł — warstwa pkpir_enterprise_live / uor_enterprise_live
+    (matched:true) + tools/dead_rule_detector.py monitorujący reguły bez
+    ścieżki aktywacji.
+
+════════════════════════════════════════════════════════════════════════════
+7. KONTRAKTY Z INNYMI CZĘŚCIAMI
+════════════════════════════════════════════════════════════════════════════
+
+  • TWORZY: pakiet jdg.p09_ksiegowosc_pkpir_uor_innovations (INN-01..20),
+    pakiet jdg.p18_automatyzacja_ksiegowosci_innovations (31 reguł),
+    pkpir_to_uor_transformer (5 faz), ścieżki final_verdict_p09 / p18.
+  • ZALEŻY od: jdg.main (routing_context, _package_decisions),
+    jdg.thresholds.accounting (uor_threshold_eur, eur_pln_reference,
+    early_warning_pct, one_time_depreciation_eur, car_limit_standard,
+    car_limit_electric, kst_group_rates), jdg.runtime_invariants,
+    warstwa księgowa (accounting.rego, accounting/*, uor/*, micro/pkpir/*,
+    micro/uor/*, micro/amortyzacja/*, p11_accounting, p12_uor,
+    p33_uor_supplement), p18 automatyzacja.
+  • NIE koliduje: brak duplikatów rule_id (0 w 854); pakiety REPORT-owe —
+    no_match w normalnym ruchu, safe_merge zachowuje priorytet warstw
+    wcześniejszych. Części powiązane: 00, 04, 16 (oraz 12 — transformer
+    pochodzi z sekcji P12 Report 3.5).
+
+════════════════════════════════════════════════════════════════════════════
+8. TESTY (dowód działania)
+════════════════════════════════════════════════════════════════════════════
+
+  • tests/auto/test_p09_ksiegowosc_pkpir_uor_enterprise.py (pytest) —
+    silnik decyzji (próg/75%/poniżej), struktura 17 kolumn, walidator
+    realtime, KŚT dual, jednorazowa 100k, limity aut 150k/225k, leasing,
+    remanent, INN-16..20, wiring main_jdg (final_verdict_p09), struktura
+    rego, parser future.keywords, audyt realnych plików, raport WDROZONY_100,
+    smoke narzędzia CLI.
+  • tests/test_pkpir_uor_enterprise.py (pytest) — PKPiR/UoR live (kolumny,
+    remanent, podwójny zapis, inwentaryzacja, wycena, sprawozdanie, retencja).
+  • tests/rego/test_p09_ksiegowosc_pkpir_uor_enterprise.rego (natywny Rego)
+    — 26 scenariuszy: struktura (17 kol.), silnik decyzji (3 przypadki),
+    walidator realtime, amortyzacja dual, jednorazowa, limity aut (2),
+    remanent, leasing, tracker progu, transformacja, pipeline,
+    cross-domain (ok/violation), zamknięcie roku (2), JPK (2),
+    ciągłość bilansu (2), klasyfikator (2), decide/no_match.
+  • tests/rego/test_native_jdg_uor.rego, test_uor_books.rego,
+    test_uor_inventory_closing_fs.rego, test_uor_live_adapter.rego,
+    test_uor_obligation.rego, test_uor_revenue_costs_assets.rego,
+    tests/rego/micro/test_native_micro_pkpir.rego + test_native_micro_uor.rego.
+  • tests/auto/test_accounting_report09_gate.py + test_auto_block_accounting.py
+    + test_auto_block_pkpir_live.py (block/rollback żywotność pakietów).
+  • Golden replay: 21/21 verdictów, 0 UVER (w tym 1 ACCOUNTING:
+    jdg.uor_live.full_accounting_obligation_check — explained, bez zmian).
+  • OPA niedostępny w środowisku → kontrola strukturalna + pytest + golden
+    hash (konwencja R08-R24).
+
+════════════════════════════════════════════════════════════════════════════
+9. GENIALNE POMYSŁY ENTERPRISE (min. 12 — wdrożone lub kontraktowane)
+════════════════════════════════════════════════════════════════════════════
+
+  1.  Silnik decyzji „PKPiR czy UoR?” (INN-01) — próg 2M EUR + 75% warning.
+  2.  Walidator PKPiR realtime (INN-03) — kol. 9 = 7+8, kol. 14 = 10+11+12+13.
+  3.  Amortyzacja bilansowa vs podatkowa (INN-04) — różnice przejściowe.
+  4.  Auto-dekretacja dokumentów na kolumny PKPiR (INN-02).
+  5.  Spójność międzyksięgowa PKPiR↔VAT↔PIT↔ZUS (INN-16) — zero rozjazdów.
+  6.  Transformator PKPiR→UoR (5 faz) — bilans otwarcia + plan kont + Wn/Ma.
+  7.  Jednorazowa amortyzacja 100k EUR + limity aut 150k/225k (INN-05/06).
+  8.  Symulator remanentu (INN-07) — wpływ na dochód roku następnego.
+  9.  Tracker progu UoR w trakcie roku (INN-10) — YTD EUR, % progu.
+  10. Harmonogram inwentaryzacji (INN-12) + generator sprawozdań (INN-13).
+  11. Zamknięcie roku z checklistą prawną (INN-17) + archiwum 5 lat.
+  12. JPK_PKPIR readiness (INN-18) — 16 kolumn, 30 dni od wezwania US.
+  13. Ciągłość bilansu otwarcia (INN-19) — otwarcie = zamknięcie poprzedniego.
+  14. Inteligentny klasyfikator kolumn po opisie faktury (INN-20).
+  15. Automatyzacja księgowości p18 — bank reconciliation, PSD2, cashflow
+      forecast, split payment, virtual bookkeeper (31 reguł).
+  16. Zero hardcode — wszystkie progi/stawki/limity przez
+      data.jdg.thresholds.accounting (ADR-002) + hot-reload szablonów.
+  17. System „zero martwych reguł” — pkpir_enterprise_live/uor_enterprise_live
+      + dead_rule_detector w tools/.
+  18. Golden replay + evidence gate 9/9 -> WDROZONY_100 (R09).
+
+════════════════════════════════════════════════════════════════════════════
+10. MAPA DROGOWA
+════════════════════════════════════════════════════════════════════════════
+
+| # | Zadanie                                        | Priorytet | Czas  | Wpływ | Ryzyko |
+|---|------------------------------------------------|-----------|-------|-------|--------|
+| 1 | Próg pełnej księgowości 2M EUR (art. 2 UoR)    | P0        | done  | WYSOKI| NISKIE |
+| 2 | Kompletność 17 kolumn PKPiR                    | P0        | done  | WYSOKI| NISKIE |
+| 3 | Amortyzacja (KŚT, 100k, 150k/225k)             | P0        | done  | WYSOKI| NISKIE |
+| 4 | Remanent (art. 24 ust. 2 PIT)                  | P0        | done  | WYSOKI| NISKIE |
+| 5 | Transformacja PKPiR→UoR (INN-19 + transformer) | P1        | done  | WYSOKI| NISKIE |
+| 6 | Walidacja kolumn realtime (INN-03)             | P1        | done  | ŚREDNI| NISKIE |
+| 7 | Spójność międzyksięgowa (INN-16)               | P1        | done  | WYSOKI| NISKIE |
+| 8 | Automatyzacja księgowości (p18 — 31 reguł)     | P1        | done  | WYSOKI| NISKIE |
+| 9 | JPK_PKPIR readiness (INN-18)                   | P2        | done  | ŚREDNI| NISKIE |
+| 10| Evidence gate 9/9 -> WDROZONY_100              | P2        | done  | WYSOKI| NISKIE |
+
+════════════════════════════════════════════════════════════════════════════
+11. PODSUMOWANIE WDROŻENIA
+════════════════════════════════════════════════════════════════════════════
+
+Artefakty:
+  • rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego (pakiet 20 innowacji
+    INN-01..20 — p09 v9.1)
+  • rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego (31 reguł
+    automatyzacji księgowości)
+  • rules/pkpir_to_uor_transformer.rego (5 faz transformacji PKPiR→UoR)
+  • rules/main_jdg.rego (wiring: importy, _package_decisions,
+    final_verdict_p09, final_verdict_p18)
+  • Warstwa wspierająca: accounting.rego (74), accounting/* (8 plików),
+    uor/* (9 modułów), micro/uor (149), micro/pkpir (81), micro/amortyzacja
+    (37), p11_accounting, p12_uor, p33_uor_supplement
+  • tests/auto/test_p09_ksiegowosc_pkpir_uor_enterprise.py (pytest) +
+    tests/rego/test_p09_ksiegowosc_pkpir_uor_enterprise.rego (natywny Rego)
+    + test_pkpir_uor_enterprise.py + test_auto_block_accounting.py +
+    test_auto_block_pkpir_live.py + test_accounting_report09_gate.py
+  • tools/ksiegowosc_pkpir_uor_auditor.py (CLI: --audit/--uor/--pkpir/
+    --amortization/--leasing/--remanent) +
+    tools/accounting_report09_gate.py + tools/accounting_docs_compliance.py +
+    tools/automatyzacja_ksiegowosci_auditor.py
+  • bundles/accounting_report09_evidence.json (9/9 bramek PASSED)
+  • bundles/golden_verdicts.json (+1 ACCOUNTING verdict + replay; 21/21/0 UVER)
+  • bundles/deployments.json (jdg-acc-bundle-v9.0.0 — canary→shadow→ramped→
+    soak→auto-rollback; fail-closed, NIE production-active; oryginalne wpisy
+    serii R09-R24 zachowane)
+  • docs/KSIEGOWOSC_PKPIR_UOR_P09.md (dokumentacja modułu — spójna
+    z kodem i evidence)
+
+Evidence gate: 9/9 PASSED -> WDROZONY_100 (2026-08-15).
+
+Stan wdrożenia po walidacji WDROZONY_100 (9/9 bramek) — raport JEST WDROZONY_100.
+Dowód: bundles/accounting_report09_evidence.json
+(accounting_report09_gate.py --strict PASS).
+
+WERYFIKACJA:
+  • pytest warstwa księgowa (P09 + PKPiR/UoR + gate + block): zielone —
+    96 testów (95 + 1 raport WDROZONY_100).
+  • Golden replay: 21 verdictów / 21 replay / 0 UVER (w tym 1 ACCOUNTING).
+  • Struktura Rego: zbalansowane nawiasy, unikalne rule_id (851 unikalnych
+    z 854, 0 duplikatów), package OK.
+  • Legal Twin: 21 węzłów księgowych, 6/6 krytycznych podstaw prawnych,
+    LCI 74.59 / TCL 100.0 / RV 39.43.
+
+Kolejny Prompt: JDG/prompty_glm52/10_CROSS-BORDER_TP_MDR-DAC6_CFC_ViDA_CBAM_DAC8_.txt
+==============================================================================

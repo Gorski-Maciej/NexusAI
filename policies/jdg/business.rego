@@ -173,6 +173,8 @@ else := {
     "zus_social_base_type":"","zus_health_rate":"",
     "business_status":"SUSPENDED",
     "suspension_blocked_by_employees": emp_count > 0,
+    "valid_from": "2018-04-30",
+    "valid_to": null,
     "suspension_expired": susp_months >= 6,
     "_routing":"BLOCK_AND_ALERT",
     "_routing_reason":"Nie można zawiesić JDG — zatrudniasz pracowników / przekroczono max 6 mies.",
@@ -192,6 +194,8 @@ else := {
 else := {
     "matched":true,"rule_id":"jdg.business.succession_no_manager_grace",
     "package":"jdg.business","priority":921,
+    "valid_from":"2018-11-19",
+    "valid_to":null,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,

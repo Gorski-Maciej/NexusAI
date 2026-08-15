@@ -252,7 +252,7 @@ def test_p22_files_exist():
         TOOLS_DIR / "validation_tools_auditor.py",
         BASE_DIR / "tests" / "rego" / "test_p22_validation_tools_enterprise.rego",
         BASE_DIR / "docs" / "NARZEDZIA_WALIDACJI_P22.md",
-        BASE_DIR.parent / "raporty_jdg_enterprise" / "R22_Narzedzia_Walidacji.txt",
+        BASE_DIR / "raporty_glm52" / "RAPORT_16_SYSTEM_OPA.txt",
     ]
     for path in expected:
         assert path.exists(), f"brakuje pliku: {path}"

@@ -34,6 +34,9 @@ class TestRuleLifecycleManager:
 
         # register
         args = type("A", (), {"rule_id": "jdg.vat.a113.r1", "version": "2.0.0",
+                              "manifest": None, "title": None,
+                              "legal_basis": "Ustawa o VAT art. 113",
+                              "severity": "BLOCKER", "owner": None, "domain": "other",
                               "valid_from": "2026-08-01", "valid_to": None,
                               "status": "CANDIDATE", "rollout": 10,
                               "error_rate": 0.0, "supersedes": "1.0.0", "remove": False,

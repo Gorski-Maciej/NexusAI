@@ -163,7 +163,9 @@ class TestMainJdgWiring:
         assert "final_verdict_p25 = safe_merge(final_verdict_p24," in text
         assert "final_verdict_p26 = safe_merge(final_verdict_p25," in text
         assert "final_verdict_p27 = safe_merge(final_verdict_p26," in text
-        assert "final_verdict_p33 = safe_merge(final_verdict_p31," in text
+        # Łańcuch P30→P31 (R06 ZUS)→P32 (R07 KKS)→P33 (R08 Ordynacja) —
+        # zgodnie z wiring w main_jdg.rego (PAS 18s/18t/18u/18v).
+        assert "final_verdict_p33 = safe_merge(final_verdict_p32," in text
         assert "final_verdict_post_merge = object.union(final_verdict_p33," in text
         assert "final_verdict_enforced = object.union(final_verdict_post_merge," in text
         assert "final_verdict = final_verdict_enforced" in text

@@ -436,7 +436,7 @@
   },
   "legal_twin": {
     "present": true,
-    "acc_nodes": 17,
+    "acc_nodes": 21,
     "critical_basis_refs": 6,
     "critical_basis_rule_ids": {
       "a2": [
@@ -472,9 +472,9 @@
     },
     "critical_articles_required": 6,
     "indexes": {
-      "LCI": 61.32,
+      "LCI": 74.59,
       "TCL": 100.0,
-      "RV": 22.74
+      "RV": 39.43
     }
   },
   "router": {
@@ -495,7 +495,7 @@
     "present": true,
     "schema_version": 2,
     "acc_verdicts": 1,
-    "replays": 5,
+    "replays": 21,
     "acc_replays": 1,
     "unexplained_replays": 0,
     "acc_unexplained_replays": 0

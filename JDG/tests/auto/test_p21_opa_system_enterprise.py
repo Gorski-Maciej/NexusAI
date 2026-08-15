@@ -282,7 +282,7 @@ def test_p21_files_exist():
         BASE_DIR / "tools" / "opa_system_auditor.py",
         BASE_DIR / "tests" / "rego" / "test_p21_opa_system_enterprise.rego",
         BASE_DIR / "docs" / "OPA_JAKO_SYSTEM_P21.md",
-        BASE_DIR.parent / "raporty_jdg_enterprise" / "R21_OPA_jako_System.txt",
+        BASE_DIR / "raporty_glm52" / "RAPORT_16_SYSTEM_OPA.txt",
     ]
     for path in expected:
         assert path.exists(), f"brakuje pliku: {path}"

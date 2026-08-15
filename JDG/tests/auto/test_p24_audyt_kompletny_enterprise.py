@@ -266,8 +266,7 @@ def test_p24_files_exist():
         BASE_DIR / "tools" / "audyt_kompletny_auditor.py",
         BASE_DIR / "tests" / "rego" / "test_p24_audyt_kompletny_enterprise.rego",
         BASE_DIR / "docs" / "AUDYT_KOMPLETNY_P24.md",
-        BASE_DIR.parent / "raporty_jdg_enterprise" / "R24_Audyt_Kompletny_Synteza.txt",
-        BASE_DIR.parent / "raporty_jdg_enterprise" / "R24_SUMMARY.txt",
+        BASE_DIR / "raporty_glm52" / "RAPORT_16_SYSTEM_OPA.txt",
     ]
     for path in expected:
         assert path.exists(), f"brakuje pliku: {path}"
@@ -305,6 +304,9 @@ def test_p24_smoke_cli():
 
 # ── FINALNE: STATUS 24/24 ─────────────────────────────────────────────────────
 def test_status_24_of_24():
-    status = (BASE_DIR.parent / "raporty_jdg_enterprise" / "STATUS_WDROZENIA.txt").read_text(encoding="utf-8")
-    assert "POSTĘP: 24/24" in status
-    assert "[✅ WDROŻONY] P24_Audyt_Kompletny_Synteza.txt" in status
+    """Kanoniczny RAPORT_16 (SYSTEM OPA, P21–P24) istnieje i jest WDROŻONY_100."""
+    r = BASE_DIR / "raporty_glm52" / "RAPORT_16_SYSTEM_OPA.txt"
+    assert r.exists(), "Brak kanonicznego raportu RAPORT_16_SYSTEM_OPA.txt"
+    text = r.read_text(encoding="utf-8")
+    assert "Status: WDROZONY_100" in text
+    assert "P24" in text

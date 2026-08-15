@@ -540,12 +540,12 @@
     "pytest_test_present": true
   },
   "legal_twin": {
-    "nodes_count": 138,
-    "covered_nodes": 103,
+    "nodes_count": 181,
+    "covered_nodes": 135,
     "indexes": {
-      "LCI": 74.64,
+      "LCI": 74.59,
       "TCL": 100.0,
-      "RV": 37.97
+      "RV": 39.43
     },
     "critical_articles_with_rules": {
       "a30ca": true,
@@ -597,7 +597,7 @@
     "critical_node_articles": {
       "a30ca": [
         {
-          "legal_node_id": "LKG-0028",
+          "legal_node_id": "LKG-0031",
           "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
           "article": "30c",
           "rule_count": 58
@@ -605,7 +605,7 @@
       ],
       "a30h": [
         {
-          "legal_node_id": "LKG-0030",
+          "legal_node_id": "LKG-0033",
           "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
           "article": "30h",
           "rule_count": 62
@@ -613,7 +613,7 @@
       ],
       "a109": [
         {
-          "legal_node_id": "LKG-0033",
+          "legal_node_id": "LKG-0036",
           "act": "Ustawa z dnia 23 kwietnia 1964 r. – Kodeks cywilny",
           "article": "109",
           "rule_count": 5
@@ -621,7 +621,7 @@
       ],
       "a41": [
         {
-          "legal_node_id": "LKG-0036",
+          "legal_node_id": "LKG-0039",
           "act": "Ustawa z dnia 6 czerwca 1997 r. – Kodeks karny",
           "article": "41",
           "rule_count": 12
@@ -629,15 +629,15 @@
       ],
       "e25": [
         {
-          "legal_node_id": "LKG-0041",
-          "act": "Rozporządzenie Parlamentu Europejskiego i Rady",
+          "legal_node_id": "LKG-0044",
+          "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) nr 910/2014 z dnia 23 lipca 2014 r. w sprawie identyfikacji elektronicznej i usług zaufania",
           "article": "25",
           "rule_count": 2
         }
       ],
       "a126": [
         {
-          "legal_node_id": "LKG-0096",
+          "legal_node_id": "LKG-0105",
           "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
           "article": "120-129",
           "rule_count": 16
@@ -645,7 +645,7 @@
       ],
       "a45": [
         {
-          "legal_node_id": "LKG-0032",
+          "legal_node_id": "LKG-0035",
           "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
           "article": "45",
           "rule_count": 32
@@ -672,9 +672,9 @@
     "no_auto_post": true
   },
   "replay": {
-    "golden_verdicts_total": 9,
+    "golden_verdicts_total": 21,
     "hyper_verdicts": 1,
-    "replays_total": 9,
+    "replays_total": 21,
     "unmatched_replays": [],
     "unmatched_count": 0,
     "replay_verified": true
@@ -689,5 +689,5 @@
     "soak_completed_at": "2026-08-15T12:00:00+00:00",
     "active_version": "jdg-bundle-v8.0.0"
   },
-  "generated_at": "2026-08-13T12:35:32.801324+00:00"
+  "generated_at": "2026-08-15T10:39:48.075872+00:00"
 }

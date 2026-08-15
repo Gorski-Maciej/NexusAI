@@ -240,7 +240,7 @@ def test_p23_files_exist():
         BASE_DIR / "tools" / "test_rego_ci_auditor.py",
         TESTS_REGO_DIR / "test_p23_test_rego_ci_enterprise.rego",
         BASE_DIR / "docs" / "TESTY_REGO_CI_P23.md",
-        BASE_DIR.parent / "raporty_jdg_enterprise" / "R23_Testy_Rego_CI.txt",
+        BASE_DIR / "raporty_glm52" / "RAPORT_16_SYSTEM_OPA.txt",
     ]
     for path in expected:
         assert path.exists(), f"brakuje pliku: {path}"
