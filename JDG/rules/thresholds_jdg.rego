@@ -936,6 +936,29 @@ rodo_aml_bdo := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# KSeF / JPK / e-DEKLARACJE / GTU / WIS THRESHOLDS — RAPORT_15 (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+ksef_jpk := {
+    # KSeF (art. 106na-106nb VAT)
+    "ksef_mandatory_from": "2026-02-01",         # obowiązek KSeF od 01.02.2026
+    "ksef_offline_grace_days": 7,                # tryb awaryjny — 7 dni (art. 106nb)
+    "ksef_sanction_max_pln": 500000,             # max sankcja za brak KSeF
+    "ksef_upo_deadline_days": 1,                 # termin UPO
+
+    # JPK (art. 82/99 VAT, art. 193a OrdPU)
+    "jpk_v7_deadline_day": 25,                   # dzień terminu JPK_V7M (25.)
+    "jpk_ksef_penalty_per_invoice": 1000,        # kara per faktura
+
+    # GTU / WIS
+    "wis_response_days": 3,                      # termin odpowiedzi WIS (art. 42a)
+    "gtu_codes": ["GTU_01", "GTU_02", "GTU_03", "GTU_04", "GTU_05", "GTU_06", "GTU_07", "GTU_08", "GTU_09", "GTU_10", "GTU_11", "GTU_12", "GTU_13"],
+
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # LOCAL TAXES / OPŁATY LOKALNE (Klasa IX — Blind Spot §1.1 z STRATEGIC_IMPROVEMENTS_7000)
 # ═══════════════════════════════════════════════════════════════════════════════
 # Stawki 2026 wg obwieszczenia MF. Gminy mogą ustalać niższe stawki uchwałą.

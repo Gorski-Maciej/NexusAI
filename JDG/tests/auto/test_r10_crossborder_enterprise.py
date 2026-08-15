@@ -102,7 +102,7 @@ def test_r10_main_router_wired_p35():
     assert "import data.jdg.r10_crossborder_innovations" in src
     assert '"jdg.r10_crossborder_innovations": r10_crossborder_innovations.decide' in src
     assert "final_verdict_p35 = safe_merge(final_verdict_p34" in src
-    assert "final_verdict_post_merge = object.union(final_verdict_p39" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p40" in src
 
 
 # ── R10-INN-01: wdt_deadline_alert_monitor ───────────────────────────────────
@@ -179,7 +179,7 @@ def test_inn05_fx_time_travel():
 
 def test_invariants_after_r10():
     src = _read(MAIN_REGO)
-    assert "final_verdict_post_merge = object.union(final_verdict_p39" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p40" in src
     assert "final_verdict_enforced = object.union(final_verdict_post_merge" in src
     assert "_decision_certificate" in src or "decision_certificate" in src
     assert "_certainty_guard" in src

@@ -399,6 +399,9 @@ import data.jdg.r13_hyper_konteksty_innovations
 # Rejestr czynności RODO, scoring AML, sankcje RODO, monitor STR/GIIF,
 # monitor obowiązków BDO.
 import data.jdg.r14_rodo_aml_bdo_innovations
+# ── PAS 18ae: R15 GLM52 KSeF / JPK / e-DEKLARACJE / GTU / WIS (2026-08-15) ──
+# Firewall KSeF, korelacja JPK, klasyfikator GTU, monitor offline, WIS.
+import data.jdg.r15_ksef_jpk_edeklaracje_innovations
 import data.jdg.micro.vat.r03 as micro_vat_r03
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1428,6 +1431,7 @@ _package_decisions := {
     "jdg.r12_ryczalt_cykl_zycia_innovations": r12_ryczalt_cykl_zycia_innovations.decide,
     "jdg.r13_hyper_konteksty_innovations": r13_hyper_konteksty_innovations.decide,
     "jdg.r14_rodo_aml_bdo_innovations": r14_rodo_aml_bdo_innovations.decide,
+    "jdg.r15_ksef_jpk_edeklaracje_innovations": r15_ksef_jpk_edeklaracje_innovations.decide,
     "jdg.micro.vat.r03": micro_vat_r03.decide,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
@@ -1944,6 +1948,18 @@ final_verdict_p39 = safe_merge(final_verdict_p38,
     ))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18af: R15 GLM52 KSeF / JPK / e-DEKLARACJE / GTU / WIS (2026-08-15)
+# Firewall KSeF, korelator JPK, klasyfikator GTU, monitor trybu awaryjnego,
+# monitor WIS. Pakiet REPORT-owy — aktywowany flagą input.jdg_entrepreneur.
+# r15_ksef_jpk_check (w normalnym ruchu no_match). Nie nadpisuje decyzji
+# (safe_merge).
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p40 = safe_merge(final_verdict_p39,
+    safe_merge(r15_ksef_jpk_edeklaracje_innovations.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -1957,7 +1973,7 @@ final_verdict_p39 = safe_merge(final_verdict_p38,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-final_verdict_post_merge = object.union(final_verdict_p39,
+final_verdict_post_merge = object.union(final_verdict_p40,
     {"_routing_context": routing_context})
 
 final_verdict_enforced = object.union(final_verdict_post_merge,

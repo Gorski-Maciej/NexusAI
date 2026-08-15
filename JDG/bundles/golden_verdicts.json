@@ -1142,6 +1142,34 @@
       "bundle_version": "jdg-rab2-bundle-v9.0.0",
       "recorded_at": "2026-08-15T20:41:32.197209+00:00",
       "legal_basis_refs": []
+    },
+    "46fd7d2237a40d081df40660c0430df797e25afb856d81748b8b28f4f9cd8164": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r15_ksef_jpk_edeklaracje_innovations.jpk_reconciliation_checker",
+        "package": "jdg.r15_ksef_jpk_edeklaracje_innovations",
+        "priority": 11037,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "jr_vat7_pln": 1000,
+        "jr_jpk_v7m_pln": 1200,
+        "jr_ledger_pln": 1000,
+        "jr_mismatch": true,
+        "jr_max_delta_pln": 200,
+        "jr_v7_deadline_day": 25,
+        "_routing": "TRIAGE_QUEUE",
+        "_routing_reason": "Korelacja JPK — VAT-7 1000.00, JPK_V7M 1200.00, księgi 1000.00 (Δ 200.00). ROZJAZD — skoryguj deklaracje.",
+        "_legal_basis": "ustawa o VAT art. 82 (JPK_V7), art. 99 (JPK_V7M), OrdPU art. 193a (JPK na żądanie)",
+        "_warnings": [
+          "JPK: rozjazd deklaracji — skoryguj."
+        ]
+      },
+      "verdict_hash": "9c6e88437e10fee721d259423441fc2a6e80fe5bc6811511953b59312061be8a",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-kjp2-bundle-v9.0.0",
+      "recorded_at": "2026-08-15T20:59:54.541836+00:00",
+      "legal_basis_refs": []
     }
   },
   "annotations": [],
@@ -2320,6 +2348,38 @@
       "reason": null,
       "uver_applies": false,
       "replayed_at": "2026-08-15T20:41:32.197209+00:00"
+    },
+    {
+      "input_hash": "46fd7d2237a40d081df40660c0430df797e25afb856d81748b8b28f4f9cd8164",
+      "golden_verdict_hash": "9c6e88437e10fee721d259423441fc2a6e80fe5bc6811511953b59312061be8a",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r15_ksef_jpk_edeklaracje_innovations.jpk_reconciliation_checker",
+        "package": "jdg.r15_ksef_jpk_edeklaracje_innovations",
+        "priority": 11037,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "jr_vat7_pln": 1000,
+        "jr_jpk_v7m_pln": 1200,
+        "jr_ledger_pln": 1000,
+        "jr_mismatch": true,
+        "jr_max_delta_pln": 200,
+        "jr_v7_deadline_day": 25,
+        "_routing": "TRIAGE_QUEUE",
+        "_routing_reason": "Korelacja JPK — VAT-7 1000.00, JPK_V7M 1200.00, księgi 1000.00 (Δ 200.00). ROZJAZD — skoryguj deklaracje.",
+        "_legal_basis": "ustawa o VAT art. 82 (JPK_V7), art. 99 (JPK_V7M), OrdPU art. 193a (JPK na żądanie)",
+        "_warnings": [
+          "JPK: rozjazd deklaracji — skoryguj."
+        ]
+      },
+      "new_verdict_hash": "9c6e88437e10fee721d259423441fc2a6e80fe5bc6811511953b59312061be8a",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-15T20:59:54.541836+00:00"
     }
   ]
 }

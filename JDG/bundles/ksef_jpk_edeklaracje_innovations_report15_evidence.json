@@ -1,0 +1,126 @@
+{
+  "report": "RAPORT_15_KSEF_JPK_EDEKLARACJE",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "report_present": true,
+    "innovations_complete": true,
+    "legal_basis_canonical": true,
+    "thresholds_externalized": true,
+    "duplicate_free": true,
+    "router_wired": true,
+    "tests_present": true,
+    "golden_replay_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "checks_passed": 9,
+  "checks_total": 9,
+  "scope": {
+    "files": {
+      "r15_rego": true,
+      "main_jdg": true,
+      "thresholds": true,
+      "pytest": true,
+      "native_rego": true,
+      "report": true
+    },
+    "files_total": 6,
+    "files_present": 6,
+    "report_present": true,
+    "kjp_core_files_declared": 27,
+    "kjp_core_files_present": 27
+  },
+  "innovations": {
+    "required_innovations": [
+      "ksef_firewall_monitor",
+      "kf_nip_valid",
+      "kf_blocked",
+      "jpk_reconciliation_checker",
+      "jr_mismatch",
+      "jr_max_delta_pln",
+      "gtu_code_classifier",
+      "gt_expected_code",
+      "gt_mismatch",
+      "ksef_offline_deadline_monitor",
+      "ko_unfiled_count",
+      "ko_grace_days",
+      "wis_request_monitor",
+      "wr_incomplete",
+      "wr_response_days"
+    ],
+    "missing_innovations": [],
+    "innovations_complete": true,
+    "legal_basis_markers": [
+      "art. 106na",
+      "art. 106nb",
+      "art. 82",
+      "art. 99",
+      "art. 42a",
+      "art. 193a"
+    ],
+    "missing_legal_markers": [],
+    "legal_basis_complete": true,
+    "decide_report_rule": true,
+    "activation_flag": true,
+    "default_no_match": true,
+    "ksef_firewall": true,
+    "jpk_reconciliation": true,
+    "gtu_classifier": true,
+    "ksef_offline": true,
+    "wis_request": true
+  },
+  "thresholds": {
+    "thresholds_via_data": true,
+    "sanction_externalized": true,
+    "offline_externalized": true,
+    "wis_externalized": true,
+    "kj_block_present": true
+  },
+  "duplicates": {
+    "rule_ids_total": 6,
+    "rule_ids_unique": 6,
+    "duplicates": [],
+    "duplicate_count": 0
+  },
+  "router": {
+    "import_present": true,
+    "package_decisions_entry": true,
+    "final_verdict_p40": true,
+    "post_merge_present": true,
+    "invariants_enforced": true,
+    "final_verdict_public": true
+  },
+  "tests": {
+    "pytest_present": true,
+    "native_rego_present": true,
+    "marker_hits": {
+      "ksef_firewall_monitor": true,
+      "jpk_reconciliation_checker": true,
+      "gtu_code_classifier": true,
+      "ksef_offline_deadline_monitor": true,
+      "wis_request_monitor": true,
+      "r15_ksef_jpk_check": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "art. 106na": true,
+      "art. 82": true,
+      "art. 99": true,
+      "art. 106nb": true,
+      "art. 42a": true
+    },
+    "markers_complete": true,
+    "pytest_test_functions": 14,
+    "native_test_functions": 12
+  },
+  "replay": {
+    "golden_verdicts_total": 28,
+    "kjp_verdicts": 1,
+    "kjp_replays": 1,
+    "uver_count": 0,
+    "replay_verified": true
+  },
+  "generated_at": "2026-08-15T21:03:15.160947+00:00"
+}

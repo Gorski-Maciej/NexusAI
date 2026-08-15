@@ -5,6 +5,33 @@ Seria: 15/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
 Status: WDROZONY_100 (2026-08-15)
 ==============================================================================
 
+────────────────────────────────────────────────────────────────────────────────
+UZUPEŁNIENIE KAMPANII GLM 5.2 (2026-08-15) — NOWY PAKIET R15
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę KSeF/JPK/e-deklaracje (p17 + ksef_jpk +
+ksef_* + jpk_* + corrections + gtu + edelivery + epuap + wis + micro/ksef|jpk),
+która jest kompletna. Dodatkowo, w ramach kampanii GLM 5.2 (seria R01→R24),
+wdrożono NOWY pakiet innowacji:
+
+  rules/r15_ksef_jpk_edeklaracje_innovations_v9.rego (5 INN):
+    R15-INN-01 ksef_firewall_monitor — firewall KSeF (art. 106na,
+                                      01.02.2026, sankcja 500k)
+    R15-INN-02 jpk_reconciliation_checker — korelacja VAT-7 ≡ JPK_V7M
+                                      ≡ księgi (art. 82/99)
+    R15-INN-03 gtu_code_classifier — auto-klasyfikator GTU (art. 99)
+    R15-INN-04 ksef_offline_deadline_monitor — tryb awaryjny (art. 106nb,
+                                      7 dni)
+    R15-INN-05 wis_request_monitor — wniosek WIS (art. 42a)
+
+  Wiring: main_jdg.rego final_verdict_p40 = safe_merge(final_verdict_p39,
+  safe_merge(r15_ksef_jpk_edeklaracje_innovations.decide, fallback.decide));
+  thresholds.ksef_jpk w thresholds_jdg.rego (zero hardcode).
+
+  Evidence: bundles/ksef_jpk_edeklaracje_innovations_report15_evidence.json
+  (9/9) — tools/ksef_jpk_edeklaracje_innovations_report15_gate.py --strict
+  PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
 ════════════════════════════════════════════════════════════════════════════
 1. EXECUTIVE SUMMARY (1 strona)
 ════════════════════════════════════════════════════════════════════════════
