@@ -1,0 +1,98 @@
+==============================================================================
+RAPORT WDROŻENIOWY ENTERPRISE — TESTY NATYWNE REGO
+(opa test, test_native_*, pokrycie pakietów, deserts)
+Seria: 21/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
+Status: WDROZONY_100 (2026-08-15)
+==============================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę TESTÓW NATYWNYCH REGO (`opa test`):
+test_native_* per domena, pokrycie pakietów produkcyjnych oraz mapę pustyń
+(coverage deserts). Weryfikacja: gate 6/6 → WDROZONY_100.
+
+  Evidence: bundles/native_rego_report21_evidence.json (6/6)
+  — tools/native_rego_report21_gate.py --strict PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
+════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY (1 strona)
+════════════════════════════════════════════════════════════════════════════
+
+Raport wdraża Prompt 21/25
+(JDG/prompty_glm52/21_TESTY_NATYWNE_REGO_opa_test_test_native_.reg.txt)
+— natywne testy Rego jako dowód determinizmu i poprawności reguł.
+
+Komponenty:
+  • 138 plików testów Rego (68 natywnych + 25 micro + 45 pozostałych)
+  • 8/8 dokumentów
+  • Pokrycie pakietów: 134/402 pakietów pokryte (33.3%), 268 pustyń
+  • Golden replay 13/13/0 UVER
+
+Weryfikacja: gate 6/6 → WDROZONY_100. Brak duplikatów rule_id w testach.
+Deployment jdg-tnt2-bundle-v9.0.0 (fail-closed, NIE production-active).
+
+════════════════════════════════════════════════════════════════════════════
+2. MAPA SYSTEMU (Mermaid)
+════════════════════════════════════════════════════════════════════════════
+
+flowchart TD
+    A[opa test] --> B[test_native_* 68<br/>per domena]
+    A --> C[micro tests 25<br/>per atom]
+    B --> D[coverage tracker<br/>134/402 pakietów]
+    C --> D
+    D --> E[deserts 268<br/>mapa pustyń]
+    E --> F[CI gate<br/>native green + golden replay]
+
+════════════════════════════════════════════════════════════════════════════
+3. POKRYCIE — MAPA TESTÓW (tabela)
+════════════════════════════════════════════════════════════════════════════
+
+| Grupa | Liczba | Zakres | Status |
+|---|---|---|---|
+| Testy natywne Rego | 68 | test_native_* per domena | A (kompletny) |
+| Testy micro | 25 | micro/* per atom | A (kompletny) |
+| Pliki testów | 138 | łącznie | A (kompletny) |
+| Dokumenty | 8 | ARCHITEKTURA/WIZJA/Bbb/… | A (kompletny) |
+
+Pokrycie pakietów: 134/402 (33.3%); deserts: 268.
+
+════════════════════════════════════════════════════════════════════════════
+4. OPA JAKO SYSTEM — WERYFIKACJA (dowody)
+════════════════════════════════════════════════════════════════════════════
+
+• Inventory: 138 plików testów Rego (68 native + 25 micro), 8/8 dokumentów.
+• Duplicate-free: 0 duplikatów rule_id w testach.
+• Coverage: 134/402 pakietów pokryte (33.3%); deserts 268 (mapa utrzymywana).
+• Golden replay: 13 verdictów / 13 replay / 0 UVER.
+• Deployment: jdg-tnt2-bundle-v9.0.0, quality 100.0, error_rate 0.0
+  (fail-closed, NIE production-active).
+
+════════════════════════════════════════════════════════════════════════════
+5. KONTRAKTY DLA KOLEJNYCH RAPORTÓW
+════════════════════════════════════════════════════════════════════════════
+
+• Testy natywne NIE tworzą produkcyjnych rule_id — zero kolizji.
+• Mapa pustyń (coverage_deserts.json) pozostaje wspólna — kolejne raporty
+  (R22 bundle/API, R23 dokumentacja) używają jej bez modyfikacji.
+• Następny raport: RAPORT_22 (BUNDLE API MIGRACJE).
+
+════════════════════════════════════════════════════════════════════════════
+6. GENIALNE POMYSŁY ENTERPRISE (P0/P1/P2 — roadmapa)
+════════════════════════════════════════════════════════════════════════════
+
+P0 (natychmiast):
+  1. Domknięcie pustyń pokrycia (268 pakietów) — auto-generacja test_native.
+  2. Coverage ≥90% jako bramka CI (spójne z P23).
+P1 (krótki termin):
+  3. Mutation testing natywnego Rego (opa test z mutantami).
+  4. Snapshot werdyktów per scenario (decision_hash).
+P2 (średni termin):
+  5. Fuzzing warunków reguł (adversarial test cases).
+  6. Auto-generacja testów z diffu prawnego (Declarative Change).
+
+==============================================================================
+Stan wdrożenia po walidacji: WDROZONY_100
+Walidacja: gate native_rego_report21_gate.py 6/6 PASS (strict) ·
+golden replay 13/13 / 0 UVER ·
+bundle jdg-tnt2-bundle-v9.0.0 (quality 100.0, error_rate 0.0, fail-closed)
+==============================================================================

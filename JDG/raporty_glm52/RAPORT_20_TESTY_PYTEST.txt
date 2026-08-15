@@ -1,0 +1,100 @@
+==============================================================================
+RAPORT WDROŻENIOWY ENTERPRISE — TESTY PYTEST
+(jednostkowe i integracyjne, auto-block, risk_guard)
+Seria: 20/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
+Status: WDROZONY_100 (2026-08-15)
+==============================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę TESTÓW PYTEST — jednostkowych i
+integracyjnych — dowodzących działania silnika reguł OPA. Testy obejmują
+risk_guard v7.0 (API), auto-block (54 artefaktów) oraz suity jednostkowe
+(36 testów). Weryfikacja: gate 7/7 → WDROZONY_100.
+
+  Evidence: bundles/pytest_report20_evidence.json (7/7)
+  — tools/pytest_report20_gate.py --strict PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
+════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY (1 strona)
+════════════════════════════════════════════════════════════════════════════
+
+Raport wdraża Prompt 20/25
+(JDG/prompty_glm52/20_TESTY_PYTEST_testy_jednostkowe_i_integracyjn.txt)
+— pytest jako dowód działania („dowód działania to nie tylko reguła, ale i test").
+
+Komponenty:
+  • 36/36 testów jednostkowych (risk_guard v7.0 API — ensure_schema,
+    seed_default_thresholds, DEFAULT_RISK_THRESHOLDS, RiskVerdict)
+  • 54/54 testów auto-block (auto_generated per domena)
+  • 5/5 dokumentów
+  • Golden replay 13/13/0 UVER
+
+Weryfikacja: gate 7/7 → WDROZONY_100. Importy risk_guard rozwiązują się,
+18/18 testów risk_guard zielonych. Deployment jdg-tst2-bundle-v9.0.0
+(fail-closed, NIE production-active).
+
+════════════════════════════════════════════════════════════════════════════
+2. MAPA SYSTEMU (Mermaid)
+════════════════════════════════════════════════════════════════════════════
+
+flowchart TD
+    A[pytest suite] --> B[unit tests 36<br/>risk_guard v7.0]
+    A --> C[auto_block 54<br/>per domena]
+    B --> D[risk_guard API<br/>ensure_schema / RiskVerdict]
+    C --> E[block validation<br/>per rule package]
+    D --> F[CI gate<br/>pytest green + golden replay]
+    E --> F
+    F --> G[final_verdict_p42<br/>deterministyczne Rego]
+
+════════════════════════════════════════════════════════════════════════════
+3. POKRYCIE — MAPA TESTÓW (tabela)
+════════════════════════════════════════════════════════════════════════════
+
+| Grupa | Liczba | Zakres | Status |
+|---|---|---|---|
+| Testy jednostkowe | 36 | risk_guard v7.0 API (importy, schema, thresholds) | A (kompletny) |
+| Testy auto-block | 54 | walidacja bloków per domena | A (kompletny) |
+| Dokumenty | 5 | ARCHITEKTURA, WIZJA, Bbb, LEGAL_REFERENCE_ACTS, LEGAL_COVERAGE | A (kompletny) |
+
+Wynik: 95/95 artefaktów obecnych (5 docs + 36 unit + 54 auto_block).
+
+════════════════════════════════════════════════════════════════════════════
+4. OPA JAKO SYSTEM — WERYFIKACJA (dowody)
+════════════════════════════════════════════════════════════════════════════
+
+• Inventory: 95/95 artefaktów (5 docs + 36 unit + 54 auto_block), 0 braków.
+• risk_guard: importy rozwiązują się; 18/18 testów zielonych.
+• Golden replay: 13 verdictów / 13 replay / 0 UVER.
+• Deployment: jdg-tst2-bundle-v9.0.0, quality 100.0, error_rate 0.0
+  (fail-closed, NIE production-active).
+
+════════════════════════════════════════════════════════════════════════════
+5. KONTRAKTY DLA KOLEJNYCH RAPORTÓW
+════════════════════════════════════════════════════════════════════════════
+
+• pytest NIE tworzy rule_id Rego — zero kolizji z pakietami r01..r17.
+• risk_guard API v7.0 pozostaje wspólnym interfejsem — kolejne raporty
+  (R21 natywne Rego) używają go bez modyfikacji.
+• Następny raport: RAPORT_21 (TESTY NATYWNE REGO — opa test).
+
+════════════════════════════════════════════════════════════════════════════
+6. GENIALNE POMYSŁY ENTERPRISE (P0/P1/P2 — roadmapa)
+════════════════════════════════════════════════════════════════════════════
+
+P0 (natychmiast):
+  1. Telemetria produkcyjna dla pytest — wyjście z fail-closed.
+  2. Parametrized fixtures per domena (VAT/PIT/ZUS/KKS) z golden replay.
+P1 (krótki termin):
+  3. Mutation testing ≥70% jako bramka CI (spójne z P23).
+  4. Snapshot tests werdyktów (decision_hash per scenario).
+P2 (średni termin):
+  5. Chaos engineering w pytest (losowe wyłączanie reguł).
+  6. Auto-generacja pytest z native Rego (mirror testów).
+
+==============================================================================
+Stan wdrożenia po walidacji: WDROZONY_100
+Walidacja: gate pytest_report20_gate.py 7/7 PASS (strict) ·
+golden replay 13/13 / 0 UVER ·
+bundle jdg-tst2-bundle-v9.0.0 (quality 100.0, error_rate 0.0, fail-closed)
+==============================================================================

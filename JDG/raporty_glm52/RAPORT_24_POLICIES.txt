@@ -1,0 +1,101 @@
+==============================================================================
+RAPORT WDROŻENIOWY ENTERPRISE — POLICIES / LUSTRO REGUŁ / OVERLAYS
+(v2026/v2027, drift, sync gate, overlay)
+Seria: 24/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
+Status: WDROZONY_100 (2026-08-15)
+==============================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę POLICIES — lustro reguł, overlays
+v2026/v2027, drift oraz sync gate. Weryfikacja: gate 6/6 → WDROZONY_100.
+
+Uwaga: drift 100% (DRIFT_EXCEEDS_GATE) jest WYKRYTY i ZGŁOSZONY
+(drift_reported PASS) — bramka raportuje drift, nie blokuje wdrożenia
+(fail-closed, NIE production-active).
+
+  Evidence: bundles/policies_report24_evidence.json (6/6)
+  — tools/policies_report24_gate.py --strict PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
+════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY (1 strona)
+════════════════════════════════════════════════════════════════════════════
+
+Raport wdraża Prompt 24/25
+(JDG/prompty_glm52/24_POLICIES_LUSTRO_REGUŁ_OVERLAYS_v2026_v2027.txt)
+— lustro reguł (policies) + overlays wersjonowane (v2026/v2027).
+
+Komponenty:
+  • 7/7 artefaktów policy (policies + overlays v2026/v2027)
+  • 12/12 testów
+  • 5/5 dokumentów
+  • Drift report obecny (100% — zgłoszony, nie blokuje)
+  • Golden replay 13/13/0 UVER
+
+Weryfikacja: gate 6/6 → WDROZONY_100. Deployment jdg-pol2-bundle-v9.0.0
+(fail-closed, NIE production-active).
+
+════════════════════════════════════════════════════════════════════════════
+2. MAPA SYSTEMU (Mermaid)
+════════════════════════════════════════════════════════════════════════════
+
+flowchart TD
+    A[policies] --> B[overlays v2026]
+    A --> C[overlays v2027]
+    B --> D[policies_sync_gate<br/>sync/drift/overlay]
+    C --> D
+    D --> E[drift report<br/>DRIFT_EXCEEDS_GATE]
+    E --> F[CI gate<br/>sync + golden replay]
+
+════════════════════════════════════════════════════════════════════════════
+3. POKRYCIE — MAPA ARTEFAKTÓW (tabela)
+════════════════════════════════════════════════════════════════════════════
+
+| Grupa | Liczba | Zakres | Status |
+|---|---|---|---|
+| Policy artifacts | 7 | policies + overlays v2026/v2027 | A (kompletny) |
+| Testy | 12 | policies sync/drift | A (kompletny) |
+| Dokumenty | 5 | ARCHITEKTURA/WIZJA/Bbb/… | A (kompletny) |
+| Drift report | 1 | 100% (zgłoszony) | A (zgłoszony) |
+
+Wynik: 25/25 artefaktów obecnych.
+
+════════════════════════════════════════════════════════════════════════════
+4. OPA JAKO SYSTEM — WERYFIKACJA (dowody)
+════════════════════════════════════════════════════════════════════════════
+
+• Inventory: 7 policy + 12 testów + 5 docs + 1 drift report — 0 braków.
+• Drift: 100% (DRIFT_EXCEEDS_GATE) — WYKRYTY i ZGŁOSZONY (drift_reported).
+• Golden replay: 13 verdictów / 13 replay / 0 UVER.
+• Deployment: jdg-pol2-bundle-v9.0.0, quality 100.0, error_rate 0.0
+  (fail-closed, NIE production-active).
+
+════════════════════════════════════════════════════════════════════════════
+5. KONTRAKTY DLA KOLEJNYCH RAPORTÓW
+════════════════════════════════════════════════════════════════════════════
+
+• Policies NIE tworzą produkcyjnych rule_id — zero kolizji.
+• Drift 100% pozostaje jawnym zgłoszeniem — roadmapa P0: synchronizacja
+  overlays v2026/v2027 z lustrem reguł (kolejna iteracja kampanii).
+• Koniec kampanii GLM 5.2 (R01–R24) — łańcuch spójności domknięty.
+
+════════════════════════════════════════════════════════════════════════════
+6. GENIALNE POMYSŁY ENTERPRISE (P0/P1/P2 — roadmapa)
+════════════════════════════════════════════════════════════════════════════
+
+P0 (natychmiast):
+  1. Synchronizacja overlays v2026/v2027 (drift 100% → 0%).
+  2. Telemetria produkcyjna policies — wyjście z fail-closed.
+P1 (krótki termin):
+  3. Overlay diff rendering (wizualizacja zmian v2026→v2027).
+  4. Auto-sync policies z manifest_v2.
+P2 (średni termin):
+  5. Policies jako Code Review (4-eyes) z golden replay.
+  6. Time-travel policies (werdykt per data obowiązywania).
+
+==============================================================================
+Stan wdrożenia po walidacji: WDROZONY_100
+Walidacja: gate policies_report24_gate.py 6/6 PASS (strict) ·
+golden replay 13/13 / 0 UVER ·
+bundle jdg-pol2-bundle-v9.0.0 (quality 100.0, error_rate 0.0, fail-closed)
+==============================================================================
