@@ -156,8 +156,8 @@ class TestR01MainJdgWiring:
         assert "final_verdict_p26 = safe_merge(final_verdict_p25," in text
         assert "final_verdict_p27 = safe_merge(final_verdict_p26," in text
         assert "final_verdict_p28 = safe_merge(final_verdict_p27," in text
-        assert "final_verdict_p33 = safe_merge(final_verdict_p31," in text
-        assert "final_verdict_post_merge = object.union(final_verdict_p33," in text
+        assert "final_verdict_p33 = safe_merge(final_verdict_p32," in text
+        assert "final_verdict_post_merge = object.union(final_verdict_p34," in text
         assert "final_verdict_enforced = object.union(final_verdict_post_merge," in text
         assert "final_verdict = final_verdict_enforced" in text
 

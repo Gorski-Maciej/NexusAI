@@ -5,6 +5,34 @@ Seria: 09/25 — Kampania GLM 5.2 (NexusAI JDG ENTERPRISE)
 Status: WDROZONY_100 (2026-08-15)
 ==============================================================================
 
+────────────────────────────────────────────────────────────────────────────────
+UZUPEŁNIENIE KAMPANII GLM 5.2 (2026-08-15) — NOWY PAKIET R09
+────────────────────────────────────────────────────────────────────────────────
+Niniejszy raport dokumentuje warstwę księgowości (p09 v9.1 INN-01..20 +
+accounting/* + uor/* + micro/* + transformer + p18), która jest kompletna
+(6/6 krytycznych artykułów COMPLETE). Dodatkowo, w ramach kampanii GLM 5.2
+(seria R01→R24), wdrożono NOWY pakiet innowacji:
+
+  rules/r09_ksiegowosc_pkpir_uor_innovations_v9.rego (5 INN):
+    R09-INN-01 uor_threshold_simulator     — symulator progu UoR 2M EUR + projekcja
+                                             forward (art. 2 ust. 1 pkt 5 UoR)
+    R09-INN-02 pkpir_ledger_reconciliation — uzgodnienie 3-drożne PKPiR↔VAT↔bank
+                                             (kol. 7 vs baza VAT vs wpływy)
+    R09-INN-03 amortization_plan_optimizer — liniowa vs degresywna vs jednorazowa
+                                             100k EUR (art. 22i/22k PIT)
+    R09-INN-04 inventory_deadline_monitor  — monitor inwentaryzacji 3 poziomy
+                                             alertów (art. 26 UoR)
+    R09-INN-05 financial_statement_autopack— auto-pakiet sprawozdania finansowego
+                                             + terminy + retencja 5 lat (art. 74)
+
+  Wiring: main_jdg.rego final_verdict_p34 = safe_merge(final_verdict_p33,
+  safe_merge(r09_ksiegowosc_pkpir_uor_innovations.decide, fallback.decide));
+  thresholds.accounting w thresholds_jdg.rego (zero hardcode).
+
+  Evidence: bundles/ksiegowosc_report09_evidence.json (9/9) —
+  tools/ksiegowosc_report09_gate.py --strict PASS -> WDROZONY_100.
+────────────────────────────────────────────────────────────────────────────────
+
 ════════════════════════════════════════════════════════════════════════════
 1. EXECUTIVE SUMMARY (1 strona)
 ════════════════════════════════════════════════════════════════════════════

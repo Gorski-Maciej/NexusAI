@@ -1,0 +1,130 @@
+{
+  "report": "RAPORT_09_UOR_KSIEGOWOSC",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "report_present": true,
+    "innovations_complete": true,
+    "legal_basis_canonical": true,
+    "thresholds_externalized": true,
+    "duplicate_free": true,
+    "router_wired": true,
+    "tests_present": true,
+    "golden_replay_ok": true
+  },
+  "gate_summary": {
+    "passed": 9,
+    "total": 9
+  },
+  "checks_passed": 9,
+  "checks_total": 9,
+  "scope": {
+    "files": {
+      "r09_rego": true,
+      "main_jdg": true,
+      "thresholds": true,
+      "pytest": true,
+      "native_rego": true,
+      "report": true
+    },
+    "files_total": 6,
+    "files_present": 6,
+    "report_present": true,
+    "acc_core_files_declared": 30,
+    "acc_core_files_present": 30
+  },
+  "innovations": {
+    "required_innovations": [
+      "uor_threshold_simulator",
+      "uos_current_eur",
+      "uos_projected_eur",
+      "uos_months_to_threshold",
+      "uos_early_warning",
+      "pkpir_ledger_reconciliation",
+      "lrecon_pkpir_sales_net",
+      "lrecon_vat_sales_base",
+      "lrecon_bank_inflows",
+      "lrecon_reconciled",
+      "amortization_plan_optimizer",
+      "plan_linear_annual",
+      "plan_degressive_annual",
+      "plan_one_off_eligible",
+      "plan_best_method",
+      "inventory_deadline_monitor",
+      "inv_red_count",
+      "FIXED_ASSETS",
+      "financial_statement_autopack",
+      "fs_missing",
+      "fs_ready",
+      "fs_retention_years"
+    ],
+    "missing_innovations": [],
+    "innovations_complete": true,
+    "legal_basis_markers": [
+      "art. 2 ust. 1 pkt 5",
+      "art. 26",
+      "art. 45-49",
+      "art. 74",
+      "art. 22i",
+      "art. 22k"
+    ],
+    "missing_legal_markers": [],
+    "legal_basis_complete": true,
+    "decide_report_rule": true,
+    "activation_flag": true,
+    "default_no_match": true,
+    "uor_simulator": true,
+    "three_way_reconciliation": true,
+    "amortization_optimizer": true,
+    "inventory_monitor": true,
+    "fs_autopack": true
+  },
+  "thresholds": {
+    "thresholds_via_data": true,
+    "uor_threshold_externalized": true,
+    "depreciation_externalized": true,
+    "car_limit_externalized": true,
+    "accounting_block_present": true
+  },
+  "duplicates": {
+    "rule_ids_total": 6,
+    "rule_ids_unique": 6,
+    "duplicates": [],
+    "duplicate_count": 0
+  },
+  "router": {
+    "import_present": true,
+    "package_decisions_entry": true,
+    "final_verdict_p34": true,
+    "post_merge_present": true,
+    "invariants_enforced": true,
+    "final_verdict_public": true
+  },
+  "tests": {
+    "pytest_present": true,
+    "native_rego_present": true,
+    "marker_hits": {
+      "uor_threshold_simulator": true,
+      "pkpir_ledger_reconciliation": true,
+      "amortization_plan_optimizer": true,
+      "inventory_deadline_monitor": true,
+      "financial_statement_autopack": true,
+      "r09_ksiegowosc_check": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "art. 74": true,
+      "ONE_OFF": true
+    },
+    "markers_complete": true,
+    "pytest_test_functions": 17,
+    "native_test_functions": 0
+  },
+  "replay": {
+    "golden_verdicts_total": 22,
+    "acc_verdicts": 1,
+    "acc_replays": 1,
+    "uver_count": 0,
+    "replay_verified": true
+  },
+  "generated_at": "2026-08-15T18:58:09.036855+00:00"
+}

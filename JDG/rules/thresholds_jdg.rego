@@ -732,6 +732,36 @@ depreciation := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# UoR / PKPiR / KSIĘGOWOŚĆ THRESHOLDS — RAPORT_09 (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+accounting := {
+    # Art. 2 ust. 1 pkt 5 UoR — próg pełnej księgowości (2 000 000 EUR)
+    "uor_threshold_eur": 2000000,               # 2M EUR
+    "eur_pln_reference": 4.5,                   # kurs referencyjny NBP (umowny)
+    "early_warning_pct": 75,                    # 75% progu — wczesne ostrzeżenie
+
+    # Art. 22k ust. 7-12 PIT — jednorazowa amortyzacja (mały podatnik)
+    "one_time_depreciation_eur": 100000,        # 100k EUR
+
+    # Art. 23a pkt 47a PIT — limity aut osobowych (KUP)
+    "car_limit_standard": 150000,               # 150k PLN
+    "car_limit_electric": 225000,               # 225k PLN (elektryk)
+
+    # Art. 26 UoR — harmonogram inwentaryzacji
+    "inventory_cash_months": 12,                # środki pieniężne — co rok
+    "inventory_stock_months": 12,               # zapasy — na koniec roku
+    "inventory_fixed_assets_years": 4,          # środki trwałe — co 4 lata
+
+    # Art. 45-49, 52 UoR — terminy sprawozdań finansowych
+    "fs_approval_deadline": "03-31",            # zatwierdzenie 31.03
+    "fs_filing_deadline": "10-15",              # złożenie 15.10
+    "fs_retention_years": 5,                    # art. 74 UoR — 5 lat
+    "valid_from": "2025-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # BUSINESS / CEIDG THRESHOLDS
 # ═══════════════════════════════════════════════════════════════════════════════
 

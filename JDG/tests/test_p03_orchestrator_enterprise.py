@@ -68,7 +68,7 @@ class TestRuntimeInvariants:
 
     def test_post_merge_reference_in_main(self):
         main = MAIN_REGO.read_text(encoding="utf-8")
-        assert "final_verdict_post_merge = object.union(final_verdict_p33," in main
+        assert "final_verdict_post_merge = object.union(final_verdict_p34," in main
         assert "runtime_invariants.enforce(final_verdict_post_merge)" in main
         assert "final_verdict_enforced" in main
 
@@ -166,7 +166,8 @@ class TestMainJdgWiring:
         # Łańcuch P30→P31 (R06 ZUS)→P32 (R07 KKS)→P33 (R08 Ordynacja) —
         # zgodnie z wiring w main_jdg.rego (PAS 18s/18t/18u/18v).
         assert "final_verdict_p33 = safe_merge(final_verdict_p32," in text
-        assert "final_verdict_post_merge = object.union(final_verdict_p33," in text
+        assert "final_verdict_p34 = safe_merge(final_verdict_p33," in text
+        assert "final_verdict_post_merge = object.union(final_verdict_p34," in text
         assert "final_verdict_enforced = object.union(final_verdict_post_merge," in text
         assert "final_verdict = final_verdict_enforced" in text
         assert '"_routing_context": routing_context' in text

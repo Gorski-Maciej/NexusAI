@@ -139,8 +139,8 @@ class TestR03MainJdgWiring:
 
     def test_post_merge_chain(self):
         text = MAIN_REGO.read_text(encoding="utf-8")
-        assert "final_verdict_p33 = safe_merge(final_verdict_p31," in text
-        assert "final_verdict_post_merge = object.union(final_verdict_p33," in text
+        assert "final_verdict_p33 = safe_merge(final_verdict_p32," in text
+        assert "final_verdict_post_merge = object.union(final_verdict_p34," in text
         assert "final_verdict_enforced = object.union(final_verdict_post_merge," in text
         assert "final_verdict = final_verdict_enforced" in text
 

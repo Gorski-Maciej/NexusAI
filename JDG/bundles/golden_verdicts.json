@@ -967,6 +967,37 @@
       "bundle_version": "unknown",
       "recorded_at": "2026-08-14T21:03:20+00:00",
       "legal_basis_refs": []
+    },
+    "41f893e51158faf79621d187ec3f9c9f06e9df7664b984ed8fb75066512d2607": {
+      "verdict": {
+        "matched": true,
+        "rule_id": "jdg.r09_ksiegowosc_pkpir_uor_innovations.uor_threshold_simulator",
+        "package": "jdg.r09_ksiegowosc_pkpir_uor_innovations",
+        "priority": 11006,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "uos_ytd_pln": 7200000,
+        "uos_current_eur": 1600000,
+        "uos_annualized_pln": 7200000,
+        "uos_projected_eur": 1600000,
+        "uos_threshold_pct": 80,
+        "uos_early_warning": true,
+        "uos_decision": "PKPiR",
+        "uos_months_to_threshold": 3,
+        "uos_months_elapsed": 12,
+        "_routing": "TRIAGE_QUEUE",
+        "_routing_reason": "Symulator progu UoR — 80.00% progu 2M EUR (1600000.00 EUR bieżąco, projekcja 1600000.00 EUR). Decyzja: PKPiR | przekroczenie za ~3 mies.",
+        "_legal_basis": "UoR art. 2 ust. 1 pkt 5 (próg 2 000 000 EUR), art. 2 ust. 2 (PKPiR poniżej progu); PIT art. 24a (PKPiR)",
+        "_warnings": [
+          "UoR: 80.00% progu (1600000.00 EUR z 2 000 000 EUR). Zbliżasz się do progu UoR — planuj przejście na pełną księgowość (75% ostrzeżenie)."
+        ]
+      },
+      "verdict_hash": "ce29702c8996d9fcc575e234c9bb2ad392d0c39add63e8d348d65b6a957a82a5",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "bundle_version": "jdg-acc2-bundle-v9.0.0",
+      "recorded_at": "2026-08-15T18:51:31.486366+00:00",
+      "legal_basis_refs": []
     }
   },
   "annotations": [],
@@ -1946,6 +1977,41 @@
       "reason": null,
       "uver_applies": false,
       "replayed_at": "2026-08-14T21:04:28+00:00"
+    },
+    {
+      "input_hash": "41f893e51158faf79621d187ec3f9c9f06e9df7664b984ed8fb75066512d2607",
+      "golden_verdict_hash": "ce29702c8996d9fcc575e234c9bb2ad392d0c39add63e8d348d65b6a957a82a5",
+      "new_verdict": {
+        "matched": true,
+        "rule_id": "jdg.r09_ksiegowosc_pkpir_uor_innovations.uor_threshold_simulator",
+        "package": "jdg.r09_ksiegowosc_pkpir_uor_innovations",
+        "priority": 11006,
+        "decision_mode": "SUGGEST",
+        "valid_from": "2025-01-01",
+        "valid_to": null,
+        "uos_ytd_pln": 7200000,
+        "uos_current_eur": 1600000,
+        "uos_annualized_pln": 7200000,
+        "uos_projected_eur": 1600000,
+        "uos_threshold_pct": 80,
+        "uos_early_warning": true,
+        "uos_decision": "PKPiR",
+        "uos_months_to_threshold": 3,
+        "uos_months_elapsed": 12,
+        "_routing": "TRIAGE_QUEUE",
+        "_routing_reason": "Symulator progu UoR — 80.00% progu 2M EUR (1600000.00 EUR bieżąco, projekcja 1600000.00 EUR). Decyzja: PKPiR | przekroczenie za ~3 mies.",
+        "_legal_basis": "UoR art. 2 ust. 1 pkt 5 (próg 2 000 000 EUR), art. 2 ust. 2 (PKPiR poniżej progu); PIT art. 24a (PKPiR)",
+        "_warnings": [
+          "UoR: 80.00% progu (1600000.00 EUR z 2 000 000 EUR). Zbliżasz się do progu UoR — planuj przejście na pełną księgowość (75% ostrzeżenie)."
+        ]
+      },
+      "new_verdict_hash": "ce29702c8996d9fcc575e234c9bb2ad392d0c39add63e8d348d65b6a957a82a5",
+      "hash_algorithm": "sha256-canonical-json-v1",
+      "changed": false,
+      "explained": false,
+      "reason": null,
+      "uver_applies": false,
+      "replayed_at": "2026-08-15T18:51:31.486366+00:00"
     }
   ]
 }
