@@ -12,7 +12,7 @@ decide := {
     "package":"jdg.employer","priority":1200,
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
-    "kus_qualification":"KUP_CREATIVE","kus_percent":50,"kup_monthly_cap_pln":120000,
+    "kus_qualification":"KUP_CREATIVE","kus_percent":50,"kup_monthly_cap_pln":object.get(data.thresholds.jdg.pit, "kup_creative_cap", 120000),
     "zus_social_base_type":"","zus_health_rate":"",
     "business_status":"","employment_tax_obligation":"PIT-4R_MONTHLY",
     "_routing":"","_routing_reason":"",
@@ -64,7 +64,7 @@ else := {
     "package":"jdg.employer","priority":1206,
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
-    "kus_qualification":"KUP_MULTIPLE","kus_percent":0,"kup_yearly_cap_pln":4500,
+    "kus_qualification":"KUP_MULTIPLE","kus_percent":0,"kup_yearly_cap_pln":object.get(data.thresholds.jdg.pit, "kup_multiple_cap", 4500),
     "zus_social_base_type":"","zus_health_rate":"",
     "business_status":"","employment_tax_obligation":"PIT-4R_MONTHLY",
     "_routing":"","_routing_reason":"",
@@ -349,7 +349,7 @@ else := {
 
 # P474: employer_ppk_auto_enrollment — PPK auto-zapis
 else := {
-    "matched":true,"rule_id":"jdg.employer.ppk_auto_enrollment",
+    "matched":true,"rule_id":"jdg.employer.ppk_auto_enrollment_b",
     "package":"jdg.employer","priority":474,
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
@@ -384,7 +384,7 @@ else := {
 
 # P476: employer_peron_contribution — PFRON ≥25 pracowników
 else := {
-    "matched":true,"rule_id":"jdg.employer.peron_contribution",
+    "matched":true,"rule_id":"jdg.employer.peron_contribution_b",
     "package":"jdg.employer","priority":476,
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",

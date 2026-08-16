@@ -85,6 +85,7 @@ decide := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p15_innovations.pcc_detection_engine",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p15_innovations",
         "priority": 1000,
         "innovation": "INN01_PCC_AUTO_DETECTION",
@@ -169,6 +170,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p15_innovations.pcc3_auto_filler",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p15_innovations",
         "priority": 2000,
         "innovation": "INN02_PCC3_AUTO_FILLER",
@@ -254,6 +256,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p15_innovations.real_estate_tax_classifier",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p15_innovations",
         "priority": 3000,
         "innovation": "INN03_REAL_ESTATE_TAX_CLASSIFIER",
@@ -338,6 +341,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p15_innovations.excise_warehouse_tracker",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p15_innovations",
         "priority": 4000,
         "innovation": "INN04_EXCISE_WAREHOUSE_TRACKER",
@@ -444,6 +448,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p15_innovations.transport_tax_calculator",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p15_innovations",
         "priority": 5000,
         "innovation": "INN05_TRANSPORT_TAX_CALCULATOR",
@@ -554,6 +559,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p15_innovations.pcc_exemption_analyzer",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p15_innovations",
         "priority": 6000,
         "innovation": "INN06_PCC_EXEMPTION_ANALYZER",
@@ -647,6 +653,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p15_innovations.local_tax_calendar",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p15_innovations",
         "priority": 7000,
         "innovation": "INN07_MULTI_TAX_CALENDAR",
@@ -740,6 +747,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p15_innovations.excise_suspension_manager",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p15_innovations",
         "priority": 8000,
         "innovation": "INN08_EXCISE_SUSPENSION_MANAGER",
@@ -838,6 +846,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p15_innovations.property_tax_appeal",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p15_innovations",
         "priority": 9000,
         "innovation": "INN09_PROPERTY_TAX_APPEAL",
@@ -956,6 +965,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p15_innovations.local_tax_rate_updater",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p15_innovations",
         "priority": 10000,
         "innovation": "INN10_LOCAL_TAX_RATE_UPDATER",
@@ -1051,6 +1061,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p15_innovations.cross_border_excise",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p15_innovations",
         "priority": 11000,
         "innovation": "INN11_CROSS_BORDER_EXCISE",
@@ -1163,6 +1174,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p15_innovations.pcc_vat_firewall",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p15_innovations",
         "priority": 12000,
         "innovation": "INN12_PCC_VAT_FIREWALL",
@@ -1201,6 +1213,8 @@ else := verdict {
 else := {
     "matched": true,
     "rule_id": "jdg.p15_innovations.coverage_summary",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p15_innovations",
     "priority": 99999,
     "innovation": "P15_COVERAGE_SUMMARY",

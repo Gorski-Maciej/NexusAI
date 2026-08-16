@@ -24,32 +24,33 @@
 package jdg.jpk_cit
 
 import data.jdg.helpers
+import data.jdg.thresholds
 import future.keywords.in
 
 # Deterministic value helpers keep conditional routing outside rule bodies.
 cit_routing_value(to_pay, advances) = "BLOCK_AND_ALERT" {
-    to_pay > 10000
+    to_pay > object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "jpk_cit_payment_tier_high_pln", 10000)
     advances == 0
 } else = "TRIAGE_QUEUE" {
-    to_pay > 5000
+    to_pay > object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "jpk_cit_payment_tier_low_pln", 5000)
 } else = "" {
-    to_pay <= 5000
+    to_pay <= object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "jpk_cit_payment_tier_low_pln", 5000)
 }
 
 cit_routing_reason_value(to_pay, advances) = "CIT do zapłaty >10k bez zaliczek" {
-    to_pay > 10000
+    to_pay > object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "jpk_cit_payment_tier_high_pln", 10000)
     advances == 0
 } else = reason {
-    to_pay > 5000
+    to_pay > object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "jpk_cit_payment_tier_low_pln", 5000)
     reason := sprintf("CIT do zapłaty: %.2f PLN", [to_pay])
 } else = "" {
-    to_pay <= 5000
+    to_pay <= object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "jpk_cit_payment_tier_low_pln", 5000)
 }
 
 threshold_ok_value(revenue_eur) = true {
-    revenue_eur < 2000000
+    revenue_eur < object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "jpk_cit_revenue_eur_limit", 2000000)
 } else = false {
-    revenue_eur >= 2000000
+    revenue_eur >= object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "jpk_cit_revenue_eur_limit", 2000000)
 }
 
 default decide := {

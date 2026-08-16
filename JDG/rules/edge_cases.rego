@@ -49,26 +49,26 @@ forecast_date_for(bridge_date, current_date, days_remaining) = bridge_date if {
 }
 
 health_amount_for(annual_revenue) = 419.46 if {
-    annual_revenue <= 60000
+    annual_revenue <= object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "health_tier_low", 60000)
 } else = 699.11 if {
-    annual_revenue > 60000
-    annual_revenue <= 300000
+    annual_revenue > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "health_tier_low", 60000)
+    annual_revenue <= object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "health_tier_high", 300000)
 } else = 1258.39 if {
-    annual_revenue > 300000
+    annual_revenue > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "health_tier_high", 300000)
 }
 
-health_tier_for(annual_revenue) = 60000 if {
-    annual_revenue <= 60000
-} else = 300000 if {
-    annual_revenue > 60000
-    annual_revenue <= 300000
+health_tier_for(annual_revenue) = object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "health_tier_low", 60000) if {
+    annual_revenue <= object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "health_tier_low", 60000)
+} else = object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "health_tier_high", 300000) if {
+    annual_revenue > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "health_tier_low", 60000)
+    annual_revenue <= object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "health_tier_high", 300000)
 } else = 0 if {
-    annual_revenue > 300000
+    annual_revenue > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "health_tier_high", 300000)
 }
 
-car_kup_limit_for(is_ev) = 225000 if {
+car_kup_limit_for(is_ev) = object.get(data.thresholds.jdg.depreciation, "passenger_car_limit_electric", 225000) if {
     is_ev == true
-} else = 150000 if {
+} else = object.get(data.thresholds.jdg.depreciation, "passenger_car_limit_standard", 150000) if {
     true
 }
 

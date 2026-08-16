@@ -25,6 +25,7 @@
 package jdg.ksef_offline_queue
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 default decide := {
     "matched": false, "rule_id": "jdg.ksef_offline_queue.no_match",
@@ -49,7 +50,7 @@ decide := {
     "ksef_queue_high_priority": high_priority,
     "ksef_queue_oldest_age_hours": oldest_age_h,
     "ksef_queue_oldest_approaching_deadline": approaching_deadline,
-    "ksef_queue_deadline_hours": 168,
+    "ksef_queue_deadline_hours": object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "ksef_offline_grace_days", 7) * 24,
     "ksef_queue_hours_remaining": hours_remaining,
     "_routing": queue_routing,
     "_routing_reason": queue_reason,
@@ -60,8 +61,8 @@ decide := {
     total_pending := object.get(input, "ksef_offline_queue_count", 0)
     high_priority := object.get(input, "ksef_offline_high_priority_count", 0)
     oldest_age_h := object.get(input, "ksef_offline_oldest_age_hours", 0)
-    hours_remaining := 168 - oldest_age_h
-    approaching_deadline := oldest_age_h >= 120
+    hours_remaining := object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "ksef_offline_grace_days", 7) * 24 - oldest_age_h
+    approaching_deadline := oldest_age_h >= object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "ksef_queue_warning_hours", 120)
 
     queue_routing := "BLOCK_AND_ALERT" { approaching_deadline }
     queue_routing := "TRIAGE_QUEUE" { total_pending > 0 }

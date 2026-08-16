@@ -461,3 +461,133 @@ def test_p17_constants_match():
     assert KSEF["jpk_ksef_penalty_per_invoice"] == 1_000.0
     assert len(KSEF["gtu_codes"]) == 13
     assert KSEF["wis_response_days"] == 3
+
+
+# ── P04: narzędzia ksef_outbox / ksef_offline_queue / jpk_autogen / edelivery_monitor ──
+from ksef_outbox import (  # noqa: E402
+    MAX_RETRIES,
+    _backoff,
+    dispatch as ksef_dispatch,
+    enqueue as ksef_enqueue,
+    reconcile as ksef_reconcile,
+    status as ksef_status,
+)
+from ksef_offline_queue import (  # noqa: E402
+    GRACE_DAYS,
+    WARNING_HOURS,
+    ZAW_NR_PENALTY_PLN,
+    add as offline_add,
+    deadline as offline_deadline,
+    zaw_nr as offline_zaw_nr,
+)
+from jpk_autogen import (  # noqa: E402
+    build as jpk_build,
+    correction as jpk_correction,
+    schedule as jpk_schedule,
+    verify as jpk_verify,
+)
+from edelivery_monitor import (  # noqa: E402
+    FICTION_DAYS,
+    archive as ede_archive,
+    check as ede_check,
+    fiction as ede_fiction,
+    inbox as ede_inbox,
+)
+
+
+INV1 = {"invoice_number": "F-001", "amount_net": 1000.0, "vat_rate": "23", "vat_amount": 230.0, "direction": "SALE"}
+INV2 = {"invoice_number": "F-002", "amount_net": 5000.0, "vat_rate": "23", "vat_amount": 1150.0, "direction": "SALE"}
+
+
+def test_p04_outbox_exactly_once():
+    """Idempotencja outbox — ten sam dokument nigdy nie wchodzi 2× (exactly-once)."""
+    ob = []
+    e1 = ksef_enqueue(INV1, ob)
+    e2 = ksef_enqueue(INV1, ob)
+    e3 = ksef_enqueue(INV2, ob)
+    assert e1["outbox_id"] == e2["outbox_id"]
+    assert e2["duplicate"] is True
+    assert len(ob) == 2
+    assert ksef_status(ob)["duplicates_detected"] == 1
+
+
+def test_p04_outbox_retry_backoff_and_upo():
+    """Retry z backoffem (sandbox: sukces od 2. próby) + rekoncyliacja UPO."""
+    import time
+    ob = []
+    ksef_enqueue(INV1, ob)
+    t0 = time.time_ns()
+    first = ksef_dispatch(ob, api="sandbox", now_ns=t0)
+    assert first["failed"] == 1  # awaria 1. próby
+    retry = ksef_dispatch(ob, api="sandbox", now_ns=t0 + (_backoff(1) * 1_000_000_000) + 1)
+    assert retry["dispatched"] == 1
+    ob[0]["upo"] = {"upo_id": "UPO-1", "status": "OK"}
+    rec = ksef_reconcile(ob, now_ns=t0 + 2 * 86_400_000_000_000)
+    assert rec["upo_ok"] == 1
+    assert ksef_status(ob)["zero_loss_ok"] is True
+
+
+def test_p04_outbox_max_retries_stale():
+    """Po przekroczeniu max_retries → FAILED (nie utracony, oznaczony)."""
+    ob = [{"outbox_id": "KOB-X", "hash": "h", "status": "PENDING", "attempts": MAX_RETRIES,
+           "next_retry_ns": 0, "invoice": INV1}]
+    res = ksef_dispatch(ob, api="sandbox", now_ns=1)
+    assert res["failed"] == 1
+    assert ob[0]["status"] == "FAILED"
+
+
+def test_p04_offline_queue_deadline_zaw():
+    """Kolejka offline: numeracja OFL, próg 120h, grace 168h, ZAW-NR 5000 zł."""
+    import time
+    q = []
+    entry = offline_add(INV1, "2026-07-01T10:00:00", q)
+    assert entry["offline_id"].startswith("OFL-")
+    assert entry["offline_marker"] is True
+    t0 = time.time_ns()
+    dl = offline_deadline(q, now_ns=t0 + 130 * 3_600_000_000_000)
+    assert dl["approaching_deadline"] is True
+    assert dl["critical"] is False
+    assert dl["hours_remaining"] == GRACE_DAYS * 24 - 130
+    dl2 = offline_deadline(q, now_ns=t0 + 170 * 3_600_000_000_000)
+    assert dl2["critical"] is True
+    zw = offline_zaw_nr(q)
+    assert zw["zaw_nr_required"] is True
+    assert zw["penalty_if_missing_pln"] == ZAW_NR_PENALTY_PLN == 5000
+
+
+def test_p04_jpk_autogen_build_correction_schedule():
+    """e-Deklaracje zero-ręki: build → korekta → terminy."""
+    verds = [INV1, {"invoice_number": "Z-1", "amount_net": 500.0, "vat_rate": "23",
+                    "vat_amount": 115.0, "direction": "PURCHASE"}]
+    j = jpk_build(verds, "2026-01")
+    assert j["jpk"]["vat_to_pay"] == 115.0
+    assert j["declaration"]["P_10"] == 115.0
+    assert jpk_correction(verds, {"period": "2026-01", "P_10": 50.0, "sales_count": 1})["correction_needed"] is True
+    assert jpk_correction(verds, {"period": "2026-01", "P_10": 115.0, "sales_count": 1})["correction_needed"] is False
+    sch = jpk_schedule("2026-01")
+    assert sch["jpk_v7"] == "2026-01-26"  # 25.01.2026 = niedziela → poniedziałek
+    assert sch["pcc_3"] == "2026-01-15"
+
+
+def test_p04_jpk_verify_3way():
+    """Detektor różnic 3-drożny: JPK ↔ deklaracja ↔ KSeF."""
+    jpk = {"vat_due": 230.0, "vat_input": 115.0, "declaration": {"P_10": 115.0}}
+    ksef_ok = {"invoices": [{"vat": 230.0}]}  # KSeF = faktury sprzedażowe
+    assert jpk_verify(jpk, ksef_ok)["consistent"] is True
+    ksef_bad = {"invoices": [{"vat": 200.0}]}
+    v = jpk_verify(jpk, ksef_bad)
+    assert v["consistent"] is False
+    assert any("KSeF" in i for i in v["issues"])
+
+
+def test_p04_edelivery_monitor():
+    """e-Doręczenia: obowiązek EDE, nowe pisma, fiction 15 dni, archiwum WORM."""
+    assert "ZAREJESTRUJ" in ede_check(True)["action"]
+    letters = [{"id": "L1", "status": "NEW", "subject": "Wezwanie", "avis_date": "2026-06-25"},
+               {"id": "L2", "status": "AVISED", "avis_date": "2026-06-25"}]
+    assert ede_inbox(letters)["new_letters"] == 1
+    fic = ede_fiction(letters, "2026-07-10")
+    assert fic["fiction_active"] == 1
+    assert FICTION_DAYS == 15
+    arch = ede_archive(letters)
+    assert arch["retention_years"] == 5

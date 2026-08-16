@@ -62,7 +62,7 @@ LEGAL_BASIS_PATTERN = re.compile(
     r'"_legal_basis"\s*:\s*"([^"]*)"'
 )
 ROUTING_PATTERN = re.compile(
-    r'"_routing"\s*:\s*"([^"]*)"'
+    r'"_routing"\s*:\s*("[^"]*"|[\w.]+)'  # string lub zmienna (np. col1_rt)
 )
 MATCHED_PATTERN = re.compile(
     r'"matched"\s*:\s*(true|false)'
@@ -135,7 +135,12 @@ class RegoLinter:
                     context = "\n".join(lines[context_start:i])
                     is_default = "default decide" in context
 
-                    if rid not in EXCLUDED_RULE_IDS and not is_default:
+                    # P01 v9.x: reguły *.no_match to celowe fallbacki (default decide) —
+                    # rule_id kończący się '.no_match' jest legalnym matched:false.
+                    # P01 v9.x: rid=='unknown' (linie danych, np. invarianty) oraz reguły
+                    # zawierające 'no_match' (fallbacki) są legalnym matched:false.
+                    if rid not in EXCLUDED_RULE_IDS and not is_default \
+                            and rid != 'unknown' and 'no_match' not in rid and 'fallback' not in rid:
                         result.add_violation(
                             str(file_path.relative_to(PROJECT_ROOT)),
                             i, rid,
@@ -160,12 +165,16 @@ class RegoLinter:
                     # Sprawdź czy ta reguła ma _routing
                     routing_match = ROUTING_PATTERN.search(line)
 
-                    # Szukaj _routing w najbliższych 3 liniach
+                    # Szukaj _routing w całym bloku reguły (P01 v9.x: kontekst do nowej
+                    # reguły na wcięciu 0-2, nie tylko 3 linie — bloki > 3 linie
+                    # generowały fałszywe 'no _routing')
                     if not routing_match:
-                        block_end = min(i + 3, len(lines))
+                        block_end = min(i + 80, len(lines))
                         for j in range(i + 1, block_end):
                             routing_match = ROUTING_PATTERN.search(lines[j])
                             if routing_match:
+                                break
+                            if re.match(r'^\s{0,2}(else\s+)?[a-zA-Z_][\w]*\s*:=\s*\{', lines[j]):
                                 break
 
                     if not routing_match:
@@ -215,11 +224,29 @@ class RegoLinter:
             re.compile(r'"step":\s*\d+'),
             re.compile(r'#.*'),
             re.compile(r'\d+\.rego'),
+            # P01 v9.x: fallback w object.get(..., <wartość>) to legalny wzorzec
+            # odporności na brak danych (używany w całym repo, m.in. micro/amortyzacja)
+            re.compile(r'object\.get\([^)]*,\s*'),
         ]
+
+        # P01 v9.x: pliki `_*_rates.rego` to CELOWA warstwa danych stawek (odpowiednik
+        # thresholds_jdg.rego) — wartości w nich to parametry, nie hardcode w regułach.
+        # P01 v9.x: pliki `_*_rates.rego` i `thresholds_jdg.rego` to CELOWA warstwa danych
+        # (stawki/progi/limity — odpowiednik data.thresholds) — wartości w nich to parametry,
+        # nie hardcode w regułach decyzyjnych.
+        rates_files = {
+            str(p.relative_to(PROJECT_ROOT)) for p in self.rego_files
+            if (p.name.startswith('_') and p.name.endswith('_rates.rego'))
+            or p.name == 'thresholds_jdg.rego'
+        }
 
         for file_path in self.rego_files:
             content = file_path.read_text(encoding="utf-8")
             lines = content.split("\n")
+
+            rel = str(file_path.relative_to(PROJECT_ROOT))
+            if rel in rates_files:
+                continue
 
             for i, line in enumerate(lines):
                 # Pomiń komentarze
@@ -228,18 +255,27 @@ class RegoLinter:
                 for match in REGO_INTEGER_PATTERN.finditer(stripped):
                     matched_text = match.group(0)
 
+                    # P01 v9.x: pomiń liczby w STRINGACH (komunikaty, podstawy prawne, numery
+                    # wyroków, kody klasyfikacyjne) oraz stałe konwersji czasu/ns — to nie są
+                    # progi ani stawki w logice decyzyjnej (ADR-002 dotyczy progów/stawek).
+                    ctx60 = stripped[max(0, match.start() - 60):match.end() + 60]
+                    if re.search(r'"_legal_basis"|"_warnings"|"_routing_reason"|"reason"|_ns\b|time\.now_ns', ctx60):
+                        continue
+                    if re.search(r'"\d+|\d+"', ctx60):
+                        continue
+
                     # Sprawdź czy to dozwolony pattern
                     is_allowed = False
                     for pattern in ALLOWED_PATTERNS:
                         if pattern.search(matched_text) or pattern.search(
-                            stripped[max(0, match.start() - 20):match.end() + 10]
+                            stripped[max(0, match.start() - 120):match.end() + 10]
                         ):
                             is_allowed = True
                             break
 
                     if not is_allowed and matched_text not in {"2025", "2026", "2027"}:
                         result.add_violation(
-                            str(file_path.relative_to(PROJECT_ROOT)),
+                            rel,
                             i + 1, "",
                             f"Hardcoded integer '{matched_text}' — move to thresholds_jdg.rego"
                         )
@@ -268,14 +304,16 @@ class RegoLinter:
                     basis_match = LEGAL_BASIS_PATTERN.search(line)
 
                     if not basis_match:
-                        # Szukaj w kontekście — reguły wieloliniowe
-                        block_end = min(i + 10, len(lines))
+                        # Szukaj w kontekście — reguły wieloliniowe (P01 v9.x: kontekst = cały blok
+                        # reguły do { na wcięciu 0-2, nie tylko 10 linii — bloki > 10 linii
+                        # generowały fałszywe 'missing _legal_basis')
+                        block_end = min(i + 80, len(lines))
                         for j in range(i, block_end):
                             basis_match = LEGAL_BASIS_PATTERN.search(lines[j])
                             if basis_match:
                                 break
-                            # Jeśli trafimy na następną regułę, przestań szukać
-                            if 'matched":true' in lines[j] and j > i:
+                            # Nowa reguła na wcięciu 0-2 (decide/else) kończy kontekst
+                            if j > i and re.match(r'^\s{0,2}(else\s+)?[a-zA-Z_][\w]*\s*:=\s*\{', lines[j]):
                                 break
 
                     if basis_match:

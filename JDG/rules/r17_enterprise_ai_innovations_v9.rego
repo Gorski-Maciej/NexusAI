@@ -73,6 +73,7 @@ at_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r17_enterprise_ai_innovations.adaptive_trust_monitor",
+    "_legal_basis": "P02 (Adaptive Trust), V1/V2 granica decyzyjna (AI rekomenduje, Rego decyduje), ADR-022 (invariants)",
     "package": "jdg.r17_enterprise_ai_innovations",
     "priority": 11046,
     "decision_mode": "SUGGEST",
@@ -112,6 +113,7 @@ nm_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r17_enterprise_ai_innovations.neural_mesh_confidence_monitor",
+    "_legal_basis": "P02 (Adaptive Trust), V1/V2 granica decyzyjna (AI rekomenduje, Rego decyduje), ADR-022 (invariants)",
     "package": "jdg.r17_enterprise_ai_innovations",
     "priority": 11047,
     "decision_mode": "SUGGEST",
@@ -155,6 +157,7 @@ cf_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r17_enterprise_ai_innovations.cashflow_forecast_monitor",
+    "_legal_basis": "P02 (Adaptive Trust), V1/V2 granica decyzyjna (AI rekomenduje, Rego decyduje), ADR-022 (invariants)",
     "package": "jdg.r17_enterprise_ai_innovations",
     "priority": 11048,
     "decision_mode": "SUGGEST",
@@ -199,6 +202,7 @@ bk_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r17_enterprise_ai_innovations.banking_psd2_monitor",
+    "_legal_basis": "P02 (Adaptive Trust), V1/V2 granica decyzyjna (AI rekomenduje, Rego decyduje), ADR-022 (invariants)",
     "package": "jdg.r17_enterprise_ai_innovations",
     "priority": 11049,
     "decision_mode": "SUGGEST",
@@ -243,6 +247,7 @@ lg_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r17_enterprise_ai_innovations.legislative_change_monitor",
+    "_legal_basis": "P02 (Adaptive Trust), V1/V2 granica decyzyjna (AI rekomenduje, Rego decyduje), ADR-022 (invariants)",
     "package": "jdg.r17_enterprise_ai_innovations",
     "priority": 11050,
     "decision_mode": "SUGGEST",

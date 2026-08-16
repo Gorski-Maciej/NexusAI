@@ -26,7 +26,7 @@ import future.keywords.if
 import future.keywords.in
 
 default decide := {
-    "matched": false, "rule_id": "jdg.banking_sca.no_match",
+    "matched": false, "rule_id": "jdg.banking_sca.no_match", "_legal_basis": "Prawo przedsiębiorców (Dz.U. 2024 poz. 236 ze zm.)",
     "valid_from":"2024-01-01","valid_to":"9999-12-31","temporal_source":"Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osob fizycznych"
     "package": "jdg.banking_sca", "priority": 9999
 }
@@ -115,6 +115,7 @@ decide := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.banking_sca.method_selection",
+        "_legal_basis": "Prawo przedsiębiorców (Dz.U. 2024 poz. 236 ze zm.)",
         "package": "jdg.banking_sca",
         "priority": 100,
         "action": "SELECT_SCA_METHOD",
@@ -187,6 +188,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.banking_sca.ais_consent_renewal",
+        "_legal_basis": "Prawo przedsiębiorców (Dz.U. 2024 poz. 236 ze zm.)",
         "package": "jdg.banking_sca",
         "priority": 200,
         "action": "RENEW_AIS_CONSENT",
@@ -240,6 +242,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.banking_sca.eidas_certificates",
+        "_legal_basis": "Prawo przedsiębiorców (Dz.U. 2024 poz. 236 ze zm.)",
         "package": "jdg.banking_sca",
         "priority": 300,
         "action": "CHECK_EIDAS_CERTS",

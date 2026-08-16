@@ -55,6 +55,31 @@ vat := {
     "proportion_min_threshold": 0.02,            # 2% — poniżej = 0% odliczenia (P553)
     "proportion_max_threshold": 0.98,            # 98% — powyżej = 100% odliczenia
 
+    # OSS/IOSS (Art. 28l, 130a-138j VAT) — próg 10 000 EUR B2C
+    "oss_threshold_eur": 10000,                  # EUR — próg OSS (P02 P1)
+    "oss_alert_eur": 5000,                       # EUR — alert zbliżania się do progu OSS
+
+    # Odwrotne obciążenie — odpady (Art. 17 ust. 1 pkt 7 VAT)
+    "reverse_charge_waste_threshold": 20000,     # PLN — próg netto dla odpadów (P73)
+
+    # Monitor limitu art. 113 (P02) — alert przy 95% limitu
+    "a113_alert_ratio": 0.95,                    # 95% limitu — alert prewencyjny
+
+    # Alerty cashflow VAT (P02) — progi BLOCK_AND_ALERT
+    "cashflow_alert_pay_threshold": 100000,      # PLN — alert kwoty do zapłaty
+    "cashflow_alert_net_impact": 50000,          # PLN — alert ujemnego wpływu netto
+    "cashflow_mpp_frozen_alert": 100000,         # PLN — alert zamrożonych środków MPP
+    "cashflow_bad_debt_reclaim_alert": 5000,     # PLN — alert odzyskiwalnego VAT (złe długi)
+
+    # Fraud detection (P02) — progi scoringu ryzyka
+    "fraud_round_amount_min": 1000,              # PLN — okrągła kwota ≥ 1000 = wskaźnik fraudu
+
+    # Art. 91 VAT — korekta wieloletnia środków trwałych
+    "asset_correction_threshold": 15000,          # PLN — ≥ 15 000 → korekta 5/10 lat (P02)
+
+    # Art. 120 VAT — marża: alert wysokiej marży (P02)
+    "margin_alert_threshold": 50000,              # PLN — alert weryfikacji dokumentacji
+
     # KSeF (Art. 106na-106nq VAT)
     "ksef_mandatory_from": "2026-02-01",        # Data obowiązku KSeF
     "ksef_offline_grace_days": 7,               # 7 dni na przesłanie po awarii
@@ -86,9 +111,24 @@ ksef_jpk_edeklaracje := {
     "ksef_mandatory_from": "2026-02-01",          # art. 106na-106nb VAT
     "ksef_offline_grace_days": 7,
     "ksef_sanction_max_pln": 500000,
+    "ksef_sanction_70_cap_pln": 300000,           # opóźnienie >24h: 70% VAT, max 300k
+    "ksef_sanction_50_cap_pln": 250000,           # czynny żal: 50% VAT, max 250k
+    "ksef_zaw_nr_penalty_pln": 5000,              # brak ZAW-NR (KKS)
+    "ksef_queue_warning_hours": 120,              # alert 5 dni przed końcem okna 168h
+    "ksef_outbox_priority_threshold_pln": 50000,  # faktura HIGH w outbox
     "ksef_upo_deadline_days": 1,
     "jpk_v7_deadline_day": 25,
     "jpk_ksef_penalty_per_invoice": 1000,
+    "jpk_cit_payment_tier_high_pln": 10000,       # estoński CIT — kwartalny próg płatności
+    "jpk_cit_payment_tier_low_pln": 5000,
+    "jpk_cit_revenue_eur_limit": 2000000,         # limit 2 mln EUR przychodu (estoński CIT)
+    "jpk_kr_threshold_eur": 2000000,              # JPK_KR — próg ksiąg rachunkowych
+    "jpk_kr_discrepancy_alert_pln": 10000,        # JPK_KR vs księgi — alert rozbieżności
+    "wis_application_fee_pln": 40,                # opłata za WIS (art. 42b VAT)
+    "wis_expiry_warning_days": 180,               # WIS ważny 5 lat — alert 6 mies. przed wygaśnięciem
+    "wis_expiry_critical_days": 90,               # alert krytyczny 3 mies. przed wygaśnięciem
+    "wdt_alert_days": 25,                         # WDT — alert 25 dni przed terminem 30 dni
+    "wdt_deadline_days": 30,                      # WDT — termin dostarczenia dokumentów
     "esig_qualified": true,
     "esig_trusted": true,
     "edelivery_mandatory_from": "2026-01-01",
@@ -189,6 +229,15 @@ automatyzacja_ksiegowosci := {
     "sca_exempt_threshold_pln": 100,             # RTS 2018/389 art. 11
     "sca_exempt_max_per_tx": 5,
     "mpp_threshold_pln": 15000,
+    "remnant_significance_limit": 50000,       # PLN — próg istotności remanentu (P01 v9.x)
+    "cross_check_discrepancy_limit": 5000,      # PLN — próg rozbieżności przychodów (P01 v9.x)
+    "mileage_log_recommendation_limit": 50000,  # PLN — auto > 50k bez ewidencji -> TRIAGE (P01 v9.x)
+    "health_tier_low": 60000,                   # PLN — próg składki zdrowotnej dolny (P01 v9.x)
+    "health_tier_high": 300000,                 # PLN — próg składki zdrowotnej górny (P01 v9.x)
+    "pfron_rate": 0.4065,                       # współczynnik PFRON (Art. 21 ustawy o rehabilitacji, P01 v9.x)
+    "high_value_tx_threshold": 15000,           # PLN — transakcja wysokiej wartości (adaptive trust, P01 v9.x)
+    "revenue_triage_limit": 100000,            # PLN — przychód > 100k -> BLOCK_AND_ALERT (P01 v9.x)
+    "cost_triage_limit": 50000,                # PLN — koszt towarów > 50k -> BLOCK_AND_ALERT (P01 v9.x)
     "vat7_deadline_day": 25,
     "zus_dra_deadline_day": 10,
     "pit_deadline_annual": "2026-04-30",
@@ -436,6 +485,7 @@ neural_mesh := {
 # R21: OPA JAKO SYSTEM (ADR-002)
 # ═══════════════════════════════════════════════════════════════════════════════
 opa_system := {
+    "ttl_fallback_ms": 300000,                # ms — TTL fallbacku (auto-rollback 5 min, P01 v9.x)
     "canary_percent": 5,                         # deploy kanary — 5% ruchu
     "canary_observation_minutes": 30,            # obserwacja kanary — 30 min
     "rollback_quality_threshold": 0.95,          # jakość decyzji ≥ 95% → zatrzymaj kanary
@@ -510,6 +560,12 @@ audyt_kompletny := {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 pit := {
+    "cash_payment_limit": 15000,                # PLN — limit płatności gotówkowych (Art. 22p PIT, P01 v9.x)
+    "tax_free_2017": 6600,                     # PLN — kwota wolna 2017 (Art. 27 ust. 1 PIT, P01 v9.x)
+    "tax_free_2018_2021": 8000,                # PLN — kwota wolna 2018-2021
+    "tax_free_2022_plus": 30000,               # PLN — kwota wolna 2022+
+    "kup_creative_cap": 120000,                # PLN — roczny limit 50% KUP (Art. 22 ust. 9 pkt 3 PIT)
+    "kup_multiple_cap": 4500,                  # PLN — roczny limit KUP wielu stosunków (Art. 22 ust. 9 pkt 4 PIT)
     # Art. 27 PIT — skala podatkowa (P500)
     "scale_low_rate": 0.12,                      # 12% — pierwszy próg
     "scale_high_rate": 0.32,                     # 32% — drugi próg
@@ -726,6 +782,23 @@ depreciation := {
 
     # Art. 22g PIT — ulepszenie
     "improvement_threshold": 10000,              # PLN — powyżej podwyższa podstawę (P884)
+
+    # Art. 22a ust. 4a PIT — limit wartości początkowej samochodów osobowych
+    "passenger_car_limit_electric": 225000,       # PLN — auta elektryczne (P01 v9.x)
+    "passenger_car_limit_standard": 150000,       # PLN — pozostałe auta osobowe
+
+    # Art. 22k ust. 7 PIT — jednorazowa amortyzacja: limit roczny
+    "one_off_annual_limit": 100000,               # PLN (P01 v9.x — z depreciation_enterprise_complete)
+    "one_off_annual_limit_pre2018": 10000,        # PLN — limit jednorazowej amortyzacji przed 2018 (P01 v9.x)
+    # Art. 22d ust. 2 PIT — pomoc de minimis: limit 3-letni
+    "de_minimis_eur_3y": 50000,                   # EUR (P01 v9.x — z depreciation_enterprise_complete)
+    "large_asset_triage_limit": 100000,          # PLN — ŚT > 100k -> TRIAGE_QUEUE (P01 v9.x)
+
+    # UoR — progi ksiąg rachunkowych (Art. 2 ust. 1 pkt 5 UoR, P01 v9.x)
+    "uor_books_threshold_eur": 2000000,          # EUR — próg obowiązku prowadzenia ksiąg
+    "uor_early_warning_eur": 1500000,            # EUR — próg wczesnego ostrzeżenia
+    "pkpir_lease_limit_pln": 150000,              # PLN — limit leasingu w PKPiR (Art. 23 PIT)
+    "transport_damage_limit": 5000,               # PLN — szkoda transportowa -> TRIAGE
 
     # Art. 22k PIT — de minimis
     "de_minimis_annual_limit_eur": 50000,        # EUR rocznie

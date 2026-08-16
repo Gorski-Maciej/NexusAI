@@ -157,7 +157,7 @@ else :=   {"matched":true,"rule_id":"jdg.ord.a51.r3","package":"jdg.micro.ord","
 }
 
 # jdg.ord.a51.r4 — `interest_minimum_amount`: Odsetki <3× koszt upomnienia → nie pobiera się → Minimum
-else :=   {"matched":true,"rule_id":"jdg.ord.a51.r4","package":"jdg.micro.ord","priority":5104,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Odsetki <3× koszt upomnienia → nie pobiera się","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.ord.a51.r4","package":"jdg.micro.ord","priority":5104,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Odsetki <3× koszt upomnienia → nie pobiera się","_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)","_warnings":[]} {
     object.get(input.invoice, "days_overdue", 0) > 0
 }
 
@@ -267,7 +267,7 @@ else :=   {"matched":true,"rule_id":"jdg.ord.a70.r1","package":"jdg.micro.ord","
 }
 
 # jdg.ord.a70.r2 — `statute_limitation_5_plus_5`: Przedawnienie z zawieszeniem = 5+5=10 lat maks. → Maksymalny
-else :=   {"matched":true,"rule_id":"jdg.ord.a70.r2","package":"jdg.micro.ord","priority":7002,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Przedawnienie z zawieszeniem = 5+5=10 lat maks.","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.ord.a70.r2","package":"jdg.micro.ord","priority":7002,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Przedawnienie z zawieszeniem = 5+5=10 lat maks.","_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)","_warnings":[]} {
     object.get(input.document, "years_since_due_year", 0) > 0
 }
 
@@ -817,7 +817,7 @@ else :=   {"matched":true,"rule_id":"jdg.ord.a199a.r10","package":"jdg.micro.ord
 }
 
 # jdg.ord.a208.r1 — `decision_first_instance_us`: Naczelnik US jako I instancja → Instancja
-else :=   {"matched":true,"rule_id":"jdg.ord.a208.r1","package":"jdg.micro.ord","priority":20801,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Naczelnik US jako I instancja","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.ord.a208.r1","package":"jdg.micro.ord","priority":20801,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Naczelnik US jako I instancja","_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)","_warnings":[]} {
     object.get(input.document, "tax_proceedings_active", false) == true
 }
 
@@ -907,46 +907,46 @@ else :=   {"matched":true,"rule_id":"jdg.ord.a221.r4","package":"jdg.micro.ord",
 }
 
 # jdg.ord.a222.r1 — `enforcement_protected_assets_tools`: Narzędzia niezbędne do pracy → wyłączenie → Ochrona
-else :=   {"matched":true,"rule_id":"jdg.ord.a222.r1","package":"jdg.micro.ord","priority":22201,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Narzędzia niezbędne do pracy → wyłączenie","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.ord.a222.r1","package":"jdg.micro.ord","priority":22201,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Narzędzia niezbędne do pracy → wyłączenie","_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)","_warnings":[]} {
     object.get(input.document, "enforcement_measure_applied", false) == true
 }
 
 # jdg.ord.a222.r2 — `enforcement_protected_assets_min_wage`: Kwota wolna od zajęcia (min. wynagrodzenie) → Ochrona
-else :=   {"matched":true,"rule_id":"jdg.ord.a222.r2","package":"jdg.micro.ord","priority":22202,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Kwota wolna od zajęcia (min. wynagrodzenie)","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.ord.a222.r2","package":"jdg.micro.ord","priority":22202,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Kwota wolna od zajęcia (min. wynagrodzenie)","_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)","_warnings":[]} {
     object.get(input.document, "enforcement_measure_applied", false) == true
 }
 
 # jdg.ord.a222.r3 — `tax_arrears_wage_seizure`: Zajecie wynagrodzenia (gdy JDG ma pracownikow) -> z wierzytelnosci → Zajecie
-else :=   {"matched":true,"rule_id":"jdg.ord.a222.r3","package":"jdg.micro.ord","priority":22203,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Zajecie wynagrodzenia (gdy JDG ma pracownikow) -> z wierzytelnosci","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.ord.a222.r3","package":"jdg.micro.ord","priority":22203,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Zajecie wynagrodzenia (gdy JDG ma pracownikow) -> z wierzytelnosci","_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)","_warnings":[]} {
     object.get(input.document, "tax_arrears_detected", false) == true
 }
 
 # jdg.ord.a222.r4 — `tax_arrears_movable_property_seizure`: Zajecie ruchomosci (samochod, sprzet) -> opis i oszacowanie → Ruchomosci
-else :=   {"matched":true,"rule_id":"jdg.ord.a222.r4","package":"jdg.micro.ord","priority":22204,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Zajecie ruchomosci (samochod, sprzet) -> opis i oszacowanie","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.ord.a222.r4","package":"jdg.micro.ord","priority":22204,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Zajecie ruchomosci (samochod, sprzet) -> opis i oszacowanie","_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)","_warnings":[]} {
     object.get(input.document, "tax_arrears_detected", false) == true
 }
 
 # jdg.ord.a223.r1 — `tax_arrears_enforcement_protected_assets`: Mienie wolne od egzekucji: ubranie, zywnosc, narzedzia pracy do 2k → Ochrona
-else :=   {"matched":true,"rule_id":"jdg.ord.a223.r1","package":"jdg.micro.ord","priority":22301,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Mienie wolne od egzekucji: ubranie, zywnosc, narzedzia pracy do 2k","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.ord.a223.r1","package":"jdg.micro.ord","priority":22301,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Mienie wolne od egzekucji: ubranie, zywnosc, narzedzia pracy do 2k","_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)","_warnings":[]} {
     object.get(input.document, "enforcement_measure_applied", false) == true; object.get(input.document, "tax_arrears_detected", false) == true
 }
 
 # jdg.ord.a224.r1 — `tax_arrears_mortgage_tax`: Hipoteka przymusowa na nieruchomosci JDG dla zabezpieczenia zaleglosci → Hipoteka
-else :=   {"matched":true,"rule_id":"jdg.ord.a224.r1","package":"jdg.micro.ord","priority":22401,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Hipoteka przymusowa na nieruchomosci JDG dla zabezpieczenia zaleglosci","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.ord.a224.r1","package":"jdg.micro.ord","priority":22401,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Hipoteka przymusowa na nieruchomosci JDG dla zabezpieczenia zaleglosci","_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)","_warnings":[]} {
     object.get(input.document, "tax_arrears_detected", false) == true
 }
 
 # jdg.ord.a225.r1 — `tax_arrears_statute_of_limitations_enforcement`: Przedawnienie egzekucji: 5 lat od zakonczenia postepowania → Przedawnienie egzekucji
-else :=   {"matched":true,"rule_id":"jdg.ord.a225.r1","package":"jdg.micro.ord","priority":22501,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Przedawnienie egzekucji: 5 lat od zakonczenia postepowania","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.ord.a225.r1","package":"jdg.micro.ord","priority":22501,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Przedawnienie egzekucji: 5 lat od zakonczenia postepowania","_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)","_warnings":[]} {
     object.get(input.document, "years_since_due_year", 0) > 0; object.get(input.document, "enforcement_measure_applied", false) == true; object.get(input.document, "tax_arrears_detected", false) == true
 }
 
 # jdg.ord.a226.r1 — `enforcement_security_prior_to_decision`: Zabezpieczenie przed wydaniem decyzji → Tymczasowe
-else :=   {"matched":true,"rule_id":"jdg.ord.a226.r1","package":"jdg.micro.ord","priority":22601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Zabezpieczenie przed wydaniem decyzji","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.ord.a226.r1","package":"jdg.micro.ord","priority":22601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Zabezpieczenie przed wydaniem decyzji","_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)","_warnings":[]} {
     object.get(input.document, "enforcement_measure_applied", false) == true
 }
 
 # jdg.ord.a226.r2 — `enforcement_security_form`: Hipoteka, zastaw, blokada rachunku → Formy
-else :=   {"matched":true,"rule_id":"jdg.ord.a226.r2","package":"jdg.micro.ord","priority":22602,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Hipoteka, zastaw, blokada rachunku","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.ord.a226.r2","package":"jdg.micro.ord","priority":22602,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Hipoteka, zastaw, blokada rachunku","_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)","_warnings":[]} {
     object.get(input.document, "enforcement_measure_applied", false) == true
 }

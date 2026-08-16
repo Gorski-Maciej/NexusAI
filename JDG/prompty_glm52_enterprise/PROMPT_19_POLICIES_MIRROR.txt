@@ -1,0 +1,203 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 19 z 19 — CZĘŚĆ: POLICIES (MIRROR + OVERLAYS v2026/v2027) + FINAŁ KAMPANII
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie architektury Policy-as-Code klasy ENTERPRISE,
+w tym zarządzania mirrorami reguł i overlayami czasowymi (v2026/v2027), spójności między
+`JDG/rules/` a `policies/`, dryfu reguł, manifestów per bundle oraz finalnej integracji kampanii
+GLM 5.2 (19 części → jedna ufortyfikowana forteca). Zgodnie z V1 §1 zasada nadrzędna nr 1:
+**„Pojedyncze źródło prawdy — żadnych mirrorów; warianty czasowe wyłącznie przez overlays”** —
+Twoim zadaniem jest zlikwidowanie dryfu między `rules/` a `policies/` bez utraty funkcji
+overlayów.
+
+## ⚠️ KRYTYCZNE ZASADY
+1. **GENERUJESZ OGROMNY, ROZBUDOWANY RAPORT** `RAPORT_GLM52_P19_POLICIES_MIRROR.txt`
+   z **INTELIGENTNYM KODEM gotowym do wdrożenia** (Rego — overlays, skrypty synchronizacji,
+   manifesty, Makefile/bundle.sh, testy) — copy-paste do katalogu.
+2. **NIE MODYFIKUJ PLIKÓW w repo** — produktem jest raport .txt.
+3. **CZYTAJ PLIKI PRZEZ LINKI GITHUB** podane niżej — nie szukaj katalogów na własną rękę.
+4. **BUDŻET KONTEKSTU:** dane wejściowe ≤ **50% okna GLM 5.2 (~500K tokenów)** — reszta na
+   głębokie myślenie, głęboką analizę i wygenerowanie rozwiązania. Katalog `policies/` (83 pliki)
+   czytaj selektywnie: struktura, wzorce pakietów, manifesty overlayów, `policies_drift_report.json`.
+
+## 🧠 OBOWIĄZKOWE NAKAZY GŁĘBOKIEGO MYŚLENIA (wymagane w całym raporcie — powtarzaj je w każdej sekcji)
+1. Przeprowadź głębokie myślenie przed każdą sekcją raportu; Przeprowadź głębokie myślenie przed każdą rekomendacją kodu; Przeprowadź głębokie myślenie przy weryfikacji całości pod kątem błędów i luk; Przeprowadź głębokie myślenie przy łączeniu wniosków z pozostałymi częściami kampanii.
+2. Przeprowadź głęboką analizę każdego pliku z listy; przeprowadź głęboką analizę powiązań między plikami; przeprowadź głęboką analizę zgodności reguł z aktami prawnymi (Bbb, LEGAL_REFERENCE_ACTS); przeprowadź głęboką analizę kontraktów spójności z innymi częściami kampanii.
+3. Każde rozwiązanie musi reprezentować zaawansowany poziom Enterprise; standardem minimalnym jest zaawansowany poziom Enterprise; jeśli propozycja nie osiąga celu: zaawansowany poziom Enterprise — odrzuć ją; wszystkie rekomendacje razem tworzą zaawansowany poziom Enterprise całego modułu.
+4. Silnik ma osiągnąć poziom ENTERPRISE w każdym wymiarze; poziom ENTERPRISE to próg minimalny, nie maksimum; każda sekcja raportu deklaruje osiągnięty poziom ENTERPRISE; ostateczny werdykt kampanii: poziom ENTERPRISE bez wyjątków.
+5. W każdej sekcji proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów; minimum 12 pozycji w kategorii: innowacyjne ulepszenia wyprzedzające profesjonalistów w rozdziale GENIALNE POMYSŁY; każdy obszar analizy kończ zestawem: innowacyjne ulepszenia wyprzedzające profesjonalistów; kod w raporcie ma być wynikiem: innowacyjne ulepszenia wyprzedzające profesjonalistów — bez tego raport nie spełnia standardu kampanii.
+## 📂 DOKUMENTY ŚWIĘTE (przeczytaj)
+- V1 — TARGET: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- V2 — WIZJA (kontynuacja V1): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- Stan obecny (sekcja 7 — policies): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- FAQ (różnica rules vs policies): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/FAQ.md
+- Struktura projektu: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/STRUKTURA_PROJEKTU.md
+
+## 📂 PLIKI TEJ CZĘŚCI DO ANALIZY — POLICIES (policies/ — poza JDG/)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/policies (katalog główny — 83 pliki)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/Makefile
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/bundle.sh
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/data/thresholds_sc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/main_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/routing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/vat/substantive.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/vat/deductions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/vat/procedures.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/pit/forms.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/pit/kup.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/pit/exemptions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/pit/transitions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/pit/advances_returns.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/kks.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/ksef_jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/accounting.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/business.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/edge_cases.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/compliance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/conflicts.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/local_taxes.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/validation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/bundles/base/manifest.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/bundles/overlays/v2026/manifest.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jdg/bundles/overlays/v2027/manifest.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/direct/pit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/direct/cit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/anomaly.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/compliance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tax/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/compliance/ (katalog)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/policies/tests (katalog)
+
+## 📂 DANE DRYFU (JDG/bundles/)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/policies_drift_report.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/policies_report24_evidence.json
+
+## 🧩 SPÓJNOŚĆ Z INNYMI CZĘŚCIAMI (kontrakty)
+- **Pojedyncze źródło prawdy (V1 §1.1):** `JDG/rules/` = źródło; `policies/` = mirror — dryf
+  wykrywany i eliminowany (policies_drift_report.json); docelowo mirror usuwany lub generowany
+  automatycznie z rules/ (CI), a warianty czasowe wyłącznie przez overlays v2026/v2027 (ADR-011).
+- **Overlays ↔ temporalność:** v2026/v2027 nakładane na bazowy zestaw — spójność z
+  `temporal.rego` (PROMPT 01) i ADR-003; detektor nakładania się (P1619) i luk (P1624).
+- **Thresholds ↔ data service:** `policies/data/thresholds_sc.rego` (mirror progów) — po
+  wdrożeniu PROMPT 01/17 progi idą wyłącznie z DuckDB Data API (zero mirrorów danych).
+- Werdykt 25-polowy, rule_id unikalne, `_legal_basis` kanoniczne — kontrakty PROMPT 01;
+  testy natywne per pakiet — PROMPT 18.
+
+## 🎯 CEL ANALIZY — POZIOM ENTERPRISE
+**Przeprowadź głębokie myślenie i przeprowadź głęboką analizę** katalogu `policies/` na
+**zaawansowanym poziomie Enterprise** — priorytet: **eliminacja dryfu między `JDG/rules/`
+a `policies/` (porównaj `policies_drift_report.json`), poprawność overlayów v2026/v2027
+(czasowe warianty stawek/limitów — zero nakładek, zero luk), spójność manifestów bundle,
+ujednolicenie werdyktów (25 pól) i legal_basis z mirrorami** — zgodnie z zasadą V1 §1: jedno
+źródło prawdy. Celem jest poziom ENTERPRISE, w którym „policies/” przestaje być ryzykiem dryfu,
+a staje się mechanizmem overlayów czasowych z dowodem spójności (hash per pakiet). Zaproponuj
+**innowacyjne ulepszenia wyprzedzające profesjonalistów**.
+
+### 1. AUDYT STRUKTURY I DRYFU (POZIOM ENTERPRISE — PRIORYTET)
+- Porównaj `policies/jdg/*` z `JDG/rules/*` (main_jdg, routing, vat/*, pit/*, zus, kks,
+  ksef_jpk, accounting, business, edge_cases, compliance, conflicts, crossborder, local_taxes,
+  fallback, validation, temporal) — różnice: werdykt (pola), rule_id, legal_basis, logika,
+  version; przeanalizuj `policies_drift_report.json` i `policies_report24_evidence.json`.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** automatyczna synchronizacja
+  rules→policies (generator mirrora w CI z hashem per plik — dryf = FAIL), „drift dashboard”
+  (hash bazowy vs mirror, różnice per pakiet), docelowo: usunięcie mirrora na rzecz overlayów
+  (V1 §1.1) — plan migracji krok po kroku.
+
+### 2. AUDYT OVERLAYÓW V2026/V2027 (POZIOM ENTERPRISE — PRIORYTET: ADR-011)
+- `bundles/base/manifest.json` + `overlays/v2026/manifest.json` + `overlays/v2027/manifest.json` —
+  kompletność nakładek (stawki VAT 2026/2027, progi PIT, limity ZUS, KSeF 2026-02-01),
+  mechanizm budowy (bundle.sh/Makefile), algebra interwałów (zero nakładek, zero luk — TCL 100%),
+  detektor nakładania się (P1619) i luk (P1624).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** „overlay algebra engine” (walidacja
+  nakładek w CI — dowód TCL 100%), generator overlayów z LKG (zmiany prawa 2027 → overlay
+  automatycznie), testy temporalne dzień-1/0/+1 per overlay, raport „co zmienia overlay” (impact
+  matrix per data wejścia).
+
+### 3. AUDYT SPÓJNOŚCI Z JDG (POZIOM ENTERPRISE)
+- Thresholds mirror (`thresholds_sc.rego`) vs `JDG/rules/thresholds_jdg.rego` + DuckDB —
+  plan wyeliminowania mirroru danych (Data API — PROMPT 17); werdykt 25-polowy w mirrorze;
+  legal_basis kanoniczne; testy per pakiet mirrora (PROMPT 18).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** „single source” pipeline —
+  mirror generowany, nigdy edytowany ręcznie; bramka CI: hash mirrora == hash rules (lub
+  uzasadniona różnica overlay).
+
+### 4. AUDYT BUDOWY BUNDLE POLICIES (POZIOM ENTERPRISE)
+- `Makefile`, `bundle.sh`, `bundles/bundle.sh` — poprawność budowy (base + overlays), podpis
+  (SBOM/signature — wzorzec z JDG/bundles), wersjonowanie, deployment (OPA bundle API).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** bundle policies = overlay-only
+  (delta względem rules), podpis HSM wspólny z PROMPT 17, manifest 2.0 (jeden autorytatywny —
+  L2), rollback < 1 min.
+
+### 5. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+M.in.: generator mirrora w CI (dryf = FAIL); drift dashboard z hashami; overlay algebra engine
+(TCL 100% — dowód); generator overlayów z LKG; raport wpływu overlay (impact matrix);
+eliminacja mirroru danych (Data API); testy temporalne per overlay; bundle overlay-only z
+podpisem; manifest 2.0 wspólny; rollback < 1 min; „co zmienia 2027” symulator; integracja
+overlayów z Decision Certificate (wersja prawa w certyfikacie).
+
+### 6. FINAŁ KAMPANII — SYNTEZA 19 CZĘŚCI (POZIOM ENTERPRISE)
+- Podsumuj kontrakty całej kampanii (01–19) i zaproponuj **finalny manifest spójności**:
+  LCI ≥ 99%, RV 100%, TCL 100%, UVR 0, zero duplikatów/stubów/hardcode, pokrycie testami
+  ≥ 95%/100%, 12 bramek CI, bundle podpisane, wdrożenie nowelizacji 24 h/4 h, parametr < 1 min,
+  rollback ≤ 5 min, Decision Certificate na każdym werdykcie — **ufortyfikowana forteca
+  niechybnej Śmierci dla wszystkich braków, błędów i niedopatrzeń**.
+- Zaproponuj `STATUS_KAMPANII.md` (checklist finalny) i kolejność weryfikacji po wdrożeniu
+  (audyty: legal_twin.py, legal_basis_audit.py, generate_manifest.py, pytest, opa test).
+
+## 📋 WYMAGANE SEKCJE RAPORTU (min. 25–40 stron)
+1. Executive Summary — TOP 10 (priorytet: dryf, overlays, single source).
+2. Tabela dryfu: pakiet × hash(rules) × hash(policies) × różnice.
+3. Audyt overlayów v2026/v2027 (algebra interwałów, TCL) — diagramy Mermaid.
+4. Audyt spójności (werdykt, legal_basis, thresholds, testy) + budowy bundle.
+5. FINAŁ: synteza kampanii 01–19 + manifest spójności + STATUS_KAMPANII.md.
+6. GENIALNE POMYSŁY (min. 12, rozbudowane).
+7. **KOD DO WDROŻENIA:** `policies_sync.py` (generator mirrora + hashe + dryf-check),
+   `overlay_engine.py` (algebra interwałów + testy dzień-1/0/+1), `overlay_generator.py`
+   (z LKG), ulepszony `bundle.sh` (base + overlays + podpis), `drift_dashboard.py`,
+   `STATUS_KAMPANII.md` (szablon), testy pytest; wpis do MANIFEST.
+8. Mapa drogowa + integracja z częściami 01–18.
+9. Metryki sukcesu (dryf = 0, TCL 100%, bundle spójne, kampania zamknięta).
+
+## 📐 FORMAT RAPORTU
+- Tytuł: „RAPORT GLM52 P19 — POLICIES MIRROR + OVERLAYS + FINAŁ KAMPANII (ENTERPRISE v9.x)”.
+- Język: polski, diagramy Mermaid, tabele dryfu.
+- **Przeprowadź głębokie myślenie przed każdą sekcją i przeprowadź głęboką analizę każdego pliku** —
+  precyzja, profesjonalizm, zero nieporozumień. Zapisz jako `RAPORT_GLM52_P19_POLICIES_MIRROR.txt`.
+
+## 🔗 SUPLEMENT LINKÓW — PEŁNE POKRYCIE KATALOGU JDG (część 19)
+Poniższe pliki tej części pochodzą z pełnej inwentaryzacji katalogu JDG (rules/tools/docs/bundles/tests) —
+przeczytaj je i włącz do analizy, aby raport pokrył KAŻDY plik części:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/policies_report24_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/policies_sync_gate.py
+
+## 🔗 KOMBINACJE LINKÓW KRZYŻOWYCH (spójność międzyczęściowa)
+Analizuj poniższe pliki z INNYCH części RAZEM z plikami swojej części — to punkty styku
+(kontrakty techniczne: rule_id, werdykt 25-polowy, temporalność, thresholds), dzięki którym
+raport będzie spójny z CAŁĄ kampanią i silnik OPA zostanie wzmocniony z każdej strony:
+- (część P02) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p02_vat_macro_innovations_v8.rego
+- (część P04) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery_gateway_enterprise.rego
+- (część P06) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22a.rego
+- (część P09) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/_zus_micro_rates.rego
+- (część P12) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_crossborder_rates.rego
+- (część P15) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance.rego
+- (część P17) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- (część P18) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/README.md
+
+## 🧠 BUDŻET KONTEKSTU (powtórzenie)
+Materiał wejściowy ≤ 50% okna (~500K tokenów). Priorytet: `policies_drift_report.json`,
+manifesty overlayów (3 pliki), `policies/jdg/main_jdg.rego` + `routing.rego` + `vat/substantive.rego`
+(porównanie wzorcowe z JDG/rules), `bundle.sh` — w całości; reszta selektywnie.
+
+## 🔄 ZAKOŃCZENIE SESJI — WYCZYŚĆ OKNO KONTEKSTOWE (FINAŁ)
+1. Zapisz raport jako `RAPORT_GLM52_P19_POLICIES_MIRROR.txt`.
+2. Wykonaj polecenie **„WYCZYŚĆ OKNO KONTEKSTOWE”**: 10-linijkowe podsumowanie CAŁEJ KAMPANII
+   (19 części) do `NOTATKI_KAMPANII.txt` — co wdrożono, co zostało, priorytety weryfikacji.
+3. Potwierdź: „KAMPANIA GLM 5.2 ZAKOŃCZONA — OKNO WYCZYSZCZONE”.
+4. Po wdrożeniu wszystkich 19 raportów uruchom weryfikację finalną (wg STATUS_KAMPANII.md):
+   `python JDG/tools/legal_twin.py`, `python JDG/tools/legal_basis_audit.py`,
+   `python JDG/tools/generate_manifest.py`, `opa check JDG/rules/ -b`, `opa test JDG/tests/rego/ -v`,
+   `python -m pytest JDG/tests -q` — wyniki muszą potwierdzić: **forteca niechybnej Śmierci**.

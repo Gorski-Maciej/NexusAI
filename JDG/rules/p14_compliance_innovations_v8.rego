@@ -70,6 +70,7 @@ decide := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p14_innovations.gdpr_auto_compliance",
+        "_legal_basis": "RODO (GDPR) — Rozporządzenie 2016/679; Art. 83 (kary)",
         "package": "jdg.p14_innovations",
         "priority": 14001,
         "p14_inn01_obligations_met": obligations_met,
@@ -136,6 +137,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p14_innovations.aml_risk_matrix",
+        "_legal_basis": "RODO (GDPR) — Rozporządzenie 2016/679; Art. 83 (kary)",
         "package": "jdg.p14_innovations",
         "priority": 14002,
         "p14_inn02_risk_score": risk_score,
@@ -351,6 +353,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p14_innovations.suspicious_tx_detector",
+        "_legal_basis": "RODO (GDPR) — Rozporządzenie 2016/679; Art. 83 (kary)",
         "package": "jdg.p14_innovations",
         "priority": 14005,
         "p14_inn05_patterns_detected": patterns_detected,
@@ -411,6 +414,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p14_innovations.privacy_by_design",
+        "_legal_basis": "RODO (GDPR) — Rozporządzenie 2016/679; Art. 83 (kary)",
         "package": "jdg.p14_innovations",
         "priority": 14006,
         "p14_inn06_system_name": system_name,
@@ -465,6 +469,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p14_innovations.cross_border_blocker",
+        "_legal_basis": "RODO (GDPR) — Rozporządzenie 2016/679; Art. 83 (kary)",
         "package": "jdg.p14_innovations",
         "priority": 14007,
         "p14_inn07_transfer_country": transfer_country,
@@ -658,6 +663,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p14_innovations.breach_auto_drafter",
+        "_legal_basis": "RODO (GDPR) — Rozporządzenie 2016/679; Art. 83 (kary)",
         "package": "jdg.p14_innovations",
         "priority": 14010,
         "p14_inn10_breach_type": breach_type,

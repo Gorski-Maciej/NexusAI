@@ -70,6 +70,7 @@ decide := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.vida_drr_full.drr_implementation",
+        "_legal_basis": "ViDA (EU 2022/890); Art. 130a-130d VAT",
         "package": "jdg.vida_drr_full",
         "priority": 18401,
         "vdf_vida_phases": vida_phases,
@@ -127,6 +128,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.vida_drr_full.platform_liability",
+        "_legal_basis": "ViDA (EU 2022/890); Art. 130a-130d VAT",
         "package": "jdg.vida_drr_full",
         "priority": 18402,
         "vdf_platform_type": platform_type,
@@ -167,6 +169,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.vida_drr_full.svr_readiness",
+        "_legal_basis": "ViDA (EU 2022/890); Art. 130a-130d VAT",
         "package": "jdg.vida_drr_full",
         "priority": 18403,
         "vdf_svr_effective": svr_effective,

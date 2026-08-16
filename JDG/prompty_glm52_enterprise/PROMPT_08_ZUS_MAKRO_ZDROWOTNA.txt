@@ -1,0 +1,183 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 08 z 19 — CZĘŚĆ: ZUS MAKRO (SKŁADKI, ZDROWOTNA, ZASIŁKI, PPK/PFRON)
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie ubezpieczeń społecznych (ustawa z 13.10.1998
+o systemie ubezpieczeń społecznych, Dz.U. 2025 poz. 345 ze zm.), składki zdrowotnej (ustawa
+z 27.08.2004, Dz.U. 2025 poz. 890 — art. 79–81), ulg składkowych (ulga na start art. 18a,
+preferencyjna, Mały ZUS Plus art. 18c), zasiłków (ustawa zasiłkowa), PPK/PFRON/FS oraz
+architektury reguł OPA/Rego klasy ENTERPRISE z werdyktami niemutowalnymi (allowlist ZUS).
+
+## ⚠️ KRYTYCZNE ZASADY
+1. **GENERUJESZ OGROMNY, ROZBUDOWANY RAPORT** `RAPORT_GLM52_P08_ZUS_MAKRO_ZDROWOTNA.txt`
+   z **INTELIGENTNYM KODEM gotowym do wdrożenia** (reguły Rego, narzędzia Python — kalkulatory
+   składek, YAML, testy natywne + pytest) — copy-paste do katalogu JDG.
+2. **NIE MODYFIKUJ PLIKÓW w repo** — produktem jest raport .txt.
+3. **CZYTAJ PLIKI PRZEZ LINKI GITHUB** podane niżej — nie szukaj katalogów na własną rękę.
+4. **BUDŻET KONTEKSTU:** dane wejściowe ≤ **50% okna GLM 5.2 (~500K tokenów)** — reszta na
+   głębokie myślenie, głęboką analizę i wygenerowanie rozwiązania.
+
+## 🧠 OBOWIĄZKOWE NAKAZY GŁĘBOKIEGO MYŚLENIA (wymagane w całym raporcie — powtarzaj je w każdej sekcji)
+1. Przeprowadź głębokie myślenie przed każdą sekcją raportu; Przeprowadź głębokie myślenie przed każdą rekomendacją kodu; Przeprowadź głębokie myślenie przy weryfikacji całości pod kątem błędów i luk; Przeprowadź głębokie myślenie przy łączeniu wniosków z pozostałymi częściami kampanii.
+2. Przeprowadź głęboką analizę każdego pliku z listy; przeprowadź głęboką analizę powiązań między plikami; przeprowadź głęboką analizę zgodności reguł z aktami prawnymi (Bbb, LEGAL_REFERENCE_ACTS); przeprowadź głęboką analizę kontraktów spójności z innymi częściami kampanii.
+3. Każde rozwiązanie musi reprezentować zaawansowany poziom Enterprise; standardem minimalnym jest zaawansowany poziom Enterprise; jeśli propozycja nie osiąga celu: zaawansowany poziom Enterprise — odrzuć ją; wszystkie rekomendacje razem tworzą zaawansowany poziom Enterprise całego modułu.
+4. Silnik ma osiągnąć poziom ENTERPRISE w każdym wymiarze; poziom ENTERPRISE to próg minimalny, nie maksimum; każda sekcja raportu deklaruje osiągnięty poziom ENTERPRISE; ostateczny werdykt kampanii: poziom ENTERPRISE bez wyjątków.
+5. W każdej sekcji proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów; minimum 12 pozycji w kategorii: innowacyjne ulepszenia wyprzedzające profesjonalistów w rozdziale GENIALNE POMYSŁY; każdy obszar analizy kończ zestawem: innowacyjne ulepszenia wyprzedzające profesjonalistów; kod w raporcie ma być wynikiem: innowacyjne ulepszenia wyprzedzające profesjonalistów — bez tego raport nie spełnia standardu kampanii.
+## 📂 DOKUMENTY ŚWIĘTE (przeczytaj)
+- V1 — TARGET: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- V2 — WIZJA (kontynuacja V1): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- Stan obecny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Akty prawne (Bbb — sekcja ZUS): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (pełne): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Dokument ZUS MAKRO: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZUS_MACRO_P07.md
+
+## 📂 PLIKI TEJ CZĘŚCI DO ANALIZY (rules/zus/ + enterprise)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/plan23_interactions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/plan42_benefits.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/enterprise_benefits.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/sickness_benefits_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_contribution_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/cumulative_revenue_engine.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_precision_engine_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/zus_extensions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p07_zus_macro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p07_zus_macro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p08_zus_macro_enterprise_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r06_zus_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/solidarity_auto_calc_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ppk_pfron_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/insurance_tracker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_health.rego
+
+## 🧩 SPÓJNOŚĆ Z INNYMI CZĘŚCIAMI (kontrakty)
+- **ZUS ↔ PIT:** składki społeczne = KUP (art. 23 ust. 1 pkt 55 — PROMPT 05), zdrowotna NIE jest
+  KUP od 2022; zasiłek chorobowy a przychód; spójność limitów (30-krotność, minimalna podstawa).
+- **ZUS ↔ księgowość:** DRA/ZUA (deklaracje — PROMPT 04), koszty pracownicze (PROMPT 10),
+  wynagrodzenia (Kodeks pracy — PROMPT 10/19).
+- **ZUS ↔ biznes:** ulga na start/Mały ZUS Plus a zawieszenie działalności (PROMPT 13),
+  zbieg etat+JDG (art. 9 — tylko zdrowotna z JDG), sukcesja (PROMPT 13).
+- **NIEMUTOWALNOŚĆ:** werdykty ZUS są w allowliście `immutable_verdict_allowlist` (main_jdg.rego —
+  PROMPT 01) — żadna inna domena nie może ich nadpisać; raport musi to uszanować i wzmocnić.
+- Werdykt 25-polowy, rule_id unikalne, `_legal_basis` kanoniczne, progi z `data.thresholds.jdg.*`
+  (stopy: emerytalna 19,52%, rentowa 8%, chorobowa 2,45%, wypadkowa 1,67%; 30-krotność;
+  minimalna podstawa = 60% przeciętnego wynagrodzenia), wpis w `main_jdg.rego` — kontrakty PROMPT 01.
+
+## 🎯 CEL ANALIZY — POZIOM ENTERPRISE
+**Przeprowadź głębokie myślenie i przeprowadź głęboką analizę** modułu ZUS MAKRO na
+**zaawansowanym poziomie Enterprise** — priorytet: **składka zdrowotna (Polski Ład)** i **poprawne
+podstawy wymiaru składek społecznych** (zbiegi, ulgi, limity, terminy 5/10/15/20). Celem jest
+poziom ENTERPRISE, w którym składki JDG liczą się same, groszowo, z niemutowalnym audytem i
+pełnym dowodem prawnym. Zaproponuj **innowacyjne ulepszenia wyprzedzające profesjonalistów**.
+
+### 1. AUDYT SKŁADKI ZDROWOTNEJ (POZIOM ENTERPRISE — PRIORYTET: art. 79–81 ustawy zdrowotnej)
+- Skala: 9% od dochodu (podstawa = dochód z działalności; odliczenie od podatku — NIE); liniowy:
+  4,9% z limitem 12 900 zł rocznie (2025); ryczałt: 4,9% od podstawy progowej — 3 progi:
+  TIER_1 ≤ 60 000 → 60% przeciętnego, TIER_2 60–300 000 → 100%, TIER_3 > 300 000 → 180%; karta:
+  9% od minimalnego.
+- **Przeprowadź głęboką analizę** `health_contribution_enterprise.rego`, `health_precision_engine_v8.rego`,
+  `cumulative_revenue_engine.rego` — progi, korekta roczna, składka od nadwyżki, granice złotówkowe.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** silnik progów z automatycznym
+  przełączaniem TIER (miesięczna re-ewaluacja), kalkulator korekty rocznej z dowodem,
+  predyktor składki (ML) na podstawie przychodów, monitor 12 900 zł (liniowy), symulator
+  „optymalna forma dla zdrowotnej” (PROMPT 05/07).
+
+### 2. AUDYT SKŁADEK SPOŁECZNYCH (POZIOM ENTERPRISE — art. 6, 18–19, 22, 36, 47 SUS)
+- Podstawy: deklarowana (min. 60% przeciętnego, max 30-krotność), preferencyjna (30% minimalnej),
+  Mały ZUS Plus (art. 18c: 24% przeciętnego z limitu przychodów 120 000), ulga na start (art. 18a:
+  6 miesięcy bez społecznych — tylko zdrowotna).
+- Stopy (art. 22): 19,52% + 8% + 2,45% + 1,67% (wypadkowa); termin: 10./15./20. (art. 47);
+  dobrowolność chorobowej; zbiegi (art. 9: etat+JDG, emeryt+JDG, student+JDG).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** kalkulator składek miesięcznych z
+  dowodem (podstawa × stopa = kwota, grosze), monitor terminów (5/10/15/20 + weekend),
+  symulator ulg (start vs preferencyjna vs Mały ZUS+), detektor zbiegu tytułów, kalkulator
+  30-krotności z alertem.
+
+### 3. AUDYT ZASIŁKÓW (POZIOM ENTERPRISE — ustawa zasiłkowa + art. 22–24, 29–34)
+- Chorobowy (80%, 100% — ciąża/wypadek), wyczekiwanie (30/90 dni), macierzyński, opiekuńczy,
+  rehabilitacyjny, świadczenie chorobowe z kasy; podstawa zasiłku (12 mies.), limit roczny
+  (182/270 dni), zasiłek a działalność (zawieszenie).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** kalkulator zasiłku z historią
+  podstaw, tracker limitu dni (182/270), symulator „czy opłaca się chorobowe dobrowolne”.
+
+### 4. AUDYT PPK / PFRON / FS / SOLIDARNOŚCIOWEGO (POZIOM ENTERPRISE)
+- PPK (7/2/1,5 — składki), PFRON (pracodawcy ≥ 25 etatów), Fundusz Pracy i FGŚP (2,45%/0,10%
+  dla pracodawców), danina solidarnościowa 4% (art. 30h PIT — ponad 1 000 000 zł) —
+  `solidarity_auto_calc_enterprise.rego`, `ppk_pfron_enterprise.rego`.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** kalkulator PFRON z etatami
+  (przelicznik 1:1, niepełnosprawni), monitor daniny solidarnościowej (prognoza przekroczenia
+  1 000 000 zł), tracker PPK (wpłaty, rezygnacje, terminy).
+
+### 5. AUDYT NIEMUTOWALNOŚCI, TEMPORALNOŚCI, NIEZAWODNOŚCI (POZIOM ENTERPRISE)
+- Wzmocnij allowlistę niemutowalną (main_jdg.rego): werdykty ZUS nigdy nie nadpisane; invariant
+  INV-ZUS (suma składek = suma składowych), grosze, zmiany parametrów (minimalne wynagrodzenie,
+  przeciętne wynagrodzenie — ogłaszane kwartalnie/rocznie), golden replay decyzji ZUS.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** „ZUS Shield” — kryptograficzny
+  dowód składek (Merkle per miesiąc), auto-aktualizacja parametrów (obwieszczenia ZUS/GUS —
+  Law Radar), testy property-based (podstawa ≥ min, suma składek = Σ).
+
+### 6. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+M.in.: silnik progów zdrowotnej z auto-TIER; kalkulator składek z dowodem groszowym; monitor
+terminów 5/10/15/20; symulator ulg składkowych; detektor zbiegu tytułów; kalkulator 30-krotności;
+tracker limitu zasiłków 182/270; kalkulator PFRON/PPK; monitor daniny solidarnościowej; ZUS
+Shield (Merkle per miesiąc); auto-aktualizacja parametrów ZUS (obwieszczenia); predyktor składki
+ML; integracja z DRA/ZUA (PROMPT 04) i KUP (PROMPT 05).
+
+## 📋 WYMAGANE SEKCJE RAPORTU (min. 25–40 stron)
+1. Executive Summary — TOP 10 (priorytet: zdrowotna + podstawy + terminy).
+2. Tabela pokrycia: art. SUS/zdrowotnej × status × rule_id × luki.
+3. Audyt zdrowotnej (skala/liniowy/ryczałt/karta — progi, korekty) — diagramy Mermaid.
+4. Audyt społecznych (podstawy, ulgi, zbiegi, stopy, terminy).
+5. Audyt zasiłków + PPK/PFRON/FS + daniny solidarnościowej.
+6. Audyt niemutowalności, temporalności, niezawodności.
+7. GENIALNE POMYSŁY (min. 12, rozbudowane).
+8. **KOD DO WDROŻENIA:** uzupełnione reguły (np. `jdg.zus.health.tier_switch`,
+   `jdg.zus.social.maly_zus_plus` — art. 18c wg LEGAL_TWIN jest w „pustyni pokrycia”),
+   `zus_calculator.py` (składki z dowodem), `health_tier_engine.py`, `zus_calendar.py`,
+   testy natywne `test_native_zus_macro.rego` + pytest; wpisy do thresholds; wpis do
+   `main_jdg.rego` (allowlist niemutowalna).
+9. Mapa drogowa + integracja z częściami 01, 04, 05, 09, 13.
+10. Metryki sukcesu (LCI ZUS ≥ 99%, RV 100%, zero błędów składek, 100% terminów pilnowanych).
+
+## 📐 FORMAT RAPORTU
+- Tytuł: „RAPORT GLM52 P08 — ZUS MAKRO + ZDROWOTNA (ENTERPRISE v9.x)”.
+- Język: polski, diagramy Mermaid, tabele pokrycia.
+- **Przeprowadź głębokie myślenie przed każdą sekcją i przeprowadź głęboką analizę każdego pliku** —
+  precyzja, profesjonalizm, zero nieporozumień. Zapisz jako `RAPORT_GLM52_P08_ZUS_MAKRO_ZDROWOTNA.txt`.
+
+## 🔗 SUPLEMENT LINKÓW — PEŁNE POKRYCIE KATALOGU JDG (część 08)
+Poniższe pliki tej części pochodzą z pełnej inwentaryzacji katalogu JDG (rules/tools/docs/bundles/tests) —
+przeczytaj je i włącz do analizy, aby raport pokrył KAŻDY plik części:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/zus_report06_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/cross_act_zus_checker.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/fix_zus_naming.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zus_atom_linter.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zus_atom_test_matrix.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zus_completeness_engine.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zus_macro_auditor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zus_naming_unifier.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zus_report06_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zus_rule_sharding.py
+
+## 🔗 KOMBINACJE LINKÓW KRZYŻOWYCH (spójność międzyczęściowa)
+Analizuj poniższe pliki z INNYCH części RAZEM z plikami swojej części — to punkty styku
+(kontrakty techniczne: rule_id, werdykt 25-polowy, temporalność, thresholds), dzięki którym
+raport będzie spójny z CAŁĄ kampanią i silnik OPA zostanie wzmocniony z każdej strony:
+- (część P10) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pkpir_rates.rego
+- (część P12) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_crossborder_rates.rego
+- (część P14) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pcc_local_excise_rates.rego
+- (część P17) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- (część P01) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- (część P04) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery_gateway_enterprise.rego
+- (część P06) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22a.rego
+- (część P07) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cashflow_tax_predictor_enterprise.rego
+
+## 🧠 BUDŻET KONTEKSTU (powtórzenie)
+Materiał wejściowy ≤ 50% okna (~500K tokenów). Priorytet: `health_contribution_enterprise.rego`,
+`health_precision_engine_v8.rego`, `zus.rego`, `zus_extensions_enterprise.rego` — w całości.
+
+## 🔄 ZAKOŃCZENIE SESJI — WYCZYŚĆ OKNO KONTEKSTOWE
+1. Zapisz raport jako `RAPORT_GLM52_P08_ZUS_MAKRO_ZDROWOTNA.txt`.
+2. Wykonaj polecenie **„WYCZYŚĆ OKNO KONTEKSTOWE”**: 10-linijkowe podsumowanie do
+   `NOTATKI_KAMPANII.txt`.
+3. Potwierdź: „OKNO WYCZYSZCZONE — gotowy na PROMPT 09 z 19 (ZUS MIKRO + ZASIŁKI)”.
+4. Użytkownik wkleja następny Prompt: `PROMPT_09_ZUS_MIKRO_ZASILKI.txt`.

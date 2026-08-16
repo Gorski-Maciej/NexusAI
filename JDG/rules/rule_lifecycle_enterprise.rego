@@ -153,6 +153,7 @@ rollback_error_threshold := object.get(data.jdg.thresholds.misc, "rule_rollback_
 decide := {
     "matched": true,
     "rule_id": "jdg.rule_lifecycle.auto_rollback",
+    "_legal_basis": "P01 Sekcja 2 — Rule Lifecycle Management",
     "package": "jdg.rule_lifecycle",
     "priority": 130,
     "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
@@ -182,6 +183,7 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.rule_lifecycle.shadow_activation",
+    "_legal_basis": "P01 Sekcja 2 — Rule Lifecycle Management",
     "package": "jdg.rule_lifecycle",
     "priority": 110,
     "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
@@ -201,6 +203,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.rule_lifecycle.ab_rollout",
+    "_legal_basis": "P01 Sekcja 2 — Rule Lifecycle Management",
     "package": "jdg.rule_lifecycle",
     "priority": 120,
     "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
@@ -228,6 +231,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.rule_lifecycle.registry_report",
+    "_legal_basis": "P01 Sekcja 2 — Rule Lifecycle Management",
     "package": "jdg.rule_lifecycle",
     "priority": 100,
     "lifecycle": {

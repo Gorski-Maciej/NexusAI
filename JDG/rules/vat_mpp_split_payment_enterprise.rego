@@ -64,6 +64,7 @@ semantic_keywords := ["stal", "złom", "paliwo", "olej napędowy", "bateria", "a
 mp_auto_mark := {
     "matched": true,
     "rule_id": "jdg.vat_mpp_split_payment.auto_mark",
+    "_legal_basis": "Art. 108a VAT + Załącznik 15",
     "package": "jdg.vat_mpp_split_payment",
     "priority": 100,
     "mpp": {
@@ -111,6 +112,7 @@ semantic_hits := [k |
 mpp_violation := {
     "matched": true,
     "rule_id": "jdg.vat_mpp_split_payment.violation",
+    "_legal_basis": "Art. 108a VAT + Załącznik 15",
     "package": "jdg.vat_mpp_split_payment",
     "priority": 200,
     "violation": {
@@ -143,6 +145,7 @@ mpp_violation := {
 solidary_liability_risk := {
     "matched": true,
     "rule_id": "jdg.vat_mpp_split_payment.solidary_liability",
+    "_legal_basis": "Art. 108a VAT + Załącznik 15",
     "package": "jdg.vat_mpp_split_payment",
     "priority": 300,
     "risk": {
@@ -181,6 +184,7 @@ solidary_applies := true {
 decide := {
     "matched": true,
     "rule_id": "jdg.vat_mpp_split_payment.report",
+    "_legal_basis": "Art. 108a VAT + Załącznik 15",
     "package": "jdg.vat_mpp_split_payment",
     "priority": 400,
     "mpp_audit": {
@@ -235,6 +239,7 @@ solidary_risk_flag := true {
 whitelist_15k_binding := {
     "matched": true,
     "rule_id": "jdg.vat_mpp_split_payment.whitelist_15k_binding",
+    "_legal_basis": "Art. 108a VAT + Załącznik 15",
     "package": "jdg.vat_mpp_split_payment",
     "priority": 350,
     "binding": {

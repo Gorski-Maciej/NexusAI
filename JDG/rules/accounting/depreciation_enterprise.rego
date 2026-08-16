@@ -28,7 +28,7 @@ decide := {
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "",
     "asset_is_fixed": is_fixed_asset,
-    "asset_minimum_value_pln": 10000,
+    "asset_minimum_value_pln": object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000),
     "asset_expected_life_years": expected_life,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": asset_routing,
@@ -40,10 +40,10 @@ decide := {
     input.invoice.category_code in {"FIXED_ASSET", "MACHINERY", "VEHICLE", "COMPUTER_EQUIPMENT", "OFFICE_EQUIPMENT", "REAL_ESTATE"}
     asset_value := object.get(input.invoice, "amount_net", 0)
     expected_life := object.get(input.invoice, "expected_useful_life_years", 5)
-    is_fixed_asset := [asset_value >= 10000, expected_life > 1] == [true, true]
+    is_fixed_asset := [asset_value >= object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000), expected_life > 1] == [true, true]
     asset_status_opts := [
         {"c": is_fixed_asset == true, "v": sprintf("ŚT — amortyzuj przez %d lat", [expected_life])},
-        {"c": asset_value < 10000, "c2": asset_value > 0, "v": "NISKOCENNY — jednorazowo w KUP"}
+        {"c": asset_value < object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000), "c2": asset_value > 0, "v": "NISKOCENNY — jednorazowo w KUP"}
     ]
     asset_status := [x.v | some x in asset_status_opts; x.c; object.get(x, "c2", true)][0]
     asset_routing := ""
@@ -69,7 +69,7 @@ else := {
     input.invoice.category_code in {"FIXED_ASSET", "MACHINERY", "COMPUTER_EQUIPMENT", "OFFICE_EQUIPMENT"}
     asset_value := object.get(input.invoice, "amount_net", 0)
     asset_value > 0
-    asset_value < 10000
+    asset_value < object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)
 }
 
 # ==============================================================================
@@ -97,7 +97,7 @@ else := {
     input.invoice.direction == "PURCHASE"
     input.invoice.category_code in {"FIXED_ASSET", "MACHINERY", "VEHICLE", "COMPUTER_EQUIPMENT", "OFFICE_EQUIPMENT", "REAL_ESTATE"}
     initial_value := object.get(input.invoice, "amount_net", 0)
-    initial_value >= 10000
+    initial_value >= object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)
     # Stawka KŚT per typ — OPA 0.68 opts pattern
     asset_type_opts := [
         {"c": input.invoice.category_code == "REAL_ESTATE", "c2": input.invoice.subtype == "RESIDENTIAL", "v": "Budynki mieszkalne"},
@@ -161,7 +161,7 @@ else := {
     "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 100,
     "zus_social_base_type": "", "zus_health_rate": "",
     "depreciation_method": "ONE_TIME_DE_MINIMIS",
-    "depreciation_limit_pln": 100000,
+    "depreciation_limit_pln": object.get(data.thresholds.jdg.depreciation, "one_off_de_minimis_limit", 100000),
     "depreciation_one_time_amount": one_time_amount,
     "depreciation_remaining_value": remaining_value,
     "business_status": "", "ceidg_registration_required": false,
@@ -176,8 +176,8 @@ else := {
     is_small_taxpayer := object.get(input.jdg_entrepreneur, "is_small_taxpayer", false)
     is_first_year := object.get(input.jdg_entrepreneur, "is_first_year", false)
     [is_small_taxpayer, is_first_year] != [false, false]
-    one_time_amount := min([initial_value, 100000])
-    remaining_value := max([0, initial_value - 100000])
+    one_time_amount := min([initial_value, object.get(data.thresholds.jdg.depreciation, "one_off_de_minimis_limit", 100000)])
+    remaining_value := max([0, initial_value - object.get(data.thresholds.jdg.depreciation, "one_off_de_minimis_limit", 100000)])
 }
 
 # ==============================================================================
@@ -205,8 +205,8 @@ else := {
     is_electric := object.get(input.invoice, "is_electric_vehicle", false)
     is_passenger := object.get(input.invoice, "is_passenger_car", true)
     car_limit_opts := [
-        {"c": is_electric == true, "v": 225000},
-        {"c": true, "v": 150000}
+        {"c": is_electric == true, "v": object.get(data.thresholds.jdg.depreciation, "passenger_car_limit_electric", 225000)},
+        {"c": true, "v": object.get(data.thresholds.jdg.depreciation, "passenger_car_limit_standard", 150000)}
     ]
     car_limit := [x.v | some x in car_limit_opts; x.c][0]
     limit_type_opts := [
@@ -233,7 +233,7 @@ else := {
     "kus_qualification": "IMPROVEMENT", "kus_percent": kup_treatment,
     "zus_social_base_type": "", "zus_health_rate": "",
     "improvement_amount_pln": improvement_amount,
-    "improvement_threshold": 10000,
+    "improvement_threshold": object.get(data.thresholds.jdg.depreciation, "improvement_threshold", 10000),
     "improvement_exceeds_threshold": exceeds_threshold,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "",
@@ -243,7 +243,7 @@ else := {
 } {
     input.invoice.category_code == "ASSET_IMPROVEMENT"
     improvement_amount := object.get(input.invoice, "amount_net", 0)
-    exceeds_threshold := improvement_amount >= 10000
+    exceeds_threshold := improvement_amount >= object.get(data.thresholds.jdg.depreciation, "improvement_threshold", 10000)
     improvement_treatment_opts := [
         {"c": exceeds_threshold == true, "v": "ZWIĘKSZA WARTOŚĆ POCZĄTKOWĄ ŚT — amortyzuj"},
         {"c": exceeds_threshold == false, "v": "KUP JEDNORAZOWO — próg 10k nie przekroczony"}

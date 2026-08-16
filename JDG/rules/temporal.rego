@@ -19,13 +19,13 @@ default decide := {"matched":false,"rule_id":"jdg.temporal.no_match","package":"
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # Kwota wolna od podatku wg roku (Art. 27 ust. 1 PIT) — P1614
-tax_free_amount(year) = 6600 { year == 2017 }
-tax_free_amount(year) = 8000 { year in {2018, 2019, 2020, 2021} }
-tax_free_amount(year) = 30000 { year >= 2022 }
+tax_free_amount(year) = object.get(data.thresholds.jdg.pit, "tax_free_2017", 6600) { year == 2017 }
+tax_free_amount(year) = object.get(data.thresholds.jdg.pit, "tax_free_2018_2021", 8000) { year in {2018, 2019, 2020, 2021} }
+tax_free_amount(year) = object.get(data.thresholds.jdg.pit, "tax_free_2022_plus", 30000) { year >= 2022 }
 
 # Limit jednorazowej amortyzacji wg roku (Art. 22d ust. 1 PIT) — P1616
-depreciation_one_off_limit(year) = 10000 { year < 2018 }
-depreciation_one_off_limit(year) = 100000 { year >= 2018 }
+depreciation_one_off_limit(year) = object.get(data.thresholds.jdg.depreciation, "one_off_annual_limit_pre2018", 10000) { year < 2018 }
+depreciation_one_off_limit(year) = object.get(data.thresholds.jdg.depreciation, "one_off_annual_limit", 100000) { year >= 2018 }
 
 # Tabela kursów NBP wg transakcji (Art. 14c PIT, Art. 30a-c VAT) — P1618
 fx_table_name(is_customs) = "Tabela C NBP (celna) z dnia poprzedzającego" { is_customs == true }

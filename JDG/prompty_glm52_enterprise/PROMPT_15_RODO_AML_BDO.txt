@@ -1,0 +1,203 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 15 z 19 — CZĘŚĆ: RODO / AML-CBDD / BDO-ŚRODOWISKO / BUDOWNICTWO / SECURITY
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie RODO (UE 2016/679), AML/CBDD (ustawa z 1.03.2018,
+Dz.U. 2025 poz. 213 — art. 28a–34, 74–80, 153; transakcje > 15 000 EUR, beneficjenci rzeczywiści,
+STR/GIIF), BDO i ochrony środowiska (ustawa o odpadach z 14.12.2012, Dz.U. 2025 poz. 321 —
+rejestracja, ewidencja, KPO, EWC, opakowania, WEEE/baterie; kara 5000 zł art. 194), Prawa
+budowlanego (7.07.1994, Dz.U. 2025 poz. 1101), transportu drogowego, bezpieczeństwa IT
+(security fortress, HMAC, RODO-IT) oraz reguł OPA/Rego klasy ENTERPRISE.
+
+## ⚠️ KRYTYCZNE ZASADY
+1. **GENERUJESZ OGROMNY, ROZBUDOWANY RAPORT** `RAPORT_GLM52_P15_RODO_AML_BDO.txt`
+   z **INTELIGENTNYM KODEM gotowym do wdrożenia** (reguły Rego, narzędzia Python, YAML, testy
+   natywne + pytest) — copy-paste do katalogu JDG.
+2. **NIE MODYFIKUJ PLIKÓW w repo** — produktem jest raport .txt.
+3. **CZYTAJ PLIKI PRZEZ LINKI GITHUB** podane niżej — nie szukaj katalogów na własną rękę.
+4. **BUDŻET KONTEKSTU:** dane wejściowe ≤ **50% okna GLM 5.2 (~500K tokenów)** — reszta na
+   głębokie myślenie, głęboką analizę i wygenerowanie rozwiązania.
+
+## 🧠 OBOWIĄZKOWE NAKAZY GŁĘBOKIEGO MYŚLENIA (wymagane w całym raporcie — powtarzaj je w każdej sekcji)
+1. Przeprowadź głębokie myślenie przed każdą sekcją raportu; Przeprowadź głębokie myślenie przed każdą rekomendacją kodu; Przeprowadź głębokie myślenie przy weryfikacji całości pod kątem błędów i luk; Przeprowadź głębokie myślenie przy łączeniu wniosków z pozostałymi częściami kampanii.
+2. Przeprowadź głęboką analizę każdego pliku z listy; przeprowadź głęboką analizę powiązań między plikami; przeprowadź głęboką analizę zgodności reguł z aktami prawnymi (Bbb, LEGAL_REFERENCE_ACTS); przeprowadź głęboką analizę kontraktów spójności z innymi częściami kampanii.
+3. Każde rozwiązanie musi reprezentować zaawansowany poziom Enterprise; standardem minimalnym jest zaawansowany poziom Enterprise; jeśli propozycja nie osiąga celu: zaawansowany poziom Enterprise — odrzuć ją; wszystkie rekomendacje razem tworzą zaawansowany poziom Enterprise całego modułu.
+4. Silnik ma osiągnąć poziom ENTERPRISE w każdym wymiarze; poziom ENTERPRISE to próg minimalny, nie maksimum; każda sekcja raportu deklaruje osiągnięty poziom ENTERPRISE; ostateczny werdykt kampanii: poziom ENTERPRISE bez wyjątków.
+5. W każdej sekcji proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów; minimum 12 pozycji w kategorii: innowacyjne ulepszenia wyprzedzające profesjonalistów w rozdziale GENIALNE POMYSŁY; każdy obszar analizy kończ zestawem: innowacyjne ulepszenia wyprzedzające profesjonalistów; kod w raporcie ma być wynikiem: innowacyjne ulepszenia wyprzedzające profesjonalistów — bez tego raport nie spełnia standardu kampanii.
+## 📂 DOKUMENTY ŚWIĘTE (przeczytaj)
+- V1 — TARGET: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- V2 — WIZJA (kontynuacja V1): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- Stan obecny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Akty prawne (Bbb): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (pełne): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Dokument P15: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/SRODOWISKO_BDO_P15.md
+- Dokument P16: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RODO_AML_BEZPIECZENSTWO_P16.md
+
+## 📂 PLIKI TEJ CZĘŚCI DO ANALIZY (rules/rodo, compliance, environmental, security + micro)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rodo.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rodo_extended.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo_ai_marketing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo_erasure.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo_podprocesorzy.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo_sankcje.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo_zatrudnienie.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_rodo.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rodo/plan42_rodo.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance/aml_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/aml/aml.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/aml/aml_cbdd.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/aml/aml_ryzyko.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/aml/aml_str_gif.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/aml/aml_transakcje.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/environmental.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/environmental/bdo_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_rejestracja.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_ewidencja.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_ewc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_zezwolenia.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/bdo/bdo_weee_baterie.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/srodowisko/srodowisko.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_est.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/budownictwo/budownictwo.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/transport/transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/security/security_fortress_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/regulated_compliance_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/sanctions_supplements_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p15_srodowisko_bdo_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r14_rodo_aml_bdo_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_rodo_aml_security_innovations_v9.rego
+
+## 🧩 SPÓJNOŚĆ Z INNYMI CZĘŚCIAMI (kontrakty)
+- **RODO ↔ system:** werdykty bez danych osobowych w logach (PROMPT 01 — privacy by design),
+  retencja dokumentów (50 lat pracownicze — `retention.rego`, PROMPT 01), WORM dla audytu.
+- **AML ↔ księgowość:** transakcje > 15 000 EUR (monitor — PROMPT 10/17), CBDD przy nowym
+  kontrahencie (PROMPT 02 — weryfikacja przed fakturą), STR/GIIF (raport — PROMPT 04).
+- **BDO ↔ środowisko ↔ akcyza:** ewidencja odpadów a KPO, opłaty środowiskowe (PROMPT 14),
+  transport odpadów (licencje — PROMPT 13), sankcje art. 194 (KKS — PROMPT 11).
+- **Budownictwo ↔ nieruchomości:** pozwolenia (art. 28–30 Pb) a podatek od nieruchomości
+  (PROMPT 14), amortyzacja budynków (PROMPT 06/10).
+- Werdykt 25-polowy, rule_id unikalne, `_legal_basis` kanoniczne, progi z `data.thresholds.jdg.*`
+  (AML 15 000 EUR, BDO 100–500 zł opłat, kara 5000 zł), wpis w `main_jdg.rego` — kontrakty PROMPT 01.
+
+## 🎯 CEL ANALIZY — POZIOM ENTERPRISE
+**Przeprowadź głębokie myślenie i przeprowadź głęboką analizę** modułu RODO/AML/BDO na
+**zaawansowanym poziomie Enterprise** — priorytet: **pełne pokrycie RODO (rejestr czynności
+art. 30, prawa osób art. 15–22, sankcje art. 83 — do 20 mln EUR), AML (CBDD, beneficjenci,
+STR/GIIF, progi), BDO (rejestracja, ewidencja kwartalna, KPO, opłaty, kary art. 194),
+bezpieczeństwo IT (forteca — HMAC, szyfrowanie, RBAC)**. Celem jest poziom ENTERPRISE, w którym
+compliance nie jest „dodatkiem”, lecz warstwą systemową egzekwowaną na każdym werdykcie.
+Zaproponuj **innowacyjne ulepszenia wyprzedzające profesjonalistów**.
+
+### 1. AUDYT RODO (POZIOM ENTERPRISE — PRIORYTET: art. 30, 17, 28, 83)
+- Rejestr czynności (art. 30), prawo do usunięcia (art. 17 — erasure z dowodem), podprocesorzy
+  (art. 28 — umowy DPAs), sankcje (art. 83 — 20 mln EUR / 4% obrotu), AI marketing (RODO-ai),
+  zatrudnienie (art. 88), ocena skutków (art. 35 — DPIA), naruszenia (art. 33–34 — 72 h).
+- `rodo.rego`, `rodo_extended.rego`, `micro/rodo/*` (6 plików), `plan33_rodo.rego`,
+  `plan42_rodo.rego` — kompletność praw, obowiązków, terminów, sankcji.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** generator rejestru czynności
+  (auto-z arkuszy danych), silnik erasure (pełny cykl: wykrycie → usunięcie → dowód → raport),
+  kalkulator sankcji RODO (art. 83 — matryca), tracker naruszeń (72 h z countdownem),
+  walidator DPA (umowy z podprocesorami), „RODO Shield” — werdykty bez PII (pseudonimizacja).
+
+### 2. AUDYT AML/CBDD (POZIOM ENTERPRISE — PRIORYTET: art. 28a–34, 74–80, 153)
+- Instytucje obowiązane (art. 2), CBDD (art. 28a–34: weryfikacja tożsamości, beneficjent
+  rzeczywisty, transakcje okazjonalne > 15 000 EUR), analiza ryzyka (art. 34 — scoring),
+  STR/GIIF (art. 74–80: raport 48 h po podejrzeniu), rejestr beneficjentów (CRBR), sankcje
+  (art. 153: do 1 000 000 zł), AMLR (rozporządzenie UE 2024/1624 — nowe progi).
+- `aml_enterprise.rego` (23 reguł — 10 BLOCK, 12 TRIAGE), `micro/aml/*` (5 plików) —
+  kompletność CBDD, progów, STR, ryzyka.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** silnik CBDD (checklista weryfikacji
+  per klient), scorer ryzyka AML (art. 34 — matryca: kraj, branża, transakcje), generator STR
+  (48 h z countdownem), monitor 15 000 EUR (transakcje okazjonalne), detektor beneficjentów
+  (struktury własności), AMLR-ready (progi 2027 — Law Radar UE).
+
+### 3. AUDYT BDO I ŚRODOWISKA (POZIOM ENTERPRISE — PRIORYTET: rejestracja, ewidencja, art. 194)
+- Rejestracja w BDO (art. 17–18, 41–48: wytwórcy odpadów — obowiązek od 2018, opłata
+  100–500 zł), ewidencja odpadów (art. 49–55: karty przekazania KPO, ewidencja kwartalna),
+  EWC (kody), transport (art. 66–74: karty, zezwolenia), opakowania (art. 194), WEEE/baterie,
+  sankcje (art. 194: kara 5000 zł; brak rejestracji), sprawozdania (art. 233).
+- `bdo_enterprise.rego` (23 — 11 BLOCK, 10 TRIAGE), `micro/bdo/*` (6 plików),
+  `micro/srodowisko/srodowisko.rego` (48), `plan33_est.rego` (15) — kompletność.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** generator rejestracji BDO
+  (formularz + opłata), ewidencja odpadów z dowodem (KPO — zero ręki), klasyfikator EWC
+  (rodzaj odpadu → kod), kalkulator opłat środowiskowych, monitor kwartalny (ewidencja +
+  opłaty), tracker zezwoleń (transport — ważność), detektor ryzyka kary 5000 zł (art. 194).
+
+### 4. AUDYT BUDOWNICTWA I TRANSPORTU (POZIOM ENTERPRISE)
+- Prawo budowlane: pozwolenia (art. 28), zgłoszenia (art. 29–30), rozpoczęcie (art. 37),
+  kierownik (art. 42), odbiory, dokumentacja (dziennik budowy); transport: licencje (ustawa
+  o transporcie drogowym), tachografy, zezwolenia — `budownictwo.rego` (64), `transport.rego` (44).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** tracker pozwoleń/zgłoszeń
+  (terminy, odbiory), kalkulator opłat (legalizacja), monitor licencji transportowych.
+
+### 5. AUDYT SECURITY (POZIOM ENTERPRISE — security_fortress_v8)
+- HMAC-SHA256 werdyktów, Merkle tree, RBAC/SoD, szyfrowanie w spoczynku/transporcie, RODO-IT,
+  ataki (prompt injection, tampering bundle, WORM) — `security_fortress_v8.rego` + PROMPT 01
+  (control plane security V1 §11) — kompletność, testy penetracyjne w CI.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** runtime security monitor (anomalie
+  dostępu), auto-rotacja kluczy (HSM), SBOM per bundle, chaos security (tampering testy).
+
+### 6. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+M.in.: generator rejestru czynności RODO; silnik erasure z dowodem; kalkulator sankcji RODO;
+tracker naruszeń 72 h; silnik CBDD z checklistą; scorer ryzyka AML; generator STR (48 h);
+monitor 15 000 EUR; detektor beneficjentów; generator rejestracji BDO; ewidencja KPO zero-ręki;
+klasyfikator EWC; monitor kwartalny BDO; tracker zezwoleń; RODO Shield (pseudonimizacja);
+security monitor runtime; AMLR-ready (Law Radar UE).
+
+## 📋 WYMAGANE SEKCJE RAPORTU (min. 25–40 stron)
+1. Executive Summary — TOP 10 (priorytet: RODO 30/83, AML CBDD/STR, BDO rejestracja/ewidencja).
+2. Tabela pokrycia: art./regulacja × status × rule_id × luki.
+3. Audyt RODO (30/17/28/83/33–34/35) — diagramy Mermaid.
+4. Audyt AML/CBDD (28a–34, 74–80, 153) + AMLR.
+5. Audyt BDO/środowiska (17–18, 41–55, 194, 233) + budownictwa/transportu.
+6. Audyt security (fortress, HMAC, RBAC) + niezawodności/temporalności.
+7. GENIALNE POMYSŁY (min. 12, rozbudowane).
+8. **KOD DO WDROŻENIA:** uzupełnione reguły (RODO/AML/BDO), `rodo_register_generator.py`,
+   `erasure_engine.py`, `aml_cbdd_engine.py`, `str_generator.py`, `bdo_ewidencja_engine.py`,
+   `ewc_classifier.py`, testy natywne `test_native_rodo.rego`, `test_native_aml.rego`,
+   `test_native_bdo.rego` + pytest; wpisy do thresholds; wpis do `main_jdg.rego`.
+9. Mapa drogowa + integracja z częściami 01, 02, 04, 10, 11, 14.
+10. Metryki sukcesu (LCI ≥ 99%, 0 naruszeń terminów RODO/AML/BDO, RV 100%).
+
+## 📐 FORMAT RAPORTU
+- Tytuł: „RAPORT GLM52 P15 — RODO / AML / BDO / SECURITY (ENTERPRISE v9.x)”.
+- Język: polski, diagramy Mermaid, tabele pokrycia.
+- **Przeprowadź głębokie myślenie przed każdą sekcją i przeprowadź głęboką analizę każdego pliku** —
+  precyzja, profesjonalizm, zero nieporozumień. Zapisz jako `RAPORT_GLM52_P15_RODO_AML_BDO.txt`.
+
+## 🔗 SUPLEMENT LINKÓW — PEŁNE POKRYCIE KATALOGU JDG (część 15)
+Poniższe pliki tej części pochodzą z pełnej inwentaryzacji katalogu JDG (rules/tools/docs/bundles/tests) —
+przeczytaj je i włącz do analizy, aby raport pokrył KAŻDY plik części:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/rodo_aml_bdo_innovations_report14_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/rodo_aml_bdo_report14_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_compliance_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p14_compliance_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/bdo_environment_auditor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rodo_aml_bdo_report14_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rodo_aml_security_auditor.py
+
+## 🔗 KOMBINACJE LINKÓW KRZYŻOWYCH (spójność międzyczęściowa)
+Analizuj poniższe pliki z INNYCH części RAZEM z plikami swojej części — to punkty styku
+(kontrakty techniczne: rule_id, werdykt 25-polowy, temporalność, thresholds), dzięki którym
+raport będzie spójny z CAŁĄ kampanią i silnik OPA zostanie wzmocniony z każdej strony:
+- (część P17) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- (część P02) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p02_vat_macro_innovations_v8.rego
+- (część P05) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances.rego
+- (część P08) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/insurance_tracker_enterprise.rego
+- (część P11) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/plan44_audit.rego
+- (część P13) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_business_lifecycle_rates.rego
+- (część P14) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pcc_local_excise_rates.rego
+
+## 🧠 BUDŻET KONTEKSTU (powtórzenie)
+Materiał wejściowy ≤ 50% okna (~500K tokenów). Priorytet: `aml_enterprise.rego`,
+`micro/aml/aml.rego`, `bdo_enterprise.rego`, `micro/bdo/bdo_ewidencja.rego`,
+`micro/rodo/rodo.rego`, `security_fortress_v8.rego` — w całości.
+
+## 🔄 ZAKOŃCZENIE SESJI — WYCZYŚĆ OKNO KONTEKSTOWE
+1. Zapisz raport jako `RAPORT_GLM52_P15_RODO_AML_BDO.txt`.
+2. Wykonaj polecenie **„WYCZYŚĆ OKNO KONTEKSTOWE”**: 10-linijkowe podsumowanie do
+   `NOTATKI_KAMPANII.txt`.
+3. Potwierdź: „OKNO WYCZYSZCZONE — gotowy na PROMPT 16 z 19 (HYPER PLAN45)”.
+4. Użytkownik wkleja następny Prompt: `PROMPT_16_HYPER_PLAN45_KONTEKSTY.txt`.

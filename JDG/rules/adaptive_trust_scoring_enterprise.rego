@@ -84,7 +84,7 @@ counterparty_risk_level := "HIGH" {
     object.get(input.vendor, "fraud_graph_match", false) == true
 } else := "MEDIUM" {
     object.get(input.vendor, "on_whitelist", false) == false
-    input.invoice.amount_net > 15000
+    input.invoice.amount_net > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "high_value_tx_threshold", 15000)
 } else := "LOW" {
     true
 }
@@ -148,6 +148,7 @@ final_trust_score(pkg) = t {
 decide := {
     "matched": true,
     "rule_id": "jdg.adaptive_trust.auto_post_gate",
+    "_legal_basis": "P02 Sekcja 1 — Adaptive Trust Scoring + risk.rego P1",
     "package": "jdg.adaptive_trust",
     "priority": 100,
     "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
@@ -175,6 +176,7 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.adaptive_trust.suggest_gate",
+    "_legal_basis": "P02 Sekcja 1 — Adaptive Trust Scoring + risk.rego P1",
     "package": "jdg.adaptive_trust",
     "priority": 110,
     "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
@@ -201,6 +203,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.adaptive_trust.triage_gate",
+    "_legal_basis": "P02 Sekcja 1 — Adaptive Trust Scoring + risk.rego P1",
     "package": "jdg.adaptive_trust",
     "priority": 120,
     "trust": {

@@ -333,7 +333,7 @@ else := verdict {
     reason := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p3233_innovations.active_contrition_checklist",
+        "matched": true, "rule_id": "jdg.p3233_innovations.active_contrition_checklist", "_legal_basis": "Art. 23 KKS; Art. 54 KKS (symulacja kary)",
         "package": "jdg.p3233_innovations", "priority": 9606,
         "vat_rate": "", "rounding_level": "", "gtu_code": "",
         "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",

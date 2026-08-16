@@ -579,14 +579,14 @@ else := {
     monthly_km := object.get(input.jdg_entrepreneur, "vehicle_mileage_km_monthly", 0)
     car_value := object.get(input.jdg_entrepreneur, "vehicle_value_pln", 0)
     is_ev := object.get(input.jdg_entrepreneur, "vehicle_is_electric", false)
-    car_limit:={true: 225000, false: 150000}[is_ev]
+    car_limit:={true: object.get(data.thresholds.jdg.depreciation, "passenger_car_limit_electric", 225000), false: object.get(data.thresholds.jdg.depreciation, "passenger_car_limit_standard", 150000)}[is_ev]
     monthly_limit := 500
     business_use := has_mileage_log
     mileage_kup:={true: "deductible_full", false: "deductible_75pct"}[has_mileage_log]
     mileage_kup_pct:={true: 100, false: 75}[has_mileage_log]
     mileage_status:={true: "Ewidencja PROWADZONA — pełne odliczenia", false: "BRAK ewidencji — KUP 75%, VAT 50%"}[has_mileage_log]
     deduction_info:={true: sprintf("KUP 100%% + VAT 100%% — oszczędność ~%.2f PLN/mies vs brak ewidencji", [car_value * 0.002]), false: sprintf("Tracisz ~%.2f PLN/mies odliczeń. Załóż ewidencję przebiegu!", [car_value * 0.002])}[has_mileage_log]
-    mile_trigger := [has_mileage_log==false, car_value > 50000]==[true,true]
+    mile_trigger := [has_mileage_log==false, car_value > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "mileage_log_recommendation_limit", 50000)]==[true,true]
     mile_routing:={true: "TRIAGE_QUEUE", false: ""}[mile_trigger]
     mile_reason:={true: sprintf("Brak ewidencji przebiegu dla auta %.0f PLN — %d PLN strat rocznie!", [car_value, car_value * 24 / 1000]), false: ""}[mile_trigger]
 }
@@ -606,13 +606,13 @@ else := {
     "_routing": asset_routing,
     "_routing_reason": asset_reason,
     "_legal_basis": "Art. 22a-22o PIT, Rozporządzenie RM w sprawie KŚT, Załącznik nr 1 PIT",
-    "_warnings": [sprintf("EWIDENCJA ŚRODKÓW TRWAŁYCH — %s: %.2f PLN. KŚT: %s. Amortyzacja: %s (%.2f PLN/rok). %s. Ulepszenie >10000 PLN zwiększa podstawę amortyzacji!", [asset_name, asset_value, kst_group, depr_method, annual_depr, depr_note])]
+    "_warnings": [sprintf("EWIDENCJA ŚRODKÓW TRWAŁYCH — %s: %.2f PLN. KŚT: %s. Amortyzacja: %s (%.2f PLN/rok). %s. Ulepszenie > 10 000 PLN zwiększa podstawę amortyzacji!", [asset_name, asset_value, kst_group, depr_method, annual_depr, depr_note])]
 } {
     input.invoice.pkpir_fixed_asset_check == true
     asset_value := object.get(input.invoice, "fixed_asset_value", 0)
     asset_name := object.get(input.invoice, "fixed_asset_name", "Środek trwały")
     kst_group := object.get(input.invoice, "fixed_asset_kst_group", "N/A")
-    is_low_value := asset_value <= 10000
+    is_low_value := asset_value <= object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)
     is_used := object.get(input.invoice, "fixed_asset_is_used", false)
     asset_class := object.get({
         [true, false]: "NISKOCENNY",
@@ -624,8 +624,8 @@ else := {
     }, [is_low_value, is_used], "LINIOWA (wg stawek KŚT)")
     annual_rate := object.get(input.invoice, "fixed_asset_depr_rate", 0.20)
     annual_depr := floor(asset_value * annual_rate * 100) / 100
-    asset_routing:={true: "TRIAGE_QUEUE", false: ""}[asset_value > 100000]
-    asset_reason:={true: sprintf("Środek trwały %.2f PLN — amortyzacja %.2f PLN/rok. Zweryfikuj stawkę KŚT.", [asset_value, annual_depr]), false: ""}[asset_value > 100000]
+    asset_routing:={true: "TRIAGE_QUEUE", false: ""}[asset_value > object.get(data.thresholds.jdg.depreciation, "large_asset_triage_limit", 100000)]
+    asset_reason:={true: sprintf("Środek trwały %.2f PLN — amortyzacja %.2f PLN/rok. Zweryfikuj stawkę KŚT.", [asset_value, annual_depr]), false: ""}[asset_value > object.get(data.thresholds.jdg.depreciation, "large_asset_triage_limit", 100000)]
     depr_note := "Amortyzacja stanowi KUP — pomniejsza dochód do opodatkowania"
 }
 
@@ -650,7 +650,7 @@ else := {"matched":true,"rule_id":"jdg.accounting.vat_sales_register",
     vat_amt:=gross_amount-net_amount
     vat_rate:=object.get(input.invoice,"vat_rate","0.23")
     gtu_code:=object.get(input.invoice,"gtu_code","")
-    is_missing_gtu:=[vat_rate=="0.23",gtu_code=="",gross_amount>15000]==[true,true,true]
+    is_missing_gtu:=[vat_rate=="0.23",gtu_code=="",gross_amount>object.get(data.thresholds.jdg.pit, "cash_payment_limit", 15000)]==[true,true,true]
     sales_rt:={true: "TRIAGE_QUEUE", false: ""}[is_missing_gtu]
     sales_rs:={true: "Brak GTU dla transakcji >15k PLN", false: ""}[is_missing_gtu]
 }
@@ -724,7 +724,7 @@ else := {"matched":true,"rule_id":"jdg.accounting.vat_split_payment_register",
     input.invoice.direction=="PURCHASE"
     input.jdg_entrepreneur.is_vat_payer==true
     gross_amount:=object.get(input.invoice,"amount_gross",0)
-    gross_amount>=15000
+    gross_amount>=object.get(data.thresholds.jdg.pit, "cash_payment_limit", 15000)
     object.get(input.invoice,"is_mpp_sensitive",false)==true
 }
 

@@ -94,6 +94,7 @@ decide := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p16_innovations.lifecycle_navigator",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p16_innovations",
         "priority": 1000,
         "innovation": "INN01_LIFECYCLE_NAVIGATOR",
@@ -187,6 +188,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p16_innovations.tax_form_selector",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p16_innovations",
         "priority": 2000,
         "innovation": "INN02_TAX_FORM_SELECTOR",
@@ -254,6 +256,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p16_innovations.suspension_simulator",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p16_innovations",
         "priority": 3000,
         "innovation": "INN03_SUSPENSION_SIMULATOR",
@@ -326,6 +329,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p16_innovations.succession_readiness",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p16_innovations",
         "priority": 4000,
         "innovation": "INN04_SUCCESSION_READINESS",
@@ -435,6 +439,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p16_innovations.gig_economy_optimizer",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p16_innovations",
         "priority": 5000,
         "innovation": "INN05_GIG_ECONOMY_OPTIMIZER",
@@ -528,6 +533,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p16_innovations.banking_api_aggregator",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p16_innovations",
         "priority": 6000,
         "innovation": "INN06_BANKING_API_AGGREGATOR",
@@ -613,6 +619,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p16_innovations.ceidg_auto_file",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p16_innovations",
         "priority": 7000,
         "innovation": "INN07_CEIDG_AUTO_FILE",
@@ -709,6 +716,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p16_innovations.health_dashboard",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p16_innovations",
         "priority": 8000,
         "innovation": "INN08_HEALTH_360_DASHBOARD",
@@ -784,6 +792,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p16_innovations.exit_strategy_simulator",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p16_innovations",
         "priority": 9000,
         "innovation": "INN09_EXIT_STRATEGY_SIMULATOR",
@@ -848,6 +857,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p16_innovations.revenue_predictor",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p16_innovations",
         "priority": 10000,
         "innovation": "INN10_REVENUE_PREDICTOR",
@@ -926,6 +936,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p16_innovations.employee_hiring_procedure",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p16_innovations",
         "priority": 11000,
         "innovation": "INN11_EMPLOYEE_HIRING",
@@ -1011,6 +1022,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p16_innovations.company_transformation",
+        "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p16_innovations",
         "priority": 12000,
         "innovation": "INN12_COMPANY_TRANSFORMATION",
@@ -1053,6 +1065,8 @@ else := verdict {
 else := {
     "matched": true,
     "rule_id": "jdg.p16_innovations.coverage_summary",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p16_innovations",
     "priority": 99999,
     "innovation": "P16_COVERAGE_SUMMARY",

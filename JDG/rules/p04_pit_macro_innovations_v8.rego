@@ -13,7 +13,8 @@ default decide := {"matched":false,"rule_id":"jdg.p04_innovations.no_match","pac
 
 # ═══ INN01: Health Limit 12900→14100 ═══
 decide := {
-    "matched":true,"rule_id":"jdg.p04_innovations.health_limit_fix","package":"jdg.p04_innovations","priority":1000,
+    "matched":true,"rule_id":"jdg.p04_innovations.health_limit_fix", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p04_innovations","priority":1000,
+    "_routing": "",
     "innovation":"INN01_HEALTH_LIMIT_14100","action":"FIX_HEALTH_LIMIT",
     "old_value":12900,"new_value":14100,"year":2026,
     "affected":["forms.rego L140","kup.rego P570"],
@@ -23,7 +24,8 @@ decide := {
 
 # ═══ INN02: 85528 Externalizer ═══
 else := {
-    "matched":true,"rule_id":"jdg.p04_innovations.pit0_limit_externalizer","package":"jdg.p04_innovations","priority":2000,
+    "matched":true,"rule_id":"jdg.p04_innovations.pit0_limit_externalizer", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p04_innovations","priority":2000,
+    "_routing": "",
     "innovation":"INN02_85528_EXTERNALIZER","action":"EXTERNALIZE_85528",
     "hardcoded_value":85528,"occurrences":"20+ in art21/exemptions/family_estonian",
     "thresholds_key":"data.jdg.thresholds.pit.pit0_shared_limit",
@@ -32,7 +34,8 @@ else := {
 
 # ═══ INN03: PIT Rates Externalizer ═══
 else := {
-    "matched":true,"rule_id":"jdg.p04_innovations.pit_rates_externalizer","package":"jdg.p04_innovations","priority":3000,
+    "matched":true,"rule_id":"jdg.p04_innovations.pit_rates_externalizer", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p04_innovations","priority":3000,
+    "_routing": "",
     "innovation":"INN03_PIT_RATES_EXTERNALIZER","action":"EXTERNALIZE_RATES",
     "rates":{"scale_low":"0.12","scale_high":"0.32","linear":"0.19","ipbox":"0.05"},
     "thresholds_keys":["pit_scale_rate_low","pit_scale_rate_high","pit_linear_rate","pit_ipbox_rate"],
@@ -42,7 +45,8 @@ else := {
 
 # ═══ INN04: Car Expense 75% Limit ═══
 else := {
-    "matched":true,"rule_id":"jdg.p04_innovations.car_expense_75pct","package":"jdg.p04_innovations","priority":4000,
+    "matched":true,"rule_id":"jdg.p04_innovations.car_expense_75pct", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p04_innovations","priority":4000,
+    "_routing": "",
     "innovation":"INN04_CAR_EXPENSE_75PCT","action":"ADD_75PCT_LIMIT",
     "current":"Only 150k/225k car value limit","missing":"75% limit on fuel/service/insurance without mileage log",
     "full_deduction_condition":"Mileage log (ewidencja przebiegu) → 100% deduction",
@@ -51,7 +55,8 @@ else := {
 
 # ═══ INN05: Leasing Type Differentiator ═══
 else := {
-    "matched":true,"rule_id":"jdg.p04_innovations.leasing_differentiator","package":"jdg.p04_innovations","priority":5000,
+    "matched":true,"rule_id":"jdg.p04_innovations.leasing_differentiator", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p04_innovations","priority":5000,
+    "_routing": "",
     "innovation":"INN05_LEASING_DIFFERENTIATOR","action":"DIFFERENTIATE_LEASING",
     "types":{"OPERATIONAL":"Full lease payment KUP","FINANCIAL":"Only interest KUP + depreciation"},
     "limit_operational":"150k/225k proportional limit on lease payments",
@@ -60,7 +65,8 @@ else := {
 
 # ═══ INN06: Advert vs Representation ═══
 else := {
-    "matched":true,"rule_id":"jdg.p04_innovations.advert_vs_representation","package":"jdg.p04_innovations","priority":6000,
+    "matched":true,"rule_id":"jdg.p04_innovations.advert_vs_representation", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p04_innovations","priority":6000,
+    "_routing": "",
     "innovation":"INN06_ADVERT_VS_REPRESENTATION","action":"DIFFERENTIATE",
     "representation":"NKUP (Art. 23 ust. 1 pkt 23)","advertising":"KUP (Art. 22 ust. 1)",
     "criteria":["Target: clients vs general public","Content: product-focused vs prestige-focused","Venue: trade fair vs restaurant"],
@@ -69,6 +75,7 @@ else := {
 
 # ═══ COVERAGE ═══
 else := {
-    "matched":true,"rule_id":"jdg.p04_innovations.summary","package":"jdg.p04_innovations","priority":99999,
+    "matched":true,"rule_id":"jdg.p04_innovations.summary", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p04_innovations","priority":99999,
+    "_routing": "",
     "innovation":"P04_PIT_MACRO","action":"REPORT","total_fixes":6,"ready_for_p05":true
 } { true }

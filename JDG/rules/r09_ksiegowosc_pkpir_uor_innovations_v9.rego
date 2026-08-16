@@ -121,6 +121,7 @@ uos_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r09_ksiegowosc_pkpir_uor_innovations.uor_threshold_simulator",
+    "_legal_basis": "UoR art. 2 ust. 1 pkt 5 (próg 2 000 000 EUR), art. 2 ust. 2 (PKPiR poniżej progu); PIT art. 24a (PKPiR)",
     "package": "jdg.r09_ksiegowosc_pkpir_uor_innovations",
     "priority": 11006,
     "decision_mode": "SUGGEST",
@@ -193,6 +194,7 @@ lrecon_routing := "" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r09_ksiegowosc_pkpir_uor_innovations.pkpir_ledger_reconciliation",
+    "_legal_basis": "UoR art. 2 ust. 1 pkt 5 (próg 2 000 000 EUR), art. 2 ust. 2 (PKPiR poniżej progu); PIT art. 24a (PKPiR)",
     "package": "jdg.r09_ksiegowosc_pkpir_uor_innovations",
     "priority": 11007,
     "decision_mode": "SUGGEST",
@@ -269,6 +271,7 @@ plan_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r09_ksiegowosc_pkpir_uor_innovations.amortization_plan_optimizer",
+    "_legal_basis": "UoR art. 2 ust. 1 pkt 5 (próg 2 000 000 EUR), art. 2 ust. 2 (PKPiR poniżej progu); PIT art. 24a (PKPiR)",
     "package": "jdg.r09_ksiegowosc_pkpir_uor_innovations",
     "priority": 11008,
     "decision_mode": "SUGGEST",
@@ -396,6 +399,7 @@ fs_routing := "" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r09_ksiegowosc_pkpir_uor_innovations.financial_statement_autopack",
+    "_legal_basis": "UoR art. 2 ust. 1 pkt 5 (próg 2 000 000 EUR), art. 2 ust. 2 (PKPiR poniżej progu); PIT art. 24a (PKPiR)",
     "package": "jdg.r09_ksiegowosc_pkpir_uor_innovations",
     "priority": 11010,
     "decision_mode": "SUGGEST",

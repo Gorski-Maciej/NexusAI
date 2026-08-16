@@ -130,7 +130,7 @@ wasm_strategy := {
 degraded_context := {
     "degraded": true,
     "sources": ["NBP_FX", "WHITELIST", "KSEF", "GUS", "LKG"],
-    "ttl_fallback_ms": 300000,
+    "ttl_fallback_ms": object.get(data.thresholds.jdg.opa_system, "ttl_fallback_ms", 300000),
     "certainty_rule": "INV-038: degraded → nigdy CERTAIN (zawsze NEEDS_ADVICE lub CONDITIONAL)",
     "routing": "TRIAGE_QUEUE",
 } {
@@ -261,6 +261,7 @@ _flatten_registry(reg) = flat {
 decide := {
     "matched": true,
     "rule_id": "jdg.p03_orchestrator_innovations.orchestrator_report",
+    "_legal_basis": "P03 GLM52 (Orkiestrator) + ADR-001..009/017/022",
     "package": "jdg.p03_orchestrator_innovations",
     "priority": 300,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "vat_exemption": "", "procedure": "",

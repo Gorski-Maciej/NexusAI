@@ -683,7 +683,7 @@ else := {
 } {
     input.invoice.direction == "PURCHASE"
     input.invoice.category_code in {"WASTE", "SCRAP_METAL", "RECYCLABLES"}
-    input.invoice.amount_net > 20000
+    input.invoice.amount_net > thresholds.vat.reverse_charge_waste_threshold
 }
 
 # P73: reverse_charge_certificates — Odwrotne obciążenie — certyfikaty CO2
@@ -1544,6 +1544,58 @@ else := {
     route_pl_only := object.get(input.invoice, "transport_route_domestic_only", true)
     transport_place = "PL" { route_pl_only == true }
     transport_place = "INTL_MIXED" { route_pl_only == false }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P02-INN: Art. 113 VAT — MONITOR LIMITU ZWOLNIENIA (alert przy 95% limitu)
+# Innowacja wyprzedzająca profesjonalistów: śledzenie obrotu YTD względem limitu
+# 200 000 PLN (art. 113 ust. 1) z prewencyjnym alertem przy 95% limitu oraz
+# prognozą daty przekroczenia (trend liniowy). Reguła uruchamiana tylko przy
+# jawnym włączniku `vat_a113_monitor` (brak shadowowania decyzji stawkowych).
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.a113_limit_monitor",
+    "package": "jdg.vat.substantive", "priority": 998,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "", "procedure": "A113_LIMIT_MONITOR",
+    "vat_exemption": "", "vat_taxable_person": false,
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": routing,
+    "_routing_reason": routing_reason,
+    "_legal_basis": "Art. 113 ust. 1, 5 i 9 VAT",
+    "_warnings": warnings,
+    "a113": {
+        "limit": thresholds.vat.subject_exemption_limit,
+        "turnover_ytd": turnover_ytd,
+        "usage_pct": usage_pct,
+        "alert_95pct": usage_pct >= thresholds.vat.a113_alert_ratio,
+        "projected_breach_date": projected_breach,
+        "months_active": months_active,
+        "proportional_limit": months_active_limit
+    }
+} {
+    object.get(input.jdg_entrepreneur, "vat_a113_monitor", false) == true
+    turnover_ytd := object.get(input.jdg_entrepreneur, "turnover_ytd_pln", 0)
+    months_active := object.get(input.jdg_entrepreneur, "vat_months_active", 12)
+    months_active > 0
+    months_active_limit := round(thresholds.vat.subject_exemption_limit * months_active / 12)
+    usage_pct := round(turnover_ytd * 100 / months_active_limit * 100) / 100
+    monthly_avg := turnover_ytd / months_active
+    projected_breach = sprintf("%s", ["< 30 dni"]) { months_active > 0; monthly_avg > 0; (months_active_limit - turnover_ytd) / monthly_avg <= 30 }
+    projected_breach = sprintf("%s", ["30-90 dni"]) { months_active > 0; monthly_avg > 0; (months_active_limit - turnover_ytd) / monthly_avg > 30; (months_active_limit - turnover_ytd) / monthly_avg <= 90 }
+    projected_breach = sprintf("%s", ["> 90 dni"]) { months_active > 0; monthly_avg > 0; (months_active_limit - turnover_ytd) / monthly_avg > 90 }
+    projected_breach = "brak danych" { true }
+    routing = "BLOCK_AND_ALERT" { usage_pct >= 100 }
+    routing = "TRIAGE_QUEUE" { usage_pct >= thresholds.vat.a113_alert_ratio; usage_pct < 100 }
+    routing = "REPORT" { true }
+    routing_reason = sprintf("LIMIT ART. 113: wykorzystanie %.0f%% limitu %v PLN (YTD %v PLN).", [usage_pct, months_active_limit, turnover_ytd]) { routing == "BLOCK_AND_ALERT" }
+    routing_reason = sprintf("LIMIT ART. 113: %.0f%% limitu — zbliżasz się do progu %v PLN (alert 95%%). Prognoza przekroczenia: %s.", [usage_pct, months_active_limit, projected_breach]) { routing == "TRIAGE_QUEUE" }
+    routing_reason = sprintf("LIMIT ART. 113: wykorzystanie %.0f%% limitu %v PLN.", [usage_pct, months_active_limit]) { routing == "REPORT" }
+    warnings = [sprintf("⚠️ PRZEKROCZONY LIMIT ART. 113: obrót YTD %v PLN ≥ %v PLN. Zwolnienie wygasa od miesiąca przekroczenia (art. 113 ust. 5) — zarejestruj się jako podatnik VAT czynny.", [turnover_ytd, months_active_limit])] { routing == "BLOCK_AND_ALERT" }
+    warnings = [sprintf("⚠️ LIMIT ART. 113: wykorzystano %.0f%% (%v PLN / %v PLN). Prognoza przekroczenia: %s. Rozważ rejestrację VAT (proporcja art. 113 ust. 9 dla nowych JDG).", [usage_pct, turnover_ytd, months_active_limit, projected_breach])] { routing == "TRIAGE_QUEUE" }
+    warnings = [] { routing == "REPORT" }
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -1121,7 +1121,7 @@ else := {
     "priority": 24999,
     "_routing": "",
     "_routing_reason": "P24 Innovations: no matching rule — all checks passed or not applicable",
-    "_legal_basis": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "_warnings": []
 } {
     true

@@ -21,6 +21,7 @@ default decide := {
 
 decide := {
     "matched": true, "rule_id": "jdg.zus.cumulative.revenue_tracker",
+    "_routing": "",
     "package": "jdg.zus.cumulative_engine", "priority": 100,
     "cumulative_revenue_pln": cum_rev,
     "cumulative_current_month": current_month,
@@ -60,6 +61,7 @@ decide := {
 
 else := {
     "matched": true, "rule_id": "jdg.zus.cumulative.income_tracker",
+    "_routing": "",
     "package": "jdg.zus.cumulative_engine", "priority": 200,
     "cumulative_income_pln": cum_income,
     "cumulative_income_months": current_month,
@@ -83,6 +85,7 @@ else := {
 
 else := {
     "matched": true, "rule_id": "jdg.zus.cumulative.annual_reconciliation",
+    "_routing": "",
     "package": "jdg.zus.cumulative_engine", "priority": 300,
     "annual_health_paid_pln": total_paid,
     "annual_health_due_pln": total_due,
@@ -127,6 +130,7 @@ else := {
 
 else := {
     "matched": true, "rule_id": "jdg.zus.cumulative.form_transition",
+    "_routing": "",
     "package": "jdg.zus.cumulative_engine", "priority": 400,
     "tax_form_previous": prev_form,
     "tax_form_current": curr_form,

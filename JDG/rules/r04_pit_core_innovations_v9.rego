@@ -87,6 +87,7 @@ best_relief := "BR" {
 relief_whatif_simulator := {
     "matched": true,
     "rule_id": "jdg.r04_pit_core_innovations.relief_whatif_simulator",
+    "_legal_basis": "Art. 26e + Art. 26gb + Art. 30ca PIT",
     "package": "jdg.r04_pit_core_innovations",
     "priority": 290,
     "simulator": {
@@ -131,6 +132,7 @@ one_off_eligible := is_small_taxpayer_flag
 one_off_depreciation := {
     "matched": true,
     "rule_id": "jdg.r04_pit_core_innovations.amortization_one_off_100k",
+    "_legal_basis": "Art. 26e + Art. 26gb + Art. 30ca PIT",
     "package": "jdg.r04_pit_core_innovations",
     "priority": 285,
     "amortization": {
@@ -166,6 +168,7 @@ low_value_eligible := low_value_asset_value > 0
 low_value_asset_amortization := {
     "matched": true,
     "rule_id": "jdg.r04_pit_core_innovations.low_value_asset_amortization",
+    "_legal_basis": "Art. 26e + Art. 26gb + Art. 30ca PIT",
     "package": "jdg.r04_pit_core_innovations",
     "priority": 284,
     "amortization": {
@@ -225,6 +228,7 @@ best_form := "SCALE" {
 health_contribution_optimizer := {
     "matched": true,
     "rule_id": "jdg.r04_pit_core_innovations.health_contribution_optimizer",
+    "_legal_basis": "Art. 26e + Art. 26gb + Art. 30ca PIT",
     "package": "jdg.r04_pit_core_innovations",
     "priority": 282,
     "optimizer": {
@@ -253,6 +257,7 @@ health_contribution_optimizer := {
 decide := {
     "matched": true,
     "rule_id": "jdg.r04_pit_core_innovations.pit_core_report",
+    "_legal_basis": "Art. 26e + Art. 26gb + Art. 30ca PIT",
     "package": "jdg.r04_pit_core_innovations",
     "priority": 295,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "vat_exemption": "", "procedure": "",

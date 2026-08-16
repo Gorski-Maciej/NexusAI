@@ -78,6 +78,7 @@ decide := {
 decide := {
     "matched": true,
     "rule_id": "jdg.vat.a87.r1",
+    "_legal_basis": "Art. 28b ust. 1 VAT",
     "package": "jdg.micro.vat.r03",
     "priority": 55087,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
@@ -87,7 +88,7 @@ decide := {
     "micro_rule_active": true,
     "refund": {
         "excess_vat": object.get(input.jdg_entrepreneur, "excess_vat_pln", 0),
-        "refund_days": refund_days,
+        "refund_days": vat_refund_days,
         "small_taxpayer": object.get(input.jdg_entrepreneur, "is_small_taxpayer", false),
         "refund_days_final": final_refund_days,
         "refund_method": "BANK_ACCOUNT",
@@ -118,6 +119,7 @@ final_refund_days := 25 {
 decide := {
     "matched": true,
     "rule_id": "jdg.vat.a91.r1",
+    "_legal_basis": "Art. 28b ust. 1 VAT",
     "package": "jdg.micro.vat.r03",
     "priority": 55091,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
@@ -157,6 +159,7 @@ correction_years := 10 {
 decide := {
     "matched": true,
     "rule_id": "jdg.vat.a106a.r1",
+    "_legal_basis": "Art. 28b ust. 1 VAT",
     "package": "jdg.micro.vat.r03",
     "priority": 55106,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
@@ -188,6 +191,7 @@ decide := {
 decide := {
     "matched": true,
     "rule_id": "jdg.vat.a106i.r1",
+    "_legal_basis": "Art. 28b ust. 1 VAT",
     "package": "jdg.micro.vat.r03",
     "priority": 55110,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
@@ -209,4 +213,218 @@ decide := {
 } {
     object.get(input.jdg_entrepreneur, "vat_a106i_check", false) == true
     object.get(input.invoice, "document_type", "") == "INVOICE"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P03 DOMKNIĘCIE PUSTYNI: ART. 42a-42h VAT — WIS (Wiążąca Informacja Stawkowa)
+# LEGAL_TWIN_RAPORT: art. 42a-42h = "pustynia pokrycia" w warstwie MIKRO
+# (vat.rego: 0 reguł jdg.micro.vat.a42[a-h]). Komplet 8 reguł atomowych:
+#   a42a — definicja WIS (zakres), a42b — przesłanki wniosku, a42c — treść WIS,
+#   a42d — moc wiążąca, a42e — okres ważności (5 lat), a42f — zmiana/uchylenie,
+#   a42g — opłata i forma wniosku, a42h — WIS dla usług (kwalifikacja).
+# Zgodność: u. VAT (Dz.U. 2025 poz. 456), P05 (article deserts), ADR-002.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# jdg.micro.vat.a42a.r1 — WIS: definicja i zakres (art. 42a ust. 1 VAT)
+else := {
+    "matched": true, "rule_id": "jdg.micro.vat.a42a.r1",
+    "package": "jdg.micro.vat.r03", "priority": 60201,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42a — WIS: definicja i zakres stosowania",
+    "_legal_basis": "Art. 42a ust. 1 VAT",
+    "_warnings": ["[MICRO] WIS (art. 42a): Wiążąca Informacja Stawkowa dotyczy stawki VAT dla towaru — wydaje Szef KAS na wniosek podatnika."],
+    "wis": {
+        "applicable": true,
+        "type": "WIS_TOWARY",
+        "subject": "stawka podatku VAT dla dostawy towarów",
+        "note": "WIS wydawana przez Szefa KAS na wniosek — potwierdza stawkę dla sklasyfikowanego towaru"
+    },
+    "valid_from": "2017-01-01", "valid_to": null
+} {
+    object.get(input.jdg_entrepreneur, "vat_a42a_check", false) == true
+    object.get(input.jdg_entrepreneur, "business_type", "") == "JDG"
+}
+
+# jdg.micro.vat.a42b.r1 — WIS: przesłanki wniosku (art. 42b ust. 1 VAT)
+else := {
+    "matched": true, "rule_id": "jdg.micro.vat.a42b.r1",
+    "package": "jdg.micro.vat.r03", "priority": 60202,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42b — przesłanki wniosku o WIS",
+    "_legal_basis": "Art. 42b ust. 1 VAT",
+    "_warnings": ["[MICRO] Art. 42b: wniosek o WIS możliwy przy wątpliwościach co do stawki VAT (niejednoznaczny kod CN)."],
+    "wis": {
+        "application_allowed": true,
+        "prerequisites": ["wątpliwość co do stawki", "klasyfikacja CN/PKWiU", "działalność gospodarcza"],
+        "cn_ambiguous": object.get(input.invoice, "cn_ambiguous", false),
+        "recommendation": "WIS zalecana przy niejednoznacznej klasyfikacji CN"
+    },
+    "valid_from": "2017-01-01", "valid_to": null
+} {
+    object.get(input.jdg_entrepreneur, "vat_a42b_check", false) == true
+    object.get(input.invoice, "cn_ambiguous", false) == true
+}
+
+# jdg.micro.vat.a42c.r1 — WIS: treść i elementy (art. 42c VAT)
+else := {
+    "matched": true, "rule_id": "jdg.micro.vat.a42c.r1",
+    "package": "jdg.micro.vat.r03", "priority": 60203,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42c — treść WIS",
+    "_legal_basis": "Art. 42c VAT",
+    "_warnings": ["[MICRO] Art. 42c: WIS zawiera klasyfikację towaru, stawkę VAT i podstawę prawną."],
+    "wis": {
+        "content_required": true,
+        "elements": ["klasyfikacja towaru", "stawka VAT", "podstawa prawna", "okres ważności"],
+        "binding_on_authority": true
+    },
+    "valid_from": "2017-01-01", "valid_to": null
+} {
+    object.get(input.jdg_entrepreneur, "vat_a42c_check", false) == true
+    object.get(input.wis, "issued", false) == true
+}
+
+# jdg.micro.vat.a42d.r1 — WIS: moc wiążąca (art. 42d ust. 1 VAT)
+else := {
+    "matched": true, "rule_id": "jdg.micro.vat.a42d.r1",
+    "package": "jdg.micro.vat.r03", "priority": 60204,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42d — moc wiążąca WIS",
+    "_legal_basis": "Art. 42d ust. 1 VAT",
+    "_warnings": ["[MICRO] Art. 42d: WIS wiąże organy podatkowe i podatnika dla towaru objętego informacją (ochrona do 5 lat)."],
+    "wis": {
+        "binding": true,
+        "binding_scope": "organy podatkowe i podatnik (dla towaru objętego WIS)",
+        "protection_years": 5,
+        "retroactive_risk": "utrata ochrony przy zmianie stanu faktycznego"
+    },
+    "valid_from": "2017-01-01", "valid_to": null
+} {
+    object.get(input.jdg_entrepreneur, "vat_a42d_check", false) == true
+    object.get(input.wis, "issued", false) == true
+}
+
+# jdg.micro.vat.a42e.r1 — WIS: okres ważności 5 lat (art. 42e ust. 1 VAT)
+else := {
+    "matched": true, "rule_id": "jdg.micro.vat.a42e.r1",
+    "package": "jdg.micro.vat.r03", "priority": 60205,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42e — okres ważności WIS (5 lat)",
+    "_legal_basis": "Art. 42e ust. 1 VAT",
+    "_warnings": ["[MICRO] Art. 42e: WIS ważna 5 lat od dnia doręczenia — monitoruj termin wygaśnięcia."],
+    "wis": {
+        "validity_years": 5,
+        "validity_from": object.get(input.wis, "issue_date", ""),
+        "expiry_alert": object.get(input.wis, "days_to_expiry", 1825) <= 365
+    },
+    "valid_from": "2017-01-01", "valid_to": null
+} {
+    object.get(input.jdg_entrepreneur, "vat_a42e_check", false) == true
+    object.get(input.wis, "issued", false) == true
+}
+
+# jdg.micro.vat.a42f.r1 — WIS: zmiana/uchylenie (art. 42f ust. 1-3 VAT)
+else := {
+    "matched": true, "rule_id": "jdg.micro.vat.a42f.r1",
+    "package": "jdg.micro.vat.r03", "priority": 60206,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42f — zmiana i uchylenie WIS",
+    "_legal_basis": "Art. 42f ust. 1-3 VAT",
+    "_warnings": ["[MICRO] Art. 42f: zmiana przepisów/wyrok TSUE/zmiana CN → WIS może zostać zmieniona lub uchylona."],
+    "wis": {
+        "change_grounds": ["zmiana przepisów", "wyrok TSUE", "zmiana klasyfikacji CN", "stwierdzenie nieprawidłowości"],
+        "protection_after_change": "ochrona wygasa od dnia zmiany",
+        "recommendation": "złóż nowy wniosek WIS po zmianie przepisów"
+    },
+    "valid_from": "2017-01-01", "valid_to": null
+} {
+    object.get(input.jdg_entrepreneur, "vat_a42f_check", false) == true
+    object.get(input.wis, "law_change", false) == true
+}
+
+# jdg.micro.vat.a42g.r1 — WIS: opłata 40 zł i forma wniosku (art. 42g ust. 1-2 VAT)
+else := {
+    "matched": true, "rule_id": "jdg.micro.vat.a42g.r1",
+    "package": "jdg.micro.vat.r03", "priority": 60207,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42g — opłata 40 zł i forma wniosku WIS",
+    "_legal_basis": "Art. 42g ust. 1-2 VAT",
+    "_warnings": ["[MICRO] Art. 42g: opłata 40 zł za każdy towar; wniosek WIS-W wyłącznie elektronicznie (e-US)."],
+    "wis": {
+        "fee_pln": 40,
+        "fee_per_item": true,
+        "form": "WIS-W elektronicznie przez e-US",
+        "payment_required_before": "rozpatrzenie wniosku"
+    },
+    "valid_from": "2017-01-01", "valid_to": null
+} {
+    object.get(input.jdg_entrepreneur, "vat_a42g_check", false) == true
+    object.get(input.jdg_entrepreneur, "business_type", "") == "JDG"
+}
+
+# jdg.micro.vat.a42h.r1 — WIS dla usług: kwalifikacja (art. 42h VAT)
+else := {
+    "matched": true, "rule_id": "jdg.micro.vat.a42h.r1",
+    "package": "jdg.micro.vat.r03", "priority": 60208,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "_routing": "",
+    "_routing_reason": "[MICRO] Art. 42h — WIS dla usług (kwalifikacja stawki)",
+    "_legal_basis": "Art. 42h VAT",
+    "_warnings": ["[MICRO] Art. 42h: WIS może dotyczyć także usług — wniosek przy niejednoznacznej klasyfikacji PKWiU (w tym czynności kompleksowe)."],
+    "wis": {
+        "service_scope": true,
+        "prerequisites": ["wątpliwość co do stawki dla usługi", "klasyfikacja PKWiU", "czynności kompleksowe"],
+        "recommendation": "WIS dla usług przy niejednoznacznej klasyfikacji (np. zestaw czynności)"
+    },
+    "valid_from": "2017-01-01", "valid_to": null
+} {
+    object.get(input.jdg_entrepreneur, "vat_a42h_check", false) == true
+    object.get(input.invoice, "service_classification_ambiguous", false) == true
 }

@@ -61,7 +61,7 @@ decide := verdict {
     routing := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p17_innovations.edge_discovery",
+        "matched": true, "rule_id": "jdg.p17_innovations.edge_discovery", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p17_innovations", "priority": 1000,
         "innovation": "INN01_EDGE_DISCOVERY", "action": "DISCOVER_EDGE_CASES",
         "pit_form": pit_form,
@@ -142,7 +142,7 @@ else := verdict {
     routing := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p17_innovations.conflict_matrix",
+        "matched": true, "rule_id": "jdg.p17_innovations.conflict_matrix", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p17_innovations", "priority": 2000,
         "innovation": "INN02_CONFLICT_MATRIX", "action": "RESOLVE_CONFLICTS",
         "pit_form": pit_form,
@@ -218,7 +218,7 @@ else := verdict {
     routing := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p17_innovations.correction_suggester",
+        "matched": true, "rule_id": "jdg.p17_innovations.correction_suggester", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p17_innovations", "priority": 3000,
         "innovation": "INN03_CORRECTION_SUGGESTER", "action": "SUGGEST_CORRECTION",
         "pit_form": pit_form,
@@ -286,7 +286,7 @@ else := verdict {
     routing := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p17_innovations.statute_timer",
+        "matched": true, "rule_id": "jdg.p17_innovations.statute_timer", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p17_innovations", "priority": 4000,
         "innovation": "INN04_STATUTE_TIMER", "action": "COUNTDOWN_STATUTE",
         "pit_form": pit_form,
@@ -367,7 +367,7 @@ else := verdict {
     routing := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p17_innovations.risk_heatmap",
+        "matched": true, "rule_id": "jdg.p17_innovations.risk_heatmap", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p17_innovations", "priority": 5000,
         "innovation": "INN05_RISK_HEATMAP", "action": "GENERATE_HEATMAP",
         "pit_form": pit_form,
@@ -438,7 +438,7 @@ else := verdict {
     routing := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p17_innovations.gaar_detector",
+        "matched": true, "rule_id": "jdg.p17_innovations.gaar_detector", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p17_innovations", "priority": 6000,
         "innovation": "INN06_GAAR_DETECTOR", "action": "DETECT_GAAR",
         "pit_form": pit_form,
@@ -498,7 +498,7 @@ else := verdict {
     routing := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p17_innovations.severity_grader",
+        "matched": true, "rule_id": "jdg.p17_innovations.severity_grader", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p17_innovations", "priority": 7000,
         "innovation": "INN07_SEVERITY_GRADER", "action": "GRADE_SEVERITY",
         "pit_form": pit_form,
@@ -546,7 +546,7 @@ else := verdict {
     routing := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p17_innovations.coverage_guarantee",
+        "matched": true, "rule_id": "jdg.p17_innovations.coverage_guarantee", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p17_innovations", "priority": 8000,
         "innovation": "INN08_COVERAGE_GUARANTEE", "action": "GUARANTEE_COVERAGE",
         "pit_form": pit_form,
@@ -590,7 +590,7 @@ else := verdict {
     routing := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p17_innovations.correction_chain",
+        "matched": true, "rule_id": "jdg.p17_innovations.correction_chain", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p17_innovations", "priority": 9000,
         "innovation": "INN09_CORRECTION_CHAIN", "action": "TRACK_CHAIN",
         "pit_form": pit_form,
@@ -636,7 +636,7 @@ else := verdict {
     routing := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p17_innovations.limitation_crossref",
+        "matched": true, "rule_id": "jdg.p17_innovations.limitation_crossref", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p17_innovations", "priority": 10000,
         "innovation": "INN10_LIMITATION_CROSSREF", "action": "CROSS_REFERENCE",
         "pit_form": pit_form,
@@ -681,7 +681,7 @@ else := verdict {
     routing := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p17_innovations.risk_mitigation",
+        "matched": true, "rule_id": "jdg.p17_innovations.risk_mitigation", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p17_innovations", "priority": 11000,
         "innovation": "INN11_RISK_MITIGATION", "action": "MITIGATE_RISK",
         "pit_form": pit_form,
@@ -721,7 +721,7 @@ else := verdict {
     routing := "" { true }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p17_innovations.test_generator",
+        "matched": true, "rule_id": "jdg.p17_innovations.test_generator", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
         "package": "jdg.p17_innovations", "priority": 12000,
         "innovation": "INN12_TEST_GENERATOR", "action": "GENERATE_TESTS",
         "pit_form": pit_form,

@@ -253,6 +253,7 @@ tp_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r10_crossborder_innovations.tp_threshold_simulator",
+    "_legal_basis": "VAT art. 42 ust. 12 (dowód wywozu WDT, 30 dni), art. 13 (WDT 0%)",
     "package": "jdg.r10_crossborder_innovations",
     "priority": 11013,
     "decision_mode": "SUGGEST",
@@ -311,6 +312,7 @@ cfc_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r10_crossborder_innovations.cfc_profit_attribution",
+    "_legal_basis": "VAT art. 42 ust. 12 (dowód wywozu WDT, 30 dni), art. 13 (WDT 0%)",
     "package": "jdg.r10_crossborder_innovations",
     "priority": 11014,
     "decision_mode": "SUGGEST",

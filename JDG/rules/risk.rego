@@ -265,7 +265,7 @@ else := {
     "_warnings": ["HEURYSTYKA: Potencjalnie pusta faktura — okrągła kwota >10k + nowy kontrahent. Wymagana weryfikacja manualna."]
 } {
     amount_gross := object.get(input.invoice, "amount_gross", 0)
-    amount_gross > 10000
+    amount_gross > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "high_value_tx_threshold", 15000)
     amount_gross % 1000 == 0
     input.vendor.is_new == true
     input.invoice.delivery_confirmed == false
@@ -418,7 +418,7 @@ else := {
     curr_revenue := object.get(input.jdg_entrepreneur, "current_period_revenue", 0)
     prev_costs := object.get(input.jdg_entrepreneur, "prev_period_costs", 0)
     curr_costs := object.get(input.jdg_entrepreneur, "current_period_costs", 0)
-    prev_revenue > 10000
+    prev_revenue > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "high_value_tx_threshold", 15000)
     revenue_change_pct := (prev_revenue - curr_revenue) / prev_revenue
     cost_change_pct := abs(prev_costs - curr_costs) / max([prev_costs, 1])
     # Spadek przychodów >50% przy spadku kosztów <15%

@@ -62,7 +62,7 @@ else := {
 
 # ═══ R902: KKS_LIMITS_VERIFICATION — Weryfikacja stawek KKS ═══
 else := {
-    "matched": true, "rule_id": "jdg.kks.extensions.limits_verification",
+    "matched": true, "rule_id": "jdg.kks.extensions.limits_verification", "_legal_basis": "Art. 119a Ordynacji podatkowej (klauzula GAAR)",
     "package": "jdg.kks.extensions", "priority": 902,
     "kks_penalty_limits": {
         "daily_rate_min": floor(min_wage / 30 * 100) / 100,
@@ -88,7 +88,8 @@ else := {
 
 # ═══ R999: coverage summary ═══
 else := {
-    "matched": true, "rule_id": "jdg.kks.extensions.coverage_summary",
+    "matched": true, "rule_id": "jdg.kks.extensions.coverage_summary", "_legal_basis": "Art. 119a Ordynacji podatkowej (klauzula GAAR)",
+    "_routing": "",
     "package": "jdg.kks.extensions", "priority": 999,
     "kks_gaps_covered": {
         "GAAR_SCANNER": "R900 ✅ NOWE",

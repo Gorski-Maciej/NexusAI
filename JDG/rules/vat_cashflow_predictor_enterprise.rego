@@ -75,10 +75,10 @@ decide := {
     total_refund := m1_refund + m2_refund + m3_refund
     net_impact := total_refund - total_pay
 
-    forecast_routing := "BLOCK_AND_ALERT" { total_pay > 100000; net_impact < -50000 }
+    forecast_routing := "BLOCK_AND_ALERT" { total_pay > thresholds.vat.cashflow_alert_pay_threshold; net_impact < -thresholds.vat.cashflow_alert_net_impact }
     forecast_routing := "TRIAGE_QUEUE" { net_impact < 0 }
     forecast_routing := "" { true }
-    forecast_reason := sprintf("VAT CASHFLOW ALERT: %.0f PLN do zapłaty — przygotuj środki na mikrorachunku!", [total_pay]) { total_pay > 100000 }
+    forecast_reason := sprintf("VAT CASHFLOW ALERT: %.0f PLN do zapłaty — przygotuj środki na mikrorachunku!", [total_pay]) { total_pay > thresholds.vat.cashflow_alert_pay_threshold }
     forecast_reason := sprintf("VAT cashflow ujemny: %.0f PLN netto w kwartale.", [net_impact]) { net_impact < 0 }
     forecast_reason := sprintf("VAT cashflow dodatni: +%.0f PLN (zwroty przewyższają zobowiązania).", [net_impact]) { net_impact > 0 }
     forecast_reason := "" { true }
@@ -178,7 +178,7 @@ else := {
     mpp_sanction_rate := object.get(object.get(data.thresholds, "misc", {}), "mpp_sanction_rate", 0.30)
     mpp_sanction_risk := mpp_violations * mpp_sanction_threshold * mpp_sanction_rate
 
-    mpp_routing := "TRIAGE_QUEUE" { mpp_frozen > 100000 }
+    mpp_routing := "TRIAGE_QUEUE" { mpp_frozen > thresholds.vat.cashflow_mpp_frozen_alert }
     mpp_routing := "" { true }
     mpp_reason := sprintf("MPP: %.0f PLN zamrożone na VAT — rozważ wniosek o uwolnienie.", [mpp_frozen]) { mpp_frozen > 100000 }
     mpp_reason := "" { true }
@@ -226,7 +226,7 @@ else := {
     correction_deadline := sprintf("za ok. %d dni", [days_to_90]) { approaching_90d > 0; overdue_receivables == 0 }
     correction_deadline := "nie dotyczy" { true }
 
-    bd_routing := "TRIAGE_QUEUE" { vat_reclaimable > 5000 }
+    bd_routing := "TRIAGE_QUEUE" { vat_reclaimable > thresholds.vat.cashflow_bad_debt_reclaim_alert }
     bd_routing := "" { true }
     bd_reason := sprintf("ULGA NA ZŁE DŁUGI: odzyskaj %.0f PLN VAT z nieściągalnych należności!", [vat_reclaimable]) { vat_reclaimable > 5000 }
     bd_reason := "" { true }

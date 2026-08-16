@@ -409,6 +409,12 @@ import data.jdg.r16_system_opa_innovations
 # Adaptive Trust, Neural Mesh, Cashflow, Bankowość PSD2, Monitor legislacyjny.
 import data.jdg.r17_enterprise_ai_innovations
 import data.jdg.micro.vat.r03 as micro_vat_r03
+import data.jdg.micro.vat as micro_vat_full
+import data.jdg.micro.jpk as micro_jpk_full
+import data.jdg.micro.jpk.plan33 as micro_jpk_plan33
+import data.jdg.micro.pit as micro_pit_full
+import data.jdg.micro.pit.plan33 as micro_pit_plan33
+import data.jdg.micro.pit.plan34 as micro_pit_plan34
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
@@ -1441,6 +1447,12 @@ _package_decisions := {
     "jdg.r16_system_opa_innovations": r16_system_opa_innovations.decide,
     "jdg.r17_enterprise_ai_innovations": r17_enterprise_ai_innovations.decide,
     "jdg.micro.vat.r03": micro_vat_r03.decide,
+    "jdg.micro.vat": micro_vat_full.decide,
+    "jdg.micro.jpk": micro_jpk_full.decide,
+    "jdg.micro.jpk.plan33": micro_jpk_plan33.decide,
+    "jdg.micro.pit": micro_pit_full.decide,
+    "jdg.micro.pit.plan33": micro_pit_plan33.decide,
+    "jdg.micro.pit.plan34": micro_pit_plan34.decide,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
     "jdg.p23_innovations": p23_innovations.decide,
@@ -1992,6 +2004,38 @@ final_verdict_p42 = safe_merge(final_verdict_p41,
     ))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18ag: P03 GLM52 VAT MIKRO + JPK — WARSTWA MIKRO (Dual-Layer, ADR-005)
+# Wpięcie warstwy mikro do orkiestratora (P03): jdg.micro.vat (vat.rego,
+# ~1100 reguł atomowych art. 5-172) + jdg.micro.jpk (jpk.rego, ~160 reguł).
+# ZASADA: mikro wypełnia LUKI makro (no_match → werdykt atomowy), ale NIGDY
+# nie nadpisuje decyzji makro (safe_merge: final_verdict_p42 ma priorytet,
+# INV-018). Pakiet jdg.micro.jpk.plan33 (plan33_jpk.rego) wydzielony w P03
+# (konflikt multiple default rules — blokował kompilację warstwy mikro).
+# Aktywacja: w normalnym ruchu mikro działa automatycznie tylko dla transakcji
+# nieobsłużonych przez makro; szczegółowe reguły r4+ aktywowane flagami
+# input.jdg_entrepreneur.vat_aXX_rYY_checks.
+# ═══════════════════════════════════════════════════════════════════════════════
+final_verdict_p43 = safe_merge(final_verdict_p42,
+    safe_merge(micro_vat_full.decide,
+    safe_merge(micro_jpk_full.decide,
+    safe_merge(micro_jpk_plan33.decide,
+        fallback.decide
+    ))))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 44: MIKRO PIT (PROMPT 05 — PIT MAKRO) — Dual-Layer (ADR-005, INV-018)
+# Warstwa mikro PIT (pit.rego ~22,7k linii + plan33 + plan34): wypełnia luki
+# makro (no_match), nigdy nie nadpisuje decyzji makro (safe_merge: lewy arg.
+# wygrywa). Konflikt kompilacji (3× default decide) naprawiony P05: plan33 →
+# jdg.micro.pit.plan33, plan34 → jdg.micro.pit.plan34.
+final_verdict_p44 = safe_merge(final_verdict_p43,
+    safe_merge(micro_pit_full.decide,
+    safe_merge(micro_pit_plan33.decide,
+    safe_merge(micro_pit_plan34.decide,
+        fallback.decide
+    ))))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -2005,7 +2049,7 @@ final_verdict_p42 = safe_merge(final_verdict_p41,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-final_verdict_post_merge = object.union(final_verdict_p42,
+final_verdict_post_merge = object.union(final_verdict_p44,
     {"_routing_context": routing_context})
 
 final_verdict_enforced = object.union(final_verdict_post_merge,

@@ -50,7 +50,7 @@ else := {
     "_warnings": ["[PIT] Wartość początkowa ≥ 10 000 PLN — OBOWIĄZKOWA amortyzacja (wpis do EŚT)"]
 } {
     initial_value := object.get(input.invoice, "amount_net", 0)
-    initial_value >= 10000
+    initial_value >= object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)
     input.invoice.expense_type == "FIXED_ASSET"
 }
 
@@ -65,7 +65,7 @@ else := {
     "_warnings": ["[PIT] Wartość ≤ 10 000 PLN — jednorazowy odpis amortyzacyjny (lub bezpośrednio w koszty)"]
 } {
     initial_value := object.get(input.invoice, "amount_net", 0)
-    initial_value <= 10000
+    initial_value <= object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)
     initial_value > 0
 }
 
@@ -114,7 +114,7 @@ else := {
     "_routing_reason": "",
     "_legal_basis": "Art. 22d ust. 1 PIT",
     "_warnings": ["[PIT] Jednorazowa amortyzacja — dla małych podatników i rozpoczynających działalność (do 100 000 PLN rocznie)"],
-    "limit_annual_pln": 100000
+    "limit_annual_pln": object.get(data.thresholds.jdg.depreciation, "one_off_annual_limit", 100000)
 } {
     object.get(input.jdg_entrepreneur, "is_small_taxpayer", false) == true
     object.get(input.invoice, "uses_one_off_depreciation", false) == true
@@ -144,7 +144,7 @@ else := {
     "_routing_reason": "",
     "_legal_basis": "Art. 22d ust. 2 PIT",
     "_warnings": ["[PIT] Jednorazowa de minimis — do 50 000 EUR łącznie przez 3 lata (pomoc publiczna)"],
-    "limit_eur_3y": 50000
+    "limit_eur_3y": object.get(data.thresholds.jdg.depreciation, "de_minimis_eur_3y", 50000)
 } {
     object.get(input.invoice, "uses_de_minimis", false) == true
 }
@@ -290,12 +290,12 @@ else := {
     "_routing_reason": "Wartość auta przekracza limit 150 000 PLN — amortyzacja tylko do limitu!",
     "_legal_basis": "Art. 22g ust. 3; Art. 23 ust. 1 pkt 4 PIT",
     "_warnings": ["[PIT] Wartość auta >150k PLN — nadwyżka NIE podlega amortyzacji (NKUP)!"],
-    "limit_pln": 150000
+    "limit_pln": object.get(data.thresholds.jdg.depreciation, "passenger_car_limit_standard", 150000)
 } {
     car_value := object.get(input.invoice, "amount_net", 0)
     vehicle_type := object.get(input.invoice, "vehicle_type", "")
     not object.get(input.invoice, "is_electric", false)
-    car_value > 150000
+    car_value > object.get(data.thresholds.jdg.depreciation, "passenger_car_limit_standard", 150000)
     vehicle_type == "PASSENGER_CAR"
 }
 
@@ -311,7 +311,7 @@ else := {
 } {
     car_value := object.get(input.invoice, "amount_net", 0)
     object.get(input.invoice, "is_electric", false) == true
-    car_value > 225000
+    car_value > object.get(data.thresholds.jdg.depreciation, "passenger_car_limit_electric", 225000)
 }
 
 else := {

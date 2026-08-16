@@ -58,6 +58,8 @@ default decide := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.shard_detector",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 1000,
     "innovation": "INN01_MICRO_PIT_SHARDING_ENGINE",
@@ -88,6 +90,8 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.completeness_matrix",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 2000,
     "innovation": "INN02_ATOM_RULE_COMPLETENESS_MATRIX",
@@ -117,6 +121,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.bracket_simulator",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 3000,
     "innovation": "INN03_DYNAMIC_TAX_BRACKET_SIMULATOR",
@@ -145,6 +151,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.test_generator",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 4000,
     "innovation": "INN04_PIT_MICRO_RULE_TEST_GENERATOR",
@@ -169,6 +177,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_auto_classifier",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 5000,
     "innovation": "INN05_NKUP_AUTO_CLASSIFIER",
@@ -200,6 +210,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.tax_form_smart_router",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 6000,
     "innovation": "INN06_TAX_FORM_SMART_ROUTER",
@@ -232,6 +244,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.rule_dependency_graph",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 7000,
     "innovation": "INN07_PIT_RULE_DEPENDENCY_GRAPH",
@@ -256,6 +270,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.historical_snapshot",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 8000,
     "innovation": "INN08_HISTORICAL_TAX_SNAPSHOT_ENGINE",
@@ -283,6 +299,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.cross_article_consistency",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 9000,
     "innovation": "INN09_CROSS_ARTICLE_CONSISTENCY_CHECKER",
@@ -327,6 +345,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.pit_micro_linter",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 10000,
     "innovation": "INN10_PIT_MICRO_RULE_LINTER",
@@ -352,6 +372,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.dead_rule_detector",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 11000,
     "innovation": "INN11_DEAD_RULE_DETECTOR",
@@ -375,6 +397,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.coverage_heatmap",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 12000,
     "innovation": "INN12_PIT_RULE_COVERAGE_HEATMAP",
@@ -408,6 +432,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt1_owner_salary",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20000,
     "innovation": "NKUP_COMPLETION",
@@ -425,6 +451,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt2_loan_repayment",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20001,
     "innovation": "NKUP_COMPLETION",
@@ -442,6 +470,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt3_owner_vacation",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20002,
     "innovation": "NKUP_COMPLETION",
@@ -459,6 +489,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt4_exempt_income_costs",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20003,
     "innovation": "NKUP_COMPLETION",
@@ -476,6 +508,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt16_penalties",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20004,
     "innovation": "NKUP_COMPLETION",
@@ -493,6 +527,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt32_luxury",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20005,
     "innovation": "NKUP_COMPLETION",
@@ -510,6 +546,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt45_input_vat",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20006,
     "innovation": "NKUP_COMPLETION",
@@ -528,6 +566,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt48_clothing",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20007,
     "innovation": "NKUP_COMPLETION",
@@ -549,6 +589,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt50_fire_safety",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20008,
     "innovation": "NKUP_COMPLETION",
@@ -566,6 +608,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt52_benefits",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20009,
     "innovation": "NKUP_COMPLETION",
@@ -583,6 +627,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt55_apport",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20010,
     "innovation": "NKUP_COMPLETION",
@@ -600,6 +646,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt23_representation",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20011,
     "innovation": "NKUP_COMPLETION",
@@ -619,6 +667,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt10_donations",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20012,
     "innovation": "NKUP_COMPLETION",
@@ -636,6 +686,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.nkup_pkt47_insurance",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 20013,
     "innovation": "NKUP_COMPLETION",
@@ -660,6 +712,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.pit_rate_scale_12pct",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 30000,
     "innovation": "PIT_RATE_ENRICHMENT",
@@ -680,6 +734,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.pit_rate_scale_32pct",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 30001,
     "innovation": "PIT_RATE_ENRICHMENT",
@@ -700,6 +756,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.pit_rate_linear_19pct",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 30002,
     "innovation": "PIT_RATE_ENRICHMENT",
@@ -717,6 +775,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.pit_rate_ipbox_5pct",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 30003,
     "innovation": "PIT_RATE_ENRICHMENT",
@@ -741,6 +801,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.temporal_tracker",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 40000,
     "innovation": "TEMPORAL_TRACKING_BOOTSTRAP",
@@ -769,6 +831,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.legal_basis_validator",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 50000,
     "innovation": "LEGAL_BASIS_VALIDATOR",
@@ -794,6 +858,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.naming_unification",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 60000,
     "innovation": "NAMING_CONSISTENCY_UNIFICATION",
@@ -820,6 +886,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p06_innovations.coverage_summary",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p06_innovations",
     "priority": 99999,
     "innovation": "P06_COVERAGE_SUMMARY",

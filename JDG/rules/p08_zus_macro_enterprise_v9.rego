@@ -193,6 +193,7 @@ missing_articles := [a |
 health_contribution_calculator := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.health_contribution_calculator",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 100,
     "health": {
@@ -280,6 +281,7 @@ deductible_note := "TAK — do 14 100 zł/rok" {
 lump_sum_tier_verifier := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.lump_sum_tier_verifier",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 101,
     "verifier": {
@@ -331,6 +333,7 @@ lump_tier_multiplier_note := "60% przeciętnego wynagrodzenia" {
 social_contribution_calculator := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.social_contribution_calculator",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 102,
     "social": {
@@ -364,6 +367,7 @@ social_total := round((social_base * (pension_rate + disability_rate + sickness_
 annual_base_limit := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.annual_base_limit",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 103,
     "limit": {
@@ -383,6 +387,7 @@ annual_base_limit := {
 payment_calendar := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.payment_calendar",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 104,
     "calendar": {
@@ -424,6 +429,7 @@ deadline_note := "10. dzień miesiąca (karta)" {
 relief_simulator := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.relief_simulator",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 105,
     "reliefs": {
@@ -490,6 +496,7 @@ unregistered_activity := object.get(input.zus_input, "monthly_revenue_unregister
 relief_tracker := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.relief_tracker",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 106,
     "tracker": {
@@ -523,6 +530,7 @@ next_switch_note := sprintf("Przejście do pełnej podstawy po uldze na start (m
 title_collision_detector := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.title_collision_detector",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 107,
     "collision": {
@@ -574,6 +582,7 @@ social_from_jdg_required := true {
 benefits_calculator := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.benefits_calculator",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 108,
     "benefits": {
@@ -622,6 +631,7 @@ maternity_weeks := "20 tyg. (1 dziecko) / 41 tyg. (bliźnięta) / 43 tyg. (3+)" 
 zus_digital_twin := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.zus_digital_twin",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 109,
     "twin": {
@@ -644,6 +654,7 @@ zus_digital_twin := {
 base_recommender := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.base_recommender",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 110,
     "recommendation": {
@@ -676,6 +687,7 @@ savings_note := "Możliwa optymalizacja — podstawa min. 60% przeciętnego" {
 zus_reconciliation := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.zus_reconciliation",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 111,
     "recon": {
@@ -694,6 +706,7 @@ zus_reconciliation := {
 employment_vs_jdg_simulator := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.employment_vs_jdg_simulator",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 112,
     "sim": {
@@ -719,6 +732,7 @@ employment_vs_jdg_total := object.get(input.zus_input, "employment_social", 0) +
 zus_verdict_integrity := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.zus_verdict_integrity",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 113,
     "integrity": {
@@ -740,6 +754,7 @@ zus_verdict_integrity := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p08_zus_macro_enterprise.report",
+    "_legal_basis": "Art. 9 SUS",
     "package": "jdg.p08_zus_macro_enterprise",
     "priority": 90,
     "p08_zus_macro": {

@@ -89,6 +89,7 @@ rg_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r14_rodo_aml_bdo_innovations.rodo_register_monitor",
+    "_legal_basis": "RODO art. 30 (rejestr czynności przetwarzania), art. 5 (zasady)",
     "package": "jdg.r14_rodo_aml_bdo_innovations",
     "priority": 11031,
     "decision_mode": "SUGGEST",
@@ -133,6 +134,7 @@ at_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r14_rodo_aml_bdo_innovations.aml_transaction_risk_scorer",
+    "_legal_basis": "RODO art. 30 (rejestr czynności przetwarzania), art. 5 (zasady)",
     "package": "jdg.r14_rodo_aml_bdo_innovations",
     "priority": 11032,
     "decision_mode": "SUGGEST",
@@ -180,6 +182,7 @@ rb_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r14_rodo_aml_bdo_innovations.rodo_sanction_calculator",
+    "_legal_basis": "RODO art. 30 (rejestr czynności przetwarzania), art. 5 (zasady)",
     "package": "jdg.r14_rodo_aml_bdo_innovations",
     "priority": 11033,
     "decision_mode": "SUGGEST",

@@ -143,6 +143,7 @@ micro_consistency_check := {
 decide := {
     "matched": true,
     "rule_id": "jdg.r03_vat_micro_innovations.vat_micro_report",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173 + P05 (pustynie artykułów)",
     "package": "jdg.r03_vat_micro_innovations",
     "priority": 280,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "vat_exemption": "", "procedure": "",

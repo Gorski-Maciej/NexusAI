@@ -120,7 +120,7 @@ else := verdict {
     emcs_docs := [] { not needs_emcs }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p33_excise_supplement.emcs_movement",
+        "matched": true, "rule_id": "jdg.p33_excise_supplement.emcs_movement", "_legal_basis": "Art. 47-48 Ustawy o podatku akcyzowym (skład podatkowy)",
         "package": "jdg.p33_excise_supplement", "priority": 9402,
         "vat_rate": "", "rounding_level": "", "gtu_code": "",
         "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",

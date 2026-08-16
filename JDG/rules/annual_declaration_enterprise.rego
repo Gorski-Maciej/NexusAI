@@ -13,19 +13,19 @@ default decide := {
 # ── Helpers: tax logic ───────────────────────────────────────────────────────
 
 compute_tax_free_amount(taxable, free_base, free_reduction) = free_base { taxable <= free_base }
-else = free_base - free_reduction { taxable > free_base; taxable <= 120000 }
-else = 0 { taxable > 120000 }
+else = free_base - free_reduction { taxable > free_base; taxable <= object.get(object.get(data.thresholds, "pit", {}), "tax_free_amount_degression_end", 120000) }
+else = 0 { taxable > object.get(object.get(data.thresholds, "pit", {}), "tax_free_amount_degression_end", 120000) }
 
 compute_pit_bracket(income, threshold) = "12%" { income <= threshold }
 else = "32%" { income > threshold }
 
-child_relief_amount(num, disabled) = 1112.04 * num { disabled == false }
+child_relief_amount(num, disabled) = object.get(object.get(data.thresholds, "pit", {}), "family_relief_amount_per_child", 1112.04) * num { disabled == false }
 else = 2224.08 { num >= 2; disabled }
 
-internet_relief_amount(costs, uses) = min([costs, 760]) { uses }
+internet_relief_amount(costs, uses) = min([costs, object.get(object.get(data.thresholds, "pit", {}), "internet_relief_limit", 760)]) { uses }
 else = 0 { not uses }
 
-rehab_relief_amount(costs, taxable) = min([costs, 2280]) { taxable <= 120000 }
+rehab_relief_amount(costs, taxable) = min([costs, object.get(object.get(data.thresholds, "pit", {}), "rehab_car_limit", 2280)]) { taxable <= object.get(object.get(data.thresholds, "pit", {}), "tax_free_amount_degression_end", 120000) }
 else = 0 { taxable > 120000 }
 
 ip_box_savings_amount(income, uses) = income * 0.14 { uses; income > 0 }
@@ -34,13 +34,13 @@ else = 0 { not uses }
 rd_relief_amount(qualified, has) = qualified { has }
 else = 0 { not has }
 
-expansion_relief_amount(costs, has) = min([costs, 1000000]) { has }
+expansion_relief_amount(costs, has) = min([costs, object.get(object.get(data.thresholds, "pit", {}), "expansion_relief_max_costs", 1000000)]) { has }
 else = 0 { not has }
 
-prototype_relief_amount(costs, has) = costs * 0.30 { has }
+prototype_relief_amount(costs, has) = costs * object.get(object.get(data.thresholds, "pit", {}), "prototype_relief_rate", 0.3) { has }
 else = 0 { not has }
 
-robotization_relief_amount(costs, has) = costs * 0.50 { has }
+robotization_relief_amount(costs, has) = costs * object.get(object.get(data.thresholds, "pit", {}), "robotization_relief_rate", 0.5) { has }
 else = 0 { not has }
 
 overpayment_amount(advances, tax) = advances - tax { advances > tax }
@@ -49,15 +49,15 @@ else = 0 { advances <= tax }
 underpayment_amount(advances, tax) = tax - advances { tax > advances }
 else = 0 { tax <= advances }
 
-joint_tax_amount(half, threshold) = half * 0.12 * 2 { half <= threshold }
-else = (threshold * 0.12 + (half - threshold) * 0.32) * 2 { half > threshold }
+joint_tax_amount(half, threshold) = half * object.get(object.get(data.thresholds, "pit", {}), "scale_low_rate", 0.12) * 2 { half <= threshold }
+else = (threshold * object.get(object.get(data.thresholds, "pit", {}), "scale_low_rate", 0.12) + (half - threshold) * object.get(object.get(data.thresholds, "pit", {}), "scale_high_rate", 0.32)) * 2 { half > threshold }
 
-tax_scale_amount(income, threshold) = income * 0.12 { income <= threshold }
-else = threshold * 0.12 + (income - threshold) * 0.32 { income > threshold }
+tax_scale_amount(income, threshold) = income * object.get(object.get(data.thresholds, "pit", {}), "scale_low_rate", 0.12) { income <= threshold }
+else = threshold * object.get(object.get(data.thresholds, "pit", {}), "scale_low_rate", 0.12) + (income - threshold) * object.get(object.get(data.thresholds, "pit", {}), "scale_high_rate", 0.32) { income > threshold }
 
-health_lump_amount(revenue, avg_wage) = floor(avg_wage * 0.60 * 0.09 * 100) / 100 * 12 { revenue <= 60000 }
-else = floor(avg_wage * 1.00 * 0.09 * 100) / 100 * 12 { revenue <= 300000 }
-else = floor(avg_wage * 1.80 * 0.09 * 100) / 100 * 12 { revenue > 300000 }
+health_lump_amount(revenue, avg_wage) = floor(avg_wage * 0.60 * 0.09 * 100) / 100 * 12 { revenue <= object.get(object.get(data.thresholds, "zus", {}), "health_lump_tier_1_limit", 60000) }
+else = floor(avg_wage * 1.00 * 0.09 * 100) / 100 * 12 { revenue <= object.get(object.get(data.thresholds, "zus", {}), "health_lump_tier_2_limit", 300000) }
+else = floor(avg_wage * 1.80 * 0.09 * 100) / 100 * 12 { revenue > object.get(object.get(data.thresholds, "zus", {}), "health_lump_tier_2_limit", 300000) }
 
 # ── Helpers: routing ─────────────────────────────────────────────────────────
 
@@ -310,6 +310,7 @@ build_pit36l_warnings(income, taxable, tax, health_ded, health, final, advances,
 else := {
     "matched": true,
     "rule_id": "jdg.annual_decl.pit28_full_autofill",
+    "_legal_basis": "Art. 27, 27b, 45 PIT; Art. 26-30cb PIT; Art. 79-81 ustawy zdrowotnej",
     "package": "jdg.annual_declaration",
     "priority": 1910,
     "vat_rate": "", "rounding_level": "PLN", "gtu_code": "",

@@ -219,6 +219,7 @@ priority_conflict_report := {
 decide := {
     "matched": true,
     "rule_id": "jdg.r01_orchestrator_core_innovations.orchestrator_core_report",
+    "_legal_basis": "R01 GLM52 (Orkiestrator + Rdzeń Silnika) + ADR-001..009/017/022 + INV-018/025/037/040/042",
     "package": "jdg.r01_orchestrator_core_innovations",
     "priority": 290,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "vat_exemption": "", "procedure": "",

@@ -337,7 +337,7 @@ else := verdict {
     # Ekspresowa klasyfikacja KUP vs NKUP — OPA 0.68 opts pattern (and→array)
     is_nkup_opts := [
         {"c": expense_type in {"REPRESENTATION", "ALCOHOL", "LUXURY", "ENTERTAINMENT", "PERSONAL_EXPENSE"}, "v": true},
-        {"c": [input.invoice.is_cash_payment == true, amount_gross >= 15000] == [true, true], "v": true},
+        {"c": [input.invoice.is_cash_payment == true, amount_gross >= object.get(data.thresholds.jdg.pit, "cash_payment_limit", 15000)] == [true, true], "v": true},
         {"c": object.get(input.vendor, "relation_to_entrepreneur", "") in {"SPOUSE", "CHILD"}, "v": true},
         {"c": true, "v": false}
     ]
@@ -483,9 +483,9 @@ else := verdict {
 
     # Amortyzacja miesięczna — OPA 0.68 opts pattern (and→array comparison)
     monthly_depr_opts := [
-        {"c": [depr_method == "LINEAR", asset_value > 10000] == [true, true], "v": asset_value * depr_rate / 12},
-        {"c": [depr_method == "ONE_OFF", asset_value <= 10000] == [true, true], "v": asset_value},
-        {"c": [depr_method == "ONE_OFF", asset_value > 10000, is_small_taxpayer == true] == [true, true, true], "v": asset_value / 12},
+        {"c": [depr_method == "LINEAR", asset_value > object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)] == [true, true], "v": asset_value * depr_rate / 12},
+        {"c": [depr_method == "ONE_OFF", asset_value <= object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)] == [true, true], "v": asset_value},
+        {"c": [depr_method == "ONE_OFF", asset_value > object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000), is_small_taxpayer == true] == [true, true, true], "v": asset_value / 12},
         {"c": asset_value == 0, "v": 0},
         {"c": depr_method == "NONE", "v": 0}
     ]
@@ -493,13 +493,13 @@ else := verdict {
 
     # Routing
     depr_routing_opts := [
-        {"c": [depr_method == "NONE", asset_value > 10000] == [true, true], "v": "TRIAGE_QUEUE"},
+        {"c": [depr_method == "NONE", asset_value > object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)] == [true, true], "v": "TRIAGE_QUEUE"},
         {"c": true, "v": ""}
     ]
     depr_routing := [x.v | some x in depr_routing_opts; x.c][0]
 
     depr_routing_reason_opts := [
-        {"c": [depr_method == "NONE", asset_value > 10000] == [true, true], "v": sprintf("ŚT %.0f PLN bez metody amortyzacji", [asset_value])},
+        {"c": [depr_method == "NONE", asset_value > object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)] == [true, true], "v": sprintf("ŚT %.0f PLN bez metody amortyzacji", [asset_value])},
         {"c": true, "v": ""}
     ]
     depr_routing_reason := [x.v | some x in depr_routing_reason_opts; x.c][0]
@@ -568,14 +568,14 @@ else := verdict {
     # Routing
     remnant_routing_opts := [
         {"c": continuity_ok == false, "v": "BLOCK_AND_ALERT"},
-        {"c": [continuity_ok == true, abs(remnant_delta) > 50000] == [true, true], "v": "TRIAGE_QUEUE"},
+        {"c": [continuity_ok == true, abs(remnant_delta) > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "remnant_significance_limit", 50000)] == [true, true], "v": "TRIAGE_QUEUE"},
         {"c": true, "v": ""}
     ]
     remnant_routing := [x.v | some x in remnant_routing_opts; x.c][0]
 
     remnant_routing_reason_opts := [
         {"c": continuity_ok == false, "v": sprintf("Remanent: pocz.=%.2f ≠ końc. poprz.=%.2f — BRAK CIĄGŁOŚCI!", [remnant_start_val, remnant_previous_end])},
-        {"c": [continuity_ok == true, abs(remnant_delta) > 50000] == [true, true], "v": sprintf("Remanent: duża zmiana %.2f PLN", [remnant_delta])},
+        {"c": [continuity_ok == true, abs(remnant_delta) > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "remnant_significance_limit", 50000)] == [true, true], "v": sprintf("Remanent: duża zmiana %.2f PLN", [remnant_delta])},
         {"c": true, "v": ""}
     ]
     remnant_routing_reason := [x.v | some x in remnant_routing_reason_opts; x.c][0]
@@ -653,8 +653,8 @@ else := verdict {
     has_discrepancy := [x.v | some x in has_discrepancy_opts; x.c][0]
 
     cross_routing_opts := [
-        {"c": [has_discrepancy == true, income_diff > 5000] == [true, true], "v": "BLOCK_AND_ALERT"},
-        {"c": [has_discrepancy == true, income_diff > 100, income_diff <= 5000] == [true, true, true], "v": "TRIAGE_QUEUE"},
+        {"c": [has_discrepancy == true, income_diff > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "cross_check_discrepancy_limit", 5000)] == [true, true], "v": "BLOCK_AND_ALERT"},
+        {"c": [has_discrepancy == true, income_diff > 100, income_diff <= object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "cross_check_discrepancy_limit", 5000)] == [true, true, true], "v": "TRIAGE_QUEUE"},
         {"c": true, "v": ""}
     ]
     cross_routing := [x.v | some x in cross_routing_opts; x.c][0]
@@ -772,7 +772,7 @@ else := verdict {
     input.invoice.is_cash_payment == true
 
     cash_amount := object.get(input.invoice, "amount_gross", 0)
-    cash_amount >= 15000
+    cash_amount >= object.get(data.thresholds.jdg.pit, "cash_payment_limit", 15000)
 
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
 
@@ -805,7 +805,7 @@ else := verdict {
     input.invoice.direction == "PURCHASE"
 
     transfer_amount := object.get(input.invoice, "amount_gross", 0)
-    transfer_amount >= 15000
+    transfer_amount >= object.get(data.thresholds.jdg.pit, "cash_payment_limit", 15000)
 
     is_verified := object.get(input.vendor, "on_whitelist", true)
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")

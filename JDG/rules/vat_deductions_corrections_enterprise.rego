@@ -27,6 +27,7 @@
 
 package jdg.vat_deductions_audit
 
+import data.jdg.thresholds
 import future.keywords.if
 import future.keywords.in
 
@@ -103,6 +104,7 @@ adjustment_direction := "IN_PLUS" {
 preproportion_report := {
     "matched": true,
     "rule_id": "jdg.vat_deductions_audit.preproportion",
+    "_legal_basis": "Art. 88 ust. 1 pkt 2, 4 VAT + art. 88a VAT",
     "package": "jdg.vat_deductions_audit",
     "priority": 200,
     "preproportion": {
@@ -127,7 +129,7 @@ preproportion_report := {
 correction_period_years := 10 {
     object.get(input.invoice, "asset_type", "") == "REAL_ESTATE"
 } else := 5 {
-    object.get(input.invoice, "amount_net", 0) >= 15000
+    object.get(input.invoice, "amount_net", 0) >= thresholds.vat.asset_correction_threshold
 } else := 1 {
     true
 }
@@ -135,6 +137,7 @@ correction_period_years := 10 {
 multi_year_correction := {
     "matched": true,
     "rule_id": "jdg.vat_deductions_audit.multi_year_correction",
+    "_legal_basis": "Art. 88 ust. 1 pkt 2, 4 VAT + art. 88a VAT",
     "package": "jdg.vat_deductions_audit",
     "priority": 300,
     "correction": {
@@ -160,6 +163,7 @@ multi_year_correction := {
 bad_debt_creditor_correction := {
     "matched": true,
     "rule_id": "jdg.vat_deductions_audit.bad_debt_creditor",
+    "_legal_basis": "Art. 88 ust. 1 pkt 2, 4 VAT + art. 88a VAT",
     "package": "jdg.vat_deductions_audit",
     "priority": 400,
     "bad_debt": {
@@ -183,6 +187,7 @@ bad_debt_creditor_correction := {
 bad_debt_debtor_correction := {
     "matched": true,
     "rule_id": "jdg.vat_deductions_audit.bad_debt_debtor",
+    "_legal_basis": "Art. 88 ust. 1 pkt 2, 4 VAT + art. 88a VAT",
     "package": "jdg.vat_deductions_audit",
     "priority": 410,
     "bad_debt": {
@@ -207,6 +212,7 @@ bad_debt_debtor_correction := {
 deduction_sanction := {
     "matched": true,
     "rule_id": "jdg.vat_deductions_audit.deduction_sanction",
+    "_legal_basis": "Art. 88 ust. 1 pkt 2, 4 VAT + art. 88a VAT",
     "package": "jdg.vat_deductions_audit",
     "priority": 500,
     "sanction": {
@@ -229,6 +235,7 @@ deduction_sanction := {
 decide := {
     "matched": true,
     "rule_id": "jdg.vat_deductions_audit.report",
+    "_legal_basis": "Art. 88 ust. 1 pkt 2, 4 VAT + art. 88a VAT",
     "package": "jdg.vat_deductions_audit",
     "priority": 600,
     "deductions_audit": {

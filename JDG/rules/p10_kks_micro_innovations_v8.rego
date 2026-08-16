@@ -21,6 +21,8 @@ default decide := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p10_innovations.sanction_tier_classifier",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p10_innovations",
     "priority": 1000,
     "innovation": "INN01_KKS_SANCTION_TIER_CLASSIFIER",
@@ -35,6 +37,8 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.p10_innovations.daily_rate_calculator",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p10_innovations",
     "priority": 2000,
     "innovation": "INN02_FINE_DAILY_RATE_CALCULATOR",
@@ -53,6 +57,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p10_innovations.document_destruction_detector",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p10_innovations",
     "priority": 3000,
     "innovation": "INN03_DOCUMENT_DESTRUCTION_DETECTOR",
@@ -69,6 +75,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p10_innovations.declaration_deadline_monitor",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p10_innovations",
     "priority": 4000,
     "innovation": "INN04_DECLARATION_DEADLINE_MONITOR",
@@ -85,6 +93,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p10_innovations.unreliable_books_detector",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p10_innovations",
     "priority": 5000,
     "innovation": "INN05_UNRELIABLE_BOOKS_DETECTOR",
@@ -100,6 +110,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p10_innovations.fiscal_seizure_scorer",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p10_innovations",
     "priority": 6000,
     "innovation": "INN06_FISCAL_SEIZURE_RISK_SCORER",
@@ -116,6 +128,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p10_innovations.rehabilitation_tracker",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p10_innovations",
     "priority": 7000,
     "innovation": "INN07_REHABILITATION_TRACKER",
@@ -133,6 +147,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p10_innovations.inspection_risk_model",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p10_innovations",
     "priority": 8000,
     "innovation": "INN08_INSPECTION_RISK_MODEL",
@@ -148,6 +164,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p10_innovations.cross_package_zero_fp",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p10_innovations",
     "priority": 9000,
     "innovation": "INN09_CROSS_PACKAGE_ZERO_FP",
@@ -167,6 +185,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p10_innovations.art58_59_document_destruction",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p10_innovations",
     "priority": 20000,
     "innovation": "GAP_ART58_59_DOCUMENTS",
@@ -182,6 +202,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p10_innovations.coverage_summary",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p10_innovations",
     "priority": 99999,
     "innovation": "P10_COVERAGE_SUMMARY",

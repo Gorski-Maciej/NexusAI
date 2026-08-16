@@ -73,6 +73,7 @@ audit_data := data.jdg.vat_micro_audit {
 micro_mesh_index := {
     "matched": true,
     "rule_id": "jdg.p05_vat_micro_atomic.micro_mesh_index",
+    "_legal_basis": "P05 Sekcja 8 + Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173",
     "package": "jdg.p05_vat_micro_atomic",
     "priority": 100,
     "mesh": {
@@ -118,6 +119,7 @@ article_coverage_status(article) = status {
 else_chain_auditor := {
     "matched": true,
     "rule_id": "jdg.p05_vat_micro_atomic.else_chain_auditor",
+    "_legal_basis": "P05 Sekcja 8 + Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173",
     "package": "jdg.p05_vat_micro_atomic",
     "priority": 110,
     "else_chain": {
@@ -146,6 +148,7 @@ fmw_order_correct_flag := true {
 proof_of_law := {
     "matched": true,
     "rule_id": "jdg.p05_vat_micro_atomic.proof_of_law",
+    "_legal_basis": "P05 Sekcja 8 + Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173",
     "package": "jdg.p05_vat_micro_atomic",
     "priority": 120,
     "law": {
@@ -171,6 +174,7 @@ verified_articles := [a | some a in key_articles_30; article_coverage_status(a) 
 temporal_projection := {
     "matched": true,
     "rule_id": "jdg.p05_vat_micro_atomic.temporal_projection",
+    "_legal_basis": "P05 Sekcja 8 + Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173",
     "package": "jdg.p05_vat_micro_atomic",
     "priority": 130,
     "temporal": {
@@ -207,6 +211,7 @@ rate_versions_2024_2026 := {
 zero_hardcode_guard := {
     "matched": true,
     "rule_id": "jdg.p05_vat_micro_atomic.zero_hardcode_guard",
+    "_legal_basis": "P05 Sekcja 8 + Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173",
     "package": "jdg.p05_vat_micro_atomic",
     "priority": 140,
     "guard": {
@@ -230,6 +235,7 @@ zero_hardcode_guard := {
 golden_dataset := {
     "matched": true,
     "rule_id": "jdg.p05_vat_micro_atomic.golden_dataset",
+    "_legal_basis": "P05 Sekcja 8 + Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173",
     "package": "jdg.p05_vat_micro_atomic",
     "priority": 150,
     "golden": {
@@ -256,6 +262,7 @@ golden_dataset := {
 micro_macro_conflict := {
     "matched": true,
     "rule_id": "jdg.p05_vat_micro_atomic.micro_macro_conflict",
+    "_legal_basis": "P05 Sekcja 8 + Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173",
     "package": "jdg.p05_vat_micro_atomic",
     "priority": 160,
     "conflict": {
@@ -277,6 +284,7 @@ micro_macro_conflict := {
 slim_vat3_checker := {
     "matched": true,
     "rule_id": "jdg.p05_vat_micro_atomic.slim_vat3_checker",
+    "_legal_basis": "P05 Sekcja 8 + Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173",
     "package": "jdg.p05_vat_micro_atomic",
     "priority": 170,
     "slim3": {
@@ -298,6 +306,7 @@ slim_vat3_checker := {
 article_desert_map := {
     "matched": true,
     "rule_id": "jdg.p05_vat_micro_atomic.article_desert_map",
+    "_legal_basis": "P05 Sekcja 8 + Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173",
     "package": "jdg.p05_vat_micro_atomic",
     "priority": 180,
     "deserts": {
@@ -319,6 +328,7 @@ article_desert_map := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p05_vat_micro_atomic.report",
+    "_legal_basis": "P05 Sekcja 8 + Ustawa o VAT (Dz.U. 2025 poz. 456) Art. 5-173",
     "package": "jdg.p05_vat_micro_atomic",
     "priority": 400,
     "p05_vat_micro_atomic": {

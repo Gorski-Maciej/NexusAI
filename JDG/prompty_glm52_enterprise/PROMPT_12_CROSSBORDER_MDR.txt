@@ -1,0 +1,208 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 12 z 19 — CZĘŚĆ: CROSS-BORDER / TP / CFC / MDR-DAC6 / ViDA / CBAM
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie transakcji międzynarodowych JDG: WNT/WDT
+(art. 9–13, 42 VAT), miejsce świadczenia (art. 28a–28o), eksport/import, różnice kursowe
+(art. 14 ust. 2c PIT), ceny transferowe (art. 23m–23zf PIT — wg LEGAL_TWIN w „pustyni pokrycia”),
+CFC (art. 30f), exit tax (art. 30da), MDR/DAC6 (art. 86a–86o OrdPU, dyrektywa 2011/16/UE),
+ViDA/DRR (UE 2025/2102), DAC8, CBAM (rozporządzenie UE 2023/956) oraz reguł OPA/Rego klasy
+ENTERPRISE z obsługą walut (NBP) i jurysdykcji.
+
+## ⚠️ KRYTYCZNE ZASADY
+1. **GENERUJESZ OGROMNY, ROZBUDOWANY RAPORT** `RAPORT_GLM52_P12_CROSSBORDER_MDR.txt`
+   z **INTELIGENTNYM KODEM gotowym do wdrożenia** (reguły Rego, narzędzia Python — kalkulatory
+   kursowe, MDR scorer; YAML, testy natywne + pytest) — copy-paste do katalogu JDG.
+2. **NIE MODYFIKUJ PLIKÓW w repo** — produktem jest raport .txt.
+3. **CZYTAJ PLIKI PRZEZ LINKI GITHUB** podane niżej — nie szukaj katalogów na własną rękę.
+4. **BUDŻET KONTEKSTU:** dane wejściowe ≤ **50% okna GLM 5.2 (~500K tokenów)** — reszta na
+   głębokie myślenie, głęboką analizę i wygenerowanie rozwiązania.
+
+## 🧠 OBOWIĄZKOWE NAKAZY GŁĘBOKIEGO MYŚLENIA (wymagane w całym raporcie — powtarzaj je w każdej sekcji)
+1. Przeprowadź głębokie myślenie przed każdą sekcją raportu; Przeprowadź głębokie myślenie przed każdą rekomendacją kodu; Przeprowadź głębokie myślenie przy weryfikacji całości pod kątem błędów i luk; Przeprowadź głębokie myślenie przy łączeniu wniosków z pozostałymi częściami kampanii.
+2. Przeprowadź głęboką analizę każdego pliku z listy; przeprowadź głęboką analizę powiązań między plikami; przeprowadź głęboką analizę zgodności reguł z aktami prawnymi (Bbb, LEGAL_REFERENCE_ACTS); przeprowadź głęboką analizę kontraktów spójności z innymi częściami kampanii.
+3. Każde rozwiązanie musi reprezentować zaawansowany poziom Enterprise; standardem minimalnym jest zaawansowany poziom Enterprise; jeśli propozycja nie osiąga celu: zaawansowany poziom Enterprise — odrzuć ją; wszystkie rekomendacje razem tworzą zaawansowany poziom Enterprise całego modułu.
+4. Silnik ma osiągnąć poziom ENTERPRISE w każdym wymiarze; poziom ENTERPRISE to próg minimalny, nie maksimum; każda sekcja raportu deklaruje osiągnięty poziom ENTERPRISE; ostateczny werdykt kampanii: poziom ENTERPRISE bez wyjątków.
+5. W każdej sekcji proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów; minimum 12 pozycji w kategorii: innowacyjne ulepszenia wyprzedzające profesjonalistów w rozdziale GENIALNE POMYSŁY; każdy obszar analizy kończ zestawem: innowacyjne ulepszenia wyprzedzające profesjonalistów; kod w raporcie ma być wynikiem: innowacyjne ulepszenia wyprzedzające profesjonalistów — bez tego raport nie spełnia standardu kampanii.
+## 📂 DOKUMENTY ŚWIĘTE (przeczytaj)
+- V1 — TARGET: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- V2 — WIZJA (kontynuacja V1): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- Stan obecny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Akty prawne (Bbb): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (pełne): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Dokument P12: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/CROSSBORDER_P12.md
+
+## 📂 PLIKI TEJ CZĘŚCI DO ANALIZY (rules/crossborder, international, tp, fx, residency, mdr + enterprise)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/plan23_ue.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/post_brexit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/exit_tax_cfc_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international_expanded.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/crossborder/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_cb.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_tax_trans.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_mdr.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan44_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan45_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/residency/plan44_residency.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/residency/plan45_residency.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fx/plan44_fx.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fx/plan45_fx.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_hallmarks.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/plan44_mdr.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/plan45_mdr.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr_auto_generator.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr_dac6_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/dac8_report_generator.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cbam_full.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vida_drr_full.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cfc_auto_classifier.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/exit_tax_mdr_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_crossborder_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p12_crossborder_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r10_crossborder_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p13_crossborder_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cross_jurisdiction_ruling_enterprise.rego
+
+## 🧩 SPÓJNOŚĆ Z INNYMI CZĘŚCIAMI (kontrakty)
+- **Cross-border ↔ VAT:** WNT/WDT/eksport/import — spójność z PROMPT 02 (substantive/deductions)
+  i PROMPT 03 (wdt_export_import_micro); dowody WDT (30 dni) — PROMPT 04 (wdt_document_tracker).
+- **TP/CFC ↔ PIT:** art. 23m–23zf (TP — dokumentacja, oświadczenie), art. 30f (CFC — 50%/33%),
+  exit tax art. 30da — spójność z PROMPT 05/07 (dochody, ulgi).
+- **MDR/DAC6 ↔ KKS/Ordynacja:** sankcje za brak MDR (art. 80f–80h KKS — PROMPT 11); MDR to
+  „obrona optymalizacji” (PROMPT 07 — GAAR).
+- **FX ↔ księgowość:** różnice kursowe (art. 14 ust. 2c) w PKPiR/UoR (PROMPT 10); kursy NBP
+  (tabela A) z time-travel — spójność z PROMPT 01 (data service).
+- Werdykt 25-polowy, rule_id unikalne, `_legal_basis` kanoniczne, progi z `data.thresholds.jdg.*`
+  (`cfc_control_threshold` 50%, `cfc_passive_income_threshold` 33%), wpis w `main_jdg.rego`
+  (full chain dla transakcji transgranicznych) — kontrakty PROMPT 01.
+
+## 🎯 CEL ANALIZY — POZIOM ENTERPRISE
+**Przeprowadź głębokie myślenie i przeprowadź głęboką analizę** modułu cross-border na
+**zaawansowanym poziomie Enterprise** — priorytet: **TP (art. 23m–23zf — „pustynia pokrycia”),
+CFC (art. 30f), MDR/DAC6 (art. 86a–86o), różnice kursowe z time-travel, exit tax (art. 30da)**.
+Celem jest poziom ENTERPRISE, w którym każda transakcja transgraniczna jest rozliczona z
+pełnym dowodem (kurs NBP z dnia, miejsce świadczenia, dokumentacja TP) i bez ryzyka sankcji
+MDR/TP/CFC. Zaproponuj **innowacyjne ulepszenia wyprzedzające profesjonalistów**.
+
+### 1. AUDYT WNT/WDT/EKSPORT/IMPORT (POZIOM ENTERPRISE)
+- WNT (art. 9–12: warunki, termin 30 dni na dostawę, korekta), WDT (art. 13/42: stawka 0%,
+  dowody 30 dni, numer VAT-UE, saldo zerowe), eksport (art. 2 pkt 8, 41 ust. 4: 0%, dokumenty),
+  import (art. 33–40), transakcje łańcuchowe (art. 22), OSS/IOSS (art. 130a–130c), magazyny
+  konsygnacyjne (art. 7 ust. 8–9).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** tracker dowodów WDT (30 dni,
+  alerty, korekta), walidator numerów VAT-UE (VIES), symulator łańcucha dostaw (art. 22),
+  monitor salda zerowego WNT/WDT, kalkulator kursu NBP z dnia zdarzenia (time-travel).
+
+### 2. AUDYT CEN TRANSFEROWYCH (POZIOM ENTERPRISE — PRIORYTET: art. 23m–23zf)
+- Zakres TP (podmioty powiązane — art. 23m ust. 1 pkt 4), próg dokumentacyjny (10 000 000 zł
+  transakcji towarowych / 2 000 000 zł usługowych / 2 500 000 zł finansowych), zasada ceny
+  rynkowej (art. 23o), metody (CUP, cost plus, TNMM), oświadczenie TP-R (art. 23z), dokumentacja
+  lokalna/grupowa, sankcje (art. 23zb–23zc).
+- Wg LEGAL_TWIN art. 23m–23zf są w „pustyni pokrycia” — **przeprowadź głęboką analizę** i
+  zaproponuj kompletne reguły.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** detektor powiązań (udziały, rodzina),
+  monitor progów dokumentacyjnych (TP-R z countdownem), symulator ceny rynkowej (benchmarki),
+  generator dokumentacji lokalnej (szablon), scorer ryzyka TP (art. 23zb — 10% korekta).
+
+### 3. AUDYT CFC I EXIT TAX (POZIOM ENTERPRISE — art. 30f, 30da)
+- CFC: kontrola ≥ 50%, dochody pasywne ≥ 33%, wyłączenia (EBITDA, rzeczywista działalność),
+  przypisanie dochodu (proporcja udziału), deklaracja; exit tax: przeniesienie składników/
+  rezydencji — 30da, kalkulacja, odroczenie (5 lat), zabezpieczenie.
+- `exit_tax_cfc_complete.rego`, `cfc_auto_classifier.rego`, `exit_tax_mdr_enterprise.rego` —
+  kompletność, progi, wyłączenia.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** auto-klasyfikator CFC (udziały →
+  testy), kalkulator przypisania dochodu CFC z dowodem, symulator exit tax (skutki, odroczenie),
+  monitor terminów (deklaracja CFC do końca 9. miesiąca).
+
+### 4. AUDYT MDR/DAC6 (POZIOM ENTERPRISE — PRIORYTET: art. 86a–86o OrdPU)
+- Definicja uzgodnienia, hallmarks (A–E), główna korzyść podatkowa (MBT), podmioty zobowiązane
+  (promotor, korzystający), termin 30 dni, MDR-1/MDR-3, sankcje (art. 80f–80h KKS: do 720 stawek),
+  DAC6 (2011/16/UE), DAC8 (krypto — raporty).
+- `mdr_hallmarks.rego` (20), `plan44_mdr.rego` (10), `plan45_mdr.rego` (42 — 34 TRIAGE),
+  `mdr_auto_generator.rego`, `mdr_dac6_enterprise.rego` — kompletność hallmarks, MBT, terminów.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** scorer MDR (hallmark → prawdopodobieństwo
+  raportowania), auto-generator MDR-1 (XML), monitor 30 dni z alertem, korelacja z GAAR
+  (optymalizacja — PROMPT 07), baza wzorców uzgodnień (schematy KIS).
+
+### 5. AUDYT ViDA/DRR/DAC8/CBAM (POZIOM ENTERPRISE)
+- ViDA (UE 2025/2102: digital VAT, platformy), DRR (e-fakturowanie UE — 2030+), DAC8
+  (kryptoaktywa — 2026/2027), CBAM (2023/956: importerzy — raporty kwartalne, certyfikaty,
+  od 2026 pełny mechanizm) — `vida_drr_full.rego`, `dac8_report_generator.rego`, `cbam_full.rego`.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** monitor CBAM (progi, raporty,
+  certyfikaty — z countdownem), kalkulator emisji wbudowanych (CBAM), tracker DAC8 (transakcje
+  krypto), Law Radar dla ViDA (projekty UE).
+
+### 6. AUDYT REZYDENCJI I KURSÓW (POZIOM ENTERPRISE)
+- Rezydencja (art. 3 PIT: centrum interesów, 183 dni), podatki u źródła (art. 30a: WHT 20%,
+  ulga 15%), umowy o unikaniu podwójnego opodatkowania (UPDO), certyfikat rezydencji;
+  różnice kursowe (art. 14 ust. 2c: metoda podatkowa — walutowa), kursy NBP (tabela A) z
+  time-travel (PROMPT 01 — data service, fallback 503).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** tracker rezydencji (183 dni,
+  centrum interesów — scoring), kalkulator WHT z UPDO (15/20/0%), silnik różnic kursowych
+  z dowodem (kurs NBP z dnia), monitor certyfikatów rezydencji (terminy ważności).
+
+### 7. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+M.in.: tracker dowodów WDT (30 dni); walidator VIES; detektor powiązań TP; monitor progów
+TP-R; symulator ceny rynkowej; auto-klasyfikator CFC; symulator exit tax; scorer MDR z
+auto-generatorem MDR-1; monitor 30 dni MDR; monitor CBAM z kalkulatorem emisji; tracker
+rezydencji; kalkulator WHT z UPDO; silnik różnic kursowych z time-travel; Law Radar UE
+(ViDA/DAC8); korelacja GAAR↔MDR („optymalizacja bezpieczna”).
+
+## 📋 WYMAGANE SEKCJE RAPORTU (min. 25–40 stron)
+1. Executive Summary — TOP 10 (priorytet: TP, CFC, MDR, kursy).
+2. Tabela pokrycia: art./regulacja × status × rule_id × luki (TP art. 23m–23zf — priorytet).
+3. Audyt WNT/WDT/eksport/import/OSS/łańcuchy — diagramy Mermaid.
+4. Audyt TP (art. 23m–23zf) — progi, metody, dokumentacja, sankcje.
+5. Audyt CFC/exit tax + MDR/DAC6 (hallmarks, MBT, terminy, sankcje).
+6. Audyt ViDA/DRR/DAC8/CBAM + rezydencji/WHT/kursów.
+7. GENIALNE POMYSŁY (min. 12, rozbudowane).
+8. **KOD DO WDROŻENIA:** kompletne reguły TP (art. 23m–23zf — domknięcie „pustyni pokrycia”),
+   `tp_documentation_engine.py`, `cfc_classifier.py`, `mdr_scorer.py` + `mdr_generator.py`,
+   `cbam_monitor.py`, `fx_rate_engine.py` (NBP time-travel), testy natywne
+   `test_native_crossborder.rego`, `test_native_mdr.rego` + pytest; wpisy do thresholds;
+   wpis do `main_jdg.rego` (full chain).
+9. Mapa drogowa + integracja z częściami 01, 02, 03, 04, 05, 07, 10, 11.
+10. Metryki sukcesu (LCI cross-border ≥ 99%, 0 sankcji MDR/TP/CFC, RV 100%).
+
+## 📐 FORMAT RAPORTU
+- Tytuł: „RAPORT GLM52 P12 — CROSS-BORDER / TP / CFC / MDR (ENTERPRISE v9.x)”.
+- Język: polski, diagramy Mermaid, tabele pokrycia.
+- **Przeprowadź głębokie myślenie przed każdą sekcją i przeprowadź głęboką analizę każdego pliku** —
+  precyzja, profesjonalizm, zero nieporozumień. Zapisz jako `RAPORT_GLM52_P12_CROSSBORDER_MDR.txt`.
+
+## 🔗 SUPLEMENT LINKÓW — PEŁNE POKRYCIE KATALOGU JDG (część 12)
+Poniższe pliki tej części pochodzą z pełnej inwentaryzacji katalogu JDG (rules/tools/docs/bundles/tests) —
+przeczytaj je i włącz do analizy, aby raport pokrył KAŻDY plik części:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/crossborder_innovations_report10_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/crossborder_report10_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/crossborder_auditor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/crossborder_report10_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p13_crossborder_toolkit.py
+
+## 🔗 KOMBINACJE LINKÓW KRZYŻOWYCH (spójność międzyczęściowa)
+Analizuj poniższe pliki z INNYCH części RAZEM z plikami swojej części — to punkty styku
+(kontrakty techniczne: rule_id, werdykt 25-polowy, temporalność, thresholds), dzięki którym
+raport będzie spójny z CAŁĄ kampanią i silnik OPA zostanie wzmocniony z każdej strony:
+- (część P14) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pcc_local_excise_rates.rego
+- (część P16) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/advertising/plan44_advertising.rego
+- (część P18) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/README.md
+- (część P02) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p02_vat_macro_innovations_v8.rego
+- (część P05) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances.rego
+- (część P08) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/insurance_tracker_enterprise.rego
+- (część P10) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pkpir_rates.rego
+- (część P11) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/plan44_audit.rego
+
+## 🧠 BUDŻET KONTEKSTU (powtórzenie)
+Materiał wejściowy ≤ 50% okna (~500K tokenów). Priorytet: `crossborder.rego`, `plan45_tp.rego`,
+`plan45_mdr.rego`, `exit_tax_cfc_complete.rego`, `cbam_full.rego` — w całości; `micro/crossborder`
+fragmentarycznie.
+
+## 🔄 ZAKOŃCZENIE SESJI — WYCZYŚĆ OKNO KONTEKSTOWE
+1. Zapisz raport jako `RAPORT_GLM52_P12_CROSSBORDER_MDR.txt`.
+2. Wykonaj polecenie **„WYCZYŚĆ OKNO KONTEKSTOWE”**: 10-linijkowe podsumowanie do
+   `NOTATKI_KAMPANII.txt`.
+3. Potwierdź: „OKNO WYCZYSZCZONE — gotowy na PROMPT 13 z 19 (RYCZAŁT / CYKL ŻYCIA)”.
+4. Użytkownik wkleja następny Prompt: `PROMPT_13_RYCZALT_CYKL_ZYCIE.txt`.

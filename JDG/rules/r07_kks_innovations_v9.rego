@@ -68,6 +68,7 @@ dp_ready := count(dp_missing) == 0 and not dp_organ_notified and dp_revenue_impa
 voluntary_disclosure_one_click := {
     "matched": true,
     "rule_id": "jdg.r07_kks_innovations.voluntary_disclosure_one_click",
+    "_legal_basis": "Art. 16 KKS (czynny żal) + Art. 17 KKS (dobrowolne poddanie się)",
     "package": "jdg.r07_kks_innovations",
     "priority": 320,
     "disclosure": {
@@ -121,6 +122,7 @@ pc_statute_barred := pc_time_elapsed_years >= limitation_years
 penalty_calculator_temporal := {
     "matched": true,
     "rule_id": "jdg.r07_kks_innovations.penalty_calculator_temporal",
+    "_legal_basis": "Art. 16 KKS (czynny żal) + Art. 17 KKS (dobrowolne poddanie się)",
     "package": "jdg.r07_kks_innovations",
     "priority": 318,
     "penalty": {
@@ -204,6 +206,7 @@ tr_routing := "PASS" {
 transaction_risk_predictor := {
     "matched": true,
     "rule_id": "jdg.r07_kks_innovations.transaction_risk_predictor",
+    "_legal_basis": "Art. 16 KKS (czynny żal) + Art. 17 KKS (dobrowolne poddanie się)",
     "package": "jdg.r07_kks_innovations",
     "priority": 316,
     "risk": {
@@ -233,6 +236,7 @@ transaction_risk_predictor := {
 decide := {
     "matched": true,
     "rule_id": "jdg.r07_kks_innovations.kks_report",
+    "_legal_basis": "Art. 16 KKS (czynny żal) + Art. 17 KKS (dobrowolne poddanie się)",
     "package": "jdg.r07_kks_innovations",
     "priority": 325,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "vat_exemption": "", "procedure": "",

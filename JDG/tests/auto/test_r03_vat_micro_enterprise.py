@@ -136,11 +136,18 @@ class TestR03MainJdgWiring:
         text = MAIN_REGO.read_text(encoding="utf-8")
         assert '"jdg.r03_vat_micro_innovations": r03_vat_micro_innovations.decide' in text
         assert '"jdg.micro.vat.r03": micro_vat_r03.decide' in text
+        # P03: pełna warstwa mikro wpięta w orkiestrator (import + rejestr + PAS 43)
+        assert 'import data.jdg.micro.vat as micro_vat_full' in text
+        assert 'import data.jdg.micro.jpk as micro_jpk_full' in text
+        assert '"jdg.micro.vat": micro_vat_full.decide' in text
+        assert '"jdg.micro.jpk": micro_jpk_full.decide' in text
 
     def test_post_merge_chain(self):
         text = MAIN_REGO.read_text(encoding="utf-8")
         assert "final_verdict_p33 = safe_merge(final_verdict_p32," in text
-        assert "final_verdict_post_merge = object.union(final_verdict_p42," in text
+        # P03: łańcuch wydłużony o PAS 43 (warstwa mikro VAT + JPK wpięta najgłębiej)
+        assert "final_verdict_p43 = safe_merge(final_verdict_p42," in text
+        assert "final_verdict_post_merge = object.union(final_verdict_p43," in text
         assert "final_verdict_enforced = object.union(final_verdict_post_merge," in text
         assert "final_verdict = final_verdict_enforced" in text
 

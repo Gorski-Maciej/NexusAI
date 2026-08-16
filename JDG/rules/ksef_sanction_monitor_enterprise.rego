@@ -77,10 +77,10 @@ decide := {
 
     # Obliczenia sankcji z limitami
     sanction_100pct := min([total_vat_missing, sanction_max])
-    sanction_70pct := min([delayed_vat * 0.70, 300000])
+    sanction_70pct := min([delayed_vat * 0.70, object.get(object.get(data.thresholds, "ksef_jpk_edeklaracje", {}), "ksef_sanction_70_cap_pln", 300000)])
     sanction_18pct := min([error_vat * 0.18, sanction_max])
     max_aggregate := sanction_100pct + sanction_70pct + sanction_18pct
-    zaw_nr_penalty := 5000 { zaw_nr_missing }
+    zaw_nr_penalty := object.get(object.get(data.thresholds, "ksef_jpk_edeklaracje", {}), "ksef_zaw_nr_penalty_pln", 5000) { zaw_nr_missing }
     zaw_nr_penalty := 0 { not zaw_nr_missing }
 
     # Poziom ryzyka

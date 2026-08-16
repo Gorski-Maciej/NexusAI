@@ -24,6 +24,7 @@
 
 package jdg.vat_rates_audit
 
+import data.jdg.thresholds
 import future.keywords.if
 import future.keywords.in
 
@@ -117,7 +118,7 @@ rate_drift_warnings := [w |
 # przekracza limit przed końcem roku, zwolnienie wygasa od miesiąca przekroczenia
 # (art. 113 ust. 5). Proporcja startowa (art. 113 ust. 9): limit = 200k × (liczba
 # miesięcy prowadzenia / 12).
-annual_exemption_limit := 200000
+annual_exemption_limit := thresholds.vat.subject_exemption_limit
 
 midyear_breach := {
     "matched": true,
@@ -209,6 +210,7 @@ exemption_gap_warnings := [cat |
 decide := {
     "matched": true,
     "rule_id": "jdg.vat_rates_audit.report",
+    "_legal_basis": "Art. 41 ust. 1-2a VAT + rozporządzenia MF z 4.12.2024 r.",
     "package": "jdg.vat_rates_audit",
     "priority": 300,
     "rates_audit": {

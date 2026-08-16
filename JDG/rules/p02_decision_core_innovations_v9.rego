@@ -289,6 +289,7 @@ risk_priority(level) = 1 {
 decide := {
     "matched": true,
     "rule_id": "jdg.p02_decision_core_innovations.report",
+    "_legal_basis": "P02 Sekcja 7 — Genius Ideas Enterprise",
     "package": "jdg.p02_decision_core_innovations",
     "priority": 400,
     "innovations": {

@@ -194,6 +194,7 @@ build_temporal_warnings(year, form) = warnings {
 else := {
     "matched": true,
     "rule_id": "jdg.pit.declaration_ext.thresholds_integration_check",
+    "_legal_basis": "Art. 45 ust. 1 PIT; Art. 27 ust. 8-9 PIT; Art. 27g PIT (ulga abolicyjna)",
     "package": "jdg.pit.declaration_ext",
     "priority": 1926,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
@@ -242,6 +243,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.pit.declaration_ext.coverage_summary",
+    "_legal_basis": "Art. 45 ust. 1 PIT; Art. 27 ust. 8-9 PIT; Art. 27g PIT (ulga abolicyjna)",
     "package": "jdg.pit.declaration_ext",
     "priority": 999,
     "declaration_gaps_covered": {

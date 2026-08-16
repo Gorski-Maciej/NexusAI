@@ -341,7 +341,7 @@ else := verdict {
     reason := "" { is_fully_paid }
 
     verdict := {
-        "matched": true, "rule_id": "jdg.p33_pcc_complete.pcc3_auto_filler",
+        "matched": true, "rule_id": "jdg.p33_pcc_complete.pcc3_auto_filler", "_legal_basis": "Art. 1 ust. 1 pkt 2, Art. 6 ust. 1 pkt 1, Art. 2 pkt 4 Ustawy o PCC",
         "package": "jdg.p33_pcc_complete", "priority": 9355,
         "vat_rate": "", "rounding_level": "", "gtu_code": "",
         "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",

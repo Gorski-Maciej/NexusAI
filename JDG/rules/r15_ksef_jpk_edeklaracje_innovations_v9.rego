@@ -82,6 +82,7 @@ kf_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r15_ksef_jpk_edeklaracje_innovations.ksef_firewall_monitor",
+    "_legal_basis": "ustawa o VAT art. 106na-106nq (KSeF od 01.02.2026, sankcja do 500 000 zł), art. 106nb (tryb awaryjny)",
     "package": "jdg.r15_ksef_jpk_edeklaracje_innovations",
     "priority": 11036,
     "decision_mode": "SUGGEST",
@@ -123,6 +124,7 @@ jr_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r15_ksef_jpk_edeklaracje_innovations.jpk_reconciliation_checker",
+    "_legal_basis": "ustawa o VAT art. 106na-106nq (KSeF od 01.02.2026, sankcja do 500 000 zł), art. 106nb (tryb awaryjny)",
     "package": "jdg.r15_ksef_jpk_edeklaracje_innovations",
     "priority": 11037,
     "decision_mode": "SUGGEST",
@@ -178,6 +180,7 @@ gt_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r15_ksef_jpk_edeklaracje_innovations.gtu_code_classifier",
+    "_legal_basis": "ustawa o VAT art. 106na-106nq (KSeF od 01.02.2026, sankcja do 500 000 zł), art. 106nb (tryb awaryjny)",
     "package": "jdg.r15_ksef_jpk_edeklaracje_innovations",
     "priority": 11038,
     "decision_mode": "SUGGEST",
@@ -271,6 +274,7 @@ wr_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r15_ksef_jpk_edeklaracje_innovations.wis_request_monitor",
+    "_legal_basis": "ustawa o VAT art. 106na-106nq (KSeF od 01.02.2026, sankcja do 500 000 zł), art. 106nb (tryb awaryjny)",
     "package": "jdg.r15_ksef_jpk_edeklaracje_innovations",
     "priority": 11040,
     "decision_mode": "SUGGEST",

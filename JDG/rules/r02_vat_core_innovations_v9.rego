@@ -222,6 +222,7 @@ art91_correction_schedule := {
 decide := {
     "matched": true,
     "rule_id": "jdg.r02_vat_core_innovations.vat_core_report",
+    "_legal_basis": "Art. 41-43, 86-95, 91, 108a-108f, 113 VAT + Zał. nr 15 ustawy o VAT + SLIM VAT 3",
     "package": "jdg.r02_vat_core_innovations",
     "priority": 285,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "vat_exemption": "", "procedure": "",

@@ -23,6 +23,8 @@ default decide := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.completeness_engine",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 1000,
     "innovation": "INN01_MICRO_ZUS_COMPLETENESS",
@@ -41,6 +43,8 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.health_tier_recalculator",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 2000,
     "innovation": "INN02_HEALTH_TIER_DYNAMIC_RECALCULATOR",
@@ -58,6 +62,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.sickness_duration_tracker",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 3000,
     "innovation": "INN03_SICKNESS_DURATION_TRACKER",
@@ -76,6 +82,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.maternity_optimizer",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 4000,
     "innovation": "INN04_MATERNITY_BENEFIT_OPTIMIZER",
@@ -94,6 +102,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.health_annual_micro",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 5000,
     "innovation": "INN05_HEALTH_ANNUAL_RECONCILIATION_MICRO",
@@ -109,6 +119,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.rate_enricher",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 6000,
     "innovation": "INN06_ZUS_MICRO_RATE_ENRICHER",
@@ -125,6 +137,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.naming_unifier",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 7000,
     "innovation": "INN07_NAMING_CONSISTENCY_UNIFIER",
@@ -141,6 +155,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.social_article_completer",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 8000,
     "innovation": "INN08_SOCIAL_INSURANCE_ARTICLE_COMPLETER",
@@ -156,6 +172,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.cross_act_validator",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 9000,
     "innovation": "INN09_ZUS_CROSS_ACT_VALIDATOR",
@@ -171,6 +189,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.test_generator",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 10000,
     "innovation": "INN10_MICRO_ZUS_TEST_GENERATOR",
@@ -186,6 +206,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.social_rates_fix",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 20000,
     "innovation": "GAP_SOCIAL_RATES",
@@ -205,6 +227,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.health_rates_fix",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 20001,
     "innovation": "GAP_HEALTH_RATES",
@@ -222,6 +246,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.plan34_legal_basis_fix",
+    "_routing": "",
+    "_legal_basis": "ustawa o SUS (Dz.U. 2024 poz. 1743 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 20002,
     "innovation": "GAP_PLAN34_LEGAL_BASIS",
@@ -238,6 +264,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.sickness_rates_fix",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 20003,
     "innovation": "GAP_SICKNESS_RATES",
@@ -256,6 +284,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p08_innovations.coverage_summary",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p08_innovations",
     "priority": 99999,
     "innovation": "P08_COVERAGE_SUMMARY",

@@ -37,7 +37,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.force_majeure.suspensio
 }
 
 # jdg.hyper.edelivery.force_majeure.suspension.zus_consequences — Zawieszenie
-else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.force_majeure.suspension.zus_consequences","package":"jdg.hyper.edelivery","priority":1186,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Skutki ZUS-owe zawieszenia z powodu siły wyższej","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.force_majeure.suspension.zus_consequences","package":"jdg.hyper.edelivery","priority":1186,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Skutki ZUS-owe zawieszenia z powodu siły wyższej","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.document, "edelivery_notification", false) == true
 }
 
@@ -47,7 +47,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.force_majeure.suspensio
 }
 
 # jdg.hyper.edelivery.force_majeure.loss.carry_back — Strata
-else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.force_majeure.loss.carry_back","package":"jdg.hyper.edelivery","priority":1188,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Możliwość retrospektywnego rozliczenia straty (specustawy)","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.force_majeure.loss.carry_back","package":"jdg.hyper.edelivery","priority":1188,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Możliwość retrospektywnego rozliczenia straty (specustawy)","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.document, "edelivery_notification", false) == true
 }
 
@@ -67,7 +67,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.force_majeure.deadlines
 }
 
 # jdg.hyper.edelivery.force_majeure.aggregate.impact_assessment — Agregacja
-else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.force_majeure.aggregate.impact_assessment","package":"jdg.hyper.edelivery","priority":1192,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Ocena łącznego wpływu siły wyższej na finanse JDG","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.force_majeure.aggregate.impact_assessment","package":"jdg.hyper.edelivery","priority":1192,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Ocena łącznego wpływu siły wyższej na finanse JDG","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.document, "edelivery_notification", false) == true
 }
 
@@ -77,7 +77,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.family.spouse.employmen
 }
 
 # jdg.hyper.edelivery.family.spouse.market_benchmark_test — Małżonek
-else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.family.spouse.market_benchmark_test","package":"jdg.hyper.edelivery","priority":1194,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Test porównawczy: czy pensja mieści się w ±30% mediany rynkowej","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.family.spouse.market_benchmark_test","package":"jdg.hyper.edelivery","priority":1194,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Test porównawczy: czy pensja mieści się w ±30% mediany rynkowej","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.document, "edelivery_notification", false) == true
 }
 
@@ -87,7 +87,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.family.spouse.qualifica
 }
 
 # jdg.hyper.edelivery.family.spouse.work_evidence_required — Małżonek
-else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.family.spouse.work_evidence_required","package":"jdg.hyper.edelivery","priority":1196,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Ewidencja czasu pracy, zadań, efektów — obowiązkowa","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.family.spouse.work_evidence_required","package":"jdg.hyper.edelivery","priority":1196,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Ewidencja czasu pracy, zadań, efektów — obowiązkowa","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.document, "edelivery_notification", false) == true
 }
 
@@ -97,7 +97,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.family.spouse.salary_ab
 }
 
 # jdg.hyper.edelivery.family.spouse.no_qualifications_red_flag — Małżonek
-else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.family.spouse.no_qualifications_red_flag","package":"jdg.hyper.edelivery","priority":1198,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Brak kwalifikacji + wysokie wynagrodzenie → HIGH risk flag","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.edelivery.family.spouse.no_qualifications_red_flag","package":"jdg.hyper.edelivery","priority":1198,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Brak kwalifikacji + wysokie wynagrodzenie → HIGH risk flag","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.document, "edelivery_notification", false) == true
 }
 

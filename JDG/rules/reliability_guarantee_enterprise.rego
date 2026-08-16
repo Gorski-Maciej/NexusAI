@@ -85,6 +85,7 @@ determinism_risks := [risk |
 decide := {
     "matched": true,
     "rule_id": "jdg.reliability_guarantee.provenance_gate",
+    "_legal_basis": "ADR-006 Immutable Audit Trail + A1 Verdict Provenance Graph",
     "package": "jdg.reliability_guarantee",
     "priority": 200,
     "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
@@ -107,6 +108,7 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.reliability_guarantee.fallback_ladder_gate",
+    "_legal_basis": "ADR-006 Immutable Audit Trail + A1 Verdict Provenance Graph",
     "package": "jdg.reliability_guarantee",
     "priority": 210,
     "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
@@ -129,6 +131,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.reliability_guarantee.determinism_warning",
+    "_legal_basis": "ADR-006 Immutable Audit Trail + A1 Verdict Provenance Graph",
     "package": "jdg.reliability_guarantee",
     "priority": 220,
     "valid_from": "2026-01-01", "valid_to": null, "decision_mode": "SUGGEST",
@@ -153,6 +156,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.reliability_guarantee.ok",
+    "_legal_basis": "ADR-006 Immutable Audit Trail + A1 Verdict Provenance Graph",
     "package": "jdg.reliability_guarantee",
     "priority": 230,
     "reliability": {

@@ -37,6 +37,8 @@ default decide := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.health_insurance_optimizer",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 1000,
     "innovation": "INN01_HEALTH_INSURANCE_OPTIMIZER",
@@ -74,6 +76,8 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.relief_transition_manager",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 2000,
     "innovation": "INN02_ZUS_RELIEF_TRANSITION_MANAGER",
@@ -103,6 +107,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.multi_title_minimizer",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 3000,
     "innovation": "INN03_MULTI_TITLE_CONTRIBUTION_MINIMIZER",
@@ -127,6 +133,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.sickness_benefit_predictor",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 4000,
     "innovation": "INN04_SICKNESS_BENEFIT_PREDICTOR",
@@ -153,6 +161,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.zus_calendar",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 5000,
     "innovation": "INN05_ZUS_CALENDAR_AUTO_NOTIFICATION",
@@ -181,6 +191,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.health_reconciliation",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 6000,
     "innovation": "INN06_HEALTH_RECONCILIATION_ENGINE",
@@ -204,6 +216,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.zus_audit_shield",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 7000,
     "innovation": "INN07_ZUS_AUDIT_SHIELD",
@@ -225,6 +239,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.preferential_tracker",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 8000,
     "innovation": "INN08_PREFERENTIAL_PERIOD_TRACKER",
@@ -253,6 +269,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.cross_border_insurance",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 9000,
     "innovation": "INN09_CROSS_BORDER_SOCIAL_INSURANCE_MATRIX",
@@ -275,6 +293,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.zus_budget_forecaster",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 10000,
     "innovation": "INN10_ZUS_BUDGET_FORECASTER",
@@ -298,6 +318,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.tier_optimizer",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 11000,
     "innovation": "INN11_HEALTH_TIER_OPTIMIZER",
@@ -321,6 +343,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.maternity_optimizer",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 12000,
     "innovation": "INN12_MATERNITY_BUSINESS_CONTINUITY",
@@ -343,6 +367,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.multiple_jdg_handler",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 20000,
     "innovation": "GAP_MULTIPLE_JDG",
@@ -363,6 +389,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.non_registered_business",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 20001,
     "innovation": "GAP_NON_REGISTERED_ACTIVITY",
@@ -387,6 +415,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.concurrent_mandate_substantive",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 20002,
     "innovation": "GAP_CONCURRENT_MANDATE_JDG",
@@ -409,6 +439,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.threshold_min_wage_2026",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 30000,
     "innovation": "THRESHOLD_FIX_MIN_WAGE",
@@ -428,6 +460,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.threshold_ryczalt_tiers_2026",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 30001,
     "innovation": "THRESHOLD_FIX_RYCZALT_TIERS",
@@ -450,6 +484,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.threshold_deduction_limit_2026",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 30002,
     "innovation": "THRESHOLD_FIX_DEDUCTION_LIMIT",
@@ -469,6 +505,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p07_innovations.coverage_summary",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p07_innovations",
     "priority": 99999,
     "innovation": "P07_COVERAGE_SUMMARY",

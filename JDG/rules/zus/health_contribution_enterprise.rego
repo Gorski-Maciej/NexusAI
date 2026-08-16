@@ -75,6 +75,7 @@ decide := {
 # ── H101: health_scale_no_deduction — Skala: składka NIEodliczalna od PIT ──
 else := {
     "matched": true, "rule_id": "jdg.zus.health.scale_no_deduction",
+    "_routing": "",
     "package": "jdg.zus.health_contribution", "priority": 101,
     "pit_form": "PIT_SCALE", "pit_rate": "", "pit_bracket": "",
     "zus_health_deductible": false, "zus_health_deduction_note": "BRAK ODLICZENIA",
@@ -88,6 +89,7 @@ else := {
 # ── H102: health_scale_zero_income — Skala: zerowy dochód → minimalna składka ──
 else := {
     "matched": true, "rule_id": "jdg.zus.health.scale_zero_income",
+    "_routing": "",
     "package": "jdg.zus.health_contribution", "priority": 102,
     "pit_form": "PIT_SCALE", "zus_health_rate": "0.09",
     "zus_health_basis_pln": min_wage,

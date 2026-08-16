@@ -64,7 +64,7 @@ st_reason_value(assets_count, net_book_value) = reason if {
     reason := sprintf("JPK_ST: %d środków trwałych — wartość netto %.0f PLN.", [assets_count, net_book_value])
 } else = ""
 
-cross_routing_value(consistent, discrepancy) = "BLOCK_AND_ALERT" if { not consistent; discrepancy > 10000 } else = "TRIAGE_QUEUE" if { not consistent; discrepancy <= 10000 } else = ""
+cross_routing_value(consistent, discrepancy) = "BLOCK_AND_ALERT" if { not consistent; discrepancy > object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "jpk_kr_discrepancy_alert_pln", 10000) } else = "TRIAGE_QUEUE" if { not consistent; discrepancy <= object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "jpk_kr_discrepancy_alert_pln", 10000) } else = ""
 cross_reason_value(consistent, discrepancy) = reason if {
     not consistent
     reason := sprintf("ROZBIEŻNOŚĆ JPK_KR vs JPK_V7: %.0f PLN — uzgodnij księgi z deklaracjami VAT!", [discrepancy])
@@ -101,7 +101,7 @@ decide := {
     input.jpk_kr_eligibility_check == true
     full_accounting := object.get(input.jdg_entrepreneur, "uses_full_accounting", false)
     revenue_eur := object.get(input.jdg_entrepreneur, "annual_revenue_eur", 0)
-    threshold_eur := 2000000
+    threshold_eur := object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "jpk_kr_threshold_eur", 2000000)
     kr_applicable := kr_applicable_value(full_accounting, revenue_eur, threshold_eur)
     elig_routing := eligibility_routing_value(kr_applicable)
     elig_reason := eligibility_reason_value(kr_applicable, revenue_eur)

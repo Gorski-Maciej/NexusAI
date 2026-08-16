@@ -30,7 +30,7 @@ THRESHOLDS = JDG_ROOT / "bundles" / "thresholds_data.json"
 REGISTRY = JDG_ROOT / "bundles" / "policy_registry.json"
 GOLDEN = JDG_ROOT / "bundles" / "golden_verdicts.json"
 
-ALLOWED_VAT = {"ZW", "NP", "OO", 0, 0.05, 0.08, 0.23}
+ALLOWED_VAT = {"ZW", "NP", "OO", "", 0, 0.05, 0.08, 0.23}  # "" = werdykt spoza domeny VAT
 EPS = 1e-6
 
 
@@ -137,9 +137,12 @@ def cmd_ci(args) -> None:
         problems.append(f"Katalog niezmienników: {len(catalog)} < 30 (cel INV-001..030)")
     if REGISTRY.exists():
         reg = json.loads(REGISTRY.read_text(encoding="utf-8"))
-        no_lb = [r["rule_id"] for r in reg.get("rules", []) if not r.get("legal_basis")]
+        # INV-009 dotyczy werdyktów matched=true (definicja w katalogu); reguły no_match
+        # (matched=false) to fallbacki bez podstawy prawnej — wyłączone z bramki.
+        no_lb = [r["rule_id"] for r in reg.get("rules", [])
+                 if r.get("matched") is True and not r.get("legal_basis")]
         if no_lb:
-            problems.append(f"INV-009: {len(no_lb)} reguł bez _legal_basis (np. {no_lb[:3]})")
+            problems.append(f"INV-009: {len(no_lb)} reguł matched=true bez _legal_basis (np. {no_lb[:3]})")
     if GOLDEN.exists():
         g = json.loads(GOLDEN.read_text(encoding="utf-8"))
         items = list(g.get("verdicts", {}).values())

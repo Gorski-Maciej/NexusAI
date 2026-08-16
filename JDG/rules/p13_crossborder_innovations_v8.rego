@@ -131,6 +131,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p13_innovations.mdr_hallmark_detector",
+        "_legal_basis": "Art. 9-13, 28b-28c VAT; Art. 41 VAT (eksport)",
         "package": "jdg.p13_innovations",
         "priority": 13002,
         "inn02_is_reportable": is_reportable,
@@ -254,6 +255,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p13_innovations.cfc_passive_monitor",
+        "_legal_basis": "Art. 9-13, 28b-28c VAT; Art. 41 VAT (eksport)",
         "package": "jdg.p13_innovations",
         "priority": 13004,
         "inn04_ownership_pct": ownership_pct,
@@ -308,6 +310,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p13_innovations.tp_auto_documenter",
+        "_legal_basis": "Art. 9-13, 28b-28c VAT; Art. 41 VAT (eksport)",
         "package": "jdg.p13_innovations",
         "priority": 13005,
         "inn05_tx_value": tx_value,
@@ -434,6 +437,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p13_innovations.vat_chain_validator",
+        "_legal_basis": "Art. 9-13, 28b-28c VAT; Art. 41 VAT (eksport)",
         "package": "jdg.p13_innovations",
         "priority": 13007,
         "inn07_vendor_country": vendor_country,
@@ -490,6 +494,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p13_innovations.wht_optimizer",
+        "_legal_basis": "Art. 9-13, 28b-28c VAT; Art. 41 VAT (eksport)",
         "package": "jdg.p13_innovations",
         "priority": 13008,
         "inn08_vendor_country": vendor_country,
@@ -541,6 +546,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p13_innovations.vies_verifier",
+        "_legal_basis": "Art. 9-13, 28b-28c VAT; Art. 41 VAT (eksport)",
         "package": "jdg.p13_innovations",
         "priority": 13009,
         "inn09_vendor_country": input.vendor.country,
@@ -594,6 +600,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p13_innovations.brexit_continuity",
+        "_legal_basis": "Art. 9-13, 28b-28c VAT; Art. 41 VAT (eksport)",
         "package": "jdg.p13_innovations",
         "priority": 13010,
         "inn10_uk_status": "THIRD_COUNTRY",
@@ -649,6 +656,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p13_innovations.cbam_compliance",
+        "_legal_basis": "Art. 9-13, 28b-28c VAT; Art. 41 VAT (eksport)",
         "package": "jdg.p13_innovations",
         "priority": 13011,
         "inn11_goods_type": goods_type,
@@ -717,6 +725,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.p13_innovations.global_mobility_planner",
+        "_legal_basis": "Art. 9-13, 28b-28c VAT; Art. 41 VAT (eksport)",
         "package": "jdg.p13_innovations",
         "priority": 13012,
         "inn12_days_abroad": days_abroad,
@@ -743,6 +752,8 @@ else := verdict {
 else := {
     "matched": true,
     "rule_id": "jdg.p13_innovations.coverage_summary",
+    "_routing": "",
+    "_legal_basis": "Art. 9-13, 28b-28c VAT; Art. 41 VAT (eksport)",
     "package": "jdg.p13_innovations",
     "priority": 99999,
     "p13_total_innovations": 12,

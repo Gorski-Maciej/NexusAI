@@ -12,8 +12,8 @@ default decide := {
     "priority": 99999
 }
 
-uor_threshold_eur := 2000000
-uor_early_warning_threshold_eur := 1500000
+uor_threshold_eur := object.get(data.thresholds.jdg.depreciation, "uor_books_threshold_eur", 2000000)
+uor_early_warning_threshold_eur := object.get(data.thresholds.jdg.depreciation, "uor_early_warning_eur", 1500000)
 
 base_verdict := {
     "vat_rate": "", "rounding_level": "", "gtu_code": "",

@@ -1,0 +1,88 @@
+NOTATKI KAMPANII GLM 5.2 — FORTYFIKACJA MODUŁU JDG (ENTERPRISE)
+================================================================
+
+[P01] ORKIESTRATOR/FUNDAMENT — WDROZONY_100 (2026-08-16)
+- validate_rules: 453 błędów → 0 (440× brak _legal_basis + 13× duplikaty rule_id)
+- policy_registry.json: +120 legal_basis; 38 pustych _legal_basis wypełnionych
+- Zero hardcode w rdzeniu: 30+ literałów → 27 nowych parametrów thresholds
+- _routing (kontrakt 25-polowy): 186 bloków uzupełnionych
+- Narzędzia: validate_rules/lint_rego_rules/invariant_checker — poprawki precyzji
+- Bramki: invariant CI PASS (42), pytest 87/87, lint 5/6 (backlog domenowy → P02-P19)
+- Backlog: 5 888 literałów domenowych w 256 plikach → mapa w raporcie §7
+
+[P02] VAT MAKRO (MPP/Split Payment FOCUS) — WDROZONY_100 (2026-08-16)
+- NOWA reguła: jdg.vat.substantive.a113_limit_monitor (priorytet 998):
+  monitor limitu 200k (art. 113), alert przy 95% (a113_alert_ratio),
+  proporcja 113 ust. 9, prognoza daty przekroczenia, BLOCK przy ≥100%
+- NOWE narzędzia ENTERPRISE:
+  * tools/vat_rate_engine.py — stawki PKWiU/CN (23/8/5/0/NP/ZW) + Trust Score
+    (CN 0.98 / PKWiU 0.95 / semantyka 0.85) + indeks pre-kompilowany
+  * tools/mpp_monitor.py — MPP: check/sanction/batch/psd2 (art. 108a-108f+96b)
+- Zero hardcode VAT: 15+ literałów → 11 nowych progów thresholds.vat
+  (oss_threshold_eur, oss_alert_eur, reverse_charge_waste_threshold,
+   a113_alert_ratio, cashflow_alert_pay/net_impact, cashflow_mpp_frozen_alert,
+   cashflow_bad_debt_reclaim_alert, fraud_round_amount_min,
+   asset_correction_threshold, margin_alert_threshold)
+- MPP: próg 15 000 z thresholds.misc.mpp_mandatory_threshold (procedures.rego),
+  granice 14 999/15 001 liczone od progu (plan26), sankcja 30% + biała lista 20%
+- SLIM VAT 3: złe długi 90 dni (P189b) / 150 dni PRE — temporalność OK
+- Testy: NOWE test_native_vat_mpp.rego (7) + test_native_vat_a113_tracker.rego (7)
+  + 10 pytest (TestVatRateEngine ×4, TestMppMonitor ×6)
+- Bramki: validate 0 · invariant 42 PASS · verify_vat_mpp 7/7 · vat_gap 32✅/2⚠️
+  · RAPORT_21 6/6 · pytest VAT 122/122 · P01 regresja 87/87
+- Uwaga techniczna: lokalna binarka OPA 0.68 nie parsuje wzorca
+  "x = val { body }" w ciele reguły (repo wymaga OPA 1.x = CI latest);
+  weryfikacja strukturalna fragmentów na 0.68: EXIT 0.
+
+OSTRZEŻENIA:
+- Baza PKWiU/CN w vat_rate_engine to podzbiór (~40 kodów) — pełna baza
+  (tysiące kodów, DuckDB) w pipeline P03/P04.
+- 5 888 literałów domenowych (poza VAT) — domykane P03-P19 wg mapy z P01 §7.
+- lint no_hardcoded_integers: 5 pozostałych spoza VAT (accounting, allowances,
+  plan45_advertising — domeny P10/P13) — domkną właściwe Prompty.
+
+NASTĘPNY: PROMPT_03_VAT_MIKRO_JPK.txt (VAT mikro + JPK_V7, INV-018 macro↔micro).
+
+[P03] VAT MIKRO + JPK — WDROZONY_100 (2026-08-16)
+- PRZEŁOM: konflikt kompilacji jdg.micro.jpk (2× default decide: jpk.rego +
+  plan33_jpk.rego) → naprawa: plan33 → jdg.micro.jpk.plan33 (71 pól package).
+  CI nie łapał (opa check wildcard per plik + opa build z tolerancją).
+- WARSTWA MIKRO WPIĘTA: PAS 43 (safe_merge p42 → mikro VAT → mikro JPK →
+  plan33 → fallback); importy + 3 wpisy rejestru; mikro wypełnia LUKI makro,
+  nie nadpisuje (INV-018, Dual-Layer ADR-005).
+- WIS art. 42a-42h (pustynia pokrycia): +8 reguł atomowych w r03
+  (jdg.micro.vat.a42a..a42h.r1, priorytety 60201..60208).
+- Nowe narzędzia: tools/jpk_validator.py (struktura/sumy/GTU/procedury/
+  terminy 25.+weekend/KSeF 2026-02) + tools/jpk_generator.py (werdykty→JPK).
+- Stub: jdg.p03_innovations.summary {true} → flaga p03_vat_micro_summary_check.
+- Fix: r03 refund_days → vat_refund_days (unsafe var, art. 87).
+- Testy: test_native_vat_micro.rego (10) + test_native_jpk.rego (7) + 16 pytest.
+- Bramki: validate 0 · invariant 42 PASS · RAPORT_21 6/6 · verify_micro P0 OK ·
+  opa check jpk EXIT 0 · pytest P03 336/336 · regresja P01/P02 112/112.
+- WYKRYTE (poza zakresem P03): 19 pakietów z konfliktami kompilacji
+  (accounting ×3, kks ×3, zus ×3, micro.sus ×16, micro.zdrowotna ×7,
+  micro.zasilkowa ×5, micro.pit ×3, crossborder, rodo, risk, allowances,
+  local_taxes, international, micro.ceidg/ksef/ord/pcc) — naprawa wg wzorca
+  jpk (planN → podpakiet) w właściwych promptach (P04/P06/P08/P09/P10/P11...).
+
+OSTRZEŻENIA:
+- vat.rego: 2 645 liczb ≥4 cyfr, z czego 1 526 to rok 2004 w _legal_basis
+  (false positives — linter je ignoruje poprawnie).
+- hardcode stawek mikro/plan33/34: 83 (P1 parametryzacja — docelowo 0).
+- 19 konfliktów kompilacji poza VAT — do domknięcia w P04-P19 (wzorzec: P03).
+
+NASTĘPNY: PROMPT_04_KSEF_JPK_EDEKLARACJE.txt (KSeF/JPK/e-Deklaracje/GTU/WIS).
+
+════════════════════════════════════════════════════════════════
+P04 — KSeF / JPK / e-DEKLARACJE / GTU / WIS / e-DORĘCZENIA — WDROZONY_100
+════════════════════════════════════════════════════════════════
+✅ Konflikt kompilacji jdg.micro.ksef naprawiony (plan33_ksef → jdg.micro.ksef.plan33, 75 pól)
+✅ Zero hardcode P04: 16 nowych progów w thresholds (sankcje 300k/250k/5k,
+   outbox 50k, queue 120h, JPK_CIT 10k/5k/2mln EUR, JPK_KR 2mln/10k,
+   WIS 40 zł/180d/90d, WDT 25/30 dni) — 12 plików reguł zaktualizowanych
+✅ Nowe narzędzia: ksef_outbox.py, ksef_offline_queue.py, jpk_autogen.py, edelivery_monitor.py
+✅ Testy natywne: test_native_ksef.rego + test_native_wis.rego (10 testów)
+✅ +7 pytest (test_p17: 50/50) · domena P04: 122/122 · regresja P01-P03: 156/156
+✅ Bramki: validate 0 · invariants 42/42 · RAPORT_21 6/6
+⚠️ Uwaga: weryfikacja 3-drożna KSeF = faktury sprzedażowe (ksef_vat_due)
+⚠️ Do naprawy w P05+: konflikty micro.ord / micro.pcc / micro.ceidg (wzorzec P03/P04)

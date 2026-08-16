@@ -130,3 +130,136 @@ class TestP04RegoPackages:
         for line in text.splitlines():
             if line.strip().startswith("else") and "{" in line:
                 assert not line.startswith(" "), f"Inline else w ciele: {line.strip()}"
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PROMPT 03 — NOWE NARZĘDZIA ENTERPRISE: jpk_validator + jpk_generator
+# (P03 Sekcja 3: JPK_V7M/V7K — struktura, sumy, terminy, KSeF)
+# ═══════════════════════════════════════════════════════════════════════════
+
+class TestJpkValidator:
+    def test_deadline_25th(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import jpk_validator as jv
+        d = jv.deadline_for("2026-01")
+        assert d["deadline_day"] == 25
+        assert d["deadline_date"] == "2026-02-25"
+        assert d["weekend_shifted"] is False
+
+    def test_deadline_weekend_shift(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import jpk_validator as jv
+        # 2025-12-25 to czwartek; 2026-01-25 to niedziela → przesunięcie
+        d = jv.deadline_for("2026-01")
+        assert d["deadline_date"] >= "2026-02-25"
+
+    def test_structure_valid(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import jpk_validator as jv
+        # Kompletne wiersze JPK (wszystkie pola K_* wg rozp. MF 15.07.2025)
+        sale = {f: 0 for f in jv.SALES_FIELDS}
+        sale.update({"K_10": 100, "K_14": 23, "GTU": ["GTU_01"], "Procedura": []})
+        purchase = {f: 0 for f in jv.PURCHASE_FIELDS}
+        purchase.update({"K_70": 50, "K_77": 11.5})
+        jpk = {
+            "sprzedaz": [sale],
+            "zakup": [purchase],
+            "deklaracja": {"P_19": 23, "P_38": 11.5, "P_39": 11.5, "P_40": 0},
+        }
+        r = jv.validate_structure(jpk)
+        assert r["valid"] is True
+
+    def test_structure_invalid_gtu(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import jpk_validator as jv
+        jpk = {
+            "sprzedaz": [{"K_10": 100, "GTU": ["GTU_99"]}],
+            "zakup": [],
+            "deklaracja": {},
+        }
+        r = jv.validate_structure(jpk)
+        assert r["valid"] is False
+        assert any("GTU_99" in i for i in r["issues"])
+
+    def test_sums_balance(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import jpk_validator as jv
+        jpk = {
+            "sprzedaz": [{"K_14": 230}, {"K_14": 25}],
+            "zakup": [{"K_77": 184}],
+            "deklaracja": {"P_19": 255, "P_38": 184, "P_39": 71, "P_40": 0},
+        }
+        r = jv.validate_sums(jpk)
+        assert r["valid"] is True
+        assert r["balance"] == 0.0
+
+    def test_sums_mismatch(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import jpk_validator as jv
+        jpk = {
+            "sprzedaz": [{"K_14": 230}],
+            "zakup": [],
+            "deklaracja": {"P_19": 100, "P_38": 0, "P_39": 100, "P_40": 0},
+        }
+        r = jv.validate_sums(jpk)
+        assert r["valid"] is False
+        assert any("P_19" in i for i in r["issues"])
+
+    def test_ksef_mandatory_after_feb2026(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import jpk_validator as jv
+        jpk = {"Okres": "2026-03", "sprzedaz": [{"K_10": 1}], "zakup": [], "deklaracja": {}}
+        r = jv.validate_ksef(jpk)
+        assert r["ksef_mandatory"] is True
+        assert r["valid"] is False  # brak KSeF_id po 2026-02-01
+
+
+class TestJpkGenerator:
+    def test_generate_sales_and_purchases(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import jpk_generator as jg
+        verdicts = [
+            {"direction": "SALE", "amount_net": 1000, "vat_rate": "23", "vat_amount": 230},
+            {"direction": "PURCHASE", "amount_net": 800, "vat_rate": "23", "vat_amount": 184},
+        ]
+        jpk = jg.generate(verdicts, "2026-01")
+        assert len(jpk["sprzedaz"]) == 1
+        assert len(jpk["zakup"]) == 1
+        assert jpk["deklaracja"]["P_19"] == 230.0
+        assert jpk["deklaracja"]["P_38"] == 184.0
+        assert jpk["deklaracja"]["P_39"] == 46.0
+
+    def test_generate_rate_mapping(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import jpk_generator as jg
+        verdicts = [
+            {"direction": "SALE", "amount_net": 500, "vat_rate": "5", "vat_amount": 25},
+            {"direction": "SALE", "amount_net": 300, "vat_rate": "8", "vat_amount": 24},
+        ]
+        jpk = jg.generate(verdicts, "2026-01")
+        # K_19 = podstawa 5%, K_18 = podstawa 8%
+        assert jpk["sprzedaz"][0]["K_19"] == 500
+        assert jpk["sprzedaz"][1]["K_18"] == 300
+
+    def test_generate_refund(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import jpk_generator as jg
+        verdicts = [
+            {"direction": "SALE", "amount_net": 100, "vat_rate": "23", "vat_amount": 23},
+            {"direction": "PURCHASE", "amount_net": 500, "vat_rate": "23", "vat_amount": 115},
+        ]
+        jpk = jg.generate(verdicts, "2026-01")
+        assert jpk["deklaracja"]["P_39"] == 0.0
+        assert jpk["deklaracja"]["P_40"] == 92.0
+
+    def test_generate_validator_roundtrip(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import jpk_generator as jg
+        import jpk_validator as jv
+        verdicts = [
+            {"direction": "SALE", "amount_net": 1000, "vat_rate": "23", "vat_amount": 230},
+            {"direction": "PURCHASE", "amount_net": 800, "vat_rate": "23", "vat_amount": 184},
+        ]
+        jpk = jg.generate(verdicts, "2026-01")
+        r = jv.validate(jpk, "2026-01")
+        assert r["valid"] is True

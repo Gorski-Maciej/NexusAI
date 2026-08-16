@@ -1,0 +1,194 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 14 z 19 — CZĘŚĆ: PCC / PODATKI LOKALNE / AKCYZĄ / TRANSPORT / ROLNICTWO
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie podatku od czynności cywilnoprawnych (9.09.2000,
+Dz.U. 2025 poz. 789), podatków i opłat lokalnych (12.01.1991, Dz.U. 2025 poz. 1234 — nieruchomości,
+środki transportowe), podatku akcyzowego (6.12.2008, Dz.U. 2025 poz. 1220 — paliwa, alkohol,
+tytoń, energia), podatku rolnego, opłat środowiskowych oraz reguł OPA/Rego klasy ENTERPRISE.
+Według LEGAL_COVERAGE (2026-08-02) obszar PCC + lokalne + akcyza był **największą luką pokrycia
+(~1%, 225 punktów prawnych)** — Twoim zadaniem jest domknięcie go do poziomu ENTERPRISE.
+
+## ⚠️ KRYTYCZNE ZASADY
+1. **GENERUJESZ OGROMNY, ROZBUDOWANY RAPORT** `RAPORT_GLM52_P14_PCC_LOKALNE_AKCYZA.txt`
+   z **INTELIGENTNYM KODEM gotowym do wdrożenia** (reguły Rego, narzędzia Python, YAML, testy
+   natywne + pytest) — copy-paste do katalogu JDG.
+2. **NIE MODYFIKUJ PLIKÓW w repo** — produktem jest raport .txt.
+3. **CZYTAJ PLIKI PRZEZ LINKI GITHUB** podane niżej — nie szukaj katalogów na własną rękę.
+4. **BUDŻET KONTEKSTU:** dane wejściowe ≤ **50% okna GLM 5.2 (~500K tokenów)** — reszta na
+   głębokie myślenie, głęboką analizę i wygenerowanie rozwiązania.
+
+## 🧠 OBOWIĄZKOWE NAKAZY GŁĘBOKIEGO MYŚLENIA (wymagane w całym raporcie — powtarzaj je w każdej sekcji)
+1. Przeprowadź głębokie myślenie przed każdą sekcją raportu; Przeprowadź głębokie myślenie przed każdą rekomendacją kodu; Przeprowadź głębokie myślenie przy weryfikacji całości pod kątem błędów i luk; Przeprowadź głębokie myślenie przy łączeniu wniosków z pozostałymi częściami kampanii.
+2. Przeprowadź głęboką analizę każdego pliku z listy; przeprowadź głęboką analizę powiązań między plikami; przeprowadź głęboką analizę zgodności reguł z aktami prawnymi (Bbb, LEGAL_REFERENCE_ACTS); przeprowadź głęboką analizę kontraktów spójności z innymi częściami kampanii.
+3. Każde rozwiązanie musi reprezentować zaawansowany poziom Enterprise; standardem minimalnym jest zaawansowany poziom Enterprise; jeśli propozycja nie osiąga celu: zaawansowany poziom Enterprise — odrzuć ją; wszystkie rekomendacje razem tworzą zaawansowany poziom Enterprise całego modułu.
+4. Silnik ma osiągnąć poziom ENTERPRISE w każdym wymiarze; poziom ENTERPRISE to próg minimalny, nie maksimum; każda sekcja raportu deklaruje osiągnięty poziom ENTERPRISE; ostateczny werdykt kampanii: poziom ENTERPRISE bez wyjątków.
+5. W każdej sekcji proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów; minimum 12 pozycji w kategorii: innowacyjne ulepszenia wyprzedzające profesjonalistów w rozdziale GENIALNE POMYSŁY; każdy obszar analizy kończ zestawem: innowacyjne ulepszenia wyprzedzające profesjonalistów; kod w raporcie ma być wynikiem: innowacyjne ulepszenia wyprzedzające profesjonalistów — bez tego raport nie spełnia standardu kampanii.
+## 📂 DOKUMENTY ŚWIĘTE (przeczytaj)
+- V1 — TARGET: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- V2 — WIZJA (kontynuacja V1): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- Stan obecny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Akty prawne (Bbb): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (pełne): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne (sekcja IX — PCC+lokalne+akcyza, największa luka): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Dokument P14: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PCC_LOKALNE_AKCYZA_P14.md
+
+## 📂 PLIKI TEJ CZĘŚCI DO ANALIZY (rules/local_taxes, pcc, micro/pcc, micro/akcyza + enterprise)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_excise_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/akcyza_alcohol.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/akcyza_fuel.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/excise_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/local_procedures_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/real_estate.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/plan26_local.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pcc/pcc_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pcc/pcc_sales.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pcc/pcc_loans.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pcc/pcc_companies.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pcc/plan42_pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pcc/pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/akcyza/akcyza.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_prop.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_prop_transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_agricultural_tax.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pcc_local_excise_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p14_pcc_lokalne_akcyza_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r11_pcc_lokalne_akcyza_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p15_pcc_local_excise_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_pcc_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_excise_supplement.rego
+
+## 🧩 SPÓJNOŚĆ Z INNYMI CZĘŚCIAMI (kontrakty)
+- **PCC ↔ VAT:** transakcje VAT są wyłączone z PCC (art. 2 pkt 4 u.p.c.c.) — arbiter VAT vs PCC
+  (spójność z PROMPT 02); PCC-3 w 14 dni (deklaracja — PROMPT 04).
+- **Lokalne ↔ księgowość:** podatek od nieruchomości (DN-1), środki transportowe (DT-1) — koszty
+  w PKPiR/UoR (PROMPT 10); stawki gminne (dane lokalne — Data Service, PROMPT 01).
+- **Akcyza ↔ cross-border:** e-DD (dokumenty elektroniczne), skład podatkowy, zwolnienia —
+  spójność z PROMPT 12 (transakcje UE) i PROMPT 02 (VAT od wyrobów).
+- Werdykt 25-polowy, rule_id unikalne, `_legal_basis` kanoniczne, progi z `data.thresholds.jdg.*`
+  (stawki PCC 0,5–2%, stawki gminne, akcyza — tabela stawek), wpis w `main_jdg.rego` —
+  kontrakty PROMPT 01.
+
+## 🎯 CEL ANALIZY — POZIOM ENTERPRISE
+**Przeprowadź głębokie myślenie i przeprowadź głęboką analizę** modułu PCC/lokalne/akcyza na
+**zaawansowanym poziomie Enterprise** — priorytet: **pełne pokrycie PCC (art. 1–10: umowy
+sprzedaży 2%, pożyczki 0,5%, spółki; PCC-3 w 14 dni), podatku od nieruchomości (stawki gminne,
+DN-1), środków transportowych (>3,5 t, DT-1), akcyzy (paliwa/alkohol/energia — rejestracja,
+e-DD, znaki akcyzy)** — ten obszar był największą luką (wg LEGAL_COVERAGE ~1% pokrycia).
+Celem jest poziom ENTERPRISE, w którym żadna czynność cywilnoprawna i żaden lokalny obowiązek
+nie umknie systemowi. Zaproponuj **innowacyjne ulepszenia wyprzedzające profesjonalistów**.
+
+### 1. AUDYT PCC (POZIOM ENTERPRISE — PRIORYTET: art. 1–10, PCC-3 w 14 dni)
+- Przedmiot (art. 1: sprzedaż, zamiana, pożyczka, darowizna, spółki), wyłączenia (art. 2 pkt 4:
+  VAT), obowiązek (art. 4: kupujący/pożyczkobiorca), podstawa (art. 6: wartość rynkowa), stawki
+  (art. 7: 2% nieruchomości/rzeczy, 1% prawa, 0,5% pożyczki), deklaracja PCC-3 (art. 10: 14 dni),
+  odpowiedzialność notariusza (art. 10 ust. 3), sankcje.
+- `pcc_enterprise_complete.rego` (51), `micro/pcc/pcc.rego` (89), `pcc/*` (5 plików),
+  `plan33_pcc.rego` (59) — kompletność czynności, stawek, terminów, wyłączeń.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** auto-detektor czynności PCC
+  (transakcje → obowiązek → stawka), generator PCC-3 (0 ręki, 14 dni), arbiter VAT vs PCC
+  (art. 2 pkt 4 — drzewo decyzyjne), monitor 14 dni z alertem, kalkulator wartości rynkowej
+  (nieruchomości — dane lokalne).
+
+### 2. AUDYT PODATKÓW LOKALNYCH (POZIOM ENTERPRISE — PRIORYTET: nieruchomości, transport)
+- Nieruchomości (art. 2–7 u.p.o.l.): grunty/budynki/budowle, stawki gminne (wyższe dla
+  działalności — ~33 zł/m² vs ~1,15 zł/m²), deklaracja DN-1 (roczna, do 31.01), informacja
+  IN-1; środki transportowe (art. 8–14: >3,5 t, stawki zależne od DMC/liczby osi), DT-1;
+  opłata targowa/uzdrowiskowa; rejestr stawek gminnych (dane lokalne — Data Service).
+- `local_taxes.rego` (27), `real_estate.rego` (2), `transport.rego` (1), `plan33_prop.rego` (30),
+  `plan33_prop_transport.rego` (5), `local_procedures_enterprise.rego` (15) — kompletność.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** silnik stawek gminnych (tabela
+  per gmina z datami — Law Radar), generator DN-1/DT-1 (auto-fill z danych), klasyfikator
+  nieruchomości (mieszkalna/firmowa → stawka), monitor terminów (31.01, raty), kalkulator
+  opłaty targowej/uzdrowiskowej.
+
+### 3. AUDYT AKCYZY (POZIOM ENTERPRISE — PRIORYTET: paliwa, alkohol, energia)
+- Wyroby akcyzowe (art. 2), rejestracja (art. 16, 24–24b), moment obowiązku (art. 21), stawki
+  (art. 30–32 paliwa; art. 92–99c alkohol/tytoń), zwolnienia (art. 89), e-DD (art. 100), znaki
+  akcyzy (art. 114), skład podatkowy, sankcje; akcyza od energii elektrycznej (art. 9 ust. 1 pkt 2).
+- `akcyza.rego` (132), `akcyza_alcohol.rego` (20), `akcyza_fuel.rego` (18),
+  `excise_enterprise_complete.rego` (15), `plan33_agricultural_tax.rego` — kompletność.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** klasyfikator wyrobu → stawka
+  akcyzy (CN), monitor rejestracji (akcyza — 30 dni), tracker e-DD (wysyłka/odbioru), kalkulator
+  akcyzy z dowodem, detektor obrotu bez znaków akcyzy (ryzyko KKS — PROMPT 11), Law Radar dla
+  stawek akcyzy (obwieszczenia MF).
+
+### 4. AUDYT PODATKU ROLNEGO I POZOSTAŁYCH (POZIOM ENTERPRISE)
+- Podatek rolny (ustawa 15.11.1984: hektary przeliczeniowe, stawki z komunikatu MRiRW — 2,5 q
+  żyta), opłaty środowiskowe (PROMPT 15 — BDO), opłata skarbowa, PCC od spółek (art. 1 ust. 3 pkt 2).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** kalkulator podatku rolnego
+  (przeliczniki, komunikaty MRiRW — auto-aktualizacja), generator deklaracji rolnych.
+
+### 5. AUDYT JAKOŚCI, TEMPORALNOŚCI, NIEZAWODNOŚCI (POZIOM ENTERPRISE)
+- Stuby/duplikaty w local_taxes/pcc/akcyza (wg LEGAL_COVERAGE: 4 reguły z ~80 potrzebnych w
+  local_taxes.rego — do pełnego domknięcia), `_legal_basis` kanoniczne, stawki gminne z datami
+  (temporalność per gmina), golden replay decyzji PCC/lokalnych.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** testy per czynność/stawkę,
+  „dowód PCC” w Decision Certificate (czynność → stawka → kwota → termin), monitor stawek
+  gminnych (zmiany uchwał — Law Radar).
+
+### 6. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+M.in.: auto-detektor czynności PCC; generator PCC-3/DN-1/DT-1 (0 ręki); arbiter VAT vs PCC;
+silnik stawek gminnych z datami; klasyfikator nieruchomości; klasyfikator wyrobów akcyzowych;
+monitor rejestracji akcyzowej; tracker e-DD; kalkulator podatku rolnego; monitor terminów
+lokalnych (31.01, 14 dni PCC); Law Radar uchwał gminnych; dowód PCC w certyfikacie; detektor
+ryzyka KKS (znaki akcyzy, PCC bez deklaracji).
+
+## 📋 WYMAGANE SEKCJE RAPORTU (min. 25–40 stron)
+1. Executive Summary — TOP 10 (priorytet: domknięcie największej luki pokrycia).
+2. Tabela pokrycia: art./ustawa × status × rule_id × luki (PCC, lokalne, akcyza).
+3. Audyt PCC (czynności, stawki, PCC-3, wyłączenia VAT) — diagramy Mermaid.
+4. Audyt nieruchomości/transportu (stawki gminne, DN-1/DT-1).
+5. Audyt akcyzy (paliwa/alkohol/energia, e-DD, znaki) + podatku rolnego.
+6. Audyt jakości, temporalności, niezawodności.
+7. GENIALNE POMYSŁY (min. 12, rozbudowane).
+8. **KOD DO WDROŻENIA:** kompletne reguły PCC/lokalne/akcyza (domknięcie luki IX),
+   `pcc_engine.py` (detektor + PCC-3), `gmina_rates_engine.py`, `akcyza_classifier.py`,
+   `dn1_dt1_generator.py`, testy natywne `test_native_pcc.rego`, `test_native_local_taxes.rego`,
+   `test_native_akcyza.rego` + pytest; wpisy do thresholds; wpis do `main_jdg.rego`.
+9. Mapa drogowa + integracja z częściami 01, 02, 04, 10, 11, 12.
+10. Metryki sukcesu (LCI IX ≥ 99%, 0 niepilnowanych terminów, RV 100%).
+
+## 📐 FORMAT RAPORTU
+- Tytuł: „RAPORT GLM52 P14 — PCC / LOKALNE / AKCYZĄ (ENTERPRISE v9.x)”.
+- Język: polski, diagramy Mermaid, tabele pokrycia.
+- **Przeprowadź głębokie myślenie przed każdą sekcją i przeprowadź głęboką analizę każdego pliku** —
+  precyzja, profesjonalizm, zero nieporozumień. Zapisz jako `RAPORT_GLM52_P14_PCC_LOKALNE_AKCYZA.txt`.
+
+## 🔗 SUPLEMENT LINKÓW — PEŁNE POKRYCIE KATALOGU JDG (część 14)
+Poniższe pliki tej części pochodzą z pełnej inwentaryzacji katalogu JDG (rules/tools/docs/bundles/tests) —
+przeczytaj je i włącz do analizy, aby raport pokrył KAŻDY plik części:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/pcc_local_report11_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/pcc_lokalne_akcyza_report11_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p15_local_taxes_toolkit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p15_pcc_local_excise_toolkit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pcc_local_excise_auditor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pcc_local_report11_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pcc_lokalne_akcyza_report11_gate.py
+
+## 🔗 KOMBINACJE LINKÓW KRZYŻOWYCH (spójność międzyczęściowa)
+Analizuj poniższe pliki z INNYCH części RAZEM z plikami swojej części — to punkty styku
+(kontrakty techniczne: rule_id, werdykt 25-polowy, temporalność, thresholds), dzięki którym
+raport będzie spójny z CAŁĄ kampanią i silnik OPA zostanie wzmocniony z każdej strony:
+- (część P16) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/advertising/plan44_advertising.rego
+- (część P18) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/README.md
+- (część P01) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- (część P04) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery_gateway_enterprise.rego
+- (część P07) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cashflow_tax_predictor_enterprise.rego
+- (część P10) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pkpir_rates.rego
+- (część P12) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_crossborder_rates.rego
+- (część P13) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_business_lifecycle_rates.rego
+
+## 🧠 BUDŻET KONTEKSTU (powtórzenie)
+Materiał wejściowy ≤ 50% okna (~500K tokenów). Priorytet: `pcc_enterprise_complete.rego`,
+`micro/pcc/pcc.rego`, `micro/akcyza/akcyza.rego`, `local_procedures_enterprise.rego` — w całości.
+
+## 🔄 ZAKOŃCZENIE SESJI — WYCZYŚĆ OKNO KONTEKSTOWE
+1. Zapisz raport jako `RAPORT_GLM52_P14_PCC_LOKALNE_AKCYZA.txt`.
+2. Wykonaj polecenie **„WYCZYŚĆ OKNO KONTEKSTOWE”**: 10-linijkowe podsumowanie do
+   `NOTATKI_KAMPANII.txt`.
+3. Potwierdź: „OKNO WYCZYSZCZONE — gotowy na PROMPT 15 z 19 (RODO / AML / BDO)”.
+4. Użytkownik wkleja następny Prompt: `PROMPT_15_RODO_AML_BDO.txt`.

@@ -104,6 +104,7 @@ any_domain_active(domains) = true {
 decide := {
     "matched": true,
     "rule_id": "jdg.conflict_declaration.unresolved_conflict",
+    "_legal_basis": "P02 Sekcja 2",
     "package": "jdg.conflict_declaration",
     "priority": 100,
     "_cross_domain_conflicts": [{"conflict_id": c.conflict_id, "type": c.type} |
@@ -159,6 +160,7 @@ else := {
 conflict_simulator_verdict := {
     "matched": true,
     "rule_id": "jdg.conflict_declaration.simulator",
+    "_legal_basis": "P02 Sekcja 2",
     "package": "jdg.conflict_declaration",
     "priority": 200,
     "simulation": {

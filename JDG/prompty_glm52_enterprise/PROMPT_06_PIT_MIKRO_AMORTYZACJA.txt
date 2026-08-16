@@ -1,0 +1,166 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 06 z 19 — CZĘŚĆ: PIT MIKRO (ATOMOWE) + AMORTYZACJA + NKUP
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie podatku PIT w warstwie mikro-atomowej (per artykuł
+ustawy z 26.07.1991), amortyzacji (art. 22a–22o: KŚT, jednorazowa 100 000 EUR, samochody
+150 000/225 000 zł, stawki indywidualne, leasing), NKUP (art. 23 — 57 punktów wyłączeń) oraz
+jakości reguł OPA/Rego klasy ENTERPRISE (zero stubów, zero duplikatów, spójność micro↔macro).
+
+## ⚠️ KRYTYCZNE ZASADY
+1. **GENERUJESZ OGROMNY, ROZBUDOWANY RAPORT** `RAPORT_GLM52_P06_PIT_MIKRO_AMORTYZACJA.txt`
+   z **INTELIGENTNYM KODEM gotowym do wdrożenia** (reguły Rego atomowe, narzędzia Python, YAML,
+   testy natywne + pytest) — copy-paste do katalogu JDG.
+2. **NIE MODYFIKUJ PLIKÓW w repo** — produktem jest raport .txt.
+3. **CZYTAJ PLIKI PRZEZ LINKI GITHUB** podane niżej — nie szukaj katalogów na własną rękę.
+4. **BUDŻET KONTEKSTU:** dane wejściowe ≤ **50% okna GLM 5.2 (~500K tokenów)** — reszta na
+   głębokie myślenie, głęboką analizę i wygenerowanie rozwiązania. Plik `rules/micro/pit/pit.rego`
+   (811 reguł) czytaj fragmentarycznie (nagłówki sekcji, wzorce, no_match, duplikaty, stuby).
+
+## 🧠 OBOWIĄZKOWE NAKAZY GŁĘBOKIEGO MYŚLENIA (wymagane w całym raporcie — powtarzaj je w każdej sekcji)
+1. Przeprowadź głębokie myślenie przed każdą sekcją raportu; Przeprowadź głębokie myślenie przed każdą rekomendacją kodu; Przeprowadź głębokie myślenie przy weryfikacji całości pod kątem błędów i luk; Przeprowadź głębokie myślenie przy łączeniu wniosków z pozostałymi częściami kampanii.
+2. Przeprowadź głęboką analizę każdego pliku z listy; przeprowadź głęboką analizę powiązań między plikami; przeprowadź głęboką analizę zgodności reguł z aktami prawnymi (Bbb, LEGAL_REFERENCE_ACTS); przeprowadź głęboką analizę kontraktów spójności z innymi częściami kampanii.
+3. Każde rozwiązanie musi reprezentować zaawansowany poziom Enterprise; standardem minimalnym jest zaawansowany poziom Enterprise; jeśli propozycja nie osiąga celu: zaawansowany poziom Enterprise — odrzuć ją; wszystkie rekomendacje razem tworzą zaawansowany poziom Enterprise całego modułu.
+4. Silnik ma osiągnąć poziom ENTERPRISE w każdym wymiarze; poziom ENTERPRISE to próg minimalny, nie maksimum; każda sekcja raportu deklaruje osiągnięty poziom ENTERPRISE; ostateczny werdykt kampanii: poziom ENTERPRISE bez wyjątków.
+5. W każdej sekcji proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów; minimum 12 pozycji w kategorii: innowacyjne ulepszenia wyprzedzające profesjonalistów w rozdziale GENIALNE POMYSŁY; każdy obszar analizy kończ zestawem: innowacyjne ulepszenia wyprzedzające profesjonalistów; kod w raporcie ma być wynikiem: innowacyjne ulepszenia wyprzedzające profesjonalistów — bez tego raport nie spełnia standardu kampanii.
+## 📂 DOKUMENTY ŚWIĘTE (przeczytaj)
+- V1 — TARGET: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- V2 — WIZJA (kontynuacja V1): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- Stan obecny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Akty prawne (Bbb): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (pełne): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Dokument PIT MIKRO: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PIT_MICRO_P06.md
+
+## 📂 PLIKI TEJ CZĘŚCI DO ANALIZY (rules/micro/ + enterprise)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pit/pit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_pit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_pit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22a.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22i.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22k.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22n.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/nkup_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p06_pit_micro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p06_pit_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p07_pit_micro_atomic_v9.rego
+
+## 🧩 SPÓJNOŚĆ Z INNYMI CZĘŚCIAMI (kontrakty)
+- **Micro↔Macro binding (INV-018):** każda reguła mikro PIT musi być spójna z makro (PROMPT 05) —
+  stawki, progi, limity, momenty; zero rozjazdów. `pit_micro_inventory.json` (bundles/) — wskaźnik.
+- **Amortyzacja ↔ księgowość:** KŚT i stawki wspólne z PKPiR/UoR (PROMPT 10 — ewidencja środków
+  trwałych); jednorazowa amortyzacja 100 000 EUR (limit przychodów 2 000 000 EUR) — spójność.
+- **Amortyzacja ↔ VAT:** limity samochodów 150 000/225 000 zł (art. 22a) i odliczenie VAT 50%/100%
+  (art. 86a) — wspólny silnik limitów (PROMPT 02).
+- **NKUP ↔ KUP:** `nkup_enterprise_complete.rego` (59 reguł) — kompletny katalog art. 23;
+  spójność z `kup.rego` (PROMPT 05) i z klasyfikatorem wydatków.
+- Werdykt 25-polowy, rule_id unikalne, `_legal_basis` kanoniczne, progi z `data.thresholds.jdg.*`
+  (`depreciation_one_time_limit_eur` 100 000, `car_limit_150k`, `car_limit_225k`), wpis w
+  `main_jdg.rego` — kontrakty PROMPT 01.
+
+## 🎯 CEL ANALIZY — POZIOM ENTERPRISE
+**Przeprowadź głębokie myślenie i przeprowadź głęboką analizę** warstwy PIT MIKRO + amortyzacji +
+NKUP na **zaawansowanym poziomie Enterprise** — tak, by każdy artykuł (1–45) miał komplet reguł
+atomowych, amortyzacja była matematycznie bezbłędna (grosze, miesiące, limity), a NKUP pokrywały
+wszystkie 57 punktów art. 23 z przykładami i testami. Celem jest poziom ENTERPRISE z „super
+inteligentną siecią zależności już od jednej reguły”. Zaproponuj **innowacyjne ulepszenia
+wyprzedzające profesjonalistów**.
+
+### 1. AUDYT POKRYCIA ARTYKUŁÓW PIT MIKRO (POZIOM ENTERPRISE)
+- Mapa: artykuł (1–45) × reguły mikro × status (komplet/brak/stub) — wg klucza: 9 (strata),
+  10 (źródła), 13 (przychody), 14 (przychody z działalności), 22 (KUP), 22a–22o (amortyzacja),
+  23 (NKUP), 26 (odliczenia), 27 (skala), 30c (liniowy), 30ca (IP Box), 30f (CFC), 44 (zaliczki),
+  45 (zeznania).
+- Wskaż artykuły z „pustyni pokrycia” (wg LEGAL_TWIN_RAPORT: art. 23m–23zf TP, art. 26/26e/26g/26h
+  ulgi — patrz też PROMPT 07) i zaproponuj kompletne reguły atomowe.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** generator reguł mikro z LKG,
+  monitor pokrycia per artykuł w CI (LCI PIT ≥ 99%), „pit_micro_inventory.json” jako artefakt CI.
+
+### 2. AUDYT JAKOŚCI (POZIOM ENTERPRISE)
+- Stuby, duplikaty rule_id, reguły martwe, puste `_legal_basis` w `pit.rego` (811 reguł),
+  `plan33_pit.rego` (86), `plan34_pit.rego` (265) — pełne listy do naprawy; konflikty plan33/34↔pit.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** linter mikro z auto-fixem,
+  ranking ryzyka reguł, detektor dryfu micro↔macro (INV-018).
+
+### 3. AUDYT AMORTYZACJI (POZIOM ENTERPRISE — PRIORYTET)
+- Art. 22a–22o: środki trwałe i wartości niematerialne, KŚT (10 grup), stawki, metoda liniowa/
+  degresywna (art. 22k), jednorazowa (art. 22f: 100 000 EUR, limit przychodów 2 000 000 EUR),
+  samochody (art. 22a ust. 2: limity 150 000/225 000 zł), ulepszenia (art. 22g), likwidacja
+  (art. 23 ust. 1 pkt 1), składniki o niskiej wartości (10 000 zł), stawki indywidualne (art. 22j).
+- `pit_a22a.rego`, `pit_a22i.rego`, `pit_a22k.rego`, `pit_a22n.rego` — kompletność, grosze,
+  rozpoczęcie/zakończenie amortyzacji (pierwszy miesiąc następny po przyjęciu), zawieszenie.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** silnik amortyzacji z harmonogramem
+  per środek trwały (miesiąc po miesiącu z dowodem matematycznym), monitor limitu 100 000 EUR i
+  2 000 000 EUR, kalkulator wyboru metody (liniowa vs degresywna) z symulacją, detektor błędu
+  „amortyzacja przed przyjęciem”, integracja z ewidencją KŚT (PROMPT 10).
+
+### 4. AUDYT NKUP (POZIOM ENTERPRISE — PRIORYTET: art. 23)
+- Kompletność `nkup_enterprise_complete.rego` (59 reguł) vs 57 punktów art. 23: reprezentacja
+  (pkt 23), kara umowna (pkt 16), VAT (pkt 43), samochody (pkt 46–47), leasing (pkt 47), składki
+  (pkt 55 — wyjątek), darowizny, wydatki osobiste, amortyzacja nieodliczalna.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** klasyfikator wydatku→punkt art. 23
+  z drzewem decyzyjnym i przykładami, rejestr „wydatków wątpliwych” (SUGGEST), testy per punkt.
+
+### 5. AUDYT OBLICZEŃ I TEMPORALNOŚCI (POZIOM ENTERPRISE)
+- Grosze/zaokrąglenia (art. 63 OrdPU), okresy amortyzacji w miesiącach, zmiany limitów 2026,
+  golden replay historycznych wyliczeń amortyzacji; invariants (amortyzacja ≤ wartość początkowa,
+  suma odpisów ≥ 0).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** testy property-based dla każdej
+  metody amortyzacji, symulator nowelizacji (Law Radar), „dowód groszowy” w Decision Certificate.
+
+### 6. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+M.in.: silnik amortyzacji z harmonogramami i dowodem matematycznym; auto-KŚT (klasyfikacja
+środka → grupa → stawka); monitor limitów (100k EUR, 150k/225k, 10k); klasyfikator NKUP per
+punkt art. 23; linter mikro z auto-fixem; generator reguł mikro z LKG; ranking ryzyka reguł;
+detektor dryfu micro↔macro; symulator metody amortyzacji; rejestr wydatków wątpliwych; testy
+property-based; integracja amortyzacji z PKPiR (kolumna 14) i JPK (PROMPT 03/10).
+
+## 📋 WYMAGANE SEKCJE RAPORTU (min. 25–40 stron)
+1. Executive Summary — TOP 10 (priorytet: amortyzacja + NKUP + stuby).
+2. Mapa pokrycia artykułów PIT (tabela artykuł × reguła × status × luki).
+3. Audyt jakości (stuby, duplikaty, martwe, legal_basis) — pełne listy.
+4. Audyt amortyzacji (art. 22a–22o) — diagramy Mermaid (harmonogram, wybór metody).
+5. Audyt NKUP (art. 23 — 57 punktów) — mapa punktów × reguł.
+6. Audyt obliczeń, groszy, temporalności, niezawodności.
+7. GENIALNE POMYSŁY (min. 12, rozbudowane).
+8. **KOD DO WDROŻENIA:** kompletne reguły mikro dla brakujących artykułów, silnik
+   `depreciation_engine.py` (harmonogramy, limity, grosze), `nkup_classifier.py`, testy natywne
+   `test_native_pit_micro.rego`, `test_native_amortyzacja.rego` + pytest; wpisy do thresholds;
+   wpis do `main_jdg.rego`.
+9. Mapa drogowa + integracja z częściami 01, 05, 07, 10.
+10. Metryki sukcesu (LCI PIT ≥ 99%, zero stubów/duplikatów, RV 100%, amortyzacja zero błędów).
+
+## 📐 FORMAT RAPORTU
+- Tytuł: „RAPORT GLM52 P06 — PIT MIKRO + AMORTYZACJA + NKUP (ENTERPRISE v9.x)”.
+- Język: polski, diagramy Mermaid, tabele pokrycia.
+- **Przeprowadź głębokie myślenie przed każdą sekcją i przeprowadź głęboką analizę każdego pliku** —
+  precyzja, profesjonalizm, zero nieporozumień. Zapisz jako `RAPORT_GLM52_P06_PIT_MIKRO_AMORTYZACJA.txt`.
+
+## 🔗 SUPLEMENT LINKÓW — PEŁNE POKRYCIE KATALOGU JDG (część 06)
+Poniższe pliki tej części pochodzą z pełnej inwentaryzacji katalogu JDG (rules/tools/docs/bundles/tests) —
+przeczytaj je i włącz do analizy, aby raport pokrył KAŻDY plik części:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/pit_micro_inventory.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pit_micro_amortization_auditor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pit_micro_inventory.py
+
+## 🔗 KOMBINACJE LINKÓW KRZYŻOWYCH (spójność międzyczęściowa)
+Analizuj poniższe pliki z INNYCH części RAZEM z plikami swojej części — to punkty styku
+(kontrakty techniczne: rule_id, werdykt 25-polowy, temporalność, thresholds), dzięki którym
+raport będzie spójny z CAŁĄ kampanią i silnik OPA zostanie wzmocniony z każdej strony:
+- (część P08) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/insurance_tracker_enterprise.rego
+- (część P10) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pkpir_rates.rego
+- (część P12) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_crossborder_rates.rego
+- (część P15) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance.rego
+- (część P18) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/README.md
+- (część P02) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p02_vat_macro_innovations_v8.rego
+- (część P04) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery_gateway_enterprise.rego
+- (część P05) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances.rego
+
+## 🧠 BUDŻET KONTEKSTU (powtórzenie)
+Materiał wejściowy ≤ 50% okna (~500K tokenów). Priorytet: `pit.rego` fragmentarycznie,
+`nkup_enterprise_complete.rego` i `micro/amortyzacja/*` w całości.
+
+## 🔄 ZAKOŃCZENIE SESJI — WYCZYŚĆ OKNO KONTEKSTOWE
+1. Zapisz raport jako `RAPORT_GLM52_P06_PIT_MIKRO_AMORTYZACJA.txt`.
+2. Wykonaj polecenie **„WYCZYŚĆ OKNO KONTEKSTOWE”**: 10-linijkowe podsumowanie do
+   `NOTATKI_KAMPANII.txt`.
+3. Potwierdź: „OKNO WYCZYSZCZONE — gotowy na PROMPT 07 z 19 (ULGI + OPTYMALIZACJA)”.
+4. Użytkownik wkleja następny Prompt: `PROMPT_07_ULGI_OPTYMALIZACJA.txt`.

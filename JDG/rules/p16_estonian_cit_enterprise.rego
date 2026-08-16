@@ -24,7 +24,7 @@ import future.keywords.if
 import future.keywords.in
 
 default decide := {
-    "matched": false, "rule_id": "jdg.estonian_cit.no_match",
+    "matched": false, "rule_id": "jdg.estonian_cit.no_match", "_legal_basis": "ustawa o CIT (Dz.U. 2023 poz. 2805 ze zm.)",
     "valid_from":"2024-01-01","valid_to":"9999-12-31","temporal_source":"Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osob fizycznych"
     "package": "jdg.estonian_cit", "priority": 9999
 }
@@ -73,6 +73,7 @@ decide := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.estonian_cit.eligibility",
+        "_legal_basis": "ustawa o CIT (Dz.U. 2023 poz. 2805 ze zm.)",
         "package": "jdg.estonian_cit",
         "priority": 100,
         "action": "CHECK_ESTONIAN_CIT_ELIGIBILITY",
@@ -132,6 +133,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.estonian_cit.tax_calculator",
+        "_legal_basis": "ustawa o CIT (Dz.U. 2023 poz. 2805 ze zm.)",
         "package": "jdg.estonian_cit",
         "priority": 200,
         "action": "CALCULATE_ESTONIAN_CIT",
@@ -202,6 +204,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.estonian_cit.jdg_to_spzoo_simulator",
+        "_legal_basis": "ustawa o CIT (Dz.U. 2023 poz. 2805 ze zm.)",
         "package": "jdg.estonian_cit",
         "priority": 300,
         "action": "SIMULATE_JDG_TO_ECIT",
@@ -253,6 +256,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.estonian_cit.compliance",
+        "_legal_basis": "ustawa o CIT (Dz.U. 2023 poz. 2805 ze zm.)",
         "package": "jdg.estonian_cit",
         "priority": 400,
         "action": "CHECK_ECIT_COMPLIANCE",

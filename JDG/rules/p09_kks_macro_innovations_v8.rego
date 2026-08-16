@@ -23,6 +23,8 @@ default decide := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.penalty_simulator",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 1000,
     "innovation": "INN01_KKS_PENALTY_SIMULATOR",
@@ -39,6 +41,8 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.voluntary_disclosure_gen",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 2000,
     "innovation": "INN02_VOLUNTARY_DISCLOSURE_AUTO",
@@ -55,6 +59,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.recidivism_calculator",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 3000,
     "innovation": "INN03_RECIDIVISM_CALCULATOR",
@@ -71,6 +77,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.limitations_calendar",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 4000,
     "innovation": "INN04_STATUTE_LIMITATIONS_CALENDAR",
@@ -88,6 +96,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.blank_invoice_shield",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 5000,
     "innovation": "INN05_BLANK_INVOICE_SHIELD",
@@ -104,6 +114,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.books_integrity_monitor",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 6000,
     "innovation": "INN06_BOOKS_INTEGRITY_MONITOR",
@@ -119,6 +131,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.tax_evasion_scorer",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 7000,
     "innovation": "INN07_TAX_EVASION_RISK_SCORER",
@@ -135,6 +149,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.kks_completeness_matrix",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 8000,
     "innovation": "INN08_KKS_COMPLETENESS_MATRIX",
@@ -152,6 +168,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.penalty_gradation",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 9000,
     "innovation": "INN09_PENALTY_GRADATION_VISUALIZER",
@@ -168,6 +186,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.audit_defense_pack",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 10000,
     "innovation": "INN10_KKS_AUDIT_DEFENSE_PACK",
@@ -183,6 +203,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.art55_intent_form",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 20000,
     "innovation": "GAP_ART55_FORM_OF_OFFENSE",
@@ -199,6 +221,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.art62_par3_mandatory",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 20001,
     "innovation": "GAP_ART62_PAR3_MANDATORY_PRISON",
@@ -217,6 +241,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.art53_authority_limits",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 20002,
     "innovation": "GAP_ART53_AUTHORITY_LIMITS",
@@ -232,6 +258,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p09_innovations.coverage_summary",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p09_innovations",
     "priority": 99999,
     "innovation": "P09_COVERAGE_SUMMARY",

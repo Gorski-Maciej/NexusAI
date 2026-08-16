@@ -509,6 +509,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p05.estonian.investment_alternative",
+    "_legal_basis": "Art. 26e ust. 2 pkt 1 PIT (min. 50% czasu pracy na B+R)",
     "package": "jdg.p05_innovations",
     "priority": 185,
     "pit_form": "ESTONIAN_CIT",
@@ -546,6 +547,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p05.estonian.shareholder_legal_entity_check",
+    "_legal_basis": "Art. 26e ust. 2 pkt 1 PIT (min. 50% czasu pracy na B+R)",
     "package": "jdg.p05_innovations",
     "priority": 186,
     "pit_form": "ESTONIAN_CIT",
@@ -616,6 +618,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p05.estonian.cit_rate_breakdown",
+    "_legal_basis": "Art. 26e ust. 2 pkt 1 PIT (min. 50% czasu pracy na B+R)",
     "package": "jdg.p05_innovations",
     "priority": 188,
     "pit_form": "ESTONIAN_CIT",
@@ -1164,6 +1167,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p05.exit_tax.upo_treaty_analyzer",
+    "_legal_basis": "Art. 26e ust. 2 pkt 1 PIT (min. 50% czasu pracy na B+R)",
     "package": "jdg.p05_innovations",
     "priority": 2000,
     "exit_tax_upo_country": country,
@@ -1217,6 +1221,7 @@ build_upo_warnings(country, exists, method, wht, rec) = warnings {
 else := {
     "matched": true,
     "rule_id": "jdg.p05.exit_tax.transfer_pricing_threshold",
+    "_legal_basis": "Art. 26e ust. 2 pkt 1 PIT (min. 50% czasu pracy na B+R)",
     "package": "jdg.p05_innovations",
     "priority": 2010,
     "exit_tax_tp_threshold_2m_pln": 2000000,

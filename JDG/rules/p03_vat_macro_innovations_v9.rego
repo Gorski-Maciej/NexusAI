@@ -38,6 +38,7 @@
 
 package jdg.p03_vat_macro_innovations
 
+import data.jdg.thresholds
 import future.keywords.if
 import future.keywords.in
 
@@ -92,12 +93,13 @@ category_implies_rule(rule) = true {
 oss_analysis := {
     "matched": true,
     "rule_id": "jdg.p03_vat_macro_innovations.oss_analysis",
+    "_legal_basis": "Art. 28m-28o VAT + Art. 130a-130c VAT",
     "package": "jdg.p03_vat_macro_innovations",
     "priority": 100,
     "oss": {
         "cross_border_b2c_eu_value": object.get(input.jdg_entrepreneur, "eu_b2c_services_value_eur", 0),
-        "oss_threshold_eur": 10000,
-        "oss_required": object.get(input.jdg_entrepreneur, "eu_b2c_services_value_eur", 0) > 10000,
+        "oss_threshold_eur": thresholds.vat.oss_threshold_eur,
+        "oss_required": object.get(input.jdg_entrepreneur, "eu_b2c_services_value_eur", 0) > thresholds.vat.oss_threshold_eur,
         "ioss_required": object.get(input.invoice, "ioss_import_applies", false) == true,
         "note": "Powyżej 10 000 EUR rocznie sprzedaży B2C usług elektronicznych do UE — rejestracja OSS (kraj siedziby), VAT wg kraju konsumenta"
     },
@@ -107,7 +109,7 @@ oss_analysis := {
     "_warnings": ["OSS: przekroczenie progu 10 000 EUR sprzedaży B2C do UE — rozważ rejestrację OSS w kraju siedziby, VAT wg stawek kraju konsumenta."]
 } {
     object.get(input.jdg_entrepreneur, "vat_pos_check", false) == true
-    object.get(input.jdg_entrepreneur, "eu_b2c_services_value_eur", 0) > 10000
+    object.get(input.jdg_entrepreneur, "eu_b2c_services_value_eur", 0) > thresholds.vat.oss_threshold_eur
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -121,6 +123,7 @@ ksef_mandatory_date := "2026-02-01"
 ksef_readiness := {
     "matched": true,
     "rule_id": "jdg.p03_vat_macro_innovations.ksef_readiness",
+    "_legal_basis": "Art. 28m-28o VAT + Art. 130a-130c VAT",
     "package": "jdg.p03_vat_macro_innovations",
     "priority": 200,
     "ksef": {
@@ -181,6 +184,7 @@ vat_thresholds_snapshot := {
 vat_refund_forecast := {
     "matched": true,
     "rule_id": "jdg.p03_vat_macro_innovations.refund_forecast",
+    "_legal_basis": "Art. 28m-28o VAT + Art. 130a-130c VAT",
     "package": "jdg.p03_vat_macro_innovations",
     "priority": 300,
     "refund": {
@@ -236,6 +240,7 @@ simulation_period_years := 10 {
 correction_simulator := {
     "matched": true,
     "rule_id": "jdg.p03_vat_macro_innovations.correction_simulator",
+    "_legal_basis": "Art. 28m-28o VAT + Art. 130a-130c VAT",
     "package": "jdg.p03_vat_macro_innovations",
     "priority": 310,
     "simulation": {
@@ -277,6 +282,7 @@ gtu_keyword_map := {
 auto_gtu := {
     "matched": true,
     "rule_id": "jdg.p03_vat_macro_innovations.auto_gtu",
+    "_legal_basis": "Art. 28m-28o VAT + Art. 130a-130c VAT",
     "package": "jdg.p03_vat_macro_innovations",
     "priority": 320,
     "gtu": {
@@ -314,6 +320,8 @@ detected_gtu := gtu {
 vat_law_change_forecast := {
     "matched": true,
     "rule_id": "jdg.p03_vat_macro_innovations.law_change_forecast",
+    "_routing": "",
+    "_legal_basis": "Art. 28m-28o VAT + Art. 130a-130c VAT",
     "package": "jdg.p03_vat_macro_innovations",
     "priority": 330,
     "law_changes": object.get(data.jdg, "vat_law_changelog", []),
@@ -328,6 +336,7 @@ vat_law_change_forecast := {
 vat_obligations_calendar := {
     "matched": true,
     "rule_id": "jdg.p03_vat_macro_innovations.obligations_calendar",
+    "_legal_basis": "Art. 28m-28o VAT + Art. 130a-130c VAT",
     "package": "jdg.p03_vat_macro_innovations",
     "priority": 340,
     "calendar": [
@@ -364,6 +373,7 @@ package_decisions := object.get(input, "_package_decisions", {})
 decide := {
     "matched": true,
     "rule_id": "jdg.p03_vat_macro_innovations.report",
+    "_legal_basis": "Art. 28m-28o VAT + Art. 130a-130c VAT",
     "package": "jdg.p03_vat_macro_innovations",
     "priority": 400,
     "p03_vat_macro": {

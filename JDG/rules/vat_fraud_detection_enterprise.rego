@@ -26,6 +26,7 @@
 
 package jdg.vat_fraud_detection
 
+import data.jdg.thresholds
 import future.keywords.if
 import future.keywords.in
 
@@ -53,7 +54,7 @@ counterparty_risk_score := sum([
 transaction_risk_score := sum([
     25 | object.get(input.invoice, "is_fraud_graph_match", false) == true
 ] + [
-    20 | object.get(input.invoice, "amount_net", 0) > 0 and round(object.get(input.invoice, "amount_net", 0) / 100) * 100 == object.get(input.invoice, "amount_net", 0) and object.get(input.invoice, "amount_net", 0) >= 1000
+    20 | object.get(input.invoice, "amount_net", 0) > 0 and round(object.get(input.invoice, "amount_net", 0) / 100) * 100 == object.get(input.invoice, "amount_net", 0) and object.get(input.invoice, "amount_net", 0) >= thresholds.vat.fraud_round_amount_min
 ] + [
     15 | object.get(input.invoice, "price_below_market_pct", 0) >= 30
 ] + [
@@ -84,6 +85,7 @@ fraud_score_decision := "HIGH" {
 empty_invoice_detection := {
     "matched": true,
     "rule_id": "jdg.vat_fraud_detection.empty_invoice",
+    "_legal_basis": "Art. 62-63, 76-77 KKS + art. 108 VAT",
     "package": "jdg.vat_fraud_detection",
     "priority": 100,
     "fraud": {
@@ -118,6 +120,7 @@ empty_invoice_signals := [
 carousel_detection := {
     "matched": true,
     "rule_id": "jdg.vat_fraud_detection.carousel",
+    "_legal_basis": "Art. 62-63, 76-77 KKS + art. 108 VAT",
     "package": "jdg.vat_fraud_detection",
     "priority": 200,
     "fraud": {
@@ -150,6 +153,7 @@ carousel_signals := [
 vanishing_trader_detection := {
     "matched": true,
     "rule_id": "jdg.vat_fraud_detection.vanishing_trader",
+    "_legal_basis": "Art. 62-63, 76-77 KKS + art. 108 VAT",
     "package": "jdg.vat_fraud_detection",
     "priority": 300,
     "fraud": {
@@ -182,6 +186,7 @@ vanishing_signals := [
 solidary_fraud_liability := {
     "matched": true,
     "rule_id": "jdg.vat_fraud_detection.solidary_liability",
+    "_legal_basis": "Art. 62-63, 76-77 KKS + art. 108 VAT",
     "package": "jdg.vat_fraud_detection",
     "priority": 400,
     "fraud": {
@@ -212,6 +217,7 @@ solidary_basis := "KNOWLEDGE_OF_FRAUD" {
 decide := {
     "matched": true,
     "rule_id": "jdg.vat_fraud_detection.report",
+    "_legal_basis": "Art. 62-63, 76-77 KKS + art. 108 VAT",
     "package": "jdg.vat_fraud_detection",
     "priority": 500,
     "fraud_audit": {

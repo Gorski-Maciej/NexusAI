@@ -154,6 +154,7 @@ amortization_calculator := {
 kst_rate_verifier := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_innovations.kst_rate_verifier",
+    "_legal_basis": "P06 Sekcja 1 + MANIFEST.md",
     "package": "jdg.p06_pit_micro_innovations",
     "priority": 210,
     "verification": {
@@ -178,6 +179,7 @@ kst_rate_verifier := {
 one_time_amortization := {
     "matched": true,
     "rule_id": "jdg.p06_pit_micro_innovations.one_time_amortization",
+    "_legal_basis": "P06 Sekcja 1 + MANIFEST.md",
     "package": "jdg.p06_pit_micro_innovations",
     "priority": 220,
     "audit": {
@@ -209,6 +211,7 @@ small_taxpayer_ok := true {
 car_depreciation_audit := {
     "matched": true,
     "rule_id": "jdg.p06_pit_micro_innovations.car_depreciation_audit",
+    "_legal_basis": "P06 Sekcja 1 + MANIFEST.md",
     "package": "jdg.p06_pit_micro_innovations",
     "priority": 230,
     "audit": {
@@ -238,6 +241,7 @@ car_limit := amort_limits.CAR_LIMIT_ELECTRIC {
 individual_rate_audit := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_innovations.individual_rate_audit",
+    "_legal_basis": "P06 Sekcja 1 + MANIFEST.md",
     "package": "jdg.p06_pit_micro_innovations",
     "priority": 240,
     "audit": {
@@ -268,6 +272,7 @@ pit_dead_rules := object.get(audit_data, "dead_rules", [])
 pit_stub_duplicate_report := {
     "matched": true,
     "rule_id": "jdg.p06_pit_micro_innovations.pit_stub_duplicate_report",
+    "_legal_basis": "P06 Sekcja 1 + MANIFEST.md",
     "package": "jdg.p06_pit_micro_innovations",
     "priority": 300,
     "audit": {
@@ -307,6 +312,7 @@ pit_priority_issues := [m |
 pit_micro_macro_report := {
     "matched": true,
     "rule_id": "jdg.p06_pit_micro_innovations.pit_micro_macro_report",
+    "_legal_basis": "P06 Sekcja 1 + MANIFEST.md",
     "package": "jdg.p06_pit_micro_innovations",
     "priority": 400,
     "consistency": {
@@ -343,6 +349,7 @@ combined_income := sum([i | some i in object.get(input.jdg_entrepreneur, "income
 pit_math_audit := {
     "matched": true,
     "rule_id": "jdg.p06_pit_micro_innovations.pit_math_audit",
+    "_legal_basis": "P06 Sekcja 1 + MANIFEST.md",
     "package": "jdg.p06_pit_micro_innovations",
     "priority": 500,
     "audit": {
@@ -381,6 +388,7 @@ pit_micro_pipeline := {
 amort_pit_impact := {
     "matched": true,
     "rule_id": "jdg.p06_pit_micro_innovations.amort_pit_impact",
+    "_legal_basis": "P06 Sekcja 1 + MANIFEST.md",
     "package": "jdg.p06_pit_micro_innovations",
     "priority": 600,
     "impact": {
@@ -425,6 +433,7 @@ pit_temporal_engine := {
 kst_misclassification := {
     "matched": true,
     "rule_id": "jdg.p06_pit_micro_innovations.kst_misclassification",
+    "_legal_basis": "P06 Sekcja 1 + MANIFEST.md",
     "package": "jdg.p06_pit_micro_innovations",
     "priority": 610,
     "detected": {
@@ -446,6 +455,7 @@ kst_misclassification := {
 amort_method_optimizer := {
     "matched": true,
     "rule_id": "jdg.p06_pit_micro_innovations.amort_method_optimizer",
+    "_legal_basis": "P06 Sekcja 1 + MANIFEST.md",
     "package": "jdg.p06_pit_micro_innovations",
     "priority": 620,
     "comparison": {
@@ -484,6 +494,7 @@ pit_proof_of_correctness := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p06_pit_micro_innovations.report",
+    "_legal_basis": "P06 Sekcja 1 + MANIFEST.md",
     "package": "jdg.p06_pit_micro_innovations",
     "priority": 700,
     "p06_pit_micro": {

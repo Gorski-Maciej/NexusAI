@@ -56,13 +56,17 @@ decide := {
     amount_gross := object.get(input.invoice, "amount_gross", 0)
     helpers.jdg_is_mpp_sensitive(input.invoice.category_code)
 
-    # Wykryj progową kwotę (14 999 - 15 001 PLN) jako alert
+    # Wykryj progową kwotę (mpp_threshold - 1 .. mpp_threshold + 1) jako alert
+    # ADR-002: granice liczone od zewnętrznego progu (art. 108a VAT — 15 000 zł)
+    mpp_threshold := object.get(thresholds.misc, "mpp_mandatory_threshold", 15000)
+    boundary_low := mpp_threshold - 1
+    boundary_high := mpp_threshold + 1
     boundary_detected = true {
-        amount_gross >= 14999
-        amount_gross <= 15001
+        amount_gross >= boundary_low
+        amount_gross <= boundary_high
     }
-    boundary_detected = false { amount_gross < 14999 }
-    boundary_detected = false { amount_gross > 15001 }
+    boundary_detected = false { amount_gross < boundary_low }
+    boundary_detected = false { amount_gross > boundary_high }
 
     routing = "TRIAGE_QUEUE" { boundary_detected == true }
     routing = "" { boundary_detected == false }
@@ -306,7 +310,7 @@ else := {
     "zus_social_base_type": "", "zus_health_rate": "",
     "business_status": "", "ceidg_registration_required": false,
     "oss_applicable": oss_applicable,
-    "oss_threshold_eur": 10000,
+    "oss_threshold_eur": thresholds.vat.oss_threshold_eur,
     "oss_annual_eur": annual_eur_services,
     "oss_threshold_exceeded": threshold_exceeded,
     "_routing": routing,
@@ -320,7 +324,7 @@ else := {
 
     annual_eur_services := object.get(input.jdg_entrepreneur, "annual_e_services_eur", 0)
 
-    oss_threshold := 10000
+    oss_threshold := thresholds.vat.oss_threshold_eur
     threshold_exceeded = true { annual_eur_services > oss_threshold }
     threshold_exceeded = false
 

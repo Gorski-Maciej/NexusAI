@@ -117,6 +117,7 @@ int_temp_effective_rate := base_interest_rate if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r08_ordynacja_obrona_innovations.interest_calculator_temporal",
+    "_legal_basis": "OrdPU art. 53-56, 56b; art. 67b (opłata prolongacyjna); art. 78 (nadpłata)",
     "package": "jdg.r08_ordynacja_obrona_innovations",
     "priority": 11001,
     "decision_mode": "SUGGEST",
@@ -310,6 +311,7 @@ corr_deadline_days := object.get(corr_template, "deadline_days", 0)
 decide := {
     "matched": true,
     "rule_id": "jdg.r08_ordynacja_obrona_innovations.correspondence_autopack",
+    "_legal_basis": "OrdPU art. 53-56, 56b; art. 67b (opłata prolongacyjna); art. 78 (nadpłata)",
     "package": "jdg.r08_ordynacja_obrona_innovations",
     "priority": 11003,
     "decision_mode": "SUGGEST",
@@ -382,6 +384,7 @@ judg_recommendation := "Rozważ odwołanie do NSA / skargę do WSA — wysoka sz
 decide := {
     "matched": true,
     "rule_id": "jdg.r08_ordynacja_obrona_innovations.judgment_predictor_wsa_nsa",
+    "_legal_basis": "OrdPU art. 53-56, 56b; art. 67b (opłata prolongacyjna); art. 78 (nadpłata)",
     "package": "jdg.r08_ordynacja_obrona_innovations",
     "priority": 11004,
     "decision_mode": "SUGGEST",
@@ -448,6 +451,7 @@ lim_decision_hash_input := concat("|", [sprintf("%s:%d", [i.liability_type, i.ta
 decide := {
     "matched": true,
     "rule_id": "jdg.r08_ordynacja_obrona_innovations.limitation_evidence_monitor",
+    "_legal_basis": "OrdPU art. 53-56, 56b; art. 67b (opłata prolongacyjna); art. 78 (nadpłata)",
     "package": "jdg.r08_ordynacja_obrona_innovations",
     "priority": 11005,
     "decision_mode": "SUGGEST",

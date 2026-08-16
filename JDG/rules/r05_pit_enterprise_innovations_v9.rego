@@ -91,6 +91,7 @@ annual_ready := count(annual_missing) == 0 and annual_expected_form != ""
 annual_autopilot := {
     "matched": true,
     "rule_id": "jdg.r05_pit_enterprise_innovations.annual_autopilot",
+    "_legal_basis": "Art. 44, 45 PIT + rozporządzenie MF ws. wzorów zeznań PIT (2025-12-30)",
     "package": "jdg.r05_pit_enterprise_innovations",
     "priority": 300,
     "autopilot": {
@@ -222,6 +223,7 @@ _fold_min(forms, idx, best_form, best_total) := acc {
 ft3_forecast := {
     "matched": true,
     "rule_id": "jdg.r05_pit_enterprise_innovations.form_transition_3y",
+    "_legal_basis": "Art. 44, 45 PIT + rozporządzenie MF ws. wzorów zeznań PIT (2025-12-30)",
     "package": "jdg.r05_pit_enterprise_innovations",
     "priority": 298,
     "forecast": {
@@ -298,6 +300,7 @@ sd_risk := "LOW" {
 strategic_decision_score := {
     "matched": true,
     "rule_id": "jdg.r05_pit_enterprise_innovations.strategic_decision_score",
+    "_legal_basis": "Art. 44, 45 PIT + rozporządzenie MF ws. wzorów zeznań PIT (2025-12-30)",
     "package": "jdg.r05_pit_enterprise_innovations",
     "priority": 296,
     "scoring": {
@@ -343,6 +346,7 @@ jh_revenue_consistent := abs(jh_revenue_delta) <= object.get(_th_pit, "jpk_toler
 jpk_harmonization := {
     "matched": true,
     "rule_id": "jdg.r05_pit_enterprise_innovations.jpk_harmonization",
+    "_legal_basis": "Art. 44, 45 PIT + rozporządzenie MF ws. wzorów zeznań PIT (2025-12-30)",
     "package": "jdg.r05_pit_enterprise_innovations",
     "priority": 294,
     "harmonization": {
@@ -375,6 +379,7 @@ abs(v) := v {
 decide := {
     "matched": true,
     "rule_id": "jdg.r05_pit_enterprise_innovations.pit_enterprise_report",
+    "_legal_basis": "Art. 44, 45 PIT + rozporządzenie MF ws. wzorów zeznań PIT (2025-12-30)",
     "package": "jdg.r05_pit_enterprise_innovations",
     "priority": 305,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "vat_exemption": "", "procedure": "",

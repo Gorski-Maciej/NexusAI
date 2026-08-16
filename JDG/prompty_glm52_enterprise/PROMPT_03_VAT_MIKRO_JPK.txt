@@ -1,0 +1,169 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 03 z 19 — CZĘŚĆ: VAT MIKRO (ATOMOWE) + JPK
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie podatku VAT (art. 5–138 ustawy z 11.03.2004),
+architektury dwuwarstwowej reguł OPA/Rego (Macro ↔ Micro — Dual-Layer), struktury JPK_VAT
+z deklaracją (rozporządzenie MF z 15.07.2025), mapowania artykułów na reguły atomowe oraz
+inżynierii jakości reguł klasy ENTERPRISE (zero stubów, zero duplikatów, spójność micro↔macro).
+
+## ⚠️ KRYTYCZNE ZASADY
+1. **GENERUJESZ OGROMNY, ROZBUDOWANY RAPORT** `RAPORT_GLM52_P03_VAT_MIKRO_JPK.txt` z
+   **INTELIGENTNYM KODEM gotowym do wdrożenia** (reguły Rego atomowe, testy natywne, narzędzia
+   Python, YAML) — copy-paste do katalogu JDG.
+2. **NIE MODYFIKUJ PLIKÓW w repo** — produktem jest raport .txt.
+3. **CZYTAJ PLIKI PRZEZ LINKI GITHUB** podane niżej — nie szukaj katalogów na własną rękę.
+4. **BUDŻET KONTEKSTU:** dane wejściowe ≤ **50% okna GLM 5.2 (~500K tokenów)**. Plik
+   `rules/micro/vat/vat.rego` (~1100 reguł) czytaj fragmentarycznie: nagłówki sekcji, wzorce
+   reguł, no_match, duplikaty, stuby.
+
+## 🧠 OBOWIĄZKOWE NAKAZY GŁĘBOKIEGO MYŚLENIA (wymagane w całym raporcie — powtarzaj je w każdej sekcji)
+1. Przeprowadź głębokie myślenie przed każdą sekcją raportu; Przeprowadź głębokie myślenie przed każdą rekomendacją kodu; Przeprowadź głębokie myślenie przy weryfikacji całości pod kątem błędów i luk; Przeprowadź głębokie myślenie przy łączeniu wniosków z pozostałymi częściami kampanii.
+2. Przeprowadź głęboką analizę każdego pliku z listy; przeprowadź głęboką analizę powiązań między plikami; przeprowadź głęboką analizę zgodności reguł z aktami prawnymi (Bbb, LEGAL_REFERENCE_ACTS); przeprowadź głęboką analizę kontraktów spójności z innymi częściami kampanii.
+3. Każde rozwiązanie musi reprezentować zaawansowany poziom Enterprise; standardem minimalnym jest zaawansowany poziom Enterprise; jeśli propozycja nie osiąga celu: zaawansowany poziom Enterprise — odrzuć ją; wszystkie rekomendacje razem tworzą zaawansowany poziom Enterprise całego modułu.
+4. Silnik ma osiągnąć poziom ENTERPRISE w każdym wymiarze; poziom ENTERPRISE to próg minimalny, nie maksimum; każda sekcja raportu deklaruje osiągnięty poziom ENTERPRISE; ostateczny werdykt kampanii: poziom ENTERPRISE bez wyjątków.
+5. W każdej sekcji proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów; minimum 12 pozycji w kategorii: innowacyjne ulepszenia wyprzedzające profesjonalistów w rozdziale GENIALNE POMYSŁY; każdy obszar analizy kończ zestawem: innowacyjne ulepszenia wyprzedzające profesjonalistów; kod w raporcie ma być wynikiem: innowacyjne ulepszenia wyprzedzające profesjonalistów — bez tego raport nie spełnia standardu kampanii.
+## 📂 DOKUMENTY ŚWIĘTE (przeczytaj)
+- V1 — TARGET: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- V2 — WIZJA (kontynuacja V1): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- Stan obecny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Akty prawne (Bbb): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (pełne): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Dokument VAT MIKRO: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_MICRO_P04.md
+
+## 📂 PLIKI TEJ CZĘŚCI DO ANALIZY — VAT MIKRO + JPK (rules/micro/)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/r03_vat_micro_articles.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/ksef_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/margin_scheme_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/place_of_supply_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/proportion_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/wdt_export_import.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/jpk/jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk/plan26_deadlines.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p03_vat_micro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p04_vat_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p05_vat_micro_atomic_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r03_vat_micro_innovations_v9.rego
+
+## 🧩 SPÓJNOŚĆ Z INNYMI CZĘŚCIAMI (kontrakty)
+- **Macro↔Micro binding:** każda reguła mikro (per artykuł) musi mieć odpowiednik/walidację w
+  warstwie macro (PROMPT 02) — invariant INV-018 (spójność micro↔macro), zero rozjazdów stawek.
+- **JPK_V7:** rejestry sprzedaży/zakupu + deklaracja VAT-7/VAT-7K; pola K_* zgodne z rozporządzeniem
+  MF z 15.07.2025; GTU (Zał. 15); MPP; kursy walut — integracja z PROMPT 04 (KSeF) i PROMPT 02.
+- Werdykt 25-polowy, rule_id unikalne, `_legal_basis` kanoniczne, progi z `data.thresholds.jdg.*`,
+  wpis w `main_jdg.rego` (import + safe_merge) — kontrakty PROMPT 01.
+- Temporalność: art. 19a (moment obowiązku), SLIM VAT 3, KSeF 2026 — jak w PROMPT 02.
+
+## 🎯 CEL ANALIZY — POZIOM ENTERPRISE
+**Przeprowadź głębokie myślenie i przeprowadź głęboką analizę** warstwy VAT MIKRO na
+**zaawansowanym poziomie Enterprise** — tak, by każdy artykuł ustawy o VAT miał komplet reguł
+atomowych, a warstwa mikro była w 100% spójna z makro, z zero stubów (reguły `{true}` pasujące
+do wszystkiego), zero duplikatów rule_id i pełnym `_legal_basis`. Celem jest poziom ENTERPRISE,
+w którym „duża złożoność przepisów = super inteligentna sieć zależności już od jednej reguły”,
+zapewniająca transparentność i niezawodność. Zaproponuj **innowacyjne ulepszenia wyprzedzające
+profesjonalistów**.
+
+### 1. AUDYT POKRYCIA ARTYKUŁÓW (POZIOM ENTERPRISE)
+- Sporządź mapę: artykuł ustawy o VAT (5–138) × reguły mikro × status (komplet/brak/stub) —
+  wg kluczowych artykułów: 5–14 (czynności), 15–18 (podatnicy), 19a–21 (obowiązek), 22 (dostawa
+  łańcuchowa), 28a–28o (miejsce), 29a–32 (podstawa), 41–42 (stawki), 43 (zwolnienia), 86–96
+  (odliczenia), 99 (deklaracje), 103 (terminy), 106a–106n (faktury), 108a–108f (MPP), 113
+  (zwolnienie), 115–118 (RR), 120 (marża), 126–130 (OSS/IOSS).
+- Wskaż artykuły z „pustyni pokrycia” (wg LEGAL_TWIN_RAPORT: m.in. art. 42a–42h WIS) i zaproponuj
+  kompletne reguły atomowe dla każdego z nich.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** generator reguł mikro z LKG
+  (każdy węzeł prawny → szablon reguły), monitor pokrycia per artykuł w CI (LCI VAT ≥ 99%).
+
+### 2. AUDYT JAKOŚCI REGUŁ MIKRO (POZIOM ENTERPRISE)
+- Wykryj stuby (reguły `{true}` bez warunków — np. wzorzec `business_type == "JDG"` tylko),
+  duplikaty rule_id, reguły martwe (nigdy nie dopasowane), reguły z pustym `_legal_basis`.
+- Przeanalizuj `plan33_vat.rego` (112 reguł) i `plan34_vat.rego` (179 reguł) — kompletność vs
+  `vat.rego` (~1100), różnice stawek/limitów, konflikty między plan33/plan34 a vat.rego.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** linter mikro (10 kontroli: stub,
+  duplikat, tautologia, hardcode, legal_basis, konflikt z macro), auto-fix script, ranking
+  „reguł podejrzanych” wg prawdopodobieństwa błędu.
+
+### 3. AUDYT JPK_VAT (POZIOM ENTERPRISE)
+- `jpk.rego` + `plan33_jpk.rego` + `plan26_deadlines.rego` — kompletność struktury JPK_V7M/V7K:
+  sekcje sprzedaży (K_10–K_49), zakupów (K_70–K_89), deklaracji (P_*), GTU, procedury (RO, WSTO_EE…).
+- Walidacja JPK przed wysyłką: suma kontrolne, zgodność z KSeF (faktury ustrukturyzowane),
+  korekty JPK (korekta deklaracji po terminie), terminy (25. dzień; weekend → przesunięcie).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** generator JPK z werdyktów (0 ręcznej
+  pracy), walidator XSD offline, auto-korekta JPK przy zmianie werdyktu, detektor różnic
+  JPK↔PKPiR↔KSeF (uzgodnienie 3-drożne), monitor terminów z alertami (art. 12 § 5 OP).
+
+### 4. AUDYT MIKRO-MECHANIZMÓW SPECJALNYCH (POZIOM ENTERPRISE)
+- Marża (art. 120), proporcja (art. 90), WDT/eksport/import (art. 13/2 pkt 8/41 ust. 4/97),
+  KSeF mikro (faktury uproszczone), miejsce świadczenia mikro (28a–28n).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** symulator marży per transakcja,
+  kalkulator proporcji wstępnej z korektą, tracker WDT z countdownem 30 dni.
+
+### 5. AUDYT TEMPORALNOŚCI I NIEZAWODNOŚCI (POZIOM ENTERPRISE)
+- valid_from/valid_to per reguła mikro; testy graniczne dzień-1/0/+1; golden replay dla
+  historycznych transakcji; invariants (stawka ∈ {0,5,8,23}, kwoty ≥ 0, suma sekcji JPK = 0).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** „mikro-shadow” — każda zmiana reguły
+  mikro ewaluowana równolegle na historycznych inputach z raportem delty werdyktów.
+
+### 6. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+M.in.: generator reguł mikro z LKG; linter mikro z auto-fixem; walidator JPK XSD offline;
+uzgodnienie 3-drożne JPK↔PKPiR↔KSeF; monitor pokrycia artykułów w CI; mikro-shadow replay;
+biblioteka wzorców reguł atomowych (recipes); detektor dryfu micro↔macro (INV-018 enforcement);
+klasyfikator stubów do auto-usunięcia; ranking ryzyka reguł; kompilator mikro do WASM;
+raport „zdrowia warstwy mikro” per pakiet (pokrycie, duplikaty, legal_basis, testy).
+
+## 📋 WYMAGANE SEKCJE RAPORTU (min. 25–40 stron)
+1. Executive Summary — TOP 10 (priorytet: stuby i duplikaty, spójność micro↔macro, JPK).
+2. Mapa pokrycia artykułów VAT (tabela artykuł × reguła × status × luki).
+3. Audyt jakości (stuby, duplikaty, martwe, legal_basis) z pełnymi listami do naprawy.
+4. Audyt JPK (struktura, walidacja, terminy, korekty) — diagramy Mermaid.
+5. Audyt mikro-mechanizmów specjalnych (marża, proporcja, WDT, KSeF mikro).
+6. Audyt temporalności, niezawodności, wydajności.
+7. GENIALNE POMYSŁY (min. 12, rozbudowane).
+8. **KOD DO WDROŻENIA:** kompletne reguły mikro dla brakujących artykułów (np. `jdg.micro.vat.a42h.wis`),
+   poprawki stubów, `jpk_validator.py` + `jpk_generator.py`, testy natywne `test_native_vat_micro.rego`,
+   `test_native_jpk.rego` + pytest; wpisy do thresholds; wpis do `main_jdg.rego`.
+9. Mapa drogowa + integracja z częściami 01, 02, 04, 10.
+10. Metryki sukcesu (LCI VAT ≥ 99%, zero stubów/duplikatów, RV 100%, JPK bez błędów XSD).
+
+## 📐 FORMAT RAPORTU
+- Tytuł: „RAPORT GLM52 P03 — VAT MIKRO + JPK (ENTERPRISE v9.x)”.
+- Język: polski, diagramy Mermaid, tabele pokrycia artykułów.
+- **Przeprowadź głębokie myślenie przed każdą sekcją i przeprowadź głęboką analizę każdego pliku** —
+  precyzja, profesjonalizm, zero nieporozumień. Zapisz jako `RAPORT_GLM52_P03_VAT_MIKRO_JPK.txt`.
+
+## 🔗 SUPLEMENT LINKÓW — PEŁNE POKRYCIE KATALOGU JDG (część 03)
+Poniższe pliki tej części pochodzą z pełnej inwentaryzacji katalogu JDG (rules/tools/docs/bundles/tests) —
+przeczytaj je i włącz do analizy, aby raport pokrył KAŻDY plik części:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/vat_micro_inventory.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/vat_micro_report03_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_micro_auditor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_micro_inventory.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_micro_report03_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/verify_vat_micro_atomic.py
+
+## 🔗 KOMBINACJE LINKÓW KRZYŻOWYCH (spójność międzyczęściowa)
+Analizuj poniższe pliki z INNYCH części RAZEM z plikami swojej części — to punkty styku
+(kontrakty techniczne: rule_id, werdykt 25-polowy, temporalność, thresholds), dzięki którym
+raport będzie spójny z CAŁĄ kampanią i silnik OPA zostanie wzmocniony z każdej strony:
+- (część P05) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances.rego
+- (część P07) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cashflow_tax_predictor_enterprise.rego
+- (część P09) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/_zus_micro_rates.rego
+- (część P12) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_crossborder_rates.rego
+- (część P15) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance.rego
+- (część P18) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/README.md
+- (część P01) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- (część P02) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p02_vat_macro_innovations_v8.rego
+
+## 🧠 BUDŻET KONTEKSTU (powtórzenie)
+Materiał wejściowy ≤ 50% okna (~500K tokenów). `vat.rego` — fragmentarycznie (nagłówki sekcji,
+wzorce, no_match, duplikaty); `jpk.rego` + `plan33_jpk.rego` — w całości (priorytet JPK).
+
+## 🔄 ZAKOŃCZENIE SESJI — WYCZYŚĆ OKNO KONTEKSTOWE
+1. Zapisz raport jako `RAPORT_GLM52_P03_VAT_MIKRO_JPK.txt`.
+2. Wykonaj polecenie **„WYCZYŚĆ OKNO KONTEKSTOWE”**: 10-linijkowe podsumowanie do
+   `NOTATKI_KAMPANII.txt`.
+3. Potwierdź: „OKNO WYCZYSZCZONE — gotowy na PROMPT 04 z 19 (KSeF / JPK / e-DEKLARACJE)”.
+4. Użytkownik wkleja następny Prompt: `PROMPT_04_KSEF_JPK_EDEKLARACJE.txt`.

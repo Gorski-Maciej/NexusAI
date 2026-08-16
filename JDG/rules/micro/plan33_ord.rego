@@ -38,6 +38,8 @@ p33o_a16_override(input) = override {
     override := {
         "matched": true,
         "rule_id": "jdg.micro.plan33_ord.a16.r1",
+        "_routing": "",
+        "_legal_basis": "Ordynacja podatkowa (Dz.U. 2024 poz. 1455 ze zm.)",
         "package": "jdg.micro.plan33_ord",
         "priority": 80000,
         "routing": "TRIAGE",
@@ -46,5 +48,5 @@ p33o_a16_override(input) = override {
         "note": "v7.0 FIX (LUKA-U4/U3): plan33_ord.rego — created to satisfy cross-report documentation contract",
     } { is_jdg; ord_a16_applicable }
 
-    override := {"matched": false, "rule_id": "jdg.micro.plan33_ord.no_match", "priority": 89999} { not is_jdg or not ord_a16_applicable }
+    override := {"matched": false, "rule_id": "jdg.micro.plan33_ord.no_match_override", "priority": 89999} { not is_jdg or not ord_a16_applicable }
 }

@@ -168,6 +168,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.decision_core_completeness.retention_non_compliant",
+    "_legal_basis": "Art. 70 § 1-2 Ordynacja podatkowa (5/10 lat)",
     "package": "jdg.decision_core_completeness",
     "priority": 120,
     "compliance": {
@@ -203,6 +204,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.decision_core_completeness.ok",
+    "_legal_basis": "Art. 70 § 1-2 Ordynacja podatkowa (5/10 lat)",
     "package": "jdg.decision_core_completeness",
     "priority": 140,
     "completeness": {

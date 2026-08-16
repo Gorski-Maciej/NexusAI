@@ -119,6 +119,7 @@ audit_data := data.jdg.pit_macro_audit {
 form_optimizer := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.form_optimizer",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 100,
     "optimizer": {
@@ -204,6 +205,7 @@ former_employer_block_flag := true {
 loss_of_linear_detector := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.loss_of_linear_detector",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 110,
     "detector": {
@@ -241,6 +243,7 @@ br_definition_ok := true {
 br_definition_checker := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.br_definition_checker",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 120,
     "br": {
@@ -267,6 +270,7 @@ br_definition_checker := {
 relief_recommender := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.relief_recommender",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 130,
     "reliefs": {
@@ -354,6 +358,7 @@ shared_limit_guard := true {
 relief_stacking_analyzer := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.relief_stacking_analyzer",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 140,
     "stacking": {
@@ -375,6 +380,7 @@ relief_stacking_analyzer := {
 br_vs_ipbox_comparator := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.br_vs_ipbox_comparator",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 150,
     "comparator": {
@@ -415,6 +421,7 @@ br_better_flag := true {
 termo_calculator := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.termo_calculator",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 160,
     "termo": {
@@ -436,6 +443,7 @@ termo_calculator := {
 kup_auditor := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.kup_auditor",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 170,
     "kup": {
@@ -458,6 +466,7 @@ kup_auditor := {
 pit_reconciliation := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.pit_reconciliation",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 180,
     "recon": {
@@ -487,6 +496,7 @@ pit_recon_consistent := true {
 advance_forecast := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.advance_forecast",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 190,
     "advances": {
@@ -509,6 +519,7 @@ advance_forecast := {
 pit_digital_twin := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.pit_digital_twin",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 200,
     "twin": {
@@ -540,6 +551,7 @@ projected_annual_tax := round(scale_tax_pln * 100) / 100 {
 pit_calendar := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.pit_calendar",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 210,
     "calendar": {
@@ -561,6 +573,7 @@ pit_calendar := {
 pit36_autogen := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.pit36_autogen",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 220,
     "pit36": {
@@ -584,6 +597,7 @@ pit36_autogen := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p06_pit_macro_enterprise.report",
+    "_legal_basis": "Art. 9a + Art. 27 + Art. 30c + ustawa o ryczałcie (Dz.U. 2025 poz. 234)",
     "package": "jdg.p06_pit_macro_enterprise",
     "priority": 400,
     "p06_pit_macro": {

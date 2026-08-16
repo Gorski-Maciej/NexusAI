@@ -7,6 +7,7 @@
 package jdg.enterprise.wis_autorequester
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 # ─────────────────────────────────────────────────────────────────────────────
 # WAR-3150: Ambiguous CN code detector
@@ -85,9 +86,9 @@ war_validity_monitor(wis_ruling) = monitor {
     validity_years := 5
     expiry_days := validity_years * 365 - issue_date
 
-    status := "OK" { expiry_days > 180 }
-    status := "EXPIRING_6M" { expiry_days <= 180; expiry_days > 90 }
-    status := "EXPIRING_3M" { expiry_days <= 90; expiry_days > 30 }
+    status := "OK" { expiry_days > object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "wis_expiry_warning_days", 180) }
+    status := "EXPIRING_6M" { expiry_days <= object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "wis_expiry_warning_days", 180); expiry_days > object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "wis_expiry_critical_days", 90) }
+    status := "EXPIRING_3M" { expiry_days <= object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "wis_expiry_critical_days", 90); expiry_days > 30 }
     status := "EXPIRING_30D" { expiry_days <= 30; expiry_days > 0 }
     status := "EXPIRED" { expiry_days <= 0 }
 

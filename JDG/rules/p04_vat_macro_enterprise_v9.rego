@@ -77,6 +77,7 @@ eur_pln_rate := object.get(data.jdg.thresholds.bounds, "eur_pln", 4.50) {
 proportion_calculator := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.proportion_calculator",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 100,
     "proportion": {
@@ -117,6 +118,7 @@ multi_year_period_years := 10 {
 bad_debt_tracker := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.bad_debt_tracker",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 110,
     "bad_debt": {
@@ -166,6 +168,7 @@ debtor_sanction_30pct := true {
 ksef_sanction_monitor := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.ksef_sanction_monitor",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 120,
     "ksef": {
@@ -196,6 +199,7 @@ kasowa_limit_pln := object.get(input.jdg_entrepreneur, "kasowa_limit_pln", 20000
 kasowa_monitor := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.kasowa_monitor",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 130,
     "kasowa": {
@@ -221,6 +225,7 @@ kasowa_monitor := {
 vat_digital_twin := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.digital_twin",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 200,
     "twin": {
@@ -313,6 +318,7 @@ twin_deduction_allowed := true {
 carousel_detector := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.carousel_detector",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 210,
     "carousel": {
@@ -363,6 +369,8 @@ carousel_routing := "BLOCK_AND_ALERT" {
 zero_defect_vat := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.zero_defect",
+    "_routing": "",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 220,
     "defects": defect_list,
@@ -430,6 +438,7 @@ sensitive_goods_flag := true {
 reconciliation_engine := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.reconciliation",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 230,
     "reconciliation": {
@@ -469,6 +478,7 @@ recon_zus_mismatch := object.get(input.recon, "zus_base", 0) > object.get(input.
 auto_mpp_system := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.auto_mpp",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 240,
     "mpp": {
@@ -541,6 +551,7 @@ mpp_semantic_keywords := ["stal", "złom", "paliwo", "olej napędowy", "bateria"
 whitelist_guard := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.whitelist_guard",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 250,
     "whitelist": {
@@ -580,6 +591,7 @@ whitelist_sanction_20pct := round(object.get(input.invoice, "amount_gross", 0) *
 rate_drift_guard := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.rate_drift_guard",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 260,
     "drift": {
@@ -633,6 +645,7 @@ rate_map_2026 := {
 sanctions_calculator := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.sanctions_calculator",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 270,
     "sanctions": {
@@ -661,6 +674,7 @@ sanctions_total := round((object.get(input.sanction_input, "understated_vat", 0)
 correcting_invoice_detector := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.correcting_invoice",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 280,
     "correcting": {
@@ -701,6 +715,7 @@ correcting_direction := "IN_MINUS" {
 decide := {
     "matched": true,
     "rule_id": "jdg.p04_vat_macro_enterprise.report",
+    "_legal_basis": "Art. 90 ust. 8-10 + Art. 91 ust. 1-7 VAT",
     "package": "jdg.p04_vat_macro_enterprise",
     "priority": 400,
     "p04_vat_macro": {

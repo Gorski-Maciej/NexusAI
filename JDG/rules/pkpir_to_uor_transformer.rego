@@ -292,6 +292,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.pkpir_to_uor_transformer.phase4_validation",
+        "_legal_basis": "Art. 2 ust. 1 pkt 2 UoR; Art. 24a PIT",
         "package": "jdg.pkpir_to_uor_transformer",
         "priority": 13103,
         "t_phase": "VALIDATION",
@@ -350,6 +351,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.pkpir_to_uor_transformer.phase5_notification",
+        "_legal_basis": "Art. 2 ust. 1 pkt 2 UoR; Art. 24a PIT",
         "package": "jdg.pkpir_to_uor_transformer",
         "priority": 13104,
         "t_phase": "NOTIFICATION",

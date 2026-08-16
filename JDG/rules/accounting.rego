@@ -114,10 +114,10 @@ warehouse_route_for(reconciled) := {"routing": "", "reason": ""} if {
     reconciled == false
 }
 
-damage_route_for(amount) := {"routing": "TRIAGE_QUEUE", "reason": "Szkoda transportowa > 5000 PLN — wymagany protokół przewoźnika"} if {
-    amount > 5000
+damage_route_for(amount) := {"routing": "TRIAGE_QUEUE", "reason": "Szkoda transportowa > 5 000 PLN — wymagany protokół przewoźnika"} if {
+    amount > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "transport_damage_limit", 5000)
 } else := {"routing": "", "reason": ""} if {
-    amount <= 5000
+    amount <= object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "transport_damage_limit", 5000)
 }
 
 change_pct_for(change, start) := 0 if {
@@ -454,7 +454,7 @@ else := {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.expense_type in {"GOODS_PURCHASE","MATERIALS","RAW_MATERIALS"}
     input.invoice.direction == "PURCHASE"
-    input.invoice.amount_net > 10000
+    input.invoice.amount_net > object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)
     object.get(input.invoice,"is_fixed_asset",false) == true
 }
 
@@ -710,7 +710,7 @@ else := {
 } if {
     input.jdg_entrepreneur.is_small_taxpayer == true
     input.invoice.expense_type == "FIXED_ASSET"
-    input.invoice.amount_net <= 100000
+    input.invoice.amount_net <= object.get(data.thresholds.jdg.depreciation, "one_off_annual_limit", 100000)
 }
 
 # ══════ P850: private_mixed_home_office — Home office proporcja ══════
@@ -890,7 +890,7 @@ else := {
     "_legal_basis":"Art. 45-52 Ustawy o rachunkowości",
     "_warnings":[sprintf("Sprawozdanie finansowe za %s — termin: %s. Bilans + RZiS + informacja dodatkowa.", [tax_year, deadline])]
 } if {
-    input.jdg_entrepreneur.annual_revenue_eur > 2000000
+    input.jdg_entrepreneur.annual_revenue_eur > object.get(data.thresholds.jdg.depreciation, "uor_books_threshold_eur", 2000000)
     is_year_end := object.get(input.invoice,"is_year_end",false)
     is_year_end == true
     tax_year := object.get(input.invoice,"tax_year","")
@@ -1002,7 +1002,7 @@ else := {
 } if {
     input.invoice.expense_type == "FIXED_ASSET"
     asset_value := object.get(input.invoice,"amount_net",0)
-    asset_value <= 10000
+    asset_value <= object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)
     asset_value > 0
     input.jdg_entrepreneur.is_small_taxpayer == false
 }
@@ -1658,7 +1658,7 @@ else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_kst_group","packag
 else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_low_value_10k","package":"jdg.accounting","priority":481,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","depreciation_method":"ONE_OFF","depreciation_pln":asset_value,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22d ust. 1 PIT","_warnings":[sprintf("Środek trwały ≤10 000 PLN — jednorazowa amortyzacja w miesiącu oddania do użytku. Wartość: %.2f PLN.",[asset_value])]} if {
     asset_value := object.get(input.invoice, "asset_value", 0)
     asset_value > 0
-    asset_value <= 10000
+    asset_value <= object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)
 }# P482: fixed_asset_de_minimis_100k — Amortyzacja de minimis do 100k
 else := {"matched":true,"rule_id":"jdg.accounting.fixed_asset_de_minimis_100k","package":"jdg.accounting","priority":482,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","depreciation_method":"DE_MINIMIS","de_minimis_limit":100000,"_routing":"","_routing_reason":"","_legal_basis":"Art. 22k ust. 7 PIT","_warnings":["Amortyzacja de minimis — jednorazowo do 100 000 PLN rocznie (mały podatnik + pierwszy rok)."]} if {
     object.get(input.jdg_entrepreneur,"is_small_taxpayer",false) == true

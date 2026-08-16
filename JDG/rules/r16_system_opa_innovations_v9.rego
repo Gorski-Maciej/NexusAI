@@ -87,6 +87,7 @@ rl_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r16_system_opa_innovations.rule_lifecycle_monitor",
+    "_legal_basis": "ADR-016..021 (cykl życia reguły, canary, auto-rollback), V2 F3 (golden replay)",
     "package": "jdg.r16_system_opa_innovations",
     "priority": 11041,
     "decision_mode": "SUGGEST",
@@ -129,6 +130,7 @@ vq_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r16_system_opa_innovations.validation_quality_monitor",
+    "_legal_basis": "ADR-016..021 (cykl życia reguły, canary, auto-rollback), V2 F3 (golden replay)",
     "package": "jdg.r16_system_opa_innovations",
     "priority": 11042,
     "decision_mode": "SUGGEST",
@@ -173,6 +175,7 @@ ts_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r16_system_opa_innovations.test_shield_monitor",
+    "_legal_basis": "ADR-016..021 (cykl życia reguły, canary, auto-rollback), V2 F3 (golden replay)",
     "package": "jdg.r16_system_opa_innovations",
     "priority": 11043,
     "decision_mode": "SUGGEST",
@@ -216,6 +219,7 @@ rb_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r16_system_opa_innovations.reliability_determinism_monitor",
+    "_legal_basis": "ADR-016..021 (cykl życia reguły, canary, auto-rollback), V2 F3 (golden replay)",
     "package": "jdg.r16_system_opa_innovations",
     "priority": 11044,
     "decision_mode": "SUGGEST",
@@ -263,6 +267,7 @@ ip_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r16_system_opa_innovations.isap_pipeline_monitor",
+    "_legal_basis": "ADR-016..021 (cykl życia reguły, canary, auto-rollback), V2 F3 (golden replay)",
     "package": "jdg.r16_system_opa_innovations",
     "priority": 11045,
     "decision_mode": "SUGGEST",

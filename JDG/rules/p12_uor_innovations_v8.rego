@@ -834,6 +834,8 @@ else := verdict {
 else := {
     "matched": true,
     "rule_id": "jdg.p12_innovations.coverage_summary",
+    "_routing": "",
+    "_legal_basis": "Art. 2 ust. 1 pkt 2 UoR + Art. 24a PIT",
     "package": "jdg.p12_innovations",
     "priority": 99999,
     "p12_total_innovations": 12,

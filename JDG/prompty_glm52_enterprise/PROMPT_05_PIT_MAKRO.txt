@@ -1,0 +1,184 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 05 z 19 — CZĘŚĆ: PIT MAKRO (FORMY, KUP, ZALICZKI, ZEZNANIA)
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie podatku PIT (ustawa z 26.07.1991, Dz.U. 2025 poz. 789
+ze zm.), form opodatkowania JDG (skala 12%/32%, liniowy 19%, ryczałt, karta podatkowa), kosztów
+uzyskania przychodów (art. 22–23), zaliczek (art. 44), zeznań rocznych (art. 45: PIT-36/36L/28)
+oraz systemów regułowych OPA/Rego klasy ENTERPRISE z temporalnością i time-travel.
+
+## ⚠️ KRYTYCZNE ZASADY
+1. **GENERUJESZ OGROMNY, ROZBUDOWANY RAPORT** `RAPORT_GLM52_P05_PIT_MAKRO.txt` z
+   **INTELIGENTNYM KODEM gotowym do wdrożenia** (reguły Rego, narzędzia Python, YAML, testy
+   natywne + pytest) — copy-paste do katalogu JDG.
+2. **NIE MODYFIKUJ PLIKÓW w repo** — produktem jest raport .txt.
+3. **CZYTAJ PLIKI PRZEZ LINKI GITHUB** podane niżej — nie szukaj katalogów na własną rękę.
+4. **BUDŻET KONTEKSTU:** dane wejściowe ≤ **50% okna GLM 5.2 (~500K tokenów)** — reszta na
+   głębokie myślenie, głęboką analizę i wygenerowanie rozwiązania.
+
+## 🧠 OBOWIĄZKOWE NAKAZY GŁĘBOKIEGO MYŚLENIA (wymagane w całym raporcie — powtarzaj je w każdej sekcji)
+1. Przeprowadź głębokie myślenie przed każdą sekcją raportu; Przeprowadź głębokie myślenie przed każdą rekomendacją kodu; Przeprowadź głębokie myślenie przy weryfikacji całości pod kątem błędów i luk; Przeprowadź głębokie myślenie przy łączeniu wniosków z pozostałymi częściami kampanii.
+2. Przeprowadź głęboką analizę każdego pliku z listy; przeprowadź głęboką analizę powiązań między plikami; przeprowadź głęboką analizę zgodności reguł z aktami prawnymi (Bbb, LEGAL_REFERENCE_ACTS); przeprowadź głęboką analizę kontraktów spójności z innymi częściami kampanii.
+3. Każde rozwiązanie musi reprezentować zaawansowany poziom Enterprise; standardem minimalnym jest zaawansowany poziom Enterprise; jeśli propozycja nie osiąga celu: zaawansowany poziom Enterprise — odrzuć ją; wszystkie rekomendacje razem tworzą zaawansowany poziom Enterprise całego modułu.
+4. Silnik ma osiągnąć poziom ENTERPRISE w każdym wymiarze; poziom ENTERPRISE to próg minimalny, nie maksimum; każda sekcja raportu deklaruje osiągnięty poziom ENTERPRISE; ostateczny werdykt kampanii: poziom ENTERPRISE bez wyjątków.
+5. W każdej sekcji proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów; minimum 12 pozycji w kategorii: innowacyjne ulepszenia wyprzedzające profesjonalistów w rozdziale GENIALNE POMYSŁY; każdy obszar analizy kończ zestawem: innowacyjne ulepszenia wyprzedzające profesjonalistów; kod w raporcie ma być wynikiem: innowacyjne ulepszenia wyprzedzające profesjonalistów — bez tego raport nie spełnia standardu kampanii.
+## 📂 DOKUMENTY ŚWIĘTE (przeczytaj)
+- V1 — TARGET: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- V2 — WIZJA (kontynuacja V1): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- Stan obecny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Akty prawne (Bbb): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (pełne): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Dokument PIT MAKRO: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PIT_MACRO_P05.md
+- Audyt PIT (R04): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PIT_AUDYT_R04.md
+
+## 📂 PLIKI TEJ CZĘŚCI DO ANALIZY — PIT MAKRO (rules/pit/ + enterprise)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/forms.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/kup.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/advances_returns.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/exemptions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/transitions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan23_exemptions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan23_tax_form_change.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan26_detailed.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan26_pit_critical.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/art21_exemptions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/elearning.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/tax_form_transition_intelligence.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances/plan23_reliefs.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/annual_declaration_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_transition_simulator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p04_pit_macro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p05_pit_macro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p06_pit_macro_enterprise_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p05_pit_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r04_pit_core_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r05_pit_enterprise_innovations_v9.rego
+
+## 🧩 SPÓJNOŚĆ Z INNYMI CZĘŚCIAMI (kontrakty)
+- **PIT ↔ VAT:** złe długi VAT (89a/89b) vs przychód PIT (art. 14) — `conflicts.rego` (PROMPT 01);
+  KUP samochodowe (75%, 150k/225k) wspólne z VAT 50%/100% — spójność z PROMPT 02.
+- **PIT ↔ ZUS:** składki ZUS jako KUP (art. 23 ust. 1 pkt 55), zdrowotna nie jest KUP (od 2022);
+  zasiłki a przychód — integracja z PROMPT 08/09.
+- **PIT ↔ księgowość:** PKPiR/UoR (PROMPT 10) — przychody/koszty z ewidencji → formularze PIT;
+  remanent; różnice kursowe (art. 14 ust. 2c) — PROMPT 12 (FX).
+- **PIT ↔ e-Deklaracje:** PIT-36/36L/28 (PROMPT 04 — auto-fill i wysyłka); PCC (PROMPT 14);
+  ryczałt (PROMPT 13); ulgi (PROMPT 07); amortyzacja (PROMPT 06).
+- Werdykt 25-polowy, rule_id unikalne, `_legal_basis` kanoniczne, progi z `data.thresholds.jdg.*`
+  (`pit_scale_low_rate` 12%, `pit_scale_high_rate` 32%, `pit_scale_threshold` 120 000,
+  `pit_tax_free_amount` 30 000, `pit_linear_rate` 19%), wpis w `main_jdg.rego` — kontrakty PROMPT 01.
+
+## 🎯 CEL ANALIZY — POZIOM ENTERPRISE
+**Przeprowadź głębokie myślenie i przeprowadź głęboką analizę** modułu PIT MAKRO na
+**zaawansowanym poziomie Enterprise** — priorytet: **poprawność form opodatkowania, zaliczek
+(art. 44) i zeznań rocznych (art. 45)**, pełne pokrycie KUP/NKUP (art. 22–23) i zwolnień
+(art. 21), determinizm groszowy (zaokrąglenia), temporalność (zmiany progów 2026). Celem jest
+poziom ENTERPRISE, w którym roczne rozliczenie JDG generuje się z werdyktów z zerowym ryzykiem
+błędu. Zaproponuj **innowacyjne ulepszenia wyprzedzające profesjonalistów**.
+
+### 1. AUDYT FORM OPODATKOWANIA (POZIOM ENTERPRISE — PRIORYTET: art. 9a, 27, 30c, 44, 45)
+- Skala 12%/32%: próg 120 000, kwota wolna 30 000, ulga dla klasy średniej (historia), składka
+  zdrowotna 9% jako pomniejszenie (do 2021) / odliczenie (2022+); obliczenia groszowe.
+- Liniowy 19%: ograniczenia art. 30c ust. 2 (były pracodawca), brak kwoty wolnej, zdrowotna 4,9%.
+- Wybór/zmiana formy (art. 9a): terminy (do 20. dnia miesiąca, do końca roku), ograniczenia,
+  symulacja optymalnej formy (`form_optimizer`, `form_transition_simulator`, `tax_form_transition_intelligence`).
+- Zaliczki (art. 44): miesięczne/kwartalne (mały podatnik), terminy (20.), uproszczone zaliczki,
+  odliczenia od zaliczek, korekty roczne.
+- Zeznania (art. 45): PIT-36/36L/28, terminy (30.04), wspólne rozliczenie, ulga na dzieci,
+  automatyczne wypełnienie z werdyktów (`annual_declaration_enterprise`).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** silnik symulacji „co by było gdyby”
+  (skala vs liniowy vs ryczałt na danych historycznych z prognozą), auto-wybór formy z
+  rekomendacją i ryzykiem, kalkulator zaliczek z zaokrągleniami groszowymi (testy graniczne),
+  predyktor zaliczek ML z historii transakcji.
+
+### 2. AUDYT KUP / NKUP (POZIOM ENTERPRISE — art. 22–23)
+- KUP bezpośrednie/pośrednie (art. 22 ust. 5–5c), moment potrącenia, KUP z ZUS, KUP samochodowe
+  (75%), limity (art. 23 ust. 1 pkt 46–47), reprezentacja (art. 23 ust. 1 pkt 23), kara umowna,
+  podatek od towarów i usług w KUP (art. 23 ust. 1 pkt 43), amortyzacja jako KUP (art. 22a–22o).
+- `kup.rego`, `kup_extended.rego` (PROMPT 07), `nkup_enterprise_complete.rego` (PROMPT 06) —
+  kompletność wyłączeń (57 punktów art. 23), klasyfikator wydatku→KUP/NKUP.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** klasyfikator KUP/NKUP z drzewem
+  decyzyjnym per art. 23 (każdy punkt = reguła + przykład), detektor „wydatek mieszany” (auto/
+  prywatny — proporcja), rejestr limitów rocznych (samochody, leasing, składki) z monitorami.
+
+### 3. AUDYT ZWOLNIEŃ I ODLICZEŃ (POZIOM ENTERPRISE — art. 21, 26)
+- Zwolnienia art. 21 (ust. 1 pkt 148/152/153/154 — młody/powrót/4+/emeryt; 85 528 limit),
+  odliczenia art. 26 (rehabilitacyjna, darowizny 6%, IKZE), ulgi PIT-0 (PROMPT 07).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** kalkulator łącznego limitu
+  zwolnień (85 528) z alertem przekroczenia, walidator uprawnień (wiek, dzieci, powrót).
+
+### 4. AUDYT TEMPORALNOŚCI I OBLICZEŃ (POZIOM ENTERPRISE)
+- Zmiany 2026: progi, kwota wolna, stawki zdrowotnej; time-travel (PIT-36 za 2024 wg prawa 2024);
+  zaokrąglenia (art. 63 OrdPU: grosze, podstawa do pełnych złotych); golden replay rocznych.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** silnik groszowy z dowodem
+  matematycznym (invariant: suma pozycji = podstawa × stawka), testy property-based (hypothesis),
+  symulator nowelizacji (Law Radar → SHADOW reguły).
+
+### 5. AUDYT NIEZAWODNOŚCI I WYDAJNOŚCI (POZIOM ENTERPRISE)
+- Duplikaty/stuby w pit/*, spójność macro↔micro (PROMPT 06, INV-018), RV (legal_basis kanoniczne),
+  latencja (forms.rego w sharded_sale — gorąca ścieżka).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** kompilacja forms.rego do WASM,
+  cache kalkulacji formularzy, benchmark rocznego rozliczenia w CI.
+
+### 6. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+M.in.: auto-optymalizator formy opodatkowania (symulacja 4-ścieżkowa z prognozą); kalkulator
+zaliczek z groszowym dowodem; predyktor zaliczek ML; silnik KUP/NKUP per punkt art. 23; monitor
+limitów rocznych; auto-PIT-36/36L/28 z werdyktów (0 ręki); symulator zmiany formy w trakcie roku
+(konsekwencje); kalkulator łącznego limitu zwolnień; detektor wydatków mieszanych; testy
+property-based dla wszystkich formuł; raport roczny „co by było gdyby” (skala vs liniowy);
+integracja z ZUS (składki jako KUP) i z KSeF (przychody) — uzgodnienie roczne 3-drożne.
+
+## 📋 WYMAGANE SEKCJE RAPORTU (min. 25–40 stron)
+1. Executive Summary — TOP 10 (priorytet: formy + zaliczki + zeznania).
+2. Tabela pokrycia: artykuł PIT × status × rule_id × luki (wg Bbb i LEGAL_REFERENCE_ACTS).
+3. Audyt form opodatkowania (skala/liniowy/ryczałt/karta + zmiany formy) — diagramy Mermaid.
+4. Audyt KUP/NKUP (art. 22–23) — mapa punktów z regułami.
+5. Audyt zwolnień/odliczeń (art. 21/26) i zaliczek/zeznań (art. 44/45).
+6. Audyt temporalności, groszy, niezawodności, wydajności.
+7. GENIALNE POMYSŁY (min. 12, rozbudowane).
+8. **KOD DO WDROŻENIA:** uzupełnione reguły (np. `jdg.pit.forms.advance_quarterly`,
+   `jdg.pit.kup.car_75pct`, `jdg.pit.a44.uproszczone`), `pit_annual_engine.py` (auto-PIT-36/36L/28),
+   `form_simulator.py`, testy natywne `test_native_pit_forms.rego`, `test_native_pit_kup.rego` +
+   pytest z testami groszowymi; wpisy do thresholds; wpis do `main_jdg.rego`.
+9. Mapa drogowa + integracja z częściami 01, 02, 04, 06, 07, 08, 10, 12, 13.
+10. Metryki sukcesu (LCI PIT ≥ 99%, RV 100%, zero błędów groszowych, auto-zeznania zgodne z MF).
+
+## 📐 FORMAT RAPORTU
+- Tytuł: „RAPORT GLM52 P05 — PIT MAKRO (FORMY/KUP/ZALICZKI/ZEZNANIA) ENTERPRISE v9.x”.
+- Język: polski, diagramy Mermaid, tabele pokrycia artykułów.
+- **Przeprowadź głębokie myślenie przed każdą sekcją i przeprowadź głęboką analizę każdego pliku** —
+  precyzja, profesjonalizm, zero nieporozumień. Zapisz jako `RAPORT_GLM52_P05_PIT_MAKRO.txt`.
+
+## 🔗 SUPLEMENT LINKÓW — PEŁNE POKRYCIE KATALOGU JDG (część 05)
+Poniższe pliki tej części pochodzą z pełnej inwentaryzacji katalogu JDG (rules/tools/docs/bundles/tests) —
+przeczytaj je i włącz do analizy, aby raport pokrył KAŻDY plik części:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/pit_core_report04_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/pit_enterprise_report05_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/declaration_extensions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pit_core_report04_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pit_enterprise_report05_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pit_temporal_snapshot_engine.py
+
+## 🔗 KOMBINACJE LINKÓW KRZYŻOWYCH (spójność międzyczęściowa)
+Analizuj poniższe pliki z INNYCH części RAZEM z plikami swojej części — to punkty styku
+(kontrakty techniczne: rule_id, werdykt 25-polowy, temporalność, thresholds), dzięki którym
+raport będzie spójny z CAŁĄ kampanią i silnik OPA zostanie wzmocniony z każdej strony:
+- (część P07) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cashflow_tax_predictor_enterprise.rego
+- (część P09) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/_zus_micro_rates.rego
+- (część P11) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/plan44_audit.rego
+- (część P14) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pcc_local_excise_rates.rego
+- (część P17) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- (część P01) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- (część P03) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk/plan26_deadlines.rego
+- (część P04) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery_gateway_enterprise.rego
+
+## 🧠 BUDŻET KONTEKSTU (powtórzenie)
+Materiał wejściowy ≤ 50% okna (~500K tokenów). Priorytet: `forms.rego`, `advances_returns.rego`,
+`kup.rego`, `annual_declaration_enterprise.rego` — kluczowe sekcje w całości.
+
+## 🔄 ZAKOŃCZENIE SESJI — WYCZYŚĆ OKNO KONTEKSTOWE
+1. Zapisz raport jako `RAPORT_GLM52_P05_PIT_MAKRO.txt`.
+2. Wykonaj polecenie **„WYCZYŚĆ OKNO KONTEKSTOWE”**: 10-linijkowe podsumowanie do
+   `NOTATKI_KAMPANII.txt`.
+3. Potwierdź: „OKNO WYCZYSZCZONE — gotowy na PROMPT 06 z 19 (PIT MIKRO + AMORTYZACJA)”.
+4. Użytkownik wkleja następny Prompt: `PROMPT_06_PIT_MIKRO_AMORTYZACJA.txt`.

@@ -1,0 +1,268 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 01 z 19 — CZĘŚĆ: ORKIESTRATOR + FUNDAMENT + CONTROL PLANE
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie systemów regułowych OPA/Rego klasy ENTERPRISE,
+polskiego prawa podatkowego dla JDG, architektury Policy-as-Code (control plane / data plane),
+Legal Knowledge Graph, runtime invariants, weryfikacji formalnej i niezawodności systemów
+decyzyjnych klasy finansowej. Specjalizujesz się w budowie silników reguł podatkowych, które są
+SYSTEMEM — nie tylko zbiorem reguł — zdolnym błyskawicznie i profesjonalnie adaptować się do
+zmiennego prawa.
+
+## ⚠️ KRYTYCZNE ZASADY
+1. **GENERUJESZ OGROMNY, ROZBUDOWANY RAPORT** w postaci pliku tekstowego
+   `RAPORT_GLM52_P01_ORKIESTRATOR_FUNDAMENT.txt` — raport zawiera **INTELIGENTNY KOD gotowy do
+   wdrożenia** (Rego, Python, YAML, SQL, JSON): kompletne reguły, narzędzia, konfiguracje,
+   pipeline'y, testy. Kod w raporcie musi być pełny, poprawny składniowo i natychmiast
+   stosowalny (copy-paste do katalogu JDG).
+2. **NIE MODYFIKUJ PLIKÓW w repo** — Twoim produktem jest raport .txt; wdrożenie wykonuje
+   człowiek/agent po sesji.
+3. **CZYTAJ PLIKI PRZEZ LINKI GITHUB** podane niżej — nie szukaj katalogów na własną rękę.
+4. **BUDŻET KONTEKSTU:** dane wejściowe (przeczytane pliki + ten prompt) mogą zająć maksymalnie
+   **50% okna kontekstowego GLM 5.2 (~500K tokenów)** — resztę zostaw na głębokie myślenie,
+   głęboką analizę i wygenerowanie rozwiązania. Duże pliki czytaj fragmentarycznie (kluczowe sekcje).
+
+## 🧠 OBOWIĄZKOWE NAKAZY GŁĘBOKIEGO MYŚLENIA (wymagane w całym raporcie — powtarzaj je w każdej sekcji)
+1. Przeprowadź głębokie myślenie przed każdą sekcją raportu; Przeprowadź głębokie myślenie przed każdą rekomendacją kodu; Przeprowadź głębokie myślenie przy weryfikacji całości pod kątem błędów i luk; Przeprowadź głębokie myślenie przy łączeniu wniosków z pozostałymi częściami kampanii.
+2. Przeprowadź głęboką analizę każdego pliku z listy; przeprowadź głęboką analizę powiązań między plikami; przeprowadź głęboką analizę zgodności reguł z aktami prawnymi (Bbb, LEGAL_REFERENCE_ACTS); przeprowadź głęboką analizę kontraktów spójności z innymi częściami kampanii.
+3. Każde rozwiązanie musi reprezentować zaawansowany poziom Enterprise; standardem minimalnym jest zaawansowany poziom Enterprise; jeśli propozycja nie osiąga celu: zaawansowany poziom Enterprise — odrzuć ją; wszystkie rekomendacje razem tworzą zaawansowany poziom Enterprise całego modułu.
+4. Silnik ma osiągnąć poziom ENTERPRISE w każdym wymiarze; poziom ENTERPRISE to próg minimalny, nie maksimum; każda sekcja raportu deklaruje osiągnięty poziom ENTERPRISE; ostateczny werdykt kampanii: poziom ENTERPRISE bez wyjątków.
+5. W każdej sekcji proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów; minimum 12 pozycji w kategorii: innowacyjne ulepszenia wyprzedzające profesjonalistów w rozdziale GENIALNE POMYSŁY; każdy obszar analizy kończ zestawem: innowacyjne ulepszenia wyprzedzające profesjonalistów; kod w raporcie ma być wynikiem: innowacyjne ulepszenia wyprzedzające profesjonalistów — bez tego raport nie spełnia standardu kampanii.
+## 📂 DOKUMENTY ŚWIĘTE (przeczytaj — to jest ostateczna struktura docelowa modułu JDG)
+- V1 — ARCHITEKTURA DOCELOWA (TARGET): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- V2 — WIZJA ENTERPRISE (KONTYNUACJA V1 — „NIEZACHWIANA PEWNOŚĆ”): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- Stan obecny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Analiza luk: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md
+- Manifest 2.0: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/MANIFEST_2_0.md
+- Cykl życia reguły: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RULE_LIFECYCLE.md
+- Akty prawne (Bbb): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (pełne): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+## 📂 RAPORTY POKRYCIA I PEWNOŚCI (przeczytaj — wskaźniki bazowe kampanii)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/COVERAGE_REPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PEWNOSC_DASHBOARD.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_TWIN_RAPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/AUDYT_PODSTAW_PRAWNYCH.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE_GAP_RAPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/unified_plan_v8.yaml
+
+## 📂 PLIKI TEJ CZĘŚCI DO ANALIZY — ORKIESTRATOR I RDZEŃ (rules/)
+- Orkiestrator i infrastruktura:
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_helpers_jdg.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_metadata_jdg.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/routing.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/risk.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/validation.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fallback.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/api_fallback.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- Rdzeń decyzyjny i krawędzie:
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edge_cases.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflicts.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/corrections.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/liability.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/retention.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/statute_of_limitations.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/representation.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/digital.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/employer.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mpips.rego
+- Control plane / lifecycle / niezawodność / invariants:
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rule_lifecycle_enterprise.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/reliability_guarantee_enterprise.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/adaptive_trust_scoring_enterprise.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflict_declaration_enterprise.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/decision_core_completeness_enterprise.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/decision_composer_enterprise.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/runtime_invariants_enterprise.rego
+- Fundament P00–P03 + R01 (kampania GLM 5.2):
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p00_legal_coverage_closure.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p01_fundament_innovations_v9.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p01_core_architecture_innovations_v8.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p02_decision_core_innovations_v9.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p03_orchestrator_innovations_v9.rego
+  https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r01_orchestrator_core_innovations_v9.rego
+
+## 📂 DANE CONTROL PLANE (bundle registry, LKG, migracje, API)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/rule_registry.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/policy_registry.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/manifest_v2.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/manifest.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/legal_graph.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/law_radar.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/healthy_versions.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/golden_verdicts.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/metrics_pewnosci.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/legal_reference_canon.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/001_jdg_rule_store.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/002_jdg_enterprise_v7.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/003_jdg_v8_legal_twin.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+
+## 🧩 SPÓJNOŚĆ Z INNYMI CZĘŚCIAMI (kontrakty — MUSISZ ich przestrzegać w raporcie)
+Ta część jest **fundamentem całej kampanii** — wszystkie pozostałe 18 części (VAT, PIT, ZUS,
+KKS, KSeF, księgowość…) podpinają się do kontraktów zdefiniowanych TUTAJ:
+1. Werdykt 25-polowy (ADR-004) + `_provenance_tree` + `_legal_basis` kanoniczne (RV→100%).
+2. rule_id `jdg.<domena>.<kategoria>.<id>` — globalnie unikalne (bramka CI: zero duplikatów).
+3. Zero hardcode — progi/stawki wyłącznie `data.thresholds.jdg.*` (ADR-002, cel 100%).
+4. Orkiestrator: każda nowa reguła = `import` + wpis w `safe_merge` (sharded_sale/purchase/full/gated)
+   + `default decide no_match` + flaga aktywacji + wpis w MANIFEST.
+5. Temporalność (ADR-003): `valid_from`/`valid_to`, time-travel, brak luk i nakładek (TCL=100%).
+6. LKG (V2 F1): `_legal_basis` → referencje do węzłów `legal_graph`; LCI≥99%; RV=100%.
+7. Runtime invariants (V2 F2): katalog INV ~20–40, sprawdzany na KAŻDYM werdykcie POST-MERGE.
+8. Klasy pewności (V2 F4): CERTAIN/CONDITIONAL/NEEDS_ADVICE + Decision Certificate.
+9. Golden Oracle (V2 F3): golden replay — zero nieuzasadnionych zmian historycznych werdyktów.
+10. Control plane (V1): bundle signing HSM, persist=true, discovery, status, delta, canary 5%→100%,
+    auto-rollback ≤5 min, zmiana parametru <1 min (Data API), Law Radar, Declarative Change (F6).
+
+## 🎯 CEL ANALIZY — POZIOM ENTERPRISE
+**Przeprowadź głębokie myślenie i przeprowadź głęboką analizę** orkiestratora `main_jdg.rego`,
+rdzenia decyzyjnego i warstwy control plane na **zaawansowanym poziomie Enterprise** — tak, by
+silnik stał się **ufortyfikowaną fortecą niechybnej Śmierci** dla wszystkich braków, błędów i
+niedopatrzeń. Twoim celem jest doprowadzenie OPA do poziomu ENTERPRISE, w którym zmiana reguły,
+dodawanie i usuwanie reguł jest sprawne, niezawodne, proste, a silnik szybko i profesjonalnie
+adaptuje się do zmian prawa. Zaproponuj **innowacyjne ulepszenia wyprzedzające profesjonalistów**
+w każdym z poniższych obszarów.
+
+### 1. AUDYT ORKIESTRATORA (POZIOM ENTERPRISE)
+- Oceń architekturę Multi-Pass (PASS 0–8), First-Match-Wins else-chain, `safe_merge` z allowlistą
+  niemutowalną (ZUS/business) — czy kolejność mergowania jest w 100% poprawna i udowodniona?
+- Przeanalizuj Sharded Router (sharded_sale/purchase/full/gated_abort) — determinizm, pokrycie
+  wszystkich ścieżek, ryzyko pominięcia pakietu (drift między shardami a full chain).
+- Oceń system priorytetów (priority 5–999999) — hierarchia, kolizje, reguły zawsze-wygrywające.
+- Przeanalizuj PASS-0 GATE (BLOCK_AND_ALERT → gated_abort) — czy minimalny werdykt zawiera
+  wszystkie wymagane pola i podstawy prawne?
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** zaproponuj graf zależności pakietów
+  (DAG) generowany z importów, kompilator ścieżek shardów (każdy shard = osobny bundle WASM),
+  cache werdyktów z inwalidacją temporalną, równoległą ewaluację niezależnych PASS-ów.
+
+### 2. AUDYT CONTROL PLANE (POZIOM ENTERPRISE) — OPA JAKO SYSTEM
+- Oceń `rule_lifecycle_enterprise.rego` + `rule_registry.json` — cykl SHADOW→CANDIDATE→ACTIVE→
+  ROLLED_BACK, hot-reload, A/B, kill-switch; co brakuje do V1 §3 (7 kroków dodania reguły)?
+- Oceń `reliability_guarantee_enterprise.rego` — provenance gate, fallback ladder, determinizm.
+- Oceń `adaptive_trust_scoring_enterprise.rego` — Trust Score, tryby AUTO_POST/SUGGEST/ASK_USER,
+  powiązanie z klasami pewności V2 F4 (CERTAIN nigdy CONDITIONAL).
+- Oceń `runtime_invariants_enterprise.rego` (rules/audit/) — katalog INV, egzekucja w runtime.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** Policy Registry API (CRUD reguł,
+  wersje, metadane, owner, status), Bundle Server z podpisem HSM (`opa sign`), persist/discovery/
+  status mode, delta-bundles, Declarative Change (formularz → diff → testy → PR → canary),
+  Law Radar (projekty ustaw RCL/Sejm/Senat), AI-Reader nowelizacji z 4-eyes.
+
+### 3. AUDYT TEMPORALNOŚCI I PROWENIENCJI (POZIOM ENTERPRISE)
+- `temporal.rego` — algebra interwałów (zero luk, zero nakładek), time-travel, testy dzień-1/0/+1.
+- `provenance.rego` — Merkle tree, HMAC, decision_hash, łańcuch dowodu dla KAS.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** pinning werdyktu do pełnej wersji
+  konfiguracji (bundle+rule+threshold+legal_node), ewaluacja różnicowa na ≥2 węzłach, certyfikat
+  decyzyjny PDF/XML z pieczęcią kryptograficzną (V2 F4).
+
+### 4. AUDYT POKRYCIA PRAWNEGO I METRYK (POZIOM ENTERPRISE)
+- Porównaj raporty: COVERAGE_REPORT (8%), LEGAL_COVERAGE (A=31%), MANIFEST (93/100), PEWNOSC
+  (LCI 30,1%, RV 10,15%, syntetyczny 3,06/100), AUDYT_PODSTAW_PRAWNYCH (RV 9,06%, 10 104
+  NON_CANONICAL, 120 MISSING), LEGAL_TWIN (LCI 74,59%, RV 39,43%, 46 niepokrytych artykułów).
+- **Przeprowadź głęboką analizę** rozbieżności i zaproponuj **jeden autorytatywny manifest 2.0**
+  + blokadę CI przy niespójności liczb (rozwiązanie L2).
+- Zaproponuj pełny plan domknięcia: `_legal_basis` kanoniczne we WSZYSTKICH regułach (RV→100%),
+  mapowanie na `legal_graph` (migracja 003), metryki LCI/TCL/RV/UVR liczone automatycznie.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** Legal Twin z dwukierunkową
+  traceability (reguła↔prawo), „pustynia pokrycia” = alarm P0, dowód istnienia przepisu z dnia
+  transakcji (time-travel LKG).
+
+### 5. AUDYT NIEZAWODNOŚCI I ZERO-DEFECT (POZIOM ENTERPRISE)
+- `edge_cases.rego` (187 reguł), `conflicts.rego` (27), `corrections.rego` (19) — kompletność,
+  konflikty międzydomenowe POST-MERGE, korekty z terminami ustawowymi.
+- `validation.rego`, `fallback.rego`, `api_fallback.rego` — degradacja zamiast błędu (nigdy 500).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** self-healing z auto-rollbackiem
+  ≤5 min, anomaly detection rozkładów werdyktów (ML), chaos engineering w CI, fuzzer decyzyjny
+  10k+ wejść, mutation ≥75%, weryfikacja formalna SMT/Z3 dla pakietów krytycznych (V2 F3).
+
+### 6. AUDYT WYDAJNOŚCI (POZIOM ENTERPRISE)
+- Latencja: p95 <5 ms krajowa, <50 ms pełny łańcuch; WASM dla gorącej ścieżki (uwaga: pakiety
+  z `http.send` zostają na silniku Go); cache werdyktów `input_hash → werdykt`.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** kompilacja shardów do WASM,
+  pre-kalkulacja kontekstu routingu, indeksy na najczęściej dopasowywanych polach, benchmarki
+  per shard w CI z budżetem czasu.
+
+### 7. AUDYT API I RULESTORE (POZIOM ENTERPRISE)
+- `api/openapi.yaml` (10 endpointów) — zgodność z kontraktem 25 pól, rate limiting, JWT+RBAC,
+  klasy pewności w odpowiedzi, Decision Certificate w API.
+- Migracje 001–003 (RuleStore DuckDB: thresholds, rule_versions, verdict_audit WORM, legal_graph,
+  invariants, golden_verdicts, decision_certificates, draft_law_radar) — schematy, indeksy,
+  retencja, backup co 15 min, RPO ≤5 min, RTO ≤15 min.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** endpoint `/v1/rules` (Policy
+  Registry), `/v1/change` (Declarative Change), `/v1/cert/{id}` (weryfikacja certyfikatu offline),
+  webhooki zmian prawa, status mode floty węzłów.
+
+### 8. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+M.in.: autonomiczny orkiestrator z grafem zależności; kompilator ścieżek shardów; runtime
+invariant check na każdym werdykcie z auto-revert; Decision Certificate PDF+XML z pieczęcią;
+Law Radar z countdownem; Declarative Change „reguła w 8 polach”; Legal Twin (LKG) z dowodem
+istnienia przepisu; golden replay w CI jako bramka; ewaluacja różnicowa międzywęzłowa; fuzzer +
+mutation + SMT jako standard; policy registry API; self-healing data (parametry) automatycznie,
+logika zawsze 4-eyes; sezonowość progów jakości (grudzień vs lipiec).
+
+## 📋 WYMAGANE SEKCJE RAPORTU (min. 25–40 stron)
+1. Executive Summary — TOP 10 rekomendacji krytycznych (z priorytetem P0/P1/P2).
+2. Tabela stanu obecnego vs cel V1/V2 (LCI, RV, TCL, UVR, duplikaty, stuby, hardcode, latencja).
+3. Audyt orkiestratora — diagramy Mermaid (Multi-Pass, shardy, safe_merge, PASS-0 GATE).
+4. Audyt control plane — cykl życia reguły, registry, bundle, canary, rollback.
+5. Audyt temporalności, proweniencji, invariants — z dowodami i testami granicznymi.
+6. Audyt pokrycia prawnego — plan domknięcia RV→100% z listą reguł do poprawy (sekcja po sekcji).
+7. Audyt niezawodności, wydajności, API, RuleStore.
+8. GENIALNE POMYSŁY (rozdział osobny, rozbudowany, min. 12 pomysłów).
+9. **KOD DO WDROŻENIA** — kompletny: ulepszony `main_jdg.rego` (runtime invariants POST-MERGE,
+   klasa pewności, decision hash), `runtime_invariants_enterprise.rego` (katalog INV ≥20),
+   `rule_lifecycle` + `policy_registry.json` (schema), migracja `004_jdg_v9_invariants.sql`,
+   narzędzie `control_plane_orchestrator.py` (bundle server + canary + rollback), `law_radar.py`,
+   `declarative_change.py`, testy natywne `test_native_runtime_invariants.rego` + pytest.
+10. Mapa drogowa wdrożenia (kroki, czas, ryzyko) + integracja z częściami 02–19.
+11. Metryki sukcesu po wdrożeniu (SLO z V1 §0 i V2 §11.1).
+
+## 📐 FORMAT RAPORTU
+- Tytuł: „RAPORT GLM52 P01 — ORKIESTRATOR + FUNDAMENT + CONTROL PLANE (ENTERPRISE v9.x)”.
+- Język: polski (techniczne po polsku/angielsku), diagramy Mermaid, tabele pokrycia.
+- **Przeprowadź głębokie myślenie przed każdą sekcją i przeprowadź głęboką analizę każdego pliku** —
+  raport ma reprezentować wyłącznie precyzję, profesjonalizm, zero nieporozumień.
+- Całość zapisz jako plik `RAPORT_GLM52_P01_ORKIESTRATOR_FUNDAMENT.txt`.
+
+## 🔗 SUPLEMENT LINKÓW — PEŁNE POKRYCIE KATALOGU JDG (część 01)
+Poniższe pliki tej części pochodzą z pełnej inwentaryzacji katalogu JDG (rules/tools/docs/bundles/tests) —
+przeczytaj je i włącz do analizy, aby raport pokrył KAŻDY plik części:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/deployments.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/orchestrator_core_report01_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/API_REFERENCJA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/DEVELOPER_GUIDE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/OPA_REGO_DEVELOPER_GUIDE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/api.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/api_doc_generator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/orchestrator_core_report01_gate.py
+
+## 🔗 KOMBINACJE LINKÓW KRZYŻOWYCH (spójność międzyczęściowa)
+Analizuj poniższe pliki z INNYCH części RAZEM z plikami swojej części — to punkty styku
+(kontrakty techniczne: rule_id, werdykt 25-polowy, temporalność, thresholds), dzięki którym
+raport będzie spójny z CAŁĄ kampanią i silnik OPA zostanie wzmocniony z każdej strony:
+- (część P03) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk/plan26_deadlines.rego
+- (część P05) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances.rego
+- (część P07) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cashflow_tax_predictor_enterprise.rego
+- (część P10) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pkpir_rates.rego
+- (część P13) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_business_lifecycle_rates.rego
+- (część P16) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/advertising/plan44_advertising.rego
+- (część P18) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/README.md
+
+## 🧠 BUDŻET KONTEKSTU (powtórzenie)
+- Materiał wejściowy ≤ 50% okna (~500K tokenów). `main_jdg.rego` (~2,5k linii) przeczytaj
+  w całości (to serce systemu); pozostałe pliki — kluczowe fragmenty; dokumenty święte — w całości.
+
+## 🔄 ZAKOŃCZENIE SESJI — WYCZYŚĆ OKNO KONTEKSTOWE
+Po wygenerowaniu raportu:
+1. Zapisz raport jako `RAPORT_GLM52_P01_ORKIESTRATOR_FUNDAMENT.txt`.
+2. Wykonaj polecenie **„WYCZYŚĆ OKNO KONTEKSTOWE”**: napisz 10-linijkowe podsumowanie sesji
+   (TOP ustalenia, co wdrożyć jako pierwsze, ostrzeżenia) do pliku `NOTATKI_KAMPANII.txt`.
+3. Potwierdź: „OKNO WYCZYSZCZONE — gotowy na PROMPT 02 z 19 (VAT MAKRO)”.
+4. Użytkownik wkleja następny Prompt: `PROMPT_02_VAT_MAKRO.txt`.

@@ -147,3 +147,115 @@ class TestVatMath:
         assert path(True, False, 36) == 60
         assert path(False, False, 6) == 180
         assert path(False, True, 36) == 0
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PROMPT 02 — NOWE NARZĘDZIA ENTERPRISE: vat_rate_engine + mpp_monitor
+# (P02 Sekcja 1: stawki PKWiU/CN; P02 Sekcja 2: MPP PRIORYTET)
+# ═══════════════════════════════════════════════════════════════════════════
+
+class TestVatRateEngine:
+    def test_classify_semantic_bread_5pct(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import vat_rate_engine as vre
+        r = vre.classify(description="chleb żytni")
+        assert r["vat_rate"] == "5"
+        assert r["source"] == "SEMANTIC"
+        assert r["trust_score"] >= 0.8
+
+    def test_classify_cn_8pct_beer(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import vat_rate_engine as vre
+        r = vre.classify(cn_code="22030010")
+        assert r["vat_rate"] == "8"
+        assert r["source"] == "CN_2203"
+
+    def test_classify_cn_car_23pct(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import vat_rate_engine as vre
+        r = vre.classify(cn_code="87032319")
+        assert r["vat_rate"] == "23"
+        assert r["source"] == "CN_8703"
+
+    def test_build_index_entries(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import vat_rate_engine as vre
+        idx = vre.build_index()
+        assert idx["entries"] >= 30
+        assert idx["index"]["1905"] == "5"
+        assert idx["index"]["2710"] == "23"
+
+
+class TestMppMonitor:
+    def test_mpp_check_violation(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import mpp_monitor as mm
+        r = mm.check({
+            "invoice_number": "FV/MPP/1",
+            "direction": "PURCHASE",
+            "cn_code": "72071210",
+            "amount_gross": 20000,
+            "vat_amount": 4600,
+        })
+        assert r["mpp_required"] is True
+        assert r["trigger"] == "ANNEX15_CN"
+        assert r["violation"] is True
+        assert r["sanction_30pct"] == 1380.0
+        assert r["routing"] == "BLOCK_AND_ALERT"
+
+    def test_mpp_check_ok_split_used(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import mpp_monitor as mm
+        r = mm.check({
+            "invoice_number": "FV/MPP/2",
+            "direction": "PURCHASE",
+            "cn_code": "72071210",
+            "amount_gross": 20000,
+            "vat_amount": 4600,
+            "split_payment_used": True,
+            "payment_to_whitelisted_account": True,
+        })
+        assert r["violation"] is False
+        assert r["whitelist_violation"] is False
+        assert r["routing"] == "OK"
+
+    def test_mpp_below_threshold(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import mpp_monitor as mm
+        r = mm.check({
+            "invoice_number": "FV/MPP/3",
+            "direction": "PURCHASE",
+            "cn_code": "72071210",
+            "amount_gross": 10000,
+            "vat_amount": 2300,
+        })
+        assert r["mpp_required"] is False
+        assert r["violation"] is False
+
+    def test_mpp_semantic_trigger(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import mpp_monitor as mm
+        r = mm.check({
+            "invoice_number": "FV/MPP/4",
+            "direction": "PURCHASE",
+            "description": "zakup złomu stalowego",
+            "amount_gross": 16000,
+            "vat_amount": 3680,
+        })
+        assert r["trigger"] == "SEMANTIC_DESCRIPTION"
+        assert r["mpp_required"] is True
+
+    def test_psd2_confirm(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import mpp_monitor as mm
+        inv = {
+            "invoice_number": "FV/PSD2/1",
+            "direction": "PURCHASE",
+            "cn_code": "72071210",
+            "amount_gross": 20000,
+            "vat_amount": 4600,
+            "split_payment_used": True,
+            "psd2": {"split_payment_confirmed": True, "transfer_type": "MPP", "account_type": "VAT"},
+        }
+        r = mm.psd2_confirm(inv)
+        assert r["psd2_verified"] is True

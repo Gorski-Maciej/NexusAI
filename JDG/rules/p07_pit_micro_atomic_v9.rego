@@ -180,6 +180,7 @@ article_desert_map := {
 amortization_calculator := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.amortization_calculator",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 100,
     "calculator": {
@@ -240,6 +241,7 @@ months_to_full := round((12 / base_rate_pct) * 100) / 100 {
 kst_rate_verifier := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.kst_rate_verifier",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 101,
     "verifier": {
@@ -282,6 +284,7 @@ rate_ok_note_detail := sprintf("NIEZGODNA — oczekiwana %.2f%%", [base_rate_pct
 initial_value_auditor := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.initial_value_auditor",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 102,
     "initial_value": {
@@ -319,6 +322,7 @@ initial_value_source := "CENA NABYCIA" {
 car_depreciation_limit := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.car_depreciation_limit",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 102,
     "car": {
@@ -348,6 +352,7 @@ car_limit_effective := car_limit_ev {
 low_value_asset := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.low_value_asset",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 103,
     "low": {
@@ -369,6 +374,7 @@ low_value_asset := {
 improvement_auditor := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.improvement_auditor",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 104,
     "improvement": {
@@ -389,6 +395,7 @@ improvement_auditor := {
 remnant_tracker := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.remnant_tracker",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 105,
     "remnant": {
@@ -416,6 +423,7 @@ closing_remnant_due := object.get(input.remnant, "closing_remnant", 0) > 0 {
 depreciation_timeline := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.depreciation_timeline",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 106,
     "timeline": {
@@ -447,6 +455,7 @@ full_years := round((1 / base_rate_pct) * 100) / 100 {
 nkup_auditor := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.nkup_auditor",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 107,
     "nkup": {
@@ -504,6 +513,7 @@ nkup_status_detail := sprintf("NARUSZENIA: %d", [violations_count]) {
 nkup_57pt_matrix := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.nkup_57pt_matrix",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 108,
     "matrix": {
@@ -531,6 +541,7 @@ nkup_57pt_matrix := {
 relief_simulator := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.relief_simulator",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 109,
     "reliefs": {
@@ -609,6 +620,7 @@ reliefs_total := round((relief_young + relief_family + relief_senior + relief_re
 ip_box_nexus := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.ip_box_nexus",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 110,
     "nexus": {
@@ -642,6 +654,7 @@ nexus_ratio := object.get(input.ip_box, "qualified_revenue", 0) / object.get(inp
 proof_of_law := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.proof_of_law",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 111,
     "lkg": {
@@ -679,6 +692,7 @@ cited_articles := [a |
 golden_dataset := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.golden_dataset",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 112,
     "golden": {
@@ -702,6 +716,7 @@ golden_dataset := {
 micro_macro_conflict := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.micro_macro_conflict",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 113,
     "conflict": {
@@ -739,6 +754,7 @@ threshold_conflict := true {
 zero_hardcode_guard := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.zero_hardcode_guard",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 114,
     "guard": {
@@ -757,6 +773,7 @@ zero_hardcode_guard := {
 temporal_projection := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.temporal_projection",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 115,
     "temporal": {
@@ -776,6 +793,7 @@ temporal_projection := {
 else_chain_auditor := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.else_chain_auditor",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 116,
     "chain": {
@@ -795,6 +813,7 @@ else_chain_auditor := {
 coverage_matrix := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.coverage_matrix",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 117,
     "matrix": {
@@ -816,6 +835,7 @@ coverage_matrix := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p07_pit_micro_atomic.report",
+    "_legal_basis": "ADR-002",
     "package": "jdg.p07_pit_micro_atomic",
     "priority": 90,
     "p07_pit_micro": {

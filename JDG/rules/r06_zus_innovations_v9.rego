@@ -108,6 +108,7 @@ hw_best_form := "SCALE" {
 health_whatif_4form := {
     "matched": true,
     "rule_id": "jdg.r06_zus_innovations.health_whatif_4form",
+    "_legal_basis": "Art. 81 ustawy o świadczeniach opieki zdrowotnej (Dz.U. 2025 poz. 890) + rozp. MPiPS ws. podstawy wymiaru (2025-12-30)",
     "package": "jdg.r06_zus_innovations",
     "priority": 310,
     "whatif": {
@@ -176,6 +177,7 @@ rt_alarms := [alarm |
 zus_relief_tracker := {
     "matched": true,
     "rule_id": "jdg.r06_zus_innovations.zus_relief_tracker",
+    "_legal_basis": "Art. 81 ustawy o świadczeniach opieki zdrowotnej (Dz.U. 2025 poz. 890) + rozp. MPiPS ws. podstawy wymiaru (2025-12-30)",
     "package": "jdg.r06_zus_innovations",
     "priority": 308,
     "tracker": {
@@ -211,6 +213,7 @@ a6a_other_parent_insured := object.get(a6a_input, "other_parent_insured", false)
 sus_a6a := {
     "matched": true,
     "rule_id": "jdg.r06_zus_innovations.sus_a6a",
+    "_legal_basis": "Art. 81 ustawy o świadczeniach opieki zdrowotnej (Dz.U. 2025 poz. 890) + rozp. MPiPS ws. podstawy wymiaru (2025-12-30)",
     "package": "jdg.r06_zus_innovations",
     "priority": 306,
     "a6a": {
@@ -233,6 +236,7 @@ sus_a6a := {
 decide := {
     "matched": true,
     "rule_id": "jdg.r06_zus_innovations.zus_report",
+    "_legal_basis": "Art. 81 ustawy o świadczeniach opieki zdrowotnej (Dz.U. 2025 poz. 890) + rozp. MPiPS ws. podstawy wymiaru (2025-12-30)",
     "package": "jdg.r06_zus_innovations",
     "priority": 315,
     "vat_rate": "", "rounding_level": "", "gtu_code": "", "vat_exemption": "", "procedure": "",

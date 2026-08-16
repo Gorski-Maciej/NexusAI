@@ -4042,6 +4042,7 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.micro.pp.a5index.r2",
+    "_legal_basis": "Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 646)",
     "package": "jdg.micro.pp",
     "priority": 270501,
     "vat_rate": "",

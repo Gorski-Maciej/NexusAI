@@ -9,6 +9,7 @@
 
 package jdg.wdt_document_tracker
 
+import data.jdg.thresholds
 import future.keywords.if
 import future.keywords.in
 
@@ -34,12 +35,12 @@ decide := verdict {
     transport_docs_date := object.get(input.invoice, "transport_docs_received_date", "")
     docs_received := transport_docs_date != ""
 
-    deadline_days := 30
+    deadline_days := object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "wdt_deadline_days", 30)
     days_remaining := deadline_days - days_since_invoice
 
     alert_level := "OK" { has_transport_docs }
-    alert_level := "GREEN" { not has_transport_docs; days_remaining > 25 }
-    alert_level := "YELLOW_25_DAYS_WARNING" { not has_transport_docs; days_remaining <= 25; days_remaining > 15 }
+    alert_level := "GREEN" { not has_transport_docs; days_remaining > object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "wdt_alert_days", 25) }
+    alert_level := "YELLOW_25_DAYS_WARNING" { not has_transport_docs; days_remaining <= object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "wdt_alert_days", 25); days_remaining > 15 }
     alert_level := "ORANGE_15_DAYS_CRITICAL" { not has_transport_docs; days_remaining <= 15; days_remaining > 5 }
     alert_level := "RED_5_DAYS_URGENT" { not has_transport_docs; days_remaining <= 5; days_remaining > 0 }
     alert_level := "EXPIRED_23PCT_VAT" { not has_transport_docs; days_remaining <= 0 }
@@ -155,6 +156,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.wdt_document_tracker.accelerated_refund",
+        "_legal_basis": "Art. 13 VAT; Art. 42 ust. 1 pkt 2 VAT",
         "package": "jdg.wdt_document_tracker",
         "priority": 18103,
         "wdt_qualifies_25day": qualifies_25day,

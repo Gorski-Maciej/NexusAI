@@ -102,7 +102,7 @@ else := {
     missing_etats = required_disabled - disabled_etats { disabled_etats < required_disabled }
     else = 0 { disabled_etats >= required_disabled }
     avg_wage := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "avg_monthly_wage", 7000)
-    pfron_amount = missing_etats * 0.4065 * avg_wage
+    pfron_amount = missing_etats * object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "pfron_rate", 0.4065) * avg_wage
 }
 
 # ══════ P773: mpips_zfss_social_fund — ZFŚS — Zakładowy Fundusz Świadczeń Socjalnych ══════

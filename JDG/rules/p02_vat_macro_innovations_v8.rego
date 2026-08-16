@@ -13,7 +13,8 @@ default decide := {"matched":false,"rule_id":"jdg.p02_innovations.no_match","pac
 
 # ═══ INN01: GTU Map Fixer ═══
 decide := {
-    "matched":true,"rule_id":"jdg.p02_innovations.gtu_map_fix","package":"jdg.p02_innovations","priority":1000,
+    "matched":true,"rule_id":"jdg.p02_innovations.gtu_map_fix", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p02_innovations","priority":1000,
+    "_routing": "",
     "innovation":"INN01_GTU_MAP_FIXER","action":"FIX_GTU_MAP",
     "issues":{"FOOD_WASTE_COLLISION":"Both map to GTU_07","MISSING_GTU_03":"Used vehicles GTU_03 not in map"},
     "fixes":{"FOOD":"GTU_06","WASTE":"GTU_07","USED_VEHICLES":"GTU_03"},
@@ -22,7 +23,8 @@ decide := {
 
 # ═══ INN02: NP Rate Handler ═══
 else := {
-    "matched":true,"rule_id":"jdg.p02_innovations.np_rate_handler","package":"jdg.p02_innovations","priority":2000,
+    "matched":true,"rule_id":"jdg.p02_innovations.np_rate_handler", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p02_innovations","priority":2000,
+    "_routing": "",
     "innovation":"INN02_NP_RATE_HANDLER","action":"HANDLE_NP_RATE",
     "issue":"NP (not subject) transactions silently fall to 23% — VAT overcharge",
     "fix":"Add NP detection → vat_rate='NP', routing=NO_VAT, no JPK inclusion",
@@ -32,7 +34,8 @@ else := {
 
 # ═══ INN03: MPP Threshold Externalizer ═══
 else := {
-    "matched":true,"rule_id":"jdg.p02_innovations.mpp_threshold_externalizer","package":"jdg.p02_innovations","priority":3000,
+    "matched":true,"rule_id":"jdg.p02_innovations.mpp_threshold_externalizer", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p02_innovations","priority":3000,
+    "_routing": "",
     "innovation":"INN03_MPP_THRESHOLD_EXTERNALIZER","action":"EXTERNALIZE_MPP",
     "hardcoded_value":15000,"thresholds_key":"data.jdg.thresholds.vat.mpp_mandatory_threshold",
     "affected_files":["substantive.rego","compliance.rego","edge_cases.rego"],
@@ -42,7 +45,8 @@ else := {
 
 # ═══ INN04: Duplicate Package Detector ═══
 else := {
-    "matched":true,"rule_id":"jdg.p02_innovations.duplicate_detector","package":"jdg.p02_innovations","priority":4000,
+    "matched":true,"rule_id":"jdg.p02_innovations.duplicate_detector", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p02_innovations","priority":4000,
+    "_routing": "",
     "innovation":"INN04_DUPLICATE_PACKAGE_DETECTOR","action":"DETECT_DUPLICATES",
     "duplicates":["plan23_detailed.rego == plan26_critical.rego (identical, package jdg.vat)"],
     "fix":"Delete plan26_critical.rego or rename package to jdg.vat.critical",
@@ -51,7 +55,8 @@ else := {
 
 # ═══ INN05: Place of Supply Completer ═══
 else := {
-    "matched":true,"rule_id":"jdg.p02_innovations.place_of_supply","package":"jdg.p02_innovations","priority":5000,
+    "matched":true,"rule_id":"jdg.p02_innovations.place_of_supply", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p02_innovations","priority":5000,
+    "_routing": "",
     "innovation":"INN05_PLACE_OF_SUPPLY_COMPLETER","action":"COMPLETE_PLACE_OF_SUPPLY",
     "missing_rules":["B2B_Art28b","B2C_e-services_Art28k","Real_estate_Art28e","Transport_Art28f"],
     "current_coverage":"import_of_services: PL only (assumes all services in PL)",
@@ -60,7 +65,8 @@ else := {
 
 # ═══ INN06: Margin Scheme Completer ═══
 else := {
-    "matched":true,"rule_id":"jdg.p02_innovations.margin_scheme","package":"jdg.p02_innovations","priority":6000,
+    "matched":true,"rule_id":"jdg.p02_innovations.margin_scheme", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p02_innovations","priority":6000,
+    "_routing": "",
     "innovation":"INN06_MARGIN_SCHEME_COMPLETER","action":"COMPLETE_MARGIN",
     "implemented":["MARGIN_USED_GOODS"],
     "missing":["Art_119_travel_agency","Art_120_art_antiques_collectibles"],
@@ -69,6 +75,7 @@ else := {
 
 # ═══ COVERAGE ═══
 else := {
-    "matched":true,"rule_id":"jdg.p02_innovations.summary","package":"jdg.p02_innovations","priority":99999,
+    "matched":true,"rule_id":"jdg.p02_innovations.summary", "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","package":"jdg.p02_innovations","priority":99999,
+    "_routing": "",
     "innovation":"P02_VAT_MACRO","action":"REPORT","total_fixes":6,"ready_for_p03":true
 } { true }

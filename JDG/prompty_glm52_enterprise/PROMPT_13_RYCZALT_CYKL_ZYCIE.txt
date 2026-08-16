@@ -1,0 +1,196 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 13 z 19 — CZĘŚĆ: RYCZAŁT / CEIDG / PRAWO PRZEDSIĘBIORCÓW / CYKL ŻYCIA / SUKCESJA
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie ryczałtu od przychodów ewidencjonowanych
+(ustawa z 20.11.1998, Dz.U. 2025 poz. 234 ze zm.), karty podatkowej, Prawa przedsiębiorców
+(6.03.2018, Dz.U. 2025 poz. 123 — zawieszenie art. 22–25, działalność nieewidencjonowana art. 5–6),
+CEIDG (6.03.2018, Dz.U. 2025 poz. 456), cyklu życia JDG (start → wzrost → zawieszenie → sukcesja
+→ zakończenie), zarządu sukcesyjnego (5.07.2018, Dz.U. 2025 poz. 1234) oraz reguł OPA/Rego
+klasy ENTERPRISE.
+
+## ⚠️ KRYTYCZNE ZASADY
+1. **GENERUJESZ OGROMNY, ROZBUDOWANY RAPORT** `RAPORT_GLM52_P13_RYCZALT_CYKL_ZYCIE.txt`
+   z **INTELIGENTNYM KODEM gotowym do wdrożenia** (reguły Rego, narzędzia Python, YAML, testy
+   natywne + pytest) — copy-paste do katalogu JDG.
+2. **NIE MODYFIKUJ PLIKÓW w repo** — produktem jest raport .txt.
+3. **CZYTAJ PLIKI PRZEZ LINKI GITHUB** podane niżej — nie szukaj katalogów na własną rękę.
+4. **BUDŻET KONTEKSTU:** dane wejściowe ≤ **50% okna GLM 5.2 (~500K tokenów)** — reszta na
+   głębokie myślenie, głęboką analizę i wygenerowanie rozwiązania.
+
+## 🧠 OBOWIĄZKOWE NAKAZY GŁĘBOKIEGO MYŚLENIA (wymagane w całym raporcie — powtarzaj je w każdej sekcji)
+1. Przeprowadź głębokie myślenie przed każdą sekcją raportu; Przeprowadź głębokie myślenie przed każdą rekomendacją kodu; Przeprowadź głębokie myślenie przy weryfikacji całości pod kątem błędów i luk; Przeprowadź głębokie myślenie przy łączeniu wniosków z pozostałymi częściami kampanii.
+2. Przeprowadź głęboką analizę każdego pliku z listy; przeprowadź głęboką analizę powiązań między plikami; przeprowadź głęboką analizę zgodności reguł z aktami prawnymi (Bbb, LEGAL_REFERENCE_ACTS); przeprowadź głęboką analizę kontraktów spójności z innymi częściami kampanii.
+3. Każde rozwiązanie musi reprezentować zaawansowany poziom Enterprise; standardem minimalnym jest zaawansowany poziom Enterprise; jeśli propozycja nie osiąga celu: zaawansowany poziom Enterprise — odrzuć ją; wszystkie rekomendacje razem tworzą zaawansowany poziom Enterprise całego modułu.
+4. Silnik ma osiągnąć poziom ENTERPRISE w każdym wymiarze; poziom ENTERPRISE to próg minimalny, nie maksimum; każda sekcja raportu deklaruje osiągnięty poziom ENTERPRISE; ostateczny werdykt kampanii: poziom ENTERPRISE bez wyjątków.
+5. W każdej sekcji proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów; minimum 12 pozycji w kategorii: innowacyjne ulepszenia wyprzedzające profesjonalistów w rozdziale GENIALNE POMYSŁY; każdy obszar analizy kończ zestawem: innowacyjne ulepszenia wyprzedzające profesjonalistów; kod w raporcie ma być wynikiem: innowacyjne ulepszenia wyprzedzające profesjonalistów — bez tego raport nie spełnia standardu kampanii.
+## 📂 DOKUMENTY ŚWIĘTE (przeczytaj)
+- V1 — TARGET: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- V2 — WIZJA (kontynuacja V1): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- Stan obecny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Akty prawne (Bbb): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (pełne): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Dokument P13: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RYCZALT_CYKL_ZYCIE_P13.md
+
+## 📂 PLIKI TEJ CZĘŚCI DO ANALIZY (rules/micro/ryczalt, ceidg, pp, sukcesja + business + enterprise)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ryczalt/ryczalt.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ryc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ceidg/ceidg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ceidg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pp/pp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sukcesja/sukcesja.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_succ.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business/gig_economy.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business/plan26_suspension_succession.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business/strategic_intelligence.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_business_lifecycle_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/lifecycle_manager_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p13_ryczalt_cykl_zycia_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r12_ryczalt_cykl_zycia_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_business_lifecycle_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_autoform_generator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_entrepreneur_test_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_enhanced_sca_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_estonian_cit_enterprise.rego
+
+## 🧩 SPÓJNOŚĆ Z INNYMI CZĘŚCIAMI (kontrakty)
+- **Ryczałt ↔ PIT:** stawki PKWiU (8,5%/12,5%/17%/20%/25%…), limit 2 000 000 EUR (art. 6 ust. 4),
+  ewidencja przychodów (art. 15), karta podatkowa (art. 21–30), przejście skala↔ryczałt (art. 9a)
+  — spójność z PROMPT 05 (formy) i 06 (mikro PIT).
+- **Zawieszenie ↔ ZUS/VAT:** zawieszenie (art. 22–25 PP: min. 30 dni, bez ZUS, VAT zawieszony)
+  — spójność z PROMPT 08 (ZUS) i 02 (VAT); działalność nieewidencjonowana (art. 5 PP: limit
+  50% minimalnej, bez ZUS) — spójność z PROMPT 08.
+- **Sukcesja ↔ wszystkie domeny:** zarząd sukcesyjny (art. 3–15 u.z.s.: 2 lata + 3 przedłużenie,
+  NIP, rachunek, odpowiedzialność) — spójność z PROMPT 01 (business_status: IN_SUCCESSIO,
+  routing full chain), 05 (PIT), 08 (ZUS), 10 (księgowość).
+- **CEIDG ↔ e-Doręczenia:** adres do doręczeń (PROMPT 04); auto-formularze CEIDG-1 (ZUA/ZWUA,
+  VAT-Z, PIT-4R) — PROMPT 04 (e-Deklaracje).
+- Werdykt 25-polowy, rule_id unikalne, `_legal_basis` kanoniczne, progi z `data.thresholds.jdg.*`
+  (limit ryczałtu 2 000 000 EUR, 50% minimalnej dla nieewidencjonowanej), wpis w `main_jdg.rego`
+  — kontrakty PROMPT 01.
+
+## 🎯 CEL ANALIZY — POZIOM ENTERPRISE
+**Przeprowadź głębokie myślenie i przeprowadź głęboką analizę** modułu ryczałtu i cyklu życia
+JDG na **zaawansowanym poziomie Enterprise** — priorytet: **stawki PKWiU ryczałtu (kompletność),
+limit 2M EUR z monitoringiem, zawieszenie/wznowienie z pełnymi skutkami (ZUS/VAT/PIT), sukcesja
+(zarząd sukcesyjny — pełny cykl), działalność nieewidencjonowana**. Celem jest poziom ENTERPRISE,
+w którym cały cykl życia JDG (od CEIDG-1 do zakończenia/sukcesji) jest prowadzony przez system
+z dowodem prawnym na każdym etapie. Zaproponuj **innowacyjne ulepszenia wyprzedzające
+profesjonalistów**.
+
+### 1. AUDYT RYCZAŁTU (POZIOM ENTERPRISE — PRIORYTET: stawki PKWiU, limit 2M EUR)
+- Stawki: 8,5% (usługi), 12,5% (wolne zawody), 17%, 20%, 25% (art. 12 u.z.p.d.), stawki 3%/5,5%
+  (art. 12 ust. 1 pkt 1–2: przychody z działalności wytwórczej), limit 2 000 000 EUR (art. 6
+  ust. 4 — przeliczenie kursem NBP z 1 października poprzedniego roku), ewidencja przychodów
+  (art. 15), karta podatkowa (art. 21–30 — decyzja naczelnika, stawki miesięczne).
+- `ryczalt.rego` (155 reguł), `plan33_ryc.rego` (158) — kompletność stawek per PKWiU, limitów.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** baza stawek PKWiU (klasyfikator
+  PKD/PKWiU → stawka), monitor limitu 2M EUR (przelicznik NBP z 1.10, alert przy 95%),
+  symulator przekroczenia limitu (skutki: przejście na skalę od następnego roku), kalkulator
+  karty podatkowej (stawki miesięczne per rodzaj działalności), auto-ewidencja przychodów.
+
+### 2. AUDYT PRAWA PRZEDSIĘBIORCÓW (POZIOM ENTERPRISE — PRIORYTET: zawieszenie art. 22–25)
+- Zawieszenie: min. 30 dni, maks. 24 miesiące, skutki (bez ZUS — tylko zdrowotna? NIE — brak
+  składek w zawieszeniu; VAT zawieszony — bez ewidencji), wznowienie, obowiązki w zawieszeniu
+  (sprawozdania?), działalność nieewidencjonowana (art. 5: limit 50% minimalnej miesięcznie,
+  bez ZUS, bez VAT).
+- `business.rego` (23 reguł — 8 BLOCK), `plan26_suspension_succession.rego`,
+  `lifecycle_manager_enterprise.rego` — kompletność skutków zawieszenia we wszystkich domenach.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** „symulator zawieszenia” (raport
+  skutków: ZUS/VAT/PIT/kalendarz), monitor 24 miesięcy zawieszenia (alert), kalkulator
+  nieewidencjonowanej (50% minimalnej — monitor miesięczny), auto-wniosek CEIDG (zawieszenie/
+  wznowienie), tracker obowiązków w zawieszeniu.
+
+### 3. AUDYT SUKCESJI (POZIOM ENTERPRISE — PRIORYTET: art. 3–15 u.z.s.)
+- Zarząd sukcesyjny: powołanie (art. 3–4), maks. 2 lata (art. 12) + 3 lata przedłużenia (art. 13),
+  wygaśnięcie (art. 14–15), NIP/rachunek firmowy (art. 18–20), odpowiedzialność (art. 21–23),
+  skutki podatkowe (PIT — kontynuacja, ZUS — płatnik), dostęp do rachunku (art. 22).
+- `sukcesja.rego` (140 reguł), `plan33_succ.rego` (20), `business/plan26_suspension_succession.rego` —
+  kompletność cyklu, terminów, odpowiedzialności.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** „plan sukcesji” (kreator: testament,
+  zarządca, pełnomocnictwa — checklista), tracker 2+3 lat z countdownem, kalkulator
+  odpowiedzialności zarządcy, auto-przełączenie kontekstu JDG (IN_SUCCESSIO → routing full
+  chain — PROMPT 01), monitor rachunku firmowego (dostęp po śmierci).
+
+### 4. AUDYT CYKLU ŻYCIA (POZIOM ENTERPRISE)
+- Start (CEIDG-1, ZUS ZUA, VAT-R, e-Doręczenia — kreator PROMPT 01/04), wzrost (zatrudnienie,
+  gig economy — `gig_economy.rego`), transformacja (JDG → spółka — `p16_entrepreneur_test`),
+  zakończenie (VAT-Z, ZWUA, likwidacja — remanent PROMPT 10, PIT-36 końcowy).
+- `lifecycle_manager_enterprise.rego`, `p16_autoform_generator_enterprise.rego` (G1–G7),
+  `p16_entrepreneur_test_enterprise.rego` (JDG vs spółka), `p16_enhanced_sca_enterprise.rego`,
+  `strategic_intelligence.rego` — kompletność faz, formularzy, terminów.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** „nawigator cyklu życia” (faza →
+  checklista obowiązków → auto-formularze), symulator transformacji JDG→spółka (koszty/ryzyka),
+  tracker licencji/zezwoleń per branża, health scorecard JDG (życiorys compliance).
+
+### 5. AUDYT NIEZAWODNOŚCI, TEMPORALNOŚCI, JAKOŚCI (POZIOM ENTERPRISE)
+- Stuby/duplikaty w ryczalt/ceidg/pp/sukcesja, `_legal_basis` kanoniczne (Dz.U. 2025 poz. 123/234/456/1234),
+  temporalność (zmiany limitów), golden replay decyzji cyklu życia; invariants (zawieszenie ≥ 30 dni,
+  sukcesja ≤ 2+3 lata).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** testy per faza cyklu życia,
+  „dowód etapu” w Decision Certificate, Law Radar (nowelizacje PP/CEIDG).
+
+### 6. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+M.in.: baza stawek PKWiU z klasyfikatorem; monitor limitu 2M EUR (NBP 1.10); symulator
+zawieszenia (skutki we wszystkich domenach); kreator planu sukcesji; tracker 2+3 lat; nawigator
+cyklu życia z checklistami; auto-formularze CEIDG/ZUA/VAT-R; symulator JDG→spółka; kalkulator
+nieewidencjonowanej (50% minimalnej); monitor 24 mies. zawieszenia; health scorecard JDG;
+auto-przełączenie kontekstu IN_SUCCESSIO; testy per faza.
+
+## 📋 WYMAGANE SEKCJE RAPORTU (min. 25–40 stron)
+1. Executive Summary — TOP 10 (priorytet: stawki ryczałtu, limit 2M EUR, sukcesja).
+2. Tabela pokrycia: art. (u.z.p.d./PP/CEIDG/u.z.s.) × status × rule_id × luki.
+3. Audyt ryczałtu (stawki PKWiU, limit, ewidencja, karta) — diagramy Mermaid.
+4. Audyt zawieszenia i działalności nieewidencjonowanej (art. 5/22–25 PP).
+5. Audyt sukcesji (art. 3–15 u.z.s.) — pełny cykl z terminami.
+6. Audyt cyklu życia (start→wzrost→transformacja→zakończenie) + jakości/temporalności.
+7. GENIALNE POMYSŁY (min. 12, rozbudowane).
+8. **KOD DO WDROŻENIA:** uzupełnione reguły stawek PKWiU, `pkwiu_classifier.py`,
+   `limit_2m_monitor.py`, `sukcesja_planner.py`, `lifecycle_navigator.py`, `zawieszenie_simulator.py`,
+   testy natywne `test_native_ryczalt.rego`, `test_native_sukcesja.rego` + pytest; wpisy do
+   thresholds; wpis do `main_jdg.rego` (IN_SUCCESSIO).
+9. Mapa drogowa + integracja z częściami 01, 02, 04, 05, 08, 10.
+10. Metryki sukcesu (LCI ≥ 99%, 0 niepilnowanych terminów cyklu życia, RV 100%).
+
+## 📐 FORMAT RAPORTU
+- Tytuł: „RAPORT GLM52 P13 — RYCZAŁT / CEIDG / CYKL ŻYCIA / SUKCESJA (ENTERPRISE v9.x)”.
+- Język: polski, diagramy Mermaid, tabele pokrycia.
+- **Przeprowadź głębokie myślenie przed każdą sekcją i przeprowadź głęboką analizę każdego pliku** —
+  precyzja, profesjonalizm, zero nieporozumień. Zapisz jako `RAPORT_GLM52_P13_RYCZALT_CYKL_ZYCIE.txt`.
+
+## 🔗 SUPLEMENT LINKÓW — PEŁNE POKRYCIE KATALOGU JDG (część 13)
+Poniższe pliki tej części pochodzą z pełnej inwentaryzacji katalogu JDG (rules/tools/docs/bundles/tests) —
+przeczytaj je i włącz do analizy, aby raport pokrył KAŻDY plik części:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/lifecycle_report12_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/ryczalt_cykl_zycia_report12_evidence.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/poa_manager_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/restructuring.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/lifecycle_report12_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p16_business_lifecycle_toolkit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/ryczalt_cykl_zycia_report12_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/ryczalt_lifecycle_auditor.py
+
+## 🔗 KOMBINACJE LINKÓW KRZYŻOWYCH (spójność międzyczęściowa)
+Analizuj poniższe pliki z INNYCH części RAZEM z plikami swojej części — to punkty styku
+(kontrakty techniczne: rule_id, werdykt 25-polowy, temporalność, thresholds), dzięki którym
+raport będzie spójny z CAŁĄ kampanią i silnik OPA zostanie wzmocniony z każdej strony:
+- (część P15) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance.rego
+- (część P17) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- (część P03) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk/plan26_deadlines.rego
+- (część P06) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22a.rego
+- (część P09) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/_zus_micro_rates.rego
+- (część P11) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/plan44_audit.rego
+- (część P12) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_crossborder_rates.rego
+
+## 🧠 BUDŻET KONTEKSTU (powtórzenie)
+Materiał wejściowy ≤ 50% okna (~500K tokenów). Priorytet: `ryczalt.rego`, `sukcesja.rego`,
+`business.rego`, `lifecycle_manager_enterprise.rego` — w całości; `plan33_ryc.rego`
+fragmentarycznie.
+
+## 🔄 ZAKOŃCZENIE SESJI — WYCZYŚĆ OKNO KONTEKSTOWE
+1. Zapisz raport jako `RAPORT_GLM52_P13_RYCZALT_CYKL_ZYCIE.txt`.
+2. Wykonaj polecenie **„WYCZYŚĆ OKNO KONTEKSTOWE”**: 10-linijkowe podsumowanie do
+   `NOTATKI_KAMPANII.txt`.
+3. Potwierdź: „OKNO WYCZYSZCZONE — gotowy na PROMPT 14 z 19 (PCC / LOKALNE / AKCYZĄ)”.
+4. Użytkownik wkleja następny Prompt: `PROMPT_14_PCC_LOKALNE_AKCYZA.txt`.

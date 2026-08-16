@@ -36,7 +36,7 @@ import future.keywords.if
 import future.keywords.in
 
 default decide := {
-    "matched": false, "rule_id": "jdg.entrepreneur_test.no_match",
+    "matched": false, "rule_id": "jdg.entrepreneur_test.no_match", "_legal_basis": "ustawa o PIT (Dz.U. 2024 poz. 1760 ze zm.)",
     "valid_from":"2024-01-01","valid_to":"9999-12-31","temporal_source":"Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osob fizycznych"
     "package": "jdg.entrepreneur_test", "priority": 9999
 }
@@ -131,6 +131,7 @@ decide := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.entrepreneur_test.assessment",
+        "_legal_basis": "ustawa o PIT (Dz.U. 2024 poz. 1760 ze zm.)",
         "package": "jdg.entrepreneur_test",
         "priority": 100,
         "action": "TEST_ENTREPRENEUR",

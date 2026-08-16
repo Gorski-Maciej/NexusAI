@@ -93,6 +93,7 @@ else := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p24.i2.r1",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210010,
     "pit_rate": "0.03",
@@ -108,6 +109,7 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i2.r2",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210011,
     "pit_rate": "0.055",
@@ -123,6 +125,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i2.r3",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210012,
     "pit_rate": "0.085",
@@ -138,6 +141,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i2.r4",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210013,
     "pit_rate": "0.125",
@@ -153,6 +157,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i2.r5",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210014,
     "pit_rate": "0.15",
@@ -168,6 +173,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i2.r6",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210015,
     "pit_rate": "0.17",
@@ -183,6 +189,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i2.r7",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210016,
     "pit_rate": "0.20",
@@ -198,6 +205,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i2.r8",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210017,
     "_routing_reason": "I2: Mapowanie semantyczne PKD → stawka ryczałtu (auto-classifier)",
@@ -217,6 +225,7 @@ else := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p24.i4.r1",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210030,
     "vat_rate": "0.08",
@@ -233,6 +242,7 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i4.r2",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210031,
     "vat_rate": "0.23",
@@ -248,6 +258,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i4.r3",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210032,
     "vat_rate": "0.00",
@@ -264,6 +275,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i4.r4",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210033,
     "_routing_reason": "I4: Umowa o roboty budowlane — PCC 1% od wartości (jeśli > 1000 zł i poza VAT)",
@@ -284,6 +296,7 @@ else := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p24.i10.r1",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210050,
     "vat_rate": "0.08",
@@ -299,6 +312,7 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i10.r2",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210051,
     "vat_rate": "0.08",
@@ -315,6 +329,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i10.r3",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210052,
     "vat_rate": "0.23",
@@ -335,6 +350,7 @@ else := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p24.i3.r1",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210020,
     "succession_score": 0,
@@ -349,6 +365,7 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i3.r2",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210021,
     "succession_score_add": 30,
@@ -363,6 +380,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i3.r3",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210022,
     "succession_score_add": 25,
@@ -377,6 +395,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i3.r4",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210023,
     "succession_score_add": 15,
@@ -396,6 +415,7 @@ else := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p24.i7.r1",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210060,
     "recommended_tax_form": "RYCZALT",
@@ -411,6 +431,7 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i7.r2",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210061,
     "recommended_tax_form": "SKALA",
@@ -425,6 +446,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p24.i7.r3",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210062,
     "recommended_tax_form": "ESTONSKI_CIT",
@@ -445,6 +467,7 @@ else := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p24.i8.r1",
+    "_routing": "",
     "package": "jdg.p24.innovations",
     "priority": 210070,
     "_routing_reason": "I8: Monitorowanie limitu działalności nieewidencjonowanej (75% płacy min.)",

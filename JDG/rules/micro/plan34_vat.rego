@@ -887,7 +887,7 @@ else :=   {"matched":true,"rule_id":"jdg.vat.a106e.r6","package":"jdg.micro.vat.
 }
 
 # jdg.vat.a106j.r8 — `correction_storno_full_cancel`: Anulowanie faktury → Storno
-else :=   {"matched":true,"rule_id":"jdg.vat.a106j.r8","package":"jdg.micro.vat.plan34","priority":10608,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Anulowanie faktury","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.vat.a106j.r8","package":"jdg.micro.vat.plan34","priority":10608,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","valid_from":"2026-01-01","valid_to":null,"_routing":"","_routing_reason":"Anulowanie faktury","_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)","_warnings":[]} {
     object.get(input.invoice, "is_correction", false) == true; object.get(input.invoice, "is_storno", false) == true
 }
 

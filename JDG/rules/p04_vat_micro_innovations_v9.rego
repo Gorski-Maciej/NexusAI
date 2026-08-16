@@ -106,6 +106,7 @@ first_stub_sample := stub_rules[0] {
 stub_duplicate_report := {
     "matched": true,
     "rule_id": "jdg.p04_vat_micro_innovations.stub_duplicate_report",
+    "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
     "priority": 200,
     "audit": {
@@ -130,6 +131,7 @@ stub_duplicate_report := {
 deduplication_plan := {
     "matched": true,
     "rule_id": "jdg.p04_vat_micro_innovations.deduplication_plan",
+    "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
     "priority": 210,
     "plan": {
@@ -171,6 +173,7 @@ priority_coherence_issues := [m |
 micro_macro_report := {
     "matched": true,
     "rule_id": "jdg.p04_vat_micro_innovations.micro_macro_report",
+    "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
     "priority": 300,
     "consistency": {
@@ -238,6 +241,7 @@ math_all_ok := true {
 math_guarantee := {
     "matched": true,
     "rule_id": "jdg.p04_vat_micro_innovations.math_guarantee",
+    "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
     "priority": 400,
     "guarantees": {
@@ -297,6 +301,7 @@ specialist_gaps := [pkg |
 specialist_audit := {
     "matched": true,
     "rule_id": "jdg.p04_vat_micro_innovations.specialist_audit",
+    "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
     "priority": 500,
     "audit": {
@@ -356,6 +361,7 @@ proof_of_correctness := {
 rate_description_mismatch := {
     "matched": true,
     "rule_id": "jdg.p04_vat_micro_innovations.rate_description_mismatch",
+    "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
     "priority": 600,
     "mismatch": {
@@ -406,6 +412,7 @@ novelization_delta := object.get(audit_data, "novelization_delta", 0)
 semantic_rate_verifier := {
     "matched": true,
     "rule_id": "jdg.p04_vat_micro_innovations.semantic_rate_verifier",
+    "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
     "priority": 610,
     "verification": {
@@ -458,6 +465,7 @@ coverage_heatmap := [{"article": a, "status": article_status(a)} |
 decide := {
     "matched": true,
     "rule_id": "jdg.p04_vat_micro_innovations.report",
+    "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
     "priority": 700,
     "p04_vat_micro": {

@@ -127,7 +127,7 @@ else := {
     outage_end_expected := object.get(input, "ksef_outage_end_expected", "")
 
     # Deadline: 7 dni od ustania awarii na wysyłkę (lub 24h od końca dnia awarii)
-    deadline_hours := 168
+    deadline_hours := object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "ksef_offline_grace_days", 7) * 24
     max_retry_date := ""
     # Jeśli znamy koniec awarii, deadline = koniec + 7 dni (TODO: full date arithmetic)
     max_retry_date := sprintf("%sT23:59:59 (TODO: +7 dni)", [outage_end_expected]) { outage_end_expected != "" }
@@ -467,7 +467,7 @@ else := {
     ]
 } {
     input.ksef_is_offline == true
-    input.ksef_outage_duration_hours > 168  # 7 dni × 24h
+    input.ksef_outage_duration_hours > object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "ksef_offline_grace_days", 7) * 24  # 7 dni × 24h
     object.get(input, "ksef_zaw_nr_sent", false) == false
 
     outage_last_day := object.get(input, "ksef_outage_start_time", "")

@@ -89,6 +89,7 @@ cd_routing := "BLOCK_AND_ALERT" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r13_hyper_konteksty_innovations.cross_domain_conflict_detector",
+    "_legal_basis": "ustawa o PIT art. 30ca (IP Box), art. 26e (ulga B+R), art. 26ea (zbieg ulg)",
     "package": "jdg.r13_hyper_konteksty_innovations",
     "priority": 11026,
     "decision_mode": "SUGGEST",
@@ -131,6 +132,7 @@ st_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r13_hyper_konteksty_innovations.solidarity_tax_monitor",
+    "_legal_basis": "ustawa o PIT art. 30ca (IP Box), art. 26e (ulga B+R), art. 26ea (zbieg ulg)",
     "package": "jdg.r13_hyper_konteksty_innovations",
     "priority": 11027,
     "decision_mode": "SUGGEST",
@@ -284,6 +286,7 @@ sg_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r13_hyper_konteksty_innovations.qualified_signature_selector",
+    "_legal_basis": "ustawa o PIT art. 30ca (IP Box), art. 26e (ulga B+R), art. 26ea (zbieg ulg)",
     "package": "jdg.r13_hyper_konteksty_innovations",
     "priority": 11030,
     "decision_mode": "SUGGEST",

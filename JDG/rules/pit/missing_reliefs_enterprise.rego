@@ -357,6 +357,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.pit.missing_reliefs.coverage_summary",
+    "_legal_basis": "Art. 26 ust. 1 pkt 6a PIT",
     "package": "jdg.pit.missing_reliefs",
     "priority": 999,
     "recommendation_only": true,

@@ -169,7 +169,7 @@ _bdo_env := object.get(object.get(object.get(data, "jdg", {}), "thresholds", {})
 _ewc_catalog := object.get(_bdo_env, "ewc_catalog", [])
 
 ewc_catalog_lookup := {
-    "matched": true, "rule_id": "jdg.micro.bdo_ewc.ewc_catalog_lookup",
+    "matched": true, "rule_id": "jdg.micro.bdo_ewc.ewc_catalog_lookup", "_legal_basis": "Rozporządzenie ws. katalogu odpadów (Dz.U. 2020 poz. 10)",
     "package": "jdg.micro.bdo_ewc", "priority": 82110,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",

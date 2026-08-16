@@ -66,7 +66,7 @@ else := {
         [true, false]: "7"
     }, [input.invoice.category_code in {"GOODS", "SERVICES", "MERCHANDISE"}, input.invoice.category_code in {"GRANTS", "REFUNDS", "OTHER_REVENUE"}], "8")
     revenue_amount := object.get(input.invoice, "amount_net", 0)
-    revenue_routing := {true: "BLOCK_AND_ALERT", false: ""}[revenue_amount > 100000]
+    revenue_routing := {true: "BLOCK_AND_ALERT", false: ""}[revenue_amount > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "revenue_triage_limit", 100000)]
 }
 
 # --- K812: Cost columns validation (9-13) ---
@@ -99,7 +99,7 @@ else := {
     ]
     cost_column := [x.v | some x in cost_column_opts; x.c][0]
     cost_amount := object.get(input.invoice, "amount_net", 0)
-    cost_routing := {true: "BLOCK_AND_ALERT", false: ""}[ [cost_amount > 50000, cost_category in {"GOODS", "RAW_MATERIALS"}] == [true,true] ]
+    cost_routing := {true: "BLOCK_AND_ALERT", false: ""}[ [cost_amount > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, "cost_triage_limit", 50000), cost_category in {"GOODS", "RAW_MATERIALS"}] == [true,true] ]
 }
 
 # --- K813: NKUP column 14 validation ---
@@ -121,7 +121,7 @@ else := {
     input.invoice.direction == "PURCHASE"
     input.invoice.category_code in {"ALCOHOL", "ENTERTAINMENT", "LUXURY", "PERSONAL_EXPENSE", "LEASE", "CAR"}
     is_personal := input.invoice.category_code in {"ALCOHOL", "ENTERTAINMENT", "LUXURY", "PERSONAL_EXPENSE"}
-    is_cash_over := [input.invoice.is_cash_payment == true, input.invoice.amount_gross >= 15000] == [true, true]
+    is_cash_over := [input.invoice.is_cash_payment == true, input.invoice.amount_gross >= object.get(data.thresholds.jdg.pit, "cash_payment_limit", 15000)] == [true, true]
     is_lease_excess := [input.invoice.category_code == "LEASE", object.get(input.invoice, "lease_excess_over_limit", 0) > 0] == [true, true]
     is_car_75 := [input.invoice.category_code == "CAR", object.get(input.invoice, "car_deduction_pct", 100) == 75] == [true, true]
     nkup_reason := object.get({
@@ -422,7 +422,7 @@ else := {
     "kus_qualification": "KUP_LIMITED", "kus_percent": kup_pct_usable,
     "zus_social_base_type": "", "zus_health_rate": "",
     "pkpir_lease_car_value_pln": car_value,
-    "pkpir_lease_limit_pln": 150000,
+    "pkpir_lease_limit_pln": object.get(data.thresholds.jdg.depreciation, "pkpir_lease_limit_pln", 150000),
     "pkpir_lease_excess_nkup_pln": excess_nkup,
     "business_status": "", "ceidg_registration_required": false,
     "_routing": lease_routing,
@@ -433,9 +433,9 @@ else := {
     input.jdg_entrepreneur.uses_pkpir == true
     input.invoice.category_code == "CAR_LEASE"
     car_value := object.get(input.invoice, "car_value_pln", 0)
-    car_value > 150000
+    car_value > object.get(data.thresholds.jdg.depreciation, "passenger_car_limit_standard", 150000)
     is_electric := object.get(input.invoice, "is_electric_vehicle", false)
-    limit := {true: 225000, false: 150000}[is_electric]
+    limit := {true: object.get(data.thresholds.jdg.depreciation, "passenger_car_limit_electric", 225000), false: object.get(data.thresholds.jdg.depreciation, "passenger_car_limit_standard", 150000)}[is_electric]
     excess_nkup := car_value - limit
     kup_portion := floor(limit * 100 / car_value)
     nkup_portion := floor(excess_nkup * 100 / car_value)

@@ -652,8 +652,8 @@ else := {
     bracket = "HIGH" { current_income > scale_threshold }
     bracket = "LOW_APPROACHING" { current_income <= scale_threshold }
     excess_over_threshold := max([current_income - scale_threshold, 0])
-    excess_tax := excess_over_threshold * 0.32
-    staying_low_tax := excess_over_threshold * 0.12
+    excess_tax := excess_over_threshold * object.get(object.get(data.thresholds, "pit", {}), "scale_high_rate", 0.32)
+    staying_low_tax := excess_over_threshold * object.get(object.get(data.thresholds, "pit", {}), "scale_low_rate", 0.12)
     potential_savings := excess_tax - staying_low_tax
     # Build strategies list as CSV string
     strat_list := ["IKZE (max 16 956 PLN)"]
@@ -703,15 +703,15 @@ else := {
 
     # Liniowy: odliczenie max 14100 PLN (2026)
     health_limit = thresholds.zus.health_linear_deduction_limit { pit_form == "LINEAR" }
-    health_rate = 0.049 { pit_form == "LINEAR" }
+    health_rate = object.get(thresholds.rates, "health_linear", 0.049) { pit_form == "LINEAR" }
 
     # Ryczałt: 50% składki (odliczenie od przychodu)
     health_limit = health_paid * 0.50 { pit_form == "LUMP_SUM" }
-    health_rate = 0.049 { pit_form == "LUMP_SUM" }
+    health_rate = object.get(thresholds.rates, "health_linear", 0.049) { pit_form == "LUMP_SUM" }
 
     # Skala: BRAK odliczenia (Polski Ład)
     health_limit = 0 { pit_form == "PIT_SCALE" }
-    health_rate = 0.09 { pit_form == "PIT_SCALE" }
+    health_rate = object.get(thresholds.rates, "health_scale", 0.09) { pit_form == "PIT_SCALE" }
 
     # Karta: jak skala
     health_limit = 0 { pit_form == "TAX_CARD" }

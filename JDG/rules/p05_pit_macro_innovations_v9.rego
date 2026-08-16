@@ -75,6 +75,7 @@ tax_form_change_ok := true {
 form_audit_report := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.form_audit_report",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 100,
     "forms": {
@@ -118,6 +119,7 @@ linear_tax_for(income) = tax {
 form_change_simulator := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.form_change_simulator",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 110,
     "simulation": {
@@ -318,6 +320,7 @@ unused_reliefs := [r.id |
 unused_relief_detector := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.unused_relief_detector",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 200,
     "detected": {
@@ -349,6 +352,7 @@ what_if_scenario := "BR" {
 relief_what_if := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.relief_what_if",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 210,
     "simulation": {
@@ -388,6 +392,7 @@ best_what_if := {"id": what_if_pairs[0][1], "saving": -1 * what_if_pairs[0][0]}
 relief_audit_report := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.relief_audit_report",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 250,
     "audit": {
@@ -424,6 +429,7 @@ kup_rate_selected := 0.50 {
 kup_audit_report := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.kup_audit_report",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 300,
     "audit": {
@@ -458,6 +464,7 @@ advance_deadline_ok := true {
 advance_audit_report := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.advance_audit_report",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 400,
     "audit": {
@@ -507,6 +514,7 @@ pit0_category := "YOUNG" {
 art21_audit_report := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.art21_audit_report",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 500,
     "audit": {
@@ -561,6 +569,7 @@ relief_limit_drift := {
 zaliczka_recommendation := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.zaliczka_recommendation",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 600,
     "recommendation": {
@@ -591,6 +600,7 @@ ml_advance_contract := {
 relief_stacking_guard := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.relief_stacking_guard",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 610,
     "guard": {
@@ -611,6 +621,7 @@ relief_stacking_guard := {
 pit0_cross_check := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.pit0_cross_check",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 620,
     "check": {
@@ -631,6 +642,7 @@ pit0_cross_check := {
 loss_optimizer := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.loss_optimizer",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 630,
     "optimization": {
@@ -652,6 +664,7 @@ loss_optimizer := {
 spouse_synergy := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.spouse_synergy",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 640,
     "analysis": {
@@ -717,6 +730,7 @@ annual_return_contract := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p05_pit_macro_innovations.report",
+    "_legal_basis": "Art. 9a, 27, 30c PIT + P05 Sekcja 1",
     "package": "jdg.p05_pit_macro_innovations",
     "priority": 700,
     "p05_pit_macro": {

@@ -286,6 +286,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.pit.rd.center_200pct",
+    "_legal_basis": "Art. 5a pkt 38-40 PIT (definicja działalności B+R)",
     "package": "jdg.pit.rd_relief",
     "priority": 108,
     "pit_form": pit_form,
@@ -341,6 +342,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.pit.rd.mdr_reporting",
+    "_legal_basis": "Art. 5a pkt 38-40 PIT (definicja działalności B+R)",
     "package": "jdg.pit.rd_relief",
     "priority": 110,
     "pit_form": pit_form,

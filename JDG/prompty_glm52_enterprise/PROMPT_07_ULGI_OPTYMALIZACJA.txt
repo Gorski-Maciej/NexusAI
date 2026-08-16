@@ -1,0 +1,176 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 07 z 19 — CZĘŚĆ: ULGI PIT + OPTYMALIZACJA PODATKOWA
+
+Jesteś Najwyższej Klasy Ekspertem w dziedzinie ulg podatkowych PIT dla JDG: B+R (art. 26e),
+IP Box (art. 30ca — 5%), termomodernizacyjna (art. 26h — 53 000 zł), na prototyp (art. 26eb),
+na robotyzację (art. 26gb), na ekspansję (art. 26ec), rehabilitacyjna (art. 26), darowizny,
+estoński CIT (art. 28c–28t — wybór CIT dla JDG), a także optymalizacji formy opodatkowania i
+strategii podatkowych klasy ENTERPRISE w silniku reguł OPA/Rego.
+
+## ⚠️ KRYTYCZNE ZASADY
+1. **GENERUJESZ OGROMNY, ROZBUDOWANY RAPORT** `RAPORT_GLM52_P07_ULGI_OPTYMALIZACJA.txt`
+   z **INTELIGENTNYM KODEM gotowym do wdrożenia** (reguły Rego, narzędzia Python — symulatory
+   ulg, kalkulatory; YAML, testy natywne + pytest) — copy-paste do katalogu JDG.
+2. **NIE MODYFIKUJ PLIKÓW w repo** — produktem jest raport .txt.
+3. **CZYTAJ PLIKI PRZEZ LINKI GITHUB** podane niżej — nie szukaj katalogów na własną rękę.
+4. **BUDŻET KONTEKSTU:** dane wejściowe ≤ **50% okna GLM 5.2 (~500K tokenów)** — reszta na
+   głębokie myślenie, głęboką analizę i wygenerowanie rozwiązania.
+
+## 🧠 OBOWIĄZKOWE NAKAZY GŁĘBOKIEGO MYŚLENIA (wymagane w całym raporcie — powtarzaj je w każdej sekcji)
+1. Przeprowadź głębokie myślenie przed każdą sekcją raportu; Przeprowadź głębokie myślenie przed każdą rekomendacją kodu; Przeprowadź głębokie myślenie przy weryfikacji całości pod kątem błędów i luk; Przeprowadź głębokie myślenie przy łączeniu wniosków z pozostałymi częściami kampanii.
+2. Przeprowadź głęboką analizę każdego pliku z listy; przeprowadź głęboką analizę powiązań między plikami; przeprowadź głęboką analizę zgodności reguł z aktami prawnymi (Bbb, LEGAL_REFERENCE_ACTS); przeprowadź głęboką analizę kontraktów spójności z innymi częściami kampanii.
+3. Każde rozwiązanie musi reprezentować zaawansowany poziom Enterprise; standardem minimalnym jest zaawansowany poziom Enterprise; jeśli propozycja nie osiąga celu: zaawansowany poziom Enterprise — odrzuć ją; wszystkie rekomendacje razem tworzą zaawansowany poziom Enterprise całego modułu.
+4. Silnik ma osiągnąć poziom ENTERPRISE w każdym wymiarze; poziom ENTERPRISE to próg minimalny, nie maksimum; każda sekcja raportu deklaruje osiągnięty poziom ENTERPRISE; ostateczny werdykt kampanii: poziom ENTERPRISE bez wyjątków.
+5. W każdej sekcji proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów; minimum 12 pozycji w kategorii: innowacyjne ulepszenia wyprzedzające profesjonalistów w rozdziale GENIALNE POMYSŁY; każdy obszar analizy kończ zestawem: innowacyjne ulepszenia wyprzedzające profesjonalistów; kod w raporcie ma być wynikiem: innowacyjne ulepszenia wyprzedzające profesjonalistów — bez tego raport nie spełnia standardu kampanii.
+## 📂 DOKUMENTY ŚWIĘTE (przeczytaj)
+- V1 — TARGET: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- V2 — WIZJA (kontynuacja V1): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- Stan obecny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Akty prawne (Bbb — sekcja „Ulgi podatkowe dla JDG”): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- Akty prawne (pełne): https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- Pokrycie prawne: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- Dokument PIT MAKRO: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PIT_MACRO_P05.md
+
+## 📂 PLIKI TEJ CZĘŚCI DO ANALIZY (rules/pit/ + enterprise)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/rd_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/ipbox_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/thermo_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/cross_relief_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/donation_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/tax_loss_harvesting_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/family_estonian_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/missing_reliefs_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/kup_extended.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_optimization_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cashflow_tax_predictor_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/decision_scoring_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/penalty_ai_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_estonian_cit_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p05_pit_innovations_v8.rego
+
+## 🧩 SPÓJNOŚĆ Z INNYMI CZĘŚCIAMI (kontrakty)
+- **Ulgi ↔ PIT MAKRO/MIKRO:** ulgi odliczane w zeznaniu (PROMPT 05) i w zaliczkach (art. 44 —
+  ulga na dziecko, B+R w zaliczkach); spójność z `allowances.rego` (PROMPT 05) i `pit.rego`
+  (PROMPT 06); konflikty między ulgami (IP Box vs B+R — `conflicts.rego`, PROMPT 01).
+- **Ulgi ↔ CIT (estoński):** wybór CIT dla JDG (art. 28c–28t) — decyzja formy (PROMPT 05),
+  JPK_CIT (PROMPT 04), spółka z o.o. vs JDG (PROMPT 13 — cykl życia).
+- **Optymalizacja ↔ ryzyko:** GAAR (art. 119a OrdPU — PROMPT 11), MDR (PROMPT 12) — optymalizacja
+  nigdy nie może generować schematów podatkowych; `tax_optimization_enterprise.rego` + `penalty_ai`
+  muszą raportować ryzyko GAAR/MDR.
+- Werdykt 25-polowy, rule_id unikalne, `_legal_basis` kanoniczne, progi z `data.thresholds.jdg.*`
+  (`pit_ip_box_rate` 5%, `pit_thermo_limit` 53 000, B+R 100–200%), wpis w `main_jdg.rego` —
+  kontrakty PROMPT 01.
+
+## 🎯 CEL ANALIZY — POZIOM ENTERPRISE
+**Przeprowadź głębokie myślenie i przeprowadź głęboką analizę** modułu ulg i optymalizacji na
+**zaawansowanym poziomie Enterprise** — priorytet: **kompletność reguł ulg (B+R, IP Box, termo,
+prototyp, robotyzacja, ekspansja, estoński CIT)** — wg LEGAL_TWIN_RAPORT artykuły art. 26/26e/26g/
+26h/24d/18d są w „pustyni pokrycia” — oraz **inteligentna optymalizacja** (symulacje, cross-relief,
+harvesting strat) z pełną kontrolą ryzyka GAAR/MDR. Celem jest poziom ENTERPRISE, w którym system
+sam znajduje i rozlicza każdą ulgę, której przedsiębiorca nie zna, z dowodem prawnym. Zaproponuj
+**innowacyjne ulepszenia wyprzedzające profesjonalistów**.
+
+### 1. AUDYT ULGI B+R (POZIOM ENTERPRISE — PRIORYTET: art. 26e)
+- Definicja działalności B+R (art. 5a pkt 38–40), koszty kwalifikowane (wynagrodzenia, składki
+  ZUS, materiały, amortyzacja, ekspertyzy, 200% — art. 26e ust. 7), limit odliczenia, korekta
+  (art. 26e ust. 13–15 — 6/12 miesięcy), ewidencja projektu.
+- `rd_relief_enterprise.rego` — kompletność kwalifikacji działalności, kosztów, limitów.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** klasyfikator kosztu→kategoria B+R,
+  tracker projektów B+R (karty projektu z kosztami i limitami), auto-kalkulacja 200%/100%,
+  detektor ryzyka odliczenia (KIS/interpretacje), symulator B+R vs IP Box.
+
+### 2. AUDYT IP BOX (POZIOM ENTERPRISE — PRIORYTET: art. 30ca)
+- Kwalifikowane IP (programy komputerowe, patenty, wzory), nexus ratio (art. 30ca ust. 4–5),
+  ewidencja (art. 30cb), 5% stawka, limit dochodów, konflikt z B+R (ten sam koszt).
+- `ipbox_enterprise.rego` — kompletność kwalifikacji, nexus, ewidencji, konfliktów.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** kalkulator nexus z dowodem,
+  generator ewidencji IP Box (art. 30cb), arbiter IP Box vs B+R (ten sam koszt — jedna ulga),
+  detektor ryzyka (interpretacje KIS, orzeczenia NSA).
+
+### 3. AUDYT POZOSTAŁYCH ULG (POZIOM ENTERPRISE)
+- Termo (art. 26h: 53 000 zł, zakres prac, faktury imienne), prototyp (26eb: 30%), robotyzacja
+  (26gb: 50%), ekspansja (26ec), rehabilitacyjna (art. 26), darowizny (6%), IKZE, ulga na dziecko,
+  PIT-0 (młody/powrót/4+/emeryt — 85 528 zł, PROMPT 05).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** „detektor ulg” — analiza transakcji
+  i automatyczne sugerowanie niewykorzystanych ulg (z Trust Score i podstawą prawną), kalkulator
+  łącznego limitu zwolnień, tracker warunków (np. 5 lat posiadania dla termo).
+
+### 4. AUDYT ESTOŃSKIEGO CIT DLA JDG (POZIOM ENTERPRISE)
+- Wybór CIT (art. 28c–28t): warunki (przychody ≤ 2 000 000 EUR? — limit dla JDG), decyzja
+  optymalna, podatek od wypłat (10/20%), JPK_CIT, przejście PIT→CIT (art. 28t), rezygnacja.
+- `p16_estonian_cit_enterprise.rego` + `family_estonian_enterprise.rego` — kompletność.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** symulator PIT vs estoński CIT na
+  danych historycznych (prognoza 3 lata), monitor warunków (limity, wyłączenia), kalkulator
+  podatku od wypłat z harmonogramem, tracker przejścia/rezygnacji (terminy).
+
+### 5. AUDYT OPTYMALIZACJI I RYZYKA (POZIOM ENTERPRISE)
+- `tax_optimization_enterprise.rego` (S1), `cross_relief_optimizer` (S5), `tax_loss_harvesting`
+  (S8 — strata 5 lat, 50% limitu), `cashflow_tax_predictor`, `decision_scoring`, `penalty_ai`.
+- **Przeprowadź głęboką analizę** powiązań z GAAR (art. 119a — PROMPT 11), MDR/DAC6 (PROMPT 12),
+  klauzulą przeciw unikaniu — optymalizacja musi być zawsze „legalna z dowodem”.
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** ranking optymalizacji z scoringiem
+  ryzyka (0–100) i podstawą prawną; symulator „co by było gdyby” dla każdej ulgi; harvesting
+  strat z harmonogramem 5 lat; predykcja wpływu nowelizacji na ulgi (Law Radar).
+
+### 6. AUDYT OBLICZEŃ, TEMPORALNOŚCI, NIEZAWODNOŚCI (POZIOM ENTERPRISE)
+- Grosze, limity roczne, zmiany limitów 2026 (np. 53 000 zł termo, 85 528 zł), golden replay
+  rocznych zeznań z ulgami; invariants (suma ulg ≤ podstawa, nexus ≤ 1).
+- **Innowacyjne ulepszenia wyprzedzające profesjonalistów:** testy property-based per ulga,
+  „dowód ulgi” w Decision Certificate (koszty → kwalifikacja → kwota → podstawa prawna).
+
+### 7. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12)
+M.in.: „detektor ulg” automatyczny; symulator B+R vs IP Box vs estoński CIT; kalkulator nexus
+z dowodem; generator ewidencji IP Box (art. 30cb); tracker projektów B+R; arbiter konfliktów ulg;
+harvesting strat z harmonogramem; ranking optymalizacji z scoringiem ryzyka GAAR/MDR; monitor
+limitów ulg (53k, 85 528 zł); predyktor wpływu nowelizacji na ulgi; auto-załączniki do zeznań
+(PIT/O — dowody); integracja z Decision Certificate (każda ulga = certyfikat z podstawą).
+
+## 📋 WYMAGANE SEKCJE RAPORTU (min. 25–40 stron)
+1. Executive Summary — TOP 10 (priorytet: B+R, IP Box, estoński CIT, detektor ulg).
+2. Tabela pokrycia: ulga × artykuł × status × rule_id × luki.
+3. Audyt B+R (art. 26e) — diagramy Mermaid (kwalifikacja, koszty, limity).
+4. Audyt IP Box (art. 30ca/30cb) — nexus, ewidencja, konflikty.
+5. Audyt pozostałych ulg (termo, prototyp, robotyzacja, ekspansja, rehabilitacyjna, darowizny).
+6. Audyt estońskiego CIT + optymalizacji z ryzykiem GAAR/MDR.
+7. Audyt obliczeń, temporalności, niezawodności.
+8. GENIALNE POMYSŁY (min. 12, rozbudowane).
+9. **KOD DO WDROŻENIA:** uzupełnione reguły ulg (domknięcie „pustyni pokrycia”: art. 26/26e/26g/26h),
+   `relief_detector.py`, `ipbox_nexus_calculator.py`, `brd_project_tracker.py`,
+   `estonian_cit_simulator.py`, testy natywne `test_native_reliefs.rego` + pytest; wpisy do
+   thresholds; wpis do `main_jdg.rego`.
+10. Mapa drogowa + integracja z częściami 01, 05, 06, 11, 12, 13.
+11. Metryki sukcesu (100% ulg wykrywanych i rozliczanych, RV 100%, zero błędów limitów).
+
+## 📐 FORMAT RAPORTU
+- Tytuł: „RAPORT GLM52 P07 — ULGI PIT + OPTYMALIZACJA (ENTERPRISE v9.x)”.
+- Język: polski, diagramy Mermaid, tabele pokrycia ulg.
+- **Przeprowadź głębokie myślenie przed każdą sekcją i przeprowadź głęboką analizę każdego pliku** —
+  precyzja, profesjonalizm, zero nieporozumień. Zapisz jako `RAPORT_GLM52_P07_ULGI_OPTYMALIZACJA.txt`.
+
+## 🔗 SUPLEMENT LINKÓW — PEŁNE POKRYCIE KATALOGU JDG (część 07)
+Poniższe pliki tej części pochodzą z pełnej inwentaryzacji katalogu JDG (rules/tools/docs/bundles/tests) —
+przeczytaj je i włącz do analizy, aby raport pokrył KAŻDY plik części:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pit_reliefs_optimizer.py
+
+## 🔗 KOMBINACJE LINKÓW KRZYŻOWYCH (spójność międzyczęściowa)
+Analizuj poniższe pliki z INNYCH części RAZEM z plikami swojej części — to punkty styku
+(kontrakty techniczne: rule_id, werdykt 25-polowy, temporalność, thresholds), dzięki którym
+raport będzie spójny z CAŁĄ kampanią i silnik OPA zostanie wzmocniony z każdej strony:
+- (część P09) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/_zus_micro_rates.rego
+- (część P11) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/plan44_audit.rego
+- (część P13) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_business_lifecycle_rates.rego
+- (część P16) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/advertising/plan44_advertising.rego
+- (część P03) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk/plan26_deadlines.rego
+- (część P05) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances.rego
+- (część P06) https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22a.rego
+
+## 🧠 BUDŻET KONTEKSTU (powtórzenie)
+Materiał wejściowy ≤ 50% okna (~500K tokenów). Priorytet: `rd_relief_enterprise.rego`,
+`ipbox_enterprise.rego`, `p16_estonian_cit_enterprise.rego`, `tax_optimization_enterprise.rego` —
+w całości.
+
+## 🔄 ZAKOŃCZENIE SESJI — WYCZYŚĆ OKNO KONTEKSTOWE
+1. Zapisz raport jako `RAPORT_GLM52_P07_ULGI_OPTYMALIZACJA.txt`.
+2. Wykonaj polecenie **„WYCZYŚĆ OKNO KONTEKSTOWE”**: 10-linijkowe podsumowanie do
+   `NOTATKI_KAMPANII.txt`.
+3. Potwierdź: „OKNO WYCZYSZCZONE — gotowy na PROMPT 08 z 19 (ZUS MAKRO + ZDROWOTNA)”.
+4. Użytkownik wkleja następny Prompt: `PROMPT_08_ZUS_MAKRO_ZDROWOTNA.txt`.

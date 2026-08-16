@@ -305,10 +305,10 @@ else := {
     margin_vat := floor(margin_base * to_number(margin_vat_rate) / (1 + to_number(margin_vat_rate)) * 100) / 100
     margin_vat := 0 { margin_base <= 0 }
 
-    margin_routing := "TRIAGE_QUEUE" { margin_base > 50000 }
+    margin_routing := "TRIAGE_QUEUE" { margin_base > thresholds.vat.margin_alert_threshold }
     margin_routing := "" { true }
     margin_reason := sprintf("VAT-marża — wysoka marża %.2f PLN. Zweryfikuj dokumentację zakupu.", 
-        [margin_base]) { margin_base > 50000 }
+        [margin_base]) { margin_base > thresholds.vat.margin_alert_threshold }
     margin_reason := "" { true }
 }
 
@@ -338,7 +338,7 @@ else := {
     eu_countries_served := object.get(input.jdg_entrepreneur, "eu_b2c_countries_list", [])
     oss_already_registered := object.get(input.jdg_entrepreneur, "oss_registered", false)
 
-    oss_needed := total_eu_b2c_sales > 10000 and not oss_already_registered
+    oss_needed := total_eu_b2c_sales > thresholds.vat.oss_threshold_eur and not oss_already_registered
     eu_countries_list := concat(", ", eu_countries_served)
 
     # VAT rates per EU country (simplified)
@@ -352,12 +352,12 @@ else := {
     }
 
     oss_routing := "BLOCK_AND_ALERT" { oss_needed }
-    oss_routing := "TRIAGE_QUEUE" { total_eu_b2c_sales > 5000; not oss_needed }
+    oss_routing := "TRIAGE_QUEUE" { total_eu_b2c_sales > thresholds.vat.oss_alert_eur; not oss_needed }
     oss_routing := "" { true }
     oss_reason := sprintf("OSS WYMAGANY! Sprzedaż B2C do UE >10k EUR: %.0f EUR.", 
         [total_eu_b2c_sales]) { oss_needed }
     oss_reason := sprintf("OSS zalecany — zbliżasz się do limitu 10k EUR (obecnie: %.0f EUR).",
-        [total_eu_b2c_sales]) { total_eu_b2c_sales > 5000; not oss_needed }
+        [total_eu_b2c_sales]) { total_eu_b2c_sales > thresholds.vat.oss_alert_eur; not oss_needed }
     oss_reason := "" { true }
 }
 
@@ -756,7 +756,7 @@ build_oss_warnings(needed, countries, total) = warnings {
         "   ⚠️ Do czasu rejestracji: rejestracja VAT w KAŻDYM kraju UE gdzie przekroczono lokalny limit!"
     ]
 } else = warnings {
-    total > 5000
+    total > thresholds.vat.oss_alert_eur
     warnings := [
         sprintf("⚠️ ZBLIŻASZ SIĘ DO LIMITU OSS: %.0f EUR / 10 000 EUR.", [total]),
         "   Monitoruj sprzedaż B2C do UE. Po przekroczeniu 10k EUR — obowiązkowa rejestracja OSS."

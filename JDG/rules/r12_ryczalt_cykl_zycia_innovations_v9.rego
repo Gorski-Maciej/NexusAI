@@ -158,6 +158,7 @@ pk_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r12_ryczalt_cykl_zycia_innovations.pkwiu_rate_classifier",
+    "_legal_basis": "ustawa o ryczałcie art. 6 ust. 1 (limit 2 mln EUR), art. 6 ust. 4 (utrata ryczałtu)",
     "package": "jdg.r12_ryczalt_cykl_zycia_innovations",
     "priority": 11022,
     "decision_mode": "SUGGEST",

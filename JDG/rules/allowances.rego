@@ -213,6 +213,7 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.relief_rd_cbr_valid",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 638,
     "vat_rate": "",
@@ -252,6 +253,7 @@ else := {
 decide := {
     "matched": true,
     "rule_id": "jdg.allowances.relief_rd_centrum",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 600,
     "vat_rate": "",
@@ -278,6 +280,7 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.relief_rd_standard",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 600,
     "vat_rate": "",
@@ -324,6 +327,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.relief_ikze",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 605,
     "vat_rate": "",
@@ -361,6 +365,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.relief_ikze_no_contribution",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 605,
     "vat_rate": "",
@@ -402,6 +407,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.relief_ip_box",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 610,
     "vat_rate": "",
@@ -439,6 +445,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.relief_innovative_employees",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 608,
     "vat_rate": "",
@@ -479,6 +486,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.relief_csr_sponsoring",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 612,
     "vat_rate": "",
@@ -518,6 +526,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.relief_payment_terminal",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 614,
     "vat_rate": "",
@@ -556,6 +565,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.relief_bad_debt_pit_creditor",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 618,
     "vat_rate": "",
@@ -598,6 +608,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.relief_abolition",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 620,
     "vat_rate": "",
@@ -638,6 +649,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.relief_union_dues",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 622,
     "vat_rate": "",
@@ -691,6 +703,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.pit_exemption_young",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 650,
     "vat_rate": "",
@@ -723,6 +736,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.pit_exemption_return",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 651,
     "vat_rate": "",
@@ -796,6 +810,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.allowances.crypto_income_classification",
+    "_routing": "",
     "package": "jdg.allowances",
     "priority": 630,
     "vat_rate": "",

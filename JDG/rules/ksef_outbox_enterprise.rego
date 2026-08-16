@@ -70,8 +70,8 @@ decide := {
     idempotency_key := sprintf("%s-%s-%s", [seller_nip, invoice_number, invoice_date])
 
     # Priorytet: HIGH dla faktur >50k PLN (szybka ścieżka), NORMAL dla reszty
-    outbox_priority := "HIGH" { invoice_amount > 50000 }
-    outbox_priority := "NORMAL" { invoice_amount <= 50000 }
+    outbox_priority := "HIGH" { invoice_amount > object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "ksef_outbox_priority_threshold_pln", 50000) }
+    outbox_priority := "NORMAL" { invoice_amount <= object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "ksef_outbox_priority_threshold_pln", 50000) }
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

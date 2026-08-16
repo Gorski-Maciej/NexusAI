@@ -148,6 +148,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.zus.extensions.limits_2026_verification",
+    "_legal_basis": "Art. 30h PIT (składka solidarnościowa 4% od nadwyżki >1M PLN)",
     "package": "jdg.zus.extensions",
     "priority": 820,
     "zus_limits_verified": {
@@ -186,6 +187,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.zus.extensions.temporal_rates",
+    "_legal_basis": "Art. 30h PIT (składka solidarnościowa 4% od nadwyżki >1M PLN)",
     "package": "jdg.zus.extensions",
     "priority": 830,
     "zus_temporal_valid_from": "2026-01-01",
@@ -207,6 +209,7 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.zus.extensions.coverage_summary",
+    "_legal_basis": "Art. 30h PIT (składka solidarnościowa 4% od nadwyżki >1M PLN)",
     "package": "jdg.zus.extensions",
     "priority": 999,
     "zus_gaps_covered": {

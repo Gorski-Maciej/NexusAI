@@ -78,12 +78,31 @@ def validate_rule_structure(filepath: Path) -> list[Violation]:
     violations = []
     content = filepath.read_text(encoding="utf-8")
     rel_path = str(filepath.relative_to(RULES_DIR))
-    rule_ids = re.findall(r'"rule_id"\s*:\s*"([^"]+)"', content)
-    seen = set()
-    for rid in rule_ids:
-        if rid in seen:
-            violations.append(Violation(rel_path, 0, rid, "DUPLICATE rule_id!", "ERROR"))
-        seen.add(rid)
+    # DUPLICATE rule_id — liczone per ŁAŃCUCH reguły (decide + else-chain to JEDNA reguła).
+    # Powtórzenie rule_id jest legalne tylko w gałęziach else-chain o TYM SAMYM priorytecie
+    # (alternatywne warunki jednej decyzji — np. statute_of_limitations OP.04a/b/c).
+    # Prawdziwy duplikat: (a) ten sam rule_id w dwóch RÓŻNYCH łańcuchach, albo
+    # (b) ten sam rule_id w jednym łańcuchu z RÓŻNYMI priorytetami (martwa gałąź).
+    chain_id = 0
+    chain_owner = {}   # rule_id -> (numer łańcucha, set priorytetów w tym łańcuchu)
+    # Deklaracje reguł pakietu stoją na wcięciu 0-2 (np. 'decide := {', 'else := {');
+    # lokalne przypisania w warunkach bloków (np. 'tax_gap := ...') mają wcięcie >= 4
+    # i NIE otwierają nowego łańcucha (P01 v9.x fix).
+    chain_pattern = re.compile(r'^\s{0,2}(else\s+)?([a-zA-Z_][\w]*)?\s*:=')
+    for i, line in enumerate(content.split("\n"), 1):
+        m = chain_pattern.match(line)
+        if m and not m.group(1):
+            chain_id += 1  # nowa reguła (decide/override/...) — nowy łańcuch
+        for rid in re.findall(r'"rule_id"\s*:\s*"([^"]+)"', line):
+            prio_m = re.search(r'"priority"\s*:\s*(\d+)', line)
+            prio = int(prio_m.group(1)) if prio_m else None
+            if rid in chain_owner:
+                own_chain, prios = chain_owner[rid]
+                if own_chain != chain_id or (prio is not None and prios and prio not in prios and own_chain == chain_id and len(prios) > 0):
+                    violations.append(Violation(rel_path, i, rid, "DUPLICATE rule_id!", "ERROR"))
+                prios.add(prio) if prio is not None else None
+            else:
+                chain_owner[rid] = (chain_id, {prio} if prio is not None else set())
     rule_blocks = re.finditer(
         r'(?:else\s+)?:=\s*\{[^}]*"matched"\s*:\s*true[^}]*"rule_id"\s*:\s*"([^"]+)"[^}]*\}',
         content, re.DOTALL

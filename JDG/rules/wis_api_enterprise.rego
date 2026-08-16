@@ -26,6 +26,7 @@
 package jdg.wis_api
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 default decide := {
     "matched": false, "rule_id": "jdg.wis_api.no_match",
@@ -113,7 +114,7 @@ else := {
     "kus_qualification": "", "kus_percent": 0,
     "zus_social_base_type": "", "zus_health_rate": "",
     "wis_form_type": "WIS-W",
-    "wis_application_fee_pln": 40,
+    "wis_application_fee_pln": object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "wis_application_fee_pln", 40),
     "wis_authority": "Dyrektor Krajowej Informacji Skarbowej",
     "wis_processing_time": "do 3 miesiecy (Art. 42g VAT)",
     "wis_application_content": app_content,

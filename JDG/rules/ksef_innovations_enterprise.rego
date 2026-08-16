@@ -21,6 +21,7 @@
 package jdg.ksef_innovations
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 default decide := {
     "matched": false, "rule_id": "jdg.ksef_innovations.no_match",
@@ -129,12 +130,13 @@ else := {
     invoices_without_ksef := object.get(input, "ksef_invoices_missing_count", 0)
     total_vat_exposed := object.get(input, "ksef_missing_vat_total", 0)
     first_violation := object.get(input, "ksef_first_violation", false)
-    sanction_max_cap := 500000
+    _th_kj := object.get(data.jdg.thresholds, "ksef_jpk_edeklaracje", {})
+    sanction_max_cap := object.get(_th_kj, "ksef_sanction_max_pln", 500000)
 
     # Sanction scenarios
     sanction_100pct := min([total_vat_exposed, sanction_max_cap])
-    sanction_70pct := min([total_vat_exposed * 0.70, 300000])
-    sanction_50pct := min([total_vat_exposed * 0.50, 250000])
+    sanction_70pct := min([total_vat_exposed * 0.70, object.get(_th_kj, "ksef_sanction_70_cap_pln", 300000)])
+    sanction_50pct := min([total_vat_exposed * 0.50, object.get(_th_kj, "ksef_sanction_50_cap_pln", 250000)])
 
     # Risk level classification
     risk_level := "NONE" { invoices_without_ksef == 0 }

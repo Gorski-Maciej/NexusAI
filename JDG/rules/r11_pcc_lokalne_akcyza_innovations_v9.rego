@@ -221,6 +221,7 @@ exc_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r11_pcc_lokalne_akcyza_innovations.excise_product_classifier",
+    "_legal_basis": "ustawa o PCC art. 10 (PCC-3, 14 dni), art. 10 § 2 (sankcje)",
     "package": "jdg.r11_pcc_lokalne_akcyza_innovations",
     "priority": 11018,
     "decision_mode": "SUGGEST",
@@ -344,6 +345,7 @@ arb_routing := "" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r11_pcc_lokalne_akcyza_innovations.vat_vs_pcc_arbitrator",
+    "_legal_basis": "ustawa o PCC art. 10 (PCC-3, 14 dni), art. 10 § 2 (sankcje)",
     "package": "jdg.r11_pcc_lokalne_akcyza_innovations",
     "priority": 11020,
     "decision_mode": "SUGGEST",

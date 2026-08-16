@@ -27,7 +27,7 @@ import future.keywords.if
 import future.keywords.in
 
 default decide := {
-    "matched": false, "rule_id": "jdg.autoform.no_match",
+    "matched": false, "rule_id": "jdg.autoform.no_match", "_legal_basis": "ustawa o CEIDG (Dz.U. 2024 poz. 1228 ze zm.)",
     "valid_from":"2024-01-01","valid_to":"9999-12-31","temporal_source":"Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osob fizycznych"
     "package": "jdg.autoform", "priority": 9999
 }
@@ -143,6 +143,7 @@ decide := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.autoform.ceidg1_autofill",
+        "_legal_basis": "ustawa o CEIDG (Dz.U. 2024 poz. 1228 ze zm.)",
         "package": "jdg.autoform",
         "priority": 8000,
         "action": "GENERATE_CEIDG1_FORM",
@@ -233,6 +234,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.autoform.zus_zua_autofill",
+        "_legal_basis": "ustawa o CEIDG (Dz.U. 2024 poz. 1228 ze zm.)",
         "package": "jdg.autoform",
         "priority": 8010,
         "action": "GENERATE_ZUS_ZUA",
@@ -282,6 +284,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.autoform.zus_zwua_autofill",
+        "_legal_basis": "ustawa o CEIDG (Dz.U. 2024 poz. 1228 ze zm.)",
         "package": "jdg.autoform",
         "priority": 8020,
         "action": "GENERATE_ZUS_ZWUA",
@@ -326,6 +329,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.autoform.vat_z_autofill",
+        "_legal_basis": "ustawa o CEIDG (Dz.U. 2024 poz. 1228 ze zm.)",
         "package": "jdg.autoform",
         "priority": 8030,
         "action": "GENERATE_VAT_Z",
@@ -409,6 +413,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.autoform.pit_employee_autofill",
+        "_legal_basis": "ustawa o CEIDG (Dz.U. 2024 poz. 1228 ze zm.)",
         "package": "jdg.autoform",
         "priority": 8040,
         "action": "GENERATE_PIT_EMPLOYEE",
@@ -483,6 +488,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.autoform.notarial_deed_template",
+        "_legal_basis": "ustawa o CEIDG (Dz.U. 2024 poz. 1228 ze zm.)",
         "package": "jdg.autoform",
         "priority": 8050,
         "action": "GENERATE_NOTARIAL_DEED",
@@ -546,6 +552,7 @@ else := verdict {
     verdict := {
         "matched": true,
         "rule_id": "jdg.autoform.receipt_generator",
+        "_legal_basis": "ustawa o CEIDG (Dz.U. 2024 poz. 1228 ze zm.)",
         "package": "jdg.autoform",
         "priority": 8060,
         "action": "GENERATE_RECEIPT",

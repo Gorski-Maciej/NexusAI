@@ -42,7 +42,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.force_majeure.audit.right.appeal_
 }
 
 # jdg.hyper.force_majeure.audit.right.wsa_complaint_30_days — Prawo JDG
-else :=   {"matched":true,"rule_id":"jdg.hyper.force_majeure.audit.right.wsa_complaint_30_days","package":"jdg.hyper.force_majeure","priority":1127,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Skarga do WSA w 30 dni od decyzji II instancji","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.force_majeure.audit.right.wsa_complaint_30_days","package":"jdg.hyper.force_majeure","priority":1127,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Skarga do WSA w 30 dni od decyzji II instancji","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "force_majeure_declared", false) == true
 }
 
@@ -52,7 +52,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.force_majeure.audit.obligation.pr
 }
 
 # jdg.hyper.force_majeure.audit.obligation.allow_inspection — Obowiązek JDG
-else :=   {"matched":true,"rule_id":"jdg.hyper.force_majeure.audit.obligation.allow_inspection","package":"jdg.hyper.force_majeure","priority":1129,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Umożliwienie oględzin lokalu","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.force_majeure.audit.obligation.allow_inspection","package":"jdg.hyper.force_majeure","priority":1129,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Umożliwienie oględzin lokalu","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "force_majeure_declared", false) == true
 }
 
@@ -62,7 +62,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.force_majeure.audit.obligation.pr
 }
 
 # jdg.hyper.force_majeure.audit.obligation.sign_protocol — Obowiązek JDG
-else :=   {"matched":true,"rule_id":"jdg.hyper.force_majeure.audit.obligation.sign_protocol","package":"jdg.hyper.force_majeure","priority":1131,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Podpisanie protokołu (odmowa wymaga uzasadnienia)","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.force_majeure.audit.obligation.sign_protocol","package":"jdg.hyper.force_majeure","priority":1131,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Podpisanie protokołu (odmowa wymaga uzasadnienia)","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "force_majeure_declared", false) == true
 }
 
@@ -82,7 +82,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.force_majeure.audit.statute.suspe
 }
 
 # jdg.hyper.force_majeure.audit.statute.resume_after_close — Przedawnienie
-else :=   {"matched":true,"rule_id":"jdg.hyper.force_majeure.audit.statute.resume_after_close","package":"jdg.hyper.force_majeure","priority":1135,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Bieg przedawnienia wznawia się po zakończeniu kontroli","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.force_majeure.audit.statute.resume_after_close","package":"jdg.hyper.force_majeure","priority":1135,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Bieg przedawnienia wznawia się po zakończeniu kontroli","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.jdg_entrepreneur, "force_majeure_declared", false) == true
 }
 

@@ -57,7 +57,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.asset.transfer
 }
 
 # jdg.hyper.procurement.family.joint_filing.conditions — PIT
-else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.joint_filing.conditions","package":"jdg.hyper.procurement","priority":1220,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Wspólne rozliczenie: małżeństwo cały rok, wspólność majątkowa","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.joint_filing.conditions","package":"jdg.hyper.procurement","priority":1220,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Wspólne rozliczenie: małżeństwo cały rok, wspólność majątkowa","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.document, "public_procurement_active", false) == true
 }
 
@@ -67,7 +67,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.joint_filing.b
 }
 
 # jdg.hyper.procurement.family.joint_filing.deadline_april30 — PIT
-else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.joint_filing.deadline_april30","package":"jdg.hyper.procurement","priority":1222,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Termin: 30 kwietnia (PIT-36 z adnotacją o wspólnym rozliczeniu)","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.joint_filing.deadline_april30","package":"jdg.hyper.procurement","priority":1222,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Termin: 30 kwietnia (PIT-36 z adnotacją o wspólnym rozliczeniu)","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.document, "public_procurement_active", false) == true
 }
 
@@ -77,7 +77,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.joint_filing.e
 }
 
 # jdg.hyper.procurement.family.single_parent.preferential_calculation — PIT
-else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.single_parent.preferential_calculation","package":"jdg.hyper.procurement","priority":1224,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Samotny rodzic: podwójna kwota wolna","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.single_parent.preferential_calculation","package":"jdg.hyper.procurement","priority":1224,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Samotny rodzic: podwójna kwota wolna","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.document, "public_procurement_active", false) == true
 }
 
@@ -87,7 +87,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.single_parent.
 }
 
 # jdg.hyper.procurement.family.health_insurance.family_members — Ubezpieczenie
-else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.health_insurance.family_members","package":"jdg.hyper.procurement","priority":1226,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Zgłoszenie członków rodziny do ubezpieczenia zdrowotnego","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.health_insurance.family_members","package":"jdg.hyper.procurement","priority":1226,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Zgłoszenie członków rodziny do ubezpieczenia zdrowotnego","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.document, "public_procurement_active", false) == true
 }
 
@@ -97,7 +97,7 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.health_insuran
 }
 
 # jdg.hyper.procurement.family.pit4r.obligation — Płatnik
-else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.pit4r.obligation","package":"jdg.hyper.procurement","priority":1228,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Obowiązek PIT-4R przy zatrudnieniu rodziny","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.pit4r.obligation","package":"jdg.hyper.procurement","priority":1228,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Obowiązek PIT-4R przy zatrudnieniu rodziny","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.document, "public_procurement_active", false) == true
 }
 
@@ -107,6 +107,6 @@ else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.pit11.deadline
 }
 
 # jdg.hyper.procurement.family.succession.planning_inheritance — Sukcesja
-else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.succession.planning_inheritance","package":"jdg.hyper.procurement","priority":1230,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Przekazanie JDG w spadku → zwolnienie z podatku od spadków (grupa 0)","_legal_basis":"","_warnings":[]} {
+else :=   {"matched":true,"rule_id":"jdg.hyper.procurement.family.succession.planning_inheritance","package":"jdg.hyper.procurement","priority":1230,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Przekazanie JDG w spadku → zwolnienie z podatku od spadków (grupa 0)","_legal_basis": "Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md)","_warnings":[]} {
     object.get(input.document, "public_procurement_active", false) == true
 }

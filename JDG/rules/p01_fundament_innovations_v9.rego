@@ -91,6 +91,7 @@ digital_twin_active := object.get(input, "digital_twin", null) != null
 digital_twin_verdict := {
     "matched": true,
     "rule_id": "jdg.p01_fundament_innovations.digital_twin",
+    "_legal_basis": "P01 Sekcja 7 — Digital Twin Simulator",
     "package": "jdg.p01_fundament_innovations",
     "priority": 300,
     "twin": {
@@ -309,6 +310,7 @@ threshold_drift_warnings := [w |
 decide := {
     "matched": true,
     "rule_id": "jdg.p01_fundament_innovations.report",
+    "_legal_basis": "P01 Sekcja 7 — Digital Twin Simulator",
     "package": "jdg.p01_fundament_innovations",
     "priority": 400,
     "innovations": {

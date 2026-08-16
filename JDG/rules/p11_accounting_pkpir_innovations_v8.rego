@@ -21,6 +21,8 @@ default decide := {
 decide := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.pkpir_column_classifier",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 1000,
     "innovation": "INN01_PKPIR_COLUMN_CLASSIFIER",
@@ -35,6 +37,8 @@ decide := {
 else := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.revenue_cost_matching",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 2000,
     "innovation": "INN02_REVENUE_COST_MATCHING",
@@ -50,6 +54,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.nkup_detector",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 3000,
     "innovation": "INN03_NKUP_AUTO_DETECTOR",
@@ -66,6 +72,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.depreciation_schedule",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 4000,
     "innovation": "INN04_DEPRECIATION_SCHEDULE_GENERATOR",
@@ -82,6 +90,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.vehicle_expense_splitter",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 5000,
     "innovation": "INN05_VEHICLE_EXPENSE_SPLITTER",
@@ -98,6 +108,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.remnant_calculator",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 6000,
     "innovation": "INN06_REMNANT_CALCULATOR",
@@ -114,6 +126,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.pkpir_uor_transition",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 7000,
     "innovation": "INN07_PKPIR_UOR_TRANSITION",
@@ -130,6 +144,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.pkpir_reconciliation",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 8000,
     "innovation": "INN08_PKPIR_RECONCILIATION",
@@ -145,6 +161,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.cross_column_validator",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 9000,
     "innovation": "INN09_CROSS_COLUMN_INTEGRITY",
@@ -162,6 +180,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.kst_rate_lookup",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 10000,
     "innovation": "INN10_KST_RATE_LOOKUP",
@@ -179,6 +199,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.nkup_expansion_tracker",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 11000,
     "innovation": "INN11_NKUP_EXPANSION_TRACKER",
@@ -198,6 +220,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.cash_trap_whitelist",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 12000,
     "innovation": "INN12_CASH_TRAP_WHITELIST",
@@ -214,6 +238,8 @@ else := {
 else := {
     "matched": true,
     "rule_id": "jdg.p11_innovations.coverage_summary",
+    "_routing": "",
+    "_legal_basis": "Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
     "package": "jdg.p11_innovations",
     "priority": 99999,
     "innovation": "P11_COVERAGE_SUMMARY",
