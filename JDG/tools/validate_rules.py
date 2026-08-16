@@ -74,6 +74,44 @@ def find_hardcoded_values(filepath: Path) -> list[Violation]:
     return violations
 
 
+def _extract_balanced_block(content: str, start: int) -> str | None:
+    """Zwraca zbalansowany blok `{...}` zaczynający się od `{` na pozycji `start`.
+
+    Reguły Rego mogą zawierać zagnieżdżone obiekty (np. ``"what_if": {...}``,
+    ``"kup_limits": {...}``) — naiwny regex ``[^}]*`` ucinał obiekt na pierwszym
+    zamykającym nawiasie. Ta funkcja liczy nawiasy z uwzględnieniem literałów
+    łańcuchowych (z escape'ami) oraz komentarzy ``#`` (P05 GLM52 fix)."""
+    brace = content.find("{", start)
+    if brace == -1:
+        return None
+    depth = 0
+    i = brace
+    in_string = False
+    while i < len(content):
+        ch = content[i]
+        if in_string:
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == '"':
+                in_string = False
+        elif ch == '"':
+            in_string = True
+        elif ch == "#":
+            nl = content.find("\n", i)
+            if nl == -1:
+                break
+            i = nl
+        elif ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return content[brace:i + 1]
+        i += 1
+    return None
+
+
 def validate_rule_structure(filepath: Path) -> list[Violation]:
     violations = []
     content = filepath.read_text(encoding="utf-8")
@@ -103,13 +141,19 @@ def validate_rule_structure(filepath: Path) -> list[Violation]:
                 prios.add(prio) if prio is not None else None
             else:
                 chain_owner[rid] = (chain_id, {prio} if prio is not None else set())
-    rule_blocks = re.finditer(
-        r'(?:else\s+)?:=\s*\{[^}]*"matched"\s*:\s*true[^}]*"rule_id"\s*:\s*"([^"]+)"[^}]*\}',
-        content, re.DOTALL
-    )
-    for block in rule_blocks:
-        rule_id = block.group(1)
-        block_text = block.group(0)
+    # Zbalansowane dopasowanie bloków reguł (`decide := {` / `else := {`).
+    # Naiwny regex [^}]* ucinał obiekt na pierwszym zamykającym nawiasie
+    # (zagnieżdżone obiekty) i fałszywie raportował brak _legal_basis (P05 GLM52).
+    for block_start in re.finditer(r':=\s*\{', content):
+        block_text = _extract_balanced_block(content, block_start.start())
+        if block_text is None:
+            continue
+        if not re.search(r'"matched"\s*:\s*true', block_text):
+            continue
+        m_rid = re.search(r'"rule_id"\s*:\s*"([^"]+)"', block_text)
+        if not m_rid:
+            continue
+        rule_id = m_rid.group(1)
         if '"_legal_basis"' not in block_text:
             violations.append(Violation(rel_path, 0, rule_id, "Brak _legal_basis", "ERROR"))
         if '"_routing"' not in block_text:
