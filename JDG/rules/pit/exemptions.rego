@@ -252,3 +252,58 @@ else := {
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
     pit_form in {"PIT_SCALE", "LINEAR", "LUMP_SUM"}
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P589: pit_exemption_shared_limit_monitor — Monitor wspólnego limitu PIT-0
+# RAPORT_GLM52_P05 (INN-05). Trigger: input.pit_exemption_monitor_check == true.
+# Art. 21 ust. 1 pkt 148-154 PIT: łączny limit 85 528 zł dla ulg PIT-0
+# (młodzi/powrót/4+/senior). Alert TRIAGE_QUEUE przy ≥ 95% limitu,
+# BLOCK_AND_ALERT przy przekroczeniu — agregacja użycia w roku.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.exemptions.shared_limit_monitor",
+    "package": "jdg.pit.exemptions", "priority": 589,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "exemption_shared_usage": total_used,
+    "exemption_shared_limit": limit,
+    "exemption_usage_pct": usage_pct,
+    "exemption_remaining": remaining,
+    "exemption_usage_detail": {
+        "young_used": young_used,
+        "return_used": return_used,
+        "family_4plus_used": family_4plus_used,
+        "senior_used": senior_used
+    },
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": routing_action,
+    "_routing_reason": routing_reason,
+    "_legal_basis": "Art. 21 ust. 1 pkt 148-154 PIT",
+    "_warnings": [sprintf("Monitor limitu PIT-0: użyto %.2f z %.0f zł (%.1f%%). Pozostało: %.2f zł.", [total_used, limit, usage_pct, remaining])]
+} {
+    input.pit_exemption_monitor_check == true
+    em := object.get(input, "pit_exemption_monitor", {})
+    ent := object.get(input, "jdg_entrepreneur", {})
+    pit_form := object.get(ent, "tax_form", "PIT_SCALE")
+    young_used := object.get(em, "young_used", 0)
+    return_used := object.get(em, "return_used", 0)
+    family_4plus_used := object.get(em, "family_4plus_used", 0)
+    senior_used := object.get(em, "senior_used", 0)
+    limit := object.get(thresholds.pit, "pit_relief_shared_limit", 85528)
+    alert_pct := object.get(thresholds.pit, "exemption_shared_limit_alert_pct", 0.95)
+
+    total_used := round((young_used + return_used + family_4plus_used + senior_used) * 100) / 100
+    usage_pct := round(total_used / limit * 1000) / 10  # % z 1 miejscem po przecinku
+    remaining := round((limit - total_used) * 100) / 100
+    alert_threshold := limit * alert_pct
+
+    routing_action = "BLOCK_AND_ALERT" { total_used > limit }
+    routing_action = "TRIAGE_QUEUE" { total_used <= limit; total_used >= alert_threshold }
+    routing_action = "" { total_used < alert_threshold }
+    routing_reason = sprintf("PRZEKROCZONO wspólny limit PIT-0: %.2f / %.0f zł — nadwyżka opodatkowana", [total_used, limit]) { total_used > limit }
+    routing_reason = sprintf("Alert: użycie limitu PIT-0 osiągnęło %.1f%% (prog 95%%) — planuj pozostałe zwolnienia", [usage_pct]) { total_used <= limit; total_used >= alert_threshold }
+    routing_reason = "Limit PIT-0 w normie" { total_used < alert_threshold }
+}

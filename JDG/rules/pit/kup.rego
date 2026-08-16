@@ -393,3 +393,69 @@ else := {
     input.invoice.direction == "PURCHASE"
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P573: kup_annual_limits_monitor — Monitor limitów rocznych KUP
+# RAPORT_GLM52_P05 (INN-04). Trigger: input.pit_kup_limits_check == true.
+# Agregat roczny: auta standard 150k / EV 225k (art. 23 ust. 1 pkt 47a),
+# zdrowotna liniowy 14 100 zł (art. 30c ust. 2 pkt 2), darowizny 6% dochodu
+# (art. 26), płatności gotówkowe 15 000 zł (art. 22p) — BLOCK_AND_ALERT
+# przy każdym przekroczeniu (kwota nadwyżki per limit).
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.kup.annual_limits_monitor",
+    "package": "jdg.pit.kup", "priority": 573,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "kup_limits": {
+        "limits_checked": ["car_standard_150k", "car_ev_225k", "health_linear_14100", "donation_6pct", "cash_15000"],
+        "exceeded_limits": exceeded,
+        "exceeded_names": limit_names,
+        "donation_limit": donation_limit
+    },
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": routing_action,
+    "_routing_reason": routing_reason,
+    "_legal_basis": "Art. 23 ust. 1 pkt 47a PIT, Art. 30c ust. 2 pkt 2 PIT, Art. 26 ust. 1 pkt 9 PIT, Art. 22p PIT",
+    "_warnings": [sprintf("Monitor limitów rocznych KUP: %d z 5 limitów przekroczonych. Nadwyżka NIE stanowi KUP.", [count(exceeded)])]
+} {
+    input.pit_kup_limits_check == true
+    kl := object.get(input, "pit_kup_limits", {})
+    ent := object.get(input, "jdg_entrepreneur", {})
+    pit_form := object.get(ent, "tax_form", "PIT_SCALE")
+    income := object.get(kl, "income", 0)
+    cars_standard := object.get(kl, "cars_standard_value", 0)
+    cars_ev := object.get(kl, "cars_ev_value", 0)
+    health_linear := object.get(kl, "health_linear_deducted", 0)
+    donations := object.get(kl, "donations_total", 0)
+    cash := object.get(kl, "cash_payments_total", 0)
+
+    car_std_limit := object.get(thresholds.pit, "car_value_limit_standard", 150000)
+    car_ev_limit := object.get(thresholds.pit, "car_value_limit_ev", 225000)
+    health_limit := object.get(thresholds.zus, "health_linear_deduction_limit", 14100)
+    donation_limit := round(income * object.get(thresholds.pit, "donation_limit_pct", 0.06) * 100) / 100
+    cash_limit := object.get(thresholds.pit, "cash_payment_limit", 15000)
+
+    # Lista przekroczeń (każdy limit = wpis z kwotą nadwyżki)
+    exceeded := [out |
+        some i
+        limits := [
+            {"limit": "car_standard_150k", "limit_value": car_std_limit, "actual": cars_standard},
+            {"limit": "car_ev_225k", "limit_value": car_ev_limit, "actual": cars_ev},
+            {"limit": "health_linear_14100", "limit_value": health_limit, "actual": health_linear},
+            {"limit": "donation_6pct", "limit_value": donation_limit, "actual": donations},
+            {"limit": "cash_15000", "limit_value": cash_limit, "actual": cash},
+        ]
+        raw := limits[i]
+        raw.actual > raw.limit_value
+        out := object.union(raw, {"excess": round((raw.actual - raw.limit_value) * 100) / 100})
+    ]
+    limit_names := [e.limit | some e in exceeded]
+
+    routing_action = "BLOCK_AND_ALERT" { count(exceeded) > 0 }
+    routing_action = "" { count(exceeded) == 0 }
+    routing_reason = sprintf("Przekroczono limity roczne KUP: %s", [concat(", ", limit_names)]) { count(exceeded) > 0 }
+    routing_reason = "Wszystkie limity roczne KUP w normie" { count(exceeded) == 0 }
+}

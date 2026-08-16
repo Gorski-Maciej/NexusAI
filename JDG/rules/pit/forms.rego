@@ -387,3 +387,99 @@ else := {"matched":true,"rule_id":"jdg.pit.forms.tax_card_eligibility","package"
 
 # ══ P497: tax_card_loss_of_right — Utrata prawa do karty podatkowej ══
 else := {"matched":true,"rule_id":"jdg.pit.forms.tax_card_loss","package":"jdg.pit.forms","priority":497,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"SCALE","pit_rate":sprintf("%.2f", [thresholds.rates.pit_scale_low]),"pit_bracket":"LOW","pit_annual_return_type":"PIT-36","kus_qualification":"full","kus_percent":100,"zus_social_base_type":"","zus_health_rate":"","business_status":"","tax_card_retained":false,"tax_card_loss_reason":loss_reason,"_routing":"BLOCK_AND_ALERT","_routing_reason":sprintf("UTRATA KARTY PODATKOWEJ — %s. Automatycznie: skala PIT.",[loss_reason]),"_legal_basis":"Art. 25-30 ustawy o zryczałtowanym PIT","_warnings":[sprintf("UTRATA KARTY PODATKOWEJ! %s Od dnia utraty obowiązuje skala podatkowa (12%%/32%%). Złóż PIT-36 za ten rok.",[loss_reason])]} {input.jdg_entrepreneur.tax_form=="TAX_CARD";employees:=object.get(input.jdg_entrepreneur,"employee_count",0);uses_specialized:=object.get(input.jdg_entrepreneur,"provides_specialized_services",false);services_former_employer:=object.get(input.jdg_entrepreneur,"former_employer_services",false);(employees>5)|(services_former_employer==true)|(uses_specialized==true);loss_reason=sprintf("Przekroczono limit 5 pracowników (obecnie %d)",[employees]){employees>5};loss_reason=sprintf("Usługi dla byłego pracodawcy — karta WYKLUCZONA",[]){employees<=5;services_former_employer==true};loss_reason=sprintf("Usługi specjalistyczne — karta WYKLUCZONA",[]){employees<=5;not services_former_employer;uses_specialized==true}}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P535: pit_what_if_recommendation — Rekomendacja formy „co by było gdyby”
+# RAPORT_GLM52_P05 (INN-06). Trigger: input.pit_what_if_check == true.
+# Symulacja 4-ścieżkowa (skala 12/32 vs liniowy 19 vs ryczałt vs karta)
+# na danych dochodowych — rekomendacja + oszczędność + ryzyka art. 9a.
+# Trigger-owa — nie shadowuje P500-P497 w normalnym ruchu.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.forms.what_if_recommendation",
+    "package": "jdg.pit.forms", "priority": 535,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "SCALE", "pit_rate": "", "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "what_if": {
+        "income": income,
+        "paths": {
+            "SCALE": scale_tax,
+            "LINEAR": linear_tax,
+            "LUMP_SUM": lump_tax,
+            "TAX_CARD": card_tax
+        },
+        "recommendation": recommendation,
+        "savings_vs_scale": savings_vs_scale,
+        "risks": risks,
+        "note": "Symulacja 'co by było gdyby' — zmiana formy tylko od 1 stycznia (art. 9a PIT)"
+    },
+    "relief_type": "", "relief_limit": 0, "relief_deductible": 0, "relief_carry_forward_years": 0,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 9a PIT, Art. 27 ust. 1, Art. 30c ust. 1 PIT",
+    "_warnings": [sprintf("Rekomendacja formy: %s — oszczędność vs skala: %.2f PLN. Zmiana formy tylko od 1 stycznia (art. 9a PIT).", [recommendation, savings_vs_scale])]
+} {
+    input.pit_what_if_check == true
+    wi := object.get(input, "pit_what_if", {})
+    ent := object.get(input, "jdg_entrepreneur", {})
+    income := object.get(wi, "income", object.get(ent, "cumulative_income_current_year", 0))
+    revenue := object.get(wi, "revenue", income)
+    kup := object.get(wi, "kup", 0)
+    zus_social := object.get(wi, "zus_social", 0)
+    lump_category := object.get(wi, "lump_category", "services")
+
+    # Dochód dla skali/liniowego: przychód − KUP − składki ZUS społeczne
+    business_income := revenue - kup - zus_social
+
+    # Skala 12/32% (art. 27)
+    scale_tax = what_if_scale_tax(business_income)
+    # Liniowy 19% (art. 30c)
+    linear_tax = round(business_income * thresholds.rates.pit_linear * 100) / 100
+    # Ryczałt: (przychód − KUP) × stawka per PKWiU (art. 12 u.z.p.d.)
+    lump_tax = round((revenue - kup) * what_if_lump_rate(lump_category) * 100) / 100
+    # Karta: estimator (thresholds.pit.card_tax_estimation_pct)
+    card_tax = round(business_income * thresholds.pit.card_tax_estimation_pct * 100) / 100
+
+    # Rekomendacja: min z czterech ścieżek (deterministyczna kolejność tie-break)
+    recommendation = "SCALE" { scale_tax <= linear_tax; scale_tax <= lump_tax; scale_tax <= card_tax }
+    recommendation = "LINEAR" { linear_tax < scale_tax; linear_tax <= lump_tax; linear_tax <= card_tax }
+    recommendation = "LUMP_SUM" { lump_tax < scale_tax; lump_tax < linear_tax; lump_tax <= card_tax }
+    recommendation = "TAX_CARD" { card_tax < scale_tax; card_tax < linear_tax; card_tax < lump_tax }
+
+    # Oszczędność względem skali (groszowo)
+    savings_vs_scale = round((scale_tax - min([scale_tax, linear_tax, lump_tax, card_tax])) * 100) / 100
+
+    # Ryzyka wybranej formy (art. 9a / 30c / u.z.p.d.)
+    risks = ["Liniowy: BRAK kwoty wolnej, BRAK wspólnego rozliczenia (art. 30c ust. 2 PIT)"] { recommendation == "LINEAR" }
+    risks = ["Ryczałt: podatek od przychodu (NIE dochodu); limit 2 mln EUR (art. 6 ust. 4 u.z.p.d.)"] { recommendation == "LUMP_SUM" }
+    risks = ["Skala: składka zdrowotna 9% NIE jest KUP (od 2022)"] { recommendation == "SCALE" }
+    risks = ["Karta: ograniczenia (max 5 pracowników, brak usług specjalistycznych — art. 8 u.z.p.d.)"] { recommendation == "TAX_CARD" }
+}
+
+# ── What-if helpers (P05 GLM52, ADR-002 — stawki z thresholds) ────────────────
+what_if_scale_tax(income) = tax {
+    threshold := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "pit_scale_threshold", 120000)
+    low := object.get(thresholds.rates, "pit_scale_low", 0.12)
+    high := object.get(thresholds.rates, "pit_scale_high", 0.32)
+    tax := round(income * low * 100) / 100
+}
+what_if_scale_tax(income) = tax {
+    threshold := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "pit_scale_threshold", 120000)
+    low := object.get(thresholds.rates, "pit_scale_low", 0.12)
+    high := object.get(thresholds.rates, "pit_scale_high", 0.32)
+    income > threshold
+    tax := round((threshold * low + (income - threshold) * high) * 100) / 100
+}
+
+what_if_lump_rate(category) = rate {
+    rate = thresholds.rates.lump_2pct { category in {"trade", "production_food"} }
+    else = thresholds.rates.lump_3pct { category in {"gastronomy"} }
+    else = thresholds.rates.lump_5_5pct { category in {"construction"} }
+    else = thresholds.rates.lump_12pct { category in {"it_high", "freelance_high"} }
+    else = thresholds.rates.lump_15pct { category in {"management"} }
+    else = thresholds.rates.lump_17pct { category in {"transport", "freelance"} }
+    else = thresholds.rates.lump_8_5pct  # default: usługi
+}

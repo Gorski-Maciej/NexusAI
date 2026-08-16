@@ -293,3 +293,79 @@ else := {
 
     settlement_diff != 0
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P558: pit_advance_grosz_rounding — Zaokrąglanie zaliczek wg art. 63 OrdPU
+# RAPORT_GLM52_P05 (INN-03). Trigger: input.pit_advance_grosz_check == true.
+# Art. 63 § 1 OrdPU: podstawy i zaliczki zaokrągla się do pełnych złotych —
+# końcówki 0–49 gr pomija, 50–99 gr podwyższa. Dowód matematyczny:
+# |zaokrąglona − surowa| < 1,00 zł (invariant w werdykcie).
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.advances.grosz_rounding",
+    "package": "jdg.pit.advances", "priority": 558,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "pit_advance_raw": advance_raw,
+    "pit_advance_rounded": advance_rounded,
+    "pit_advance_base_raw": base_raw,
+    "pit_advance_base_rounded": base_rounded,
+    "rounding_applied": true,
+    "rounding_rule": "ART_63_ORDYNACJA",
+    "rounding_proof": {"abs_diff_pln": abs_diff},
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 63 § 1 OrdPU w zw. z art. 44 PIT",
+    "_warnings": [sprintf("Zaliczka zaokrąglona wg art. 63 § 1 OrdPU: %.2f zł → %.2f zł (podstawa %.2f zł → %.2f zł). Końcówki 0–49 gr pomija się, 50–99 gr podwyższa.", [advance_raw, advance_rounded, base_raw, base_rounded])]
+} {
+    input.pit_advance_grosz_check == true
+    gc := object.get(input, "pit_advance_grosz", {})
+    ent := object.get(input, "jdg_entrepreneur", {})
+    pit_form := object.get(ent, "tax_form", "PIT_SCALE")
+    base_raw := object.get(gc, "base_amount", object.get(ent, "monthly_taxable_base", 0))
+    rate := object.get(gc, "rate", object.get(thresholds.rates, "pit_scale_low", 0.12))
+    advance_raw := round(base_raw * rate * 100) / 100
+    # Art. 63 § 1 OrdPU — zaokrąglenie do pełnych złotych
+    base_rounded = floor(base_raw) { base_raw - floor(base_raw) < 0.5 }
+    base_rounded = floor(base_raw) + 1 { base_raw - floor(base_raw) >= 0.5 }
+    advance_rounded = floor(advance_raw) { advance_raw - floor(advance_raw) < 0.5 }
+    advance_rounded = floor(advance_raw) + 1 { advance_raw - floor(advance_raw) >= 0.5 }
+    abs_diff := abs(advance_rounded - advance_raw)
+    abs_diff < 1.0  # invariant groszowy (dowód matematyczny)
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# P558b: pit_quarterly_advance_due_dates — Terminarz zaliczek kwartalnych
+# RAPORT_GLM52_P05 (INN-07). Trigger: input.pit_quarterly_advance_check == true.
+# Art. 44 ust. 3g PIT (mały podatnik): zaliczki kwartalne do 20. dnia
+# miesiąca następującego po kwartale: 20.04, 20.07, 20.10, 20.01.
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.pit.advances.quarterly_due_dates",
+    "package": "jdg.pit.advances", "priority": 558,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": pit_form, "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "pit_advance_frequency": "QUARTERLY",
+    "pit_quarterly_due_dates": quarterly_due_dates,
+    "pit_advance_due_day": thresholds.pit.advance_due_day,
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "", "_routing_reason": "",
+    "_legal_basis": "Art. 44 ust. 3g PIT",
+    "_warnings": ["Mały podatnik — zaliczki kwartalne: 20.04 (I kw.), 20.07 (II kw.), 20.10 (III kw.), 20.01 (IV kw.)"]
+} {
+    input.pit_quarterly_advance_check == true
+    ent := object.get(input, "jdg_entrepreneur", {})
+    pit_form := object.get(ent, "tax_form", "PIT_SCALE")
+    due_months := object.get(thresholds.pit, "quarterly_advance_due_months", [4, 7, 10, 1])
+    due_day := object.get(thresholds.pit, "advance_due_day", 20)
+    quarterly_due_dates = [
+        {"quarter": "Q1", "due_date": sprintf("%02d-%02d", [due_day, due_months[0]])},
+        {"quarter": "Q2", "due_date": sprintf("%02d-%02d", [due_day, due_months[1]])},
+        {"quarter": "Q3", "due_date": sprintf("%02d-%02d", [due_day, due_months[2]])},
+        {"quarter": "Q4", "due_date": sprintf("%02d-%02d", [due_day, due_months[3]])},
+    ]
+}

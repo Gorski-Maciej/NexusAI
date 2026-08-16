@@ -631,6 +631,25 @@ pit := {
 
     # Art. 21 ust. 1 pkt 148-154 PIT — wspólny limit ulg PIT-0 (mlodzi, powrót, 4+, senior)
     "pit_relief_shared_limit": 85528,            # PLN — limit łączny ulg PIT-0 (2026)
+
+    # ── P05 GLM52 — PIT MAKRO (RAPORT_GLM52_P05_PIT_MAKRO.txt) ──
+    # Art. 44 PIT — termin zaliczek (20. dzień miesiąca)
+    "advance_due_day": 20,
+    # Art. 63 § 1 OrdPU — zaokrąglanie podstaw i zaliczek do pełnych złotych
+    "advance_grosz_rounding": true,
+    # Art. 44 ust. 3g PIT — terminy zaliczek kwartalnych małego podatnika
+    # (20. dzień miesiąca następującego po kwartale: IV, VII, X, I)
+    "quarterly_advance_due_months": [4, 7, 10, 1],
+    # Art. 45 ust. 1 PIT — termin zeznania PIT-36/36L
+    "annual_return_pit36_deadline": "04-30",
+    # Art. 21 ust. 1 ustawy o ryczałcie — termin PIT-28 (28 lutego!)
+    "annual_return_pit28_deadline": "02-28",
+    # Alert 95% łącznego limitu ulg PIT-0 (monitor prewencyjny)
+    "exemption_shared_limit_alert_pct": 0.95,
+    # Art. 23 ust. 1 pkt 37 PIT — składki ZUS społeczne jako KUP (flaga kontraktu P08)
+    "zus_social_as_kup": true,
+    # Estimator karty podatkowej w symulacji „co by było gdyby” (P05 INN-06)
+    "card_tax_estimation_pct": 0.20,
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -58,3 +58,43 @@ test_positive_no_match {
     result.matched == true
     result.rule_id == "jdg.pit.kup.no_match"
 }
+
+# 6. jdg.pit.kup.annual_limits_monitor (P05 GLM52 — INN-04, trigger)
+# Auto standard 180 000 > 150 000 → BLOCK_AND_ALERT, nadwyżka 30 000
+test_positive_annual_limits_exceeded {
+    result := data.jdg.pit.kup.decide with input as {
+        "pit_kup_limits_check": true,
+        "pit_kup_limits": {
+            "income": 300000,
+            "cars_standard_value": 180000,
+            "cars_ev_value": 0,
+            "health_linear_deducted": 5000,
+            "donations_total": 5000,
+            "cash_payments_total": 3000
+        }
+    }
+    result.rule_id == "jdg.pit.kup.annual_limits_monitor"
+    result.matched == true
+    result._routing == "BLOCK_AND_ALERT"
+    result.kup_limits.exceeded_names == ["car_standard_150k"]
+    result.kup_limits.exceeded_limits[_].limit == "car_standard_150k"
+    result.kup_limits.exceeded_limits[_].excess == 30000
+}
+
+# 7. annual_limits_monitor — wszystko w limitach → brak alarmu
+test_positive_annual_limits_ok {
+    result := data.jdg.pit.kup.decide with input as {
+        "pit_kup_limits_check": true,
+        "pit_kup_limits": {
+            "income": 100000,
+            "cars_standard_value": 100000,
+            "cars_ev_value": 100000,
+            "health_linear_deducted": 8000,
+            "donations_total": 4000,
+            "cash_payments_total": 10000
+        }
+    }
+    result.rule_id == "jdg.pit.kup.annual_limits_monitor"
+    result._routing == ""
+    count(result.kup_limits.exceeded_limits) == 0
+}

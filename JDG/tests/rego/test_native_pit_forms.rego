@@ -68,3 +68,28 @@ test_positive_no_match {
     result.matched == true
     result.rule_id == "jdg.pit.forms.no_match"
 }
+
+# 7. jdg.pit.forms.what_if_recommendation (P05 GLM52 — INN-06, trigger)
+# Skala 40 000 vs liniowy 38 000 vs ryczałt 17 000 vs karta 40 000 → LUMP_SUM
+test_positive_what_if_recommendation {
+    result := data.jdg.pit.forms.decide with input as {
+        "pit_what_if_check": true,
+        "pit_what_if": {"income": 200000, "revenue": 250000, "kup": 50000,
+                        "zus_social": 0, "lump_category": "services"}
+    }
+    result.rule_id == "jdg.pit.forms.what_if_recommendation"
+    result.matched == true
+    result.what_if.recommendation == "LUMP_SUM"
+    result.what_if.paths.SCALE == 40000
+    result.what_if.paths.LINEAR == 38000
+    result.what_if.paths.LUMP_SUM == 17000
+    result.what_if.savings_vs_scale == 23000
+}
+
+# 8. what_if — bez triggera reguła nie odpala się (fallback no_match)
+test_negative_what_if_without_trigger {
+    result := data.jdg.pit.forms.decide with input as {
+        "pit_what_if": {"income": 200000}
+    }
+    result.rule_id == "jdg.pit.forms.no_match"
+}
