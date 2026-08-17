@@ -605,6 +605,8 @@ pit := {
     "prototype_relief_rate": 0.30,              # 30% — ulga na prototyp (Art. 26eb, P30 L8)
     "robotization_relief_rate": 0.50,           # 50% — ulga na robotyzację (Art. 26gb, P30 L8)
     "expansion_relief_max_costs": 1000000,       # PLN — max koszty kwalifikowane ekspansji (Art. 26ec)
+    "pit_thermo_limit": 53000,                   # PLN — ulga termomodernizacyjna (Art. 26h, limit na podatnika)
+    "pit_thermo_carry_years": 3,                 # lata — odliczenie w ciągu 3 lat (Art. 26h ust. 6)
 
     # P30: Mały podatnik PIT
     "small_taxpayer_pit_limit_eur": 2000000,     # EUR — limit przychodu (Art. 5a pkt 20, P30 L11)
@@ -821,6 +823,21 @@ depreciation := {
 
     # Art. 22k PIT — de minimis
     "de_minimis_annual_limit_eur": 50000,        # EUR rocznie
+
+    # ── P06 GLM52 — AMORTYZACJA (RAPORT_GLM52_P06_PIT_MIKRO_AMORTYZACJA.txt) ──
+    "one_time_depreciation_eur": 100000,         # EUR — jednorazowa amortyzacja (art. 22i / 22k ust. 7-12)
+    "small_taxpayer_revenue_limit_eur": 2000000, # EUR — limit przychodów małego podatnika dla jednorazowej
+    "low_value_asset_limit": 10000,              # PLN — niskocenne ŚT (art. 22f ust. 3 / art. 22d ust. 1)
+    "degressive_coeff_machines": 2.0,            # art. 22k ust. 1 — maszyny grupy 3-6 i 8 + transport
+    "degressive_coeff_other": 1.4,               # art. 22k ust. 2 — pozostałe ŚT
+    "individual_rate_max_multiplier": 2.0,       # art. 22j/22n — stawka indywidualna max 2× standard
+    "wnip_max_period_years": 5,                  # art. 22b ust. 1 — WNiP amortyzacja ≤ 5 lat
+    # Standardowe roczne stawki KŚT (rozporządzenie MF w sprawie amortyzacji,
+    # załącznik nr 1 — spójne z kst_groups w p06_pit_micro_innovations_v9.rego)
+    "kst_rates": {
+        "0": 0.0, "1": 0.015, "2": 0.045, "3": 0.07, "4": 0.14,
+        "5": 0.20, "6": 0.18, "7": 0.20, "8": 0.20, "9": 0.20, "10": 0.20
+    }
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

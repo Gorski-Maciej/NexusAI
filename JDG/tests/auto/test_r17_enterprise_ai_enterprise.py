@@ -99,7 +99,7 @@ def test_r17_main_router_wired_p42():
     assert "import data.jdg.r17_enterprise_ai_innovations" in src
     assert '"jdg.r17_enterprise_ai_innovations": r17_enterprise_ai_innovations.decide' in src
     assert "final_verdict_p42 = safe_merge(final_verdict_p41" in src
-    assert "final_verdict_post_merge = object.union(final_verdict_p42" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p45" in src
 
 
 # ── R17-INN-01: adaptive_trust_monitor ───────────────────────────────────────
@@ -160,7 +160,7 @@ def test_inn05_legislative():
 
 def test_invariants_after_r17():
     src = _read(MAIN_REGO)
-    assert "final_verdict_post_merge = object.union(final_verdict_p42" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p45" in src
     assert "final_verdict_enforced = object.union(final_verdict_post_merge" in src
     assert "_decision_certificate" in src or "decision_certificate" in src
     assert "_certainty_guard" in src

@@ -432,6 +432,52 @@ else := {
     total := emp_health + jdg_health
 }
 
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  H160: TIER SWITCH — miesięczna re-ewaluacja progu ryczałtu (P08 GLM52)    ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+# Automatyczne przełączanie TIER przy przekroczeniu progu przychodu narastająco
+# (art. 81 ust. 2e-2f u.ś.o.z.) — silnik progów z re-ewaluacją miesięczną.
+else := {
+    "matched": true, "rule_id": "jdg.zus.health.tier_switch",
+    "package": "jdg.zus.health_contribution", "priority": 160,
+    "pit_form": "LUMP_SUM",
+    "zus_health_tier_switch_detected": tier_changed,
+    "zus_health_tier_previous": previous_tier,
+    "zus_health_tier_current": current_tier,
+    "zus_health_monthly_previous_pln": previous_monthly,
+    "zus_health_monthly_current_pln": current_monthly,
+    "zus_health_cumulative_revenue_pln": cumulative_revenue,
+    "_routing": tier_rt,
+    "_routing_reason": sprintf("Zmiana progu ryczałtu: %s → %s (składka %.2f → %.2f PLN/mies). Przychód narastająco: %.2f PLN.", [previous_tier, current_tier, previous_monthly, current_monthly, cumulative_revenue]),
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy o świadczeniach zdrowotnych",
+    "_warnings": [sprintf("⚠️ ZMIANA PROGU SKŁADKI ZDROWOTNEJ (ryczałt): %s → %s od tego miesiąca. Składka: %.2f → %.2f PLN/mies. Monitoruj przychód narastająco — następna zmiana przy %.0f PLN.", [previous_tier, current_tier, previous_monthly, current_monthly, next_limit])]
+} {
+    input.jdg_entrepreneur.tax_form == "LUMP_SUM"
+    input.jdg_entrepreneur.health_tier_switch_check == true
+    cumulative_revenue := object.get(input.jdg_entrepreneur, "lump_sum_cumulative_revenue", 0)
+    previous_tier := object.get(input.jdg_entrepreneur, "lump_sum_previous_tier", "TIER_I")
+    limit1 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_1_limit", 60000)
+    limit2 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_2_limit", 300000)
+    tier1 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_1_amount", 491.40)
+    tier2 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_2_amount", 819.00)
+    tier3 := object.get(object.get(data.jdg.thresholds, "zus", {}), "health_lump_tier_3_amount", 1474.20)
+    current_tier = "TIER_I" { cumulative_revenue <= limit1 }
+    current_tier = "TIER_II" { cumulative_revenue > limit1; cumulative_revenue <= limit2 }
+    current_tier = "TIER_III" { cumulative_revenue > limit2 }
+    current_monthly = tier1 { cumulative_revenue <= limit1 }
+    current_monthly = tier2 { cumulative_revenue > limit1; cumulative_revenue <= limit2 }
+    current_monthly = tier3 { cumulative_revenue > limit2 }
+    previous_monthly = tier1 { previous_tier == "TIER_I" }
+    previous_monthly = tier2 { previous_tier == "TIER_II" }
+    previous_monthly = tier3 { previous_tier == "TIER_III" }
+    tier_changed := current_tier != previous_tier
+    next_limit = limit1 { current_tier == "TIER_I" }
+    next_limit = limit2 { current_tier == "TIER_II" }
+    next_limit = 0 { current_tier == "TIER_III" }
+    tier_rt = "TRIAGE_QUEUE" { tier_changed }
+    tier_rt = "" { not tier_changed }
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # FALLBACK
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -105,6 +105,6 @@ test_positive_annual_pit28 {
 # 9. jdg.pit.advances.no_match — fallback
 test_positive_no_match {
     result := data.jdg.pit.advances.decide with input as {}
-    result.matched == true
+    result.matched == false
     result.rule_id == "jdg.pit.advances.no_match"
 }

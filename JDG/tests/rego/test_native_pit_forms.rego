@@ -65,7 +65,7 @@ test_positive_tax_card {
 # 6. jdg.pit.forms.no_match — fallback
 test_positive_no_match {
     result := data.jdg.pit.forms.decide with input as {}
-    result.matched == true
+    result.matched == false
     result.rule_id == "jdg.pit.forms.no_match"
 }
 

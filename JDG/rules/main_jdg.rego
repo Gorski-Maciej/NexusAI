@@ -415,6 +415,13 @@ import data.jdg.micro.jpk.plan33 as micro_jpk_plan33
 import data.jdg.micro.pit as micro_pit_full
 import data.jdg.micro.pit.plan33 as micro_pit_plan33
 import data.jdg.micro.pit.plan34 as micro_pit_plan34
+import data.jdg.micro.amort_a22a
+import data.jdg.micro.amort_a22b
+import data.jdg.micro.amort_a22c
+import data.jdg.micro.amort_a22h
+import data.jdg.micro.amort_a22i
+import data.jdg.micro.amort_a22k
+import data.jdg.micro.amort_a22n
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
@@ -1453,6 +1460,13 @@ _package_decisions := {
     "jdg.micro.pit": micro_pit_full.decide,
     "jdg.micro.pit.plan33": micro_pit_plan33.decide,
     "jdg.micro.pit.plan34": micro_pit_plan34.decide,
+    "jdg.micro.amort_a22a": amort_a22a.decide,
+    "jdg.micro.amort_a22b": amort_a22b.decide,
+    "jdg.micro.amort_a22c": amort_a22c.decide,
+    "jdg.micro.amort_a22h": amort_a22h.decide,
+    "jdg.micro.amort_a22i": amort_a22i.decide,
+    "jdg.micro.amort_a22k": amort_a22k.decide,
+    "jdg.micro.amort_a22n": amort_a22n.decide,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
     "jdg.p23_innovations": p23_innovations.decide,
@@ -2036,6 +2050,26 @@ final_verdict_p44 = safe_merge(final_verdict_p43,
     ))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 45: AMORTYZACJA MIKRO (PROMPT 06 — PIT MIKRO + AMORTYZACJA + NKUP)
+# Warstwa mikro amortyzacji (art. 22a-22h/22i/22k/22n): a22a (definicja ŚT),
+# a22b (WNiP), a22c (wyłączenia), a22h (zasady odpisów + invariant F2),
+# a22i (metody: liniowa/degresywna), a22k (jednorazowa de minimis + limity),
+# a22n (ewidencja ŚT). Konwencja mikro (INV-018): bez catch-all {true} — brak
+# dopasowania → default no_match; wypełniają LUKI makro, nigdy nie nadpisują
+# (safe_merge: lewy arg. wygrywa). Naprawione P06: usunięte fallbacki {true}
+# (przejmowały no_match), poprawione _legal_basis (degresywna = art. 22k).
+final_verdict_p45 = safe_merge(final_verdict_p44,
+    safe_merge(amort_a22a.decide,
+    safe_merge(amort_a22b.decide,
+    safe_merge(amort_a22c.decide,
+    safe_merge(amort_a22h.decide,
+    safe_merge(amort_a22i.decide,
+    safe_merge(amort_a22k.decide,
+    safe_merge(amort_a22n.decide,
+        fallback.decide
+    ))))))))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -2049,7 +2083,7 @@ final_verdict_p44 = safe_merge(final_verdict_p43,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-final_verdict_post_merge = object.union(final_verdict_p44,
+final_verdict_post_merge = object.union(final_verdict_p45,
     {"_routing_context": routing_context})
 
 final_verdict_enforced = object.union(final_verdict_post_merge,

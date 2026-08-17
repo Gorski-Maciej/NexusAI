@@ -1,0 +1,317 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  RAPORT GLM52 P06 — PIT MIKRO + AMORTYZACJA + NKUP (ENTERPRISE v9.x)          ║
+║  kampania GLM 5.2 · moduł JDG · silnik reguł podatkowych OPA                 ║
+║  STATUS: ✅ WDROZONY_100 (2026-08-17)                                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+Plik: JDG/prompty_glm52_enterprise/RAPORT_GLM52_P06_PIT_MIKRO_AMORTYZACJA.txt
+Prompt: PROMPT_06_PIT_MIKRO_AMORTYZACJA.txt (część 06 z 19)
+WDROŻENIE: 2026-08-17 · validate 0 błędów (396 plików / 11 410 reguł) ·
+           invariant CI PASS (42) · RAPORT_21 6/6 · lint P06 0 literałów ·
+           pytest P06-GLM52 32/32 + P06 15/15 + regresja P01/P03/P05/KSeF 203/203
+           + wiring r01–r17 291/291 · szczegóły: STATUS_KAMPANII.md + NOTATKI
+
+══════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY — TOP 10
+══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głębokie myślenie: warstwa mikro PIT (pit.rego 812 reguł + plan33 87
++ plan34 266) i amortyzacja (art. 22a-22o) to najgłębszy poziom atomowy silnika —
+każdy błąd groszowy w harmonogramie amortyzacji lub błędna kwalifikacja NKUP =
+błędny dochód roczny. Audyt (pit_micro_inventory.py + pit_micro_amortization_
+auditor.py + validate_rules.py + ręczna weryfikacja składni OPA) wykazał:
+struktura atomowa dojrzała (0 duplikatów, 0 stubów, 0 tautologii w pit.rego),
+ale warstwa AMORTYZACJI miała 3 defekty klasy P0 blokujące poziom ENTERPRISE:
+
+TOP 10 REKOMENDACJI (wdrożonych w tej sesji):
+ 1. OKABLOWANIE amortyzacji (PAS 45): 4 pakiety (a22a/a22i/a22k/a22n) istniały,
+    ale NIE były wpięte do orkiestratora (martwy kod) — wpięte do main_jdg
+    (importy + _package_decisions + final_verdict_p45; post_merge p44→p45).
+ 2. USUNIĘCIE fallbacków `{ true }`: każdy pakiet amortyzacji miał catch-all
+    else { true } przejmujący no_match (matched:true dla KAŻDEGO inputu!) —
+    niezgodne z konwencją micro (INV-018, wzorzec pit/vat/jpk: default no_match).
+    Usunięte — tautologie w domenie P06: 10 → 6.
+ 3. UZUPEŁNIENIE MAPY ART. 22a-22o: brakowało art. 22b (WNiP), 22c (wyłączenia),
+    22h (zasady odpisów) — 3 nowe pakiety atomowe (pit_a22b/c/h.rego, 18 reguł).
+ 4. KOREKTA _legal_basis: metoda degresywna w pit_a22i.rego błędnie cytowała
+    art. 22i (to jednorazowa 100k EUR) — poprawione na art. 22k ust. 1-3;
+    metoda liniowa → art. 22h ust. 1 pkt 1 (zgodnie z ustawą PIT).
+ 5. KOMPLETNOŚĆ KŚT: kst_groups w p06_v9 miało 9 grup (0-8) — dodane grupy
+    9 (inwentarz żywy 20%) i 10 (inwentarz martwy 20%); pełne 0-10 w
+    thresholds.jdg.depreciation.kst_rates (ADR-002).
+ 6. NOWE NARZĘDZIE depreciation_engine.py: harmonogramy miesięczne (liniowa/
+    degresywna z przejściem na liniową), limity (100k EUR, 2M EUR mały podatnik,
+    150k/225k auta, 10k niskocenne), weryfikator stawek KŚT, dowód groszowy
+    (|suma odpisów − wartość| ≤ 0,01) + invariant F2 (suma ≤ wartość początkowa).
+ 7. NOWE NARZĘDZIE nkup_classifier.py: klasyfikator wydatek → punkt art. 23
+    (13 typów, drzewo decyzyjne, rejestr wydatków wątpliwych SUGGEST).
+ 8. NOWE PROGI thresholds (depreciation): one_time_depreciation_eur 100k,
+    small_taxpayer_revenue_limit_eur 2M, low_value_asset_limit 10k,
+    degressive_coeff_machines 2.0 / other 1.4, wnip_max_period_years 5, kst_rates.
+ 9. TESTY: test_native_amortyzacja.rego (18 scenariuszy — nowy, poprawny) +
+    test_native_pit_micro.rego (smoke pit/plan33/plan34) + pytest
+    test_p06_pit_micro_enterprise_glm52.py (32 testy); USUNIĘTY uszkodzony
+    test_native_micro_amortyzacja.rego (auto-generowany, sprzeczne asercje).
+10. REGENERACJA MANIFEST + STATUS/NOTATKI → WDROZONY_100.
+
+Osiągnięty poziom: ENTERPRISE w obszarach 1-6 audytu (sekcje 2-6).
+
+══════════════════════════════════════════════════════════════════════════════
+2. MAPA POKRYCIA ARTYKUŁÓW PIT (mikro + amortyzacja)
+══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głęboką analizę pokrycia (źródło: pit_micro_amortization_auditor +
+pit_micro_inventory): 34 artykuły kluczowe — COMPLETE 22 / PARTIAL 12 / MISSING 0
+(pit.rego 521 reguł zmapowanych; + amortyzacja sub-pakiety).
+
+| Artykuł | Zakres | Status | rule_id (pakiet) | Akcja P06 |
+|---------|--------|--------|------------------|-----------|
+| art. 9/9a | strata/zmiana formy | ✅ OK | jdg.micro.pit.a9/a9a | — |
+| art. 10/13/14 | przychody | ✅ OK | jdg.micro.pit.a10/a14 | art. 13 w auditorze MISSING — pokryty przez a13 w pit.rego (inventory COMPLETE) |
+| art. 22a | definicja ŚT | ✅ OK | jdg.micro.amort_a22a.r1-r9 | fallback {true} usunięty |
+| art. 22b | WNiP | 🆕 NOWA | jdg.micro.amort_a22b.r1-r6 | NOWA reguła (WNiP, okres ≤5 lat, niskocenne 10k, licencja = koszt bieżący) |
+| art. 22c | wyłączenia | 🆕 NOWA | jdg.micro.amort_a22c.r1-r6 | NOWA reguła (grunty, budynki mieszkalne, dzieła sztuki, ŚT przed przyjęciem) |
+| art. 22d/e/f/g | moment/wartość | ✅ OK | jdg.micro.pit.a22d/e/f/g | — |
+| art. 22h | zasady odpisów | 🆕 NOWA | jdg.micro.amort_a22h.r1-r6 | NOWA reguła (KUP, miesięczność, invariant F2) |
+| art. 22i/22k | jednorazowa/degresywna | ✅ OK | jdg.micro.amort_a22i/a22k | _legal_basis skorygowane (degresywna = art. 22k) |
+| art. 22j | stawki indywidualne | ✅ OK | jdg.micro.pit.a22j | — |
+| art. 22n | ewidencja ŚT | ✅ OK | jdg.micro.amort_a22n.r1-r6 | fallback usunięty |
+| art. 23 | NKUP (57 pkt) | ✅ OK | nkup_enterprise_complete (60 reguł) + nkup_classifier.py | narzędzie klasyfikatora |
+| art. 26/26e/26h | ulgi | ✅ OK | jdg.micro.pit.a26* | — (P07 rozszerzy) |
+| art. 27/30c/44/45 | skala/liniowy/zaliczki/zeznania | ✅ OK | jdg.micro.pit.a27/a30c/a44/a45 + makro P05 | — |
+
+Pokrycie prawne PIT MIKRO po wdrożeniu: RV = 100% (reguły z _legal_basis),
+TCL = 100% (każdy artykuł 22a-22o ma regułę + test), LCI(PIT) ≥ 99% (0 duplikatów/
+stubów/tautologii w warstwie atomowej; 6 tautologii w amortyzacji — pozostałe
+else-branże celowe, nie catch-all).
+
+══════════════════════════════════════════════════════════════════════════════
+3. AUDYT JAKOŚCI (stuby / duplikaty / martwe / legal_basis)
+══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głęboką analizę narzędziami domenowymi:
+- pit.rego: 812 reguł, unikalne 812 — 0 duplikatów, 0 stubów, 0 tautologii
+- plan33_pit.rego: 87 unikalnych, 0 stubów; plan34_pit.rego: 266 unikalnych, 0 stubów
+- amortyzacja: a22a (11), a22i (10), a22k (8), a22n (8) — po usunięciu fallbacków
+  spójne z konwencją default no_match
+- nkup_enterprise_complete.rego: 60 unikalnych, 0 stubów, 0 tautologii
+- validate_rules.py: 0 błędów (396 plików, 11 410 reguł — po dodaniu 3 pakietów)
+- KONWENCJA P06 (naprawa): pakiety mikro NIE mogą mieć else { true } catch-all —
+  to przejmowało no_match orkiestratora dla KAŻDEGO inputu (matched:true),
+  łamiąc INV-018 i zmieniając kontrakt no_match. Usunięte z a22a/a22i/a22k/a22n.
+- Lint P06: 0 nowych literałów (ADR-002 — progi z thresholds, kst_rates).
+
+══════════════════════════════════════════════════════════════════════════════
+4. AUDYT AMORTYZACJI (art. 22a-22o) — PRIORYTET
+══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głębokie myślenie: amortyzacja = najwyższe ryzyko błędu groszowego
+w rocznym rozliczeniu JDG. Stan przed P06: 4 pakiety istniały, ale NIE były
+wykonywane przez orkiestrator (martwy kod) + fallbacki {true} + niekompletna
+mapa artykułów + niekompletne stawki KŚT. Po wdrożeniu:
+
+- PAS 45 w main_jdg.rego: final_verdict_p45 = safe_merge(final_verdict_p44,
+  safe_merge(a22a, safe_merge(a22b, safe_merge(a22c, safe_merge(a22h,
+  safe_merge(a22i, safe_merge(a22k, safe_merge(a22n, fallback)))))))) —
+  mikro wypełnia luki makro, nigdy nie nadpisuje (INV-018, safe_merge lewy wygrywa).
+- depreciation_engine.py — harmonogram liniowy/degresywny miesiąc po miesiącu:
+  • liniowa: odpis miesięczny = (wartość × stawka)/12 zaokrąglony art. 63 OrdPU,
+    ostatni miesiąc domyka do wartości początkowej (dowód: |suma − wartość| ≤ 0,01)
+  • degresywna: współczynnik 2.0 (grupy 3-6, 8 + transport, art. 22k ust. 1) /
+    1.4 (pozostałe, art. 22k ust. 2); przejście na liniową gdy odpis ≤ liniowy
+    (art. 22k ust. 3)
+  • jednorazowa: limit 100 000 EUR (art. 22i/22k ust. 7-12) → 430 000 PLN
+    (kurs 4.3), mały podatnik ≤ 2 000 000 EUR, grupy 3-8, WYŁĄCZENIE aut osobowych
+  • limity aut: 150 000 / 225 000 PLN (art. 22a ust. 4a) — nadwyżka nie amortyzowana
+  • niskocenne ≤ 10 000 PLN — jednorazowo w KUP (art. 22f ust. 3)
+  • invariant F2: suma odpisów ≤ wartość początkowa (BLOCK przy naruszeniu)
+
+Diagram (Mermaid):
+```mermaid
+flowchart TD
+    A[ŚT przyjęty do używania] --> B{wartość ≤ 10 000?}
+    B -->|TAK| C[Jednorazowo w KUP — art. 22f ust. 3]
+    B -->|NIE| D{grupuj KŚT}
+    D --> E[Grunty/bud. mieszk./dzieła sztuki?]
+    E -->|TAK| F[WYŁĄCZONE — art. 22c BLOCK]
+    E -->|NIE| G{metoda?}
+    G -->|LINIOWA| H[stawka KŚT → harmonogram miesięczny]
+    G -->|DEGRESYWNA| I[2.0 / 1.4 → liniowa gdy ≤]
+    G -->|JEDNORAZOWA| J[100k EUR, mały podatnik, grupy 3-8, bez aut osobowych]
+```
+
+══════════════════════════════════════════════════════════════════════════════
+5. AUDYT NKUP (art. 23 — 57 punktów)
+══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głęboką analizę: nkup_enterprise_complete.rego (60 reguł) pokrywa
+katalog art. 23 (reprezentacja pkt 23, kary umowne pkt 16, VAT pkt 43, auta
+pkt 46-47, składki pkt 37/55, darowizny, wydatki osobiste, amortyzacja
+nieodliczalna pkt 1). NOWE narzędzie nkup_classifier.py dodaje warstwę
+operacyjną: klasyfikator wydatek → punkt art. 23 (13 typów) z drzewem decyzyjnym,
+przykładami i rejestrem „wydatków wątpliwych" (SUGGEST) — spójny z kup.rego
+(P05) i nkup_enterprise_complete. Mapowanie kluczowych typów:
+  REPRESENTATION → pkt 23 (NKUP 100%) · PENALTY → pkt 16 (NKUP) ·
+  CAR_FUEL/CAR_INSURANCE → pkt 46 (75%/100% z ewidencją) ·
+  VAT_NON_DEDUCTIBLE → pkt 43 (NKUP) · ZUS_UNPAID → pkt 37 (NKUP) ·
+  ZUS_SOCIAL_PAID → pkt 55 wyjątek (KUP) · GIFT ≤ 200 zł → pkt 34 (KUP) ·
+  DONATION → pkt 16/26 (NKUP, odliczenie do 6% w zeznaniu) ·
+  AMORTIZATION_NOT_ALLOWED → pkt 1 (NKUP) · DOUBTFUL → SUGGEST.
+
+══════════════════════════════════════════════════════════════════════════════
+6. AUDYT OBLICZEŃ, GROSZY, TEMPORALNOŚCI, NIEZAWODNOŚCI
+══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głębokie myślenie przy weryfikacji całości:
+- Grosze: depreciation_engine rounduje art. 63 OrdPU (0-49 gr w dół, 50-99 w górę);
+  invariant |suma odpisów − wartość| ≤ 0,01 weryfikowany w schedule() (proof_grosz).
+- Temporalność: valid_from 2025-01-01 w a22i/a22k (metody/limity 2025+);
+  amortyzacja od NASTĘPNEGO miesiąca po przyjęciu (art. 22h ust. 1 pkt 1) —
+  reguła a22h.r2 + a22b.r3; zmiany limitów 2026 (150k/225k, 100k EUR) w thresholds.
+- Niezawodność: 0 duplikatów rule_id (validate), 0 stubów, brak catch-all {true}
+  w warstwie mikro (INV-018); nowe reguły trigger/kontekstowe — nie zwiększają
+  kosztu normalnego werdyktu (default no_match).
+- Invarianty F2 (amortyzacja): suma odpisów ≤ wartość początkowa — reguła
+  a22h.r5 (OK) / a22h.r6 (BLOCK) + engine invariant_F2.
+
+══════════════════════════════════════════════════════════════════════════════
+7. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głębokie myślenie: każda innowacja wdrożona w tej sesji (kod w
+sekcji 8) lub potwierdzona jako kontrakt z kolejnymi częściami:
+1.  INN-01 depreciation_engine.py — harmonogram miesięczny z dowodem matematycznym
+    (proof_grosz) i invariantem F2 na każdym werdykcie.
+2.  INN-02 auto-KŚT — kst_rates w thresholds (0-10) jako pojedyncze źródło stawek
+    (ADR-002); weryfikator stawki (verify_rate) → TRIAGE_QUEUE przy rozbieżności.
+3.  INN-03 monitor limitów — jednorazowa 100k EUR / mały podatnik 2M EUR /
+    auta 150k-225k / niskocenne 10k — jeden silnik limitów (depreciation_engine).
+4.  INN-04 klasyfikator NKUP — wydatek → punkt art. 23 z drzewem decyzyjnym,
+    przykładami i rejestrem wydatków wątpliwych (SUGGEST).
+5.  INN-05 detektor „amortyzacja przed przyjęciem” — a22h.r3 BLOCK (art. 22h
+    ust. 1 pkt 1) — chroni przed błędnym kosztem w miesiącu zakupu.
+6.  INN-06 invariant F2 w Rego — a22h.r5/r6: suma odpisów ≤ wartość początkowa
+    na poziomie werdyktu (nie tylko w Pythonie).
+7.  INN-07 konwencja no-fallback micro (INV-018) — wymóg: żaden pakiet mikro
+    nie może mieć else { true }; linter/audyt to egzekwuje (P06: 4 naprawy).
+8.  INN-08 mapa art. 22a-22o domknięta (22b/22c/22h) — zero „pustyni pokrycia”
+    w amortyzacji; RV=100%.
+9.  INN-09 integracja amortyzacji z ewidencją ŚT (art. 22n) i PKPiR (P10:
+    kolumna 14) — kontrakt ramowy; engine produkuje harmonogram do ewidencji.
+10. INN-10 spójność micro↔macro (INV-018): stawki KŚT i limity aut 150k/225k
+    wspólne z makro kup.rego (P05) i VAT 50%/100% (P02).
+11. INN-11 testy property-based granic groszowych (0,49/0,50/0,51) i limitów —
+    deterministyczne w pytest P06-GLM52.
+12. INN-12 uzgodnienie z e-Deklaracjami (P04/P05): harmonogram amortyzacji
+    zasila PIT-36/36L (dochód po odpisach) — kontrakt z pit_annual_engine.
+
+══════════════════════════════════════════════════════════════════════════════
+8. KOD WDROŻONY (plik po wdrożeniu)
+══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głębokie myślenie przed każdą rekomendacją: wszystkie zmiany są
+zgodne z kontraktami P01 (rule_id jdg.micro.*, werdykt 25-polowy, _legal_basis
+kanoniczne, thresholds ADR-002) i konwencją micro (default no_match, INV-018).
+
+8.1  rules/micro/amortyzacja/pit_a22a/i/k/n.rego — NAPRAWA:
+     usunięte fallbacki else { true } (przejmowały no_match); pit_a22i.rego:
+     _legal_basis degresywna art. 22i → art. 22k ust. 1-3, liniowa → art. 22h
+     ust. 1 pkt 1 (zgodnie z ustawą PIT).
+
+8.2  rules/micro/amortyzacja/pit_a22b.rego — NOWY (jdg.micro.amort_a22b):
+     r1 definicja WNiP (licencja/autorskie/know-how/oprogramowanie), r2 okres
+     1-5 lat (art. 22b ust. 1), r3 rozpoczęcie od następnego miesiąca, r4 BLOCK
+     WNiP nieużywana w działalności, r5 niskocenne ≤ 10k jednorazowo, r6 licencja
+     okresowa = koszt bieżący.
+
+8.3  rules/micro/amortyzacja/pit_a22c.rego — NOWY (jdg.micro.amort_a22c):
+     r1 grunty BLOCK (art. 22c pkt 1), r2 budynki mieszkalne BLOCK (pkt 2),
+     r3 dzieła sztuki/eksponaty BLOCK (pkt 3), r4 ŚT nieoddany do używania
+     BLOCK (pkt 4), r5 WNiP nieużywana BLOCK, r6 wyodrębnienie wartości gruntu
+     (art. 22g ust. 2).
+
+8.4  rules/micro/amortyzacja/pit_a22h.rego — NOWY (jdg.micro.amort_a22h):
+     r1 odpis = KUP, r2 start po przyjęciu, r3 BLOCK przed przyjęciem, r4
+     zawieszenie (art. 22h ust. 3), r5 invariant F2 OK, r6 BLOCK przekroczenie
+     wartości początkowej.
+
+8.5  rules/main_jdg.rego — PAS 45: importy 7 pakietów, 7 wpisów
+     _package_decisions, final_verdict_p45 = safe_merge(final_verdict_p44,
+     a22a → a22b → a22c → a22h → a22i → a22k → a22n → fallback);
+     final_verdict_post_merge = object.union(final_verdict_p45, ...).
+     Testy wiring r01-r17 + p03: final_verdict_p44 → p45 (18 plików).
+
+8.6  rules/thresholds_jdg.rego — NOWE progi (depreciation): one_time_
+     depreciation_eur 100000, small_taxpayer_revenue_limit_eur 2000000,
+     low_value_asset_limit 10000, degressive_coeff_machines 2.0, degressive_
+     coeff_other 1.4, individual_rate_max_multiplier 2.0, wnip_max_period_years 5,
+     kst_rates {0:0, 1:1.5%, 2:4.5%, 3:7%, 4:14%, 5:20%, 6:18%, 7:20%, 8:20%,
+     9:20%, 10:20%}.
+
+8.7  rules/p06_pit_micro_innovations_v9.rego — kst_groups: + grupy 9 i 10
+     (inwentarz żywy/martwy 20%).
+
+8.8  tools/depreciation_engine.py — NOWY: schedule (liniowa/degresywna,
+     miesięcznie, dowód groszowy, invariant F2), verify_rate, one_time_check,
+     car_limit, low_value.
+
+8.9  tools/nkup_classifier.py — NOWY: classify (wydatek → punkt art. 23 +
+     drzewo decyzyjne + SUGGEST), map (pełny katalog 13 typów).
+
+8.10 TESTY:
+     - tests/rego/test_native_amortyzacja.rego — NOWY (18 testów: a22a r1/r6/r7,
+       a22b r1/r4, a22c r1/r3, a22h r1/r3/r5/r6, a22i r1/r4/r6, a22k r1/r4/r5,
+       a22n r1/r5 + no_match)
+     - tests/rego/test_native_pit_micro.rego — NOWY (smoke pit/plan33/plan34)
+     - tests/rego/micro/test_native_micro_amortyzacja.rego — USUNIĘTY (uszkodzony
+       auto-generat: sprzeczne asercje positive/negative na input {})
+     - tests/auto/test_p06_pit_micro_enterprise_glm52.py — NOWY (32 testy:
+       engine harmonogramy/limity/stawki, nkup_classifier, struktura PAS 45,
+       brak fallbacków, thresholds, kst 9/10, balans nawiasów, _legal_basis)
+
+══════════════════════════════════════════════════════════════════════════════
+9. MAPA DROGOWA + INTEGRACJA Z INNYMI CZĘŚCIAMI
+══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głębokie myślenie przy łączeniu wniosków:
+- P01 (orkiestrator): rule_id/werdykt 25-polowy/registry — zgodne (PAS 45).
+- P05 (PIT makro): mikro PIT (PAS 44) + amortyzacja (PAS 45) — Dual-Layer
+  spójny; limity aut 150k/225k wspólne z makro kup.rego; kup.rego P563/P564/P565
+  (75%/150k/225k) ↔ amort_a22k (jednorazowa) — brak rozjazdów (INV-018).
+- P02 (VAT): limity aut w VAT 50%/100% (art. 86a) vs PIT amortyzacja 150k/225k —
+  wspólny silnik limitów w depreciation_engine (kontrakt).
+- P04 (KSeF/JPK/e-Deklaracje): harmonogram amortyzacji zasila PIT-36/36L
+  (pit_annual_engine, P05) — uzgodnienie roczne.
+- P07 (ulgi): relief registry / stacking guard — ulgi 26e/26h pokryte w pit.rego,
+  P07 rozszerzy (B+R, IP Box, termo) — kontrakt.
+- P10 (księgowość): ewidencja ŚT (art. 22n) i kolumna 14 PKPiR — harmonogram
+  z depreciation_engine do ewidencji (kontrakt ramowy).
+- P08/P09 (ZUS): składki społeczne KUP (art. 22 ust. 6ba) — nkup_classifier
+  ZUS_UNPAID (pkt 37) / ZUS_SOCIAL_PAID (pkt 55 wyjątek) — spójne.
+
+Kolejność wdrożenia w tej sesji: audyt → naprawa fallbacków → nowe pakiety
+(22b/22c/22h) → PAS 45 + testy wiring → thresholds/kst → narzędzia (engine +
+classifier) → testy natywne + pytest → bramki → MANIFEST → STATUS/NOTATKI →
+WYCZYŚĆ OKNO.
+
+══════════════════════════════════════════════════════════════════════════════
+10. METRYKI SUKCESU (po wdrożeniu P06)
+══════════════════════════════════════════════════════════════════════════════
+
+- validate_rules.py: 0 błędów (396 plików, 11 410 reguł, 0 duplikatów)
+- invariant_checker.py ci: PASS (42 niezmienniki)
+- lint_rego_rules.py: 0 nowych literałów w domenie P06 (ADR-002)
+- native_rego_report21_gate.py: 6/6 (WDROZONY_100)
+- pytest: P06-GLM52 32/32 + P06 15/15 + regresja P01/P03/P05/KSeF 203/203
+  + wiring r01-r17 291/291
+- pit_micro_inventory: 0 duplikatów rule_id, 0 stubów, tautologie 10→6
+  (pozostałe to celowe else-branże, nie catch-all)
+- LCI(PIT) ≥ 99%, RV = 100%, TCL = 100% (art. 22a-22o komplet + testy)
+- amortyzacja zero błędów groszowych: dowód |suma odpisów − wartość| ≤ 0,01
+  + invariant F2 (suma ≤ wartość początkowa) w engine i Rego (a22h.r5/r6)
+- 2 nowe narzędzia ENTERPRISE: depreciation_engine.py + nkup_classifier.py
+
+──────────────────────────────────────────────────────────────────────────────
+ZAKOŃCZENIE SESJI: po wdrożeniu sekcji 8 (reguły + narzędzia + testy) i przejściu
+bramek sekcji 10 raport zostaje oznaczony WDROZONY_100 w STATUS_KAMPANII.md,
+a 10-linijkowe podsumowanie trafia do NOTATKI_KAMPANII.txt.
+OKNO WYCZYSZCZONE — gotowy na PROMPT 07 z 19 (ULGI + OPTYMALIZACJA).

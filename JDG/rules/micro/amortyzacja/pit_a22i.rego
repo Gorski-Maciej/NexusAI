@@ -32,8 +32,8 @@ decide := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 22i ust. 1 PIT",
-    "_warnings": [sprintf("[MICRO] Art.22i PIT: Amortyzacja LINIOWA — stawka %.0f%% rocznie = %.2f PLN/rok (%d rat)", [rate, annual, months])]
+    "_legal_basis": "Art. 22h ust. 1 pkt 1 PIT (metoda liniowa)",
+    "_warnings": [sprintf("[MICRO] Art.22h PIT: Amortyzacja LINIOWA — stawka %.0f%% rocznie = %.2f PLN/rok (%d rat)", [rate, annual, months])]
 } {
     input.invoice.category_code in {"FIXED_ASSET", "MACHINERY", "VEHICLE", "COMPUTER_EQUIPMENT", "OFFICE_EQUIPMENT"}
     initial_value := object.get(input.invoice, "asset_initial_value", 0)
@@ -73,8 +73,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 22i ust. 1-2 PIT + Załącznik nr 1",
-    "_warnings": [sprintf("[MICRO] Art.22i PIT: Stawka KŚT %s: %.0f%% rocznie. Grupa KŚT: %s", [asset_type, rate, kst_group])]
+    "_legal_basis": "Art. 22h ust. 1 PIT + Załącznik nr 1 (stawki KŚT)",
+    "_warnings": [sprintf("[MICRO] Art.22h PIT: Stawka KŚT %s: %.0f%% rocznie. Grupa KŚT: %s", [asset_type, rate, kst_group])]
 } {
     asset_type := object.get(input.invoice, "kst_asset_type", "Maszyny")
     kst_group := object.get(input.invoice, "kst_group", "4")
@@ -92,8 +92,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 22i ust. 2 PIT",
-    "_warnings": [sprintf("[MICRO] Art.22i PIT: Metoda DEGRESYWNA — współczynnik %.1f × stawka %.0f%% = %.0f%% efektywna. Maszyny w grupie 3-6 i 8 KŚT + transport.", [coeff, base_rate, effective_rate])]
+    "_legal_basis": "Art. 22k ust. 1 PIT (metoda degresywna)",
+    "_warnings": [sprintf("[MICRO] Art.22k PIT: Metoda DEGRESYWNA — współczynnik %.1f × stawka %.0f%% = %.0f%% efektywna. Maszyny w grupie 3-6 i 8 KŚT + transport.", [coeff, base_rate, effective_rate])]
 } {
     input.invoice.depreciation_method == "DEGRESSIVE"
     base_rate := object.get(input.invoice, "depreciation_base_rate", 20)
@@ -112,8 +112,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 22i ust. 5 PIT",
-    "_warnings": [sprintf("[MICRO] Art.22i PIT: Degresywna → LINIOWA gdy roczny odpis ≤ odpis liniowy (%.2f PLN). Wartość netto: %.2f PLN.", [linear_annual, net_value])]
+    "_legal_basis": "Art. 22k ust. 3 PIT (przejście na liniową)",
+    "_warnings": [sprintf("[MICRO] Art.22k PIT: Degresywna → LINIOWA gdy roczny odpis ≤ odpis liniowy (%.2f PLN). Wartość netto: %.2f PLN.", [linear_annual, net_value])]
 } {
     input.invoice.depreciation_method == "DEGRESSIVE"
     object.get(input.invoice, "switch_to_linear_triggered", false) == true
@@ -133,8 +133,8 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("Niedozwolony współczynnik %.1f dla grupy KŚT %s. Max: 2.0 (maszyny) / 1.4 (inne).", [coeff, kst_group]),
-    "_legal_basis": "Art. 22i ust. 2 PIT",
-    "_warnings": [sprintf("[MICRO] Art.22i PIT: BLOCK — współczynnik degresywny %.1f > max %.1f dla grupy KŚT %s. Nadwyżka amortyzacji = NKUP!", [coeff, max_coeff, kst_group])]
+    "_legal_basis": "Art. 22k ust. 1-2 PIT",
+    "_warnings": [sprintf("[MICRO] Art.22k PIT: BLOCK — współczynnik degresywny %.1f > max %.1f dla grupy KŚT %s. Nadwyżka amortyzacji = NKUP!", [coeff, max_coeff, kst_group])]
 } {
     coeff := object.get(input.invoice, "degressive_coefficient", 1.0)
     kst_group := object.get(input.invoice, "kst_group", "1")
@@ -154,8 +154,8 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 22i ust. 1 PIT + Załącznik nr 1 (poz. 1-2)",
-    "_warnings": [sprintf("[MICRO] Art.22i PIT: Budynek %s — stawka %.1f%% rocznie (%d lat amortyzacji)", [building_type, rate, years])]
+    "_legal_basis": "Art. 22h ust. 1 PIT + Załącznik nr 1 (poz. 1-2)",
+    "_warnings": [sprintf("[MICRO] Art.22h PIT: Budynek %s — stawka %.1f%% rocznie (%d lat amortyzacji)", [building_type, rate, years])]
 } {
     input.invoice.category_code == "REAL_ESTATE"
     building_type = "mieszkalny" { input.invoice.subtype == "RESIDENTIAL" }
@@ -184,17 +184,4 @@ else := {
     shortened_months := object.get(input.invoice, "shortened_depreciation_months", 60)
 }
 
-# ── Fallback ──────────────────────────────────────────────────────────────────
-else := {
-    "matched": true, "rule_id": "jdg.micro.amort_a22i.fallback",
-    "package": "jdg.micro.amort_a22i", "priority": 81199,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 22i PIT",
-    "_warnings": ["[MICRO] Art.22i PIT — amortyzacja liniowa ze stawką podstawową"]
-} { true }
+# ── Bez fallbacka catch-all (konwencja micro warstwy: brak dopasowania → default no_match).

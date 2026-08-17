@@ -24,6 +24,7 @@
 package jdg.pit.thermo_relief
 
 import data.jdg.helpers
+import data.jdg.thresholds
 
 default decide := {
     "matched": false, "rule_id": "jdg.pit.thermo.no_match",
@@ -252,21 +253,22 @@ else := {
     "priority": 126,
     "pit_form": pit_form,
     "thermo_annual_total_pln": annual_total,
-    "thermo_limit_pln": 53000,
+    "thermo_limit_pln": thermo_limit,
     "thermo_deductible_pln": deductible,
     "thermo_excess_pln": excess,
     "thermo_excess_note": excess_note,
     "_routing": thermo_rt,
-    "_routing_reason": sprintf("Limit termo: %.2f PLN wykorzystane z 53 000 PLN. Do odliczenia: %.2f PLN. Nadwyżka: %.2f PLN.", [annual_total, deductible, excess]),
+    "_routing_reason": sprintf("Limit termo: %.2f PLN wykorzystane z %.0f PLN. Do odliczenia: %.2f PLN. Nadwyżka: %.2f PLN.", [annual_total, thermo_limit, deductible, excess]),
     "_legal_basis": "Art. 26h ust. 1 PIT (limit 53 000 PLN)",
-    "_warnings": [sprintf("ŁĄCZNY LIMIT TERMOMODERNIZACJI: %.2f PLN z 53 000 PLN. Odliczasz: %.2f PLN. %s. PAMIĘTAJ: limit 53k jest NA PODATNIKA (nie na budynek). Małżonkowie osobno wykorzystują swoje limity!",
-        [annual_total, deductible, excess_note])]
+    "_warnings": [sprintf("ŁĄCZNY LIMIT TERMOMODERNIZACJI: %.2f PLN z %.0f PLN. Odliczasz: %.2f PLN. %s. PAMIĘTAJ: limit 53k jest NA PODATNIKA (nie na budynek). Małżonkowie osobno wykorzystują swoje limity!",
+        [annual_total, thermo_limit, deductible, excess_note])]
 } {
     input.thermo_relief_requested == true
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
     annual_total := object.get(input.jdg_entrepreneur, "thermo_expenses_annual_total", 0)
-    deductible := min([annual_total, 53000])
-    excess := max([annual_total - 53000, 0])
+    thermo_limit := object.get(thresholds.pit, "pit_thermo_limit", 53000)
+    deductible := min([annual_total, thermo_limit])
+    excess := max([annual_total - thermo_limit, 0])
     excess_note = sprintf("Nadwyżka %.2f PLN PRZEPADA — nie przechodzi na kolejne lata!", [excess]) { excess > 0 }
     excess_note = "OK — w limicie" { excess == 0 }
 

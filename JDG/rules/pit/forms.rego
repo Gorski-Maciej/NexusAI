@@ -463,7 +463,7 @@ else := {
 what_if_scale_tax(income) = tax {
     threshold := object.get(object.get(object.get(data.thresholds, "jdg", {}), "bounds", {}), "pit_scale_threshold", 120000)
     low := object.get(thresholds.rates, "pit_scale_low", 0.12)
-    high := object.get(thresholds.rates, "pit_scale_high", 0.32)
+    income <= threshold
     tax := round(income * low * 100) / 100
 }
 what_if_scale_tax(income) = tax {

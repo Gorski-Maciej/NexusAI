@@ -138,17 +138,4 @@ else := {
     sale_price := object.get(input.invoice, "amount_net", 0)
 }
 
-# ── Fallback ──────────────────────────────────────────────────────────────────
-else := {
-    "matched": true, "rule_id": "jdg.micro.amort_a22n.fallback",
-    "package": "jdg.micro.amort_a22n", "priority": 81399,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 22n PIT",
-    "_warnings": ["[MICRO] Art.22n PIT — ewidencja ŚT prowadzona prawidłowo"]
-} { true }
+# ── Bez fallbacka catch-all (konwencja micro warstwy: brak dopasowania → default no_match).

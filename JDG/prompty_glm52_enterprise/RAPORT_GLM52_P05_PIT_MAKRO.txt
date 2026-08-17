@@ -1,9 +1,14 @@
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║  RAPORT GLM52 P05 — PIT MAKRO (FORMY / KUP / ZALICZKI / ZEZNANIA) ENTERPRISE  ║
 ║  v9.1 · kampania GLM 5.2 · moduł JDG · silnik reguł podatkowych OPA          ║
+║  STATUS: ✅ WDROZONY_100 (2026-08-17)                                        ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 Plik: JDG/prompty_glm52_enterprise/RAPORT_GLM52_P05_PIT_MAKRO.txt
 Prompt: PROMPT_05_PIT_MAKRO.txt (część 05 z 19)
+WDROŻENIE: 2026-08-17 · validate 0 · invariant CI PASS (42) · RAPORT_21 6/6 ·
+           lint PIT 0 literałów · pytest P05 39/39 · PIT regresja 96/96 ·
+           regresja P01–P04 244/244 · wiring r01–r17 199/199 · MANIFEST+coverage
+           zregenerowane · szczegóły: STATUS_KAMPANII.md + NOTATKI_KAMPANII.txt
 Zakres: warstwa MAKRO PIT — formy opodatkowania (art. 9a, 27, 30c), KUP/NKUP
         (art. 22–23), zaliczki (art. 44), zeznania roczne (art. 45),
         zwolnienia (art. 21) i odliczenia (art. 26), temporalność,

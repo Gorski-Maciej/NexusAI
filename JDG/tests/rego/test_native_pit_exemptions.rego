@@ -48,17 +48,17 @@ test_positive_family_4plus {
 }
 
 # 4. jdg.pit.exemptions.shared_limit_monitor — alert 95% limitu (trigger)
-# 80 000 z 85 528 → ≥ 95% (81 251,60) → TRIAGE_QUEUE
+# 82 000 z 85 528 → 95,9% ≥ 95% (próg 81 251,60) → TRIAGE_QUEUE
 test_positive_shared_limit_alert {
     result := data.jdg.pit.exemptions.decide with input as {
         "pit_exemption_monitor_check": true,
-        "pit_exemption_monitor": {"young_used": 80000, "return_used": 0,
+        "pit_exemption_monitor": {"young_used": 82000, "return_used": 0,
                                   "family_4plus_used": 0, "senior_used": 0}
     }
     result.rule_id == "jdg.pit.exemptions.shared_limit_monitor"
     result.matched == true
     result._routing == "TRIAGE_QUEUE"
-    result.exemption_shared_usage == 80000
+    result.exemption_shared_usage == 82000
     result.exemption_shared_limit == 85528
 }
 
@@ -78,6 +78,6 @@ test_positive_shared_limit_exceeded {
 # 6. jdg.pit.exemptions.no_match — fallback
 test_positive_no_match {
     result := data.jdg.pit.exemptions.decide with input as {}
-    result.matched == true
+    result.matched == false
     result.rule_id == "jdg.pit.exemptions.no_match"
 }

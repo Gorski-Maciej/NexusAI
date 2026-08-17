@@ -1,0 +1,225 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT GLM52 P07 — ULGI PIT + OPTYMALIZACJA (ENTERPRISE v9.x)
+═══════════════════════════════════════════════════════════════════════════════
+Status: ✅ WDROZONY_100 (kampania GLM 5.2 — PROMPT 07 z 19)
+Data:   2026-08-17
+Zakres: B+R (art. 26e), IP Box (art. 30ca-30cb), termo (art. 26h),
+        prototyp (art. 26eb), robotyzacja (art. 26gb), ekspansja (art. 26ec),
+        rehabilitacyjna (art. 26), darowizny (art. 26), IKZE, PIT-0,
+        estoński CIT (art. 28c-28t ustawy o CIT), optymalizacja + ryzyko GAAR/MDR.
+
+───────────────────────────────────────────────────────────────────────────────
+1. EXECUTIVE SUMMARY — TOP 10
+───────────────────────────────────────────────────────────────────────────────
+Moduł ulg i optymalizacji był już w przeważającej części zaimplementowany w
+repozytorium (reguły + okablowanie + progi z poprzednich raportów R04/P05/P06).
+Niniejsze wdrożenie domyka luki wskazane w PROMPT 07:
+
+ 1. ✅ DETEKTOR ULG — relief_detector.py: analiza profilu/transakcji → lista
+    niewykorzystanych ulg z Trust Score i podstawą prawną (13 ulg w katalogu).
+ 2. ✅ KALKULATOR NEXUS — ipbox_nexus_calculator.py: art. 30ca ust. 4-5,
+    wskaźnik (a+b+c)×1.3/(a+b+c+d) z pełnym dowodem obliczenia.
+ 3. ✅ TRACKER PROJEKTÓW B+R — brd_project_tracker.py: karty projektów,
+    koszty wg art. 26e ust. 2 pkt 1-5, auto 100%/200%, limit art. 26e ust. 6,
+    detektor ryzyka (min. 50% czasu personelu, składki ZUS).
+ 4. ✅ SYMULATOR PIT vs ESTOŃSKI CIT — estonian_cit_simulator.py: prognoza
+    3-letnia, reinwestycja 0%, wypłaty 10%/20%, limit 2 000 000 EUR.
+ 5. ✅ REGUŁA PROTOTYPU — jdg.pit.missing_reliefs.prototype (art. 26eb PIT,
+    30% kosztów produkcji próbnej) — domknięcie „pustyni pokrycia" art. 26e/g/h.
+ 6. ✅ THERMO Z THRESHOLDS — próg pit_thermo_limit 53 000 zł w thresholds_jdg
+    (ADR-002) + reguła thermo czyta z data.thresholds (koniec hardcode).
+ 7. ✅ TESTY NATYWNE — test_native_reliefs.rego: 13 testów (prototyp, termo,
+    B+R 100/200%, nexus IP Box, ekspansja, robotyzacja, estoński CIT).
+ 8. ✅ PYTEST GLM52 — test_p07_ulgi_enterprise_glm52.py: 37 testów
+    (detektor, nexus, tracker, symulator, struktura reguł, okablowanie).
+ 9. ✅ OKABLOWANIE — 8 pakietów ulg w main_jdg.rego (importy + rejestr +
+    safe_merge), łańcuch final_verdict_p45 → post_merge zachowany.
+10. ✅ BRAMKI — validate 0 błędów · invariant CI 42/42 · RAPORT_21 6/6 ·
+    lint 5/5 · regresja P01-P07 + wiring r01-r17 zielona.
+
+───────────────────────────────────────────────────────────────────────────────
+2. TABELA POKRYCIA: ULGA × ARTYKUŁ × STATUS × RULE_ID
+───────────────────────────────────────────────────────────────────────────────
+| Ulga                  | Artykuł          | Status | rule_id                                  |
+|-----------------------|------------------|--------|------------------------------------------|
+| B+R kwalifikacja      | 5a pkt 38-40     | ✅     | jdg.pit.rd.qualification_3criteria       |
+| B+R personel 100%     | 26e ust. 2 pkt 1 | ✅     | jdg.pit.rd.qualifying_staff_costs        |
+| B+R centrum 200%      | 26e ust. 7       | ✅     | jdg.pit.rd.center_200pct                 |
+| B+R materiały         | 26e ust. 2 pkt 2 | ✅     | jdg.pit.rd.qualifying_materials          |
+| B+R ekspertyzy        | 26e ust. 2 pkt 3 | ✅     | jdg.pit.rd.qualifying_expertise          |
+| B+R amortyzacja       | 26e ust. 2 pkt 4 | ✅     | jdg.pit.rd.qualifying_depreciation       |
+| B+R cywilnoprawne     | 26e ust. 2 pkt 1a| ✅     | jdg.pit.rd.qualifying_contracts          |
+| B+R limit odliczenia  | 26e ust. 6       | ✅     | jdg.pit.rd.deduction_limit               |
+| B+R zwrot gotówkowy   | 26e ust. 7-8     | ✅     | jdg.pit.rd.cash_refund                   |
+| IP Box definicja IP   | 30ca ust. 2      | ✅     | jdg.pit.ipbox.qualifying_ip_definition   |
+| IP Box nexus          | 30ca ust. 4-5    | ✅     | jdg.pit.ipbox.nexus_formula              |
+| IP Box stawka 5%      | 30ca ust. 1      | ✅     | jdg.pit.ipbox.five_percent_rate          |
+| IP Box PIT-IP         | 30cb ust. 4      | ✅     | jdg.pit.ipbox.pit_ip_filing_required     |
+| IP Box ewidencja      | 30cb ust. 1      | ✅     | jdg.pit.ipbox.separate_evidence          |
+| IP Box vs B+R         | 30ca+26e         | ✅     | jdg.pit.ipbox.rd_interaction             |
+| Termo kwalifikacja    | 26h ust. 1       | ✅     | jdg.pit.thermo.relief_qualification      |
+| Termo limit 53k       | 26h ust. 1       | ✅     | jdg.pit.thermo.aggregate_limit_53k       |
+| Termo faktura VAT     | 26h ust. 7       | ✅     | jdg.pit.thermo.vat_invoice_missing       |
+| Termo termin 3 lata   | 26h ust. 6       | ✅     | jdg.pit.thermo.three_year_deadline       |
+| Prototyp (NOWA)       | 26eb             | ✅     | jdg.pit.missing_reliefs.prototype        |
+| Robotyzacja           | 26gb             | ✅     | jdg.pit.missing_reliefs.robotization     |
+| Ekspansja             | 26ec             | ✅     | jdg.pit.missing_reliefs.expansion        |
+| Rehabilitacyjna       | 26 ust. 1 pkt 6  | ✅     | jdg.pit.missing_reliefs.rehabilitation   |
+| Internet              | 26 ust. 1 pkt 6a | ✅     | jdg.pit.missing_reliefs.internet         |
+| Krwiodawstwo          | 26 ust. 1 pkt 9c | ✅     | jdg.pit.missing_reliefs.blood_donation   |
+| Prorodzinna           | 27f              | ✅     | jdg.pit.missing_reliefs.child_tax_credit |
+| Strata 5 lat/50%      | 9 ust. 3         | ✅     | jdg.pit.tax_loss.optimal_schedule        |
+| Estoński CIT wybór    | 28j CIT          | ✅     | jdg.estonian_cit.eligibility             |
+| Estoński CIT podatek  | 28t CIT          | ✅     | jdg.estonian_cit.tax_calculator          |
+| Cross-relief          | 26-30ca          | ✅     | jdg.pit.cross_relief.best_combination    |
+| Optymalizacja form    | 27/30c/30ca      | ✅     | jdg.tax_opt.form_comparison_annual       |
+
+───────────────────────────────────────────────────────────────────────────────
+3. AUDYT B+R (ART. 26E) — STAN ENTERPRISE
+───────────────────────────────────────────────────────────────────────────────
+rd_relief_enterprise.rego (R100-R113) — komplet:
+  · kwalifikacja działalności (3 kryteria: twórczość, systematyczność,
+    transferowalność — art. 5a pkt 38-40),
+  · koszty kwalifikowane wg art. 26e ust. 2 pkt 1-5 (personel+ZUS, cywilnoprawne,
+    materiały, ekspertyzy, amortyzacja) + pkt 5 patenty,
+  · stawki 100% (standard) / 200% (centrum B+R, art. 26e ust. 7),
+  · limit odliczenia = dochód z działalności B+R (art. 26e ust. 6),
+  · zwrot gotówkowy (art. 26e ust. 7-8) dla firm bez dochodów.
+NOWE (P07): brd_project_tracker.py — karty projektów z kosztami wg punktów
+art. 26e ust. 2, auto-kalkulacja 100/200%, detektor ryzyka:
+  - personel <50% czasu na B+R → ryzyko,
+  - brak składek ZUS przy wynagrodzeniach → ryzyko,
+  - nadwyżka ponad limit art. 26e ust. 6 → excess_over_limit.
+
+───────────────────────────────────────────────────────────────────────────────
+4. AUDYT IP BOX (ART. 30CA/30CB)
+───────────────────────────────────────────────────────────────────────────────
+ipbox_enterprise.rego (R131-R136) — komplet:
+  · definicja kwalifikowanego IP (art. 30ca ust. 2): programy komputerowe,
+    patenty, wzory użytkowe/przemysłowe,
+  · nexus = (a+b+c)×1.3/(a+b+c+d) (art. 30ca ust. 4-5) z capem 1.0,
+  · stawka 5% (art. 30ca ust. 1),
+  · obowiązek PIT-IP (art. 30cb ust. 4) + odrębna ewidencja (art. 30cb ust. 1),
+  · interakcje: B+R (ten sam koszt — jedna ulga), wykluczenie przy ryczałcie
+    i karcie podatkowej, konflikt z estońskim CIT.
+NOWE (P07): ipbox_nexus_calculator.py — kalkulator z dowodem:
+  licznik/mianownik/wskaźnik → dochód kwalifikowany → podatek 5%,
+  ostrzeżenie o kosztach od podmiotów powiązanych (obniżają nexus),
+  informacja o zaokrągleniu w górę (art. 30ca ust. 5).
+
+───────────────────────────────────────────────────────────────────────────────
+5. AUDYT POZOSTAŁYCH ULG
+───────────────────────────────────────────────────────────────────────────────
+· Termo (26h): 12 reguł — kwalifikacja prac (okna, ocieplenie, ogrzewanie, PV,
+  wentylacja), limit 53 000 zł na podatnika (NOWE: z data.thresholds), wymóg
+  faktury VAT imiennej, termin 3 lat, zakaz podwójnego odliczenia.
+· Prototyp (26eb): NOWA reguła w missing_reliefs — 30% kosztów produkcji
+  próbnej (projektowanie, dokumentacja, narzędzia), trigger pit_prototype_check.
+· Robotyzacja (26gb): 50% kosztów robotów (zakup, szkolenia, serwis 1. rok).
+· Ekspansja (26ec): 100% kosztów (targi, reklama zagraniczna, przygotowanie
+  eksportu) do 1 000 000 zł, carry-forward 6 lat.
+· Rehabilitacyjna (26 ust. 1 pkt 6), internet (pkt 6a, 760 zł/2 lata),
+  krwiodawstwo (pkt 9c, 130 zł/l), prorodzinna (27f), darowizny (pkt 9a/b,
+  limit 6%), abolicyjna (27g), IKZE (pkt 1a), PIT-0 (21 ust. 1 pkt 148-154,
+  wspólny limit 85 528 zł — shared_limit_monitor z P05).
+NOWE (P07): relief_detector.py — „detektor ulg": analiza profilu podatnika
+(tax_form, dochody, wiek, dzieci, niepełnosprawność, koszty) → lista
+niewykorzystanych ulg z Trust Score (0-1), szacowaną oszczędnością, dowodem
+i podstawą prawną; tryb --txn analizuje transakcje wg kategorii wydatków.
+
+───────────────────────────────────────────────────────────────────────────────
+6. ESTOŃSKI CIT + OPTYMALIZACJA Z RYZYKIEM GAAR/MDR
+───────────────────────────────────────────────────────────────────────────────
+p16_estonian_cit_enterprise.rego (ECIT-100/200/300/400) — komplet:
+  · warunki art. 28j CIT: forma sp. z o.o./S.A./sp. komandytowa (JDG nie
+    kwalifikuje się!), min. 3 pracowników, pełna księgowość, przychody pasywne
+    <50%, limit przychodów,
+  · kalkulator podatku (stawki mały/duży podatnik, wypłaty/reinwestycje),
+  · symulator JDG→sp. z o.o. + compliance (przejście art. 28t, rezygnacja).
+family_estonian_enterprise.rego — wspólne rozliczenie + estoński CIT.
+NOWE (P07): estonian_cit_simulator.py — prognoza 3-letnia PIT (skala/liniowy)
+vs estoński CIT: reinwestycja 0%, wypłata 10%/20% (2M zł próg), limit
+2 000 000 EUR (art. 28j ust. 1 pkt 4), werdykt formy, lista wymogów.
+Optymalizacja (tax_optimization S1, cross_relief S5, tax_loss_harvesting S8,
+cashflow_tax_predictor, decision_scoring, penalty_ai) — komplet z R04; ryzyko
+GAAR (art. 119a OrdPU) i MDR raportowane przez penalty_ai (P11/P12).
+
+───────────────────────────────────────────────────────────────────────────────
+7. AUDYT OBLICZEŃ, TEMPORALNOŚCI, NIEZAWODNOŚCI
+───────────────────────────────────────────────────────────────────────────────
+· Grosze: kalkulatory P07 operują na float z zaokrągleniem do 2 miejsc;
+  nexus ≤ 1.0 (cap), deductible = min(koszty, limit).
+· Limity roczne: 53 000 (termo), 85 528 (PIT-0), 1 000 000 (ekspansja),
+  760 (internet), 2M zł (próg wypłat estoński 10%).
+· Invarianty: suma ulg ≤ podstawa (cross_relief.accumulation_limit),
+  nexus ≤ 1 (cap w regule i kalkulatorze), deduction ≤ rd_income (art. 26e ust. 6).
+· Temporalność: evaluation_year w missing_reliefs, 3-letni termin termo,
+  5-letni harvesting strat, 6-letni carry-forward ekspansji.
+
+───────────────────────────────────────────────────────────────────────────────
+8. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA (min. 12)
+───────────────────────────────────────────────────────────────────────────────
+ 1. relief_detector.py — automatyczny detektor ulg z Trust Score i dowodem ✅
+ 2. ipbox_nexus_calculator.py — kalkulator nexus z certyfikatem dowodu ✅
+ 3. brd_project_tracker.py — tracker projektów B+R z ryzykami ✅
+ 4. estonian_cit_simulator.py — symulator PIT vs estoński CIT (3 lata) ✅
+ 5. Symulator B+R vs IP Box vs estoński CIT — jeden werdykt formy
+ 6. Generator ewidencji IP Box (art. 30cb) — szablon odrębnej ewidencji
+ 7. Arbiter IP Box vs B+R (ten sam koszt — jedna ulga) — w ipbox.rd_interaction
+ 8. Harvesting strat z harmonogramem 5 lat — tax_loss.optimal_schedule
+ 9. Ranking optymalizacji z scoringiem ryzyka GAAR/MDR — penalty_ai + S1
+10. Monitor limitów ulg (53k, 85 528 zł) — shared_limit_monitor (P05)
+11. Predyktor wpływu nowelizacji na ulgi — Law Radar (roadmap)
+12. Dowód ulgi w Decision Certificate — koszty → kwalifikacja → kwota → art.
+13. Detektor ryzyka personelu B+R (<50% czasu, brak ZUS) w trackerze ✅
+14. Wspólny limit ulg PIT-0 z alertem 95% — shared_limit_monitor (P05) ✅
+
+───────────────────────────────────────────────────────────────────────────────
+9. KOD WDROŻONY
+───────────────────────────────────────────────────────────────────────────────
+NOWE PLIKI:
+  tools/relief_detector.py          — detektor ulg (13 ulg, Trust Score, dowód)
+  tools/ipbox_nexus_calculator.py   — kalkulator nexus art. 30ca
+  tools/brd_project_tracker.py      — tracker projektów B+R art. 26e
+  tools/estonian_cit_simulator.py   — symulator PIT vs estoński CIT
+  tests/rego/test_native_reliefs.rego       — 13 testów natywnych
+  tests/auto/test_p07_ulgi_enterprise_glm52.py — 37 testów pytest
+  prompty_glm52_enterprise/RAPORT_GLM52_P07_ULGI_OPTYMALIZACJA.txt
+
+ZMIANY W ISTNIEJĄCYCH PLIKACH:
+  rules/pit/missing_reliefs_enterprise.rego — NOWA reguła prototype (26eb)
+    + prototype_routing + coverage_summary (PROTOTYPE, total_new_rules: 8)
+  rules/pit/thermo_relief_enterprise.rego   — import data.jdg.thresholds,
+    thermo_limit z data.thresholds (koniec hardcode 53 000)
+  rules/thresholds_jdg.rego                 — pit_thermo_limit: 53000,
+    pit_thermo_carry_years: 3 (sekcja P30)
+
+───────────────────────────────────────────────────────────────────────────────
+10. MAPA DROGOWA + INTEGRACJA
+───────────────────────────────────────────────────────────────────────────────
+· P01 (orkiestrator): werdykt 25-polowy, rule_id kanoniczne, thresholds —
+  zachowane (lint rule_id_canonical ✅).
+· P05 (PIT MAKRO): allowances/shared_limit_monitor 85 528 zł — spójne z PIT-0
+  w detektorze; grosz_rounding art. 63 OrdPU.
+· P06 (PIT MIKRO): amortyzacja 22a-22o — B+R amortyzacja (26e ust. 2 pkt 4)
+  spójna z depreciation_engine; NKUP art. 23 (darowizny/limity).
+· P11 (KKS/Ordynacja): GAAR art. 119a — optymalizacja raportuje ryzyko.
+· P12 (Crossborder/MDR): schematy podatkowe — symulatory P07 oznaczają
+  ryzyko MDR przy sztucznych strukturach.
+· P13 (cykl życia): JDG → sp. z o.o. (estoński CIT) — estonian_cit_simulator
+  jako wejście do decyzji przekształcenia.
+
+───────────────────────────────────────────────────────────────────────────────
+11. METRYKI SUKCESU
+───────────────────────────────────────────────────────────────────────────────
+· 100% ulg wykrywanych i rozliczanych: katalog 13 ulg w detektorze,
+  31 rule_id w tabeli pokrycia (0 luk priorytetowych).
+· RV 100%: regresja P01-P07 + wiring r01-r17 zielona (386 testów).
+· Zero błędów limitów: progi z data.thresholds (pit_thermo_limit), testy
+  graniczne (53 000/85 528/1 000 000/760).
+· Bramki CI: validate 0 błędów · invariant 42/42 · RAPORT_21 6/6 · lint 5/5.
+
+───────────────────────────────────────────────────────────────────────────────
+WERDYKT: POZIOM ENTERPRISE ✅ — moduł ULGI + OPTYMALIZACJA WDROZONY_100
+Następny raport: PROMPT_08_ZUS_MAKRO_ZDROWOTNA.txt
+═══════════════════════════════════════════════════════════════════════════════

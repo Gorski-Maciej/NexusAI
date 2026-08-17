@@ -121,7 +121,8 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# P582: pit_exemption_return {
+# P582: pit_exemption_return — Ulga na powrót (art. 21 ust. 1 pkt 152 PIT)
+else := {
     "matched": true, "rule_id": "jdg.pit.exemptions.return",
     "package": "jdg.pit.exemptions", "priority": 582,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
@@ -162,7 +163,6 @@ else := {
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
     cum := object.get(input.jdg_entrepreneur, "cumulative_income_current_year", 0)
     cum > thresholds.pit.pit_relief_shared_limit
-}
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -207,7 +207,6 @@ else := {
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
     cum := object.get(input.jdg_entrepreneur, "cumulative_income_current_year", 0)
     cum > thresholds.pit.pit_relief_shared_limit
-}
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

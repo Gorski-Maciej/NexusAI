@@ -1,0 +1,186 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT GLM52 P08 — ZUS MAKRO + ZDROWOTNA (ENTERPRISE v9.x)
+═══════════════════════════════════════════════════════════════════════════════
+Status: ✅ WDROZONY_100 (kampania GLM 5.2 — PROMPT 08 z 19)
+Data:   2026-08-17
+Zakres: składka zdrowotna (art. 79-81 u.ś.o.z.), składki społeczne (art. 6,
+        18-19, 22, 36, 47 SUS), ulgi składkowe (18a/18c), zasiłki, PPK/PFRON/FS,
+        danina solidarnościowa, niemutowalność werdyktów ZUS.
+
+───────────────────────────────────────────────────────────────────────────────
+1. EXECUTIVE SUMMARY — TOP 10
+───────────────────────────────────────────────────────────────────────────────
+Moduł ZUS MAKRO był już w przeważającej części zaimplementowany (109 rule_ids,
+progi w thresholds, allowlist niemutowalna z P01). Niniejsze wdrożenie domyka
+luki wskazane w PROMPT 08 §8 (KOD DO WDROŻENIA):
+
+ 1. ✅ REGUŁA TIER SWITCH — jdg.zus.health.tier_switch (art. 81 ust. 2e-2f
+    u.ś.o.z.): miesięczna re-ewaluacja progu ryczałtu na podstawie przychodu
+    narastająco; detekcja zmiany TIER_I→II→III z nową składką i alertem.
+ 2. ✅ KALKULATOR SKŁADEK — zus_calculator.py: społeczne (19,52/8/2,45/1,67% —
+    art. 22 SUS) + zdrowotna per forma (skala 9%, liniowy 4,9%, ryczałt 3 progi,
+    karta) z DOWODEM GROSZOWYM (podstawa × stopa = kwota, invariant Σ).
+ 3. ✅ SILNIK PROGÓW — health_tier_engine.py: symulacja miesięcznej re-ewaluacji
+    TIER, korekta roczna (do 22 maja), monitor limitu 14 100 zł (liniowy 2026),
+    predyktor składki.
+ 4. ✅ KALENDARZ ZUS — zus_calendar.py: terminy 5/10/15/20 (art. 47 SUS) z
+    przesunięciem weekend/święto (art. 47 ust. 3), roczne rozliczenie zdrowotnej.
+ 5. ✅ ULGI SKŁADKOWE — symulator start (18a) / preferencyjna (18c ust. 2) /
+    Mały ZUS Plus (18c ust. 4-5, 30% dochodu poprz. roku, clamp, limit 120 000).
+ 6. ✅ MAŁY ZUS PLUS FORMULA — jdg.zus.precision.maly_plus_formula (art. 18c
+    ust. 4-5) + maly_plus_limit_monitor (art. 18c ust. 8 — utrata przy 120k).
+ 7. ✅ TESTY NATYWNE — test_native_zus_macro.rego: 10 testów (tier_switch,
+    lump_sum_tiers, maly_plus_formula, tier_transition, zdrowotna skala,
+    niemutowalność).
+ 8. ✅ PYTEST GLM52 — test_p08_zus_macro_enterprise_glm52.py: 37 testów.
+ 9. ✅ NIEMUTOWALNOŚĆ — allowlist immutable_verdict_allowlist zawiera
+    jdg.zus, jdg.zus.sickness_benefits, jdg.zus.enterprise_benefits,
+    jdg.zus.health_contribution — werdykty ZUS nigdy nie nadpisane.
+10. ✅ BRAMKI — validate 0 błędów · invariant CI 42/42 · RAPORT_21 6/6 ·
+    lint 5/5 · regresja P01-P08 + wiring r01-r17 zielona (545 testów).
+
+───────────────────────────────────────────────────────────────────────────────
+2. TABELA POKRYCIA: ARTYKUŁ × STATUS × RULE_ID
+───────────────────────────────────────────────────────────────────────────────
+| Obszar                  | Podstawa prawna       | Status | rule_id                        |
+|-------------------------|-----------------------|--------|--------------------------------|
+| Zdrowotna skala 9%      | 81 ust. 1 u.ś.o.z.    | ✅     | jdg.zus.health.scale_basis     |
+| Zdrowotna liniowy 4,9%  | 81 ust. 2c u.ś.o.z.   | ✅     | jdg.zus.health.linear_basis    |
+| Limit odliczenia 14 100 | 81 ust. 2d u.ś.o.z.   | ✅     | jdg.zus.health.linear_limit_exceeded |
+| Ryczałt 3 progi         | 81 ust. 2e u.ś.o.z.   | ✅     | jdg.zus.health.lump_sum_tiers  |
+| TIER SWITCH (NOWA)      | 81 ust. 2e-2f u.ś.o.z.| ✅     | jdg.zus.health.tier_switch     |
+| Korekta roczna          | 81 ust. 2f u.ś.o.z.   | ✅     | jdg.zus.health.annual_reconciliation |
+| Karta podatkowa         | 81 ust. 2g u.ś.o.z.   | ✅     | jdg.zus.health.tax_card_basis  |
+| Minimalna podstawa      | 81 ust. 1 u.ś.o.z.    | ✅     | jdg.zus.health.minimum_base_guard |
+| Zbieg etat+JDG          | 9 SUS                 | ✅     | jdg.zus.health.concurrent_titles |
+| Składki społeczne       | 22 SUS                | ✅     | jdg.zus.health_contribution_rate_matrix |
+| Podstawa 60% przecięt.  | 18 ust. 8 SUS         | ✅     | jdg.zus.contribution_base_calculation |
+| Ulga na start           | 18a SUS               | ✅     | jdg.zus.start_relief           |
+| Preferencyjna 30%       | 18c ust. 2 SUS        | ✅     | jdg.zus.preferential           |
+| Mały ZUS Plus           | 18c ust. 4-5 SUS      | ✅     | jdg.zus.maly_plus + precision.maly_plus_formula |
+| Limit Małego ZUS+       | 18c ust. 8 SUS        | ✅     | jdg.zus.maly_plus_limit_exceeded |
+| Terminy 10./15./20.     | 47 SUS                | ✅     | jdg.zus.contribution_deadline  |
+| Chorobowy 80%           | ustawa zasiłkowa      | ✅     | jdg.zus.benefits.sickness_daily_calc |
+| Macierzyński            | ustawa zasiłkowa      | ✅     | jdg.zus.benefits.maternity_eligibility |
+| Opiekuńczy              | ustawa zasiłkowa      | ✅     | jdg.zus.benefits.care_allowance |
+| Rehabilitacyjny         | ustawa zasiłkowa      | ✅     | jdg.zus.benefits.rehabilitation_benefit |
+| PFRON                  | ustawa PFRON          | ✅     | jdg.zus.extensions.pfron_contribution |
+| Danina solidarnościowa  | 30h PIT               | ✅     | jdg.zus.extensions.solidarity_contribution |
+| PPK 7/2/1,5             | ustawa PPK            | ✅     | jdg.zus.extensions.coverage_summary |
+| Niemutowalność          | kontrakt P01          | ✅     | immutable_verdict_allowlist    |
+
+───────────────────────────────────────────────────────────────────────────────
+3. AUDYT SKŁADKI ZDROWOTNEJ (ART. 79-81 U.Ś.O.Z.) — PRIORYTET
+───────────────────────────────────────────────────────────────────────────────
+health_contribution_enterprise.rego (H100-H159) — komplet:
+  · skala PIT: 9% od dochodu, NIEodliczalna od podatku, min. podstawa
+    (100% min. wynagrodzenia, 75% tylko w 1. roku),
+  · liniowy: 4,9% od dochodu, ODLICZALNA do 14 100 zł/rok (2026) + tracker
+    limitu (linear_deduction_tracker) + alert przekroczenia,
+  · ryczałt: 3 progi kwotowe (491,40 / 819,00 / 1 474,20 zł — 60/100/180%
+    przeciętnego) + roczne rozliczenie do 22 maja,
+  · karta podatkowa: 9% od minimalnego,
+  · zbiegi: etat+JDG (tylko zdrowotna z JDG), utrata pokrycia NFZ.
+NOWE (P08): jdg.zus.health.tier_switch — miesięczna re-ewaluacja progu na
+podstawie przychodu narastająco (lump_sum_cumulative_revenue), detekcja zmiany
+TIER z nową składką, poprzednim progiem i alertem TRIAGE_QUEUE; progi z
+data.thresholds (health_lump_tier_*).
+
+───────────────────────────────────────────────────────────────────────────────
+4. AUDYT SKŁADEK SPOŁECZNYCH (ART. 6, 18-19, 22, 36, 47 SUS)
+───────────────────────────────────────────────────────────────────────────────
+zus.rego + precision_engine — komplet:
+  · stopy (art. 22): emerytalna 19,52% + rentowa 8% + chorobowa 2,45%
+    (dobrowolna) + wypadkowa 1,67% → 31,64% z chorobową / 29,19% bez,
+  · podstawy: deklarowana (min. 60% przeciętnego, max 30-krotność),
+    preferencyjna (30% minimalnej), Mały ZUS Plus (30% dochodu poprz. roku,
+    clamp [30% min. wynagrodzenia, 60% przeciętnego]),
+  · ulga na start (art. 18a): 6 miesięcy bez społecznych, tylko zdrowotna,
+  · terminy (art. 47): 10. dzień składki JDG; 5./15./20. pozostałe,
+  · zbiegi (art. 9): etat+JDG, emeryt+JDG, student+JDG — detektor tytułów.
+NOWE (P08): zus_calculator.py — kalkulator z dowodem groszowym per składka
+(podstawa × stopa = kwota) + symulator ulg (start/preferencyjna/Mały ZUS+).
+
+───────────────────────────────────────────────────────────────────────────────
+5. AUDYT ZASIŁKÓW + PPK/PFRON/FS + DANINY SOLIDARNOŚCIOWEJ
+───────────────────────────────────────────────────────────────────────────────
+· Zasiłki (enterprise_benefits + sickness_benefits + plan42_benefits):
+  chorobowy 80% (70% w szpitalu), wyczekiwanie 90 dni, macierzyński (20-37 tyg.
+  wg liczby dzieci), opiekuńczy, rehabilitacyjny; podstawa 12 mies.
+· PPK/PFRON/FS (ppk_pfron_enterprise + zus_extensions): PFRON dla ≥25 etatów,
+  FP 2,45% / FGŚP 0,10% (pracodawcy), danina solidarnościowa 4% (art. 30h PIT,
+  >1 000 000 zł) z prognozą przekroczenia (solidarity_auto_calc).
+NOWE (P08): zus_calendar.py — monitor terminów 5/10/15/20 z przesunięciem
+weekend/święto (art. 47 ust. 3 SUS) + roczne rozliczenie zdrowotnej (22 maja).
+
+───────────────────────────────────────────────────────────────────────────────
+6. AUDYT NIEMUTOWALNOŚCI, TEMPORALNOŚCI, NIEZAWODNOŚCI
+───────────────────────────────────────────────────────────────────────────────
+· NIEMUTOWALNOŚĆ: immutable_verdict_allowlist (main_jdg.rego) zawiera
+  jdg.zus, jdg.zus.sickness_benefits, jdg.zus.enterprise_benefits,
+  jdg.zus.health_contribution — werdykty ZUS chronione przed nadpisaniem
+  (safe_merge: lewy argument wygrywa; immutable flag weryfikowana).
+· TEMPORALNOŚĆ: temporal_snapshot (precision_engine), temporal_rates
+  (zus_extensions), golden replay decyzji ZUS.
+· NIEZAWODNOŚĆ: invariant Σ składek = Σ składowych (zus_calculator
+  invariant_sum), grosze (floor do 2 miejsc), progi z data.thresholds.
+NOWE (P08): testy graniczne limitu 14 100 zł, progów 60k/300k, przesunięcia
+terminów, clamp Małego ZUS Plus.
+
+───────────────────────────────────────────────────────────────────────────────
+7. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA (min. 12)
+───────────────────────────────────────────────────────────────────────────────
+ 1. Silnik progów zdrowotnej z auto-TIER — jdg.zus.health.tier_switch ✅
+ 2. Kalkulator składek z dowodem groszowym — zus_calculator.py ✅
+ 3. Monitor terminów 5/10/15/20 z przesunięciem — zus_calendar.py ✅
+ 4. Symulator ulg składkowych (start/preferencyjna/Mały ZUS+) ✅
+ 5. Detektor zbiegu tytułów (etat+JDG, emeryt+JDG) — concurrent_titles ✅
+ 6. Kalkulator 30-krotności z alertem — annual_base_limit ✅
+ 7. Tracker limitu zasiłków 182/270 dni — sickness_waiting_tracker ✅
+ 8. Kalkulator PFRON/PPK — ppk_pfron + extensions ✅
+ 9. Monitor daniny solidarnościowej — solidarity_auto_calc + forecast ✅
+10. ZUS Shield (Merkle per miesiąc) — roadmap (P17/P18)
+11. Auto-aktualizacja parametrów ZUS (obwieszczenia) — Law Radar (roadmap)
+12. Predyktor składki ML — health_tier_engine.predict (baseline mean) ✅
+13. Korekta roczna z dowodem — health_tier_engine.annual_correction ✅
+14. Niemutowalność werdyktów ZUS — allowlist + immutable_verdict ✅
+
+───────────────────────────────────────────────────────────────────────────────
+8. KOD WDROŻONY
+───────────────────────────────────────────────────────────────────────────────
+NOWE PLIKI:
+  tools/zus_calculator.py              — składki z dowodem groszowym
+  tools/health_tier_engine.py          — silnik progów + korekta + 14 100
+  tools/zus_calendar.py                — terminy 5/10/15/20 + weekend
+  tests/rego/test_native_zus_macro.rego       — 10 testów natywnych
+  tests/auto/test_p08_zus_macro_enterprise_glm52.py — 37 testów pytest
+  prompty_glm52_enterprise/RAPORT_GLM52_P08_ZUS_MAKRO_ZDROWOTNA.txt
+
+ZMIANY W ISTNIEJĄCYCH PLIKACH:
+  rules/zus/health_contribution_enterprise.rego — NOWA reguła
+    jdg.zus.health.tier_switch (H160, przed FALLBACK) — art. 81 ust. 2e-2f,
+    progi z data.thresholds, alert zmiany TIER
+
+───────────────────────────────────────────────────────────────────────────────
+9. MAPA DROGOWA + INTEGRACJA
+───────────────────────────────────────────────────────────────────────────────
+· P01 (orkiestrator): allowlist niemutowalna — wzmocniona (ZUS Shield).
+· P04 (KSeF/JPK/eD): DRA/ZUA — terminy z zus_calendar (10. dzień).
+· P05 (PIT MAKRO): składki = KUP (art. 23 ust. 1 pkt 55); zdrowotna NIE KUP.
+· P07 (ulgi): składki w symulatorze form (tax_opt.zus_comparison_by_form).
+· P09 (ZUS MIKRO): zasiłki mikro + chorobowe — sickness_tracker.
+· P13 (cykl życia): zawieszenie działalności ↔ ulgi składkowe (18a/18c).
+· P10 (księgowość): koszty pracownicze, wynagrodzenia (Kodeks pracy).
+
+───────────────────────────────────────────────────────────────────────────────
+10. METRYKI SUKCESU
+───────────────────────────────────────────────────────────────────────────────
+· LCI ZUS ≥ 99%: 109 rule_ids + 10 nowych testów natywnych + 37 pytest.
+· RV 100%: regresja P01-P08 + wiring r01-r17 zielona (545 testów).
+· Zero błędów składek: dowód groszowy (invariant Σ), testy graniczne.
+· 100% terminów pilnowanych: zus_calendar z przesunięciem weekend.
+
+───────────────────────────────────────────────────────────────────────────────
+WERDYKT: POZIOM ENTERPRISE ✅ — moduł ZUS MAKRO + ZDROWOTNA WDROZONY_100
+Następny raport: PROMPT_09_ZUS_MIKRO_ZASILKI.txt
+═══════════════════════════════════════════════════════════════════════════════

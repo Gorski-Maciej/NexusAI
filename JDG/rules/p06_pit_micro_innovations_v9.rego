@@ -99,7 +99,9 @@ kst_groups := {
     "5": {"name": "Maszyny i urządzenia specjalistyczne", "rate": 0.20, "note": "20% (do 25%)"},
     "6": {"name": "Urządzenia techniczne", "rate": 0.18, "note": "18%"},
     "7": {"name": "Środki transportu", "rate": 0.20, "note": "samochody 20% (art. 22k limity)"},
-    "8": {"name": "Narzędzia, przyrządy, wyposażenie", "rate": 0.20, "note": "20%"}
+    "8": {"name": "Narzędzia, przyrządy, wyposażenie", "rate": 0.20, "note": "20%"},
+    "9": {"name": "Inwentarz żywy", "rate": 0.20, "note": "20% (bydło, konie; 25% wybrane stada — załącznik nr 1 poz. 4-8)"},
+    "10": {"name": "Inwentarz martwy", "rate": 0.20, "note": "20% (załącznik nr 1 poz. 9)"}
 }
 
 # ── KALKULATOR PEŁNEJ AMORTYZACJI (Sekcja 2 genius) ───────────────────────────

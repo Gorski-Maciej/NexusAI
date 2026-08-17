@@ -137,4 +137,3 @@ build_expiry_warnings(expiring, oldest, renewal) = warnings {
     expiring > 0
     warnings := [sprintf("⚠️ %d pełnomocnictw wygaśnie za %d dni — zaplanuj odnowienie.", [expiring, oldest])]
 } else = ["✅ Wszystkie pełnomocnictwa ważne >30 dni."]
-}

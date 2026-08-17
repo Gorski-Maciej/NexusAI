@@ -91,6 +91,7 @@ decide := {
     # v7.0 NOTE: Rozważ flagę nowego podmiotu → Faza 3
     ksef_phase = "2" { annual_turnover == 0; monthly_avg == 0 }
     ksef_from = thresholds.vat.ksef_mandatory_from { annual_turnover == 0; monthly_avg == 0 }
+}
 
 # ══════ P952: ksef_b2c_mandatory_2026 — KSeF B2C obowiązkowy od 2026-07-01 (v7.0 NEW) ══════
 # Raport v7.0 LUKA: KSeF B2C NIEOBSŁUŻONE. Teraz obowiązkowe od 2026-07-01.

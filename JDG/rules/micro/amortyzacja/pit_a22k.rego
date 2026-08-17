@@ -139,17 +139,4 @@ else := {
     excess := used_total - de_minimis_limit
 }
 
-# ── Fallback ──────────────────────────────────────────────────────────────────
-else := {
-    "matched": true, "rule_id": "jdg.micro.amort_a22k.fallback",
-    "package": "jdg.micro.amort_a22k", "priority": 81299,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 22k PIT",
-    "_warnings": ["[MICRO] Art.22k PIT — amortyzacja standardowa (liniowa/degresywna)"]
-} { true }
+# ── Bez fallbacka catch-all (konwencja micro warstwy: brak dopasowania → default no_match).

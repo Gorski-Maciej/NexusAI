@@ -87,7 +87,6 @@ build_queue_warnings(total, age, remaining, approaching) = warnings {
         sprintf("   Najstarsza: %d godz. | Pozostało: %d godz. do deadline", [age, remaining]),
     ]
 } else = ["✅ Kolejka offline pusta — wszystkie faktury wysłane."]
-}
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # KOL-2275: PRIORITY-BASED DISPATCH — Priorytetyzacja wysyłki po przywróceniu

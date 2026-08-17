@@ -51,9 +51,6 @@ else :=   {"matched":true,"rule_id":"jdg.tax_trans.r8","package":"jdg.micro.tax_
     object.get(input.invoice, "vehicle_weight_kg", 0) > 3500
 }
 
-    true
-}
-
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  L-TR-1: Progi DMC i stawki podatku transportowego (6 reguł) P24          ║
 # ║  Legal basis: Art. 8-13 ustawy o podatkach i opłatach lokalnych            ║

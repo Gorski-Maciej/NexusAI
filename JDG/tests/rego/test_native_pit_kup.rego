@@ -55,7 +55,7 @@ test_positive_full_deductible {
 # 5. jdg.pit.kup.no_match — fallback
 test_positive_no_match {
     result := data.jdg.pit.kup.decide with input as {}
-    result.matched == true
+    result.matched == false
     result.rule_id == "jdg.pit.kup.no_match"
 }
 

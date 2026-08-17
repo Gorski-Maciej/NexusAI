@@ -195,17 +195,6 @@ else := {
     improvement > 0
 }
 
-# ── Fallback ──────────────────────────────────────────────────────────────────
-else := {
-    "matched": true, "rule_id": "jdg.micro.amort_a22a.fallback",
-    "package": "jdg.micro.amort_a22a", "priority": 81099,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 22a PIT",
-    "_warnings": ["[MICRO] Art.22a PIT — składnik nie spełnia definicji ŚT. Księguj jako KUP jednorazowe."]
-} { true }
+# ── Bez fallbacka catch-all (konwencja micro warstwy: brak dopasowania → default no_match).
+# Składnik niespełniający definicji ŚT (art. 22a) nie produkuje werdyktu — makro KUP
+# (kup.rego) obsługuje go jako wydatek; nie przejmujemy no_match (INV-018, wzorzec P03-P05).

@@ -82,6 +82,12 @@ robotization_routing(costs) := "TRIAGE_QUEUE" if {
     costs <= 200000
 }
 
+prototype_routing(costs) := "TRIAGE_QUEUE" if {
+    costs > 100000
+} else := "" if {
+    costs <= 100000
+}
+
 # Active loss carry-forward. It is evaluated only when at least one loss field
 # is present and positive; normal PIT traffic remains no_match.
 decide := {
@@ -327,6 +333,34 @@ else := {
 
 else := {
     "matched": true,
+    "rule_id": "jdg.pit.missing_reliefs.prototype",
+    "package": "jdg.pit.missing_reliefs",
+    "priority": 695,
+    "recommendation_only": true,
+    "requires_documentation": true,
+    "evaluation_year": evaluation_year(input),
+    "relief_type": "PROTOTYPE",
+    "relief_percent": prototype_rate * 100,
+    "relief_total_qualified": total_qualified,
+    "relief_deductible": total_qualified * prototype_rate,
+    "_routing": prototype_routing(total_qualified),
+    "_routing_reason": sprintf("Ulga na prototyp: %.2f PLN kosztów produkcji próbnej; odliczenie %.2f PLN.", [total_qualified, total_qualified * prototype_rate]),
+    "_legal_basis": "Art. 26eb PIT",
+    "_warnings": ["Ulga na prototyp — koszty produkcji próbnej nowego produktu; wymagane: odrębna ewidencja, faktury, potwierdzenie wprowadzenia do oferty (prototyp wdrożony do produkcji)."]
+} if {
+    input.pit_prototype_check == true
+    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    form_allows_relief(pit_form)
+    trial_production := max([0, object.get(input.jdg_entrepreneur, "prototype_trial_production_costs", 0)])
+    prototype_documentation := max([0, object.get(input.jdg_entrepreneur, "prototype_documentation_costs", 0)])
+    prototype_tools := max([0, object.get(input.jdg_entrepreneur, "prototype_tools_costs", 0)])
+    total_qualified := trial_production + prototype_documentation + prototype_tools
+    total_qualified > 0
+    prototype_rate := object.get(thresholds.pit, "prototype_relief_rate", 0.30)
+}
+
+else := {
+    "matched": true,
     "rule_id": "jdg.pit.missing_reliefs.robotization",
     "package": "jdg.pit.missing_reliefs",
     "priority": 700,
@@ -370,9 +404,10 @@ else := {
         "BLOOD_DONATION": "income-limited",
         "CHILD_TAX_CREDIT": "scale-only",
         "EXPANSION": "cost and legal-condition audit",
+        "PROTOTYPE": "trial-production cost audit",
         "ROBOTIZATION": "qualified-cost audit"
     },
-    "total_new_rules": 7,
+    "total_new_rules": 8,
     "generated_from": "RAPORT_04_PIT_CORE.txt",
     "_routing": "",
     "_routing_reason": "Jawne podsumowanie pokrycia raportu 04.",

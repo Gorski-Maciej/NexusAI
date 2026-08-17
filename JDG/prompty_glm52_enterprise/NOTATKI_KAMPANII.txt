@@ -86,3 +86,121 @@ P04 — KSeF / JPK / e-DEKLARACJE / GTU / WIS / e-DORĘCZENIA — WDROZONY_100
 ✅ Bramki: validate 0 · invariants 42/42 · RAPORT_21 6/6
 ⚠️ Uwaga: weryfikacja 3-drożna KSeF = faktury sprzedażowe (ksef_vat_due)
 ⚠️ Do naprawy w P05+: konflikty micro.ord / micro.pcc / micro.ceidg (wzorzec P03/P04)
+
+════════════════════════════════════════════════════════════════
+P05 — PIT MAKRO (FORMY / KUP / ZALICZKI / ZEZNANIA) — WDROZONY_100
+════════════════════════════════════════════════════════════════
+✅ 5 nowych reguł trigger-owych: what_if_recommendation (INN-06, P535),
+   grosz_rounding art. 63 OrdPU (INN-03, P558), quarterly_due_dates
+   (INN-07, P558b), annual_limits_monitor (INN-04, P573),
+   shared_limit_monitor PIT-0 85 528 zł + alert 95% (INN-05, P589)
+✅ PAS 44: warstwa MIKRO PIT wpięta (pit.rego ~22,7k linii; konflikt 3×
+   default → plan33/plan34 podpakiet — wzorzec P03/P04)
+✅ thresholds: 6 nowych progów (advance_due_day, advance_grosz_rounding,
+   quarterly_advance_due_months, annual_return_pit36/pit28_deadline,
+   exemption_shared_limit_alert_pct) + card_tax_estimation_pct,
+   zus_social_as_kup (kontrakt P08)
+✅ Narzędzia v2: pit_annual_engine.py (degresja kwoty zmniejszającej
+   art. 27, zaokrąglenia art. 63, PIT-28 per PKWiU 2-17%, settlement
+   nadpłata/zwrot 45 dni / niedopłata+odsetki 14,5%, verify groszowy)
+   + form_simulator.py (simulate_3y prognoza + health_impact 9%/4,9%/progi)
+✅ Testy: test_native_pit_advances.rego (9) + test_native_pit_exemptions.rego
+   (6) NOWE + forms/kup (+6) · pytest GLM52 P05: 39/39
+✅ Bramki: validate 0 · invariant 42 PASS · RAPORT_21 6/6 · lint PIT 0
+   literałów · regresja P01-P04 244/244 · wiring r01-r17 199/199
+🔧 NAPRAWY (błędy składniowe blokujące opa check rules/): exemptions.rego
+   (brak else:= P582 + 2× extra brace), guard income<=threshold w
+   what_if_scale_tax (zwracał set), stale wiring tests p42/p43→p44
+   (17 plików), 4 pliki niezbalansowane: ksef_jpk, ksef_offline_queue,
+   plan33_tax_trans, poa_manager
+⚠️ CI opa check/test nadal wymaga OPA 1.x (lokalna 0.68 nie parsuje
+   wzorca "x = val { body }" — repo celuje w CI latest)
+NASTĘPNY: PROMPT_06_PIT_MIKRO_AMORTYZACJA.txt (PIT mikro + amortyzacja
+art. 22a-22o + NKUP) — konflikty micro.pit już naprawione w P05 (PAS 44)
+
+════════════════════════════════════════════════════════════════
+P06 — PIT MIKRO + AMORTYZACJA + NKUP — WDROZONY_100
+════════════════════════════════════════════════════════════════
+✅ PAS 45: warstwa AMORTYZACJI MIKRO wpięta do orkiestratora (7 pakietów:
+   a22a/a22b/a22c/a22h/a22i/a22k/a22n; final_verdict_p45, post_merge p44→p45,
+   importy + rejestr; wcześniej 4 pakiety = martwy kod)
+✅ NAPRAWA P0: fallbacki else { true } w a22a/i/k/n przejmowały no_match dla
+   KAŻDEGO inputu (matched:true) — usunięte (konwencja micro INV-018,
+   wzorzec pit/vat/jpk); tautologie domeny P06: 10 → 6
+✅ NOWE pakiety atomowe: art. 22b WNiP (6 reguł), 22c wyłączenia (6 reguł),
+   22h zasady odpisów + invariant F2 suma≤wartość (6 reguł) — mapa 22a-22o
+   domknięta, zero „pustyni pokrycia"
+✅ Korekta _legal_basis: degresywna w a22i błędnie art. 22i → art. 22k ust.
+   1-3; liniowa → art. 22h ust. 1 pkt 1 (zgodnie z ustawą PIT)
+✅ KŚT komplet: kst_groups 0-10 (+9 inwentarz żywy, +10 inwentarz martwy)
+   + thresholds.depreciation.kst_rates (ADR-002)
+✅ NOWE narzędzia: tools/depreciation_engine.py (harmonogram liniowy/de-
+   gresywny miesięcznie, limity 100k EUR/2M EUR/150k-225k/10k, dowód groszo-
+   wy |suma−wartość|≤0,01, invariant F2) + tools/nkup_classifier.py (wydatek
+   → punkt art. 23, 13 typów, SUGGEST dla wątpliwych)
+✅ 8 nowych progów thresholds.depreciation (one_time_eur, small_taxpayer 2M
+   EUR, low_value 10k, degressive 2.0/1.4, wnip 5 lat, kst_rates)
+✅ Testy: test_native_amortyzacja.rego (18) + test_native_pit_micro.rego (5)
+   + pytest GLM52 P06 (32); usunięty USZKODZONY test_native_micro_amortyzacja
+   (auto-generat: sprzeczne asercje positive/negative na input {})
+✅ Bramki: validate 0 (396/11 410) · invariant 42 PASS · RAPORT_21 6/6 ·
+   lint P06 0 · pytest 203 regresja + 291 wiring (p45) · inventory 0 dup/0 stub
+⚠️ KŚT auditor (pit_micro_amortization_auditor) szuka stawek tylko w pit.rego
+   — pełna tabela stawek jest w kst_groups (v9) + thresholds.kst_rates (narzę-)
+   dzie do rozbudowy w P18; CI opa wymaga OPA 1.x (lokalna 0.68 nie parsuje
+   wzorca "x = val { body }" — repo celuje w CI latest)
+NASTĘPNY: PROMPT_07_ULGI_OPTYMALIZACJA.txt (ulgi B+R, IP Box, termo,
+optymalizacja — relief registry/stacking guard już w p05/p06 innovations)
+
+[P07] ULGI PIT + OPTYMALIZACJA — WDROZONY_100 (2026-08-17)
+✅ NOWE narzędzia (wymagane w PROMPT 07, KOD DO WDROŻENIA §9):
+   tools/relief_detector.py — detektor 13 ulg (B+R, IP Box, termo, prototyp,
+   robotyzacja, ekspansja, rehab, internet, krew, dziecko, IKZE, PIT-0,
+   abolicyjna) z Trust Score 0-1, szacowaną oszczędnością, dowodem i
+   podstawą prawną; tryb --txn (transakcje → kategorie ulg)
+✅ tools/ipbox_nexus_calculator.py — nexus (a+b+c)×1.3/(a+b+c+d) art. 30ca
+   ust. 4-5 z certyfikatem dowodu (licznik/mianownik/wskaźnik → dochód
+   kwalifikowany → 5%); cap 1.0; alert o kosztach od podmiotów powiązanych
+✅ tools/brd_project_tracker.py — karty projektów B+R: koszty wg art. 26e
+   ust. 2 pkt 1-5, auto 100%/200% (centrum), limit art. 26e ust. 6,
+   detektor ryzyka (personel <50% czasu, brak ZUS)
+✅ tools/estonian_cit_simulator.py — prognoza 3-letnia PIT skala/liniowy vs
+   estoński CIT: reinwestycja 0%, wypłaty 10%/20% (próg 2M zł), limit
+   2 000 000 EUR (art. 28j ust. 1 pkt 4), werdykt formy + wymogi
+✅ NOWA reguła jdg.pit.missing_reliefs.prototype (art. 26eb, 30% produkcji
+   próbnej) + prototype_routing — domknięcie pustyni pokrycia art. 26e/g/h;
+   coverage_summary: PROTOTYPE + total_new_rules 8
+✅ Thermo z data.thresholds: import + pit_thermo_limit 53 000 w
+   thresholds_jdg (ADR-002) — koniec hardcode; + pit_thermo_carry_years 3
+✅ Testy: test_native_reliefs.rego (13 testów: prototyp/termo/B+R 100/200%/
+   nexus/ekspansja/robotyzacja/estoński CIT) + pytest GLM52 P07 (37)
+✅ Bramki: validate 0 · invariant 42 PASS · RAPORT_21 6/6 · lint 5/5 ·
+   pytest P07 37 + P05/P06 108 + regresja P01-P04 67 + wiring r01-r17 270
+   + P06-pytest 68; okablowanie 8 pakietów ulg potwierdzone (p45 zachowany)
+⚠️ Reguły ulg (rd/ipbox/thermo/missing_reliefs) były już okablowane z R04 —
+   P07 domknął luki narzędziowe i prototyp 26eb; CI opa wymaga OPA 1.x
+NASTĘPNY: PROMPT_08_ZUS_MAKRO_ZDROWOTNA.txt (ZUS makro + składka zdrowotna)
+
+[P08] ZUS MAKRO + ZDROWOTNA — WDROZONY_100 (2026-08-17)
+✅ NOWA reguła jdg.zus.health.tier_switch (H160, art. 81 ust. 2e-2f u.ś.o.z.):
+   miesięczna re-ewaluacja progu ryczałtu (przychód narastająco), detekcja
+   zmiany TIER_I→II→III, składka z data.thresholds, alert TRIAGE_QUEUE
+✅ tools/zus_calculator.py — składki z DOWODEM GROSZOWYM: społeczne 19,52/8/
+   2,45/1,67% (art. 22 SUS) + zdrowotna per forma (skala 9%, liniowy 4,9%,
+   ryczałt 491,40/819,00/1 474,20, karta); invariant Σ; symulator ulg
+   (start 18a / preferencyjna 18c ust. 2 / Mały ZUS+ 18c ust. 4-5 z clampem
+   [30% min., 60% przecięt.] i limitem 120 000 — art. 18c ust. 8)
+✅ tools/health_tier_engine.py — progi ryczałtu 60k/300k z auto-TIER, korekta
+   roczna do 22 maja, monitor limitu 14 100 zł (liniowy 2026, P563), predyktor
+✅ tools/zus_calendar.py — terminy 5/10/15/20 (art. 47 SUS) z przesunięciem
+   weekend/święto (art. 47 ust. 3), roczne rozliczenie zdrowotnej (22 maja)
+✅ Testy: test_native_zus_macro.rego (10: tier_switch/lump_sum_tiers/maly_plus
+   _formula/tier_transition/zdrowotna/niemutowalność) + pytest GLM52 P08 (37)
+✅ Bramki: validate 0 · invariant 42 PASS · RAPORT_21 6/6 · lint 5/5 ·
+   pytest ZUS 132 + P01-P07 138 + wiring r01-r17 275 = 545 zielonych
+✅ Niemutowalność potwierdzona: allowlist (jdg.zus, sickness_benefits,
+   enterprise_benefits, health_contribution) — werdykty ZUS nigdy nie nadpisane
+⚠️ Moduł ZUS miał już 109 rule_ids z R04/R06 — P08 domknął tier_switch + 3
+   narzędzia + testy; precision_engine to pakiety nazwanych reguł queryable;
+   CI opa wymaga OPA 1.x
+NASTĘPNY: PROMPT_09_ZUS_MIKRO_ZASILKI.txt (ZUS mikro + zasiłki — sickness)
