@@ -883,7 +883,7 @@ CZESCI.append(dict(
           "rules/micro/zasilkowa/zasilkowa_a19.rego", "rules/micro/zasilkowa/zasilkowa_a29.rego",
           "rules/micro/zasilkowa/zasilkowa_a32.rego", "rules/micro/zasilkowa/zasilkowa_a33.rego"]),
         ("ZUS MICRO LOOSE + INNOWACJE (rules/micro/, rules/)", ["rules/micro/plan33_zus.rego",
-          "rules/micro/plan34_zus.rego", "p07_zus_macro_innovations_v8.rego", "p07_zus_macro_innovations_v9.rego",
+          "rules/micro/zus_micro_atomic_p09.rego", "p07_zus_macro_innovations_v8.rego", "p07_zus_macro_innovations_v9.rego",
           "p08_zus_macro_enterprise_v9.rego", "p08_zus_micro_innovations_v8.rego",
           "p08_zus_micro_innovations_v9.rego"]),
         ("ZUS MICRO RATES + HEALTH (rules/micro/)", ["rules/micro/_zus_micro_rates.rego",

@@ -44,7 +44,7 @@ p33o_a16_override(input) = override {
         "priority": 80000,
         "routing": "TRIAGE",
         "routing_reason": "Czynny żal (KKS a16) — przekierowanie do S22 + enterprise correspondence engine",
-        "legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
+        "legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.)",
         "note": "v7.0 FIX (LUKA-U4/U3): plan33_ord.rego — created to satisfy cross-report documentation contract",
     } { is_jdg; ord_a16_applicable }
 

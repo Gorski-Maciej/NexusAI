@@ -1,8 +1,8 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — UoR Obligation Layer: Art. 2–10 Ustawy o rachunkowości
+# NexusAI JDG — UoR Obligation Layer: Art. 2–10 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)
 # Package: jdg.uor.obligation — Full Accounting Obligation Rules
 # Version: 1.0.0 — Q3 2026 Critical Closure (P28 Grand Finale)
-# Legal basis: Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. 591)
+# Legal basis: Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)
 # Coverage: Art. 2–10 — ~40 rules, ~40 legal points
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -31,7 +31,7 @@ decide := {
     "priority": 100001,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Przekroczenie 2M EUR — OBOWIĄZEK pełnej księgowości od następnego roku obrotowego!",
-    "_legal_basis": "Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości (Dz.U. 1994 nr 121 poz. 591)",
+    "_legal_basis": "Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[UoR] Art.2: Przekroczono próg 2 000 000 EUR. Pełna księgowość obowiązkowa od 01.01 następnego roku. Zgłoś NIP-2!"],
     "threshold_eur": 2000000,
     "mandatory_uor": true

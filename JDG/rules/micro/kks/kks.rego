@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a16 — Czynny żal (12 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a16.r1: kks_a16_r1_eligibility
@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -71,7 +71,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -99,7 +99,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a16_r3_pass", false) == true
@@ -127,7 +127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a16_r4_checks", false) == true
@@ -155,7 +155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -183,7 +183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -211,7 +211,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a16_exception", false) == true
@@ -239,7 +239,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a16_exception_2", false) == true
@@ -267,7 +267,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -295,7 +295,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -323,7 +323,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "kks_deadline_required", false) == true
@@ -354,7 +354,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Czynny żal",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a16_violation", false) == true
@@ -362,7 +362,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a20 — Przedawnienie karalności — przestępstwa (8 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a20.r1: kks_a20_r1_eligibility
@@ -387,7 +387,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — przestępstwa: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -415,7 +415,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — przestępstwa: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -443,7 +443,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — przestępstwa: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a20_r3_pass", false) == true
@@ -471,7 +471,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — przestępstwa: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a20_r4_checks", false) == true
@@ -499,7 +499,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — przestępstwa: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -527,7 +527,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — przestępstwa: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -555,7 +555,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — przestępstwa: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a20_exception", false) == true
@@ -583,7 +583,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — przestępstwa: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a20_exception_2", false) == true
@@ -591,7 +591,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a21 — Przedawnienie karalności — wykroczenia (8 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a21.r1: kks_a21_r1_eligibility
@@ -616,7 +616,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — wykroczenia: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -644,7 +644,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — wykroczenia: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -672,7 +672,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — wykroczenia: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a21_r3_pass", false) == true
@@ -700,7 +700,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — wykroczenia: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a21_r4_checks", false) == true
@@ -728,7 +728,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — wykroczenia: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -756,7 +756,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — wykroczenia: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -784,7 +784,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — wykroczenia: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a21_exception", false) == true
@@ -812,7 +812,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie karalności — wykroczenia: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a21_exception_2", false) == true
@@ -820,7 +820,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a54 — Uchylanie się od opodatkowania (15 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a54.r1: kks_a54_r1_eligibility
@@ -845,7 +845,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -873,7 +873,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -901,7 +901,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a54_r3_pass", false) == true
@@ -929,7 +929,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a54_r4_checks", false) == true
@@ -957,7 +957,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -985,7 +985,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -1013,7 +1013,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a54_exception", false) == true
@@ -1041,7 +1041,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a54_exception_2", false) == true
@@ -1069,7 +1069,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -1097,7 +1097,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -1125,7 +1125,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "kks_deadline_required", false) == true
@@ -1156,7 +1156,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Uchylanie się od opodatkowania",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a54_violation", false) == true
@@ -1184,7 +1184,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: edge case — nietypowa sytuacja wymagająca uwagi"]
 } {
     object.get(input.invoice, "kks_a54_edge_case", false) == true
@@ -1212,7 +1212,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: drugi edge case — rzadki scenariusz"]
 } {
     object.get(input.invoice, "kks_a54_edge_case_2", false) == true
@@ -1240,7 +1240,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Uchylanie się od opodatkowania: walidacja formalna — sprawdź dokumenty"]
 } {
     object.get(input.invoice, "kks_validation_required", false) == true
@@ -1248,7 +1248,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a55 — Oszustwo podatkowe (12 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a55.r1: kks_a55_r1_eligibility
@@ -1273,7 +1273,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo podatkowe: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1301,7 +1301,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo podatkowe: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -1329,7 +1329,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo podatkowe: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a55_r3_pass", false) == true
@@ -1357,7 +1357,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo podatkowe: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a55_r4_checks", false) == true
@@ -1385,7 +1385,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo podatkowe: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -1413,7 +1413,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo podatkowe: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -1441,7 +1441,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo podatkowe: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a55_exception", false) == true
@@ -1469,7 +1469,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo podatkowe: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a55_exception_2", false) == true
@@ -1497,7 +1497,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo podatkowe: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -1525,7 +1525,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo podatkowe: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -1553,7 +1553,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo podatkowe: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "kks_deadline_required", false) == true
@@ -1584,7 +1584,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Oszustwo podatkowe",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo podatkowe: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a55_violation", false) == true
@@ -1592,7 +1592,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a56 — Nierzetelne księgi / PKPiR (15 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a56.r1: kks_a56_r1_eligibility
@@ -1617,7 +1617,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1645,7 +1645,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -1673,7 +1673,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a56_r3_pass", false) == true
@@ -1701,7 +1701,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a56_r4_checks", false) == true
@@ -1729,7 +1729,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -1757,7 +1757,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -1785,7 +1785,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a56_exception", false) == true
@@ -1813,7 +1813,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a56_exception_2", false) == true
@@ -1841,7 +1841,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -1869,7 +1869,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -1897,7 +1897,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "kks_deadline_required", false) == true
@@ -1928,7 +1928,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Nierzetelne księgi / PKPiR",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a56_violation", false) == true
@@ -1956,7 +1956,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: edge case — nietypowa sytuacja wymagająca uwagi"]
 } {
     object.get(input.invoice, "kks_a56_edge_case", false) == true
@@ -1984,7 +1984,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: drugi edge case — rzadki scenariusz"]
 } {
     object.get(input.invoice, "kks_a56_edge_case_2", false) == true
@@ -2012,7 +2012,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne księgi / PKPiR: walidacja formalna — sprawdź dokumenty"]
 } {
     object.get(input.invoice, "kks_validation_required", false) == true
@@ -2020,7 +2020,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a57 — Nierzetelna ewidencja VAT (12 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a57.r1: kks_a57_r1_eligibility
@@ -2045,7 +2045,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelna ewidencja VAT: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2073,7 +2073,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelna ewidencja VAT: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -2101,7 +2101,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelna ewidencja VAT: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a57_r3_pass", false) == true
@@ -2129,7 +2129,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelna ewidencja VAT: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a57_r4_checks", false) == true
@@ -2157,7 +2157,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelna ewidencja VAT: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -2185,7 +2185,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelna ewidencja VAT: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -2213,7 +2213,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelna ewidencja VAT: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a57_exception", false) == true
@@ -2241,7 +2241,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelna ewidencja VAT: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a57_exception_2", false) == true
@@ -2269,7 +2269,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelna ewidencja VAT: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -2297,7 +2297,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelna ewidencja VAT: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -2325,7 +2325,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelna ewidencja VAT: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "kks_deadline_required", false) == true
@@ -2356,7 +2356,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Nierzetelna ewidencja VAT",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelna ewidencja VAT: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a57_violation", false) == true
@@ -2364,7 +2364,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a58 — Oszustwo w zakresie faktur (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a58.r1: kks_a58_r1_eligibility
@@ -2389,7 +2389,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo w zakresie faktur: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2417,7 +2417,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo w zakresie faktur: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -2445,7 +2445,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo w zakresie faktur: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a58_r3_pass", false) == true
@@ -2473,7 +2473,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo w zakresie faktur: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a58_r4_checks", false) == true
@@ -2501,7 +2501,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo w zakresie faktur: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -2529,7 +2529,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo w zakresie faktur: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -2557,7 +2557,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo w zakresie faktur: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a58_exception", false) == true
@@ -2585,7 +2585,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo w zakresie faktur: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a58_exception_2", false) == true
@@ -2613,7 +2613,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo w zakresie faktur: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -2641,7 +2641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Oszustwo w zakresie faktur: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -2649,7 +2649,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a59 — Fałszowanie dokumentów (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a59.r1: kks_a59_r1_eligibility
@@ -2674,7 +2674,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Fałszowanie dokumentów: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2702,7 +2702,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Fałszowanie dokumentów: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -2730,7 +2730,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Fałszowanie dokumentów: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a59_r3_pass", false) == true
@@ -2758,7 +2758,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Fałszowanie dokumentów: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a59_r4_checks", false) == true
@@ -2786,7 +2786,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Fałszowanie dokumentów: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -2814,7 +2814,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Fałszowanie dokumentów: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -2842,7 +2842,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Fałszowanie dokumentów: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a59_exception", false) == true
@@ -2870,7 +2870,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Fałszowanie dokumentów: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a59_exception_2", false) == true
@@ -2898,7 +2898,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Fałszowanie dokumentów: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -2926,7 +2926,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Fałszowanie dokumentów: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -2934,7 +2934,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a60 — Przekroczenie uprawnień (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a60.r1: kks_a60_r1_eligibility
@@ -2959,7 +2959,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przekroczenie uprawnień: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2987,7 +2987,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przekroczenie uprawnień: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -3015,7 +3015,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przekroczenie uprawnień: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a60_r3_pass", false) == true
@@ -3043,7 +3043,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przekroczenie uprawnień: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a60_r4_checks", false) == true
@@ -3071,7 +3071,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przekroczenie uprawnień: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -3099,7 +3099,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przekroczenie uprawnień: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -3127,7 +3127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przekroczenie uprawnień: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a60_exception", false) == true
@@ -3155,7 +3155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przekroczenie uprawnień: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a60_exception_2", false) == true
@@ -3183,7 +3183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przekroczenie uprawnień: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -3211,7 +3211,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przekroczenie uprawnień: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -3219,7 +3219,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a61 — Narażenie na uszczuplenie (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a61.r1: kks_a61_r1_eligibility
@@ -3244,7 +3244,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Narażenie na uszczuplenie: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -3272,7 +3272,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Narażenie na uszczuplenie: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -3300,7 +3300,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Narażenie na uszczuplenie: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a61_r3_pass", false) == true
@@ -3328,7 +3328,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Narażenie na uszczuplenie: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a61_r4_checks", false) == true
@@ -3356,7 +3356,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Narażenie na uszczuplenie: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -3384,7 +3384,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Narażenie na uszczuplenie: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -3412,7 +3412,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Narażenie na uszczuplenie: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a61_exception", false) == true
@@ -3440,7 +3440,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Narażenie na uszczuplenie: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a61_exception_2", false) == true
@@ -3468,7 +3468,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Narażenie na uszczuplenie: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -3496,7 +3496,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Narażenie na uszczuplenie: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -3504,7 +3504,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a62 — Puste faktury / fałszerstwo faktur (15 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a62.r1: kks_a62_r1_eligibility
@@ -3529,7 +3529,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -3557,7 +3557,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -3585,7 +3585,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a62_r3_pass", false) == true
@@ -3613,7 +3613,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a62_r4_checks", false) == true
@@ -3641,7 +3641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -3669,7 +3669,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -3697,7 +3697,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a62_exception", false) == true
@@ -3725,7 +3725,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a62_exception_2", false) == true
@@ -3753,7 +3753,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -3781,7 +3781,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -3809,7 +3809,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "kks_deadline_required", false) == true
@@ -3840,7 +3840,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Puste faktury / fałszerstwo faktur",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a62_violation", false) == true
@@ -3868,7 +3868,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: edge case — nietypowa sytuacja wymagająca uwagi"]
 } {
     object.get(input.invoice, "kks_a62_edge_case", false) == true
@@ -3896,7 +3896,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: drugi edge case — rzadki scenariusz"]
 } {
     object.get(input.invoice, "kks_a62_edge_case_2", false) == true
@@ -3924,7 +3924,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Puste faktury / fałszerstwo faktur: walidacja formalna — sprawdź dokumenty"]
 } {
     object.get(input.invoice, "kks_validation_required", false) == true
@@ -3932,7 +3932,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a63 — Niewystawienie faktury (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a63.r1: kks_a63_r1_eligibility
@@ -3957,7 +3957,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewystawienie faktury: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -3985,7 +3985,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewystawienie faktury: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -4013,7 +4013,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewystawienie faktury: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a63_r3_pass", false) == true
@@ -4041,7 +4041,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewystawienie faktury: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a63_r4_checks", false) == true
@@ -4069,7 +4069,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewystawienie faktury: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -4097,7 +4097,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewystawienie faktury: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -4125,7 +4125,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewystawienie faktury: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a63_exception", false) == true
@@ -4153,7 +4153,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewystawienie faktury: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a63_exception_2", false) == true
@@ -4181,7 +4181,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewystawienie faktury: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -4209,7 +4209,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewystawienie faktury: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -4217,7 +4217,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a64 — Niewłaściwa stawka VAT (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a64.r1: kks_a64_r1_eligibility
@@ -4242,7 +4242,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewłaściwa stawka VAT: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -4270,7 +4270,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewłaściwa stawka VAT: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -4298,7 +4298,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewłaściwa stawka VAT: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a64_r3_pass", false) == true
@@ -4326,7 +4326,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewłaściwa stawka VAT: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a64_r4_checks", false) == true
@@ -4354,7 +4354,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewłaściwa stawka VAT: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -4382,7 +4382,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewłaściwa stawka VAT: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -4410,7 +4410,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewłaściwa stawka VAT: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a64_exception", false) == true
@@ -4438,7 +4438,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewłaściwa stawka VAT: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a64_exception_2", false) == true
@@ -4466,7 +4466,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewłaściwa stawka VAT: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -4494,7 +4494,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewłaściwa stawka VAT: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -4502,7 +4502,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a65 — Zawyżenie zwrotu VAT (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a65.r1: kks_a65_r1_eligibility
@@ -4527,7 +4527,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zawyżenie zwrotu VAT: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -4555,7 +4555,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zawyżenie zwrotu VAT: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -4583,7 +4583,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zawyżenie zwrotu VAT: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a65_r3_pass", false) == true
@@ -4611,7 +4611,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zawyżenie zwrotu VAT: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a65_r4_checks", false) == true
@@ -4639,7 +4639,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zawyżenie zwrotu VAT: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -4667,7 +4667,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zawyżenie zwrotu VAT: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -4695,7 +4695,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zawyżenie zwrotu VAT: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a65_exception", false) == true
@@ -4723,7 +4723,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zawyżenie zwrotu VAT: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a65_exception_2", false) == true
@@ -4751,7 +4751,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zawyżenie zwrotu VAT: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -4779,7 +4779,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zawyżenie zwrotu VAT: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -4787,7 +4787,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a66 — Nierzetelne zeznanie (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a66.r1: kks_a66_r1_eligibility
@@ -4812,7 +4812,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne zeznanie: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -4840,7 +4840,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne zeznanie: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -4868,7 +4868,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne zeznanie: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a66_r3_pass", false) == true
@@ -4896,7 +4896,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne zeznanie: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a66_r4_checks", false) == true
@@ -4924,7 +4924,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne zeznanie: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -4952,7 +4952,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne zeznanie: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -4980,7 +4980,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne zeznanie: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a66_exception", false) == true
@@ -5008,7 +5008,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne zeznanie: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a66_exception_2", false) == true
@@ -5036,7 +5036,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne zeznanie: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -5064,7 +5064,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nierzetelne zeznanie: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -5072,7 +5072,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a67 — Nieprowadzenie ksiąg (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a67.r1: kks_a67_r1_eligibility
@@ -5097,7 +5097,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprowadzenie ksiąg: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -5125,7 +5125,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprowadzenie ksiąg: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -5153,7 +5153,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprowadzenie ksiąg: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a67_r3_pass", false) == true
@@ -5181,7 +5181,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprowadzenie ksiąg: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a67_r4_checks", false) == true
@@ -5209,7 +5209,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprowadzenie ksiąg: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -5237,7 +5237,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprowadzenie ksiąg: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -5265,7 +5265,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprowadzenie ksiąg: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a67_exception", false) == true
@@ -5293,7 +5293,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprowadzenie ksiąg: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a67_exception_2", false) == true
@@ -5321,7 +5321,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprowadzenie ksiąg: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -5349,7 +5349,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprowadzenie ksiąg: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -5357,7 +5357,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a68 — Zniszczenie dokumentów (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a68.r1: kks_a68_r1_eligibility
@@ -5382,7 +5382,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zniszczenie dokumentów: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -5410,7 +5410,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zniszczenie dokumentów: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -5438,7 +5438,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zniszczenie dokumentów: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a68_r3_pass", false) == true
@@ -5466,7 +5466,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zniszczenie dokumentów: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a68_r4_checks", false) == true
@@ -5494,7 +5494,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zniszczenie dokumentów: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -5522,7 +5522,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zniszczenie dokumentów: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -5550,7 +5550,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zniszczenie dokumentów: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a68_exception", false) == true
@@ -5578,7 +5578,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zniszczenie dokumentów: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a68_exception_2", false) == true
@@ -5606,7 +5606,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zniszczenie dokumentów: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -5634,7 +5634,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Zniszczenie dokumentów: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -5642,7 +5642,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a69 — Utrudnianie kontroli (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a69.r1: kks_a69_r1_eligibility
@@ -5667,7 +5667,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Utrudnianie kontroli: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -5695,7 +5695,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Utrudnianie kontroli: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -5723,7 +5723,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Utrudnianie kontroli: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a69_r3_pass", false) == true
@@ -5751,7 +5751,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Utrudnianie kontroli: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a69_r4_checks", false) == true
@@ -5779,7 +5779,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Utrudnianie kontroli: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -5807,7 +5807,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Utrudnianie kontroli: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -5835,7 +5835,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Utrudnianie kontroli: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a69_exception", false) == true
@@ -5863,7 +5863,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Utrudnianie kontroli: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a69_exception_2", false) == true
@@ -5891,7 +5891,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Utrudnianie kontroli: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -5919,7 +5919,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Utrudnianie kontroli: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -5927,7 +5927,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a70 — Nieskładanie deklaracji (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a70.r1: kks_a70_r1_eligibility
@@ -5952,7 +5952,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieskładanie deklaracji: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -5980,7 +5980,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieskładanie deklaracji: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -6008,7 +6008,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieskładanie deklaracji: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a70_r3_pass", false) == true
@@ -6036,7 +6036,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieskładanie deklaracji: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a70_r4_checks", false) == true
@@ -6064,7 +6064,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieskładanie deklaracji: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -6092,7 +6092,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieskładanie deklaracji: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -6120,7 +6120,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieskładanie deklaracji: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a70_exception", false) == true
@@ -6148,7 +6148,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieskładanie deklaracji: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a70_exception_2", false) == true
@@ -6176,7 +6176,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieskładanie deklaracji: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -6204,7 +6204,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieskładanie deklaracji: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -6212,7 +6212,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a71 — Naruszenie obowiązków płatniczych (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a71.r1: kks_a71_r1_eligibility
@@ -6237,7 +6237,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków płatniczych: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -6265,7 +6265,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków płatniczych: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -6293,7 +6293,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków płatniczych: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a71_r3_pass", false) == true
@@ -6321,7 +6321,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków płatniczych: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a71_r4_checks", false) == true
@@ -6349,7 +6349,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków płatniczych: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -6377,7 +6377,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków płatniczych: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -6405,7 +6405,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków płatniczych: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a71_exception", false) == true
@@ -6433,7 +6433,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków płatniczych: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a71_exception_2", false) == true
@@ -6461,7 +6461,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków płatniczych: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -6489,7 +6489,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków płatniczych: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -6497,7 +6497,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a72 — Niepobranie podatku (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a72.r1: kks_a72_r1_eligibility
@@ -6522,7 +6522,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niepobranie podatku: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -6550,7 +6550,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niepobranie podatku: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -6578,7 +6578,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niepobranie podatku: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a72_r3_pass", false) == true
@@ -6606,7 +6606,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niepobranie podatku: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a72_r4_checks", false) == true
@@ -6634,7 +6634,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niepobranie podatku: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -6662,7 +6662,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niepobranie podatku: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -6690,7 +6690,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niepobranie podatku: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a72_exception", false) == true
@@ -6718,7 +6718,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niepobranie podatku: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a72_exception_2", false) == true
@@ -6746,7 +6746,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niepobranie podatku: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -6774,7 +6774,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niepobranie podatku: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -6782,7 +6782,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a73 — Niewpłacenie podatku (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a73.r1: kks_a73_r1_eligibility
@@ -6807,7 +6807,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewpłacenie podatku: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -6835,7 +6835,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewpłacenie podatku: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -6863,7 +6863,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewpłacenie podatku: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a73_r3_pass", false) == true
@@ -6891,7 +6891,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewpłacenie podatku: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a73_r4_checks", false) == true
@@ -6919,7 +6919,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewpłacenie podatku: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -6947,7 +6947,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewpłacenie podatku: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -6975,7 +6975,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewpłacenie podatku: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a73_exception", false) == true
@@ -7003,7 +7003,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewpłacenie podatku: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a73_exception_2", false) == true
@@ -7031,7 +7031,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewpłacenie podatku: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -7059,7 +7059,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niewpłacenie podatku: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -7067,7 +7067,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a74 — Naruszenie obowiązków ewidencyjnych (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a74.r1: kks_a74_r1_eligibility
@@ -7092,7 +7092,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków ewidencyjnych: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -7120,7 +7120,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków ewidencyjnych: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -7148,7 +7148,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków ewidencyjnych: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a74_r3_pass", false) == true
@@ -7176,7 +7176,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków ewidencyjnych: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a74_r4_checks", false) == true
@@ -7204,7 +7204,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków ewidencyjnych: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -7232,7 +7232,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków ewidencyjnych: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -7260,7 +7260,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków ewidencyjnych: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a74_exception", false) == true
@@ -7288,7 +7288,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków ewidencyjnych: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a74_exception_2", false) == true
@@ -7316,7 +7316,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków ewidencyjnych: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -7344,7 +7344,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie obowiązków ewidencyjnych: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -7352,7 +7352,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a75 — Naruszenie KSeF (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a75.r1: kks_a75_r1_eligibility
@@ -7377,7 +7377,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie KSeF: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -7405,7 +7405,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie KSeF: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -7433,7 +7433,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie KSeF: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a75_r3_pass", false) == true
@@ -7461,7 +7461,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie KSeF: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a75_r4_checks", false) == true
@@ -7489,7 +7489,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie KSeF: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -7517,7 +7517,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie KSeF: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -7545,7 +7545,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie KSeF: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a75_exception", false) == true
@@ -7573,7 +7573,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie KSeF: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a75_exception_2", false) == true
@@ -7601,7 +7601,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie KSeF: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -7629,7 +7629,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie KSeF: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -7637,7 +7637,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a76 — Naruszenie JPK (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a76.r1: kks_a76_r1_eligibility
@@ -7662,7 +7662,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie JPK: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -7690,7 +7690,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie JPK: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -7718,7 +7718,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie JPK: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a76_r3_pass", false) == true
@@ -7746,7 +7746,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie JPK: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a76_r4_checks", false) == true
@@ -7774,7 +7774,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie JPK: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -7802,7 +7802,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie JPK: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -7830,7 +7830,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie JPK: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a76_exception", false) == true
@@ -7858,7 +7858,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie JPK: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a76_exception_2", false) == true
@@ -7886,7 +7886,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie JPK: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -7914,7 +7914,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Naruszenie JPK: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -7922,7 +7922,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a77 — Niezłożenie deklaracji w terminie (12 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a77.r1: kks_a77_r1_eligibility
@@ -7947,7 +7947,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezłożenie deklaracji w terminie: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -7975,7 +7975,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezłożenie deklaracji w terminie: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -8003,7 +8003,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezłożenie deklaracji w terminie: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a77_r3_pass", false) == true
@@ -8031,7 +8031,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezłożenie deklaracji w terminie: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a77_r4_checks", false) == true
@@ -8059,7 +8059,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezłożenie deklaracji w terminie: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -8087,7 +8087,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezłożenie deklaracji w terminie: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -8115,7 +8115,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezłożenie deklaracji w terminie: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a77_exception", false) == true
@@ -8143,7 +8143,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezłożenie deklaracji w terminie: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a77_exception_2", false) == true
@@ -8171,7 +8171,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezłożenie deklaracji w terminie: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -8199,7 +8199,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezłożenie deklaracji w terminie: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -8227,7 +8227,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezłożenie deklaracji w terminie: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "kks_deadline_required", false) == true
@@ -8258,7 +8258,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Niezłożenie deklaracji w terminie",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezłożenie deklaracji w terminie: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a77_violation", false) == true
@@ -8266,7 +8266,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a78 — Nieprawidłowe dane w deklaracji (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a78.r1: kks_a78_r1_eligibility
@@ -8291,7 +8291,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprawidłowe dane w deklaracji: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -8319,7 +8319,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprawidłowe dane w deklaracji: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -8347,7 +8347,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprawidłowe dane w deklaracji: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a78_r3_pass", false) == true
@@ -8375,7 +8375,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprawidłowe dane w deklaracji: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a78_r4_checks", false) == true
@@ -8403,7 +8403,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprawidłowe dane w deklaracji: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -8431,7 +8431,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprawidłowe dane w deklaracji: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -8459,7 +8459,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprawidłowe dane w deklaracji: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a78_exception", false) == true
@@ -8487,7 +8487,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprawidłowe dane w deklaracji: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a78_exception_2", false) == true
@@ -8515,7 +8515,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprawidłowe dane w deklaracji: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -8543,7 +8543,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nieprawidłowe dane w deklaracji: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -8551,7 +8551,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a79 — Niezapłacenie podatku w terminie (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a79.r1: kks_a79_r1_eligibility
@@ -8576,7 +8576,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezapłacenie podatku w terminie: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -8604,7 +8604,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezapłacenie podatku w terminie: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -8632,7 +8632,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezapłacenie podatku w terminie: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a79_r3_pass", false) == true
@@ -8660,7 +8660,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezapłacenie podatku w terminie: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a79_r4_checks", false) == true
@@ -8688,7 +8688,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezapłacenie podatku w terminie: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -8716,7 +8716,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezapłacenie podatku w terminie: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -8744,7 +8744,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezapłacenie podatku w terminie: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a79_exception", false) == true
@@ -8772,7 +8772,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezapłacenie podatku w terminie: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a79_exception_2", false) == true
@@ -8800,7 +8800,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezapłacenie podatku w terminie: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -8828,7 +8828,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Niezapłacenie podatku w terminie: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -8836,7 +8836,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a80 — Sankcje — grzywny, kara (12 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a80.r1: kks_a80_r1_eligibility
@@ -8861,7 +8861,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Sankcje — grzywny, kara: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -8889,7 +8889,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Sankcje — grzywny, kara: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -8917,7 +8917,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Sankcje — grzywny, kara: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a80_r3_pass", false) == true
@@ -8945,7 +8945,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Sankcje — grzywny, kara: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a80_r4_checks", false) == true
@@ -8973,7 +8973,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Sankcje — grzywny, kara: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -9001,7 +9001,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Sankcje — grzywny, kara: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -9029,7 +9029,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Sankcje — grzywny, kara: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a80_exception", false) == true
@@ -9057,7 +9057,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Sankcje — grzywny, kara: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a80_exception_2", false) == true
@@ -9085,7 +9085,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Sankcje — grzywny, kara: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -9113,7 +9113,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Sankcje — grzywny, kara: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -9141,7 +9141,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Sankcje — grzywny, kara: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "kks_deadline_required", false) == true
@@ -9172,7 +9172,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Sankcje — grzywny, kara",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Sankcje — grzywny, kara: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a80_violation", false) == true
@@ -9180,7 +9180,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a81 — Nadzwyczajne złagodzenie kary (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a81.r1: kks_a81_r1_eligibility
@@ -9205,7 +9205,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nadzwyczajne złagodzenie kary: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -9233,7 +9233,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nadzwyczajne złagodzenie kary: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -9261,7 +9261,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nadzwyczajne złagodzenie kary: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a81_r3_pass", false) == true
@@ -9289,7 +9289,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nadzwyczajne złagodzenie kary: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a81_r4_checks", false) == true
@@ -9317,7 +9317,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nadzwyczajne złagodzenie kary: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -9345,7 +9345,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nadzwyczajne złagodzenie kary: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -9373,7 +9373,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nadzwyczajne złagodzenie kary: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a81_exception", false) == true
@@ -9401,7 +9401,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nadzwyczajne złagodzenie kary: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a81_exception_2", false) == true
@@ -9429,7 +9429,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nadzwyczajne złagodzenie kary: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -9457,7 +9457,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Nadzwyczajne złagodzenie kary: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -9465,7 +9465,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a82 — Odstąpienie od wymierzenia kary (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a82.r1: kks_a82_r1_eligibility
@@ -9490,7 +9490,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Odstąpienie od wymierzenia kary: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -9518,7 +9518,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Odstąpienie od wymierzenia kary: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -9546,7 +9546,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Odstąpienie od wymierzenia kary: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a82_r3_pass", false) == true
@@ -9574,7 +9574,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Odstąpienie od wymierzenia kary: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a82_r4_checks", false) == true
@@ -9602,7 +9602,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Odstąpienie od wymierzenia kary: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -9630,7 +9630,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Odstąpienie od wymierzenia kary: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -9658,7 +9658,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Odstąpienie od wymierzenia kary: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a82_exception", false) == true
@@ -9686,7 +9686,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Odstąpienie od wymierzenia kary: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a82_exception_2", false) == true
@@ -9714,7 +9714,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Odstąpienie od wymierzenia kary: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -9742,7 +9742,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Odstąpienie od wymierzenia kary: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -9750,7 +9750,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a83 — Przepadek przedmiotów / korzyści (10 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a83.r1: kks_a83_r1_eligibility
@@ -9775,7 +9775,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przepadek przedmiotów / korzyści: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -9803,7 +9803,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przepadek przedmiotów / korzyści: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -9831,7 +9831,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przepadek przedmiotów / korzyści: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a83_r3_pass", false) == true
@@ -9859,7 +9859,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przepadek przedmiotów / korzyści: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a83_r4_checks", false) == true
@@ -9887,7 +9887,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przepadek przedmiotów / korzyści: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -9915,7 +9915,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przepadek przedmiotów / korzyści: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -9943,7 +9943,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przepadek przedmiotów / korzyści: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a83_exception", false) == true
@@ -9971,7 +9971,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przepadek przedmiotów / korzyści: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a83_exception_2", false) == true
@@ -9999,7 +9999,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przepadek przedmiotów / korzyści: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_kks", false) == true
@@ -10027,7 +10027,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Przepadek przedmiotów / korzyści: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_kks", false) == true
@@ -10035,7 +10035,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a85 — Karalność łączna — zbieg przestępstw (8 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a85.r1: kks_a85_r1_eligibility
@@ -10060,7 +10060,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg przestępstw: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -10088,7 +10088,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg przestępstw: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -10116,7 +10116,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg przestępstw: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a85_r3_pass", false) == true
@@ -10144,7 +10144,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg przestępstw: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a85_r4_checks", false) == true
@@ -10172,7 +10172,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg przestępstw: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -10200,7 +10200,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg przestępstw: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -10228,7 +10228,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg przestępstw: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a85_exception", false) == true
@@ -10256,7 +10256,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg przestępstw: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a85_exception_2", false) == true
@@ -10264,7 +10264,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a86 — Karalność łączna — zbieg wykroczeń (8 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a86.r1: kks_a86_r1_eligibility
@@ -10289,7 +10289,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg wykroczeń: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -10317,7 +10317,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg wykroczeń: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -10345,7 +10345,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg wykroczeń: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a86_r3_pass", false) == true
@@ -10373,7 +10373,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg wykroczeń: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a86_r4_checks", false) == true
@@ -10401,7 +10401,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg wykroczeń: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -10429,7 +10429,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg wykroczeń: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -10457,7 +10457,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg wykroczeń: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a86_exception", false) == true
@@ -10485,7 +10485,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Karalność łączna — zbieg wykroczeń: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a86_exception_2", false) == true
@@ -10493,7 +10493,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  kks.a87 — Kary łączne (8 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)                                                   ║
+# ║  Legal basis: Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.kks.a87.r1: kks_a87_r1_eligibility
@@ -10518,7 +10518,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Kary łączne: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -10546,7 +10546,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Kary łączne: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "kks_condition_met", false) == true
@@ -10574,7 +10574,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Kary łączne: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a87_r3_pass", false) == true
@@ -10602,7 +10602,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Kary łączne: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "kks_a87_r4_checks", false) == true
@@ -10630,7 +10630,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Kary łączne: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "kks_exclusion_applies", false) == false
@@ -10658,7 +10658,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Kary łączne: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "kks_exclusion_2", false) == false
@@ -10686,7 +10686,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Kary łączne: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "kks_a87_exception", false) == true
@@ -10714,7 +10714,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Kary łączne: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "kks_a87_exception_2", false) == true
@@ -10748,7 +10748,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 62 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 62: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a62_r2_check", false) == true
@@ -10775,7 +10775,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 70 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 70: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a70_u1_p1_check", false) == true
@@ -10802,7 +10802,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 70 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 70: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a70_u2_p2_check", false) == true
@@ -10829,7 +10829,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a71_u1_p2_check", false) == true
@@ -10856,7 +10856,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a71_u3_p3_check", false) == true
@@ -10883,7 +10883,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a71_u4_p4_check", false) == true
@@ -10910,7 +10910,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 71 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 71: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a71_u5_p1_check", false) == true
@@ -10937,7 +10937,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a72_u2_p3_check", false) == true
@@ -10964,7 +10964,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a72_u3_p4_check", false) == true
@@ -10991,7 +10991,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a72_u4_p1_check", false) == true
@@ -11018,7 +11018,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 72 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 72: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a72_u5_p2_check", false) == true
@@ -11045,7 +11045,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a73_u1_p3_check", false) == true
@@ -11072,7 +11072,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a73_u2_p4_check", false) == true
@@ -11099,7 +11099,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a73_u3_p1_check", false) == true
@@ -11126,7 +11126,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 73 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 73: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a73_u4_p2_check", false) == true
@@ -11153,7 +11153,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a74_u1_p4_check", false) == true
@@ -11180,7 +11180,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a74_u2_p1_check", false) == true
@@ -11207,7 +11207,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a74_u3_p2_check", false) == true
@@ -11234,7 +11234,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 74 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 74: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a74_u5_p3_check", false) == true
@@ -11261,7 +11261,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a75_u1_p1_check", false) == true
@@ -11288,7 +11288,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a75_u2_p2_check", false) == true
@@ -11315,7 +11315,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a75_u4_p3_check", false) == true
@@ -11342,7 +11342,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 75 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 75: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a75_u5_p4_check", false) == true
@@ -11369,7 +11369,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a76_u1_p2_check", false) == true
@@ -11396,7 +11396,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a76_u3_p3_check", false) == true
@@ -11423,7 +11423,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a76_u4_p4_check", false) == true
@@ -11450,7 +11450,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 76 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 76: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a76_u5_p1_check", false) == true
@@ -11477,7 +11477,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a77_r1_check", false) == true
@@ -11504,7 +11504,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a77_u2_p3_check", false) == true
@@ -11531,7 +11531,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a77_u3_p4_check", false) == true
@@ -11558,7 +11558,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a77_u4_p1_check", false) == true
@@ -11585,7 +11585,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 77 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 77: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a77_u5_p2_check", false) == true
@@ -11612,7 +11612,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a78_u1_p3_check", false) == true
@@ -11639,7 +11639,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a78_u2_p4_check", false) == true
@@ -11666,7 +11666,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a78_u3_p1_check", false) == true
@@ -11693,7 +11693,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 78 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 78: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a78_u4_p2_check", false) == true
@@ -11720,7 +11720,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a79_u1_p4_check", false) == true
@@ -11747,7 +11747,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a79_u2_p1_check", false) == true
@@ -11774,7 +11774,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a79_u3_p2_check", false) == true
@@ -11801,7 +11801,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 79 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 79: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a79_u5_p3_check", false) == true
@@ -11828,7 +11828,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a80_u1_p1_check", false) == true
@@ -11855,7 +11855,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a80_u2_p2_check", false) == true
@@ -11882,7 +11882,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a80_u4_p3_check", false) == true
@@ -11909,7 +11909,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 80 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 80: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a80_u5_p4_check", false) == true
@@ -11936,7 +11936,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a81_u1_p2_check", false) == true
@@ -11963,7 +11963,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a81_u3_p3_check", false) == true
@@ -11990,7 +11990,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a81_u4_p4_check", false) == true
@@ -12017,7 +12017,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 81 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 81: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a81_u5_p1_check", false) == true
@@ -12044,7 +12044,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a82_u2_p3_check", false) == true
@@ -12071,7 +12071,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a82_u3_p4_check", false) == true
@@ -12098,7 +12098,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a82_u4_p1_check", false) == true
@@ -12125,7 +12125,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 82 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 82: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a82_u5_p2_check", false) == true
@@ -12152,7 +12152,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a83_u1_p3_check", false) == true
@@ -12179,7 +12179,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a83_u2_p4_check", false) == true
@@ -12206,7 +12206,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a83_u3_p1_check", false) == true
@@ -12233,7 +12233,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 83 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 83: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a83_u4_p2_check", false) == true
@@ -12260,7 +12260,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 84 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 84: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a84_u1_p4_check", false) == true
@@ -12287,7 +12287,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 84 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 84: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a84_u2_p1_check", false) == true
@@ -12314,7 +12314,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 84 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 84: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a84_u3_p2_check", false) == true
@@ -12341,7 +12341,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 84 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 84: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a84_u5_p3_check", false) == true
@@ -12368,7 +12368,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 85 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 85: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a85_u1_p1_check", false) == true
@@ -12395,7 +12395,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 85 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 85: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a85_u2_p2_check", false) == true
@@ -12422,7 +12422,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 85 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 85: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a85_u4_p3_check", false) == true
@@ -12449,7 +12449,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 85 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 85: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a85_u5_p4_check", false) == true
@@ -12476,7 +12476,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 86 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 86: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a86_u1_p2_check", false) == true
@@ -12503,7 +12503,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 86 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 86: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a86_u3_p3_check", false) == true
@@ -12530,7 +12530,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 86 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 86: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a86_u4_p4_check", false) == true
@@ -12557,7 +12557,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 86 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 86: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a86_u5_p1_check", false) == true
@@ -12584,7 +12584,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 87 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 87: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a87_u2_p3_check", false) == true
@@ -12611,7 +12611,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 87 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 87: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a87_u3_p4_check", false) == true
@@ -12638,7 +12638,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 87 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 87: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a87_u4_p1_check", false) == true
@@ -12665,7 +12665,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 87 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 87: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a87_u5_p2_check", false) == true
@@ -12692,7 +12692,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 88 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 88: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a88_u1_p3_check", false) == true
@@ -12719,7 +12719,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 88 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 88: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a88_u2_p4_check", false) == true
@@ -12746,7 +12746,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 88 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 88: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a88_u3_p1_check", false) == true
@@ -12773,7 +12773,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 88 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 88: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a88_u4_p2_check", false) == true
@@ -12800,7 +12800,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 89 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 89: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a89_u1_p4_check", false) == true
@@ -12827,7 +12827,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 89 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 89: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a89_u2_p1_check", false) == true
@@ -12854,7 +12854,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 89 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 89: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a89_u3_p2_check", false) == true
@@ -12881,7 +12881,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 89 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 89: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a89_u5_p3_check", false) == true
@@ -12908,7 +12908,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 90 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 90: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a90_u1_p1_check", false) == true
@@ -12935,7 +12935,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 90 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 90: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a90_u2_p2_check", false) == true
@@ -12962,7 +12962,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 90 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 90: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a90_u4_p3_check", false) == true
@@ -12989,7 +12989,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 90 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 90: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a90_u5_p4_check", false) == true
@@ -13016,7 +13016,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 91 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 91: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a91_u1_p2_check", false) == true
@@ -13043,7 +13043,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 91 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 91: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a91_u3_p3_check", false) == true
@@ -13070,7 +13070,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 91 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 91: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a91_u4_p4_check", false) == true
@@ -13097,7 +13097,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 91 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 91: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a91_u5_p1_check", false) == true
@@ -13124,7 +13124,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 92 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 92: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a92_u2_p3_check", false) == true
@@ -13151,7 +13151,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 92 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 92: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a92_u3_p4_check", false) == true
@@ -13178,7 +13178,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 92 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 92: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a92_u4_p1_check", false) == true
@@ -13205,7 +13205,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 92 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 92: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a92_u5_p2_check", false) == true
@@ -13232,7 +13232,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 93 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 93: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a93_u1_p3_check", false) == true
@@ -13259,7 +13259,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 93 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 93: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a93_u2_p4_check", false) == true
@@ -13286,7 +13286,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 93 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 93: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a93_u3_p1_check", false) == true
@@ -13313,7 +13313,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 93 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 93: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a93_u4_p2_check", false) == true
@@ -13340,7 +13340,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 94 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 94: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a94_u1_p4_check", false) == true
@@ -13367,7 +13367,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 94 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Art. 94: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "kks_a94_u5_p3_check", false) == true

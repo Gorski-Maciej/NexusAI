@@ -3,7 +3,7 @@
 # Dual-Layer Architecture: Micro (Deep-Tier) — Atomic legal validation
 # Version: 9.0 — FULL REWRITE: REAL LOGIC replacing stubs
 # Package: jdg.micro.uor
-# Legal basis: Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. 591)
+# Legal basis: Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)
 # Coverage: 30+ articles with real computational logic (up from 6 in v7.0)
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -37,7 +37,7 @@ decide := {
     "uor_threshold_pln": 9000000,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości (Dz.U. 1994 nr 121 poz. 591)",
+    "_legal_basis": "Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.2 UoR: Próg pełnej księgowości = 2 000 000 EUR (~9 000 000 PLN przy kursie 4.5)"]
 } {
     annual_revenue_pln := object.get(input.jdg_entrepreneur, "annual_revenue_actual", 0)
@@ -57,7 +57,7 @@ else := {
     "pkpir_allowed": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości; Art. 24a PIT",
+    "_legal_basis": "Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 24a PIT",
     "_warnings": ["[MICRO] Art.2 UoR: JDG poniżej 2M EUR — PKPiR wystarczająca"]
 } {
     annual_revenue_pln := object.get(input.jdg_entrepreneur, "annual_revenue_actual", 0)
@@ -76,7 +76,7 @@ else := {
     "uor_voluntary": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.2 UoR: JDG może DOBROWOLNIE przejść na pełną księgowość — decyzja strategiczna"]
 } {
     object.get(input.jdg_entrepreneur, "uor_voluntary_choice", false) == true
@@ -91,7 +91,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "JDG w grupie kapitałowej musi stosować pełną księgowość — Art. 2 ust. 1 pkt 2 UoR",
-    "_legal_basis": "Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.2 UoR: JDG w GRUPIE KAPITAŁOWEJ → pełna księgowość obowiązkowa!"]
 } {
     object.get(input.jdg_entrepreneur, "in_capital_group", false) == true
@@ -107,7 +107,7 @@ else := {
     "rate_source": "NBP z 30.09 roku poprzedzającego",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 2 ust. 4 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 2 ust. 4 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.2 UoR: Kurs EUR/PLN wg NBP z 30.09 roku poprzedzającego rok obrotowy"]
 } {
     object.get(input.jdg_entrepreneur, "uor_rate_check_requested", false) == true
@@ -123,7 +123,7 @@ else := {
     "early_warning_pct": 50,
     "_routing": "WARNING",
     "_routing_reason": "Przychód narastająco przekroczył 50% progu 2M EUR — przygotuj strategię przejścia",
-    "_legal_basis": "Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.2 UoR: ⚠️ EARLY WARNING — narastająco >50% progu 2M EUR"]
 } {
     q1 := object.get(input.jdg_entrepreneur, "revenue_q1", 0)
@@ -145,7 +145,7 @@ else := {
     "early_warning_pct": 75,
     "_routing": "WARNING",
     "_routing_reason": "Przychód narastająco ≥75% progu 2M EUR — przejście na UoR prawdopodobne w tym roku!",
-    "_legal_basis": "Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.2 UoR: ⚠️ CRITICAL WARNING — narastająco ≥75% progu 2M EUR. Przygotuj remanent!"]
 } {
     q1 := object.get(input.jdg_entrepreneur, "revenue_q1", 0)
@@ -167,7 +167,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Przekroczenie 2M EUR — obowiązek pełnej księgowości od 01.01 następnego roku!",
-    "_legal_basis": "Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.2 UoR: 🔴 PRZEKROCZENIE PROGU! Pełna księgowość od 01.01 następnego roku. Zgłoś CEIDG-1 + NIP-2!"]
 } {
     annual_revenue_pln := object.get(input.jdg_entrepreneur, "annual_revenue_actual", 0)
@@ -191,7 +191,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 ust. 1 pkt 12 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 3 ust. 1 pkt 12 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.3 UoR: Aktywa = kontrolowane zasoby o wiarygodnie ustalonej wartości, powstałe w wyniku przeszłych zdarzeń"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -207,7 +207,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 ust. 1 pkt 20 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 3 ust. 1 pkt 20 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.3 UoR: Zobowiązania = obowiązek wykonania świadczenia powodujący wykorzystanie aktywów"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -224,7 +224,7 @@ else := {
     "fixed_asset_min_value": 10000,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 ust. 1 pkt 15 Ustawy o rachunkowości; Art. 22a PIT",
+    "_legal_basis": "Art. 3 ust. 1 pkt 15 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 22a PIT",
     "_warnings": ["[MICRO] Art.3 UoR: Środek trwały = okres użyteczności>1 rok, kompletny, zdatny do użytku, wartość≥10 000 PLN"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -242,7 +242,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 ust. 1 pkt 14 Ustawy o rachunkowości; Art. 22b PIT",
+    "_legal_basis": "Art. 3 ust. 1 pkt 14 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 22b PIT",
     "_warnings": ["[MICRO] Art.3 UoR: WNiP = prawa majątkowe (autorskie, patenty, licencje, know-how, goodwill)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -258,7 +258,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 ust. 1 pkt 9 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 3 ust. 1 pkt 9 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.3 UoR: Rok obrotowy = okres 12 miesięcy (najczęściej kalendarzowy: 01.01–31.12)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -274,7 +274,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 ust. 1 pkt 31 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 3 ust. 1 pkt 31 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.3 UoR: Koszty = uprawdopodobnione zmniejszenia korzyści ekonomicznych (spadek aktywów/wzrost zobowiązań)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -290,7 +290,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 ust. 1 pkt 30 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 3 ust. 1 pkt 30 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.3 UoR: Przychody = uprawdopodobnione zwiększenia korzyści ekonomicznych (wzrost aktywów/spadek zobowiązań)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -306,7 +306,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 ust. 1 pkt 10 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 3 ust. 1 pkt 10 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.3 UoR: Dzień bilansowy = dzień zamknięcia ksiąg rachunkowych (najczęściej 31.12)"]
 } {
     true
@@ -326,7 +326,7 @@ else := {
     "principle": "accrual",
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Zasada memoriałowa naruszona — używana metoda kasowa zamiast memoriałowej!",
-    "_legal_basis": "Art. 4 ust. 1 pkt 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 4 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.4 UoR: ZASADA MEMORIAŁOWA — przychody i koszty w okresie którego dotyczą, NIE w dacie zapłaty!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -343,7 +343,7 @@ else := {
     "principle": "accrual",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 4 ust. 1 pkt 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 4 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.4 UoR: ✅ Zasada memoriałowa — stosowana prawidłowo"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -360,7 +360,7 @@ else := {
     "principle": "matching",
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Zasada współmierności naruszona — koszty nieprzypisane do właściwego okresu!",
-    "_legal_basis": "Art. 4 ust. 1 pkt 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 4 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.4 UoR: ZASADA WSPÓŁMIERNOŚCI — koszty muszą być współmierne do przychodów danego okresu!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -377,7 +377,7 @@ else := {
     "principle": "prudence",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Zasada ostrożności naruszona — aktywa mogą być zawyżone, brak rezerw na ryzyka!",
-    "_legal_basis": "Art. 4 ust. 1 pkt 3 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 4 ust. 1 pkt 3 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.4 UoR: ZASADA OSTROŻNOŚCI — nie zawyżaj aktywów, twórz rezerwy na znane ryzyka!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -394,7 +394,7 @@ else := {
     "principle": "continuity",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Zasada ciągłości zagrożona — jednostka może nie kontynuować działalności!",
-    "_legal_basis": "Art. 4 ust. 1 pkt 4 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 4 ust. 1 pkt 4 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.4 UoR: ZASADA CIĄGŁOŚCI — zagrożona! Oceń czy jednostka będzie kontynuować działalność przez >12 miesięcy"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -415,7 +415,7 @@ else := {
     "materiality_threshold_pct": 5.0,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 4 ust. 1 pkt 5 Ustawy o rachunkowości; KSR 2",
+    "_legal_basis": "Art. 4 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); KSR 2",
     "_warnings": ["[MICRO] Art.4 UoR: ZASADA ISTOTNOŚCI — ujawniaj informacje istotne dla oceny sytuacji (próg ~5% sumy bilansowej)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -431,7 +431,7 @@ else := {
     "principle": "substance_over_form",
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Przewaga treści nad formą — forma prawna transakcji może nie odzwierciedlać jej treści ekonomicznej!",
-    "_legal_basis": "Art. 4 ust. 1 pkt 6 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 4 ust. 1 pkt 6 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.4 UoR: PRZEWAGA TREŚCI NAD FORMĄ — ekonomiczna treść transakcji ma pierwszeństwo nad jej formą prawną!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -449,7 +449,7 @@ else := {
     "materiality_pct": 5.0,
     "_routing": "WARNING",
     "_routing_reason": "Pozycja przekracza próg istotności — wymaga osobnej prezentacji w sprawozdaniu finansowym",
-    "_legal_basis": "Art. 4 ust. 1 pkt 5 Ustawy o rachunkowości; Art. 4a UoR",
+    "_legal_basis": "Art. 4 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 4a UoR",
     "_warnings": ["[MICRO] Art.4 UoR: Pozycja ISTOTNA >5% sumy bilansowej — wymaga osobnej prezentacji w sprawozdaniu"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -469,7 +469,7 @@ else := {
     "all_principles": ["memoriałowa", "współmierności", "ostrożności", "ciągłości", "istotności", "przewagi treści"],
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 4 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 4 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.4 UoR: Wszystkie 6 fundamentalnych zasad rachunkowości wg Art. 4 ust. 1 UoR"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -486,7 +486,7 @@ else := {
     "principle": "accrual_revenue",
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Przychód zaksięgowany w niewłaściwym okresie sprawozdawczym!",
-    "_legal_basis": "Art. 4 ust. 1 pkt 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 4 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.4 UoR: Przychód w złym okresie — zasada memoriałowa wymaga przypisania do okresu, którego dotyczy"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -507,7 +507,7 @@ else := {
     "principle": "prudence_provisions",
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Brak rezerwy na znane ryzyko — naruszenie zasady ostrożności!",
-    "_legal_basis": "Art. 4 ust. 1 pkt 3 Ustawy o rachunkowości; KSR 6",
+    "_legal_basis": "Art. 4 ust. 1 pkt 3 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); KSR 6",
     "_warnings": ["[MICRO] Art.4 UoR: Brak rezerwy na znane ryzyko — utwórz rezerwę na przewidywane straty!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -527,7 +527,7 @@ else := {
     "principle": "prudence_impairment",
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Brak odpisu aktualizującego mimo trwałej utraty wartości aktywa!",
-    "_legal_basis": "Art. 4 ust. 1 pkt 3; Art. 28 ust. 7 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 4 ust. 1 pkt 3; Art. 28 ust. 7 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.4 UoR: Trwała utrata wartości wymaga ODPISU AKTUALIZUJĄCEGO — zasada ostrożności!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -554,7 +554,7 @@ else := {
     "standard": "TRUE_AND_FAIR_VIEW",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 5 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.5 UoR: TRUE & FAIR VIEW — księgi muszą przedstawiać rzetelny i jasny obraz sytuacji majątkowej i finansowej"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -570,7 +570,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "TRUE & FAIR VIEW NARUSZONE — istotne zniekształcenie sprawozdania finansowego!",
-    "_legal_basis": "Art. 5 ust. 1; Art. 77 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 5 ust. 1; Art. 77 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.5 UoR: ❌ TRUE & FAIR VIEW NARUSZONE — ryzyko odpowiedzialności karnej (Art. 77 UoR)!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -586,7 +586,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Stronnicza wycena aktywów — naruszenie True & Fair View!",
-    "_legal_basis": "Art. 5 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 5 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.5 UoR: Stronnicza wycena — aktywa lub pasywa wycenione tendencyjnie (zawyżone/zaniżone)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -602,7 +602,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Ukryte zobowiązania pozabilansowe — naruszenie True & Fair View!",
-    "_legal_basis": "Art. 5 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 5 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.5 UoR: Ukryte zobowiązania — jednostka nie ujawniła zobowiązań pozabilansowych"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -622,7 +622,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "BRAK polityki rachunkowości — obowiązkowa dla jednostek stosujących UoR!",
-    "_legal_basis": "Art. 10 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 10 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.10 UoR: Polityka rachunkowości OBOWIĄZKOWA — dokument opisujący przyjęte zasady rachunkowości"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -638,7 +638,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 10 ust. 1 pkt 1; Art. 32 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 10 ust. 1 pkt 1; Art. 32 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.10 UoR: Polityka musi określać metodę amortyzacji (liniowa, degresywna, naturalna)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -654,7 +654,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 10 ust. 1 pkt 2; Art. 28 ust. 1 pkt 6 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 10 ust. 1 pkt 2; Art. 28 ust. 1 pkt 6 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.10 UoR: Polityka musi określać metodę wyceny zapasów (FIFO, LIFO, średnia ważona, ceny stałe)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -670,7 +670,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 10 ust. 1 pkt 4; Art. 4 ust. 1 pkt 5 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 10 ust. 1 pkt 4; Art. 4 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.10 UoR: Polityka powinna określać próg istotności (zwykle 4-5% sumy bilansowej wg KSR 2)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -685,7 +685,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 10 ust. 1 pkt 3; Art. 47 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 10 ust. 1 pkt 3; Art. 47 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.10 UoR: Polityka musi wskazywać wariant RZiS (porównawczy lub kalkulacyjny)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -701,7 +701,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 10 ust. 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 10 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.10 UoR: Polityka rachunkowości powinna być aktualizowana przy zmianie przepisów lub profilu działalności"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -720,7 +720,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Księgi NIE zamknięte na dzień bilansowy — obowiązek Art.12 UoR!",
-    "_legal_basis": "Art. 12 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 12 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.12 UoR: Zamknij księgi rachunkowe na dzień bilansowy (31.12) w ciągu 3 miesięcy!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -738,7 +738,7 @@ else := {
     "deadline": "31 marca następnego roku",
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Zbliża się termin zamknięcia ksiąg — 3 miesiące od dnia bilansowego!",
-    "_legal_basis": "Art. 12 ust. 1; Art. 52 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 12 ust. 1; Art. 52 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.12 UoR: Termin zamknięcia ksiąg = 3 miesiące od dnia bilansowego (do 31 marca następnego roku)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -754,7 +754,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 ust. 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 12 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.12 UoR: Przenieś salda kont wynikowych (4,5,7) na konto 860 'Rozliczenie wyniku finansowego'"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -770,7 +770,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Próba modyfikacji ostatecznie zamkniętych ksiąg — NARUSZENIE Art.13 UoR!",
-    "_legal_basis": "Art. 13 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 13 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.13 UoR: Ostatecznie zamknięte księgi NIE MOGĄ być modyfikowane! (sankcja karna Art. 77)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -788,7 +788,7 @@ else := {
     "deadline": "6 miesięcy od dnia bilansowego",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sprawozdanie finansowe NIE zatwierdzone w terminie 6 miesięcy!",
-    "_legal_basis": "Art. 13 ust. 2; Art. 53 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 13 ust. 2; Art. 53 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.13 UoR: Zatwierdź sprawozdanie finansowe w ciągu 6 miesięcy od dnia bilansowego"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -804,7 +804,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 13 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 13 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.13 UoR: ✅ Księgi zamknięte prawidłowo — salda przeniesione, sprawozdanie zatwierdzone"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -825,7 +825,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 14 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 14 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.14 UoR: Rok obrotowy domyślnie = rok kalendarzowy (01.01–31.12)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -840,7 +840,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 14 ust. 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 14 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.14 UoR: Pierwszy rok obrotowy może być krótszy niż 12 miesięcy (od dnia rozpoczęcia do 31.12)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -856,7 +856,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "WARNING",
     "_routing_reason": "Zmiana roku obrotowego — wymaga zgłoszenia do US w ciągu 30 dni!",
-    "_legal_basis": "Art. 14 ust. 3 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 14 ust. 3 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.14 UoR: Zmiana roku obrotowego możliwa tylko z ważnych przyczyn — zgłoś do US!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -876,7 +876,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Dowód księgowy niekompletny — brak krytycznych elementów!",
-    "_legal_basis": "Art. 20-21 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 20-21 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.20-21 UoR: Dowód księgowy MUSI zawierać min. 8 elementów krytycznych (nazwa, adres, data, opis, kwota, NIP, nr, podpis)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -893,7 +893,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "WARNING",
     "_routing_reason": "Dowód księgowy — brak elementów niekrytycznych (stawka VAT, metoda płatności, waluta)",
-    "_legal_basis": "Art. 20-21 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 20-21 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.20-21 UoR: Sprawdź kompletność — 15 elementów wymaganych: strony, daty, opis, podpisy, kwoty, VAT, NIP, nr dokumentu, płatność, waluta"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -912,7 +912,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "NIP kontrahenta niezweryfikowany — sprawdź w białej liście VAT!",
-    "_legal_basis": "Art. 21 ust. 1 pkt 5 Ustawy o rachunkowości; Art. 96b VAT",
+    "_legal_basis": "Art. 21 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 96b VAT",
     "_warnings": ["[MICRO] Art.21 UoR: NIP kontrahenta — wymagany i powinien być zweryfikowany w białej liście VAT"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -929,7 +929,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "WARNING",
     "_routing_reason": "Opis operacji zbyt ogólny — powinien umożliwiać identyfikację zdarzenia gospodarczego",
-    "_legal_basis": "Art. 21 ust. 1 pkt 4 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 21 ust. 1 pkt 4 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.21 UoR: Opis operacji — musi umożliwiać jednoznaczną identyfikację zdarzenia gospodarczego"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -947,7 +947,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Data wystawienia ≠ data operacji — sprawdź poprawność przypisania do okresu sprawozdawczego",
-    "_legal_basis": "Art. 21 ust. 1 pkt 1-2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 21 ust. 1 pkt 1-2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.21 UoR: Data wystawienia i data operacji powinny być zgodne z okresem księgowania"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -967,7 +967,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 21 ust. 1 pkt 9 Ustawy o rachunkowości; Art. 30 UoR",
+    "_legal_basis": "Art. 21 ust. 1 pkt 9 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 30 UoR",
     "_warnings": ["[MICRO] Art.21 UoR: Waluta obca — wymaga przeliczenia wg kursu NBP z dnia poprzedzającego operację (Art. 30 UoR)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -984,7 +984,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 20-21 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 20-21 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.20-21 UoR: ✅ Dowód księgowy KOMPLETNY — wszystkie 15 elementów obecne"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1000,7 +1000,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 22 ust. 3; Art. 25 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 22 ust. 3; Art. 25 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.21 UoR: Korekta błędów — przez skreślenie i wpisanie poprawnej treści z datą i podpisem (lub dokument korygujący)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1020,7 +1020,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Podwójny zapis NARUSZONY — suma Wn ≠ Ma!",
-    "_legal_basis": "Art. 22 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 22 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.22 UoR: PODWÓJNY ZAPIS — każda operacja musi mieć stronę Wn i Ma o równej wartości!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1038,7 +1038,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Zapisy NIE są chronologiczne — naruszenie zasady rzetelności ksiąg!",
-    "_legal_basis": "Art. 22 ust. 1; Art. 24 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 22 ust. 1; Art. 24 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.22 UoR: Zapisy księgowe MUSZĄ być chronologiczne i kompletne!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1054,7 +1054,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Próba KASOWANIA zapisu księgowego — NARUSZENIE Art.22 UoR!",
-    "_legal_basis": "Art. 22 ust. 1; Art. 25 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 22 ust. 1; Art. 25 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.22 UoR: ZAKAZ KASOWANIA ZAPISÓW! Korekta tylko przez storno lub zapis korygujący!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1070,7 +1070,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 22 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 22 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.22 UoR: ✅ Podwójny zapis prawidłowy — Wn = Ma"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1089,7 +1089,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "WARNING",
     "_routing_reason": "Luki w numeracji zapisów — potencjalne naruszenie rzetelności ksiąg",
-    "_legal_basis": "Art. 24 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 24 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.22/24 UoR: Luki w numeracji zapisów — każdy zapis powinien być kolejno numerowany"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1108,7 +1108,7 @@ else := {
     "sanction_base_amount_pln": 5000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "NIERZETELNE KSIĘGI — sankcja KKS: grzywna do 720 stawek dziennych!",
-    "_legal_basis": "Art. 24; Art. 77 Ustawy o rachunkowości; Art. 60-61 KKS",
+    "_legal_basis": "Art. 24; Art. 77 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 60-61 KKS",
     "_warnings": ["[MICRO] Art.22/24 UoR: 🔴 NIERZETELNE KSIĘGI! Sankcja: grzywna, kara ograniczenia wolności lub pozbawienia wolności do lat 2!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1128,7 +1128,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Księgi nierzetelne — zapisy niezgodne ze stanem rzeczywistym!",
-    "_legal_basis": "Art. 24 ust. 2-3 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 24 ust. 2-3 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.24 UoR: Nierzetelne księgi = zapisy NIE odzwierciedlają stanu rzeczywistego — UTRATA mocy dowodowej!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1144,7 +1144,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Nierzetelne księgi — US może OSZACOWAĆ dochód! (Art. 23 OrdPU)",
-    "_legal_basis": "Art. 24 ust. 2 Ustawy o rachunkowości; Art. 23 OrdPU",
+    "_legal_basis": "Art. 24 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 23 OrdPU",
     "_warnings": ["[MICRO] Art.24 UoR: Nierzetelne księgi → US szacuje dochód → potencjalnie WYŻSZY podatek + odsetki!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1164,7 +1164,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "BRAK inwentaryzacji rocznej — obowiązek Art.26 UoR!",
-    "_legal_basis": "Art. 26 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 26 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.26 UoR: Inwentaryzacja OBOWIĄZKOWA minimum raz w roku — termin: 3 miesiące od dnia bilansowego"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1182,7 +1182,7 @@ else := {
     "method": "spis_z_natury",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 26 ust. 1 pkt 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 26 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.26 UoR: SPIS Z NATURY — towary, materiały, półfabrykaty, produkty gotowe, gotówka"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1199,7 +1199,7 @@ else := {
     "method": "potwierdzenie_sald",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 26 ust. 1 pkt 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 26 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.26 UoR: POTWIERDZENIE SALD — należności od kontrahentów, zobowiązania wobec dostawców"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1216,7 +1216,7 @@ else := {
     "method": "weryfikacja_analityczna",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 26 ust. 1 pkt 3 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 26 ust. 1 pkt 3 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.26 UoR: WERYFIKACJA ANALITYCZNA — RMK, rozliczenia międzyokresowe, rezerwy"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1233,7 +1233,7 @@ else := {
     "inventory_deadline": "do 31 marca następnego roku",
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Inwentaryzacja NIE przeprowadzona w terminie 3 miesięcy od dnia bilansowego!",
-    "_legal_basis": "Art. 26 ust. 3 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 26 ust. 3 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.26 UoR: Termin inwentaryzacji = 3 miesiące od dnia bilansowego (do 31 marca)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1250,7 +1250,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Różnice inwentaryzacyjne — nadwyżki/niedobory wymagają wyjaśnienia i rozliczenia!",
-    "_legal_basis": "Art. 27 ust. 1-2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 27 ust. 1-2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.27 UoR: Różnice inwentaryzacyjne — wyjaśnij, rozlicz w księgach, skoryguj podatek!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1268,7 +1268,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 27 ust. 3 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 27 ust. 3 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.27 UoR: Dokumentacja inwentaryzacji: arkusze spisowe, protokoły, potwierdzenia sald"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1284,7 +1284,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 26 ust. 3 pkt 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 26 ust. 3 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.26 UoR: Inwentaryzacja ciągła — alternatywnie do okresowej, dla jednostek z ewidencją ilościowo-wartościową"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1305,7 +1305,7 @@ else := {
     "valuation_method": "cena_nabycia",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 28 ust. 1 pkt 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 28 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.28 UoR: Cena nabycia = cena zakupu + koszty uboczne (transport, montaż, ubezpieczenie, cło)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1323,7 +1323,7 @@ else := {
     "valuation_method": "koszt_wytworzenia",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 28 ust. 1 pkt 8; Art. 28 ust. 3 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 28 ust. 1 pkt 8; Art. 28 ust. 3 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.28 UoR: Koszt wytworzenia = materiały bezpośrednie + robocizna bezpośrednia + uzasadniona część kosztów pośrednich"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1340,7 +1340,7 @@ else := {
     "valuation_method": "wartosc_godziwa",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 28 ust. 1 pkt 5 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 28 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.28 UoR: Wartość godziwa = cena możliwa do uzyskania na aktywnym rynku (np. akcje, obligacje, udziały)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1357,7 +1357,7 @@ else := {
     "valuation_method": "nizsza_z_cen",
     "_routing": "WARNING",
     "_routing_reason": "Wycena zapasów — wartość rynkowa niższa od ceny nabycia! Konieczny odpis aktualizujący.",
-    "_legal_basis": "Art. 28 ust. 1 pkt 6 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 28 ust. 1 pkt 6 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.28 UoR: Zapasy wyceniaj wg NIŻSZEJ z cen: nabycia/zakupu lub rynkowej netto (ostrożność!)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1376,7 +1376,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Trwała utrata wartości aktywa — konieczny ODPIS AKTUALIZUJĄCY!",
-    "_legal_basis": "Art. 28 ust. 7 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 28 ust. 7 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.28 UoR: Odpis aktualizujący przy trwałej utracie wartości — nie wyżej niż do poziomu wartości odzyskiwalnej"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1396,7 +1396,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 28 ust. 7-8 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 28 ust. 7-8 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.28 UoR: Wartość bilansowa netto = wartość początkowa - umorzenie - odpisy aktualizujące"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1412,7 +1412,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Należności przeterminowane >180 dni — rozważ odpis aktualizujący!",
-    "_legal_basis": "Art. 28 ust. 1 pkt 7; Art. 35b Ustawy o rachunkowości",
+    "_legal_basis": "Art. 28 ust. 1 pkt 7; Art. 35b ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.28 UoR: Należności — wycena w kwocie wymagającej zapłaty z uwzględnieniem odpisów aktualizujących"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1429,7 +1429,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 28 ust. 1 pkt 8 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 28 ust. 1 pkt 8 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.28 UoR: Zobowiązania — wycena w kwocie wymagającej zapłaty (wartość nominalna)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1449,7 +1449,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "WARNING",
     "_routing_reason": "Transakcja w walucie obcej — przelicz na PLN wg kursu NBP z dnia poprzedzającego!",
-    "_legal_basis": "Art. 27 ust. 1-2; Art. 30 ust. 1 pkt 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 27 ust. 1-2; Art. 30 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.27 UoR: Waluty obce — przeliczaj wg KURSU NBP z dnia poprzedzającego dzień operacji (lub średniego NBP dla dnia bilansowego)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1467,7 +1467,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Dzień bilansowy — przelicz aktywa/pasywa walutowe wg kursu NBP z 31.12!",
-    "_legal_basis": "Art. 27 ust. 2; Art. 30 ust. 1 pkt 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 27 ust. 2; Art. 30 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.27 UoR: Wycena bilansowa walut — kurs NBP z dnia bilansowego. Różnice kursowe → przychody/koszty finansowe"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1484,7 +1484,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 27 ust. 2; Art. 30 ust. 2-4 Ustawy o rachunkowości; Art. 15a PIT",
+    "_legal_basis": "Art. 27 ust. 2; Art. 30 ust. 2-4 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 15a PIT",
     "_warnings": ["[MICRO] Art.27 UoR: Różnice kursowe dzielą się na ZREALIZOWANE (przy zapłacie) i NIEZREALIZOWANE (przy wycenie bilansowej)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1504,7 +1504,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 30 ust. 1 pkt 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 30 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.30 UoR: Wycena walut obcych — kurs NBP z dnia poprzedzającego dzień operacji"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1521,7 +1521,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 30 ust. 1 pkt 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 30 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.30 UoR: Na dzień bilansowy — wycena wg kursu NBP z dnia bilansowego (31.12)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1537,7 +1537,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 30 ust. 2-4 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 30 ust. 2-4 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.30 UoR: Różnice kursowe — zrealizowane (zapłata) i niezrealizowane (wycena bilansowa) → przychody/koszty finansowe"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1557,7 +1557,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 32 ust. 1-2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 32 ust. 1-2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.32 UoR: Amortyzacja UoR = okres ekonomicznej użyteczności (elastyczny!), NIE wg stawek KŚT (sztywnych)!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1574,7 +1574,7 @@ else := {
     "method": "liniowa",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 32 ust. 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 32 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.32 UoR: Metoda liniowa = równe odpisy przez cały okres użyteczności ekonomicznej"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1592,7 +1592,7 @@ else := {
     "method": "degresywna",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 32 ust. 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 32 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.32 UoR: Metoda degresywna = wyższe odpisy w pierwszych latach (współczynnik 2.0), gdy intensywne użytkowanie"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1609,7 +1609,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "UoR vs PIT: różnica w amortyzacji generuje AKTYWA/REZERWY z tytułu odroczonego podatku!",
-    "_legal_basis": "Art. 32-33 Ustawy o rachunkowości; Art. 22a-22o PIT; Art. 37 UoR",
+    "_legal_basis": "Art. 32-33 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 22a-22o PIT; Art. 37 UoR",
     "_warnings": ["[MICRO] Art.32/37 UoR: RÓŻNICA UoR vs PIT w amortyzacji → podatek odroczony (DTL/DTA). Prowadź DWIE ewidencje!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1626,7 +1626,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 32 ust. 3 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 32 ust. 3 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.32 UoR: Amortyzację rozpocznij od miesiąca następującego po miesiącu przyjęcia środka trwałego do użytkowania"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1642,7 +1642,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 32 ust. 6 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 32 ust. 6 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.32 UoR: Środki trwałe <10 000 PLN mogą być amortyzowane jednorazowo w miesiącu oddania do użytkowania"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1664,7 +1664,7 @@ else := {
     "rmk_type": "czynne",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 39 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 39 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.39 UoR: RMK czynne = koszty poniesione w bieżącym okresie, dotyczące przyszłych okresów (np. prenumerata, ubezpieczenie)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1681,7 +1681,7 @@ else := {
     "rmk_type": "bierne",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 39 ust. 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 39 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.39 UoR: RMK bierne = rezerwy na przyszłe zobowiązania przypadające na bieżący okres (np. naprawy gwarancyjne)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1698,7 +1698,7 @@ else := {
     "rmk_type": "przychody_przyszlych_okresow",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 39 ust. 2a Ustawy o rachunkowości; Art. 41 UoR",
+    "_legal_basis": "Art. 39 ust. 2a ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 41 UoR",
     "_warnings": ["[MICRO] Art.39/41 UoR: Przychody przyszłych okresów = wpływy dotyczące przyszłych okresów sprawozdawczych"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1714,7 +1714,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 39 ust. 1-2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 39 ust. 1-2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.39 UoR: Podziel RMK na krótkoterminowe (≤12 mies.) i długoterminowe (>12 mies.) w bilansie"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1730,7 +1730,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "RMK nieprawidłowo rozliczone — koszty w niewłaściwym okresie!",
-    "_legal_basis": "Art. 39 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 39 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.39 UoR: RMK rozliczane nieprawidłowo — sprawdź przypisanie do właściwych okresów sprawozdawczych"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1750,7 +1750,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sprawozdanie finansowe NIE sporządzone — obowiązek Art.45 UoR!",
-    "_legal_basis": "Art. 45 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 45 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.45 UoR: Sprawozdanie finansowe OBOWIĄZKOWE dla jednostek stosujących UoR — termin 3 miesiące od dnia bilansowego"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1767,7 +1767,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Bilans NIEZBILANSOWANY — Aktywa ≠ Pasywa + Kapitał!",
-    "_legal_basis": "Art. 46 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 46 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.46 UoR: Bilans: Aktywa trwałe + obrotowe = Kapitał własny + Zobowiązania długo- i krótkoterminowe"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1786,7 +1786,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 47 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 47 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.47 UoR: RZiS: Przychody - Koszty = Wynik finansowy brutto - Podatek = Wynik netto"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1802,7 +1802,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "WARNING",
     "_routing_reason": "Informacja dodatkowa niekompletna — wymagane ujawnienia: polityka rachunkowości, zdarzenia po dniu bilansowym, instrumenty finansowe",
-    "_legal_basis": "Art. 48 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 48 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.48 UoR: Informacja dodatkowa musi zawierać: wprowadzenie, politykę rachunkowości, noty objaśniające"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1818,7 +1818,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 48b Ustawy o rachunkowości",
+    "_legal_basis": "Art. 48b ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.48b UoR: Cash Flow — 3 segmenty: operacyjny (metoda pośrednia), inwestycyjny, finansowy"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1835,7 +1835,7 @@ else := {
     "deadline": "31 marca następnego roku",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sprawozdanie finansowe NIE złożone w terminie do 31 marca!",
-    "_legal_basis": "Art. 52 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 52 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.52 UoR: Termin złożenia sprawozdania finansowego: 31 marca + 15 dni na zatwierdzenie i złożenie"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1856,7 +1856,7 @@ else := {
     "audit_threshold_assets_pln": 12500000,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Przekroczone progi badania sprawozdania — obowiązkowy audyt przez biegłego rewidenta!",
-    "_legal_basis": "Art. 53; Art. 64 ust. 1 pkt 4 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 53; Art. 64 ust. 1 pkt 4 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.53 UoR: Badanie sprawozdania przez biegłego rewidenta obowiązkowe gdy suma bilansowa >2.5M EUR lub przychody >5M EUR"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1875,7 +1875,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 53; Art. 64 ust. 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 53; Art. 64 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.53 UoR: JDG poniżej progów — ZWOLNIENIE z obowiązku badania sprawozdania przez biegłego rewidenta"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1900,7 +1900,7 @@ else := {
     "retention_years": 5,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 74 ust. 1 pkt 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 74 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.74 UoR: Księgi rachunkowe + dowody księgowe przechowuj 5 LAT od końca roku obrotowego"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1916,7 +1916,7 @@ else := {
     "retention_years": 50,
     "_routing": "WARNING",
     "_routing_reason": "⚠️ Listy płac — okres przechowywania 50 LAT! Nie niszcz przedwcześnie!",
-    "_legal_basis": "Art. 74 ust. 1 pkt 2; Art. 74 ust. 1a Ustawy o rachunkowości",
+    "_legal_basis": "Art. 74 ust. 1 pkt 2; Art. 74 ust. 1a ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.74 UoR: ⚠️ Dokumenty płacowe (listy płac, karty wynagrodzeń) przechowuj 50 LAT! (nie 5 lat jak reszta)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1933,7 +1933,7 @@ else := {
     "retention": "BEZTERMINOWO",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 74 ust. 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 74 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.74 UoR: Sprawozdania finansowe przechowuj BEZTERMINOWO (stałe)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1948,7 +1948,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 74 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 74 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.74 UoR: Po 5 latach od końca roku obrotowego można protokolarnie zniszczyć dokumenty księgowe (UWAGA na płace 50 lat!)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1968,7 +1968,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 76 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 76 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.76 UoR: Kierownik jednostki (JDG = przedsiębiorca) ponosi OSOBISTĄ odpowiedzialność za księgi rachunkowe!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1983,7 +1983,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 76 ust. 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 76 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.76 UoR: Nawet przy outsourcowanej księgowości — ODPOWIEDZIALNOŚĆ ZAWSZE po stronie przedsiębiorcy JDG!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -1999,7 +1999,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 76 ust. 3 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 76 ust. 3 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.76 UoR: Powierzenie prowadzenia ksiąg biuru rachunkowemu — ODPOWIEDZIALNOŚĆ NADAL TWOJA (przedsiębiorco)!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2020,7 +2020,7 @@ else := {
     "sanction_severity": "HIGH",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "SANKCJA KARNA Art.77 UoR: Nierzetelne księgi → grzywna, ograniczenie wolności, pozbawienie wolności do lat 2!",
-    "_legal_basis": "Art. 77 pkt 1 Ustawy o rachunkowości; Art. 60-61 KKS",
+    "_legal_basis": "Art. 77 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 60-61 KKS",
     "_warnings": ["[MICRO] Art.77 UoR: ⚖️ SANKCJA KARNA — grzywna do 720 stawek dziennych lub kara pozbawienia wolności do lat 2!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2038,7 +2038,7 @@ else := {
     "sanction_severity": "HIGH",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "SANKCJA KARNA: Brak sprawozdania finansowego — Art. 77 pkt 2 UoR!",
-    "_legal_basis": "Art. 77 pkt 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 77 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.77 UoR: Niesporządzenie lub niezłożenie sprawozdania finansowego → sankcja karna!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2057,7 +2057,7 @@ else := {
     "sanction_severity": "MEDIUM",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Brak obowiązkowego badania sprawozdania przez biegłego rewidenta!",
-    "_legal_basis": "Art. 77 pkt 3 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 77 pkt 3 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.77 UoR: Niepoddanie sprawozdania badaniu przez biegłego rewidenta → sankcja karna!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2080,7 +2080,7 @@ else := {
     "sanction_severity": "CRITICAL",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "FAŁSZOWANIE DOKUMENTACJI KSIĘGOWEJ — przestępstwo! Sankcja do 5 lat pozbawienia wolności!",
-    "_legal_basis": "Art. 77 pkt 4 Ustawy o rachunkowości; Art. 270-271 KK",
+    "_legal_basis": "Art. 77 pkt 4 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 270-271 KK",
     "_warnings": ["[MICRO] Art.77 UoR: 🔴 FAŁSZOWANIE DOKUMENTÓW — przestępstwo ścigane z oskarżenia publicznego! Do 5 lat więzienia!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2098,7 +2098,7 @@ else := {
     "sanction_severity": "CRITICAL",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "UPORCZYWE naruszenie przepisów UoR — zaostrzona sankcja karna!",
-    "_legal_basis": "Art. 77 pkt 5; Art. 79 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 77 pkt 5; Art. 79 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.77/79 UoR: Uporczywe naruszenia → zaostrzone sankcje: grzywna + ograniczenie wolności + zakaz prowadzenia działalności"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2121,7 +2121,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "WARNING",
     "_routing_reason": "Nieterminowe złożenie sprawozdania finansowego — wykroczenie skarbowe!",
-    "_legal_basis": "Art. 79 Ustawy o rachunkowości; Art. 56 KKS",
+    "_legal_basis": "Art. 79 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 56 KKS",
     "_warnings": ["[MICRO] Art.79 UoR: Wykroczenie skarbowe — nieterminowe złożenie → grzywna 1-10 stawek dziennych"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2140,7 +2140,7 @@ else := {
     "sanction_base_amount_pln": 500,
     "_routing": "WARNING",
     "_routing_reason": "Brak polityki rachunkowości — wykroczenie!",
-    "_legal_basis": "Art. 79; Art. 10 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 79; Art. 10 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.79 UoR: Brak polityki rachunkowości → wykroczenie → grzywna"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2160,7 +2160,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "WARNING",
     "_routing_reason": "Zmiana polityki rachunkowości — wymaga retrospektywnego przekształcenia danych porównawczych!",
-    "_legal_basis": "Art. 16 ust. 1; Art. 8 ust. 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 16 ust. 1; Art. 8 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.16 UoR: Zmiana polityki rachunkowości → RETROSPEKTYWNE przekształcenie + ujawnienie w informacji dodatkowej"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2176,7 +2176,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Zmiana polityki rachunkowości BEZ uzasadnienia w informacji dodatkowej!",
-    "_legal_basis": "Art. 16 ust. 1; Art. 48 ust. 1 pkt 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 16 ust. 1; Art. 48 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.16 UoR: Zmiana polityki → OBOWIĄZKOWE ujawnienie: przyczyna, wpływ na wynik, dane porównawcze"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2192,7 +2192,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Zmiana metody amortyzacji — skwantyfikuj wpływ na wynik finansowy!",
-    "_legal_basis": "Art. 16 ust. 1; Art. 32 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 16 ust. 1; Art. 32 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.16 UoR: Zmiana metody amortyzacji (np. liniowa→degresywna) → ujawnij efekt liczbowy na wynik bieżący i przyszłe okresy"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2208,7 +2208,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "WARNING",
     "_routing_reason": "Zmiana polityki rachunkowości musi być zaakceptowana przez biegłego rewidenta (jeśli podlega badaniu)!",
-    "_legal_basis": "Art. 16 ust. 2; Art. 53 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 16 ust. 2; Art. 53 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.16 UoR: Zmiana polityki → poinformuj biegłego rewidenta — wymaga akceptacji i ujawnienia w opinii"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2235,7 +2235,7 @@ else := {
     "sanction_severity": "CRITICAL",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "CAŁKOWITY BRAK KSIĄG RACHUNKOWYCH — przestępstwo! Grzywna + kara pozbawienia wolności do lat 2!",
-    "_legal_basis": "Art. 78 pkt 1 Ustawy o rachunkowości; Art. 60-61 KKS; Art. 303 KK",
+    "_legal_basis": "Art. 78 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 60-61 KKS; Art. 303 KK",
     "_warnings": ["[MICRO] Art.78 UoR: 🔴 CAŁKOWITY BRAK KSIĄG — przestępstwo ścigane z urzędu! Grzywna + pozbawienie wolności!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2253,7 +2253,7 @@ else := {
     "sanction_severity": "CRITICAL",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Nieprowadzenie ksiąg rachunkowych mimo przekroczenia 2M EUR — przestępstwo!",
-    "_legal_basis": "Art. 78 pkt 1; Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 78 pkt 1; Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.78 UoR: Przekroczenie 2M EUR BEZ przejścia na księgi rachunkowe → przestępstwo + szacowanie dochodu przez US!"]
 } {
     annual_revenue_pln := object.get(input.jdg_entrepreneur, "annual_revenue_actual", 0)
@@ -2275,7 +2275,7 @@ else := {
     "sanction_severity": "CRITICAL",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "ZNISZCZENIE/UKRYCIE KSIĄG — przestępstwo! Kara do 5 lat pozbawienia wolności!",
-    "_legal_basis": "Art. 78 pkt 2 Ustawy o rachunkowości; Art. 276 KK",
+    "_legal_basis": "Art. 78 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 276 KK",
     "_warnings": ["[MICRO] Art.78 UoR: 🔴 ZNISZCZENIE/UKRYCIE KSIĄG — przestępstwo! Do 5 lat pozbawienia wolności + przepadek korzyści!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2297,7 +2297,7 @@ else := {
     "sanction_severity": "CRITICAL",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "ZAKAZ prowadzenia działalności — sankcja administracyjna za rażące naruszenia UoR!",
-    "_legal_basis": "Art. 80 Ustawy o rachunkowości; Art. 373-376 Prawa upadłościowego",
+    "_legal_basis": "Art. 80 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 373-376 Prawa upadłościowego",
     "_warnings": ["[MICRO] Art.80 UoR: ZAKAZ prowadzenia działalności gospodarczej (1-10 lat) za rażące naruszenie przepisów o rachunkowości!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2316,7 +2316,7 @@ else := {
     "sanction_severity": "CRITICAL",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "PRZEPADEK korzyści majątkowej uzyskanej w wyniku naruszeń UoR!",
-    "_legal_basis": "Art. 80 ust. 2; Art. 81 Ustawy o rachunkowości; Art. 44-45 KK",
+    "_legal_basis": "Art. 80 ust. 2; Art. 81 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 44-45 KK",
     "_warnings": ["[MICRO] Art.80-81 UoR: Przepadek korzyści majątkowej + nawiązka na rzecz Skarbu Państwa — nawet do równowartości wyrządzonej szkody!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2334,7 +2334,7 @@ else := {
     "sanction_severity": "HIGH",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "NAWIĄZKA na rzecz Skarbu Państwa — dodatkowa sankcja finansowa za naruszenia!",
-    "_legal_basis": "Art. 81 Ustawy o rachunkowości; Art. 39 KK",
+    "_legal_basis": "Art. 81 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 39 KK",
     "_warnings": ["[MICRO] Art.81 UoR: Nawiązka — dodatkowa kara finansowa do 1 000 000 PLN na rzecz Skarbu Państwa za poważne naruszenia!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2354,7 +2354,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "JDG jako jednostka dominująca — obowiązek skonsolidowanego sprawozdania finansowego!",
-    "_legal_basis": "Art. 7 ust. 1; Art. 55 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 7 ust. 1; Art. 55 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.7 UoR: JDG jako jednostka dominująca w grupie kapitałowej → obowiązek konsolidacji sprawozdań!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2370,7 +2370,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 7 ust. 2; Art. 56 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 7 ust. 2; Art. 56 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.7 UoR: Grupa może być zwolniona z konsolidacji jeśli łącznie < 2.5M EUR sumy bilansowej i <5M EUR przychodów"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2390,7 +2390,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "WARNING",
     "_routing_reason": "Brak dokumentacji opisującej politykę rachunkowości — wymagane Art.9 UoR!",
-    "_legal_basis": "Art. 9; Art. 10 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 9; Art. 10 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.9 UoR: Dokumentacja opisująca przyjęte zasady (polityka) rachunkowości — OBOWIĄZKOWA dla każdej jednostki UoR"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2406,7 +2406,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 9; Art. 10 ust. 1 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 9; Art. 10 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.9 UoR: Dokumentacja musi zawierać: metodę amortyzacji, metodę wyceny zapasów, wariant RZiS, próg istotności, plan kont, zasady RMK"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2425,7 +2425,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 ust. 1; Art. 14 ust. 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 15 ust. 1; Art. 14 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.15 UoR: Pierwszy rok obrotowy — od dnia rozpoczęcia do 31.12. Może być krótszy niż 12 miesięcy."]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2441,7 +2441,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Rozpoczęcie UoR w trakcie roku — wymaga bilansu otwarcia na dzień rozpoczęcia!",
-    "_legal_basis": "Art. 15 ust. 1; Art. 12 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 15 ust. 1; Art. 12 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.15 UoR: Otwórz księgi na dzień rozpoczęcia — sporządź bilans otwarcia (inwentaryzacja + wycena wg Art.28)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2461,7 +2461,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Niewykorzystane urlopy pracownicze — utwórz RMK bierne na dzień bilansowy!",
-    "_legal_basis": "Art. 38 ust. 1; Art. 39 ust. 2 Ustawy o rachunkowości; KSR 6",
+    "_legal_basis": "Art. 38 ust. 1; Art. 39 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); KSR 6",
     "_warnings": ["[MICRO] Art.38 UoR: Niewykorzystane urlopy → RMK bierne na dzień bilansowy (wynagrodzenie + ZUS). Ostrożność!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2479,7 +2479,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "WARNING",
     "_routing_reason": "Odprawy emerytalne/nagrody jubileuszowe — rozważ utworzenie rezerwy długoterminowej!",
-    "_legal_basis": "Art. 38 ust. 1; Art. 35d; Art. 39 ust. 2 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 38 ust. 1; Art. 35d; Art. 39 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.38 UoR: Odprawy emerytalne/rentowe + nagrody jubileuszowe → rezerwy długoterminowe (wycena aktuarialna)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2518,7 +2518,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Instrumenty finansowe — wymagana wycena wg wartości godziwej na dzień bilansowy!",
-    "_legal_basis": "Art. 41 ust. 1; Art. 28 ust. 1 pkt 5 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 41 ust. 1; Art. 28 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.41 UoR: Instrumenty finansowe wyceniaj wg wartości godziwej. Zmiany → przychody/koszty finansowe lub kapitał z aktualizacji wyceny"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2535,7 +2535,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Transakcja z jednostką powiązaną — wymaga ujawnienia w informacji dodatkowej!",
-    "_legal_basis": "Art. 42 ust. 1; Art. 44 Ustawy o rachunkowości; MSR 24",
+    "_legal_basis": "Art. 42 ust. 1; Art. 44 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); MSR 24",
     "_warnings": ["[MICRO] Art.42 UoR: Transakcje z jednostkami powiązanymi (rodzina, spółki powiązane) → OBOWIĄZKOWE ujawnienie: charakter, kwota, warunki"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2551,7 +2551,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "WARNING",
     "_routing_reason": "Transakcje wewnątrzgrupowe — wyłącz przy konsolidacji!",
-    "_legal_basis": "Art. 44 ust. 1-2; Art. 60 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 44 ust. 1-2; Art. 60 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.44 UoR: Transakcje między jednostkami powiązanymi w grupie → WYŁĄCZENIA konsolidacyjne (sprzedaż, należności, zobowiązania)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2572,7 +2572,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Brak rezerwy na znane ryzyko — naruszenie Art.35 UoR!",
-    "_legal_basis": "Art. 35 ust. 1; Art. 35d Ustawy o rachunkowości; KSR 6",
+    "_legal_basis": "Art. 35 ust. 1; Art. 35d ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); KSR 6",
     "_warnings": ["[MICRO] Art.35 UoR: Rezerwy OBOWIĄZKOWE na: naprawy gwarancyjne, restrukturyzację, sprawy sądowe, straty z umów"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2591,7 +2591,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 35d ust. 1-4 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 35d ust. 1-4 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.35d UoR: Rezerwy wycenia się w uzasadnionej, wiarygodnie oszacowanej wartości. Dziel na krótko- i długoterminowe."]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2607,7 +2607,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Wykryto dodatnie różnice przejściowe — utwórz REZERWĘ z tytułu odroczonego podatku (DTL)!",
-    "_legal_basis": "Art. 37 ust. 1-6 Ustawy o rachunkowości; KSR 2",
+    "_legal_basis": "Art. 37 ust. 1-6 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); KSR 2",
     "_warnings": ["[MICRO] Art.37 UoR: Dodatnie różnice przejściowe (UoR szybciej amortyzuje niż PIT) → REZERWA DTL (19% CIT)"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2625,7 +2625,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 37 ust. 4-6 Ustawy o rachunkowości",
+    "_legal_basis": "Art. 37 ust. 4-6 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] Art.37 UoR: Ujemne różnice przejściowe → AKTYWA DTA (tylko jeśli prawdopodobne osiągnięcie dochodu). Ostrożność!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2649,7 +2649,7 @@ else := {
     "integration": "UoR_PIT_DEFERRED_TAX",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 37 Ustawy o rachunkowości; Art. 22a-22o PIT",
+    "_legal_basis": "Art. 37 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 22a-22o PIT",
     "_warnings": ["[MICRO] INTEGRACJA UoR↔PIT: Różnice przejściowe w amortyzacji → podatek odroczony (DTL/DTA). Prowadź DWIE ewidencje!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2666,7 +2666,7 @@ else := {
     "integration": "UoR_VAT_DOCUMENTS",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 20-21 Ustawy o rachunkowości; Art. 106e VAT; Art. 109 VAT",
+    "_legal_basis": "Art. 20-21 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 106e VAT; Art. 109 VAT",
     "_warnings": ["[MICRO] INTEGRACJA UoR↔VAT: Faktury VAT są jednocześnie dowodami księgowymi UoR — muszą spełniać OBYDWA reżimy!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2683,7 +2683,7 @@ else := {
     "integration": "UoR_KKS_SANCTIONS",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Naruszenie UoR może być jednocześnie przestępstwem KKS — podwójna sankcja!",
-    "_legal_basis": "Art. 77 Ustawy o rachunkowości; Art. 60-61 KKS; Art. 56 KKS",
+    "_legal_basis": "Art. 77 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.); Art. 60-61 KKS; Art. 56 KKS",
     "_warnings": ["[MICRO] INTEGRACJA UoR↔KKS: Nierzetelne księgi → jednocześnie sankcja UoR (Art.77) + KKS (Art.60-61). Podwójne ryzyko!"]
 } {
     object.get(input.jdg_entrepreneur, "uses_uor", false) == true
@@ -2705,7 +2705,7 @@ else := {
     "max_priority": 160150,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. 591)",
+    "_legal_basis": "Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)",
     "_warnings": ["[MICRO] UoR v9.0: 38 artykułów, 138 reguł z REALNĄ logiką prawną (up from 6 articles / 174 stubs in v7.0)"]
 } {
     true

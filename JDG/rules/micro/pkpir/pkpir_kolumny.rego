@@ -32,7 +32,7 @@ decide := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§10 rozporządzenia MF z 15.11.2025 r.",
+    "_legal_basis": "§10 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
     "_warnings": ["[MICRO] §10 PKPiR: PKPiR musi zawierać 19 kolumn — kol.1-19"]
 } { input.jdg_entrepreneur.uses_pkpir == true }
 
@@ -47,7 +47,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§10 ust. 1 pkt 1 rozporządzenia MF w sprawie PKPiR",
+    "_legal_basis": "§10 ust. 1 pkt 1 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
     "_warnings": ["[MICRO] §10 PKPiR: Kol.1 — LP (liczba porządkowa) — numerowane ciągiem od 1"]
 } {
     input.jdg_entrepreneur.uses_pkpir == true
@@ -65,7 +65,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§10 ust. 1 pkt 2-3 rozporządzenia MF w sprawie PKPiR",
+    "_legal_basis": "§10 ust. 1 pkt 2-3 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
     "_warnings": [sprintf("[MICRO] §10 PKPiR: Kol.2=%s (data zdarzenia), Kol.3=%s (data wpisu)", [event_date, entry_date])]
 } {
     event_date := object.get(input.invoice, "transaction_date", "")
@@ -84,7 +84,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§10 ust. 1 pkt 4-5 rozporządzenia MF w sprawie PKPiR",
+    "_legal_basis": "§10 ust. 1 pkt 4-5 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
     "_warnings": [sprintf("[MICRO] §10 PKPiR: Kol.4=%s (nr faktury/dowodu), Kol.5=%s (nazwa kontrahenta)", [doc_number, vendor_name])]
 } {
     doc_number := object.get(input.invoice, "document_number", "")
@@ -103,7 +103,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§11 rozporządzenia MF w sprawie PKPiR",
+    "_legal_basis": "§11 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
     "_warnings": ["[MICRO] §11 PKPiR: Kol.6 — opis zdarzenia, Kol.7 — sprzedane towary/usługi, Kol.8 — pozostałe przychody, Kol.9 — opis"]
 } {
     input.invoice.direction == "SALE"
@@ -120,7 +120,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§12 rozporządzenia MF w sprawie PKPiR",
+    "_legal_basis": "§12 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
     "_warnings": ["[MICRO] §12 PKPiR: Kol.10 — zakup towarów, Kol.11 — koszty uboczne, Kol.12 — wynagrodzenia, Kol.13 — pozostałe, Kol.14 — NKUP"]
 } {
     input.invoice.direction == "PURCHASE"
@@ -137,7 +137,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§12 ust. 4-5 rozporządzenia MF w sprawie PKPiR",
+    "_legal_basis": "§12 ust. 4-5 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
     "_warnings": [sprintf("[MICRO] §12 PKPiR: Kol.15 — amortyzacja %.2f PLN, Kol.16 — VAT naliczony %.2f PLN", [depr, vat])]
 } {
     depr := object.get(input.invoice, "depreciation_monthly", 0)
@@ -156,7 +156,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§12 ust. 6 rozporządzenia MF w sprawie PKPiR",
+    "_legal_basis": "§12 ust. 6 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
     "_warnings": [sprintf("[MICRO] §12 PKPiR: Kol.17 — uwagi. Przyczyna korekty: %s", [correction_reason])]
 } {
     correction_reason := object.get(input.invoice, "correction_reason", "")
@@ -175,7 +175,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "PKPiR bez wymaganych 19 kolumn — księga nierzetelna (Art. 56 KKS)!",
-    "_legal_basis": "§10 rozporządzenia MF w sprawie PKPiR + Art. 56 KKS",
+    "_legal_basis": "§10 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów + Art. 56 KKS",
     "_warnings": [sprintf("[MICRO] §10 PKPiR: BLOCK — księga ma %d kolumn zamiast 19. Nierzetelność = KKS Art.56!", [col_count])]
 } {
     col_count := object.get(input.jdg_entrepreneur, "pkpir_column_count", 0)
@@ -223,17 +223,3 @@ else := {
     object.get(input.jdg_entrepreneur, "pkpir_entry_count", 0) > 0
 }
 
-# ── Fallback ──────────────────────────────────────────────────────────────────
-else := {
-    "matched": true, "rule_id": "jdg.micro.pkpir_columns.p10.fallback",
-    "package": "jdg.micro.pkpir_columns", "priority": 80199,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§10-12 rozporządzenia MF w sprawie PKPiR",
-    "_warnings": ["[MICRO] PKPiR struktura kolumn — OK"]
-} { true }

@@ -32,7 +32,7 @@ decide := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§21 rozporządzenia MF z 15.11.2025 r.",
+    "_legal_basis": "§21 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
     "_warnings": ["[MICRO] §21 PKPiR: Kol.14 — wydatki niestanowiące kosztów uzyskania przychodu (NKUP). NIE wliczaj do dochodu PIT!"]
 } { input.jdg_entrepreneur.uses_pkpir == true }
 
@@ -209,17 +209,3 @@ else := {
     amount := object.get(input.jdg_entrepreneur, "nkup_misclassified_amount", 0)
 }
 
-# ── Fallback ──────────────────────────────────────────────────────────────────
-else := {
-    "matched": true, "rule_id": "jdg.micro.pkpir_nkup.p21.fallback",
-    "package": "jdg.micro.pkpir_nkup", "priority": 80499,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§21 rozporządzenia MF w sprawie PKPiR",
-    "_warnings": ["[MICRO] PKPiR NKUP — wydatek stanowi KUP"]
-} { true }

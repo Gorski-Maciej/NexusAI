@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a16 — Czynny żal (6 reguł)                                    ║
-# ║  Legal basis: Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930) — NIE Ordynacja Podatkowa                                                   ║
+# ║  Legal basis: Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.) — NIE Ordynacja Podatkowa                                                   ║
 # ║  v7.0 FIX (LUKA-U3/M5): Poprawiona podstawa prawna z OrdPU → KKS Art. 16    ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
@@ -44,7 +44,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: sprawdzenie czy przepis ma zastosowanie do JDG — UWAGA: podstawa KKS a16, nie OrdPU"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -72,7 +72,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -100,7 +100,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a16_r3_pass", false) == true
@@ -128,7 +128,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a16_r4_checks", false) == true
@@ -156,7 +156,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -184,7 +184,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930)",
+    "_legal_basis": "Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["[MICRO] Czynny żal: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -192,7 +192,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a20 — Zaległość podatkowa (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a20.r1: ord_a20_r1_eligibility
@@ -217,7 +217,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zaległość podatkowa: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -245,7 +245,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zaległość podatkowa: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -273,7 +273,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zaległość podatkowa: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a20_r3_pass", false) == true
@@ -301,7 +301,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zaległość podatkowa: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a20_r4_checks", false) == true
@@ -329,7 +329,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zaległość podatkowa: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -337,7 +337,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a21 — Nadpłata (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a21.r1: ord_a21_r1_eligibility
@@ -362,7 +362,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -390,7 +390,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -418,7 +418,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a21_r3_pass", false) == true
@@ -446,7 +446,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a21_r4_checks", false) == true
@@ -474,7 +474,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -482,7 +482,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a26 — Odpowiedzialność podatnika (8 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a26.r1: ord_a26_r1_eligibility
@@ -507,7 +507,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność podatnika: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -535,7 +535,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność podatnika: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -563,7 +563,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność podatnika: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a26_r3_pass", false) == true
@@ -591,7 +591,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność podatnika: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a26_r4_checks", false) == true
@@ -619,7 +619,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność podatnika: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -647,7 +647,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność podatnika: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -675,7 +675,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność podatnika: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a26_exception", false) == true
@@ -703,7 +703,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność podatnika: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a26_exception_2", false) == true
@@ -711,7 +711,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a27 — Odpowiedzialność małżonka (6 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a27.r1: ord_a27_r1_eligibility
@@ -736,7 +736,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność małżonka: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -764,7 +764,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność małżonka: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -792,7 +792,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność małżonka: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a27_r3_pass", false) == true
@@ -820,7 +820,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność małżonka: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a27_r4_checks", false) == true
@@ -848,7 +848,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność małżonka: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -876,7 +876,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność małżonka: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -884,7 +884,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a28 — Odpowiedzialność rozwiedzionego małżonka (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a28.r1: ord_a28_r1_eligibility
@@ -909,7 +909,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność rozwiedzionego małżonka: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -937,7 +937,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność rozwiedzionego małżonka: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -965,7 +965,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność rozwiedzionego małżonka: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a28_r3_pass", false) == true
@@ -993,7 +993,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność rozwiedzionego małżonka: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a28_r4_checks", false) == true
@@ -1021,7 +1021,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odpowiedzialność rozwiedzionego małżonka: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -1029,7 +1029,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a29 — Podatnicy, płatnicy, inkasenci (8 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a29.r1: ord_a29_r1_eligibility
@@ -1054,7 +1054,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Podatnicy, płatnicy, inkasenci: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1082,7 +1082,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Podatnicy, płatnicy, inkasenci: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -1110,7 +1110,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Podatnicy, płatnicy, inkasenci: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a29_r3_pass", false) == true
@@ -1138,7 +1138,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Podatnicy, płatnicy, inkasenci: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a29_r4_checks", false) == true
@@ -1166,7 +1166,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Podatnicy, płatnicy, inkasenci: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -1194,7 +1194,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Podatnicy, płatnicy, inkasenci: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -1222,7 +1222,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Podatnicy, płatnicy, inkasenci: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a29_exception", false) == true
@@ -1250,7 +1250,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Podatnicy, płatnicy, inkasenci: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a29_exception_2", false) == true
@@ -1258,7 +1258,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a32 — Obowiązek składania deklaracji (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a32.r1: ord_a32_r1_eligibility
@@ -1283,7 +1283,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek składania deklaracji: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1311,7 +1311,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek składania deklaracji: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -1339,7 +1339,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek składania deklaracji: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a32_r3_pass", false) == true
@@ -1367,7 +1367,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek składania deklaracji: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a32_r4_checks", false) == true
@@ -1395,7 +1395,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek składania deklaracji: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -1403,7 +1403,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a33 — Obowiązek zapłaty podatku (8 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a33.r1: ord_a33_r1_eligibility
@@ -1428,7 +1428,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek zapłaty podatku: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1456,7 +1456,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek zapłaty podatku: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -1484,7 +1484,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek zapłaty podatku: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a33_r3_pass", false) == true
@@ -1512,7 +1512,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek zapłaty podatku: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a33_r4_checks", false) == true
@@ -1540,7 +1540,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek zapłaty podatku: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -1568,7 +1568,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek zapłaty podatku: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -1596,7 +1596,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek zapłaty podatku: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a33_exception", false) == true
@@ -1624,7 +1624,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek zapłaty podatku: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a33_exception_2", false) == true
@@ -1632,7 +1632,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a47 — Odsetki za zwłokę — stawka (8 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a47.r1: ord_a47_r1_eligibility
@@ -1657,7 +1657,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki za zwłokę — stawka: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1685,7 +1685,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki za zwłokę — stawka: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -1713,7 +1713,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki za zwłokę — stawka: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a47_r3_pass", false) == true
@@ -1741,7 +1741,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki za zwłokę — stawka: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a47_r4_checks", false) == true
@@ -1769,7 +1769,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki za zwłokę — stawka: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -1797,7 +1797,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki za zwłokę — stawka: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -1825,7 +1825,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki za zwłokę — stawka: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a47_exception", false) == true
@@ -1853,7 +1853,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki za zwłokę — stawka: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a47_exception_2", false) == true
@@ -1887,7 +1887,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — opłata prolongacyjna: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1915,7 +1915,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — opłata prolongacyjna: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -1943,7 +1943,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — opłata prolongacyjna: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a48_r3_pass", false) == true
@@ -1971,7 +1971,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — opłata prolongacyjna: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a48_r4_checks", false) == true
@@ -1999,7 +1999,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — opłata prolongacyjna: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -2033,7 +2033,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Umorzenie odsetek: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2061,7 +2061,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Umorzenie odsetek: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -2089,7 +2089,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Umorzenie odsetek: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a51_r3_pass", false) == true
@@ -2117,7 +2117,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Umorzenie odsetek: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a51_r4_checks", false) == true
@@ -2145,7 +2145,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Umorzenie odsetek: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -2153,7 +2153,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a52 — Kolejność zaliczania wpłat (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a52.r1: ord_a52_r1_eligibility
@@ -2178,7 +2178,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Kolejność zaliczania wpłat: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2206,7 +2206,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Kolejność zaliczania wpłat: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -2234,7 +2234,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Kolejność zaliczania wpłat: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a52_r3_pass", false) == true
@@ -2262,7 +2262,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Kolejność zaliczania wpłat: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a52_r4_checks", false) == true
@@ -2290,7 +2290,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Kolejność zaliczania wpłat: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -2298,7 +2298,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a53 — Odsetki — zasady ogólne (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a53.r1: ord_a53_r1_eligibility
@@ -2323,7 +2323,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — zasady ogólne: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2351,7 +2351,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — zasady ogólne: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -2379,7 +2379,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — zasady ogólne: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a53_r3_pass", false) == true
@@ -2407,7 +2407,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — zasady ogólne: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a53_r4_checks", false) == true
@@ -2435,7 +2435,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — zasady ogólne: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -2443,7 +2443,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a54 — Odsetki — minimalna kwota (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a54.r1: ord_a54_r1_eligibility
@@ -2468,7 +2468,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — minimalna kwota: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2496,7 +2496,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — minimalna kwota: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -2524,7 +2524,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — minimalna kwota: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a54_r3_pass", false) == true
@@ -2552,7 +2552,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — minimalna kwota: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a54_r4_checks", false) == true
@@ -2580,7 +2580,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — minimalna kwota: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -2588,7 +2588,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a56 — Odsetki — stawka podstawowa (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ║  v7.0 FIX (LUKA-U5/K56-2): reference_rate = 200% stopy lombardowej NBP       ║
 # ║  → Moduł enterprise: interest_calculator_enterprise.rego (get_reference_rate) ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
@@ -2615,7 +2615,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — stawka podstawowa: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2643,7 +2643,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — stawka podstawowa: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -2671,7 +2671,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — stawka podstawowa: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a56_r3_pass", false) == true
@@ -2699,7 +2699,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — stawka podstawowa: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a56_r4_checks", false) == true
@@ -2727,7 +2727,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki — stawka podstawowa: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -2735,7 +2735,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a56b — Odsetki karne 150% (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a56b.r1: ord_a56b_r1_eligibility
@@ -2760,7 +2760,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki karne 150%: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2788,7 +2788,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki karne 150%: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -2816,7 +2816,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki karne 150%: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a56b_r3_pass", false) == true
@@ -2844,7 +2844,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki karne 150%: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a56b_r4_checks", false) == true
@@ -2872,7 +2872,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odsetki karne 150%: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -2880,7 +2880,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a67a — Ulgi w spłacie — rodzaje (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a67a.r1: ord_a67a_r1_eligibility
@@ -2905,7 +2905,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Ulgi w spłacie — rodzaje: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2933,7 +2933,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Ulgi w spłacie — rodzaje: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -2961,7 +2961,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Ulgi w spłacie — rodzaje: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a67a_r3_pass", false) == true
@@ -2989,7 +2989,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Ulgi w spłacie — rodzaje: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a67a_r4_checks", false) == true
@@ -3017,7 +3017,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Ulgi w spłacie — rodzaje: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -3025,7 +3025,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a67b — Odroczenie / raty (8 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a67b.r1: ord_a67b_r1_eligibility
@@ -3050,7 +3050,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odroczenie / raty: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -3078,7 +3078,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odroczenie / raty: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -3106,7 +3106,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odroczenie / raty: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a67b_r3_pass", false) == true
@@ -3134,7 +3134,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odroczenie / raty: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a67b_r4_checks", false) == true
@@ -3162,7 +3162,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odroczenie / raty: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -3190,7 +3190,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odroczenie / raty: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -3218,7 +3218,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odroczenie / raty: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a67b_exception", false) == true
@@ -3246,7 +3246,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odroczenie / raty: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a67b_exception_2", false) == true
@@ -3254,7 +3254,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a67c — Ulgi automatyczne (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a67c.r1: ord_a67c_r1_eligibility
@@ -3279,7 +3279,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Ulgi automatyczne: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -3307,7 +3307,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Ulgi automatyczne: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -3335,7 +3335,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Ulgi automatyczne: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a67c_r3_pass", false) == true
@@ -3363,7 +3363,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Ulgi automatyczne: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a67c_r4_checks", false) == true
@@ -3391,7 +3391,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Ulgi automatyczne: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -3399,7 +3399,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a67d — Zabezpieczenie przy ulgach (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a67d.r1: ord_a67d_r1_eligibility
@@ -3424,7 +3424,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zabezpieczenie przy ulgach: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -3452,7 +3452,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zabezpieczenie przy ulgach: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -3480,7 +3480,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zabezpieczenie przy ulgach: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a67d_r3_pass", false) == true
@@ -3508,7 +3508,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zabezpieczenie przy ulgach: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a67d_r4_checks", false) == true
@@ -3536,7 +3536,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zabezpieczenie przy ulgach: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -3544,7 +3544,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a67e — Odwołanie ulgi (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a67e.r1: ord_a67e_r1_eligibility
@@ -3569,7 +3569,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odwołanie ulgi: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -3597,7 +3597,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odwołanie ulgi: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -3625,7 +3625,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odwołanie ulgi: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a67e_r3_pass", false) == true
@@ -3653,7 +3653,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odwołanie ulgi: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a67e_r4_checks", false) == true
@@ -3681,7 +3681,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Odwołanie ulgi: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -3689,7 +3689,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a70 — Przedawnienie zobowiązań (15 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a70.r1: ord_a70_r1_eligibility
@@ -3714,7 +3714,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -3742,7 +3742,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -3770,7 +3770,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a70_r3_pass", false) == true
@@ -3798,7 +3798,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a70_r4_checks", false) == true
@@ -3826,7 +3826,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -3854,7 +3854,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -3882,7 +3882,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a70_exception", false) == true
@@ -3910,7 +3910,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a70_exception_2", false) == true
@@ -3938,7 +3938,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ord", false) == true
@@ -3966,7 +3966,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ord", false) == true
@@ -3994,7 +3994,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "ord_deadline_required", false) == true
@@ -4025,7 +4025,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Przedawnienie zobowiązań",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a70_violation", false) == true
@@ -4053,7 +4053,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: edge case — nietypowa sytuacja wymagająca uwagi"]
 } {
     object.get(input.invoice, "ord_a70_edge_case", false) == true
@@ -4081,7 +4081,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: drugi edge case — rzadki scenariusz"]
 } {
     object.get(input.invoice, "ord_a70_edge_case_2", false) == true
@@ -4109,7 +4109,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie zobowiązań: walidacja formalna — sprawdź dokumenty"]
 } {
     object.get(input.invoice, "ord_validation_required", false) == true
@@ -4117,7 +4117,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a71 — Przerwanie i zawieszenie przedawnienia (10 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a71.r1: ord_a71_r1_eligibility
@@ -4142,7 +4142,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przerwanie i zawieszenie przedawnienia: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -4170,7 +4170,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przerwanie i zawieszenie przedawnienia: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -4198,7 +4198,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przerwanie i zawieszenie przedawnienia: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a71_r3_pass", false) == true
@@ -4226,7 +4226,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przerwanie i zawieszenie przedawnienia: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a71_r4_checks", false) == true
@@ -4254,7 +4254,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przerwanie i zawieszenie przedawnienia: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -4282,7 +4282,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przerwanie i zawieszenie przedawnienia: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -4310,7 +4310,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przerwanie i zawieszenie przedawnienia: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a71_exception", false) == true
@@ -4338,7 +4338,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przerwanie i zawieszenie przedawnienia: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a71_exception_2", false) == true
@@ -4366,7 +4366,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przerwanie i zawieszenie przedawnienia: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ord", false) == true
@@ -4394,7 +4394,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przerwanie i zawieszenie przedawnienia: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ord", false) == true
@@ -4402,7 +4402,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a72 — Nadpłata — definicja (8 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a72.r1: ord_a72_r1_eligibility
@@ -4427,7 +4427,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — definicja: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -4455,7 +4455,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — definicja: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -4483,7 +4483,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — definicja: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a72_r3_pass", false) == true
@@ -4511,7 +4511,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — definicja: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a72_r4_checks", false) == true
@@ -4539,7 +4539,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — definicja: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -4567,7 +4567,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — definicja: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -4595,7 +4595,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — definicja: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a72_exception", false) == true
@@ -4623,7 +4623,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — definicja: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a72_exception_2", false) == true
@@ -4631,7 +4631,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a73 — Nadpłata — zaliczenie (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a73.r1: ord_a73_r1_eligibility
@@ -4656,7 +4656,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — zaliczenie: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -4684,7 +4684,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — zaliczenie: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -4712,7 +4712,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — zaliczenie: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a73_r3_pass", false) == true
@@ -4740,7 +4740,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — zaliczenie: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a73_r4_checks", false) == true
@@ -4768,7 +4768,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — zaliczenie: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -4776,7 +4776,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a74 — Nadpłata — wniosek o zwrot (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a74.r1: ord_a74_r1_eligibility
@@ -4801,7 +4801,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — wniosek o zwrot: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -4829,7 +4829,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — wniosek o zwrot: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -4857,7 +4857,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — wniosek o zwrot: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a74_r3_pass", false) == true
@@ -4885,7 +4885,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — wniosek o zwrot: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a74_r4_checks", false) == true
@@ -4913,7 +4913,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — wniosek o zwrot: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -4921,7 +4921,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a75 — Nadpłata po przedawnieniu (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a75.r1: ord_a75_r1_eligibility
@@ -4946,7 +4946,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata po przedawnieniu: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -4974,7 +4974,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata po przedawnieniu: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -5002,7 +5002,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata po przedawnieniu: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a75_r3_pass", false) == true
@@ -5030,7 +5030,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata po przedawnieniu: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a75_r4_checks", false) == true
@@ -5058,7 +5058,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata po przedawnieniu: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -5066,7 +5066,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a76 — Nadpłata — minimum 5 PLN (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a76.r1: ord_a76_r1_eligibility
@@ -5091,7 +5091,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — minimum 5 PLN: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -5119,7 +5119,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — minimum 5 PLN: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -5147,7 +5147,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — minimum 5 PLN: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a76_r3_pass", false) == true
@@ -5175,7 +5175,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — minimum 5 PLN: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a76_r4_checks", false) == true
@@ -5203,7 +5203,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — minimum 5 PLN: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -5211,7 +5211,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a77 — Nadpłata — dziedziczenie (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a77.r1: ord_a77_r1_eligibility
@@ -5236,7 +5236,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — dziedziczenie: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -5264,7 +5264,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — dziedziczenie: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -5292,7 +5292,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — dziedziczenie: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a77_r3_pass", false) == true
@@ -5320,7 +5320,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — dziedziczenie: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a77_r4_checks", false) == true
@@ -5348,7 +5348,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — dziedziczenie: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -5356,7 +5356,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a78 — Nadpłata — termin korekty (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a78.r1: ord_a78_r1_eligibility
@@ -5381,7 +5381,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — termin korekty: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -5409,7 +5409,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — termin korekty: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -5437,7 +5437,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — termin korekty: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a78_r3_pass", false) == true
@@ -5465,7 +5465,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — termin korekty: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a78_r4_checks", false) == true
@@ -5493,7 +5493,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — termin korekty: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -5501,7 +5501,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a79 — Nadpłata — korekta przed/po kontroli (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a79.r1: ord_a79_r1_eligibility
@@ -5526,7 +5526,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — korekta przed/po kontroli: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -5554,7 +5554,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — korekta przed/po kontroli: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -5582,7 +5582,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — korekta przed/po kontroli: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a79_r3_pass", false) == true
@@ -5610,7 +5610,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — korekta przed/po kontroli: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a79_r4_checks", false) == true
@@ -5638,7 +5638,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — korekta przed/po kontroli: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -5646,7 +5646,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a80 — Nadpłata — waluta obca (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a80.r1: ord_a80_r1_eligibility
@@ -5671,7 +5671,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — waluta obca: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -5699,7 +5699,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — waluta obca: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -5727,7 +5727,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — waluta obca: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a80_r3_pass", false) == true
@@ -5755,7 +5755,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — waluta obca: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a80_r4_checks", false) == true
@@ -5783,7 +5783,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Nadpłata — waluta obca: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -5791,7 +5791,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a81 — Korekta deklaracji (10 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a81.r1: ord_a81_r1_eligibility
@@ -5816,7 +5816,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta deklaracji: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -5844,7 +5844,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta deklaracji: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -5872,7 +5872,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta deklaracji: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a81_r3_pass", false) == true
@@ -5900,7 +5900,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta deklaracji: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a81_r4_checks", false) == true
@@ -5928,7 +5928,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta deklaracji: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -5956,7 +5956,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta deklaracji: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -5984,7 +5984,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta deklaracji: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a81_exception", false) == true
@@ -6012,7 +6012,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta deklaracji: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a81_exception_2", false) == true
@@ -6040,7 +6040,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta deklaracji: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ord", false) == true
@@ -6068,7 +6068,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta deklaracji: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ord", false) == true
@@ -6076,7 +6076,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a81b — Korekta w trakcie kontroli (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a81b.r1: ord_a81b_r1_eligibility
@@ -6101,7 +6101,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta w trakcie kontroli: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -6129,7 +6129,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta w trakcie kontroli: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -6157,7 +6157,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta w trakcie kontroli: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a81b_r3_pass", false) == true
@@ -6185,7 +6185,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta w trakcie kontroli: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a81b_r4_checks", false) == true
@@ -6213,7 +6213,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Korekta w trakcie kontroli: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -6221,7 +6221,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a86 — Przechowywanie dokumentów (8 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a86.r1: ord_a86_r1_eligibility
@@ -6246,7 +6246,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przechowywanie dokumentów: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -6274,7 +6274,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przechowywanie dokumentów: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -6302,7 +6302,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przechowywanie dokumentów: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a86_r3_pass", false) == true
@@ -6330,7 +6330,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przechowywanie dokumentów: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a86_r4_checks", false) == true
@@ -6358,7 +6358,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przechowywanie dokumentów: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -6386,7 +6386,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przechowywanie dokumentów: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -6414,7 +6414,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przechowywanie dokumentów: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a86_exception", false) == true
@@ -6442,7 +6442,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Przechowywanie dokumentów: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a86_exception_2", false) == true
@@ -6450,7 +6450,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a87 — Zwrot nadpłaty — 45 dni (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a87.r1: ord_a87_r1_eligibility
@@ -6475,7 +6475,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zwrot nadpłaty — 45 dni: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -6503,7 +6503,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zwrot nadpłaty — 45 dni: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -6531,7 +6531,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zwrot nadpłaty — 45 dni: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a87_r3_pass", false) == true
@@ -6559,7 +6559,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zwrot nadpłaty — 45 dni: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a87_r4_checks", false) == true
@@ -6587,7 +6587,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Zwrot nadpłaty — 45 dni: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -6595,7 +6595,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a119a — Klauzula GAAR (10 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a119a.r1: ord_a119a_r1_eligibility
@@ -6620,7 +6620,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Klauzula GAAR: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -6648,7 +6648,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Klauzula GAAR: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -6676,7 +6676,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Klauzula GAAR: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a119a_r3_pass", false) == true
@@ -6704,7 +6704,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Klauzula GAAR: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a119a_r4_checks", false) == true
@@ -6732,7 +6732,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Klauzula GAAR: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -6760,7 +6760,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Klauzula GAAR: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -6788,7 +6788,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Klauzula GAAR: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a119a_exception", false) == true
@@ -6816,7 +6816,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Klauzula GAAR: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a119a_exception_2", false) == true
@@ -6844,7 +6844,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Klauzula GAAR: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ord", false) == true
@@ -6872,7 +6872,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Klauzula GAAR: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ord", false) == true
@@ -6880,7 +6880,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a120 — Postępowanie — wszczęcie (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a120.r1: ord_a120_r1_eligibility
@@ -6905,7 +6905,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — wszczęcie: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -6933,7 +6933,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — wszczęcie: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -6961,7 +6961,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — wszczęcie: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a120_r3_pass", false) == true
@@ -6989,7 +6989,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — wszczęcie: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a120_r4_checks", false) == true
@@ -7017,7 +7017,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — wszczęcie: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -7025,7 +7025,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a121 — Postępowanie — strona (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a121.r1: ord_a121_r1_eligibility
@@ -7050,7 +7050,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — strona: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -7078,7 +7078,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — strona: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -7106,7 +7106,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — strona: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a121_r3_pass", false) == true
@@ -7134,7 +7134,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — strona: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a121_r4_checks", false) == true
@@ -7162,7 +7162,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — strona: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -7170,7 +7170,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a122 — Postępowanie — pełnomocnik (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a122.r1: ord_a122_r1_eligibility
@@ -7195,7 +7195,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — pełnomocnik: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -7223,7 +7223,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — pełnomocnik: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -7251,7 +7251,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — pełnomocnik: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a122_r3_pass", false) == true
@@ -7279,7 +7279,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — pełnomocnik: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a122_r4_checks", false) == true
@@ -7307,7 +7307,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — pełnomocnik: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -7315,7 +7315,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a123 — Postępowanie — dowody (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a123.r1: ord_a123_r1_eligibility
@@ -7340,7 +7340,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — dowody: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -7368,7 +7368,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — dowody: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -7396,7 +7396,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — dowody: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a123_r3_pass", false) == true
@@ -7424,7 +7424,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — dowody: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a123_r4_checks", false) == true
@@ -7452,7 +7452,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — dowody: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -7460,7 +7460,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a124 — Postępowanie — terminy (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a124.r1: ord_a124_r1_eligibility
@@ -7485,7 +7485,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — terminy: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -7513,7 +7513,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — terminy: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -7541,7 +7541,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — terminy: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a124_r3_pass", false) == true
@@ -7569,7 +7569,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — terminy: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a124_r4_checks", false) == true
@@ -7597,7 +7597,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — terminy: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -7605,7 +7605,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a125 — Postępowanie — decyzja (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a125.r1: ord_a125_r1_eligibility
@@ -7630,7 +7630,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — decyzja: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -7658,7 +7658,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — decyzja: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -7686,7 +7686,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — decyzja: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a125_r3_pass", false) == true
@@ -7714,7 +7714,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — decyzja: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a125_r4_checks", false) == true
@@ -7742,7 +7742,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — decyzja: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -7750,7 +7750,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a126 — Postępowanie — odwołanie (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a126.r1: ord_a126_r1_eligibility
@@ -7775,7 +7775,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — odwołanie: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -7803,7 +7803,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — odwołanie: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -7831,7 +7831,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — odwołanie: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a126_r3_pass", false) == true
@@ -7859,7 +7859,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — odwołanie: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a126_r4_checks", false) == true
@@ -7887,7 +7887,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — odwołanie: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -7895,7 +7895,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a127 — Postępowanie — skarga do WSA (5 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a127.r1: ord_a127_r1_eligibility
@@ -7920,7 +7920,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — skarga do WSA: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -7948,7 +7948,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — skarga do WSA: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -7976,7 +7976,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — skarga do WSA: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a127_r3_pass", false) == true
@@ -8004,7 +8004,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — skarga do WSA: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a127_r4_checks", false) == true
@@ -8032,7 +8032,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Postępowanie — skarga do WSA: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -8040,7 +8040,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a138a — Pełnomocnictwa podatkowe (30 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a138a.r1: ord_a138a_r1_eligibility
@@ -8065,7 +8065,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -8093,7 +8093,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -8121,7 +8121,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a138a_r3_pass", false) == true
@@ -8149,7 +8149,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a138a_r4_checks", false) == true
@@ -8177,7 +8177,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -8205,7 +8205,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -8233,7 +8233,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a138a_exception", false) == true
@@ -8261,7 +8261,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a138a_exception_2", false) == true
@@ -8289,7 +8289,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ord", false) == true
@@ -8317,7 +8317,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ord", false) == true
@@ -8345,7 +8345,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "ord_deadline_required", false) == true
@@ -8376,7 +8376,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Pełnomocnictwa podatkowe",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a138a_violation", false) == true
@@ -8404,7 +8404,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: edge case — nietypowa sytuacja wymagająca uwagi"]
 } {
     object.get(input.invoice, "ord_a138a_edge_case", false) == true
@@ -8432,7 +8432,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: drugi edge case — rzadki scenariusz"]
 } {
     object.get(input.invoice, "ord_a138a_edge_case_2", false) == true
@@ -8460,7 +8460,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: walidacja formalna — sprawdź dokumenty"]
 } {
     object.get(input.invoice, "ord_validation_required", false) == true
@@ -8488,7 +8488,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -8516,7 +8516,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -8544,7 +8544,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a138a_r18_pass", false) == true
@@ -8572,7 +8572,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a138a_r19_checks", false) == true
@@ -8600,7 +8600,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -8628,7 +8628,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -8656,7 +8656,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a138a_exception", false) == true
@@ -8684,7 +8684,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a138a_exception_2", false) == true
@@ -8712,7 +8712,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ord", false) == true
@@ -8740,7 +8740,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ord", false) == true
@@ -8768,7 +8768,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "ord_deadline_required", false) == true
@@ -8799,7 +8799,7 @@ else := {
     "sanction_base_amount_pln": 50000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Pełnomocnictwa podatkowe",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a138a_violation", false) == true
@@ -8827,7 +8827,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: edge case — nietypowa sytuacja wymagająca uwagi"]
 } {
     object.get(input.invoice, "ord_a138a_edge_case", false) == true
@@ -8855,7 +8855,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: drugi edge case — rzadki scenariusz"]
 } {
     object.get(input.invoice, "ord_a138a_edge_case_2", false) == true
@@ -8883,7 +8883,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Pełnomocnictwa podatkowe: walidacja formalna — sprawdź dokumenty"]
 } {
     object.get(input.invoice, "ord_validation_required", false) == true
@@ -8891,7 +8891,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ord.a193a — JPK na żądanie (10 reguł)                                    ║
-# ║  Legal basis: Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)                                                   ║
+# ║  Legal basis: Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ord.a193a.r1: ord_a193a_r1_eligibility
@@ -8916,7 +8916,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] JPK na żądanie: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -8944,7 +8944,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] JPK na żądanie: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ord_condition_met", false) == true
@@ -8972,7 +8972,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] JPK na żądanie: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a193a_r3_pass", false) == true
@@ -9000,7 +9000,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] JPK na żądanie: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ord_a193a_r4_checks", false) == true
@@ -9028,7 +9028,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] JPK na żądanie: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ord_exclusion_applies", false) == false
@@ -9056,7 +9056,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] JPK na żądanie: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ord_exclusion_2", false) == false
@@ -9084,7 +9084,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] JPK na żądanie: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ord_a193a_exception", false) == true
@@ -9112,7 +9112,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] JPK na żądanie: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ord_a193a_exception_2", false) == true
@@ -9140,7 +9140,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] JPK na żądanie: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_ord", false) == true
@@ -9168,7 +9168,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] JPK na żądanie: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_ord", false) == true
@@ -9202,7 +9202,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 100 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 100: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a100_u1_p1_check", false) == true
@@ -9229,7 +9229,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 100 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 100: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a100_u2_p2_check", false) == true
@@ -9256,7 +9256,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a101_u1_p2_check", false) == true
@@ -9283,7 +9283,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a101_u3_p3_check", false) == true
@@ -9310,7 +9310,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a101_u4_p4_check", false) == true
@@ -9337,7 +9337,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 101 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 101: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a101_u5_p1_check", false) == true
@@ -9364,7 +9364,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 102 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 102: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a102_u2_p3_check", false) == true
@@ -9391,7 +9391,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 102 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 102: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a102_u3_p4_check", false) == true
@@ -9418,7 +9418,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 102 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 102: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a102_u4_p1_check", false) == true
@@ -9445,7 +9445,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 102 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 102: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a102_u5_p2_check", false) == true
@@ -9472,7 +9472,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 103 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 103: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a103_u1_p3_check", false) == true
@@ -9499,7 +9499,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 103 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 103: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a103_u2_p4_check", false) == true
@@ -9526,7 +9526,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 103 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 103: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a103_u3_p1_check", false) == true
@@ -9553,7 +9553,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 103 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 103: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a103_u4_p2_check", false) == true
@@ -9580,7 +9580,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 104 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 104: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a104_u1_p4_check", false) == true
@@ -9607,7 +9607,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 104 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 104: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a104_u2_p1_check", false) == true
@@ -9634,7 +9634,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 104 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 104: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a104_u3_p2_check", false) == true
@@ -9661,7 +9661,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 104 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 104: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a104_u5_p3_check", false) == true
@@ -9688,7 +9688,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 105 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 105: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a105_u1_p1_check", false) == true
@@ -9715,7 +9715,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 105 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 105: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a105_u2_p2_check", false) == true
@@ -9742,7 +9742,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 105 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 105: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a105_u4_p3_check", false) == true
@@ -9769,7 +9769,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 105 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 105: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a105_u5_p4_check", false) == true
@@ -9796,7 +9796,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 106 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 106: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a106_u1_p2_check", false) == true
@@ -9823,7 +9823,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 106 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 106: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a106_u3_p3_check", false) == true
@@ -9850,7 +9850,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 106 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 106: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a106_u4_p4_check", false) == true
@@ -9877,7 +9877,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 106 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 106: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a106_u5_p1_check", false) == true
@@ -9904,7 +9904,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 107 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 107: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a107_u2_p3_check", false) == true
@@ -9931,7 +9931,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 107 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 107: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a107_u3_p4_check", false) == true
@@ -9958,7 +9958,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 107 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 107: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a107_u4_p1_check", false) == true
@@ -9985,7 +9985,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 107 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 107: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a107_u5_p2_check", false) == true
@@ -10012,7 +10012,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 108 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 108: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a108_u1_p3_check", false) == true
@@ -10039,7 +10039,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 108 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 108: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a108_u2_p4_check", false) == true
@@ -10066,7 +10066,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 108 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 108: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a108_u3_p1_check", false) == true
@@ -10093,7 +10093,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 108 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 108: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a108_u4_p2_check", false) == true
@@ -10120,7 +10120,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a109_u1_p4_check", false) == true
@@ -10147,7 +10147,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a109_u2_p1_check", false) == true
@@ -10174,7 +10174,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a109_u3_p2_check", false) == true
@@ -10201,7 +10201,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a109_u5_p3_check", false) == true
@@ -10228,7 +10228,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 110 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 110: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a110_u1_p1_check", false) == true
@@ -10255,7 +10255,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 110 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 110: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a110_u2_p2_check", false) == true
@@ -10282,7 +10282,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 110 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 110: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a110_u4_p3_check", false) == true
@@ -10309,7 +10309,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 110 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 110: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a110_u5_p4_check", false) == true
@@ -10336,7 +10336,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 111 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 111: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a111_u1_p2_check", false) == true
@@ -10363,7 +10363,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 111 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 111: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a111_u3_p3_check", false) == true
@@ -10390,7 +10390,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 111 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 111: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a111_u4_p4_check", false) == true
@@ -10417,7 +10417,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 111 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 111: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a111_u5_p1_check", false) == true
@@ -10444,7 +10444,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 112 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 112: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a112_u2_p3_check", false) == true
@@ -10471,7 +10471,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 112 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 112: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a112_u3_p4_check", false) == true
@@ -10498,7 +10498,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 112 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 112: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a112_u4_p1_check", false) == true
@@ -10525,7 +10525,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 112 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 112: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a112_u5_p2_check", false) == true
@@ -10552,7 +10552,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 113 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 113: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a113_u1_p3_check", false) == true
@@ -10579,7 +10579,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 113 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 113: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a113_u2_p4_check", false) == true
@@ -10606,7 +10606,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 113 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 113: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a113_u3_p1_check", false) == true
@@ -10633,7 +10633,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 113 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 113: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a113_u4_p2_check", false) == true
@@ -10660,7 +10660,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 114 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 114: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a114_u1_p4_check", false) == true
@@ -10687,7 +10687,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 114 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 114: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a114_u2_p1_check", false) == true
@@ -10714,7 +10714,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 114 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 114: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a114_u3_p2_check", false) == true
@@ -10741,7 +10741,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 114 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 114: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a114_u5_p3_check", false) == true
@@ -10768,7 +10768,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 115 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 115: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a115_u1_p1_check", false) == true
@@ -10795,7 +10795,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 115 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 115: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a115_u2_p2_check", false) == true
@@ -10822,7 +10822,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 115 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 115: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a115_u4_p3_check", false) == true
@@ -10849,7 +10849,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 115 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 115: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a115_u5_p4_check", false) == true
@@ -10876,7 +10876,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 116 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 116: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a116_u1_p2_check", false) == true
@@ -10903,7 +10903,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 116 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 116: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a116_u3_p3_check", false) == true
@@ -10930,7 +10930,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 116 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 116: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a116_u4_p4_check", false) == true
@@ -10957,7 +10957,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 116 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 116: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a116_u5_p1_check", false) == true
@@ -10984,7 +10984,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 117 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 117: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a117_u2_p3_check", false) == true
@@ -11011,7 +11011,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 117 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 117: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a117_u3_p4_check", false) == true
@@ -11038,7 +11038,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 117 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 117: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a117_u4_p1_check", false) == true
@@ -11065,7 +11065,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 117 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 117: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a117_u5_p2_check", false) == true
@@ -11092,7 +11092,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 118 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 118: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a118_u1_p3_check", false) == true
@@ -11119,7 +11119,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 118 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 118: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a118_u2_p4_check", false) == true
@@ -11146,7 +11146,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 118 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 118: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a118_u3_p1_check", false) == true
@@ -11173,7 +11173,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 118 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 118: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a118_u4_p2_check", false) == true
@@ -11200,7 +11200,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 119 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 119: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a119_u1_p4_check", false) == true
@@ -11227,7 +11227,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 119 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 119: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a119_u2_p1_check", false) == true
@@ -11254,7 +11254,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 119 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 119: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a119_u3_p2_check", false) == true
@@ -11281,7 +11281,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 119 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 119: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a119_u5_p3_check", false) == true
@@ -11308,7 +11308,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 120 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 120: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a120_u1_p1_check", false) == true
@@ -11335,7 +11335,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 120 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 120: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a120_u2_p2_check", false) == true
@@ -11362,7 +11362,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 120 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 120: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a120_u4_p3_check", false) == true
@@ -11389,7 +11389,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 120 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 120: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a120_u5_p4_check", false) == true
@@ -11416,7 +11416,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 121 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 121: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a121_u1_p2_check", false) == true
@@ -11443,7 +11443,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 121 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 121: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a121_u3_p3_check", false) == true
@@ -11470,7 +11470,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 121 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 121: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a121_u4_p4_check", false) == true
@@ -11497,7 +11497,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 121 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 121: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a121_u5_p1_check", false) == true
@@ -11524,7 +11524,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 122 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 122: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a122_u2_p3_check", false) == true
@@ -11551,7 +11551,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 122 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 122: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a122_u3_p4_check", false) == true
@@ -11578,7 +11578,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 122 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 122: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a122_u4_p1_check", false) == true
@@ -11605,7 +11605,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 122 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 122: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a122_u5_p2_check", false) == true
@@ -11632,7 +11632,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 123 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 123: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a123_u1_p3_check", false) == true
@@ -11659,7 +11659,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 123 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 123: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a123_u2_p4_check", false) == true
@@ -11686,7 +11686,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 123 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 123: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a123_u3_p1_check", false) == true
@@ -11713,7 +11713,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 123 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 123: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a123_u4_p2_check", false) == true
@@ -11740,7 +11740,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 124 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 124: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a124_u1_p4_check", false) == true
@@ -11767,7 +11767,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 124 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 124: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a124_u2_p1_check", false) == true
@@ -11794,7 +11794,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 124 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 124: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a124_u3_p2_check", false) == true
@@ -11821,7 +11821,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 124 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 124: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a124_u5_p3_check", false) == true
@@ -11848,7 +11848,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 125 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 125: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a125_u4_p3_check", false) == true
@@ -11875,7 +11875,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 125 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 125: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a125_u5_p4_check", false) == true
@@ -11902,7 +11902,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a16_r1_check", false) == true
@@ -11929,7 +11929,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16a — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 16a: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a16a_r1_check", false) == true
@@ -11956,7 +11956,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a20_r1_check", false) == true
@@ -11983,7 +11983,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a21_r1_check", false) == true
@@ -12010,7 +12010,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 67a — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)",
+    "_legal_basis": "Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] Art. 67a: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "ord_a67a_r1_check", false) == true

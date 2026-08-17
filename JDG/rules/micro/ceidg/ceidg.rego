@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ceidg.a5 — Zgłoszenie do CEIDG (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)                                                   ║
+# ║  Legal basis: Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ceidg.a5.r1: ceidg_a5_r1_eligibility
@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zgłoszenie do CEIDG: sprawdzenie czy przepis ma zastosowanie do JDG"],
     "valid_from": "2018-11-01",
     "valid_to": null,
@@ -73,7 +73,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zgłoszenie do CEIDG: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ceidg_condition_met", false) == true
@@ -101,7 +101,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zgłoszenie do CEIDG: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_a5_r3_pass", false) == true
@@ -129,7 +129,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zgłoszenie do CEIDG: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_a5_r4_checks", false) == true
@@ -157,7 +157,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zgłoszenie do CEIDG: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ceidg_exclusion_applies", false) == false
@@ -185,7 +185,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zgłoszenie do CEIDG: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ceidg_exclusion_2", false) == false
@@ -213,7 +213,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zgłoszenie do CEIDG: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ceidg_a5_exception", false) == true
@@ -241,7 +241,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zgłoszenie do CEIDG: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ceidg_a5_exception_2", false) == true
@@ -249,7 +249,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ceidg.a12 — Zmiany wpisu (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)                                                   ║
+# ║  Legal basis: Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ceidg.a12.r1: ceidg_a12_r1_eligibility
@@ -274,7 +274,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zmiany wpisu: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -302,7 +302,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zmiany wpisu: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ceidg_condition_met", false) == true
@@ -330,7 +330,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zmiany wpisu: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_a12_r3_pass", false) == true
@@ -358,7 +358,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zmiany wpisu: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_a12_r4_checks", false) == true
@@ -386,7 +386,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zmiany wpisu: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ceidg_exclusion_applies", false) == false
@@ -414,7 +414,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zmiany wpisu: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ceidg_exclusion_2", false) == false
@@ -442,7 +442,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zmiany wpisu: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "ceidg_a12_exception", false) == true
@@ -470,7 +470,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zmiany wpisu: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "ceidg_a12_exception_2", false) == true
@@ -478,7 +478,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ceidg.a15 — Zawieszenie w CEIDG (6 reguł)                                    ║
-# ║  Legal basis: Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)                                                   ║
+# ║  Legal basis: Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ceidg.a15.r1: ceidg_a15_r1_eligibility
@@ -503,7 +503,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zawieszenie w CEIDG: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -531,7 +531,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zawieszenie w CEIDG: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ceidg_condition_met", false) == true
@@ -559,7 +559,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zawieszenie w CEIDG: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_a15_r3_pass", false) == true
@@ -587,7 +587,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zawieszenie w CEIDG: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_a15_r4_checks", false) == true
@@ -615,7 +615,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zawieszenie w CEIDG: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ceidg_exclusion_applies", false) == false
@@ -643,7 +643,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Zawieszenie w CEIDG: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ceidg_exclusion_2", false) == false
@@ -651,7 +651,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ceidg.a22 — Wykreślenie z CEIDG (6 reguł)                                    ║
-# ║  Legal basis: Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)                                                   ║
+# ║  Legal basis: Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ceidg.a22.r1: ceidg_a22_r1_eligibility
@@ -676,7 +676,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Wykreślenie z CEIDG: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -704,7 +704,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Wykreślenie z CEIDG: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ceidg_condition_met", false) == true
@@ -732,7 +732,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Wykreślenie z CEIDG: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_a22_r3_pass", false) == true
@@ -760,7 +760,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Wykreślenie z CEIDG: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_a22_r4_checks", false) == true
@@ -788,7 +788,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Wykreślenie z CEIDG: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ceidg_exclusion_applies", false) == false
@@ -816,7 +816,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Wykreślenie z CEIDG: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ceidg_exclusion_2", false) == false
@@ -824,7 +824,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ceidg.a25 — Wznowienie wpisu (6 reguł)                                    ║
-# ║  Legal basis: Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)                                                   ║
+# ║  Legal basis: Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ceidg.a25.r1: ceidg_a25_r1_eligibility
@@ -849,7 +849,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Wznowienie wpisu: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -877,7 +877,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Wznowienie wpisu: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "ceidg_condition_met", false) == true
@@ -905,7 +905,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Wznowienie wpisu: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_a25_r3_pass", false) == true
@@ -933,7 +933,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Wznowienie wpisu: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_a25_r4_checks", false) == true
@@ -961,7 +961,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Wznowienie wpisu: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "ceidg_exclusion_applies", false) == false
@@ -989,7 +989,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647)",
+    "_legal_basis": "Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] Wznowienie wpisu: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "ceidg_exclusion_2", false) == false
@@ -997,7 +997,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ceidg.a13 — Termin 7 dni na zgłoszenie zmian (3 reguły) P24 L-CEIDG-2     ║
-# ║  Legal basis: Art. 14 ust. 1 ustawy o CEIDG                                   ║
+# ║  Legal basis: Art. 14 ust. 1 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ceidg.a13.r1: ceidg_a13_r1_change_deadline_7_days
@@ -1022,7 +1022,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Termin 7 dni na zgłoszenie zmiany danych w CEIDG PRZEKROCZONY",
-    "_legal_basis": "Art. 14 ust. 1 ustawy o CEIDG",
+    "_legal_basis": "Art. 14 ust. 1 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] L-CEIDG-2: Zmianę danych w CEIDG należy zgłosić w ciągu 7 DNI od jej zaistnienia. Przekroczenie terminu = kara porządkowa 700 zł (przy powtórce do 1 400 zł)!"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_data_changed", false) == true
@@ -1055,7 +1055,7 @@ else := {
     "sanction_base_amount_pln": 700,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja: pierwsze naruszenie terminu 7 dni — kara porządkowa 700 zł",
-    "_legal_basis": "Art. 48-49 ustawy o CEIDG",
+    "_legal_basis": "Art. 48-49 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] L-CEIDG-2: PIERWSZE naruszenie terminu 7 dni. Kara porządkowa: 700 zł. Zgłoś zmianę niezwłocznie!"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_deadline_violation_count", 0) == 1
@@ -1086,7 +1086,7 @@ else := {
     "sanction_base_amount_pln": 1400,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja: powtórne naruszenie terminu 7 dni — kara porządkowa do 1 400 zł",
-    "_legal_basis": "Art. 48-49 ustawy o CEIDG",
+    "_legal_basis": "Art. 48-49 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] L-CEIDG-2: POWTÓRNE naruszenie terminu 7 dni. Kara porządkowa: do 1 400 zł. Systematyczne naruszenia mogą skutkować wykreśleniem z CEIDG!"]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_deadline_violation_count", 0) >= 2
@@ -1094,7 +1094,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  ceidg.a5data — Dane obowiązkowe CEIDG-1 (5 reguł) P24 L-CEIDG-1           ║
-# ║  Legal basis: Art. 5-7 ustawy o CEIDG                                         ║
+# ║  Legal basis: Art. 5-7 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)                                         ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.ceidg.a5data.r1: ceidg_a5data_r1_personal_data_required
@@ -1119,7 +1119,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "CEIDG-1 — brak wymaganych danych osobowych (imię, nazwisko, PESEL)",
-    "_legal_basis": "Art. 5 ustawy o CEIDG",
+    "_legal_basis": "Art. 5 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] L-CEIDG-1: Wniosek CEIDG-1 wymaga: imię, nazwisko, PESEL (lub data urodzenia), NIP, adres zamieszkania. Brak danych = wniosek niekompletny."]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_application_filed", false) == true
@@ -1148,7 +1148,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "CEIDG-1 — brak danych działalności (PKD, adres, forma)",
-    "_legal_basis": "Art. 6 ustawy o CEIDG",
+    "_legal_basis": "Art. 6 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] L-CEIDG-1: Wniosek CEIDG-1 wymaga: kody PKD (główny + dodatkowe), adres prowadzenia działalności, forma prawna (JDG), data rozpoczęcia."]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_application_filed", false) == true
@@ -1177,7 +1177,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "CEIDG-1 — wybór formy opodatkowania (skala/ryczałt/liniowy/karta)",
-    "_legal_basis": "Art. 7 ustawy o CEIDG",
+    "_legal_basis": "Art. 7 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] L-CEIDG-1: We wniosku CEIDG-1 należy wskazać formę opodatkowania PIT (skala/ryczałt/liniowy/karta). Wybór można zmienić do 20. dnia następnego miesiąca."]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_application_filed", false) == true
@@ -1206,7 +1206,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "CEIDG-1 — zgłoszenie do ZUS automatycznie przez CEIDG",
-    "_legal_basis": "Art. 7a ustawy o CEIDG (CEIDG ↔ ZUS integracja)",
+    "_legal_basis": "Art. 7a ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456) (CEIDG ↔ ZUS integracja)",
     "_warnings": ["[MICRO] L-CEIDG-1: CEIDG automatycznie przekazuje dane do ZUS (ZUS ZUA). Nie musisz składać osobnego zgłoszenia — system zrobi to za Ciebie w ciągu 7 dni."]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_application_filed", false) == true
@@ -1235,7 +1235,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "CEIDG-1 — NIP nadawany automatycznie przy rejestracji",
-    "_legal_basis": "Art. 8 ustawy o CEIDG",
+    "_legal_basis": "Art. 8 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)",
     "_warnings": ["[MICRO] L-CEIDG-1: NIP nadawany automatycznie przy rejestracji CEIDG-1. Nie musisz składać osobnego zgłoszenia NIP-7."]
 } {
     object.get(input.jdg_entrepreneur, "ceidg_application_filed", false) == true

@@ -29,7 +29,7 @@ else :=   {"matched":true,"rule_id":"jdg.conviction.business_partner_impact","pa
 }
 
 # jdg.conviction.rehabilitation — P1964: Zatarcie skazania — 3 lata (wykroczenia) / 5 lat (przestępstwa)
-else :=   {"matched":true,"rule_id":"jdg.conviction.rehabilitation","package":"jdg.conviction","priority":1964,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Zatarcie skazania — 3 lata dla wykroczeń, 5 lat dla przestępstw skarbowych","_legal_basis":"Art. 19 KKS","_warnings":["Skazanie KKS — zatarcie po 3 latach (wykroczenia) / 5 latach (przestępstwa) od wykonania kary"]} {
+else :=   {"matched":true,"rule_id":"jdg.conviction.rehabilitation","package":"jdg.conviction","priority":1964,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Zatarcie skazania — 3 lata dla wykroczeń, 5 lat dla przestępstw skarbowych","_legal_basis":"Art. 19 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)","_warnings":["Skazanie KKS — zatarcie po 3 latach (wykroczenia) / 5 latach (przestępstwa) od wykonania kary"]} {
     object.get(input.jdg_entrepreneur, "kks_conviction_active", false) == true
 }
 

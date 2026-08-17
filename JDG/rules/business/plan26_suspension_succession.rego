@@ -10,12 +10,12 @@ import data.jdg.helpers
 # pojedynczy default żyje w business.rego (1 wersja prawdy w pakiecie jdg.business).
 
 # jdg.business.resumption_procedure_valid — Wznowienie JDG — zgłoszenie CEIDG + obowiązki
-decide :=   {"matched":true,"rule_id":"jdg.business.resumption_procedure_valid","package":"jdg.business","priority":916,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"TRIAGE_QUEUE","_routing_reason":"Wznowienie JDG — zgłoszenie CEIDG + obowiązki","_legal_basis":"Art. 22-25 Prawa przedsiębiorców","_warnings":["Wznowienie bez zgłoszenia CEIDG — zgłoś natychmiast"]} {
+decide :=   {"matched":true,"rule_id":"jdg.business.resumption_procedure_valid","package":"jdg.business","priority":916,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"TRIAGE_QUEUE","_routing_reason":"Wznowienie JDG — zgłoszenie CEIDG + obowiązki","_legal_basis":"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)","_warnings":["Wznowienie bez zgłoszenia CEIDG — zgłoś natychmiast"]} {
     object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"; object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"
 }
 
 # jdg.business.maximum_suspension_period_check — Maks. 6 mies. ciągłego zawieszenia
-else :=   {"matched":true,"rule_id":"jdg.business.maximum_suspension_period_check","package":"jdg.business","priority":918,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Maks. 6 mies. ciągłego zawieszenia","_legal_basis":"Art. 22 Prawa przedsiębiorców","_warnings":["Zawieszenie >6 mies. — rozważ wznowienie lub zamknięcie"]} {
+else :=   {"matched":true,"rule_id":"jdg.business.maximum_suspension_period_check","package":"jdg.business","priority":918,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Maks. 6 mies. ciągłego zawieszenia","_legal_basis":"Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)","_warnings":["Zawieszenie >6 mies. — rozważ wznowienie lub zamknięcie"]} {
     object.get(input.jdg_entrepreneur, "business_status", "") == "SUSPENDED"
 }
 

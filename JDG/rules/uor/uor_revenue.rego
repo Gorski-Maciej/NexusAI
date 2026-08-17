@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — UoR Revenue Layer: Art. 28–34 Ustawy o rachunkowości
+# NexusAI JDG — UoR Revenue Layer: Art. 28–34 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)
 # Package: jdg.uor.revenue — Revenue Recognition Rules
 # Version: 1.0.0 — Q3 2026 Critical Closure
 # Legal basis: Art. 28–34 UoR

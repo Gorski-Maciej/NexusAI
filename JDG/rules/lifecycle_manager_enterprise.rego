@@ -237,7 +237,7 @@ else := {
 
     # All regulatory milestones
     all_milestones := [
-        {"id": "CEIDG_REGISTRATION", "desc": "Rejestracja CEIDG-1", "deadline": "Przed rozpoczęciem działalności", "article": "Art. 5-6 Prawa Przedsiębiorców"},
+        {"id": "CEIDG_REGISTRATION", "desc": "Rejestracja CEIDG-1", "deadline": "Przed rozpoczęciem działalności", "article": "Art. 5-6 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)"},
         {"id": "ZUS_ZUA_JDG", "desc": "Zgłoszenie ZUS ZUA (kod 05 10)", "deadline": "7 dni od wpisu CEIDG", "article": "Art. 43 SUS"},
         {"id": "VAT_R_REGISTRATION", "desc": "VAT-R (rejestracja VAT)", "deadline": "Przed pierwszą transakcją / 7 dni od przekroczenia 200k", "article": "Art. 96 VAT"},
         {"id": "TAX_FORM_CHOICE", "desc": "Wybór formy opodatkowania PIT", "deadline": "Do 20. dnia miesiąca po pierwszym przychodzie", "article": "Art. 9a PIT"},

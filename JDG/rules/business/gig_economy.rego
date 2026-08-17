@@ -144,7 +144,7 @@ else := {
     "pit_form": "LUMP_SUM", "pit_rate": "0.085", "pit_bracket": "", "pit_annual_return_type": "PIT-28",
     "lump_sum_rate_category": "8.5%_TRANSPORT_SERVICES",
     "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "",
-    "_routing": "", "_routing_reason": "", "_legal_basis": "Art. 12 ust. 1 pkt 5 lit. a ustawy o ryczałcie",
+    "_routing": "", "_routing_reason": "", "_legal_basis": "Art. 12 ust. 1 pkt 5 lit. a ustawy z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne (Dz.U. 2025 poz. 234 ze zm.)",
     "_warnings": [sprintf("RYCZAŁT 8.5%% — usługi transportowe (PKWiU %s). Uwaga: ryczałt = podatek od przychodu (nie od dochodu). Brak możliwości odliczenia KUP!", [pkwiu_code])]
 } {
     input.jdg_entrepreneur.tax_form == "LUMP_SUM"

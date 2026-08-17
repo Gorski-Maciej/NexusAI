@@ -99,7 +99,7 @@ def test_r15_main_router_wired_p40():
     assert "import data.jdg.r15_ksef_jpk_edeklaracje_innovations" in src
     assert '"jdg.r15_ksef_jpk_edeklaracje_innovations": r15_ksef_jpk_edeklaracje_innovations.decide' in src
     assert "final_verdict_p42 = safe_merge(final_verdict_p41" in src
-    assert "final_verdict_post_merge = object.union(final_verdict_p45" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p50" in src
 
 
 # ── R15-INN-01: ksef_firewall_monitor ────────────────────────────────────────
@@ -159,7 +159,7 @@ def test_inn05_wis_request():
 
 def test_invariants_after_r15():
     src = _read(MAIN_REGO)
-    assert "final_verdict_post_merge = object.union(final_verdict_p45" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p50" in src
     assert "final_verdict_enforced = object.union(final_verdict_post_merge" in src
     assert "_decision_certificate" in src or "decision_certificate" in src
     assert "_certainty_guard" in src

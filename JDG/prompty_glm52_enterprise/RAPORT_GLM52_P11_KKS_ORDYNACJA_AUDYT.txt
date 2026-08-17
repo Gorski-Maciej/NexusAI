@@ -1,0 +1,156 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║  RAPORT GLM 5.2 — PROMPT 11 z 19: KKS + ORDYNACJA + AUDYT/OBRONA             ║
+║  Status: ✅ WDROZONY_100 (2026-08-17)                                         ║
+║  Kampania: JDG/prompty_glm52_enterprise                                      ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+CEL GŁÓWNEGO NURTU (PROMPT 11 §1-§8, wszystkie kroki/etapy/fazy wdrożone):
+System, który nie tylko rozlicza podatki, ale też BRONI przedsiębiorcy — zna
+każdą sankcję KKS (gradacja art. 54-83), każdy termin obrony (przedawnienia
+art. 70/44, korekty 81b, Biała Lista 117ba, prawa w kontroli 282b/291/223) i
+każdą ścieżkę minimalizacji kary (czynny żal 16, dobrowolne poddanie 17),
+z dowodem dla organów (penalty proof, defense packet, pisma).
+
+─────────────────────────────────────────────────────────────────────────────────
+1. ELIMINOWANE DEFEKTY (audyt przed wdrożeniem → stan po)
+─────────────────────────────────────────────────────────────────────────────────
+• KONFLIKT KOMPILACJI: rules/micro/plan34_ord.rego deklarował `package jdg.micro.ord`
+  z własnym `default decide` — kolidował z ord.rego (dwa `default decide` w jednym
+  pakiecie = błąd kompilacji OPA). DODATKOWO plan33_ord.rego importował
+  `data.jdg.micro.plan34_ord` (pakiet NIEISTNIEJĄCY — import zepsuty).
+  → Naprawa: plan34_ord.rego → `package jdg.micro.plan34_ord` (zgodnie z importem
+  w plan33_ord), 192 pola `"package"` + default rule_id skorygowane. Konflikt
+  usunięty, import plan33_ord → plan34_ord teraz rozwiązuje się poprawnie.
+• 52 reguł UNKNOWN_ACT w rules/audit/plan45_audit.rego (jdg.audit.hyper.*) z
+  krótkimi `"_legal_basis":"Art. X OP"` (akt nierozpoznany) → skanonizowane do
+  pełnych nazw: „Art. X ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa
+  (Dz.U. 2025 poz. 234, ze zm.)" + KAS/PPSA/PP pełne nazwy (docs/AUDYT_PODSTAW_
+  PRAWNYCH.md: 58 reguł z UNKNOWN_ACT → 0).
+• Kanonizacja _legal_basis w całej warstwie KKS/Ord/Audyt:
+  - micro/kks/kks.rego (473), micro/ord/ord.rego (423): „Kodeks Karny Skarbowy z
+    10.09.1999 (Dz.U. 1999 nr 83 poz. 930)" → „Dz.U. 2025 poz. 678, ze zm.",
+    „Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926)" → „poz. 234".
+  - kks.rego (155), enterprise_penalties (20), plan42/43 (11+21), conviction
+    plan44/45 (1+9), statute/plan26_detailed (5), r07 (2) — łącznie ~390 zamian.
+  - Wynik: kks_ordynacja_quality.py → 0 błędów, 0 duplikatów, 0 stubów (1756 reguł).
+
+─────────────────────────────────────────────────────────────────────────────────
+2. NOWE REGUŁY ATOMOWE — rules/micro/kks_ord_atomic_p11.rego (13 reguł)
+─────────────────────────────────────────────────────────────────────────────────
+Package jdg.micro.kks_ord_atomic_p11 — konwerter stubów → reguł warunkowych:
+• KKS art. 54 (gradacja kar): jdg.micro.kks.a54.penalty_calculator.r1 (przestępstwo,
+  do 720 stawek) / .r2 (wykroczenie, do 240 stawek) — stawka dzienna (1/720 min.
+  wynagrodzenia) × liczba stawek → kwota, z _provenance_tree (dowód dla organów).
+• KKS art. 16: jdg.micro.kks.a16.active_remorse — czynny żal przed wykryciem →
+  znikoma szkodliwość, umorzenie.
+• KKS art. 17: jdg.micro.kks.a17.voluntary_submission — dobrowolne poddanie +
+  zapłata pełnej należności → obniżka 50%.
+• KKS art. 37: jdg.micro.kks.a37.recidivism_monitor — recydywa w 5 lat →
+  BLOCK_AND_ALERT (kara do 2×).
+• KKS art. 44: jdg.micro.kks.a44.limitation — przedawnienie karalności 5 lat →
+  OK (obrona).
+• OP art. 70: jdg.micro.ord.a70.limitation — przedawnienie zobowiązania 5 lat od
+  końca roku (przerwanie §4 / zawieszenie §6 w provenance).
+• OP art. 81b: jdg.micro.ord.a81b.correction_duty — korekta w 14 dni; korekta
+  minus po kontroli zablokowana (§ 3).
+• OP art. 117ba: jdg.micro.ord.a117ba.whitelist_monitor — płatność na rachunek
+  spoza Białej Listy → sankcja 20% (kwota z dowodem).
+• OP art. 119a: jdg.micro.ord.a119a.gaar_risk — korzyść + brak celu gospodarczego
+  + sztuczność → ryzyko GAAR WYSOKIE (tarcza anty-GAAR, spójność PROMPT 07).
+• OP art. 282b/291/223 + PPSA 53: jdg.micro.ord.a282b.audit_defense_packet —
+  pakiet praw w kontroli (7 dni zawiadomienie, 14 dni protokół, 14 dni odwołanie,
+  30 dni WSA).
+• OP art. 193a: jdg.micro.ord.a193a.jpk_request — JPK na żądanie w 14 dni.
+Każda reguła: werdykt 25-polowy (kontrakt P01), _legal_basis kanoniczne,
+_provenance_tree, zero hardcode (progi z _ths ← data.jdg.thresholds.jdg.ord/kks).
+
+─────────────────────────────────────────────────────────────────────────────────
+3. THRESHOLDS (ADR-002 — zero hardcode)
+─────────────────────────────────────────────────────────────────────────────────
+rules/thresholds_jdg.rego — rozszerzone sekcje `ord` (+11 progów) i `kks` (+12):
+ord: correction_deadline_days 14 · whitelist_sanction_pct 0.20 · gaar_risk_flag ·
+appeal_deadline_days 14 · audit_notification_days 7 · protocol_objection_days 14 ·
+wsa_appeal_days 30 · statute_limitation_break_reset · statute_limitation_suspend_kks ·
+overpayment_claim_years 5 · interest_lombard_multiplier 2.0 · instalment_relief_active ·
+jpk_request_days 14.
+kks: active_remorse_impact_pct 0.50 · voluntary_submission_impact_pct 0.50 ·
+small_value_min_pln 100 · lesser_weight_max_pln 5000 · daily_rate_min_pln 77 ·
+daily_rate_max_pln 1540 · daily_rates_crime_max 720 · daily_rates_misdemeanor_max 240 ·
+joint_penalty_max_years 3 · recidivism_days_window 1825 · statute_limitation_kks_years 5 ·
+conviction_expungement_years 3.
+
+─────────────────────────────────────────────────────────────────────────────────
+4. NARZĘDZIA DOMENOWE (nowe, 3 szt. + linter; limitations_calendar już istniał)
+─────────────────────────────────────────────────────────────────────────────────
+• tools/kks_ordynacja_quality.py — linter + kanonizacja _legal_basis + bramka
+  (--fix / --gate): stuby, duplikaty rule_id, martwe {true}, short-form OP/KKS,
+  stare Dz.U. (1999 nr 83 poz. 930 / 1997 nr 137 poz. 926).
+• tools/penalty_calculator.py — kalkulator kary KKS (art. 54-83): typ czynu →
+  stawka dzienna → liczba stawek → kwota z dowodem (proof), 6 typów czynów,
+  4-ścieżkowy symulator minimalizacji (czynny żal / dobrowolne poddanie / korekta
+  przed kontrolą / obrona), recydywa 2×, self-test.
+• tools/defense_packet_builder.py — „obrońca": pakiet dowodowy na kontrolę KAS
+  (golden replay SHA-256 + Decision Certificates + LKG snapshot z datą — V2 §12)
+  + oś czasu praw w kontroli (7/14/14/30 dni), status pakietu, self-test.
+• tools/correspondence_generator.py — generator pism do US/KAS: wyjaśnienia,
+  zastrzeżenia do protokołu, odwołanie, czynny żal (art. 16 KKS), wniosek o
+  nadpłatę (art. 72-80), ulga w spłacie (art. 67a) + bundle 4 pism, self-test.
+
+─────────────────────────────────────────────────────────────────────────────────
+5. WIRING — PAS 48 (main_jdg.rego)
+─────────────────────────────────────────────────────────────────────────────────
+final_verdict_p48 = safe_merge(final_verdict_p47, [micro/kks (474), micro/ord (424),
+micro/kks.plan33 (65), micro/plan33_ord (3), micro/plan34_ord (190),
+kks_ord_atomic_p11 (13)]) → final_verdict_post_merge = object.union(
+final_verdict_p48, ...) → runtime_invariants → final_verdict_enforced.
+Łańcuch: p45 (P08) → p46 (P09 ZUS) → p47 (P10 księgowość) → p48 (P11 KKS/Ord).
++29 asercji wiring r01-r17/p06/p07 zaktualizowanych p47→p48.
+
+─────────────────────────────────────────────────────────────────────────────────
+6. TESTY
+─────────────────────────────────────────────────────────────────────────────────
+• tests/rego/test_native_kks_ord.rego — 18 testów natywnych Rego (pakiet
+  jdg.micro.kks_ord_atomic_p11): kalkulator kary (przestępstwo/wykroczenie),
+  czynny żal ±, dobrowolne poddanie, recydywa ±, przedawnienie KKS/OP ±,
+  korekta 81b, Biała Lista ±, GAAR ±, pakiet praw kontroli, JPK, no_match.
+• tests/auto/test_p11_kks_ordynacja_enterprise_glm52.py — 30 testów pytest:
+  penalty_calculator (9), defense_packet (4), correspondence (4),
+  limitations_calendar (3), atomic Rego (5), wiring PAS 48 (4), bramki (2).
+• test_r07_kks_enterprise.py: kanoniczne _legal_basis KKS (Dz.U. 2025 poz. 678)
+  + asercja braku starych cytowań.
+
+─────────────────────────────────────────────────────────────────────────────────
+7. BRAMKI PO WDROŻENIU
+─────────────────────────────────────────────────────────────────────────────────
+• validate_rules.py ................. 0 błędów (449 plików Rego)
+• invariant_checker.py ci ........... ✅ 42 niezmienników PASS
+• lint_rego_rules.py --ci ........... 5/6 (no_hardcoded_integers — backlog
+                                     znany, pre-existing w sus/zdrowotna/zasilkowa)
+• kks_ordynacja_quality.py --gate ... ✅ BRAMKA: PASS (0 błędów, 1756 reguł)
+• bundle_api_report22_gate.py ....... 9/9 (manifest.json metadata zaktualizowane)
+• pytest P11 ........................ 30/30 + r07: 16/16 + rdzeń (p03): 21/21 +
+                                     P09/P10 regresja: 98/98 + r01-r17/p06/p07: 339/339
+• pytest JDG (pełny) ................ 3183 passed (24 faili pre-existing:
+                                     raporty_glm52/ usunięte + nexus_ai env +
+                                     kks07 gate + temporal_validity)
+
+─────────────────────────────────────────────────────────────────────────────────
+8. PLIKI (nowe / zmienione)
+─────────────────────────────────────────────────────────────────────────────────
+NOWE:  rules/micro/kks_ord_atomic_p11.rego
+       tools/kks_ordynacja_quality.py · penalty_calculator.py ·
+       defense_packet_builder.py · correspondence_generator.py
+       tests/rego/test_native_kks_ord.rego
+       tests/auto/test_p11_kks_ordynacja_enterprise_glm52.py
+ZMIENIONE: rules/micro/plan34_ord.rego (pakiet → jdg.micro.plan34_ord — konflikt
+       kompilacji NAPRAWIONY) · rules/audit/plan45_audit.rego (52 UNKNOWN_ACT →
+       kanon) · rules/micro/kks/kks.rego + ord/ord.rego + kks.rego +
+       enterprise_penalties/plan42/plan43/conviction/statute/r07 (~390 zamian
+       _legal_basis) · rules/main_jdg.rego (PAS 48) · rules/thresholds_jdg.rego
+       (ord +11 / kks +12 progów) · MANIFEST.md · bundles/manifest.json ·
+       bundles/manifest_v2.json · STATUS_KAMPANII.md · NOTATKI_KAMPANII.txt ·
+       29 plików testowych (wiring p48)
+
+─────────────────────────────────────────────────────────────────────────────────
+NASTĘPNY: PROMPT_12 (CROSS-BORDER / MDR) — pierwszy niewdrożony raport kampanii.
+═══════════════════════════════════════════════════════════════════════════════

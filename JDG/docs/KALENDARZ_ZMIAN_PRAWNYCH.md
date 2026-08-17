@@ -1,6 +1,6 @@
 # 📅 KALENDARZ ZMIAN PRAWNYCH (countdown) — P02 sekcja 7 / V2 F5
 
-> Wygenerowano: 2026-08-17T06:36:08.413673+00:00 · generator: `legal_change_calendar.py`
+> Wygenerowano: 2026-08-17T14:22:16.620093+00:00 · generator: `legal_change_calendar.py`
 > KPI: lead ≥ 30 dni przed wejściem w życie (V2 §6.2.5)
 
 | ID | Zmiana | Źródło | Wejście | Countdown | Lead OK | Confidence | Reguły SHADOW |

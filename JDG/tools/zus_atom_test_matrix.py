@@ -32,7 +32,7 @@ TESTS_DIR = PROJECT_ROOT / "tests"
 
 ZUS_MICRO_FILES = [
     "sus/sus.rego", "zdrowotna/zdrowotna.rego", "zasilkowa/zasilkowa.rego",
-    "plan33_zus.rego", "plan34_zus.rego", "plan33_health.rego",
+    "plan33_zus.rego", "zus_micro_atomic_p09.rego", "plan33_health.rego",
 ]
 
 # ── Test templates per rule type ────────────────────────────────────────────

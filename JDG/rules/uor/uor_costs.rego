@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — UoR Costs Layer: Art. 35–42 Ustawy o rachunkowości
+# NexusAI JDG — UoR Costs Layer: Art. 35–42 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)
 # Package: jdg.uor.costs — Cost Accounting Rules
 # Version: 1.0.0 — Q3 2026 Critical Closure
 # Legal basis: Art. 35–42 UoR

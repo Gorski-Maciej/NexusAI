@@ -14,12 +14,12 @@ decide :=   {"matched":true,"rule_id":"jdg.statute.zus_suspension_during_proceed
 }
 
 # jdg.statute.interruption_detailed_events — Przerwanie przedawnienia — uznanie długu, KKS, upadłość
-else :=   {"matched":true,"rule_id":"jdg.statute.interruption_detailed_events","package":"jdg.statute","priority":1157,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Przerwanie przedawnienia — uznanie długu, KKS, upadłość","_legal_basis":"Art. 71 OP","_warnings":["Bieg przedawnienia przerwany — nowy 5-letni termin"]} {
+else :=   {"matched":true,"rule_id":"jdg.statute.interruption_detailed_events","package":"jdg.statute","priority":1157,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Przerwanie przedawnienia — uznanie długu, KKS, upadłość","_legal_basis":"Art. 71 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)","_warnings":["Bieg przedawnienia przerwany — nowy 5-letni termin"]} {
     object.get(input.document, "statute_interrupted", false) == true
 }
 
 # jdg.statute.tax_arrears_detection — Wykrycie zaległości podatkowej — VAT/PIT/ZUS
-else :=   {"matched":true,"rule_id":"jdg.statute.tax_arrears_detection","package":"jdg.statute","priority":1167,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"TRIAGE_QUEUE","_routing_reason":"Wykrycie zaległości podatkowej — VAT/PIT/ZUS","_legal_basis":"Art. 20-21 OP","_warnings":["Zaległość podatkowa — kwota X, dni Y"]} {
+else :=   {"matched":true,"rule_id":"jdg.statute.tax_arrears_detection","package":"jdg.statute","priority":1167,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"TRIAGE_QUEUE","_routing_reason":"Wykrycie zaległości podatkowej — VAT/PIT/ZUS","_legal_basis":"Art. 20-21 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)","_warnings":["Zaległość podatkowa — kwota X, dni Y"]} {
     object.get(input.document, "tax_arrears_detected", false) == true
 }
 
@@ -29,7 +29,7 @@ else :=   {"matched":true,"rule_id":"jdg.statute.voluntary_disclosure_protection
 }
 
 # jdg.statute.overpayment_detection_and_refund — Nadpłata podatku — zwrot 45 dni (VAT) / 3 mies. (PIT)
-else :=   {"matched":true,"rule_id":"jdg.statute.overpayment_detection_and_refund","package":"jdg.statute","priority":1169,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Nadpłata podatku — zwrot 45 dni (VAT) / 3 mies. (PIT)","_legal_basis":"Art. 72-80 OP","_warnings":["Nadpłata — złóż wniosek o zwrot"]} {
+else :=   {"matched":true,"rule_id":"jdg.statute.overpayment_detection_and_refund","package":"jdg.statute","priority":1169,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Nadpłata podatku — zwrot 45 dni (VAT) / 3 mies. (PIT)","_legal_basis":"Art. 72-80 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)","_warnings":["Nadpłata — złóż wniosek o zwrot"]} {
     object.get(input.document, "overpayment_detected", false) == true
 }
 
@@ -39,7 +39,7 @@ else :=   {"matched":true,"rule_id":"jdg.statute.deferral_active_interest_suspen
 }
 
 # jdg.statute.tax_remission_liability_extinguished — Umorzenie zaległości — zobowiązanie wygasa
-else :=   {"matched":true,"rule_id":"jdg.statute.tax_remission_liability_extinguished","package":"jdg.statute","priority":1171,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Umorzenie zaległości — zobowiązanie wygasa","_legal_basis":"Art. 51 OP","_warnings":["Zaległość umorzona — zobowiązanie wygasło"]} {
+else :=   {"matched":true,"rule_id":"jdg.statute.tax_remission_liability_extinguished","package":"jdg.statute","priority":1171,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Umorzenie zaległości — zobowiązanie wygasa","_legal_basis":"Art. 51 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)","_warnings":["Zaległość umorzona — zobowiązanie wygasło"]} {
     object.get(input.document, "remission_granted", false) == true
 }
 
@@ -49,6 +49,6 @@ else :=   {"matched":true,"rule_id":"jdg.statute.overpayment_offset_auto","packa
 }
 
 # jdg.statute.tax_proceedings_deadlines_alert — Terminy proceduralne — 7/14/30/60 dni
-else :=   {"matched":true,"rule_id":"jdg.statute.tax_proceedings_deadlines_alert","package":"jdg.statute","priority":1174,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Terminy proceduralne — 7/14/30/60 dni","_legal_basis":"Art. 120-129 OP","_warnings":["Termin procesowy — zostało X dni"]} {
+else :=   {"matched":true,"rule_id":"jdg.statute.tax_proceedings_deadlines_alert","package":"jdg.statute","priority":1174,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Terminy proceduralne — 7/14/30/60 dni","_legal_basis":"Art. 120-129 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)","_warnings":["Termin procesowy — zostało X dni"]} {
     object.get(input.invoice, "days_to_deadline", 999) < 30
 }

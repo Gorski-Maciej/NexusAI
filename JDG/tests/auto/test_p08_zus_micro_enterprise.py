@@ -89,8 +89,9 @@ def test_audit_rego_files():
     assert any(f.startswith("zasilkowa/") for f in res["files_audited"])
     assert res["total_rule_ids"] > 0
     assert res["unique_count"] > 0
-    # plan33_zus.rego używa prefiksu jdg.zus (bez .micro.) — niekonsekwencja
-    assert res["plan33_rule_id_prefix"] == "jdg.zus"
+    # P09 (GLM52): prefiks skonsolidowany do jdg.micro.zus — zero kolizji
+    # z makro jdg.zus.* (INV-018, kontrakt rule_id PROMPT 01)
+    assert res["plan33_rule_id_prefix"] == "jdg.micro.zus"
 
 
 def test_audit_coverage_reports_real():

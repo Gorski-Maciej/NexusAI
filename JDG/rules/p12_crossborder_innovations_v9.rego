@@ -25,7 +25,7 @@
 #
 # Zgodność: Ustawa o VAT (art. 9-13 WNT/WDT, 28a-28o miejsce świadczenia),
 #           PIT (art. 30da-30db exit tax, art. 30f CFC, art. 23zf TP),
-#           MDR/DAC6 (Dyrektywa 2011/16/UE zm. 2018/822), ViDA (2025-2030),
+#           MDR/DAC6 (dyrektywa Rady 2011/16/UE z dnia 15 lutego 2011 r. w sprawie współpracy administracyjnej w dziedzinie opodatkowania (DAC6) zm. 2018/822), ViDA (2025-2030),
 #           DAC8 (krypto 2026), ADR-002 (progi z data.jdg.thresholds).
 # package: jdg.p12_crossborder_innovations
 # deprecated: false
@@ -214,7 +214,7 @@ mdr_audit := {
     "sanctions": "kara pieniężna do 720 stawek dziennych za brak raportu MDR (art. 80f KKS)",
     "_routing": "",
     "_routing_reason": "Audyt MDR/DAC6 — hallmarks A-E, beneficjent, pośrednicy, termin 30 dni, sankcje",
-    "_legal_basis": "Dyrektywa 2011/16/UE zm. 2018/822 (DAC6); OrdPU art. 86a-86o",
+    "_legal_basis": "dyrektywa Rady 2011/16/UE z dnia 15 lutego 2011 r. w sprawie współpracy administracyjnej w dziedzinie opodatkowania (DAC6) zm. 2018/822 (DAC6); OrdPU art. 86a-86o",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p12_crossborder_check", false) == true

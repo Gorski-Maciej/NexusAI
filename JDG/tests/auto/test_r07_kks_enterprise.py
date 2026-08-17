@@ -52,11 +52,12 @@ class TestR07Structure:
     def test_legal_basis_canonical(self, text):
         for marker in [
             "Art. 16 KKS (czynny żal)",
-            "Art. 23, 25, 27, 44 KKS",
-            "Art. 54, 56, 57, 62 KKS",
-            "Dz.U. 1999 nr 83 poz. 930",
+            "Art. 23, 25, 27, 44 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
+            "Art. 54, 56, 57, 62 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
+            "Dz.U. 2025 poz. 678",
         ]:
             assert marker in text, f"Missing legal basis: {marker}"
+        assert "Dz.U. 1999 nr 83 poz. 930" not in text, "stare cytowanie KKS (P11 kanonizacja)"
 
     def test_activation_flags(self, text):
         for flag in [
@@ -86,7 +87,7 @@ class TestR07Wiring:
     def test_post_merge_chain(self):
         text = MAIN_REGO.read_text(encoding="utf-8")
         assert "final_verdict_p33 = safe_merge(final_verdict_p32," in text
-        assert "final_verdict_post_merge = object.union(final_verdict_p45," in text
+        assert "final_verdict_post_merge = object.union(final_verdict_p50," in text
         assert "final_verdict_enforced = object.union(final_verdict_post_merge," in text
         assert "final_verdict = final_verdict_enforced" in text
 

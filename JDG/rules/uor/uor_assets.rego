@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — UoR Assets Layer: Art. 28b–28h Ustawy o rachunkowości
+# NexusAI JDG — UoR Assets Layer: Art. 28b–28h ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)
 # Package: jdg.uor.assets — Asset Accounting & Valuation Rules
 # Version: 1.0.0 — Q3 2026 Critical Closure
 # Legal basis: Art. 28b–28h UoR

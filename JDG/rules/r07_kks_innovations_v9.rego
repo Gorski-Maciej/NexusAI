@@ -20,7 +20,7 @@
 #                                           PER TRANSAKCJA (0-100) + routing
 #                                           (PASS/WARN/BLOCK_AND_ALERT)
 #
-# Zgodność: ADR-001..009/017/022, KKS (Dz.U. 1999 nr 83 poz. 930 ze zm.)
+# Zgodność: ADR-001..009/017/022, KKS (Dz.U. 2025 poz. 678, ze zm.)
 #           Art. 16, 17, 44, 45, 54, 56, 57, 62; thresholds.kks (zero
 #           hardcode); INV-018; First-Match-Wins else-chain.
 # package: jdg.r07_kks_innovations
@@ -137,7 +137,7 @@ penalty_calculator_temporal := {
     },
     "_routing": "REPORT",
     "_routing_reason": sprintf("Kara: %d stawek × %.0f zł = %.0f zł (limit %.0f; przedawnienie %s)", [pc_stakes_count, pc_daily_stakes, pc_fine, fine_limit_absolute, pc_statute_barred && "TAK" || "NIE"]),
-    "_legal_basis": "Art. 23, 25, 27, 44 KKS",
+    "_legal_basis": "Art. 23, 25, 27, 44 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["Ostateczny wymiar kary zależy od sądu/organu; kalkulator wspiera decyzję, nie zastępuje oceny."],
 } {
     object.get(input.jdg_entrepreneur, "r07_penalty_calc_check", false) == true
@@ -224,7 +224,7 @@ transaction_risk_predictor := {
     },
     "_routing": tr_routing,
     "_routing_reason": sprintf("Ryzyko karne transakcji: %d/100 (%s) → %s", [tr_score, tr_risk_level, tr_routing]),
-    "_legal_basis": "Art. 54, 56, 57, 62 KKS",
+    "_legal_basis": "Art. 54, 56, 57, 62 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["Wynik jest predykcją ryzyka — ostateczna ocena należy do doradcy; BLOCK_AND_ALERT wymaga ręcznej decyzji."],
 } {
     object.get(input.jdg_entrepreneur, "r07_txn_risk_check", false) == true
@@ -252,7 +252,7 @@ decide := {
     },
     "_routing": "REPORT",
     "_routing_reason": "R07 KKS: czynny żal one-click z dokumentacją, kalkulator kar z temporalnością, predykcja ryzyka per transakcja",
-    "_legal_basis": "KKS (Dz.U. 1999 nr 83 poz. 930 ze zm.) Art. 16, 17, 23, 25, 27, 44, 54, 56, 57, 62",
+    "_legal_basis": "Art. 16, 17, 23, 25, 27, 44, 54, 56, 57, 62 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["Raport KKS — aktywowany wyłącznie flagą r07_kks_check"],
 } {
     object.get(input.jdg_entrepreneur, "r07_kks_check", false) == true

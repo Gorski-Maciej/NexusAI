@@ -1,6 +1,6 @@
 # 📋 MANIFEST 2.0 — JEDNO ŹRÓDŁO PRAWDY METRYK JDG (P01 Fundament)
 
-> Wygenerowano: 2026-08-08T12:03:39.044445+00:00 · generator: `manifest_v2.py`
+> Wygenerowano: 2026-08-17T12:31:49.484505+00:00 · generator: `manifest_v2.py`
 > **Zasada:** manifest jest regenerowany w CI ze skanu katalogów; każda rozbieżność
 > między dokumentami a tym plikiem = blokada merge (bramka `--check`).
 
@@ -8,24 +8,24 @@
 
 | Metryka | Wartość | SLO |
 |---|---|---|
-| Pliki Rego (rules/) | 440 | — |
-| Bloki reguł | 12960 | — |
-| Bloki matched=true | 12165 | — |
-| Unikalne rule_id | 11858 | — |
-| Duplikaty rule_id | 587 | **0** |
-| Stuby { true } | 905 | **0** |
-| Narzędzia Python (tools/) | 137 | — |
-| Natywne testy Rego | 91 | ≥ 95% pakietów |
-| Pliki testów pytest | 29 | — |
+| Pliki Rego (rules/) | 449 | — |
+| Bloki reguł | 13033 | — |
+| Bloki matched=true | 12134 | — |
+| Unikalne rule_id | 12182 | — |
+| Duplikaty rule_id | 235 | **0** |
+| Stuby { true } | 1028 | **0** |
+| Narzędzia Python (tools/) | 223 | — |
+| Natywne testy Rego | 109 | ≥ 95% pakietów |
+| Pliki testów pytest | 36 | — |
 | Completeness Score | 50/100 | → 100 |
 
 ## Rozstrzygnięcie luk dokumentacyjnych (L2)
 
 | Metryka | README.md | MANIFEST.md | COVERAGE_REPORT.md | STAN FAKTYCZNY (2.0) |
 |---|---|---|---|---|
-| Pliki Rego | 439 | 383 | 176 | **440** |
-| rule_id | 11452 | 10878 | 10827 | **11858** (unikalne) |
-| Narzędzia | 57 | 98 | 130 | **137** |
+| Pliki Rego | 439 | 383 | 176 | **449** |
+| rule_id | 11452 | 10878 | 10827 | **12182** (unikalne) |
+| Narzędzia | 57 | 98 | 130 | **223** |
 
 ## SLO docelowe (V1 §0 / V2 §11)
 

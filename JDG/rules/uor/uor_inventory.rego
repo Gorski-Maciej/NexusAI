@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — UoR Inventory Layer: Art. 17, 34 Ustawy o rachunkowości
+# NexusAI JDG — UoR Inventory Layer: Art. 17, 34 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)
 # Package: jdg.uor.inventory — Inventory Accounting Rules
 # Version: 1.0.0 — Q3 2026 Critical Closure
 # Legal basis: Art. 17, 34 UoR; KSR 5

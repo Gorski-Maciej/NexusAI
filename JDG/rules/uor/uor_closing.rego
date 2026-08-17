@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — UoR Closing Layer: Art. 45–49 Ustawy o rachunkowości
+# NexusAI JDG — UoR Closing Layer: Art. 45–49 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)
 # Package: jdg.uor.closing — Year-End Closing Rules
 # Version: 1.0.0 — Q3 2026 Critical Closure
 # Legal basis: Art. 45–49 UoR

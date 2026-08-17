@@ -98,7 +98,7 @@ decide := object.union(base_verdict, {
     "uor_early_warning_threshold_eur": uor_early_warning_threshold_eur, "uor_current_quarter": quarter,
     "uor_quarters_remaining": quarters_remaining, "uor_pkpir_sufficient": bool_not(required), "_routing": route,
     "_routing_reason": sprintf("UoR Art.2: %.0f EUR; próg %.0f EUR.", [annual_eur, uor_threshold_eur]),
-    "_legal_basis": "Art. 2 Ustawy o rachunkowości", "_warnings": [sprintf("UoR Art.2: %.0f PLN / %.0f EUR.", [revenue_pln, annual_eur])]
+    "_legal_basis": "Art. 2 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)", "_warnings": [sprintf("UoR Art.2: %.0f PLN / %.0f EUR.", [revenue_pln, annual_eur])]
 }) if {
     decision_kind == "obligation"
     pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")

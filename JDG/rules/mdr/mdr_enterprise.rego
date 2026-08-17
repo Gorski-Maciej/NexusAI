@@ -424,16 +424,4 @@ else := {
     audit_status = "NIEKOMPLETNY — uzupełnij!" { is_complete == false }
 }
 
-# ── Fallback ──────────────────────────────────────────────────────────────────
-else := {
-    "matched": true, "rule_id": "jdg.mdr.enterprise.fallback",
-    "package": "jdg.mdr.enterprise", "priority": 1997,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Art. 86a-86o OrdPU",
-    "_warnings": ["[MDR] MDR Enterprise — brak schematów podatkowych do zgłoszenia. JDG nie jest promotorem ani korzystającym z raportowalnych schematów."]
-} { true }
+# ── INV-018: brak catch-all {true} — brak dopasowania → default no_match (linia 25) ──

@@ -17,7 +17,7 @@
 #   - K160-K169: Art. 16 — Czynny żal — praktyczny przewodnik
 #   - K170-K179: Art. 20-21, 44 — Przedawnienie, przerwanie, zatarcie skazania
 # architecture: Enterprise Multi-Pass (ADR-001), First-Match-Wins else-chain
-# legal_basis: Kodeks Karny Skarbowy (Dz.U. 1999 nr 83 poz. 930)
+# legal_basis: Kodeks Karny Skarbowy (Dz.U. 2025 poz. 678, ze zm.)
 # package: jdg.kks.enterprise_penalties
 # deprecated: false
 
@@ -99,7 +99,7 @@ decide := {
     "sanction_type": "KKS", "sanction_severity": severity_label,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("Uchylanie od podatku Art.54 — %s: %.0f PLN, ryzyko do %d stawek", [evasion_type, tax_loss, max_rates]),
-    "_legal_basis": "Art. 54 § 1-3 KKS",
+    "_legal_basis": "Art. 54 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("ART.54 KKS — UCHYLANIE SIĘ OD OPODATKOWANIA. Typ: %s. Uszczuplenie: %.2f PLN. Klasyfikacja: %s (próg: %.0f PLN). Max kara: do %d stawek dziennych (~%.0f PLN). Szacowana grzywna: %.0f PLN. %s", [evasion_type, tax_loss, evasion_severity, materiality_threshold, max_rates, max_penalty_pln, estimated_penalty, defense_note])]
 } {
     input.kks.tax_evasion_detected == true
@@ -131,7 +131,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": "CRITICAL",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Całkowicie ukryta działalność — Art. 54 § 3 KKS",
-    "_legal_basis": "Art. 54 § 3 KKS",
+    "_legal_basis": "Art. 54 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("UKRYTA DZIAŁALNOŚĆ GOSPODARCZA — Art. 54 § 3 KKS. Przychód: %.2f PLN/rok bez CEIDG i deklaracji. KARA: grzywna do 720 stawek dziennych + do 5 lat pozbawienia wolności! Zarejestruj CEIDG + złóż czynny żal NATYCHMIAST.", [concealed_revenue])]
 } {
     object.get(input.kks, "concealed_business", false) == true
@@ -149,7 +149,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": "HIGH",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("Fikcyjne koszty %.2f PLN — Art. 54 § 1 KKS", [fictitious_amount]),
-    "_legal_basis": "Art. 54 § 1 KKS",
+    "_legal_basis": "Art. 54 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("FIKCYJNE KOSZTY UZYSKANIA — %.2f PLN. Art. 54 § 1 KKS. Faktury od nieistniejących/nierzetelnych podmiotów = PRZESTĘPSTWO SKARBOWE. Konsekwencje: (1) Grzywna do 720 stawek dziennych, (2) Odpowiedzialność solidarna za VAT (Art. 105a VAT), (3) Utrata prawa do odliczenia VAT + KUP. Zweryfikuj kontrahenta na Białej Liście VAT!", [fictitious_amount])]
 } {
     object.get(input.kks, "fictitious_costs_detected", false) == true
@@ -171,7 +171,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": severity,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("Nierzetelna PKPiR — integrity %.0f%% — Art. 56 KKS", [integrity_score]),
-    "_legal_basis": "Art. 56 § 1-4 KKS",
+    "_legal_basis": "Art. 56 § 1-4 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("NIERZETELNA PKPiR — Art. 56 KKS. Integrity score: %.0f%%. Klasyfikacja: %s. Max kara: %d stawek dziennych. Konsekwencje: (1) Szacunkowe określenie dochodu przez US (zwykle 2-3x zawyżone!), (2) Grzywna KKS + odsetki, (3) Wzmożone kontrole przez 5 lat. %s", [integrity_score, offense_class, max_rates, fix_guidance])]
 } {
     object.get(input.jdg_entrepreneur, "pkpir_integrity_score", 1.0) < 0.85
@@ -192,7 +192,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": "HIGH",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("Nierzetelna ewidencja VAT — %.2f PLN rozbieżność JPK", [vat_discrepancy]),
-    "_legal_basis": "Art. 57 § 1 KKS",
+    "_legal_basis": "Art. 57 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("NIERZETELNA EWIDENCJA VAT — Art. 57 KKS. Rozbieżność JPK vs rejestry: %.2f PLN. Konsekwencje: (1) Grzywna do 360 stawek dziennych, (2) Dodatkowe zobowiązanie 30%% (Art. 112b VAT), (3) Sankcja za nierzetelny JPK. Skoryguj JPK_V7 przed kontrolą!", [vat_discrepancy])]
 } {
     object.get(input.kks, "vat_evidence_unreliable", false) == true
@@ -214,7 +214,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": "CRITICAL",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Zniszczenie/ukrycie dokumentów — Art. 60 KKS",
-    "_legal_basis": "Art. 60 § 1-3 KKS",
+    "_legal_basis": "Art. 60 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["ZNISZCZENIE/UKRYCIE DOKUMENTÓW — Art. 60 KKS. PRZESTĘPSTWO SKARBOWE! Kary: (1) Grzywna do 720 stawek dziennych, (2) Do 5 lat pozbawienia wolności przy wielkiej wartości, (3) Odpowiedzialność za dokumenty przez 5 lat. NISZCZENIE PO TERMINIE PRZEDAWNIENIA = DOZWOLONE (Art. 86 OrdPU)."]
 } {
     object.get(input.kks, "documents_destroyed_intentionally", false) == true
@@ -232,7 +232,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": "CRITICAL",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("Pusta faktura — Art. 62 § 2 KKS (%s, ryzyko %d lat)", [offense_scale, max_years]),
-    "_legal_basis": "Art. 62 § 1-2 KKS",
+    "_legal_basis": "Art. 62 § 1-2 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("PUSTA FAKTURA — Art. 62 § 2 KKS. %s. Konsekwencje: (1) Grzywna do %d stawek dziennych, (2) DO %d LAT pozbawienia wolności (obowiązkowo powyżej 5 mln PLN!), (3) Przepadek korzyści majątkowej, (4) Odpowiedzialność solidarna za VAT (Art. 105a VAT). NIE wystawiaj/nabywaj faktur bez realnej transakcji!", [offense_desc, max_rates, max_years])]
 } {
     object.get(input.kks, "empty_invoice_detected", false) == true
@@ -255,7 +255,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": "CRITICAL",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Podrobiona/przerobiona faktura — Art. 62 § 1 KKS",
-    "_legal_basis": "Art. 62 § 1 KKS",
+    "_legal_basis": "Art. 62 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["PODROBIONA/PRZEROBIONA FAKTURA — Art. 62 § 1 KKS. Fałszerstwo dokumentu = przestępstwo! Konsekwencje: grzywna do 720 stawek + do 5 lat pozbawienia wolności. Natychmiast zgłoś do US przez czynny żal!"]
 } {
     object.get(input.kks, "invoice_counterfeited", false) == true
@@ -277,7 +277,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": severity,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("Błędna stawka VAT — zaniżono %.2f PLN — Art. 64 KKS", [vat_underpaid]),
-    "_legal_basis": "Art. 64 KKS",
+    "_legal_basis": "Art. 64 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("NIEWŁAŚCIWA STAWKA VAT — Art. 64 KKS. Zastosowano %s zamiast %s. Zaniżono VAT o %.2f PLN. Konsekwencje: (1) Grzywna do %d stawek dziennych, (2) Dopłata VAT + odsetki 14.5%%, (3) %s. Skoryguj fakturę korygującą + JPK_V7.", [applied_rate, correct_rate, vat_underpaid, max_rates, penalty_note])]
 } {
     object.get(input.kks, "wrong_vat_rate_applied", false) == true
@@ -301,7 +301,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": "HIGH",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("Utrudnianie kontroli — %s — Art. 69 KKS", [obstruction_type]),
-    "_legal_basis": "Art. 69 § 1-3 KKS",
+    "_legal_basis": "Art. 69 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("UTRUDNIANIE KONTROLI SKARBOWEJ — Art. 69 KKS. %s. Konsekwencje: (1) Kara grzywny do 360 stawek dziennych, (2) Dodatkowa kara porządkowa 5 000 PLN (Art. 262 OrdPU), (3) Możliwość przymusowego doprowadzenia świadków, (4) Możliwość oszacowania podstawy opodatkowania (zwykle zawyżonej!). %s", [obstruction_desc, fix_instruction])]
 } {
     object.get(input.kks, "obstruction_detected", false) == true
@@ -326,7 +326,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": severity,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("Nienależny zwrot VAT %.2f PLN — Art. 76 KKS", [refund_amount]),
-    "_legal_basis": "Art. 76 § 1-2 KKS",
+    "_legal_basis": "Art. 76 § 1-2 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("NIENALEŻNY ZWROT VAT — Art. 76 KKS. Kwota: %.2f PLN. Konsekwencje: (1) Zwrot VAT + 30%% dodatkowego zobowiązania (%.2f PLN), (2) Grzywna do %d stawek, (3) %s. Natychmiast skoryguj JPK i zwróć VAT z odsetkami!", [refund_amount, refund_amount * 1.30, max_rates, penalty_add])]
 } {
     object.get(input.kks, "unjustified_vat_refund", false) == true
@@ -349,7 +349,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": severity,
     "_routing": filing_rt,
     "_routing_reason": sprintf("Niezłożona deklaracja %s — %d dni opóźnienia", [declaration_type, days_overdue]),
-    "_legal_basis": "Art. 77 § 1-3 KKS",
+    "_legal_basis": "Art. 77 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("NIEZŁOŻONA DEKLARACJA — %s. Opóźnienie: %d dni. Konsekwencje: (1) Grzywna do %d stawek dziennych (%s), (2) US może sam oszacować podatek (zwykle NIekorzystnie!), (3) Odsetki 14.5%% od zaległości. ZŁÓŻ DEKLARACJĘ NATYCHMIAST + czynny żal!", [declaration_type, days_overdue, max_rates, offense_type])]
 } {
     object.get(input.kks, "declaration_missing", false) == true
@@ -375,7 +375,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": severity,
     "_routing": payment_rt,
     "_routing_reason": sprintf("Niezapłacony podatek %.2f PLN — Art. 79 KKS", [tax_unpaid]),
-    "_legal_basis": "Art. 79 KKS",
+    "_legal_basis": "Art. 79 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("NIEZAPŁACONY PODATEK — %.2f PLN zaległości. Odsetki: %.2f PLN/dzień (14.5%%/rok). Konsekwencje: (1) Grzywna KKS do 180 stawek, (2) Egzekucja komornicza (zajęcie konta!), (3) %s. WPŁAĆ PODATEK + czynny żal!", [tax_unpaid, daily_interest, escalation_note])]
 } {
     object.get(input.kks, "tax_unpaid_detected", false) == true
@@ -402,7 +402,7 @@ else := {
     "kks_max_penalty_pln": 720 * daily_rate,
     "_routing": "",
     "_routing_reason": sprintf("Stawka dzienna KKS: %.2f PLN (od %.2f do %.2f)", [daily_rate, 56.00, 56000.00]),
-    "_legal_basis": "Art. 23 § 1-4 KKS",
+    "_legal_basis": "Art. 23 § 1-4 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("STAWKA DZIENNA GRZYWNY KKS — %.2f PLN. Zasada: (1) Min. 1/40 min. wynagrodzenia (56 PLN), (2) Max. 400× min. wynagrodzenia (56 000 PLN), (3) 10-720 stawek = grzywna %.0f–%.0f PLN, (4) US oblicza na podstawie: dochodu, sytuacji majątkowej, możliwości zarobkowych. Miesięczny dochód JDG: %.2f PLN → stawka ~%.2f PLN.", [daily_rate, 10 * daily_rate, 720 * daily_rate, monthly_income, daily_rate])]
 } {
     input.kks.penalty_calculation_requested == true
@@ -427,7 +427,7 @@ else := {
     "kks_imprisonment_CRIME_max_years": 10,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 23, 26-28 KKS",
+    "_legal_basis": "Art. 23, 26-28 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": ["TABELA KAR KKS: (1) Wykroczenia: 10-180 stawek + max 30 dni aresztu, (2) Przestępstwa standardowe: 10-360 stawek + do 3 lat więzienia, (3) Przestępstwa ciężkie (art.54 §2, art.62 §2): 10-720 stawek + do 5 lat, (4) Wielka wartość/fakturowa: 10-1080 stawek + do 10 lat. Stawka dzienna: 56-56 000 PLN."]
 } {
     input.kks.penalty_calculation_requested == true
@@ -442,7 +442,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": "CRITICAL",
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("Niezapłacona grzywna %.2f PLN — ryzyko %d dni aresztu zastępczego", [unpaid_fine, substitute_days]),
-    "_legal_basis": "Art. 25 § 1-3 KKS",
+    "_legal_basis": "Art. 25 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("NIEZAPŁACONA GRZYWNA KKS — %.2f PLN. GROZI KARA ZASTĘPCZA! 1 dzień zastępczy = min. 2 stawki dzienne. Maksymalnie: %d dni aresztu. TWOJA SYTUACJA: %d dni aresztu przy obecnej stawce. WPŁAĆ GRZYWNĘ NATYCHMIAST — unikniesz aresztu!", [unpaid_fine, 360, substitute_days])]
 } {
     object.get(input.kks, "unpaid_fine_detected", false) == true
@@ -466,7 +466,7 @@ else := {
     "kks_vd_how_to": vd_howto,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 16 § 1-8 KKS",
+    "_legal_basis": "Art. 16 § 1-8 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("CZYNNY ŻAL (Art. 16 KKS) — TWOJA NAJLEPSZA OBRONA! Skutek: CAŁKOWITA BEZKARNOŚĆ za przestępstwo/wykroczenie skarbowe. JAK ZŁOŻYĆ: (1) Złóż pisemne zawiadomienie do US właściwego dla opodatkowania (osobiście/listem poleconym/PUE), (2) WSKAŻ istotne okoliczności czynu (co, kiedy, ile), (3) WPŁAĆ całą zaległość + odsetki w 7 DNI od złożenia zawiadomienia, (4) %s. UWAGA: czynny żal NIESKUTECZNY jeśli US już wykryło naruszenie lub wszczęto kontrolę!", [vd_timing])]
 } {
     object.get(input.kks, "voluntary_disclosure_eligible", false) == true
@@ -486,7 +486,7 @@ else := {
     "sanction_type": "KKS", "sanction_severity": severity,
     "_routing": vd_rt,
     "_routing_reason": sprintf("Czynny żal — wpłać %.2f PLN w ciągu %d dni (pozostało %d)", [amount_due, 7, days_remaining]),
-    "_legal_basis": "Art. 16 § 2 KKS",
+    "_legal_basis": "Art. 16 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("CZYNNY ŻAL — TERMIN WPŁATY. Złozono: %s. Kwota do wpłaty: %.2f PLN. Termin 7 dni od złożenia zawiadomienia. %s. Przekroczenie terminu = NIESKUTECZNY czynny żal = PEŁNA ODPOWIEDZIALNOŚĆ KKS!", [filing_date, amount_due, vd_urgency])]
 } {
     object.get(input.kks, "voluntary_disclosure_filed", false) == true
@@ -542,7 +542,7 @@ else := {
     "kks_is_rehabilitated": is_rehab,
     "_routing": "",
     "_routing_reason": sprintf("Zatarcie skazania: %s — %d lat od wykonania kary", [rehab_status, rehab_years]),
-    "_legal_basis": "Art. 21 § 1-4 KKS",
+    "_legal_basis": "Art. 21 § 1-4 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [sprintf("ZATARCIE SKAZANIA KKS — %s. Skazanie z %s. Okres zatarcia: %d lat od wykonania/wykonania kary. Data zatarcia: %s. Po zatarciu: (1) Skazanie uważa się za niebyłe, (2) Można legalnie oświadczać o niekaralności, (3) Nie ma wpływu na zamówienia publiczne po okresie.", [rehab_status, conviction_date, rehab_years, rehab_date])]
 } {
     object.get(input.kks, "rehabilitation_check_requested", false) == true

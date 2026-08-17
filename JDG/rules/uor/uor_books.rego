@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — UoR Books Layer: Art. 11–24 Ustawy o rachunkowości
+# NexusAI JDG — UoR Books Layer: Art. 11–24 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)
 # Package: jdg.uor.books — Books of Account Rules
 # Version: 1.0.0 — Q3 2026 Critical Closure
 # Legal basis: Ustawa o rachunkowości — Art. 11–24

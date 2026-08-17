@@ -183,7 +183,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("KKS %s — %s", [kks_article, offense_desc]),
-    "_legal_basis": "Art. 56-62 KKS",
+    "_legal_basis": "Art. 56-62 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
     "_warnings": [
         sprintf("🚨 KKS — %s", [kks_article]),
         sprintf("   Czyn: %s", [offense_desc]),

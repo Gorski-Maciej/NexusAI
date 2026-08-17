@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a6 — Podmioty podlegające ubezpieczeniom (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a6.r1: sus_a6_r1_eligibility
@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podmioty podlegające ubezpieczeniom: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -71,7 +71,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podmioty podlegające ubezpieczeniom: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -99,7 +99,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podmioty podlegające ubezpieczeniom: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a6_r3_pass", false) == true
@@ -127,7 +127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podmioty podlegające ubezpieczeniom: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a6_r4_checks", false) == true
@@ -155,7 +155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podmioty podlegające ubezpieczeniom: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -183,7 +183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podmioty podlegające ubezpieczeniom: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -211,7 +211,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podmioty podlegające ubezpieczeniom: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a6_exception", false) == true
@@ -239,7 +239,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podmioty podlegające ubezpieczeniom: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a6_exception_2", false) == true
@@ -247,7 +247,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a6b — Zbieg tytułów ubezpieczenia (6 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a6b.r1: sus_a6b_r1_eligibility
@@ -272,7 +272,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6b ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg tytułów ubezpieczenia: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -300,7 +300,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6b ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg tytułów ubezpieczenia: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -328,7 +328,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6b ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg tytułów ubezpieczenia: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a6b_r3_pass", false) == true
@@ -356,7 +356,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6b ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg tytułów ubezpieczenia: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a6b_r4_checks", false) == true
@@ -384,7 +384,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6b ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg tytułów ubezpieczenia: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -412,7 +412,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 6b ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg tytułów ubezpieczenia: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -420,7 +420,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a9 — Zbieg ubezpieczeń (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a9.r1: sus_a9_r1_eligibility
@@ -445,7 +445,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg ubezpieczeń: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -473,7 +473,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg ubezpieczeń: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -501,7 +501,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg ubezpieczeń: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a9_r3_pass", false) == true
@@ -529,7 +529,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg ubezpieczeń: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a9_r4_checks", false) == true
@@ -557,7 +557,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg ubezpieczeń: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -585,7 +585,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg ubezpieczeń: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -613,7 +613,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg ubezpieczeń: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a9_exception", false) == true
@@ -641,7 +641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zbieg ubezpieczeń: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a9_exception_2", false) == true
@@ -649,7 +649,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a11 — Dobrowolność ubezpieczeń (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a11.r1: sus_a11_r1_eligibility
@@ -674,7 +674,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolność ubezpieczeń: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -702,7 +702,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolność ubezpieczeń: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -730,7 +730,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolność ubezpieczeń: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a11_r3_pass", false) == true
@@ -758,7 +758,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolność ubezpieczeń: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a11_r4_checks", false) == true
@@ -786,7 +786,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolność ubezpieczeń: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -814,7 +814,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolność ubezpieczeń: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -842,7 +842,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolność ubezpieczeń: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a11_exception", false) == true
@@ -870,7 +870,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolność ubezpieczeń: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a11_exception_2", false) == true
@@ -878,7 +878,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a13 — Obowiązek ubezpieczenia (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a13.r1: sus_a13_r1_eligibility
@@ -903,7 +903,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek ubezpieczenia: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -931,7 +931,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek ubezpieczenia: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -959,7 +959,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek ubezpieczenia: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a13_r3_pass", false) == true
@@ -987,7 +987,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek ubezpieczenia: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a13_r4_checks", false) == true
@@ -1015,7 +1015,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek ubezpieczenia: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -1043,7 +1043,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek ubezpieczenia: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -1071,7 +1071,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek ubezpieczenia: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a13_exception", false) == true
@@ -1099,7 +1099,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek ubezpieczenia: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a13_exception_2", false) == true
@@ -1107,7 +1107,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a14 — Dobrowolne ubezpieczenie chorobowe (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a14.r1: sus_a14_r1_eligibility
@@ -1132,7 +1132,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolne ubezpieczenie chorobowe: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1160,7 +1160,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolne ubezpieczenie chorobowe: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -1188,7 +1188,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolne ubezpieczenie chorobowe: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a14_r3_pass", false) == true
@@ -1216,7 +1216,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolne ubezpieczenie chorobowe: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a14_r4_checks", false) == true
@@ -1244,7 +1244,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolne ubezpieczenie chorobowe: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -1272,7 +1272,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolne ubezpieczenie chorobowe: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -1300,7 +1300,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolne ubezpieczenie chorobowe: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a14_exception", false) == true
@@ -1328,7 +1328,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Dobrowolne ubezpieczenie chorobowe: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a14_exception_2", false) == true
@@ -1336,7 +1336,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a18 — Podstawy wymiaru składek (10 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a18.r1: sus_a18_r1_eligibility
@@ -1361,7 +1361,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podstawy wymiaru składek: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1389,7 +1389,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podstawy wymiaru składek: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -1417,7 +1417,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podstawy wymiaru składek: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a18_r3_pass", false) == true
@@ -1445,7 +1445,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podstawy wymiaru składek: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a18_r4_checks", false) == true
@@ -1473,7 +1473,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podstawy wymiaru składek: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -1501,7 +1501,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podstawy wymiaru składek: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -1529,7 +1529,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podstawy wymiaru składek: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a18_exception", false) == true
@@ -1557,7 +1557,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podstawy wymiaru składek: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a18_exception_2", false) == true
@@ -1585,7 +1585,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podstawy wymiaru składek: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_sus", false) == true
@@ -1613,7 +1613,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Podstawy wymiaru składek: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_sus", false) == true
@@ -1621,7 +1621,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a18a — Ulga na start / preferencyjny ZUS (10 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a18a.r1: sus_a18a_r1_eligibility
@@ -1646,7 +1646,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18a ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Ulga na start / preferencyjny ZUS: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1674,7 +1674,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18a ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Ulga na start / preferencyjny ZUS: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -1702,7 +1702,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18a ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Ulga na start / preferencyjny ZUS: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a18a_r3_pass", false) == true
@@ -1730,7 +1730,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18a ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Ulga na start / preferencyjny ZUS: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a18a_r4_checks", false) == true
@@ -1758,7 +1758,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18a ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Ulga na start / preferencyjny ZUS: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -1786,7 +1786,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18a ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Ulga na start / preferencyjny ZUS: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -1814,7 +1814,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18a ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Ulga na start / preferencyjny ZUS: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a18a_exception", false) == true
@@ -1842,7 +1842,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18a ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Ulga na start / preferencyjny ZUS: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a18a_exception_2", false) == true
@@ -1870,7 +1870,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18a ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Ulga na start / preferencyjny ZUS: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_sus", false) == true
@@ -1898,7 +1898,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18a ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Ulga na start / preferencyjny ZUS: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_sus", false) == true
@@ -1906,7 +1906,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a18c — Mały ZUS Plus (10 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a18c.r1: sus_a18c_r1_eligibility
@@ -1931,7 +1931,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Mały ZUS Plus: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1959,7 +1959,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Mały ZUS Plus: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -1987,7 +1987,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Mały ZUS Plus: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a18c_r3_pass", false) == true
@@ -2015,7 +2015,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Mały ZUS Plus: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a18c_r4_checks", false) == true
@@ -2043,7 +2043,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Mały ZUS Plus: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -2071,7 +2071,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Mały ZUS Plus: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -2099,7 +2099,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Mały ZUS Plus: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a18c_exception", false) == true
@@ -2127,7 +2127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Mały ZUS Plus: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a18c_exception_2", false) == true
@@ -2155,7 +2155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Mały ZUS Plus: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_sus", false) == true
@@ -2183,7 +2183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Mały ZUS Plus: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_sus", false) == true
@@ -2191,7 +2191,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a19 — Składka na ubezpieczenie wypadkowe (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a19.r1: sus_a19_r1_eligibility
@@ -2216,7 +2216,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Składka na ubezpieczenie wypadkowe: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2244,7 +2244,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Składka na ubezpieczenie wypadkowe: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -2272,7 +2272,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Składka na ubezpieczenie wypadkowe: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a19_r3_pass", false) == true
@@ -2300,7 +2300,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Składka na ubezpieczenie wypadkowe: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a19_r4_checks", false) == true
@@ -2328,7 +2328,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Składka na ubezpieczenie wypadkowe: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -2356,7 +2356,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Składka na ubezpieczenie wypadkowe: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -2384,7 +2384,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Składka na ubezpieczenie wypadkowe: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a19_exception", false) == true
@@ -2412,7 +2412,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Składka na ubezpieczenie wypadkowe: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a19_exception_2", false) == true
@@ -2420,7 +2420,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a22 — Stopy procentowe składek (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a22.r1: sus_a22_r1_eligibility
@@ -2445,7 +2445,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Stopy procentowe składek: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2473,7 +2473,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Stopy procentowe składek: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -2501,7 +2501,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Stopy procentowe składek: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a22_r3_pass", false) == true
@@ -2529,7 +2529,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Stopy procentowe składek: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a22_r4_checks", false) == true
@@ -2557,7 +2557,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Stopy procentowe składek: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -2585,7 +2585,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Stopy procentowe składek: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -2613,7 +2613,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Stopy procentowe składek: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a22_exception", false) == true
@@ -2641,7 +2641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Stopy procentowe składek: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a22_exception_2", false) == true
@@ -2649,7 +2649,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a24 — Przedawnienie składek (6 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a24.r1: sus_a24_r1_eligibility
@@ -2674,7 +2674,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 24 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie składek: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2702,7 +2702,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 24 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie składek: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -2730,7 +2730,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 24 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie składek: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a24_r3_pass", false) == true
@@ -2758,7 +2758,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 24 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie składek: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a24_r4_checks", false) == true
@@ -2786,7 +2786,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 24 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie składek: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -2814,7 +2814,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 24 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Przedawnienie składek: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -2822,7 +2822,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a36 — Terminy płatności (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a36.r1: sus_a36_r1_eligibility
@@ -2847,7 +2847,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Terminy płatności: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2875,7 +2875,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Terminy płatności: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -2903,7 +2903,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Terminy płatności: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a36_r3_pass", false) == true
@@ -2931,7 +2931,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Terminy płatności: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a36_r4_checks", false) == true
@@ -2959,7 +2959,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Terminy płatności: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -2987,7 +2987,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Terminy płatności: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -3015,7 +3015,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Terminy płatności: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a36_exception", false) == true
@@ -3043,7 +3043,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Terminy płatności: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a36_exception_2", false) == true
@@ -3051,7 +3051,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a40 — Zawieszenie działalności (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a40.r1: sus_a40_r1_eligibility
@@ -3076,7 +3076,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 40 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zawieszenie działalności: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -3104,7 +3104,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 40 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zawieszenie działalności: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -3132,7 +3132,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 40 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zawieszenie działalności: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a40_r3_pass", false) == true
@@ -3160,7 +3160,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 40 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zawieszenie działalności: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a40_r4_checks", false) == true
@@ -3188,7 +3188,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 40 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zawieszenie działalności: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -3216,7 +3216,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 40 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zawieszenie działalności: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -3244,7 +3244,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 40 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zawieszenie działalności: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a40_exception", false) == true
@@ -3272,7 +3272,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 40 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Zawieszenie działalności: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a40_exception_2", false) == true
@@ -3280,7 +3280,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sus.a47 — Obowiązek opłacania składek (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)                                                   ║
+# ║  Legal basis: Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sus.a47.r1: sus_a47_r1_eligibility
@@ -3305,7 +3305,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek opłacania składek: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -3333,7 +3333,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek opłacania składek: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sus_condition_met", false) == true
@@ -3361,7 +3361,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek opłacania składek: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a47_r3_pass", false) == true
@@ -3389,7 +3389,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek opłacania składek: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sus_a47_r4_checks", false) == true
@@ -3417,7 +3417,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek opłacania składek: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sus_exclusion_applies", false) == false
@@ -3445,7 +3445,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek opłacania składek: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sus_exclusion_2", false) == false
@@ -3473,7 +3473,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek opłacania składek: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sus_a47_exception", false) == true
@@ -3501,7 +3501,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)",
+    "_legal_basis": "Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
     "_warnings": ["[MICRO] Obowiązek opłacania składek: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sus_a47_exception_2", false) == true

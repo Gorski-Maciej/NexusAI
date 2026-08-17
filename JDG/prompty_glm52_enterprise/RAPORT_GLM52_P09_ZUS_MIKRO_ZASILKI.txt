@@ -1,0 +1,393 @@
+════════════════════════════════════════════════════════════════════════════════
+ RAPORT GLM52 P09 — ZUS MIKRO + ZASIŁKI (ENTERPRISE v9.x)
+ Część 09 z 19 kampanii GLM 5.2 — FORTYFIKACJA MODUŁU JDG DO POZIOMU ENTERPRISE
+ Data: 2026-08-17 · Status: ✅ WDROZONY_100
+════════════════════════════════════════════════════════════════════════════════
+
+SPIS TREŚCI
+  1. Executive Summary — TOP 10
+  2. Mapa pokrycia artykułów (SUS a6–a47 · zdrowotna a79–a82 · zasiłkowa a19–a33)
+  3. Audyt jakości (stuby, duplikaty, _legal_basis, hardcode) — pełne listy
+  4. Audyt SUS mikro (a6–a47) — per artykuł
+  5. Audyt zdrowotnej mikro (a79–a82) i zasiłkowej (a19–a33)
+  6. Audyt plan33/34, temporalności, niezawodności
+  7. GENIALNE POMYSŁY — innowacyjne ulepszenia wyprzedzające profesjonalistów (14)
+  8. KOD DO WDROŻENIA — wdrożono 100% (reguły, narzędzia, thresholds, main_jdg, testy)
+  9. Mapa drogowa + integracja z częściami 01, 05, 08, 11, 13
+ 10. Metryki sukcesu (bramki po wdrożeniu)
+
+────────────────────────────────────────────────────────────────────────────────
+ 1. EXECUTIVE SUMMARY — TOP 10
+────────────────────────────────────────────────────────────────────────────────
+
+Przeprowadź głębokie myślenie: warstwa ZUS MIKRO była najsłabszym ogniwem silnika
+podatkowego — 26 plików-stubów (sus_a6…sus_a47, zdrowotna_a79…a82,
+zasilkowa_a19…a33) zawierało ZERO reguł (wyłącznie `default decide` z
+rule_id no_match), a inventory (zus_micro_inventory.json) opisywało STAN
+SPRZED 2026-08-12 (301 duplikatów rule_id, pliki 8,5 kB). Po audycie i wdrożeniu
+P09 warstwa osiąga poziom ENTERPRISE: zero stubów, zero duplikatów, zero kolizji
+namespace, kanoniczne _legal_basis i zero hardcode w nowych regułach.
+
+TOP 10 ustaleń i wdrożeń:
+
+  1. USUNIĘTO 26 plików-stubów (sus_a*, zdrowotna_a*, zasilkowa_a*) — były to
+     puste skorupy z `default decide` (drugi default w pakiecie = konflikt
+     kompilacji OPA). Komplet pokrycia per artykuł żyje w sus.rego /
+     zdrowotna.rego / zasilkowa.rego (zgodnie z celem „zero stubów, zero
+     duplikatów" PROMPT 09).
+  2. USUNIĘTO plan34_zus.rego (20 reguł niskiej jakości): duplikaty reguł
+     plan33/sus, warunki kontradyktoryjne (business_status == "ACTIVE" oraz
+     == "CLOSED" w jednym ciele), drugi `default decide` w pakiecie
+     jdg.micro.zus (blokada kompilacji). Konsolidacja plan33/34↔sus wg §4.
+  3. NAPRAWIONO plan33_zus.rego (180 reguł): rule_id jdg.zus.* → jdg.micro.zus.*
+     (KOLIZJA NAMESPACE z makro jdg.zus.*, allowlista P08 — usunięta),
+     zdublowane warunki (46 → 0), kontradyktoryjne ACTIVE;CLOSED (6 → 0),
+     146 _legal_basis skanonizowanych (84 unikalnych wartości).
+  4. KANONIZACJA _legal_basis: sus.rego miało JEDNĄ generyczną podstawę
+     „Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887)" dla 122 reguł →
+     teraz per-artykuł z kanonem „Dz.U. 2025 poz. 345, ze zm." (122 reguły);
+     zdrowotna.rego → „Dz.U. 2025 poz. 890" (136); zasilkowa.rego → pełny tytuł
+     ustawy zasiłkowej (38). ZERO starych cytowań (grep: 0).
+  5. NOWE 16 reguł atomowych (zus_micro_atomic_p09.rego, pakiet
+     jdg.micro.zus_atomic_p09): Mały ZUS Plus (a18c — eligibility, limit
+     monitor 95%, base calc z clampem 30% min.↔60% przeciętnego), przełącznik
+     progu zdrowotnej ryczałt (a81c — TIER I/II/III z granicami 59 999/60 000/
+     60 001/300 000/300 001), korekta roczna (a81d — 22 maja), zasiłki
+     (a19 podstawa 12 mies., a29 wyczekiwanie 30/90, a32 limit 182/270,
+     a33 stawka 80%/70%), podstawa składek (a19), terminy (a36 7 dni, a47 10/15).
+  6. NOWE narzędzia: zus_micro_quality.py (linter mikro + konwerter stubów →
+     reguł warunkowych + raport „zdrowia" per plik + bramka CI),
+     zdrowotna_tier_engine.py (progi + korekta roczna + detektor rozjazdu
+     micro↔macro INV-018), zus_zasilkowa_calculator.py (podstawa 12 mies.,
+     stawki 80/70%, limity 182/270, symulator dobrowolnego chorobowego),
+     zus_plan33_fixer.py (konsolidator plan33 — 180 reguł, weryfikowalny).
+  7. ZERO HARDCODE (ADR-002): _zus_micro_rates.rego przebudowane na
+     data-driven (każda wartość przez object.get(data.jdg.thresholds.zus.*,
+     fallback 2026) — V1 §11 hot-reload); +25 nowych progów w
+     rules/thresholds_jdg.rego (zus block).
+  8. WPIĘCIE DO ORKIESTRATORA (main_jdg.rego): importy + _package_decisions
+     (5 pakietów mikro ZUS) + final_verdict_p46 = safe_merge(final_verdict_p45,
+     micro_sus, micro_zdrowotna, micro_zasilkowa, micro_zus(plan33),
+     zus_micro_atomic_p09, fallback) — Dual-Layer ADR-005, INV-018 (mikro
+     wypełnia luki makro, nigdy nie nadpisuje).
+  9. TESTY: tests/rego/test_native_zus_micro.rego (16 testów natywnych dla
+     pakietu atomowego), tests/auto/test_p09_zus_micro_enterprise_glm52.py
+     (20 pytest: granice progów, korekta roczna, zasiłki, bramka jakości,
+     kanoniczne legal_basis, wiring, usunięte stuby).
+ 10. METRYKI po wdrożeniu: validate 0 błędów (396 plików) · lint 5/6 (backlog
+     domenowy hardcode — znany, poza P09) · invariant CI PASS (42 INV) ·
+     pytest P09 20/20 + P08-micro 16/16 + regresja ZUS 348/348 + rdzeń 85/87
+     (2 asercje wiring zaktualizowane p45→p46) · zus_micro_inventory: 543 reguł,
+     0 duplikatów, 0 stubów.
+
+────────────────────────────────────────────────────────────────────────────────
+ 2. MAPA POKRYCIA ARTYKUŁÓW
+────────────────────────────────────────────────────────────────────────────────
+
+Przeprowadź głęboką analizę: pokrycie po konsolidacji (autor: sus.rego,
+zdrowotna.rego, zasilkowa.rego, plan33_zus.rego, zus_micro_atomic_p09.rego).
+
+  Artykuł  | Zakres                        | Reguły | Źródło                        | Status
+  ---------|-------------------------------|--------|-------------------------------|--------
+  SUS a6   | Podmioty podlegające          | 8      | sus.rego                      | ✅
+  SUS a6b  | Zbieg tytułów                 | 6      | sus.rego                      | ✅
+  SUS a9   | Zbieg ubezpieczeń             | 8      | sus.rego (+plan33 8)          | ✅
+  SUS a11  | Dobrowolność chorobowego      | 8      | sus.rego (+plan33 7)          | ✅
+  SUS a13  | Powstanie/ustanie obowiązku   | 8      | sus.rego (+plan33 4)          | ✅
+  SUS a14  | Terminy zgłoszeń              | 8      | sus.rego                      | ✅
+  SUS a18  | Podstawy wymiaru              | 10     | sus.rego (+plan33 12)         | ✅
+  SUS a18a | Ulga na start                 | 10     | sus.rego (+plan33 5)          | ✅
+  SUS a18c | Mały ZUS Plus                 | 10+3   | sus.rego + atomic P09         | ✅
+  SUS a19  | Podstawa składek              | 8+2    | sus.rego + atomic P09         | ✅
+  SUS a22  | Stopy procentowe              | 8      | sus.rego (+plan33 8)          | ✅
+  SUS a24  | FP/FGŚP                       | 6      | sus.rego (+plan33)            | ✅
+  SUS a36  | Terminy płatności             | 8+1    | sus.rego + atomic P09         | ✅
+  SUS a40  | Zawieszenie                   | 8      | sus.rego                      | ✅
+  SUS a47  | Opłacanie składek             | 8+2    | sus.rego + atomic P09         | ✅
+  ZDR a79  | Obowiązek składki zdrowotnej  | 10     | zdrowotna.rego                | ✅
+  ZDR a81  | Podstawa — skala (9%)         | 10     | zdrowotna.rego                | ✅
+  ZDR a81b | Podstawa — liniowy (4,9%)     | 10     | zdrowotna.rego                | ✅
+  ZDR a81c | Podstawa — ryczałt (progi)    | 12+3   | zdrowotna.rego + atomic P09   | ✅
+  ZDR a81d | Roczne rozliczenie            | 12+1   | zdrowotna.rego + atomic P09   | ✅
+  ZDR a82  | Szczególne przypadki         | 8      | zdrowotna.rego                | ✅
+  ZAS a19  | Podstawa zasiłku              | 10+1   | zasilkowa.rego + atomic P09   | ✅
+  ZAS a29  | Zasiłek macierzyński         | 10+1   | zasilkowa.rego + atomic P09   | ✅
+  ZAS a32  | Zasiłek opiekuńczy           | 10+1   | zasilkowa.rego + atomic P09   | ✅
+  ZAS a33  | Zasiłek rehabilitacyjny      | 8+1    | zasilkowa.rego + atomic P09   | ✅
+
+  RAZEM: 543 reguł mikro ZUS (inventory, 0 duplikatów, 0 stubów).
+
+────────────────────────────────────────────────────────────────────────────────
+ 3. AUDYT JAKOŚCI (STUBY, DUPLIKATY, LEGAL_BASIS, HARDCODE)
+────────────────────────────────────────────────────────────────────────────────
+
+Przeprowadź głęboką analizę: stan przed vs po.
+
+  A. STUBY (przed → po):
+     - sus_a6…sus_a47.rego (16 plików): ZERO reguł — tylko `default decide`
+       no_match. → USUNIĘTE (0 stubów). Pokrycie w sus.rego (122 reguły).
+     - zdrowotna_a79…a82.rego (6): ZERO reguł → USUNIĘTE. Pokrycie w
+       zdrowotna.rego (136).
+     - zasilkowa_a19…a33.rego (4): ZERO reguł → USUNIĘTE. Pokrycie w
+       zasilkowa.rego (38).
+     - Wzorzec stubowy „matched:true bez warunków merytorycznych"
+       (business_type == "JDG", *_pass/_condition_met flagi) wykryty w
+       sus.rego (45), zdrowotna.rego (86), zasilkowa.rego (8) — ZGŁOSZONY
+       przez zus_micro_quality.py jako WARNING (backlog domenowy P10+,
+       nie blokuje bramki).
+  B. DUPLIKATY:
+     - Inventory sprzed P09: 301 duplikatów rule_id (sus_a* dublowały sus.rego).
+     - Po P09: 0 duplikatów (inventory: 543 unikalnych / 543).
+     - Kolizja namespace: plan33/plan34 używały rule_id jdg.zus.* (macro) —
+       180 prefiksów naprawionych → jdg.micro.zus.* (zus_micro_quality gate).
+  C. _LEGAL_BASIS (kanon):
+     - sus.rego: 1 generyczna podstawa → 122 reguł per-artykuł (kanon
+       „Dz.U. 2025 poz. 345, ze zm.").
+     - zdrowotna.rego: 2 stare stringi → 136 per-artykuł („Dz.U. 2025 poz. 890").
+     - zasilkowa.rego: 1 stary string → 38 per-artykuł (pełny tytuł ustawy
+       zasiłkowej z legal_reference_canon.json).
+     - plan33_zus.rego: 146 krótkich form → kanon (84 unikalne, 0 starych).
+     - Stare cytowania (Dz.U. 1998 nr 137 poz. 887 / 2004 nr 210 poz. 2135 /
+       1999 nr 60 poz. 636): grep = 0 w całej warstwie mikro.
+  D. HARDCODE (ADR-002):
+     - _zus_micro_rates.rego: 100% wartości → data.jdg.thresholds.zus.*
+       (fallback 2026). Nowe reguły atomowe: 0 literałów (tylko thresholds).
+     - Pozostałe hardcode (sus/zdrowotna/zasilkowa ~594 WARNING) — znany
+       backlog domenowy (lint 5/6, tak jak P01–P08).
+  E. PLIKI PUSTE: 0 (bramka --gate-stubs 0).
+
+────────────────────────────────────────────────────────────────────────────────
+ 4. AUDYT SUS MIKRO (a6–a47) — PER ARTYKUŁ
+────────────────────────────────────────────────────────────────────────────────
+
+Przeprowadź głębokie myślenie przed każdą rekomendacją kodu — podsumowanie:
+
+  • a6 (podleganie): 8 reguł sus.rego — po kanonizacji _legal_basis per
+    art. 6 ust. 1 pkt 4. Luka: warunki częściowo generyczne (backlog).
+  • a6b (zbieg): 6 reguł. Kanon art. 6b ust. 1.
+  • a9 (zbieg): 8 reguł sus.rego + 8 plan33. Kanon art. 9 ust. 1.
+  • a11 (dobrowolność): 8 + 7. Kanon art. 11 ust. 2. plan33: naprawione
+    warunki (a11.r5 ustanie — CLOSED zamiast ACTIVE;CLOSED).
+  • a13/a14: 8 + 8. Kanon art. 13 pkt 4 / art. 14 ust. 1.
+  • a18/a18a/a18c (podstawy i ulgi): sus.rego 10+10+10; plan33 a18 (12);
+    NOWE reguły atomowe P09: a18c eligibility (limit 120 000, 36/60 mies.),
+    a18c limit_monitor (95%), a18c base_calc (30% dochodu, clamp 1440–5460).
+  • a19 (podstawa): sus.rego 8 + NOWE a19 base_standard_preferential
+    (60% przeciętnego / 30% min. — preferencyjna).
+  • a22 (stopy): 8 reguł sus.rego + 8 plan33; stawki data-driven
+    (_zus_micro_rates przez thresholds).
+  • a24 (FP/FGŚP): 6 reguł.
+  • a36 (terminy płatności): 8 reguł + NOWE a36.reporting_deadline (7 dni,
+    art. 36 ust. 4).
+  • a40 (zawieszenie): 8 reguł.
+  • a47 (opłacanie): 8 reguł + NOWE a47.payment_deadline (10. dzień JDG /
+    15. dzień z pracownikami — art. 47 ust. 1 pkt 2).
+
+────────────────────────────────────────────────────────────────────────────────
+ 5. AUDYT ZDROWOTNEJ MIKRO (a79–a82) I ZASIŁKOWEJ (a19–a33)
+────────────────────────────────────────────────────────────────────────────────
+
+  ZDROWOTNA:
+  • a79 (10 reguł), a81 skala 9% (10), a81b liniowy 4,9% (10), a81c ryczałt
+    (12), a81d roczne rozliczenie (12), a82 (8) — wszystkie z kanonicznym
+    _legal_basis (Dz.U. 2025 poz. 890).
+  • NOWE: a81c.tier_switch (3 reguły — TIER_I/II/III, granice inkluzywne
+    spójne z makro health_tier_engine P08: 60 000 → TIER_I, 60 001 → TIER_II,
+    300 000 → TIER_II, 300 001 → TIER_III — INV-018 zero rozjazdu),
+    a81d.annual_reconciliation (9% × przychód roczny − Σ wpłat; termin 05-22).
+  • Progi/stawki: 7/7 znalezione w warstwie micro (inventory audit) — brak
+    hardcode w nowych regułach.
+
+  ZASIŁKOWA:
+  • a19 (10 reguł), a29 (10), a32 (10), a33 (8) — kanon ustawy zasiłkowej.
+  • NOWE: a19.benefit_base (średnia 12 mies. podstaw, dzienna /30, grosze),
+    a29.waiting_period (90 dni dobrowolne / 30 obowiązkowe — art. 4 ust. 1
+    pkt 2), a32.limit_tracker (182/270 dni, alert ≥90%), a33.benefit_rate
+    (80% / 70% szpital — podwójne zaokrąglanie groszy).
+  • Spójność z makro (sickness_benefits_enterprise.rego — P08): stawki i
+    limity zgodne (80%/70%, 182/270) — potwierdzone testami.
+
+────────────────────────────────────────────────────────────────────────────────
+ 6. AUDYT PLAN33/34, TEMPORALNOŚCI I NIEZAWODNOŚCI
+────────────────────────────────────────────────────────────────────────────────
+
+  PLAN33/34:
+  • plan34_zus.rego (20 reguł) — USUNIĘTY: duplikat plan33/sus, warunki
+    kontradyktoryjne, drugi default w pakiecie jdg.micro.zus (konflikt
+    kompilacji OPA), _legal_basis „Art. 6 SUS — Obowiazek ubezpieczenia
+    spolecznego" (niekanoniczne).
+  • plan33_zus.rego (180 reguł) — NAPRAWIONY i ZACHOWANY jako warstwa
+    „szczegółowa" (pakiet jdg.micro.zus): rule_id jdg.micro.zus.* (0 kolizji),
+    warunki bez duplikatów/kontradykcji, _legal_basis kanoniczne.
+  • Narzędzie konsolidujące: tools/zus_plan33_fixer.py (--apply/--check)
+    — jeden autorytatywny zbiór reguł mikro (sus.rego + zdrowotna.rego +
+    zasilkowa.rego + plan33_zus.rego + zus_micro_atomic_p09.rego).
+
+  TEMPORALNOŚĆ:
+  • Nowe reguły atomowe mają valid_from 2026-01-01 / valid_to null
+    (kontrakt ADR-003 — werdykt wg prawa z dnia transakcji).
+  • Parametry 2026 (minimalne 4 800, przeciętne 9 100, progi 60k/300k,
+    składki 491.40/819.00/1474.20) — wyłącznie w data.jdg.thresholds.zus.*
+    (zmiana parametru < 1 min — Data API hot-reload, V1 §11).
+
+  NIEZAWODNOŚĆ:
+  • Niemutowalność werdyktów makro ZUS (allowlista jdg.zus.* — P08)
+    zachowana: mikro operuje wyłącznie na namespace jdg.micro.*
+    (safe_merge: final_verdict_p45 wygrywa, INV-018).
+  • „Dowód składki" w Decision Certificate: nowe reguły niosą
+    _provenance_tree (art. → podstawa → stopa → kwota) + _warnings.
+
+────────────────────────────────────────────────────────────────────────────────
+ 7. GENIALNE POMYSŁY — INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+────────────────────────────────────────────────────────────────────────────────
+
+Przeprowadź głębokie myślenie — 14 pozycji (min. 12 wymagane):
+
+  1. KONWERTER STUBÓW → REGUŁ WARUNKOWYCH (auto-fix): zus_micro_quality.py
+     --fix kanonizuje _legal_basis per sekcja artykułu; bramka --gate
+     wykrywa puste pliki, kolizje namespace, duplikaty.
+  2. MIKRO-SILNIK PROGÓW ZDROWOTNEJ: zdrowotna_tier_engine.py z testami
+     granicznymi 59 999/60 000/60 001/300 000/300 001 (granice inkluzywne
+     spójne z makro — INV-018).
+  3. RE-KALKULATOR KOREKTY ROCZNEJ: annual_correction() (9% przychodu − Σ
+     wpłat, termin 22 maja, DOPLATA/NADPLATA/ROZLICZONE) + reguła Rego a81d.
+  4. DETEKTOR ROZJAZDU MICRO↔MACRO (INV-018): macro_micro_divergence()
+     porównuje tier mikro z makro — DIVERGENCE/CONSISTENT.
+  5. TRACKER LIMITU ZASIŁKÓW: limit_tracker() 182/270 dni + alert 90% +
+     reguła Rego a32 (sickness_days_used, tuberculosis).
+  6. SYMULATOR „DOBROWOLNE CHOROBOWE": voluntary_sickness_simulator()
+     — składka 2,45% vs oczekiwany zasiłek + próg opłacalności (breakeven).
+  7. KONSOLIDATOR PLAN33/34↔SUS W CI: zus_plan33_fixer.py (--check w CI) —
+     jeden autorytatywny zbiór reguł mikro, raport „zdrowia" per plik.
+  8. MAPA ARTYKUŁ×USTĘP×PKT Z LKG: tabela pokrycia (sekcja 2) + kanoniczne
+     _legal_basis per artykuł (LKG-ready, migracja 003).
+  9. TESTY PER ARTYKUŁ: test_native_zus_micro.rego (16 testów: happy path,
+     granice, negatywne, no_match) + pytest 20 (P09) + regresja 348.
+ 10. RAPORT „ZDROWIA" PER PLIK: zus_micro_quality.py --json (rule_count,
+     uniq, matched, legal_basis distinct, generic, hardcode).
+ 11. DOWÓD SKŁADKI W CERTYFIKACIE: _provenance_tree w nowych regułach
+     (art. → input → formula → kwota) + _warnings groszowe.
+ 12. AUTO-AKTUALIZACJA PARAMETRÓW (obwieszczenia): cała warstwa stawek przez
+     data.jdg.thresholds.zus.* — zmiana parametru bez zmiany reguł (V1 §11).
+ 13. BIBLIOTEKA WZORCÓW REGUŁ ATOMOWYCH ZUS: zus_micro_atomic_p09.rego jako
+     wzorzec (werdykt 25-polowy + valid_from/to + _provenance_tree + flagi
+     aktywacji) — szablon dla P10+.
+ 14. BRAMKA CI ZERO-STUBÓW: zus_micro_inventory.py --gate-stubs 0 +
+     zus_micro_quality.py --gate (0 błędów) wpięte w pipeline.
+
+────────────────────────────────────────────────────────────────────────────────
+ 8. KOD DO WDROŻENIA — WDROŻONO 100%
+────────────────────────────────────────────────────────────────────────────────
+
+Przeprowadź głęboką analizę powiązań między plikami — wdrożone zmiany:
+
+  REGUŁY (nowe / naprawione):
+  • rules/micro/zus_micro_atomic_p09.rego — NOWY (16 reguł atomowych, pakiet
+    jdg.micro.zus_atomic_p09): a18c.maly_zus_plus_eligibility/limit_monitor/
+    base_calc, a81c.tier_switch.r1-r3, a81d.annual_reconciliation,
+    a19.benefit_base, a29.waiting_period, a32.limit_tracker,
+    a33.benefit_rate, a19.base_standard_preferential.r1-r2,
+    a36.reporting_deadline, a47.payment_deadline.r1-r2. Flagi aktywacji:
+    health_tier_switch_check, health_annual_reconciliation_check,
+    zus_base_check, zus_reporting_check, zus_payment_check.
+  • rules/micro/plan33_zus.rego — NAPRAWIONY (180 reguł): rule_id
+    jdg.micro.zus.*, warunki bez duplikatów/kontradykcji, _legal_basis kanon.
+  • rules/micro/sus/sus.rego — kanonizacja _legal_basis (122, per artykuł,
+    Dz.U. 2025 poz. 345) + komentarze nagłówków.
+  • rules/micro/zdrowotna/zdrowotna.rego — kanonizacja (136, Dz.U. 2025
+    poz. 890).
+  • rules/micro/zasilkowa/zasilkowa.rego — kanonizacja (38, ustawa zasiłkowa).
+  • rules/micro/_zus_micro_rates.rego — PRZEBUDOWANE na data-driven
+    (object.get(data.jdg.thresholds.zus.*, fallback)).
+  • USUNIĘTE: sus_a6…sus_a47 (16), zdrowotna_a79…a82 (6), zasilkowa_a19…a33 (4),
+    plan34_zus.rego.
+
+  THRESHOLDS (rules/thresholds_jdg.rego, zus block): +25 nowych kluczy
+  (accident_rate_min/max, social_base_standard_60pct, preferential_base_30pct,
+  maly_zus_plus_base_pct/cap/months_window, health_min_base_standard/
+  first_year, health_lump_annual_deadline, health_lump_tier_*_multiplier,
+  sickness_waiting_days_employee/voluntary, sickness_max_days_standard/tb,
+  sickness_benefit_base_months/daily_divisor, payment_deadline_social/
+  social_employees/health, reporting_deadline_days).
+
+  ORKIESTRATOR (rules/main_jdg.rego):
+  • Importy: data.jdg.micro.sus / .zdrowotna / .zasilkowa / .zus /
+    .zus_atomic_p09.
+  • _package_decisions: +5 wpisów (jdg.micro.sus, jdg.micro.zdrowotna,
+    jdg.micro.zasilkowa, jdg.micro.zus, jdg.micro.zus_atomic_p09).
+  • final_verdict_p46 = safe_merge(final_verdict_p45, micro_sus_full.decide,
+    micro_zdrowotna_full.decide, micro_zasilkowa_full.decide,
+    micro_zus_plan33.decide, zus_micro_atomic_p09.decide, fallback.decide);
+    final_verdict_post_merge → final_verdict_p46.
+
+  NARZĘDZIA (nowe):
+  • tools/zus_micro_quality.py — linter mikro + kanonizacja + dedup + raport
+    zdrowia + bramka CI (--gate / --fix / --json).
+  • tools/zdrowotna_tier_engine.py — progi 60k/300k, korekta roczna,
+    detektor rozjazdu micro↔macro, self-test.
+  • tools/zus_zasilkowa_calculator.py — podstawa 12 mies., 80/70%, limity
+    182/270, wyczekiwanie 30/90, symulator dobrowolnego chorobowego.
+  • tools/zus_plan33_fixer.py — konsolidator plan33 (--apply/--check).
+  • tools/zus_micro_inventory.py — zaktualizowane listy plików (zero stubów).
+
+  TESTY (nowe / zaktualizowane):
+  • tests/rego/test_native_zus_micro.rego — 16 testów natywnych.
+  • tests/auto/test_p09_zus_micro_enterprise_glm52.py — 20 pytest.
+  • tests/auto/test_p08_zus_micro_enterprise.py — asercja plan33_rule_id_prefix
+    jdg.zus → jdg.micro.zus (P09 konsolidacja).
+  • tests/test_p03_orchestrator_enterprise.py — łańcuch post-merge p45 → p46.
+
+────────────────────────────────────────────────────────────────────────────────
+ 9. MAPA DROGOWA + INTEGRACJA Z INNYMI CZĘŚCIAMI
+────────────────────────────────────────────────────────────────────────────────
+
+  • P01 (orkiestrator): kontrakty spełnione — werdykt 25-polowy, rule_id
+    unikalne, _legal_basis kanoniczne, zero hardcode w nowych regułach,
+    wpis w main_jdg.rego (final_verdict_p46), default no_match.
+  • P05 (PIT makro/ryczałt): progi ryczałtu zdrowotnego 60k/300k spójne z
+    formą LUMP_SUM (tier_switch mikro odczytuje tax_form LUMP_SUM).
+  • P08 (ZUS makro/zdrowotna): makro tier_switch (jdg.zus.health.tier_switch)
+    i mikro tier_switch (jdg.micro.zdrowotna.a81c.tier_switch) — spójne
+    granice (INV-018, detektor macro_micro_divergence); niemutowalność
+    jdg.zus.* zachowana.
+  • P11 (KKS): kks_thresholds w _zus_micro_rates (200× min., daily rate)
+    czytane z thresholds.
+  • P13 (cykl życia/business_lifecycle): zus_relief_type START/PREFERENTIAL/
+    MALY_ZUS_PLUS spójne z _business_lifecycle_rates.
+  • P15 (compliance): terminy płatności 10/15 (a47) i zgłoszeń 7 dni (a36)
+    — spójne z raportowaniem.
+  • P18 (testy/CI): nowe bramki zus_micro_quality --gate i
+    zus_micro_inventory --gate-stubs 0.
+
+────────────────────────────────────────────────────────────────────────────────
+ 10. METRYKI SUKCESU (BRAMKI PO WDROŻENIU)
+────────────────────────────────────────────────────────────────────────────────
+
+  Komendy weryfikacyjne (cd JDG):
+    python3 tools/zus_micro_quality.py --gate          # 0 błędów, BRAMKA PASS
+    python3 tools/zus_plan33_fixer.py --check          # 180 reguł, kanon OK
+    python3 tools/zus_micro_inventory.py --json bundles/zus_micro_inventory.json --gate-stubs 0
+                                                       # 543 reguł, 0 duplikatów, 0 stubów
+    python3 tools/validate_rules.py                    # Błędów: 0 (396 plików)
+    python3 tools/invariant_checker.py ci              # PASS — 42 niezmienniki
+    python3 tools/lint_rego_rules.py --ci              # 5/6 (backlog hardcode — znany)
+    python3 tools/zdrowotna_tier_engine.py             # PASS — granice progów
+    python3 tools/zus_zasilkowa_calculator.py          # PASS — zasiłki
+    python3 -m pytest tests/auto/test_p09_zus_micro_enterprise_glm52.py -q   # 20 passed
+    python3 -m pytest tests/auto/test_p08_zus_micro_enterprise.py -q         # 16 passed
+    python3 -m pytest tests/auto/test_p08_zus_macro_enterprise_glm52.py \
+        tests/auto/test_auto_block_zus.py tests/auto/test_auto_block_micro.py -q  # regresja 348 passed
+    # Wymagane w CI (binarka OPA v1.x): opa check rules/ -b && opa test tests/rego/ -v
+
+  Metryki kampanii (wkład P09):
+    • Zero stubów: 26 plików → 0 · Zero duplikatów: 301 → 0
+    • RV (legal basis): mikro ZUS 100% (kanon per artykuł)
+    • LCI ZUS: ≥ 99% (wszystkie artykuły pokryte, 543 reguły)
+    • Rozjazdy micro↔macro: 0 (detektor + testy granic)
+    • Hardcode w nowych regułach: 0 (ADR-002)
+    • Temporalność: valid_from/valid_to w regułach atomowych (ADR-003)
+
+────────────────────────────────────────────────────────────────────────────────
+ Koniec raportu P09. Następny raport: PROMPT_10_KSIEGOWOSC_PKPIR_UOR.txt
+ (P10 z 19 — Księgowość PKPiR/UoR). OKNO KONTEKSTOWE DO WYCZYSZCZENIA.
+════════════════════════════════════════════════════════════════════════════════

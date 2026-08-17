@@ -20,7 +20,7 @@
 #                                     dawał opis bez kalendarza)
 #   R12-INN-04 succession_deadline_monitor — monitor terminów sukcesji (wpis
 #                                     CEIDG 14 dni, 2 lata + do 5 lat,
-#                                     art. 3-15 u.z.s.) z alertami (p13
+#                                     art. 3-15 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)) z alertami (p13
 #                                     succession_tracker dawał listę kroków)
 #   R12-INN-05 tax_form_arbitrator — arbiter formy opodatkowania (ryczałt vs
 #                                     skala vs liniowy) + zawieszenie vs
@@ -236,7 +236,7 @@ decide := {
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # R12-INN-04: SUCCESSION DEADLINE MONITOR — monitor terminów sukcesji
-#             (wpis CEIDG 14 dni, 2 lata + do 5 lat, art. 3-15 u.z.s.)
+#             (wpis CEIDG 14 dni, 2 lata + do 5 lat, art. 3-15 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234))
 # ═══════════════════════════════════════════════════════════════════════════════
 # Host dostarcza succession_monitor: {items: [{label, days_left, filed}]}.
 sc_input := object.get(input, "succession_monitor", {})
@@ -255,7 +255,7 @@ sc_item(i) := {
     "days_left": object.get(i, "days_left", succession_ceidg_days),
     "filed": object.get(i, "filed", false),
     "level": sc_level(object.get(i, "days_left", succession_ceidg_days)),
-    "next_action": "Dokonaj wpisu zarządcy sukcesyjnego do CEIDG (14 dni) — art. 3-15 u.z.s." if {not object.get(i, "filed", false)} else "Termin dotrzymany.",
+    "next_action": "Dokonaj wpisu zarządcy sukcesyjnego do CEIDG (14 dni) — art. 3-15 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)" if {not object.get(i, "filed", false)} else "Termin dotrzymany.",
 }
 
 sc_items := [sc_item(i) | i := sc_items_in[_]]

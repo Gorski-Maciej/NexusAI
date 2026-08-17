@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — UoR Financial Statements Layer: Art. 45–50 Ustawy o rachunkowości
+# NexusAI JDG — UoR Financial Statements Layer: Art. 45–50 ustawy z dnia 29 września 1994 r. o rachunkowości (Dz.U. 2025 poz. 567, ze zm.)
 # Package: jdg.uor.financial_stmt — Financial Statement Generation & Validation
 # Version: 1.0.0 — Q3 2026 Critical Closure
 # Legal basis: Art. 45–50 UoR

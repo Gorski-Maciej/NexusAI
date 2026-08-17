@@ -61,7 +61,7 @@ lifecycle_phases := {
         "zus_social_due": false,
         "zus_health_due": true,
         "key_actions": ["Max 6 mies. bez pracowników", "ZUS społeczne=0, zdrowotna NADAL", "Brak amortyzacji"],
-        "legal_basis": "Art. 22-25 Prawa Przedsiębiorców, Art. 36a SUS"
+        "legal_basis": "Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123), Art. 36a SUS"
     },
     "SUCCESSION": {
         "months_max_standard": 24,
@@ -71,7 +71,7 @@ lifecycle_phases := {
     },
     "CLOSURE": {
         "key_actions": ["Wykreślenie CEIDG", "Remanent likwidacyjny 10%", "VAT-Z + VAT 23%", "ZUS ZWUA 7d", "Zeznanie końcowe PIT"],
-        "legal_basis": "Art. 24 PIT, Art. 14 VAT, Art. 31-36 Prawa Przedsiębiorców"
+        "legal_basis": "Art. 24 PIT, Art. 14 VAT, Art. 31-36 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)"
     }
 }
 

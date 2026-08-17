@@ -423,6 +423,65 @@ import data.jdg.micro.amort_a22i
 import data.jdg.micro.amort_a22k
 import data.jdg.micro.amort_a22n
 
+# ── PAS 18ai: P09 GLM52 ZUS MIKRO + ZASIŁKI (2026-08-17) ──
+# Warstwa mikro ZUS (sus/zdrowotna/zasilkowa + plan33 + atomowe P09):
+# wypełnia LUKI makro (no_match → werdykt atomowy), nigdy nie nadpisuje
+# decyzji makro (safe_merge: final_verdict_p45 ma priorytet, INV-018).
+# Konsolidacja P09: usunięte stuby sus_a*/zdrowotna_a*/zasilkowa_a* oraz
+# plan34_zus.rego (duplikaty); plan33_zus.rego → rule_id jdg.micro.zus.*
+# (kolizja z makro jdg.zus.* naprawiona).
+import data.jdg.micro.sus as micro_sus_full
+import data.jdg.micro.zdrowotna as micro_zdrowotna_full
+import data.jdg.micro.zasilkowa as micro_zasilkowa_full
+import data.jdg.micro.zus as micro_zus_plan33
+import data.jdg.micro.zus_atomic_p09
+
+# ── PAS 18aj: P10 GLM52 KSIĘGOWOŚĆ PKPiR/UoR (2026-08-17) ──
+# Warstwa mikro księgowości (PKPiR 7 pakietów + UoR + plan33_uor + atomowe P10):
+# wypełnia LUKI makro (no_match → werdykt atomowy), nigdy nie nadpisuje
+# decyzji makro (safe_merge: final_verdict_p46 ma priorytet, INV-018).
+# Konsolidacja P10: usunięte fallbacki {true} (6 reguł martwych PKPiR),
+# kanoniczne _legal_basis (UoR: Dz.U. 2025 poz. 567; PKPiR: rozp. MF 15.11.2025).
+import data.jdg.micro.pkpir
+import data.jdg.micro.pkpir_columns
+import data.jdg.micro.pkpir_corrections
+import data.jdg.micro.pkpir_costs
+import data.jdg.micro.pkpir_nkup
+import data.jdg.micro.pkpir_revenue
+import data.jdg.micro.pkpir_remnant
+import data.jdg.micro.uor
+import data.jdg.micro.uor_plan33
+import data.jdg.micro.ksiegowosc_atomic_p10
+import data.jdg.micro.kks as micro_kks_full
+import data.jdg.micro.ord as micro_ord_full
+import data.jdg.micro.kks.plan33 as micro_kks_plan33
+import data.jdg.micro.plan33_ord as micro_ord_plan33
+import data.jdg.micro.plan34_ord as micro_ord_plan34
+import data.jdg.micro.kks_ord_atomic_p11
+import data.jdg.micro.crossborder as micro_cb_full
+import data.jdg.micro.cb as micro_cb_plan33
+import data.jdg.micro.tp as micro_tp_plan33
+import data.jdg.micro.tax_trans as micro_tax_trans_plan33
+import data.jdg.micro.mdr as micro_mdr_plan33
+import data.jdg.micro.crossborder_atomic_p12
+
+# ── PAS 18ak: P13 GLM52 RYCZAŁT / CEIDG / PP / SUKCESJA (2026-08-17) ──
+# Warstwa micro cyklu życia (ryczalt/ceidg/pp/sukcesja + plan33 + atomowe P13):
+# wypełnia LUKI makro (no_match → werdykt atomowy), nigdy nie nadpisuje
+# decyzji makro (safe_merge: final_verdict_p49 ma priorytet, INV-018).
+# Konsolidacja P13: plan33_ceidg.rego → package jdg.micro.plan33_ceidg
+# (konflikt 2× default decide z ceidg.rego naprawiony — wzorzec plan34_ord P11);
+# kanon _legal_basis: ryczałt poz. 234 / PP poz. 123 / CEIDG poz. 456 /
+# sukcesja poz. 1234 (0 starych cytowań).
+import data.jdg.micro.ryczalt as micro_ryczalt_full
+import data.jdg.micro.ryc as micro_ryc_plan33
+import data.jdg.micro.ceidg as micro_ceidg_full
+import data.jdg.micro.plan33_ceidg as micro_ceidg_plan33
+import data.jdg.micro.pp as micro_pp_full
+import data.jdg.micro.sukcesja as micro_sukcesja_full
+import data.jdg.micro.succ as micro_succ_plan33
+import data.jdg.micro.ryczalt_cykl_atomic_p13
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1467,6 +1526,36 @@ _package_decisions := {
     "jdg.micro.amort_a22i": amort_a22i.decide,
     "jdg.micro.amort_a22k": amort_a22k.decide,
     "jdg.micro.amort_a22n": amort_a22n.decide,
+    "jdg.micro.sus": micro_sus_full.decide,
+    "jdg.micro.zdrowotna": micro_zdrowotna_full.decide,
+    "jdg.micro.zasilkowa": micro_zasilkowa_full.decide,
+    "jdg.micro.zus": micro_zus_plan33.decide,
+    "jdg.micro.zus_atomic_p09": zus_micro_atomic_p09.decide,
+    "jdg.micro.pkpir": micro_pkpir.decide,
+    "jdg.micro.pkpir_columns": micro_pkpir_columns.decide,
+    "jdg.micro.pkpir_corrections": micro_pkpir_corrections.decide,
+    "jdg.micro.pkpir_costs": micro_pkpir_costs.decide,
+    "jdg.micro.pkpir_nkup": micro_pkpir_nkup.decide,
+    "jdg.micro.pkpir_revenue": micro_pkpir_revenue.decide,
+    "jdg.micro.pkpir_remnant": micro_pkpir_remnant.decide,
+    "jdg.micro.uor": micro_uor.decide,
+    "jdg.micro.uor_plan33": micro_uor_plan33.decide,
+    "jdg.micro.ksiegowosc_atomic_p10": ksiegowosc_atomic_p10.decide,
+    "jdg.micro.kks_ord_atomic_p11": kks_ord_atomic_p11.decide,
+    "jdg.micro.crossborder": micro_cb_full.decide,
+    "jdg.micro.cb": micro_cb_plan33.decide,
+    "jdg.micro.tp": micro_tp_plan33.decide,
+    "jdg.micro.tax_trans": micro_tax_trans_plan33.decide,
+    "jdg.micro.mdr": micro_mdr_plan33.decide,
+    "jdg.micro.crossborder_atomic_p12": crossborder_atomic_p12.decide,
+    "jdg.micro.ryczalt": micro_ryczalt_full.decide,
+    "jdg.micro.ryc": micro_ryc_plan33.decide,
+    "jdg.micro.ceidg": micro_ceidg_full.decide,
+    "jdg.micro.plan33_ceidg": micro_ceidg_plan33.decide,
+    "jdg.micro.pp": micro_pp_full.decide,
+    "jdg.micro.sukcesja": micro_sukcesja_full.decide,
+    "jdg.micro.succ": micro_succ_plan33.decide,
+    "jdg.micro.ryczalt_cykl_atomic_p13": ryczalt_cykl_atomic_p13.decide,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
     "jdg.p23_innovations": p23_innovations.decide,
@@ -2070,20 +2159,111 @@ final_verdict_p45 = safe_merge(final_verdict_p44,
     ))))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 46: ZUS MIKRO + ZASIŁKI (PROMPT 09 — GLM52 P09, Dual-Layer ADR-005/INV-018)
+# Warstwa mikro ZUS (sus.rego 122 reguł + zdrowotna.rego 136 + zasilkowa.rego 38
+# + plan33_zus.rego 180 + zus_micro_atomic_p09 16 reguł atomowych): wypełnia
+# LUKI makro (no_match), nigdy nie nadpisuje decyzji makro (safe_merge: lewy
+# argument wygrywa). Niemutowalność werdyktów makro ZUS (allowlist jdg.zus.*)
+# chroniona — mikro operuje na własnym namespace jdg.micro.*.
+final_verdict_p46 = safe_merge(final_verdict_p45,
+    safe_merge(micro_sus_full.decide,
+    safe_merge(micro_zdrowotna_full.decide,
+    safe_merge(micro_zasilkowa_full.decide,
+    safe_merge(micro_zus_plan33.decide,
+    safe_merge(zus_micro_atomic_p09.decide,
+        fallback.decide
+    ))))))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 47: KSIĘGOWOŚĆ MIKRO (PROMPT 10 — GLM52 P10, Dual-Layer ADR-005/INV-018)
+# Warstwa mikro księgowości (PKPiR 7 pakietów: pkpir/columns/corrections/costs/
+# nkup/revenue/remnant + micro/uor 148 reguł + plan33_uor + ksiegowosc_atomic_p10
+# 16 reguł atomowych: próg 2M EUR, podwójny zapis, inwentaryzacja, sprawozdanie,
+# zamknięcie roku, amortyzacja księgowa, walidator 17 kolumn, leasing): wypełnia
+# LUKI makro (no_match), nigdy nie nadpisuje decyzji makro (safe_merge: lewy
+# argument wygrywa).final_verdict_p47 = safe_merge(final_verdict_p46,
+    safe_merge(micro_pkpir.decide,
+    safe_merge(micro_pkpir_columns.decide,
+    safe_merge(micro_pkpir_corrections.decide,
+    safe_merge(micro_pkpir_costs.decide,
+    safe_merge(micro_pkpir_nkup.decide,
+    safe_merge(micro_pkpir_revenue.decide,
+    safe_merge(micro_pkpir_remnant.decide,
+    safe_merge(micro_uor.decide,
+    safe_merge(micro_uor_plan33.decide,
+    safe_merge(ksiegowosc_atomic_p10.decide,
+        fallback.decide
+    )))))))))))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 48: KKS + ORDYNACJA + AUDYT/OBRONA MIKRO (PROMPT 11 — GLM52 P11)
+# Reguły atomowe P11 (13): gradacja kar KKS (art. 54 — stawka dzienna × stawek,
+# przestępstwo/wykroczenie), czynny żal (art. 16), dobrowolne poddanie (art. 17),
+# recydywa (art. 37), przedawnienie karalności (art. 44), przedawnienie
+# zobowiązania (art. 70 OP), korekta (art. 81b), Biała Lista (art. 117ba),
+# GAAR (art. 119a), prawa w kontroli (art. 282b/291/223 + WSA), JPK na żądanie
+# (art. 193a). Wypełnia LUKI makro (no_match), nigdy nie nadpisuje (safe_merge).
+final_verdict_p48 = safe_merge(final_verdict_p47,
+    safe_merge(micro_kks_full.decide,
+    safe_merge(micro_ord_full.decide,
+    safe_merge(micro_kks_plan33.decide,
+    safe_merge(micro_ord_plan33.decide,
+    safe_merge(micro_ord_plan34.decide,
+    safe_merge(kks_ord_atomic_p11.decide,
+        fallback.decide
+    ))))))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 49: CROSS-BORDER / TP / CFC / MDR MIKRO (PROMPT 12 — GLM52 P12)
+# Warstwa mikro cross-border (micro/crossborder 193 + plan33_cb/tp/tax_trans/mdr
+# + crossborder_atomic_p12 10 reguł: TP 23m/23zf/23zb, CFC 30f, exit tax 30da,
+# MDR 86a-86o, WHT 30a, rezydencja 3, FX 14 ust. 2c): wypełnia LUKI makro
+# (no_match), nigdy nie nadpisuje decyzji makro (safe_merge: lewy argument wygrywa).
+final_verdict_p49 = safe_merge(final_verdict_p48,
+    safe_merge(micro_cb_full.decide,
+    safe_merge(micro_cb_plan33.decide,
+    safe_merge(micro_tp_plan33.decide,
+    safe_merge(micro_tax_trans_plan33.decide,
+    safe_merge(micro_mdr_plan33.decide,
+    safe_merge(crossborder_atomic_p12.decide,
+        fallback.decide
+    ))))))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18al: P13 GLM52 RYCZAŁT / CEIDG / PP / SUKCESJA MIKRO (PROMPT 13 — GLM52 P13)
+# Warstwa micro cyklu życia (micro/ryczalt 156 + plan33_ryc 159 + ceidg 43 +
+# plan33_ceidg 16 + pp 148 + sukcesja 141 + plan33_succ 21 + ryczalt_cykl_atomic_p13
+# 18 reguł: stawki PKWiU 3-25%, limit 2M EUR z alertem 95%, zawieszenie 30 dni/
+# 24 mies., nieewidencjonowana 50% minimalnej, sukcesja 2+3 lata, karta podatkowa):
+# wypełnia LUKI makro (no_match), nigdy nie nadpisuje decyzji makro (safe_merge:
+# lewy argument wygrywa). IN_SUCCESSIO → routing full chain (kontrakt PROMPT 01).
+final_verdict_p50 = safe_merge(final_verdict_p49,
+    safe_merge(micro_ryczalt_full.decide,
+    safe_merge(micro_ryc_plan33.decide,
+    safe_merge(micro_ceidg_full.decide,
+    safe_merge(micro_ceidg_plan33.decide,
+    safe_merge(micro_pp_full.decide,
+    safe_merge(micro_sukcesja_full.decide,
+    safe_merge(micro_succ_plan33.decide,
+    safe_merge(ryczalt_cykl_atomic_p13.decide,
+        fallback.decide
+    )))))))))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
-#   • certainty_class    — CERTAIN / CONDITIONAL / NEEDS_ADVICE (F4 V2 §5.2),
-#   • _certainty_guard   — CERTAINTY_BLOCKED / MANUAL_REVIEW / AUTO_POST_ALLOWED,
+#   • _certainty_class     — CERTAIN / CONDITIONAL / NEEDS_ADVICE (F4 V2 §5.2),
+#   • _certainty_guard    — CERTAINTY_BLOCKED / MANUAL_REVIEW / AUTO_POST_ALLOWED,
 #   • _decision_certificate — certyfikat F4 z decision_hash (F3 V2) i wersjami
 #                             bundle/rule/threshold (V1 §9.3),
-#   • _routing_context   — kontekst routingu O(1) (INV-020/INV-036, ADR-009).
+#   • _routing_context    — kontekst routingu O(1) (INV-020/INV-036, ADR-009).
 # Host NIGDY nie wykonuje AUTO_POST dla werdyktu z _certainty_guard =
 # CERTAINTY_BLOCKED (INV-006/INV-035) — gwarancja „nigdy zła decyzja".
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-final_verdict_post_merge = object.union(final_verdict_p45,
+final_verdict_post_merge = object.union(final_verdict_p50,
     {"_routing_context": routing_context})
 
 final_verdict_enforced = object.union(final_verdict_post_merge,

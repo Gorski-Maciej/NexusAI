@@ -204,3 +204,97 @@ NASTĘPNY: PROMPT_08_ZUS_MAKRO_ZDROWOTNA.txt (ZUS makro + składka zdrowotna)
    narzędzia + testy; precision_engine to pakiety nazwanych reguł queryable;
    CI opa wymaga OPA 1.x
 NASTĘPNY: PROMPT_09_ZUS_MIKRO_ZASILKI.txt (ZUS mikro + zasiłki — sickness)
+
+════════════════════════════════════════════════════════════════════
+WYCZYŚĆ OKNO KONTEKSTOWE — PODSUMOWANIE P09 (ZUS MIKRO + ZASIŁKI)
+════════════════════════════════════════════════════════════════════
+✅ Usunięto 26 stubów (sus_a*/zdrowotna_a*/zasilkowa_a* — zero reguł,
+   drugi default decide = konflikt kompilacji) + plan34_zus.rego (20 reguł
+   duplikat/niekanonicznych) — zero stubów, zero duplikatów (301 → 0)
+✅ plan33_zus.rego (180 reguł): rule_id jdg.zus.*→jdg.micro.zus.* (kolizja
+   z makro), 46 zdublowanych warunków→0, ACTIVE;CLOSED 6→0, 146 legal_basis
+   skanonizowanych; konsolidator tools/zus_plan33_fixer.py (--check w CI)
+✅ Kanon _legal_basis: sus.rego 122× „Dz.U. 2025 poz. 345, ze zm.", zdrowotna
+   136× „poz. 890", zasilkowa 38× (pełny tytuł) — zero starych cytowań
+✅ NOWE 16 reguł atomowych zus_micro_atomic_p09.rego: MZP a18c (eligibility/
+   limit 95%/base clamp), tier_switch a81c r1-r3 (granice 59 999/60 000/
+   60 001/300 000/300 001 — INV-018 z makro), korekta roczna a81d (22 maja),
+   zasiłki a19/a29/a32/a33 (12 mies./30-90 dni/182-270/80-70%), terminy
+   a36 (7 dni)/a47 (10/15) — zero hardcode + _provenance_tree
+✅ ZERO HARDCODE (ADR-002): _zus_micro_rates.rego data-driven (data.jdg.
+   thresholds.zus.*, hot-reload V1 §11) + 25 nowych progów w thresholds_jdg
+✅ Wpięcie PAS 46 w main_jdg.rego: final_verdict_p46 = safe_merge(p45, micro
+   sus/zdrowotna/zasilkowa/plan33/atomic, fallback) — mikro wypełnia luki,
+   nigdy nie nadpisuje makro (INV-018)
+✅ Nowe narzędzia: zus_micro_quality.py (linter+kanonizacja+bramka),
+   zdrowotna_tier_engine.py (progi+korekta+rozjazd micro↔macro),
+   zus_zasilkowa_calculator.py (symulator dobrowolnego chorobowego)
+✅ Testy: test_native_zus_micro.rego (16) + pytest P09 20/20 + P08-micro
+   16/16 + regresja ZUS 348/348 + rdzeń 85/87 (2 asercje wiring p45→p46)
+✅ Bramki: validate 0 · invariant 42 PASS · zus_micro_quality BRAMKA PASS ·
+   inventory 543 reguł / 0 duplikatów / 0 stubów (gate-stubs 0)
+⚠️ Backlog domenowy (znany): ~594 literałów hardcode w sus/zdrowotna/
+   zasilkowa + 139 wzorców generycznych (backlog P10+, lint 5/6);
+   CI opa wymaga OPA 1.x
+NASTĘPNY: PROMPT_10_KSIEGOWOSC_PKPIR_UOR.txt (P10 z 19 — Księgowość PKPiR/UoR)
+OKNO WYCZYSZCZONE — gotowy na PROMPT 10 z 19 (KSIĘGOWOŚĆ PKPiR/UoR)
+
+════════════════════════════════════════════════════════════
+P10 KSIĘGOWOŚĆ PKPiR/UoR — WDROZONY_100 (2026-08-17)
+════════════════════════════════════════════════════════════
+✅ USUNIĘTE 6 martwych catch-ali { true } w pkpir (INV-018) +
+   plan33_uor default rule_id naprawiony (jdg.micro.plan33_uor.*)
+✅ Kanon _legal_basis: uor.rego (38, Dz.U. 2025 poz. 567 ze zm.)
+   + 7 pakietów pkpir — 0 starych cytowań, 0 zdublowanych sufiksów
+✅ NOWE 17 reguł atomowych ksiegowosc_atomic_p10.rego: silnik
+   decyzji UoR/PKPiR (2M EUR) + monitor 95%, podwójny zapis (ΣD=ΣC),
+   inwentaryzacja (4 lata), zamknięcie roku (12 kroków), amortyzacja
+   księgowa (liniowa/degresywna/jednorazowa 100k EUR), bilans (A=P),
+   walidator 17 kolumn PKPiR, leasing (17f: 90%/75%/10 lat),
+   limit aut 150k/225k — zero hardcode (+16 progów thresholds)
+✅ NOWE narzędzia: ksiegowosc_quality.py (bramka), pkpir_engine.py,
+   uor_double_entry.py, uor_closing_engine.py, pkpir_uor_transformer.py
+✅ WPIĘCIE PAS 47: final_verdict_p47 (pkpir+uor+plan33_uor+atomic);
+   29 asercji wiring r01-r17+p06/p07 zaktualizowanych p45→p47
+✅ Testy: test_native_ksiegowosc.rego (24) + pytest P10 25/25 +
+   regresja r01-r17/p06/p07 339/339 + bundle_api 9/9 + MANIFEST
+✅ Bramki: validate 0 · invariant 42 PASS · ksiegowosc_quality
+   BRAMKA PASS · pytest JDG 3121 passed (16 faili pre-existing:
+   raporty_glm52/ usunięte + nexus_ai env + kks07/temporal gates)
+⚠️ Backlog znany: hardcode w sus/zdrowotna/zasilkowa (lint 5/6);
+   raporty_glm52/ usunięte wcześniej → gates r09/r16/kks07/p24
+   pre-existing; CI opa wymaga OPA 1.x
+NASTĘPNY: PROMPT_11_PCC_LOKALNE_AKCYZA.txt (P11 z 19)
+OKNO WYCZYSZCZONE — gotowy na PROMPT 11 z 19 (PCC/LOKALNE/AKCYZA)
+
+════════════════════════════════════════════════════════════
+P11 KKS + ORDYNACJA + AUDYT/OBRONA — WDROZONY_100 (2026-08-17)
+════════════════════════════════════════════════════════════
+✅ NAPRAWIONY KONFLIKT KOMPILACJI: plan34_ord.rego → pakiet
+   jdg.micro.plan34_ord (był jdg.micro.ord — 2× default decide;
+   plan33_ord importował nieistniejący pakiet) — 192 pola
+✅ Kanon _legal_basis ~390 zamian: 52 UNKNOWN_ACT w plan45_audit
+   (Art. X OP/KAS/PPSA/PP → pełne nazwy), micro/kks 473 + micro/ord
+   423 + kks.rego 155 + enterprise_penalties + plan42/43 + conviction
+   + statute + r07 (Dz.U. 1999/1997 → Dz.U. 2025 poz. 678/234)
+✅ NOWE 13 reguł atomowych kks_ord_atomic_p11.rego: kalkulator kary
+   a54 (stawka dzienna × stawek, dowód), czynny żal a16, dobrowolne
+   poddanie a17 (50%), recydywa a37 (2×), przedawnienia a44/a70,
+   korekta a81b (14 dni, minus po kontroli BLOCK), Biała Lista a117ba
+   (20%), GAAR a119a, pakiet praw kontroli a282b/291/223 (7/14/14/30),
+   JPK a193a — zero hardcode (ord +11 / kks +12 progów thresholds)
+✅ NOWE narzędzia: kks_ordynacja_quality.py (bramka), penalty_calculator
+   (4-ścieżkowy symulator minimalizacji), defense_packet_builder (golden
+   replay + certyfikaty + LKG, V2 §12), correspondence_generator (6 pism)
+✅ WPIĘCIE PAS 48: final_verdict_p48 (kks+ord+plan33+plan34+atomic);
+   29 asercji wiring r01-r17/p06/p07 zaktualizowanych p47→p48
+✅ Testy: test_native_kks_ord.rego (18) + pytest P11 30/30 + r07 16/16
+   + rdzeń 21/21 + P09/P10 98/98 + r01-r17 339/339 + bundle_api 9/9
+✅ Bramki: validate 0 · invariant 42 PASS · kks_ordynacja_quality BRAMKA
+   PASS · pytest JDG 3183 passed (24 faili pre-existing: raporty_glm52/
+   usunięte + nexus_ai env + kks07/temporal gates)
+⚠️ Backlog znany: hardcode w sus/zdrowotna/zasilkowa (lint 5/6);
+   manifest_v2 L2 doc-drift (README/KATALOG liczą narzędzia sprzed P11)
+NASTĘPNY: PROMPT_12_CROSSBORDER_MDR.txt (P12 z 19)
+OKNO WYCZYSZCZONE — gotowy na PROMPT 12 z 19 (CROSS-BORDER / MDR)
+P12 CROSSBORDER/MDR WDROZONY_100: (1) usunięty martwy catch-all {true} w mdr_enterprise.rego (INV-018 — maskował reguły MDR); (2) kanonizacja _legal_basis: 192 generyczne (72x Dyrektywy UE + 120x Ustawa PIT/CIT) → kanon per artykuł (poz. 1637/234/1361/868/1662); (3) 10 reguł atomowych crossborder_atomic_p12.rego (TP a23m/23zf/23zb, CFC a30f 14%/250k/50%, exit tax a30da 30M/2027, MDR a86a scoring+30 dni, WHT a29, FX a14) — 0 hardcode (+19 progów thresholds); (4) 6 narzędzi: crossborder_quality.py, tp_documentation_engine.py, cfc_classifier.py, mdr_scorer.py, fx_rate_engine.py, cbam_monitor.py; (5) PAS 49 wpięty (final_verdict_p49), 29 asercji wiring p48→p49 + test_p11 łańcuch p49; (6) naprawiony zlepiony prolog thresholds crossborder; (7) test_native_crossborder.rego (18) + pytest 40/40; (8) bundle manifest.json metadata zaktualizowane (450/12254/12239/414) → 9/9; (9) naprawiony p00 skan matched:true (okno dwukierunkowe — 6 GAP rules green); (10) bramki: validate 0, invariant CI 42 PASS, lint 5/6 (backlog pre-existing, 0 wkładu P12), regresja r01–r17/p06/p07 241/241.

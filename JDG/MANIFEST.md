@@ -1,14 +1,14 @@
 # 📋 JDG MANIFEST — Tracker Pokrycia Reguł vs Mapa Kanoniczna 38c
 
-> **Auto-generowane:** 2026-08-17 08:08:40
+> **Auto-generowane:** 2026-08-17 13:39:20
 > **Generator:** v8.0 (parser strukturalny, 100% plików)
-> **Completeness Score:** 🟢 **90/100**
->   - Plików w manifescie: 401/472 (84%)
->   - Aktualność: 99/100 | Sumy spójne: ✅ | Routing: 70%
-> **Plików Rego:** 472
-> **Plików z matched:true:** 401
-> **Bloków matched:true:** 11728
-> **Unikalnych rule_id:** 11725
+> **Completeness Score:** 🟢 **92/100**
+>   - Plików w manifescie: 404/450 (89%)
+>   - Aktualność: 97/100 | Sumy spójne: ✅ | Routing: 70%
+> **Plików Rego:** 450
+> **Plików z matched:true:** 404
+> **Bloków matched:true:** 11754
+> **Unikalnych rule_id:** 11751
 > **Duplikatów:** 3
 
 ---
@@ -33,7 +33,7 @@
 | `rules/annual_declaration_enterprise.rego` | 6 | 0 | 0 | 1e9cf8f35a16b62b |
 | `rules/api_fallback.rego` | 6 | 1 | 1 | f89dfd4daa28e652 |
 | `rules/audit/plan44_audit.rego` | 15 | 1 | 2 | 166aaaf02d77d330 |
-| `rules/audit/plan45_audit.rego` | 55 | 3 | 6 | fbf87d45df0bdca3 |
+| `rules/audit/plan45_audit.rego` | 55 | 3 | 6 | 0016f227d516aea9 |
 | `rules/audit_defense_enterprise.rego` | 4 | 0 | 0 | 773ecbf2fdd10558 |
 | `rules/banking_automation_enterprise.rego` | 14 | 0 | 0 | a41d729d474d8daf |
 | `rules/business.rego` | 23 | 8 | 5 | c7ef3a8c0eb3cf26 |
@@ -47,8 +47,8 @@
 | `rules/compliance.rego` | 10 | 4 | 0 | b18a78343a137b7b |
 | `rules/conflict_declaration_enterprise.rego` | 4 | 1 | 0 | d43cb08e83909190 |
 | `rules/conflicts.rego` | 27 | 7 | 11 | cbf359a40805c71f |
-| `rules/conviction/plan44_conviction.rego` | 6 | 2 | 0 | 98b03c13db2e91c1 |
-| `rules/conviction/plan45_conviction.rego` | 30 | 10 | 0 | aa35e047f6a73038 |
+| `rules/conviction/plan44_conviction.rego` | 6 | 2 | 0 | 29f5650936a1717b |
+| `rules/conviction/plan45_conviction.rego` | 30 | 10 | 0 | ae5cd4584312b483 |
 | `rules/corrections.rego` | 19 | 3 | 4 | 92c60f4e77b985a0 |
 | `rules/crossborder.rego` | 31 | 3 | 11 | 74c0774f3b5900ba |
 | `rules/crossborder/exit_tax_cfc_complete.rego` | 16 | 3 | 0 | 856fc17fabacf309 |
@@ -104,12 +104,12 @@
 | `rules/jpk_kr_st_generator_enterprise.rego` | 4 | 0 | 0 | 7ca5cbe60242bd42 |
 | `rules/jpk_v7_autogen_enterprise.rego` | 7 | 0 | 0 | 74c7ffa84ff92083 |
 | `rules/judicial_interpretations_enterprise.rego` | 5 | 0 | 0 | 8ec1a75fe3614bca |
-| `rules/kks.rego` | 255 | 170 | 61 | e6af484dcc25585f |
-| `rules/kks/enterprise_penalties.rego` | 21 | 12 | 0 | 0e4959964bededf2 |
+| `rules/kks.rego` | 255 | 170 | 61 | 4c09d8e677ca727a |
+| `rules/kks/enterprise_penalties.rego` | 21 | 12 | 0 | 6fbf79bee1882a84 |
 | `rules/kks/kks_extensions_enterprise.rego` | 4 | 0 | 1 | 35bc49ffd5816d65 |
 | `rules/kks/kks_innovations_v8.rego` | 13 | 4 | 0 | 481d15cfa37c19ba |
-| `rules/kks/plan42_detailed.rego` | 12 | 7 | 1 | 8db9a29bb72e730c |
-| `rules/kks/plan43_decomposition.rego` | 21 | 10 | 1 | 8a852696903188de |
+| `rules/kks/plan42_detailed.rego` | 12 | 7 | 1 | d94e4532eb0e1286 |
+| `rules/kks/plan43_decomposition.rego` | 21 | 10 | 1 | dbc30481973c52a9 |
 | `rules/kks/plan44_kks_conviction.rego` | 2 | 1 | 0 | 310631a5c8c8ed85 |
 | `rules/ksef_firewall_enterprise.rego` | 3 | 0 | 0 | b0b4c36c5d849a05 |
 | `rules/ksef_innovations_enterprise.rego` | 5 | 0 | 0 | 9b28e94d01803fa5 |
@@ -135,7 +135,7 @@
 | `rules/local_taxes/plan26_local.rego` | 6 | 0 | 1 | d4f459b64b2d79c5 |
 | `rules/local_taxes/real_estate.rego` | 2 | 0 | 2 | 26564bc0a882feb5 |
 | `rules/local_taxes/transport.rego` | 1 | 0 | 1 | 7f34215231ef5770 |
-| `rules/mdr/mdr_enterprise.rego` | 17 | 4 | 12 | 9a4afa9d48de24e0 |
+| `rules/mdr/mdr_enterprise.rego` | 16 | 4 | 12 | d4df30687512ce80 |
 | `rules/mdr/mdr_hallmarks.rego` | 20 | 17 | 0 | 76d998a773937527 |
 | `rules/mdr/plan44_mdr.rego` | 10 | 1 | 7 | 12e82419eac65364 |
 | `rules/mdr/plan45_mdr.rego` | 42 | 2 | 34 | a10ee7c10c33de63 |
@@ -162,31 +162,34 @@
 | `rules/micro/bdo/bdo_zezwolenia.rego` | 7 | 4 | 1 | e9f5b71284ce1820 |
 | `rules/micro/budownictwo/budownictwo.rego` | 64 | 13 | 0 | 8adcc7f55d9c5520 |
 | `rules/micro/ceidg/ceidg.rego` | 42 | 5 | 0 | ed8518a7adfc92e6 |
-| `rules/micro/crossborder/crossborder.rego` | 192 | 0 | 0 | d8017860c8371802 |
+| `rules/micro/crossborder/crossborder.rego` | 192 | 0 | 0 | a37424e14665a3bd |
+| `rules/micro/crossborder_atomic_p12.rego` | 9 | 5 | 3 | 59dcd7c04694a644 |
 | `rules/micro/jpk/jpk.rego` | 35 | 1 | 0 | f520af362478d53e |
-| `rules/micro/kks/kks.rego` | 473 | 8 | 0 | c1043f843d40b2e8 |
+| `rules/micro/kks/kks.rego` | 473 | 8 | 0 | a29139b8a7b2195b |
+| `rules/micro/kks_ord_atomic_p11.rego` | 12 | 4 | 4 | 16c839ff90c1bf54 |
 | `rules/micro/ksef/ksef.rego` | 79 | 2 | 0 | 44132c16d843ff82 |
-| `rules/micro/ord/ord.rego` | 423 | 3 | 0 | d234d95664a8c18c |
+| `rules/micro/ksiegowosc_atomic_p10.rego` | 16 | 5 | 3 | 83d93847a4bffea6 |
+| `rules/micro/ord/ord.rego` | 423 | 3 | 0 | 5e500ff7d4d06e67 |
 | `rules/micro/p24_innovations_enterprise.rego` | 29 | 3 | 0 | 0c49c842b5a9269b |
 | `rules/micro/pcc/pcc.rego` | 89 | 1 | 0 | 1b42a6cda9d86c1c |
 | `rules/micro/pit/pit.rego` | 811 | 24 | 0 | 9a07d48293446f4a |
-| `rules/micro/pkpir/pkpir.rego` | 11 | 1 | 0 | 38421433297a7785 |
-| `rules/micro/pkpir/pkpir_kolumny.rego` | 12 | 2 | 0 | 4afc6e5f98d094c0 |
-| `rules/micro/pkpir/pkpir_korekty.rego` | 9 | 1 | 1 | aed8f9a3fa6ad58c |
-| `rules/micro/pkpir/pkpir_koszty.rego` | 11 | 2 | 0 | 88a20fe85df99810 |
-| `rules/micro/pkpir/pkpir_nkup.rego` | 11 | 1 | 0 | 5c933f5514263e6e |
-| `rules/micro/pkpir/pkpir_przychody.rego` | 11 | 1 | 1 | 3dfde7d3f64ee98d |
-| `rules/micro/pkpir/pkpir_remanent.rego` | 9 | 1 | 2 | eac8cf7a8107c25d |
+| `rules/micro/pkpir/pkpir.rego` | 11 | 1 | 0 | 835586dd96378bd0 |
+| `rules/micro/pkpir/pkpir_kolumny.rego` | 11 | 2 | 0 | 602ab1df36ef2a12 |
+| `rules/micro/pkpir/pkpir_korekty.rego` | 8 | 1 | 1 | 3266a8a9e60550f3 |
+| `rules/micro/pkpir/pkpir_koszty.rego` | 10 | 2 | 0 | 47f893ad6e08f32a |
+| `rules/micro/pkpir/pkpir_nkup.rego` | 10 | 1 | 0 | c94d86a0065ad806 |
+| `rules/micro/pkpir/pkpir_przychody.rego` | 10 | 1 | 1 | 97feb858c2804707 |
+| `rules/micro/pkpir/pkpir_remanent.rego` | 8 | 1 | 2 | 723cfd1aa5ea2b9d |
 | `rules/micro/plan33_agricultural_tax.rego` | 5 | 0 | 0 | 4e4a166138ee2ac3 |
-| `rules/micro/plan33_cb.rego` | 20 | 0 | 0 | 2d5d3710f2b0cd42 |
+| `rules/micro/plan33_cb.rego` | 20 | 0 | 0 | 5d931f1770238ff4 |
 | `rules/micro/plan33_ceidg.rego` | 15 | 0 | 0 | c10c21b3c45bd9b4 |
 | `rules/micro/plan33_est.rego` | 15 | 0 | 0 | 82b7f3ac1359dc25 |
 | `rules/micro/plan33_health.rego` | 40 | 0 | 0 | 03e0148dd9561c59 |
 | `rules/micro/plan33_jpk.rego` | 70 | 0 | 0 | 8d5acd79dd8826bf |
-| `rules/micro/plan33_kks.rego` | 64 | 0 | 0 | 5726004e05c94a93 |
+| `rules/micro/plan33_kks.rego` | 64 | 0 | 0 | 9cd2a39034a671a4 |
 | `rules/micro/plan33_ksef.rego` | 74 | 0 | 0 | d55a2fcff51a2c62 |
-| `rules/micro/plan33_mdr.rego` | 10 | 0 | 0 | c99905142274ef10 |
-| `rules/micro/plan33_ord.rego` | 1 | 0 | 0 | 1c8107b26838f8bf |
+| `rules/micro/plan33_mdr.rego` | 10 | 0 | 0 | c4753ab7bc637876 |
+| `rules/micro/plan33_ord.rego` | 1 | 0 | 0 | 2c6c4d2dcb827cd8 |
 | `rules/micro/plan33_pcc.rego` | 59 | 0 | 0 | 8d10b54000402bb6 |
 | `rules/micro/plan33_pit.rego` | 86 | 0 | 0 | eb83f697ad513ea3 |
 | `rules/micro/plan33_prop.rego` | 30 | 0 | 0 | 98a3824c4046eca6 |
@@ -194,15 +197,14 @@
 | `rules/micro/plan33_rodo.rego` | 10 | 2 | 3 | aa1a460ee88d7f15 |
 | `rules/micro/plan33_ryc.rego` | 158 | 0 | 0 | 70709fc14f384f5f |
 | `rules/micro/plan33_succ.rego` | 20 | 0 | 0 | 9cecece3ec1201c0 |
-| `rules/micro/plan33_tax_trans.rego` | 15 | 0 | 0 | 863bbefda2b968b4 |
-| `rules/micro/plan33_tp.rego` | 15 | 0 | 0 | 468c1287edc139b0 |
-| `rules/micro/plan33_uor.rego` | 25 | 0 | 0 | 549b95007a2aa681 |
+| `rules/micro/plan33_tax_trans.rego` | 15 | 0 | 0 | 3bc38a7d177cabf4 |
+| `rules/micro/plan33_tp.rego` | 15 | 0 | 0 | d7696465db58d528 |
+| `rules/micro/plan33_uor.rego` | 25 | 0 | 0 | 7ce000ce8951f57a |
 | `rules/micro/plan33_vat.rego` | 112 | 0 | 0 | 343ab82af8d3a559 |
-| `rules/micro/plan33_zus.rego` | 180 | 0 | 0 | f09ab35a7b34f71d |
-| `rules/micro/plan34_ord.rego` | 189 | 0 | 0 | 0f39ec261ecc83c7 |
+| `rules/micro/plan33_zus.rego` | 180 | 0 | 0 | 37435fc8384ebf06 |
+| `rules/micro/plan34_ord.rego` | 189 | 0 | 0 | 48afd725c492c787 |
 | `rules/micro/plan34_pit.rego` | 265 | 0 | 0 | 5c6da186989dc109 |
 | `rules/micro/plan34_vat.rego` | 179 | 0 | 0 | ada7cc696e777a78 |
-| `rules/micro/plan34_zus.rego` | 20 | 0 | 0 | 157874741c1d87f1 |
 | `rules/micro/pp/pp.rego` | 147 | 2 | 0 | 258024a7f793518b |
 | `rules/micro/rodo/rodo.rego` | 40 | 0 | 0 | 8e54380c2692ee0a |
 | `rules/micro/rodo/rodo_ai_marketing.rego` | 6 | 1 | 1 | db1f4c0a31fdb719 |
@@ -213,9 +215,9 @@
 | `rules/micro/ryczalt/ryczalt.rego` | 155 | 8 | 0 | 09354e758441e508 |
 | `rules/micro/srodowisko/srodowisko.rego` | 48 | 0 | 0 | 8283974bb67d3383 |
 | `rules/micro/sukcesja/sukcesja.rego` | 140 | 3 | 1 | 75292a242fc270d3 |
-| `rules/micro/sus/sus.rego` | 122 | 0 | 0 | 5e2a1759384a5150 |
+| `rules/micro/sus/sus.rego` | 122 | 0 | 0 | 03bddeeb39170f47 |
 | `rules/micro/transport/transport.rego` | 44 | 0 | 0 | 7723aaa8e6fd7425 |
-| `rules/micro/uor/uor.rego` | 148 | 34 | 26 | 6fd5d6ee444ad907 |
+| `rules/micro/uor/uor.rego` | 148 | 34 | 26 | 12435ff40919a626 |
 | `rules/micro/vat/ksef_micro.rego` | 10 | 4 | 0 | ab1023bf2dfe0ef0 |
 | `rules/micro/vat/margin_scheme_micro.rego` | 10 | 0 | 5 | 9938f6c6e76e509d |
 | `rules/micro/vat/place_of_supply_micro.rego` | 11 | 0 | 3 | 78e39b2fbc1111d5 |
@@ -223,8 +225,9 @@
 | `rules/micro/vat/r03_vat_micro_articles.rego` | 13 | 0 | 0 | 5687e72810aefd57 |
 | `rules/micro/vat/vat.rego` | 1091 | 27 | 0 | 1d961f2a7e56bd38 |
 | `rules/micro/vat/wdt_export_import.rego` | 16 | 2 | 11 | 78b09539fbaf26a2 |
-| `rules/micro/zasilkowa/zasilkowa.rego` | 38 | 0 | 0 | b562ebc855ff71d2 |
-| `rules/micro/zdrowotna/zdrowotna.rego` | 136 | 2 | 0 | 815ec09dc4013e49 |
+| `rules/micro/zasilkowa/zasilkowa.rego` | 38 | 0 | 0 | 16a8fa7b2470d99f |
+| `rules/micro/zdrowotna/zdrowotna.rego` | 136 | 2 | 0 | 6b33cab64ad47425 |
+| `rules/micro/zus_micro_atomic_p09.rego` | 16 | 0 | 2 | 38715f9a50466308 |
 | `rules/mpips.rego` | 12 | 0 | 5 | 678db203d465d969 |
 | `rules/neural_mesh_v2_enterprise.rego` | 15 | 4 | 3 | c2c98fbd3f69736b |
 | `rules/neural_rule_mesh_enterprise.rego` | 19 | 0 | 1 | 88ba313b1aadb9a1 |
@@ -260,7 +263,7 @@
 | `rules/p10_kks_micro_innovations_v8.rego` | 11 | 0 | 0 | 1f938dc152da1b57 |
 | `rules/p11_accounting_pkpir_innovations_v8.rego` | 13 | 0 | 0 | be5a7ba17119bb99 |
 | `rules/p11_ordynacja_podatkowa_innovations_v9.rego` | 26 | 0 | 2 | 8088cf6ef0c51c22 |
-| `rules/p12_crossborder_innovations_v9.rego` | 26 | 0 | 6 | d004323d9438cb89 |
+| `rules/p12_crossborder_innovations_v9.rego` | 26 | 0 | 6 | 16ab2a535f9850c8 |
 | `rules/p12_uor_innovations_v8.rego` | 13 | 0 | 0 | eef64fdfc9446820 |
 | `rules/p13_crossborder_innovations_v8.rego` | 13 | 0 | 0 | 3c227d83c378f9e4 |
 | `rules/p13_ryczalt_cykl_zycia_innovations_v9.rego` | 25 | 0 | 4 | 1ce6bc47f6289df3 |
@@ -338,7 +341,7 @@
 | `rules/r04_pit_core_innovations_v9.rego` | 5 | 0 | 0 | 8e41490ff830be7b |
 | `rules/r05_pit_enterprise_innovations_v9.rego` | 5 | 0 | 0 | 35ea1a838bf77cc5 |
 | `rules/r06_zus_innovations_v9.rego` | 4 | 0 | 0 | 49830e81d45ca0a1 |
-| `rules/r07_kks_innovations_v9.rego` | 4 | 0 | 0 | f7b770b45e2175fe |
+| `rules/r07_kks_innovations_v9.rego` | 4 | 0 | 0 | 607dc2ca506db0d6 |
 | `rules/r08_ordynacja_obrona_innovations_v9.rego` | 5 | 1 | 0 | 0e3a8fba69b33c3a |
 | `rules/r09_ksiegowosc_pkpir_uor_innovations_v9.rego` | 5 | 0 | 0 | a1e0644561b0bd6c |
 | `rules/r10_crossborder_innovations_v9.rego` | 5 | 0 | 0 | 4750b7b97f08af83 |
@@ -359,19 +362,19 @@
 | `rules/restructuring.rego` | 12 | 8 | 2 | bc2a00a27ae7f5cd |
 | `rules/retention.rego` | 13 | 1 | 0 | e9e5571c4c1acfa2 |
 | `rules/risk.rego` | 17 | 9 | 6 | 870c035ae950de6a |
-| `rules/risk/plan26_kks.rego` | 4 | 2 | 2 | 871a4e434e2cf9be |
+| `rules/risk/plan26_kks.rego` | 4 | 2 | 2 | 24f2504e25bc0efc |
 | `rules/rodo.rego` | 12 | 2 | 10 | f48cd5b0df125f33 |
 | `rules/rodo/plan42_rodo.rego` | 3 | 0 | 1 | b8e1b1dedcb27709 |
 | `rules/rodo_extended.rego` | 17 | 4 | 12 | 3d8767f2d2db6fa3 |
 | `rules/routing.rego` | 5 | 2 | 3 | 8be621b994f84f0a |
 | `rules/rule_lifecycle_enterprise.rego` | 4 | 1 | 0 | 21c867a814f5fe6c |
-| `rules/sanctions_optimization_enterprise.rego` | 4 | 1 | 0 | 80d2aadc0941fab5 |
+| `rules/sanctions_optimization_enterprise.rego` | 4 | 1 | 0 | 1052e86a96b56c39 |
 | `rules/seasonal/plan44_seasonal.rego` | 7 | 0 | 0 | 89951ab1425f6840 |
 | `rules/seasonal/plan45_seasonal.rego` | 28 | 0 | 0 | ce5475aa23e9b1d2 |
 | `rules/security/security_fortress_v8.rego` | 19 | 2 | 3 | 4ae253f7badbb8e4 |
 | `rules/solidarity/plan44_solidarity.rego` | 5 | 1 | 0 | e9ddc96632c891ca |
 | `rules/solidarity/plan45_solidarity.rego` | 28 | 3 | 0 | e1d8a9b2fe617a72 |
-| `rules/statute/plan26_detailed.rego` | 9 | 1 | 1 | 6563ac0657511f2d |
+| `rules/statute/plan26_detailed.rego` | 9 | 1 | 1 | aa45004a09918f00 |
 | `rules/statute_of_limitations.rego` | 18 | 5 | 9 | 408bf07aa6542cea |
 | `rules/strategic_advisor_enterprise.rego` | 8 | 0 | 2 | 5fceaa002e2ddb41 |
 | `rules/tax_authority_interaction_enterprise.rego` | 6 | 1 | 4 | 248bab0dd0aa4fb3 |
@@ -382,14 +385,14 @@
 | `rules/tp/plan44_tp.rego` | 9 | 2 | 3 | 1c977d94613b070e |
 | `rules/tp/plan45_tp.rego` | 52 | 9 | 11 | 95a7d1411ad32684 |
 | `rules/uor/plan42_uor.rego` | 5 | 0 | 1 | 0ef0faada0f09980 |
-| `rules/uor/uor_assets.rego` | 33 | 0 | 0 | 46ced5c928a8767a |
-| `rules/uor/uor_books.rego` | 52 | 13 | 4 | 597a629322b9ef11 |
-| `rules/uor/uor_closing.rego` | 25 | 3 | 1 | aeba5c31559b7585 |
-| `rules/uor/uor_costs.rego` | 26 | 0 | 2 | 5edcfde0d8efc064 |
-| `rules/uor/uor_financial_stmt.rego` | 27 | 1 | 1 | 4a4c125b84606222 |
-| `rules/uor/uor_inventory.rego` | 17 | 1 | 3 | 4f96944f92d2acce |
-| `rules/uor/uor_obligation.rego` | 30 | 9 | 6 | 8ca932d0be9da3eb |
-| `rules/uor/uor_revenue.rego` | 29 | 0 | 1 | dab912c773767747 |
+| `rules/uor/uor_assets.rego` | 33 | 0 | 0 | d1eaff48c4dd696b |
+| `rules/uor/uor_books.rego` | 52 | 13 | 4 | 36bee1fafde00cc5 |
+| `rules/uor/uor_closing.rego` | 25 | 3 | 1 | 4149d99fa38d041a |
+| `rules/uor/uor_costs.rego` | 26 | 0 | 2 | 0ab8d5e39eb8b7cf |
+| `rules/uor/uor_financial_stmt.rego` | 27 | 1 | 1 | 812d66c01c7ca24c |
+| `rules/uor/uor_inventory.rego` | 17 | 1 | 3 | 6336f6cd409b109f |
+| `rules/uor/uor_obligation.rego` | 30 | 9 | 6 | 3ecbc77b7c3f36f3 |
+| `rules/uor/uor_revenue.rego` | 29 | 0 | 1 | fbf82f96837d4d2d |
 | `rules/validation.rego` | 8 | 5 | 3 | 7fdb119701a4dc5b |
 | `rules/vat/deductions.rego` | 28 | 5 | 4 | 7858b9de3622cba1 |
 | `rules/vat/enterprise_vat_bridge.rego` | 11 | 0 | 0 | c158ab7ad11e2f06 |
@@ -418,7 +421,7 @@
 | `rules/zus/plan42_benefits.rego` | 8 | 1 | 1 | 1bc26b568ebc91ac |
 | `rules/zus/sickness_benefits_enterprise.rego` | 14 | 1 | 0 | 1ab4ea7debfd583e |
 | `rules/zus/zus_extensions_enterprise.rego` | 6 | 0 | 0 | 4600db0d99adf678 |
-| **RAZEM** | **11728** | **836** | **679** | — |
+| **RAZEM** | **11754** | **850** | **691** | — |
 
 ---
 
@@ -829,61 +832,61 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1106 | `jdg.audit.hyper.type_verification` |  | Art. 272-280 OP |
-| 1107 | `jdg.audit.hyper.type_tax_audit` |  | Art. 281-292 OP |
-| 1108 | `jdg.audit.hyper.type_tax_proceeding` | 🟡 TRIAGE | Art. 120-129 OP |
-| 1109 | `jdg.audit.hyper.type_customs_fiscal` | 🟡 TRIAGE | Art. 54-93 KAS |
-| 1110 | `jdg.audit.hyper.trigger_cross_checking` |  | Art. 272 OP |
-| 1111 | `jdg.audit.hyper.trigger_return_to_correct` |  | Art. 274 OP |
-| 1112 | `jdg.audit.hyper.trigger_inspection_warrant` |  | Art. 283 OP |
-| 1113 | `jdg.audit.hyper.trigger_external_information` |  | Art. 281 OP |
-| 1114 | `jdg.audit.hyper.right_notification_7days` |  | Art. 282b OP |
-| 1115 | `jdg.audit.hyper.right_no_notification_exceptions` |  | Art. 282b OP |
-| 1116 | `jdg.audit.hyper.right_presence` |  | Art. 285 OP |
-| 1117 | `jdg.audit.hyper.right_exclusion_inspector` |  | Art. 130 OP |
-| 1118 | `jdg.audit.hyper.right_refuse_self_incrimination` |  | Art. 199 OP |
-| 1119 | `jdg.audit.hyper.right_object_to_protocol` |  | Art. 291 OP |
-| 1120 | `jdg.audit.hyper.right_record_activities` |  | Art. 286 § 3 OP |
-| 1121 | `jdg.audit.hyper.right_break_request` |  | Art. 84c PP |
-| 1122 | `jdg.audit.hyper.right_oppose_inspection` | 🟡 TRIAGE | Art. 84c PP |
-| 1123 | `jdg.audit.hyper.right_correction_minus_blocked` |  | Art. 81b OP |
-| 1124 | `jdg.audit.hyper.right_correction_plus_allowed` |  | Art. 81b OP |
-| 1125 | `jdg.audit.hyper.right_to_be_heard` |  | Art. 200 OP |
-| 1126 | `jdg.audit.hyper.right_appeal_14days` | 🟡 TRIAGE | Art. 223 OP |
-| 1127 | `jdg.audit.hyper.right_wsa_30days` | 🟡 TRIAGE | Art. 52-54 PPSA |
-| 1128 | `jdg.audit.hyper.obligation_provide_docs` |  | Art. 287 OP |
-| 1129 | `jdg.audit.hyper.obligation_allow_inspection` |  | Art. 287 OP |
-| 1130 | `jdg.audit.hyper.obligation_provide_explanations` |  | Art. 287 OP |
-| 1131 | `jdg.audit.hyper.obligation_sign_protocol` |  | Art. 291 OP |
-| 1132 | `jdg.audit.hyper.obligation_retain_audit_docs` |  | Art. 86 OP |
-| 1133 | `jdg.audit.hyper.statute_suspension_effect` |  | Art. 70 § 6 OP |
-| 1134 | `jdg.audit.hyper.statute_suspension_duration` |  | Art. 70 § 6 OP |
-| 1135 | `jdg.audit.hyper.statute_resume_after_close` |  | Art. 70 § 6 OP |
-| 1136 | `jdg.audit.hyper.penalty_obstruction_5000` | 🔴 BLOCK | Art. 262 OP |
-| 1137 | `jdg.audit.hyper.penalty_obstruction_kks69` | 🔴 BLOCK | Art. 69 KKS |
-| 1138 | `jdg.audit.hyper.penalty_coercion` | 🔴 BLOCK | Art. 151 OP |
-| 1139 | `jdg.audit.hyper.doc_seizure_receipt` |  | Art. 288 OP |
-| 1140 | `jdg.audit.hyper.doc_seizure_duration` |  | Art. 288 OP |
-| 1141 | `jdg.audit.hyper.doc_electronic_evidence` |  | Art. 193a OP |
-| 1142 | `jdg.audit.hyper.doc_foreign_language` |  | Art. 180a OP |
-| 1143 | `jdg.audit.hyper.protocol_deadline_14days` |  | Art. 291 OP |
-| 1144 | `jdg.audit.hyper.protocol_required_elements` |  | Art. 291 OP |
-| 1145 | `jdg.audit.hyper.protocol_objections_period` |  | Art. 291 OP |
-| 1146 | `jdg.audit.hyper.protocol_objections_to_director` |  | Art. 291 OP |
-| 1147 | `jdg.audit.hyper.protocol_electronic_service` |  | Art. 144b OP |
-| 1148 | `jdg.audit.hyper.representation_pps1` |  | Art. 138e OP |
-| 1149 | `jdg.audit.hyper.representation_upl1` |  | Art. 138e OP |
-| 1150 | `jdg.audit.hyper.representation_access_files` |  | Art. 178 OP |
-| 1151 | `jdg.audit.hyper.representation_participation` |  | Art. 138e OP |
+| 1106 | `jdg.audit.hyper.type_verification` |  | Art. 272-280 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 1107 | `jdg.audit.hyper.type_tax_audit` |  | Art. 281-292 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 1108 | `jdg.audit.hyper.type_tax_proceeding` | 🟡 TRIAGE | Art. 120-129 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 1109 | `jdg.audit.hyper.type_customs_fiscal` | 🟡 TRIAGE | Art. 54-93 ustawy z dnia 16 listopada 2016 r. o Krajowej Adm... |
+| 1110 | `jdg.audit.hyper.trigger_cross_checking` |  | Art. 272 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1111 | `jdg.audit.hyper.trigger_return_to_correct` |  | Art. 274 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1112 | `jdg.audit.hyper.trigger_inspection_warrant` |  | Art. 283 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1113 | `jdg.audit.hyper.trigger_external_information` |  | Art. 281 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1114 | `jdg.audit.hyper.right_notification_7days` |  | Art. 282b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
+| 1115 | `jdg.audit.hyper.right_no_notification_exceptions` |  | Art. 282b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
+| 1116 | `jdg.audit.hyper.right_presence` |  | Art. 285 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1117 | `jdg.audit.hyper.right_exclusion_inspector` |  | Art. 130 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1118 | `jdg.audit.hyper.right_refuse_self_incrimination` |  | Art. 199 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1119 | `jdg.audit.hyper.right_object_to_protocol` |  | Art. 291 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1120 | `jdg.audit.hyper.right_record_activities` |  | Art. 286 § 3 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 1121 | `jdg.audit.hyper.right_break_request` |  | Art. 84c ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorc... |
+| 1122 | `jdg.audit.hyper.right_oppose_inspection` | 🟡 TRIAGE | Art. 84c ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorc... |
+| 1123 | `jdg.audit.hyper.right_correction_minus_blocked` |  | Art. 81b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1124 | `jdg.audit.hyper.right_correction_plus_allowed` |  | Art. 81b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1125 | `jdg.audit.hyper.right_to_be_heard` |  | Art. 200 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1126 | `jdg.audit.hyper.right_appeal_14days` | 🟡 TRIAGE | Art. 223 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1127 | `jdg.audit.hyper.right_wsa_30days` | 🟡 TRIAGE | Art. 52-54 ustawy z dnia 30 sierpnia 2002 r. — Prawo o postę... |
+| 1128 | `jdg.audit.hyper.obligation_provide_docs` |  | Art. 287 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1129 | `jdg.audit.hyper.obligation_allow_inspection` |  | Art. 287 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1130 | `jdg.audit.hyper.obligation_provide_explanations` |  | Art. 287 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1131 | `jdg.audit.hyper.obligation_sign_protocol` |  | Art. 291 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1132 | `jdg.audit.hyper.obligation_retain_audit_docs` |  | Art. 86 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatk... |
+| 1133 | `jdg.audit.hyper.statute_suspension_effect` |  | Art. 70 § 6 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja po... |
+| 1134 | `jdg.audit.hyper.statute_suspension_duration` |  | Art. 70 § 6 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja po... |
+| 1135 | `jdg.audit.hyper.statute_resume_after_close` |  | Art. 70 § 6 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja po... |
+| 1136 | `jdg.audit.hyper.penalty_obstruction_5000` | 🔴 BLOCK | Art. 262 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1137 | `jdg.audit.hyper.penalty_obstruction_kks69` | 🔴 BLOCK | Art. 69 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 1138 | `jdg.audit.hyper.penalty_coercion` | 🔴 BLOCK | Art. 151 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1139 | `jdg.audit.hyper.doc_seizure_receipt` |  | Art. 288 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1140 | `jdg.audit.hyper.doc_seizure_duration` |  | Art. 288 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1141 | `jdg.audit.hyper.doc_electronic_evidence` |  | Art. 193a ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
+| 1142 | `jdg.audit.hyper.doc_foreign_language` |  | Art. 180a ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
+| 1143 | `jdg.audit.hyper.protocol_deadline_14days` |  | Art. 291 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1144 | `jdg.audit.hyper.protocol_required_elements` |  | Art. 291 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1145 | `jdg.audit.hyper.protocol_objections_period` |  | Art. 291 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1146 | `jdg.audit.hyper.protocol_objections_to_director` |  | Art. 291 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1147 | `jdg.audit.hyper.protocol_electronic_service` |  | Art. 144b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
+| 1148 | `jdg.audit.hyper.representation_pps1` |  | Art. 138e ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
+| 1149 | `jdg.audit.hyper.representation_upl1` |  | Art. 138e ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
+| 1150 | `jdg.audit.hyper.representation_access_files` |  | Art. 178 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1151 | `jdg.audit.hyper.representation_participation` |  | Art. 138e ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
 | 1152 | `jdg.audit.hyper.cross_border_mutual_assistance` |  | DAC, UPO |
 | 1153 | `jdg.audit.hyper.cross_border_simultaneous` | 🟡 TRIAGE | DAC |
 | 1154 | `jdg.audit.hyper.cross_border_foreign_officials` |  | DAC |
-| 1155 | `jdg.audit.hyper.closure_decision_issuance` |  | Art. 107 OP |
-| 1156 | `jdg.audit.hyper.closure_decision_deadline` |  | Art. 107 OP |
-| 1157 | `jdg.audit.hyper.closure_correction_window` |  | Art. 81b OP |
-| 1158 | `jdg.audit.hyper.followup_recommendations` |  | Art. 292 OP |
-| 1159 | `jdg.audit.hyper.followup_deadline_monitoring` |  | Art. 292 OP |
-| 1160 | `jdg.audit.hyper.aggregate_risk_update` |  | Art. 119b OP |
+| 1155 | `jdg.audit.hyper.closure_decision_issuance` |  | Art. 107 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1156 | `jdg.audit.hyper.closure_decision_deadline` |  | Art. 107 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1157 | `jdg.audit.hyper.closure_correction_window` |  | Art. 81b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1158 | `jdg.audit.hyper.followup_recommendations` |  | Art. 292 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1159 | `jdg.audit.hyper.followup_deadline_monitoring` |  | Art. 292 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podat... |
+| 1160 | `jdg.audit.hyper.aggregate_risk_update` |  | Art. 119b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
 
 ### `rules/audit_defense_enterprise.rego` (4 reguł)
 
@@ -1103,7 +1106,7 @@
 | 1961 | `jdg.conviction.banking_access` |  | Ustawa o AML/CFT |
 | 1962 | `jdg.conviction.tax_office_relations` |  | Art. 119b Ordynacji podatkowej |
 | 1963 | `jdg.conviction.business_partner_impact` |  | Art. 105a VAT |
-| 1964 | `jdg.conviction.rehabilitation` |  | Art. 19 KKS |
+| 1964 | `jdg.conviction.rehabilitation` |  | Art. 19 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 1965 | `jdg.conviction.tax_arrears_enforcement` | 🔴 BLOCK | Art. 36 Ordynacji podatkowej |
 
 ### `rules/conviction/plan45_conviction.rego` (30 reguł)
@@ -1120,25 +1123,25 @@
 | 1553 | `jdg.conviction.hyper.enhanced_aml_kyc` |  | Art. 43 AML |
 | 1554 | `jdg.conviction.hyper.fintech_access_restriction` |  | Polityki fintechów |
 | 1555 | `jdg.conviction.hyper.cash_monitoring_enhanced` |  | GIIF |
-| 1556 | `jdg.conviction.hyper.enhanced_audit_scrutiny` |  | Art. 119b OP |
-| 1557 | `jdg.conviction.hyper.risk_profile_high` |  | Art. 119b OP |
-| 1558 | `jdg.conviction.hyper.public_warning_list` | 🔴 BLOCK | Art. 119b OP |
-| 1559 | `jdg.conviction.hyper.statute_interruption` |  | Art. 70 § 4 OP |
-| 1560 | `jdg.conviction.hyper.extended_audit_period` |  | Art. 83 PP |
+| 1556 | `jdg.conviction.hyper.enhanced_audit_scrutiny` |  | Art. 119b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
+| 1557 | `jdg.conviction.hyper.risk_profile_high` |  | Art. 119b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
+| 1558 | `jdg.conviction.hyper.public_warning_list` | 🔴 BLOCK | Art. 119b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
+| 1559 | `jdg.conviction.hyper.statute_interruption` |  | Art. 70 § 4 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja po... |
+| 1560 | `jdg.conviction.hyper.extended_audit_period` |  | Art. 83 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
 | 1561 | `jdg.conviction.hyper.business_partner_trust_loss` |  | — |
 | 1562 | `jdg.conviction.hyper.joint_vat_liability_partners` |  | Art. 105a VAT |
 | 1563 | `jdg.conviction.hyper.supply_chain_due_diligence` |  | Art. 105a VAT |
 | 1564 | `jdg.conviction.hyper.contract_termination_clauses` |  | KC |
 | 1565 | `jdg.conviction.hyper.network_isolation` |  | — |
-| 1566 | `jdg.conviction.hyper.rehabilitation_misdemeanor_3y` |  | Art. 19 KKS |
-| 1567 | `jdg.conviction.hyper.rehabilitation_crime_5y` |  | Art. 19 KKS |
+| 1566 | `jdg.conviction.hyper.rehabilitation_misdemeanor_3y` |  | Art. 19 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 1567 | `jdg.conviction.hyper.rehabilitation_crime_5y` |  | Art. 19 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 1568 | `jdg.conviction.hyper.rehabilitation_clean_record` |  | Art. 106 KK |
 | 1569 | `jdg.conviction.hyper.rehabilitation_business_ban_lift` |  | Art. 41 KK |
 | 1570 | `jdg.conviction.hyper.rehabilitation_us_notification` |  | Praktyka |
-| 1571 | `jdg.conviction.hyper.full_asset_enforcement` | 🔴 BLOCK | Art. 26 OP |
+| 1571 | `jdg.conviction.hyper.full_asset_enforcement` | 🔴 BLOCK | Art. 26 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatk... |
 | 1572 | `jdg.conviction.hyper.no_asset_concealment` | 🔴 BLOCK | Art. 36 OP, Art. 61 KKS |
 | 1573 | `jdg.conviction.hyper.bank_account_seizure` | 🔴 BLOCK | Art. 75-89 Ustawa o post. egz. |
-| 1574 | `jdg.conviction.hyper.collateral_required` | 🔴 BLOCK | Art. 33 OP |
+| 1574 | `jdg.conviction.hyper.collateral_required` | 🔴 BLOCK | Art. 33 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatk... |
 | 1575 | `jdg.conviction.hyper.insolvency_filing_obligation` | 🔴 BLOCK | Art. 21 Prawa upadłościowego |
 
 ### `rules/corrections.rego` (19 reguł)
@@ -2628,52 +2631,52 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 130 | `jdg.kks.unreliable_pkpir_art56` | 🔴 BLOCK | Art. 56 § 1-4 KKS |
-| 131 | `jdg.kks.unreliable_vat_evidence_art57` | 🔴 BLOCK | Art. 57 § 1 KKS |
-| 132 | `jdg.kks.empty_invoice_art62` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 133 | `jdg.kks.wrong_vat_rate_art64` | 🟡 TRIAGE | Art. 64 KKS |
-| 134 | `jdg.kks.tax_return_non_filing_art77` | 🔴 BLOCK | Art. 77 § 1-3 KKS |
-| 135 | `jdg.kks.non_payment_of_tax_art79` | 🔴 BLOCK | Art. 79 KKS |
+| 130 | `jdg.kks.unreliable_pkpir_art56` | 🔴 BLOCK | Art. 56 § 1-4 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 131 | `jdg.kks.unreliable_vat_evidence_art57` | 🔴 BLOCK | Art. 57 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 132 | `jdg.kks.empty_invoice_art62` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 133 | `jdg.kks.wrong_vat_rate_art64` | 🟡 TRIAGE | Art. 64 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 134 | `jdg.kks.tax_return_non_filing_art77` | 🔴 BLOCK | Art. 77 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 135 | `jdg.kks.non_payment_of_tax_art79` | 🔴 BLOCK | Art. 79 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 136 | `jdg.kks.destruction_of_docs_art68` | 🔴 BLOCK | Art. 68 KKS + Art. 86 Ordynacji podatkowej |
-| 137 | `jdg.kks.voluntary_disclosure_art16` | 🟡 TRIAGE | Art. 16 § 1-3 KKS |
-| 138 | `jdg.kks.statute_of_limitations_art44` |  | Art. 44 § 1-5 KKS |
+| 137 | `jdg.kks.voluntary_disclosure_art16` | 🟡 TRIAGE | Art. 16 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 138 | `jdg.kks.statute_of_limitations_art44` |  | Art. 44 § 1-5 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
 | 139 | `jdg.kks.fiscal_penalty_calculation` |  | Art. 23 § 1-3 + Art. 48 KKS |
-| 140 | `jdg.kks.obstruction_of_tax_audit_art69` | 🔴 BLOCK | Art. 69 § 1-3 KKS |
+| 140 | `jdg.kks.obstruction_of_tax_audit_art69` | 🔴 BLOCK | Art. 69 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
 | 141 | `jdg.kks.aggregate_risk_score` |  | Całość KKS — reguła pomocnicza (risk assessment) |
-| 200 | `jdg.kks.voluntary_disclosure_eligible` |  | Art. 16 § 1 KKS |
-| 201 | `jdg.kks.voluntary_disclosure_deadline_breach` | 🔴 BLOCK | Art. 16 § 5 KKS |
-| 202 | `jdg.kks.voluntary_disclosure_successor` |  | Art. 16 § 3 KKS |
-| 203 | `jdg.kks.voluntary_disclosure_partial` | 🟡 TRIAGE | Art. 16 § 2 KKS |
-| 204 | `jdg.kks.voluntary_disclosure_payment` | 🟡 TRIAGE | Art. 16 § 4 KKS |
-| 205 | `jdg.kks.voluntary_disclosure_multiple_offenses` | 🟡 TRIAGE | Art. 16 § 1-6 KKS |
+| 200 | `jdg.kks.voluntary_disclosure_eligible` |  | Art. 16 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 201 | `jdg.kks.voluntary_disclosure_deadline_breach` | 🔴 BLOCK | Art. 16 § 5 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 202 | `jdg.kks.voluntary_disclosure_successor` |  | Art. 16 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 203 | `jdg.kks.voluntary_disclosure_partial` | 🟡 TRIAGE | Art. 16 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 204 | `jdg.kks.voluntary_disclosure_payment` | 🟡 TRIAGE | Art. 16 § 4 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 205 | `jdg.kks.voluntary_disclosure_multiple_offenses` | 🟡 TRIAGE | Art. 16 § 1-6 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
 | 206 | `jdg.kks.voluntary_disclosure_correction_before_audit` | 🟡 TRIAGE | Art. 16 § 1 KKS w zw. z Art. 81 OrdPU |
 | 207 | `jdg.kks.voluntary_disclosure_foreign_tax` | 🟡 TRIAGE | Art. 16 § 1 KKS w zw. z umowami o unikaniu podwójnego opodat... |
 | 208 | `jdg.kks.voluntary_disclosure_mandatory_reporter` | 🔴 BLOCK | Art. 86a-86o OrdPU (MDR) |
-| 209 | `jdg.kks.voluntary_disclosure_bribe_disclosure` | 🔴 BLOCK | Art. 16a KKS |
-| 210 | `jdg.kks.extraordinary_mitigation` |  | Art. 17 KKS |
-| 211 | `jdg.kks.minor_significance` |  | Art. 18 KKS |
-| 212 | `jdg.kks.damage_restitution` |  | Art. 19 § 1 KKS |
-| 213 | `jdg.kks.cooperation_with_authorities` |  | Art. 19 § 2 KKS |
-| 214 | `jdg.kks.remorse_and_first_offense` |  | Art. 19 § 1-2 KKS |
-| 215 | `jdg.kks.voluntary_surrender` |  | Art. 16 § 1-2 KKS |
-| 216 | `jdg.kks.repeat_offense_aggravating` | 🔴 BLOCK | Art. 19 § 3 KKS |
-| 217 | `jdg.kks.organized_group_aggravating` | 🔴 BLOCK | Art. 19 § 4 KKS |
-| 218 | `jdg.kks.large_scale_aggravating` | 🔴 BLOCK | Art. 19 § 3-4 KKS |
-| 219 | `jdg.kks.obstruction_of_justice` | 🔴 BLOCK | Art. 83 KKS |
-| 220 | `jdg.kks.statute_of_limitations_crime_5y` |  | Art. 44 § 1 KKS |
-| 221 | `jdg.kks.statute_of_limitations_misdemeanor_3y` |  | Art. 51 § 1 KKS |
-| 222 | `jdg.kks.statute_limitation_suspension` | 🟡 TRIAGE | Art. 44 § 5 KKS |
-| 223 | `jdg.kks.statute_limitation_interruption` | 🟡 TRIAGE | Art. 44 § 6 KKS |
-| 224 | `jdg.kks.statute_limitation_extension_10y` | 🟡 TRIAGE | Art. 44 § 2 KKS |
-| 225 | `jdg.kks.limitation_absolute_bar_p225` |  | Art. 44 § 7 KKS |
-| 240 | `jdg.kks.tax_evasion_false_declaration` | 🔴 BLOCK | Art. 54 § 1 KKS |
-| 241 | `jdg.kks.tax_declaration_overdue` | 🔴 BLOCK | Art. 54 § 1-2 KKS |
-| 242 | `jdg.kks.tax_evasion_hiding_revenue` | 🔴 BLOCK | Art. 54 § 1 KKS |
-| 243 | `jdg.kks.tax_evasion_inflated_costs_p243` | 🔴 BLOCK | Art. 54 § 1 KKS |
-| 244 | `jdg.kks.tax_evasion_double_books_p244` | 🔴 BLOCK | Art. 54 § 1 KKS |
-| 245 | `jdg.kks.tax_evasion_shell_company_p245` | 🔴 BLOCK | Art. 54 § 1 KKS |
-| 246 | `jdg.kks.evasion_fictitious_costs_p246` | 🔴 BLOCK | Art. 54 § 1 KKS |
-| 247 | `jdg.kks.evasion_identity_theft_p247` | 🔴 BLOCK | Art. 54 § 1 KKS |
+| 209 | `jdg.kks.voluntary_disclosure_bribe_disclosure` | 🔴 BLOCK | Art. 16a ustawy z dnia 10 września 1999 r. — Kodeks karny sk... |
+| 210 | `jdg.kks.extraordinary_mitigation` |  | Art. 17 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 211 | `jdg.kks.minor_significance` |  | Art. 18 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 212 | `jdg.kks.damage_restitution` |  | Art. 19 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 213 | `jdg.kks.cooperation_with_authorities` |  | Art. 19 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 214 | `jdg.kks.remorse_and_first_offense` |  | Art. 19 § 1-2 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 215 | `jdg.kks.voluntary_surrender` |  | Art. 16 § 1-2 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 216 | `jdg.kks.repeat_offense_aggravating` | 🔴 BLOCK | Art. 19 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 217 | `jdg.kks.organized_group_aggravating` | 🔴 BLOCK | Art. 19 § 4 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 218 | `jdg.kks.large_scale_aggravating` | 🔴 BLOCK | Art. 19 § 3-4 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 219 | `jdg.kks.obstruction_of_justice` | 🔴 BLOCK | Art. 83 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 220 | `jdg.kks.statute_of_limitations_crime_5y` |  | Art. 44 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 221 | `jdg.kks.statute_of_limitations_misdemeanor_3y` |  | Art. 51 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 222 | `jdg.kks.statute_limitation_suspension` | 🟡 TRIAGE | Art. 44 § 5 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 223 | `jdg.kks.statute_limitation_interruption` | 🟡 TRIAGE | Art. 44 § 6 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 224 | `jdg.kks.statute_limitation_extension_10y` | 🟡 TRIAGE | Art. 44 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 225 | `jdg.kks.limitation_absolute_bar_p225` |  | Art. 44 § 7 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 240 | `jdg.kks.tax_evasion_false_declaration` | 🔴 BLOCK | Art. 54 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 241 | `jdg.kks.tax_declaration_overdue` | 🔴 BLOCK | Art. 54 § 1-2 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 242 | `jdg.kks.tax_evasion_hiding_revenue` | 🔴 BLOCK | Art. 54 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 243 | `jdg.kks.tax_evasion_inflated_costs_p243` | 🔴 BLOCK | Art. 54 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 244 | `jdg.kks.tax_evasion_double_books_p244` | 🔴 BLOCK | Art. 54 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 245 | `jdg.kks.tax_evasion_shell_company_p245` | 🔴 BLOCK | Art. 54 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 246 | `jdg.kks.evasion_fictitious_costs_p246` | 🔴 BLOCK | Art. 54 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 247 | `jdg.kks.evasion_identity_theft_p247` | 🔴 BLOCK | Art. 54 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 248 | `jdg.kks.evasion_tp_manipulation_p248` | 🔴 BLOCK | Art. 54 § 1 KKS + Art. 23o-23zf PIT |
 | 249 | `jdg.kks.evasion_invoice_fraud_multi_p249` | 🔴 BLOCK | Art. 54 § 1-2 KKS + Art. 62 § 2 KKS (puste faktury) |
 | 250 | `jdg.kks.evasion_fictitious_costs_temporal_p250` | 🔴 BLOCK | Art. 54 § 1 KKS + Art. 56 § 1 KKS |
@@ -2681,99 +2684,99 @@
 | 252 | `jdg.kks.evasion_unregistered_crossborder_p252` | 🔴 BLOCK | Art. 54 § 1 KKS + Art. 17 ust. 1 pkt 3 VAT + Art. 96 VAT |
 | 253 | `jdg.kks.evasion_fake_residency_cert_p253` | 🔴 BLOCK | Art. 54 § 1 KKS + Art. 83 KKS (fałszowanie dokumentów) |
 | 254 | `jdg.kks.evasion_money_laundering_invoices_p254` | 🔴 BLOCK | Art. 54 § 1 KKS + Art. 299 KK (pranie pieniędzy) + Art. 62 §... |
-| 255 | `jdg.kks.unreliable_books_falsified_entries` | 🔴 BLOCK | Art. 56 § 1 KKS |
-| 256 | `jdg.kks.unreliable_books_missing_entries` | 🔴 BLOCK | Art. 56 § 2 KKS |
-| 257 | `jdg.kks.unreliable_books_wrong_values_p257` | 🔴 BLOCK | Art. 56 § 3 KKS |
-| 258 | `jdg.kks.unreliable_books_destroyed_p258` | 🔴 BLOCK | Art. 60 § 1 KKS |
-| 259 | `jdg.kks.books_late_entries_p259` | 🟡 TRIAGE | Art. 56 KKS |
-| 260 | `jdg.kks.books_backdated_p260` | 🔴 BLOCK | Art. 56 KKS |
-| 261 | `jdg.kks.books_ghost_employees_p261` | 🔴 BLOCK | Art. 56 KKS |
-| 270 | `jdg.kks.unreliable_vat_records` | 🔴 BLOCK | Art. 57 § 1 KKS |
-| 271 | `jdg.kks.vat_records_concealment_p271` | 🔴 BLOCK | Art. 57 § 2 KKS |
-| 272 | `jdg.kks.vat_jpk_mismatch_p272` | 🔴 BLOCK | Art. 57 § 1 KKS |
-| 273 | `jdg.kks.vat_gtu_misclassification_p273` | 🟡 TRIAGE | Art. 57 § 1 KKS |
-| 274 | `jdg.kks.vat_rate_manipulation_p274` | 🔴 BLOCK | Art. 57 § 1 KKS |
+| 255 | `jdg.kks.unreliable_books_falsified_entries` | 🔴 BLOCK | Art. 56 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 256 | `jdg.kks.unreliable_books_missing_entries` | 🔴 BLOCK | Art. 56 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 257 | `jdg.kks.unreliable_books_wrong_values_p257` | 🔴 BLOCK | Art. 56 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 258 | `jdg.kks.unreliable_books_destroyed_p258` | 🔴 BLOCK | Art. 60 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 259 | `jdg.kks.books_late_entries_p259` | 🟡 TRIAGE | Art. 56 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 260 | `jdg.kks.books_backdated_p260` | 🔴 BLOCK | Art. 56 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 261 | `jdg.kks.books_ghost_employees_p261` | 🔴 BLOCK | Art. 56 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 270 | `jdg.kks.unreliable_vat_records` | 🔴 BLOCK | Art. 57 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 271 | `jdg.kks.vat_records_concealment_p271` | 🔴 BLOCK | Art. 57 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 272 | `jdg.kks.vat_jpk_mismatch_p272` | 🔴 BLOCK | Art. 57 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 273 | `jdg.kks.vat_gtu_misclassification_p273` | 🟡 TRIAGE | Art. 57 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 274 | `jdg.kks.vat_rate_manipulation_p274` | 🔴 BLOCK | Art. 57 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 275 | `jdg.kks.vat_split_payment_evasion_p275` | 🔴 BLOCK | Art. 57 § 1 KKS w zw. z Art. 108a VAT |
 | 275 | `jdg.kks.vat_split_payment_evasion_internal_p275b` | 🔴 BLOCK | Art. 57 § 1 KKS w zw. z Art. 108a VAT (wewnętrzna detekcja o... |
-| 276 | `jdg.kks.vat_currency_conversion_fraud_p276` | 🔴 BLOCK | Art. 57 KKS |
-| 277 | `jdg.kks.vat_reverse_charge_omission_p277` | 🔴 BLOCK | Art. 57 KKS |
-| 278 | `jdg.kks.vat_duplicate_deduction_p278` | 🔴 BLOCK | Art. 57 KKS |
-| 279 | `jdg.kks.vat_missing_sales_register_p279` | 🔴 BLOCK | Art. 57 KKS |
-| 280 | `jdg.kks.documents_destroyed_art60` | 🔴 BLOCK | Art. 60 § 1 KKS |
-| 281 | `jdg.kks.documents_hidden_from_authorities` | 🔴 BLOCK | Art. 60 § 2 KKS |
-| 282 | `jdg.kks.documents_stolen_claim_p282` | 🟡 TRIAGE | Art. 60 § 1 KKS |
-| 283 | `jdg.kks.documents_force_majeure_no_proof_p283` | 🔴 BLOCK | Art. 60 § 1 KKS |
+| 276 | `jdg.kks.vat_currency_conversion_fraud_p276` | 🔴 BLOCK | Art. 57 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 277 | `jdg.kks.vat_reverse_charge_omission_p277` | 🔴 BLOCK | Art. 57 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 278 | `jdg.kks.vat_duplicate_deduction_p278` | 🔴 BLOCK | Art. 57 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 279 | `jdg.kks.vat_missing_sales_register_p279` | 🔴 BLOCK | Art. 57 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 280 | `jdg.kks.documents_destroyed_art60` | 🔴 BLOCK | Art. 60 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 281 | `jdg.kks.documents_hidden_from_authorities` | 🔴 BLOCK | Art. 60 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 282 | `jdg.kks.documents_stolen_claim_p282` | 🟡 TRIAGE | Art. 60 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 283 | `jdg.kks.documents_force_majeure_no_proof_p283` | 🔴 BLOCK | Art. 60 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 284 | `jdg.kks.documents_held_by_former_accountant_p284` | 🔴 BLOCK | Art. 60 KKS w zw. z Art. 83 KKS |
-| 285 | `jdg.kks.unjustified_vat_refund_art76` | 🔴 BLOCK | Art. 76 § 1 KKS |
-| 286 | `jdg.kks.unjustified_refund_attempt_p286` | 🔴 BLOCK | Art. 76 § 2 KKS |
-| 287 | `jdg.kks.refund_overstated_deduction_p287` | 🔴 BLOCK | Art. 76 § 1 KKS |
-| 288 | `jdg.kks.refund_fake_export_p288` | 🔴 BLOCK | Art. 76 § 1 KKS |
-| 289 | `jdg.kks.refund_fictitious_wnt_p289` | 🔴 BLOCK | Art. 76 KKS |
-| 290 | `jdg.kks.tax_collector_not_remitted` | 🔴 BLOCK | Art. 59 § 1 KKS |
-| 291 | `jdg.kks.tax_collector_withholding_false_p291` | 🔴 BLOCK | Art. 59 § 2 KKS |
-| 292 | `jdg.kks.collector_aiding_evasion_p292` | 🔴 BLOCK | Art. 59 KKS |
+| 285 | `jdg.kks.unjustified_vat_refund_art76` | 🔴 BLOCK | Art. 76 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 286 | `jdg.kks.unjustified_refund_attempt_p286` | 🔴 BLOCK | Art. 76 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 287 | `jdg.kks.refund_overstated_deduction_p287` | 🔴 BLOCK | Art. 76 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 288 | `jdg.kks.refund_fake_export_p288` | 🔴 BLOCK | Art. 76 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 289 | `jdg.kks.refund_fictitious_wnt_p289` | 🔴 BLOCK | Art. 76 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 290 | `jdg.kks.tax_collector_not_remitted` | 🔴 BLOCK | Art. 59 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 291 | `jdg.kks.tax_collector_withholding_false_p291` | 🔴 BLOCK | Art. 59 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 292 | `jdg.kks.collector_aiding_evasion_p292` | 🔴 BLOCK | Art. 59 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 293 | `jdg.kks.collector_zus_not_remitted_p293` | 🔴 BLOCK | Art. 59 KKS w zw. z Art. 46-47 SUS |
 | 294 | `jdg.kks.collector_dac7_non_filing_p294` | 🔴 BLOCK | Art. 59 KKS w zw. z Art. 39q OrdPU |
-| 295 | `jdg.kks.false_testimony_kas_p295` | 🔴 BLOCK | Art. 83 § 1 KKS |
-| 296 | `jdg.kks.deceitful_evasion_method_p296` | 🔴 BLOCK | Art. 54 § 2 KKS |
-| 297 | `jdg.kks.identity_concealment_p297` | 🔴 BLOCK | Art. 54 § 1 KKS |
+| 295 | `jdg.kks.false_testimony_kas_p295` | 🔴 BLOCK | Art. 83 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 296 | `jdg.kks.deceitful_evasion_method_p296` | 🔴 BLOCK | Art. 54 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 297 | `jdg.kks.identity_concealment_p297` | 🔴 BLOCK | Art. 54 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 298 | `jdg.kks.chain_transaction_fraud_p298` | 🔴 BLOCK | Art. 54 § 1 KKS w zw. z Art. 62 KKS |
 | 299 | `jdg.kks.digital_currency_concealment_p299` | 🔴 BLOCK | Art. 54 KKS w zw. z AML |
-| 300 | `jdg.kks.empty_invoice_issued` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 301 | `jdg.kks.fake_invoice_issued` | 🔴 BLOCK | Art. 62 § 1 KKS |
-| 302 | `jdg.kks.invoice_carousel_detected` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 303 | `jdg.kks.invoice_falsified_amount_p303` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 304 | `jdg.kks.invoice_counterfeit_p304` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 305 | `jdg.kks.invoice_used_for_tax_fraud_p305` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 306 | `jdg.kks.empty_invoice_systematic_p306` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 307 | `jdg.kks.empty_invoice_organized_scheme_p307` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 308 | `jdg.kks.empty_invoice_cross_border_p308` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 309 | `jdg.kks.empty_invoice_digital_forgery_p309` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 310 | `jdg.kks.empty_invoice_ksef_fraud_p310` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 311 | `jdg.kks.empty_invoice_timestamp_fraud_p311` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 312 | `jdg.kks.empty_invoice_recipient_knowledge_p312` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 313 | `jdg.kks.empty_invoice_intermediary_p313` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 314 | `jdg.kks.empty_invoice_conspirator_p314` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 315 | `jdg.kks.empty_invoice_value_bands_p315` | 🔴 BLOCK | Art. 62 § 2 KKS |
+| 300 | `jdg.kks.empty_invoice_issued` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 301 | `jdg.kks.fake_invoice_issued` | 🔴 BLOCK | Art. 62 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 302 | `jdg.kks.invoice_carousel_detected` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 303 | `jdg.kks.invoice_falsified_amount_p303` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 304 | `jdg.kks.invoice_counterfeit_p304` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 305 | `jdg.kks.invoice_used_for_tax_fraud_p305` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 306 | `jdg.kks.empty_invoice_systematic_p306` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 307 | `jdg.kks.empty_invoice_organized_scheme_p307` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 308 | `jdg.kks.empty_invoice_cross_border_p308` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 309 | `jdg.kks.empty_invoice_digital_forgery_p309` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 310 | `jdg.kks.empty_invoice_ksef_fraud_p310` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 311 | `jdg.kks.empty_invoice_timestamp_fraud_p311` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 312 | `jdg.kks.empty_invoice_recipient_knowledge_p312` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 313 | `jdg.kks.empty_invoice_intermediary_p313` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 314 | `jdg.kks.empty_invoice_conspirator_p314` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 315 | `jdg.kks.empty_invoice_value_bands_p315` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 316 | `jdg.kks.empty_invoice_cross_border_p316` | 🔴 BLOCK | Art. 62 § 2 KKS w zw. z Dyrektywą VAT |
 | 317 | `jdg.kks.empty_invoice_esignature_forgery_p317` | 🔴 BLOCK | Art. 62 § 1-2 KKS + Art. 270 KK + eIDAS |
 | 318 | `jdg.kks.empty_invoice_ksef_validation_p318` | 🔴 BLOCK | Art. 106na VAT + Art. 62 KKS |
 | 319 | `jdg.kks.empty_invoice_upo_verification_p319` | 🔴 BLOCK | Art. 106na-106nq VAT + Art. 62 KKS |
-| 320 | `jdg.kks.failure_to_invoice_p320` | 🔴 BLOCK | Art. 63 § 1 KKS |
+| 320 | `jdg.kks.failure_to_invoice_p320` | 🔴 BLOCK | Art. 63 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 321 | `jdg.kks.failure_to_invoice_b2b_p321` | 🔴 BLOCK | Art. 63 § 2 KKS w zw. z Art. 106b VAT |
 | 322 | `jdg.kks.failure_to_invoice_deadline_p322` | 🟡 TRIAGE | Art. 63 KKS w zw. z Art. 106i VAT |
-| 323 | `jdg.kks.failure_to_invoice_over_threshold_p323` | 🔴 BLOCK | Art. 63 KKS |
+| 323 | `jdg.kks.failure_to_invoice_over_threshold_p323` | 🔴 BLOCK | Art. 63 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 324 | `jdg.kks.failure_to_invoice_serial_p324` | 🔴 BLOCK | Art. 63 KKS (uporczywość) |
 | 325 | `jdg.kks.failure_to_invoice_cash_p325` | 🔴 BLOCK | Art. 63 KKS w zw. z Art. 19a VAT |
-| 326 | `jdg.kks.invoice_incorrect_data_p326` | 🔴 BLOCK | Art. 63 § 2 KKS |
+| 326 | `jdg.kks.invoice_incorrect_data_p326` | 🔴 BLOCK | Art. 63 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 327 | `jdg.kks.invoice_missing_fields_p327` | 🟡 TRIAGE | Art. 63 KKS w zw. z Art. 106e VAT |
 | 328 | `jdg.kks.invoice_false_nip_p328` | 🔴 BLOCK | Art. 63 KKS + Art. 81 KKS |
 | 329 | `jdg.kks.invoice_failure_aggregate_p329` | 🔴 BLOCK | Art. 62-63 KKS — agregacja |
-| 330 | `jdg.kks.wrong_vat_rate_p330` | 🟡 TRIAGE | Art. 64 KKS |
+| 330 | `jdg.kks.wrong_vat_rate_p330` | 🟡 TRIAGE | Art. 64 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 331 | `jdg.kks.wrong_vat_rate_significant_p331` | 🔴 BLOCK | Art. 64 KKS (znaczna wartość) |
-| 332 | `jdg.kks.vat_refund_overstatement_p332` | 🔴 BLOCK | Art. 65 KKS |
+| 332 | `jdg.kks.vat_refund_overstatement_p332` | 🔴 BLOCK | Art. 65 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 333 | `jdg.kks.vat_refund_fictitious_export_p333` | 🔴 BLOCK | Art. 65 KKS w zw. z Art. 76 KKS |
 | 334 | `jdg.kks.vat_refund_accelerated_fraud_p334` | 🔴 BLOCK | Art. 65 KKS w zw. z Art. 87 ust. 6 VAT |
-| 335 | `jdg.kks.untrue_tax_return_p335` | 🔴 BLOCK | Art. 66 KKS |
-| 336 | `jdg.kks.withholding_tax_failure_p336` | 🔴 BLOCK | Art. 67 KKS |
+| 335 | `jdg.kks.untrue_tax_return_p335` | 🔴 BLOCK | Art. 66 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 336 | `jdg.kks.withholding_tax_failure_p336` | 🔴 BLOCK | Art. 67 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 337 | `jdg.kks.withholding_tax_non_remittance_p337` | 🔴 BLOCK | Art. 67 KKS w zw. z Art. 59 KKS |
 | 338 | `jdg.kks.wht_certificate_fraud_p338` | 🔴 BLOCK | Art. 67 KKS + Art. 60 KKS |
 | 339 | `jdg.kks.vat_calculation_errors_aggregate_p339` | 🟡 TRIAGE | Art. 64-67 KKS — agregacja |
-| 340 | `jdg.kks.destruction_documents_p340` | 🔴 BLOCK | Art. 68 KKS |
+| 340 | `jdg.kks.destruction_documents_p340` | 🔴 BLOCK | Art. 68 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 341 | `jdg.kks.destruction_before_retention_p341` | 🔴 BLOCK | Art. 68 KKS w zw. z Art. 86 OrdPU |
 | 342 | `jdg.kks.destruction_during_audit_p342` | 🔴 BLOCK | Art. 68 KKS + Art. 83 KKS |
-| 343 | `jdg.kks.obstruction_audit_p343` | 🔴 BLOCK | Art. 69 KKS |
-| 344 | `jdg.kks.obstruction_denial_of_access_p344` | 🔴 BLOCK | Art. 69 KKS |
+| 343 | `jdg.kks.obstruction_audit_p343` | 🔴 BLOCK | Art. 69 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 344 | `jdg.kks.obstruction_denial_of_access_p344` | 🔴 BLOCK | Art. 69 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 345 | `jdg.kks.obstruction_false_information_p345` | 🔴 BLOCK | Art. 69 KKS w zw. z Art. 83 KKS |
-| 346 | `jdg.kks.non_filing_declaration_p346` | 🔴 BLOCK | Art. 70 KKS |
-| 347 | `jdg.kks.non_filing_multiple_periods_p347` | 🔴 BLOCK | Art. 70 KKS |
+| 346 | `jdg.kks.non_filing_declaration_p346` | 🔴 BLOCK | Art. 70 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 347 | `jdg.kks.non_filing_multiple_periods_p347` | 🔴 BLOCK | Art. 70 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 348 | `jdg.kks.non_filing_despite_request_p348` | 🔴 BLOCK | Art. 70 KKS w zw. z Art. 83 KKS |
-| 349 | `jdg.kks.business_without_registration_p349` | 🔴 BLOCK | Art. 71 KKS |
-| 350 | `jdg.kks.business_despite_ban_p350` | 🔴 BLOCK | Art. 72 KKS |
-| 351 | `jdg.kks.illegal_gambling_tax_p351` | 🔴 BLOCK | Art. 73 KKS |
-| 352 | `jdg.kks.excise_duty_evasion_p352` | 🔴 BLOCK | Art. 74 KKS |
-| 353 | `jdg.kks.customs_duty_evasion_p353` | 🔴 BLOCK | Art. 75 KKS |
-| 354 | `jdg.kks.import_vat_evasion_p354` | 🔴 BLOCK | Art. 76 KKS |
+| 349 | `jdg.kks.business_without_registration_p349` | 🔴 BLOCK | Art. 71 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 350 | `jdg.kks.business_despite_ban_p350` | 🔴 BLOCK | Art. 72 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 351 | `jdg.kks.illegal_gambling_tax_p351` | 🔴 BLOCK | Art. 73 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 352 | `jdg.kks.excise_duty_evasion_p352` | 🔴 BLOCK | Art. 74 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 353 | `jdg.kks.customs_duty_evasion_p353` | 🔴 BLOCK | Art. 75 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 354 | `jdg.kks.import_vat_evasion_p354` | 🔴 BLOCK | Art. 76 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 355 | `jdg.kks.vat_fraud_network_detection_p355` | 🔴 BLOCK | Art. 62 KKS + Art. 76a KKS |
 | 356 | `jdg.kks.vat_fraud_temporal_pattern_p356` | 🟡 TRIAGE | Art. 62 KKS — analiza wzorców |
 | 357 | `jdg.kks.vat_fraud_geographic_clustering_p357` | 🟡 TRIAGE | Art. 62 KKS — geografia fraudu |
@@ -2785,12 +2788,12 @@
 | 363 | `jdg.kks.vat_fraud_insolvency_pattern_p363` | 🔴 BLOCK | Art. 62 KKS + Art. 300 KK |
 | 364 | `jdg.kks.vat_section_aggregate_risk_p364` |  | Art. 62-76 KKS — agregacja sekcji VAT |
 | 365 | `jdg.kks.asset_seizure_risk_p365` | 🔴 BLOCK | Art. 22-31 KKS — zabezpieczenie majątkowe |
-| 366 | `jdg.kks.property_security_active_p366` | 🔴 BLOCK | Art. 22 KKS |
-| 367 | `jdg.kks.bank_account_blocked_p367` | 🔴 BLOCK | Art. 23 § 1 KKS |
+| 366 | `jdg.kks.property_security_active_p366` | 🔴 BLOCK | Art. 22 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 367 | `jdg.kks.bank_account_blocked_p367` | 🔴 BLOCK | Art. 23 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 368 | `jdg.kks.mortgage_on_property_p368` | 🔴 BLOCK | Art. 23 § 2 KKS w zw. z Art. 34 § 2 OrdPU |
 | 369 | `jdg.kks.tax_lien_registered_p369` | 🔴 BLOCK | Art. 24 KKS w zw. z Art. 41 OrdPU |
-| 370 | `jdg.kks.third_party_liability_p370` | 🔴 BLOCK | Art. 24a KKS |
-| 371 | `jdg.kks.successor_liability_p371` | 🟡 TRIAGE | Art. 25 KKS |
+| 370 | `jdg.kks.third_party_liability_p370` | 🔴 BLOCK | Art. 24a ustawy z dnia 10 września 1999 r. — Kodeks karny sk... |
+| 371 | `jdg.kks.successor_liability_p371` | 🟡 TRIAGE | Art. 25 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 372 | `jdg.kks.business_activity_ban_p372` | 🔴 BLOCK | Art. 26 KKS w zw. z Art. 41 KK |
 | 373 | `jdg.kks.public_contracts_ban_p373` | 🔴 BLOCK | Art. 108-109 PZP + KKS |
 | 374 | `jdg.kks.professional_license_risk_p374` | 🔴 BLOCK | Art. 26 KKS + przepisy korporacyjne |
@@ -2819,95 +2822,95 @@
 | 397 | `jdg.kks.offense_discovery_path_p397` | 🟡 TRIAGE | Art. 16 KKS — czynny żal |
 | 398 | `jdg.kks.legal_defense_validity_p398` |  | Art. 10-11 KKS — kontratypy i obrona |
 | 399 | `jdg.kks.crime_section_summary_p399` | 🔴 BLOCK | Art. 54-76 KKS — synteza |
-| 400 | `jdg.kks.declaration_not_filed_vat` | 🟡 TRIAGE | Art. 77 § 1 KKS |
-| 401 | `jdg.kks.declaration_not_filed_pit` | 🟡 TRIAGE | Art. 77 § 2 KKS |
-| 402 | `jdg.kks.declaration_not_filed_zus` | 🟡 TRIAGE | Art. 77 § 3 KKS |
-| 403 | `jdg.kks.declaration_not_filed_cit_withholding_p403` | 🟡 TRIAGE | Art. 77 KKS |
-| 404 | `jdg.kks.declaration_not_filed_local_taxes_p404` | 🟡 TRIAGE | Art. 77 KKS |
-| 405 | `jdg.kks.declaration_not_filed_pcc_p405` | 🟡 TRIAGE | Art. 77 KKS |
-| 406 | `jdg.kks.declaration_not_filed_intrastat_p406` | 🟡 TRIAGE | Art. 77 KKS |
-| 407 | `jdg.kks.declaration_not_filed_tpr_p407` | 🟡 TRIAGE | Art. 77 KKS |
-| 410 | `jdg.kks.incorrect_data_in_declaration` | 🟡 TRIAGE | Art. 78 § 1 KKS |
-| 411 | `jdg.kks.tax_not_paid_on_time` | 🟡 TRIAGE | Art. 79 KKS |
-| 412 | `jdg.kks.incorrect_data_partial_payment_p412` | 🟡 TRIAGE | Art. 79 KKS |
-| 413 | `jdg.kks.incorrect_data_late_payment_pattern_p413` | 🟡 TRIAGE | Art. 79 KKS |
-| 414 | `jdg.kks.incorrect_data_withholding_not_remitted_p414` | 🔴 BLOCK | Art. 77-79 KKS |
-| 415 | `jdg.kks.incorrect_data_wrong_account_p415` | 🟡 TRIAGE | Art. 78 KKS |
-| 420 | `jdg.kks.obstruction_no_books_at_premises_p420` | 🔴 BLOCK | Art. 83 KKS |
-| 421 | `jdg.kks.obstruction_computer_broken_p421` | 🔴 BLOCK | Art. 83 KKS |
-| 422 | `jdg.kks.obstruction_accountant_disappeared_p422` | 🔴 BLOCK | Art. 83 KKS |
-| 423 | `jdg.kks.obstruction_data_encrypted_p423` | 🔴 BLOCK | Art. 83 KKS |
-| 424 | `jdg.kks.obstruction_force_majeure_false_p424` | 🟡 TRIAGE | Art. 83 KKS |
+| 400 | `jdg.kks.declaration_not_filed_vat` | 🟡 TRIAGE | Art. 77 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 401 | `jdg.kks.declaration_not_filed_pit` | 🟡 TRIAGE | Art. 77 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 402 | `jdg.kks.declaration_not_filed_zus` | 🟡 TRIAGE | Art. 77 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 403 | `jdg.kks.declaration_not_filed_cit_withholding_p403` | 🟡 TRIAGE | Art. 77 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 404 | `jdg.kks.declaration_not_filed_local_taxes_p404` | 🟡 TRIAGE | Art. 77 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 405 | `jdg.kks.declaration_not_filed_pcc_p405` | 🟡 TRIAGE | Art. 77 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 406 | `jdg.kks.declaration_not_filed_intrastat_p406` | 🟡 TRIAGE | Art. 77 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 407 | `jdg.kks.declaration_not_filed_tpr_p407` | 🟡 TRIAGE | Art. 77 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 410 | `jdg.kks.incorrect_data_in_declaration` | 🟡 TRIAGE | Art. 78 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 411 | `jdg.kks.tax_not_paid_on_time` | 🟡 TRIAGE | Art. 79 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 412 | `jdg.kks.incorrect_data_partial_payment_p412` | 🟡 TRIAGE | Art. 79 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 413 | `jdg.kks.incorrect_data_late_payment_pattern_p413` | 🟡 TRIAGE | Art. 79 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 414 | `jdg.kks.incorrect_data_withholding_not_remitted_p414` | 🔴 BLOCK | Art. 77-79 ustawy z dnia 10 września 1999 r. — Kodeks karny ... |
+| 415 | `jdg.kks.incorrect_data_wrong_account_p415` | 🟡 TRIAGE | Art. 78 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 420 | `jdg.kks.obstruction_no_books_at_premises_p420` | 🔴 BLOCK | Art. 83 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 421 | `jdg.kks.obstruction_computer_broken_p421` | 🔴 BLOCK | Art. 83 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 422 | `jdg.kks.obstruction_accountant_disappeared_p422` | 🔴 BLOCK | Art. 83 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 423 | `jdg.kks.obstruction_data_encrypted_p423` | 🔴 BLOCK | Art. 83 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 424 | `jdg.kks.obstruction_force_majeure_false_p424` | 🟡 TRIAGE | Art. 83 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 430 | `jdg.kks.risk_aggregation_low` |  | KKS — agregacja ryzyka |
 | 431 | `jdg.kks.risk_aggregation_medium` | 🟡 TRIAGE | KKS — agregacja ryzyka |
 | 432 | `jdg.kks.risk_aggregation_high` | 🔴 BLOCK | KKS — agregacja ryzyka |
-| 433 | `jdg.kks.criminal_threshold_p433` | 🔴 BLOCK | Art. 53 § 3-6 KKS |
+| 433 | `jdg.kks.criminal_threshold_p433` | 🔴 BLOCK | Art. 53 § 3-6 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
 | 434 | `jdg.kks.risk_pattern_detection_p434` | 🟡 TRIAGE | KKS — analiza wzorców |
 | 435 | `jdg.kks.risk_recidivism_check_p435` | 🟡 TRIAGE | KKS — recydywa |
 | 436 | `jdg.kks.risk_seasonal_pattern_p436` | 🟡 TRIAGE | KKS — analiza sezonowa |
 | 437 | `jdg.kks.unregistered_activity_p437` | 🔴 BLOCK | Art. 60^1 § 1 KKS |
 | 438 | `jdg.kks.ceidg_false_data_p438` | 🔴 BLOCK | Art. 60^1 § 2 KKS |
-| 439 | `jdg.kks.nip_not_obtained_p439` | 🔴 BLOCK | Art. 81 § 1 KKS |
-| 440 | `jdg.kks.ceidg_change_not_reported_p440` | 🟡 TRIAGE | Art. 81 KKS |
-| 441 | `jdg.kks.bank_account_not_reported_p441` | 🟡 TRIAGE | Art. 81 KKS |
+| 439 | `jdg.kks.nip_not_obtained_p439` | 🔴 BLOCK | Art. 81 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 440 | `jdg.kks.ceidg_change_not_reported_p440` | 🟡 TRIAGE | Art. 81 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 441 | `jdg.kks.bank_account_not_reported_p441` | 🟡 TRIAGE | Art. 81 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 442 | `jdg.kks.vat_r_not_submitted_p442` | 🔴 BLOCK | Art. 81 KKS w zw. z Art. 96 VAT |
-| 443 | `jdg.kks.change_of_accountant_not_reported_p443` | 🟡 TRIAGE | Art. 81 KKS |
-| 444 | `jdg.kks.business_address_unreachable_p444` | 🔴 BLOCK | Art. 82 KKS |
+| 443 | `jdg.kks.change_of_accountant_not_reported_p443` | 🟡 TRIAGE | Art. 81 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 444 | `jdg.kks.business_address_unreachable_p444` | 🔴 BLOCK | Art. 82 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 445 | `jdg.kks.cash_register_not_installed_p445` | 🔴 BLOCK | Art. 84 KKS w zw. z Art. 111 VAT |
-| 446 | `jdg.kks.receipt_not_issued_b2c_p446` | 🔴 BLOCK | Art. 84 § 1 KKS |
+| 446 | `jdg.kks.receipt_not_issued_b2c_p446` | 🔴 BLOCK | Art. 84 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 447 | `jdg.kks.bdo_register_missing_p447` | 🟡 TRIAGE | Art. 82 KKS w zw. z ustawa o odpadach |
-| 448 | `jdg.kks.employee_tax_forms_missing_p448` | 🟡 TRIAGE | Art. 81-82 KKS |
+| 448 | `jdg.kks.employee_tax_forms_missing_p448` | 🟡 TRIAGE | Art. 81-82 ustawy z dnia 10 września 1999 r. — Kodeks karny ... |
 | 449 | `jdg.kks.intrastat_missing_p449` | 🟡 TRIAGE | Art. 81 KKS w zw. z ustawa o statystyce |
-| 450 | `jdg.kks.refused_inspection_p450` | 🔴 BLOCK | Art. 83 § 1 KKS |
-| 451 | `jdg.kks.false_evidence_submitted_p451` | 🔴 BLOCK | Art. 83 § 2 KKS |
+| 450 | `jdg.kks.refused_inspection_p450` | 🔴 BLOCK | Art. 83 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 451 | `jdg.kks.false_evidence_submitted_p451` | 🔴 BLOCK | Art. 83 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 452 | `jdg.kks.unpaid_vat_penalty_30pct_p452` | 🔴 BLOCK | Art. 82-84 KKS w zw. z Art. 108a VAT |
-| 453 | `jdg.kks.missing_invoice_numbering_p453` | 🟡 TRIAGE | Art. 82 KKS |
+| 453 | `jdg.kks.missing_invoice_numbering_p453` | 🟡 TRIAGE | Art. 82 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 454 | `jdg.kks.storage_below_5years_p454` | 🔴 BLOCK | Art. 82 KKS w zw. z Art. 86 OrdPU |
-| 455 | `jdg.kks.signature_missing_declaration_p455` | 🟡 TRIAGE | Art. 81 KKS |
+| 455 | `jdg.kks.signature_missing_declaration_p455` | 🟡 TRIAGE | Art. 81 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 456 | `jdg.kks.aml_sar_not_filed_p456` | 🔴 BLOCK | Art. 72-86 AML w zw. z Art. 82 KKS |
 | 457 | `jdg.kks.cesop_not_reported_p457` | 🟡 TRIAGE | Art. 82 KKS w zw. z Rozp. 2020/284 |
-| 458 | `jdg.kks.repeat_minor_offense_p458` | 🟡 TRIAGE | Art. 50 § 2 KKS |
+| 458 | `jdg.kks.repeat_minor_offense_p458` | 🟡 TRIAGE | Art. 50 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 459 | `jdg.kks.unauthorized_tax_advice_p459` | 🔴 BLOCK | Art. 81 KKS w zw. z ustawa o doradztwie podatkowym |
-| 460 | `jdg.kks.property_seizure_risk_p460` | 🔴 BLOCK | Art. 31-35 KKS |
-| 461 | `jdg.kks.travel_ban_risk_p461` | 🔴 BLOCK | Art. 34 KKS |
-| 462 | `jdg.kks.business_suspension_risk_p462` | 🔴 BLOCK | Art. 33 KKS |
-| 470 | `jdg.kks.aiding_abetting_p470` | 🔴 BLOCK | Art. 24 KKS |
-| 471 | `jdg.kks.instigating_p471` | 🔴 BLOCK | Art. 24 KKS |
-| 490 | `jdg.kks.daily_rate_calculation` |  | Art. 23 § 3 KKS |
-| 491 | `jdg.kks.fine_range_calculation` |  | Art. 23 § 1-2 KKS |
-| 492 | `jdg.kks.confiscation_risk` | 🔴 BLOCK | Art. 29-30 KKS |
-| 493 | `jdg.kks.probation_eligibility` |  | Art. 28 KKS |
-| 494 | `jdg.kks.imprisonment_risk_p494` | 🔴 BLOCK | Art. 27 KKS |
-| 495 | `jdg.kks.mandatory_penalty_notice_p495` | 🟡 TRIAGE | Art. 48-52 KKS |
-| 496 | `jdg.kks.publication_of_verdict_p496` | 🔴 BLOCK | Art. 30 KKS |
-| 497 | `jdg.kks.aggregate_penalty_p497` | 🔴 BLOCK | Art. 24 § 1-3 KKS |
-| 498 | `jdg.kks.penalty_payment_plan_p498` | 🟡 TRIAGE | Art. 27 § 1 KKS |
+| 460 | `jdg.kks.property_seizure_risk_p460` | 🔴 BLOCK | Art. 31-35 ustawy z dnia 10 września 1999 r. — Kodeks karny ... |
+| 461 | `jdg.kks.travel_ban_risk_p461` | 🔴 BLOCK | Art. 34 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 462 | `jdg.kks.business_suspension_risk_p462` | 🔴 BLOCK | Art. 33 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 470 | `jdg.kks.aiding_abetting_p470` | 🔴 BLOCK | Art. 24 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 471 | `jdg.kks.instigating_p471` | 🔴 BLOCK | Art. 24 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 490 | `jdg.kks.daily_rate_calculation` |  | Art. 23 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 491 | `jdg.kks.fine_range_calculation` |  | Art. 23 § 1-2 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 492 | `jdg.kks.confiscation_risk` | 🔴 BLOCK | Art. 29-30 ustawy z dnia 10 września 1999 r. — Kodeks karny ... |
+| 493 | `jdg.kks.probation_eligibility` |  | Art. 28 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 494 | `jdg.kks.imprisonment_risk_p494` | 🔴 BLOCK | Art. 27 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 495 | `jdg.kks.mandatory_penalty_notice_p495` | 🟡 TRIAGE | Art. 48-52 ustawy z dnia 10 września 1999 r. — Kodeks karny ... |
+| 496 | `jdg.kks.publication_of_verdict_p496` | 🔴 BLOCK | Art. 30 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 497 | `jdg.kks.aggregate_penalty_p497` | 🔴 BLOCK | Art. 24 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 498 | `jdg.kks.penalty_payment_plan_p498` | 🟡 TRIAGE | Art. 27 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 499 | `jdg.kks.penalty_execution_timeline_p499` | 🟡 TRIAGE | Art. 25-27, Art. 46-53 KKS |
 
 ### `rules/kks/enterprise_penalties.rego` (21 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 100 | `jdg.kks.tax_evasion_classification` | 🔴 BLOCK | Art. 54 § 1-3 KKS |
-| 101 | `jdg.kks.concealed_business_art54p3` | 🔴 BLOCK | Art. 54 § 3 KKS |
-| 102 | `jdg.kks.fictitious_costs_art54` | 🔴 BLOCK | Art. 54 § 1 KKS |
-| 110 | `jdg.kks.unreliable_pkpir_detailed` | 🔴 BLOCK | Art. 56 § 1-4 KKS |
-| 111 | `jdg.kks.unreliable_vat_evidence_detailed` | 🔴 BLOCK | Art. 57 § 1 KKS |
-| 120 | `jdg.kks.document_destruction_art60` | 🔴 BLOCK | Art. 60 § 1-3 KKS |
-| 121 | `jdg.kks.enterprise.empty_invoice_art62` | 🔴 BLOCK | Art. 62 § 1-2 KKS |
-| 122 | `jdg.kks.invoice_counterfeiting_art62p1` | 🔴 BLOCK | Art. 62 § 1 KKS |
-| 130 | `jdg.kks.enterprise.wrong_vat_rate_art64` | 🔴 BLOCK | Art. 64 KKS |
-| 131 | `jdg.kks.obstruction_audit_art69` | 🔴 BLOCK | Art. 69 § 1-3 KKS |
-| 140 | `jdg.kks.unjustified_refund_art76` | 🔴 BLOCK | Art. 76 § 1-2 KKS |
-| 141 | `jdg.kks.non_filing_declaration_art77` |  | Art. 77 § 1-3 KKS |
-| 142 | `jdg.kks.tax_non_payment_art79` |  | Art. 79 KKS |
-| 150 | `jdg.kks.enterprise.daily_rate_calculation` |  | Art. 23 § 1-4 KKS |
-| 151 | `jdg.kks.fine_range_table` |  | Art. 23, 26-28 KKS |
-| 152 | `jdg.kks.imprisonment_substitute` | 🔴 BLOCK | Art. 25 § 1-3 KKS |
-| 160 | `jdg.kks.voluntary_disclosure_guide` |  | Art. 16 § 1-8 KKS |
-| 161 | `jdg.kks.voluntary_disclosure_deadline` |  | Art. 16 § 2 KKS |
+| 100 | `jdg.kks.tax_evasion_classification` | 🔴 BLOCK | Art. 54 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 101 | `jdg.kks.concealed_business_art54p3` | 🔴 BLOCK | Art. 54 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 102 | `jdg.kks.fictitious_costs_art54` | 🔴 BLOCK | Art. 54 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 110 | `jdg.kks.unreliable_pkpir_detailed` | 🔴 BLOCK | Art. 56 § 1-4 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 111 | `jdg.kks.unreliable_vat_evidence_detailed` | 🔴 BLOCK | Art. 57 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 120 | `jdg.kks.document_destruction_art60` | 🔴 BLOCK | Art. 60 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 121 | `jdg.kks.enterprise.empty_invoice_art62` | 🔴 BLOCK | Art. 62 § 1-2 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 122 | `jdg.kks.invoice_counterfeiting_art62p1` | 🔴 BLOCK | Art. 62 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 130 | `jdg.kks.enterprise.wrong_vat_rate_art64` | 🔴 BLOCK | Art. 64 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 131 | `jdg.kks.obstruction_audit_art69` | 🔴 BLOCK | Art. 69 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 140 | `jdg.kks.unjustified_refund_art76` | 🔴 BLOCK | Art. 76 § 1-2 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 141 | `jdg.kks.non_filing_declaration_art77` |  | Art. 77 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 142 | `jdg.kks.tax_non_payment_art79` |  | Art. 79 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 150 | `jdg.kks.enterprise.daily_rate_calculation` |  | Art. 23 § 1-4 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 151 | `jdg.kks.fine_range_table` |  | Art. 23, 26-28 ustawy z dnia 10 września 1999 r. — Kodeks ka... |
+| 152 | `jdg.kks.imprisonment_substitute` | 🔴 BLOCK | Art. 25 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 160 | `jdg.kks.voluntary_disclosure_guide` |  | Art. 16 § 1-8 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 161 | `jdg.kks.voluntary_disclosure_deadline` |  | Art. 16 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 170 | `jdg.kks.statute_of_limitations_table` |  | Art. 20 § 1-3, Art. 44 § 1-5 KKS |
-| 171 | `jdg.kks.rehabilitation_period` |  | Art. 21 § 1-4 KKS |
+| 171 | `jdg.kks.rehabilitation_period` |  | Art. 21 § 1-4 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
 | 999 | `jdg.kks.enterprise.fallback` |  | Kodeks Karny Skarbowy |
 
 ### `rules/kks/kks_extensions_enterprise.rego` (4 reguł)
@@ -2941,44 +2944,44 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 130 | `jdg.kks.plan42.unreliable_pkpir_art56` | 🔴 BLOCK | Art. 56 § 1-4 KKS |
-| 131 | `jdg.kks.plan42.unreliable_vat_evidence_art57` | 🔴 BLOCK | Art. 57 § 1 KKS |
-| 132 | `jdg.kks.plan42.empty_invoice_art62` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 133 | `jdg.kks.plan42.wrong_vat_rate_art64` | 🔴 BLOCK | Art. 64 KKS |
-| 134 | `jdg.kks.plan42.tax_return_non_filing_art77` | 🔴 BLOCK | Art. 77 § 1-3 KKS |
-| 135 | `jdg.kks.plan42.non_payment_of_tax_art79` | 🟡 TRIAGE | Art. 79 KKS |
-| 136 | `jdg.kks.destruction_of_documents_art68` | 🔴 BLOCK | Art. 68 KKS |
-| 137 | `jdg.kks.plan42.voluntary_disclosure_art16` |  | Art. 16 § 1-3 KKS |
-| 138 | `jdg.kks.criminal_statute_art44` |  | Art. 44 § 1-5 KKS |
-| 139 | `jdg.kks.plan42.fiscal_penalty_calculation` |  | Art. 23 § 1-3 KKS |
-| 140 | `jdg.kks.obstruction_of_audit_art69` | 🔴 BLOCK | Art. 69 § 1-3 KKS |
+| 130 | `jdg.kks.plan42.unreliable_pkpir_art56` | 🔴 BLOCK | Art. 56 § 1-4 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 131 | `jdg.kks.plan42.unreliable_vat_evidence_art57` | 🔴 BLOCK | Art. 57 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 132 | `jdg.kks.plan42.empty_invoice_art62` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 133 | `jdg.kks.plan42.wrong_vat_rate_art64` | 🔴 BLOCK | Art. 64 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 134 | `jdg.kks.plan42.tax_return_non_filing_art77` | 🔴 BLOCK | Art. 77 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 135 | `jdg.kks.plan42.non_payment_of_tax_art79` | 🟡 TRIAGE | Art. 79 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 136 | `jdg.kks.destruction_of_documents_art68` | 🔴 BLOCK | Art. 68 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 137 | `jdg.kks.plan42.voluntary_disclosure_art16` |  | Art. 16 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 138 | `jdg.kks.criminal_statute_art44` |  | Art. 44 § 1-5 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 139 | `jdg.kks.plan42.fiscal_penalty_calculation` |  | Art. 23 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 140 | `jdg.kks.obstruction_of_audit_art69` | 🔴 BLOCK | Art. 69 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
 | 141 | `jdg.kks.plan42.aggregate_risk_score` |  | Całość KKS — reguła pomocnicza |
 
 ### `rules/kks/plan43_decomposition.rego` (21 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 200 | `jdg.kks.vd_conditions_art16_p1` |  | Art. 16 § 1 KKS |
-| 201 | `jdg.kks.vd_payment_obligation_art16_p2` | 🔴 BLOCK | Art. 16 § 2 KKS |
-| 202 | `jdg.kks.vd_incomplete_notification_art16_p3` | 🟡 TRIAGE | Art. 16 § 3 KKS |
-| 207 | `jdg.kks.vd_effect_no_penalty_art16_p8` |  | Art. 16 § 8 KKS |
-| 220 | `jdg.kks.statute_crime_5y_art20_p1` |  | Art. 20 § 1 KKS |
-| 221 | `jdg.kks.statute_misdemeanor_3y_art20_p2` |  | Art. 20 § 2 KKS |
-| 222 | `jdg.kks.statute_extension_5y_art20_p3` |  | Art. 20 § 3 KKS |
-| 223 | `jdg.kks.statute_interruption_art21_p1` |  | Art. 21 § 1 KKS |
-| 240 | `jdg.kks.tax_evasion_elements_art54_p1` | 🔴 BLOCK | Art. 54 § 1 KKS |
-| 241 | `jdg.kks.tax_evasion_significant_art54_p2` | 🔴 BLOCK | Art. 54 § 2 KKS |
-| 242 | `jdg.kks.tax_evasion_concealed_business_art54_p3` | 🔴 BLOCK | Art. 54 § 3 KKS |
-| 256 | `jdg.kks.unreliable_pkpir_systematic_art56_p2` | 🔴 BLOCK | Art. 56 § 2 KKS |
-| 257 | `jdg.kks.pkpir_fictitious_entries_art56_p3` | 🔴 BLOCK | Art. 56 § 3 KKS |
-| 302 | `jdg.kks.empty_invoice_carousel_art62_p3` | 🔴 BLOCK | Art. 62 § 2 KKS |
-| 303 | `jdg.kks.invoice_falsification_art62_p4` | 🔴 BLOCK | Art. 62 § 1 KKS |
-| 400 | `jdg.kks.declaration_non_filing_art77_p1` |  | Art. 77 § 1 KKS |
-| 401 | `jdg.kks.declaration_persistent_art77_p2` | 🔴 BLOCK | Art. 77 § 2 KKS |
-| 411 | `jdg.kks.tax_non_payment_art79_p1` |  | Art. 79 KKS |
-| 490 | `jdg.kks.fine_daily_rate_art23` |  | Art. 23 § 1-3 KKS |
-| 491 | `jdg.kks.fine_amount_range_art23_p4` |  | Art. 23 § 4 KKS |
-| 492 | `jdg.kks.imprisonment_substitute_art25` | 🔴 BLOCK | Art. 25 KKS |
+| 200 | `jdg.kks.vd_conditions_art16_p1` |  | Art. 16 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 201 | `jdg.kks.vd_payment_obligation_art16_p2` | 🔴 BLOCK | Art. 16 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 202 | `jdg.kks.vd_incomplete_notification_art16_p3` | 🟡 TRIAGE | Art. 16 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 207 | `jdg.kks.vd_effect_no_penalty_art16_p8` |  | Art. 16 § 8 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 220 | `jdg.kks.statute_crime_5y_art20_p1` |  | Art. 20 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 221 | `jdg.kks.statute_misdemeanor_3y_art20_p2` |  | Art. 20 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 222 | `jdg.kks.statute_extension_5y_art20_p3` |  | Art. 20 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 223 | `jdg.kks.statute_interruption_art21_p1` |  | Art. 21 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 240 | `jdg.kks.tax_evasion_elements_art54_p1` | 🔴 BLOCK | Art. 54 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 241 | `jdg.kks.tax_evasion_significant_art54_p2` | 🔴 BLOCK | Art. 54 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 242 | `jdg.kks.tax_evasion_concealed_business_art54_p3` | 🔴 BLOCK | Art. 54 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 256 | `jdg.kks.unreliable_pkpir_systematic_art56_p2` | 🔴 BLOCK | Art. 56 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 257 | `jdg.kks.pkpir_fictitious_entries_art56_p3` | 🔴 BLOCK | Art. 56 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 302 | `jdg.kks.empty_invoice_carousel_art62_p3` | 🔴 BLOCK | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 303 | `jdg.kks.invoice_falsification_art62_p4` | 🔴 BLOCK | Art. 62 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 400 | `jdg.kks.declaration_non_filing_art77_p1` |  | Art. 77 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 401 | `jdg.kks.declaration_persistent_art77_p2` | 🔴 BLOCK | Art. 77 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 411 | `jdg.kks.tax_non_payment_art79_p1` |  | Art. 79 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 490 | `jdg.kks.fine_daily_rate_art23` |  | Art. 23 § 1-3 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 491 | `jdg.kks.fine_amount_range_art23_p4` |  | Art. 23 § 4 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 492 | `jdg.kks.imprisonment_substitute_art25` | 🔴 BLOCK | Art. 25 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 
 ### `rules/kks/plan44_kks_conviction.rego` (2 reguł)
 
@@ -3350,7 +3353,7 @@
 |:---------:|---------|:-------:|----------------|
 | 1320 | `jdg.local_taxes.transport.tax_applicable` | 🟡 TRIAGE | Ustawa o podatkach i opłatach lokalnych, Rozdział 3 (Art. 8-... |
 
-### `rules/mdr/mdr_enterprise.rego` (17 reguł)
+### `rules/mdr/mdr_enterprise.rego` (16 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -3370,7 +3373,6 @@
 | 1963 | `jdg.mdr.enterprise.privilege_attorney` | 🟡 TRIAGE | Art. 86a § 4 OrdPU, Art. 86c OrdPU |
 | 1964 | `jdg.mdr.enterprise.retention_6years` | 🟡 TRIAGE | Art. 86m OrdPU |
 | 1965 | `jdg.mdr.enterprise.audit_trail` | 🟡 TRIAGE | Art. 86m § 2 OrdPU, Art. 86n (obowiązek dokumentowania) |
-| 1997 | `jdg.mdr.enterprise.fallback` |  | Art. 86a-86o OrdPU |
 
 ### `rules/mdr/mdr_hallmarks.rego` (20 reguł)
 
@@ -4072,198 +4074,212 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 50000 | `jdg.cb.a28.u1.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50001 | `jdg.cb.a28.u2.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50002 | `jdg.cb.a28.u3.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50003 | `jdg.cb.a29.u1.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50004 | `jdg.cb.a29.u2.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50005 | `jdg.cb.a29.u4.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50006 | `jdg.cb.a29.u5.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50007 | `jdg.cb.a30.u1.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50008 | `jdg.cb.a30.u1.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50009 | `jdg.cb.a30.u2.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50010 | `jdg.cb.a30.u3.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50011 | `jdg.cb.a30.u4.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50012 | `jdg.cb.a30.u5.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50013 | `jdg.cb.a31.u1.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50014 | `jdg.cb.a31.u2.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50015 | `jdg.cb.a31.u3.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50016 | `jdg.cb.a31.u3.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50017 | `jdg.cb.a31.u4.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50018 | `jdg.cb.a31.u4.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50019 | `jdg.cb.a31.u5.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50020 | `jdg.cb.a31.u5.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50021 | `jdg.cb.a32.u1.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50022 | `jdg.cb.a32.u2.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50023 | `jdg.cb.a32.u2.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50024 | `jdg.cb.a32.u3.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50025 | `jdg.cb.a32.u3.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50026 | `jdg.cb.a32.u4.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50027 | `jdg.cb.a32.u4.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50028 | `jdg.cb.a32.u5.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50029 | `jdg.cb.a33.u1.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50030 | `jdg.cb.a33.u1.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50031 | `jdg.cb.a33.u2.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50032 | `jdg.cb.a33.u2.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50033 | `jdg.cb.a33.u3.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50034 | `jdg.cb.a33.u3.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50035 | `jdg.cb.a33.u4.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50036 | `jdg.cb.a33.u5.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50037 | `jdg.cb.a34.u1.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50038 | `jdg.cb.a34.u1.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50039 | `jdg.cb.a34.u2.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50040 | `jdg.cb.a34.u2.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50041 | `jdg.cb.a34.u3.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50042 | `jdg.cb.a34.u4.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50043 | `jdg.cb.a34.u5.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50044 | `jdg.cb.a34.u5.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50045 | `jdg.cb.a35.u1.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50046 | `jdg.cb.a35.u1.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50047 | `jdg.cb.a35.u2.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50048 | `jdg.cb.a35.u3.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50049 | `jdg.cb.a35.u4.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50050 | `jdg.cb.a35.u4.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50051 | `jdg.cb.a35.u5.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50052 | `jdg.cb.a35.u5.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50053 | `jdg.cb.a36.u1.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50054 | `jdg.cb.a36.u2.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50055 | `jdg.cb.a36.u3.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50056 | `jdg.cb.a36.u3.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50057 | `jdg.cb.a36.u4.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50058 | `jdg.cb.a36.u4.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50059 | `jdg.cb.a36.u5.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50060 | `jdg.cb.a36.u5.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50061 | `jdg.cb.a37.u1.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50062 | `jdg.cb.a37.u2.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50063 | `jdg.cb.a37.u2.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50064 | `jdg.cb.a37.u3.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50065 | `jdg.cb.a37.u3.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50066 | `jdg.cb.a37.u4.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50067 | `jdg.cb.a37.u4.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50068 | `jdg.cb.a37.u5.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50069 | `jdg.cb.a38.u1.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50070 | `jdg.cb.a38.u1.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50071 | `jdg.cb.a38.u2.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50072 | `jdg.cb.a38.u2.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50073 | `jdg.cb.a38.u3.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50074 | `jdg.cb.a38.u3.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50075 | `jdg.cb.a38.u4.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50076 | `jdg.cb.a38.u5.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50077 | `jdg.cb.a39.u1.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50078 | `jdg.cb.a39.u1.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50079 | `jdg.cb.a39.u2.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50080 | `jdg.cb.a39.u2.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50081 | `jdg.cb.a39.u3.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50082 | `jdg.cb.a39.u4.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50083 | `jdg.cb.a39.u5.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50084 | `jdg.cb.a39.u5.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50085 | `jdg.cb.a40.u1.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50086 | `jdg.cb.a40.u1.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50087 | `jdg.cb.a40.u2.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50088 | `jdg.cb.a40.u3.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50089 | `jdg.cb.a40.u4.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50090 | `jdg.cb.a40.u4.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50091 | `jdg.cb.a40.u5.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50092 | `jdg.cb.a40.u5.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50093 | `jdg.cb.a41.u1.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50094 | `jdg.cb.a41.u2.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50095 | `jdg.cb.a41.u3.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50096 | `jdg.cb.a41.u3.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50097 | `jdg.cb.a41.u4.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50098 | `jdg.cb.a41.u4.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50099 | `jdg.cb.a41.u5.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50100 | `jdg.cb.a41.u5.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50101 | `jdg.cb.a42.u1.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50102 | `jdg.cb.a42.u2.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50103 | `jdg.cb.a42.u2.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50104 | `jdg.cb.a42.u3.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50105 | `jdg.cb.a42.u3.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50106 | `jdg.cb.a42.u4.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50107 | `jdg.cb.a42.u4.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50108 | `jdg.cb.a42.u5.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50109 | `jdg.cb.a43.u1.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50110 | `jdg.cb.a43.u2.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50111 | `jdg.cb.a43.u3.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50112 | `jdg.cb.a43.u4.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50113 | `jdg.cb.a43.u5.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50114 | `jdg.cb.a44.u1.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 50115 | `jdg.cb.a44.u2.p1` |  | Ustawa o PIT/CIT — cross-border |
-| 50116 | `jdg.cb.a44.u3.p2` |  | Ustawa o PIT/CIT — cross-border |
-| 50117 | `jdg.cb.a44.u5.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50118 | `jdg.cb.a45.u4.p3` |  | Ustawa o PIT/CIT — cross-border |
-| 50119 | `jdg.cb.a45.u5.p4` |  | Ustawa o PIT/CIT — cross-border |
-| 230023 | `jdg.micro.crossborder.a23o.r1` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230024 | `jdg.micro.crossborder.a23o.r2` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230025 | `jdg.micro.crossborder.a23o.r3` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230026 | `jdg.micro.crossborder.a23o.r4` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230027 | `jdg.micro.crossborder.a23o.r5` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230028 | `jdg.micro.crossborder.a23o.r6` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230029 | `jdg.micro.crossborder.a23o.r7` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230030 | `jdg.micro.crossborder.a23o.r8` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230031 | `jdg.micro.crossborder.a23o.r9` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230032 | `jdg.micro.crossborder.a23o.r10` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230033 | `jdg.micro.crossborder.a23zf.r1` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230034 | `jdg.micro.crossborder.a23zf.r2` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230035 | `jdg.micro.crossborder.a23zf.r3` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230036 | `jdg.micro.crossborder.a23zf.r4` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230037 | `jdg.micro.crossborder.a23zf.r5` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230038 | `jdg.micro.crossborder.a23zf.r6` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230039 | `jdg.micro.crossborder.a23zf.r7` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230040 | `jdg.micro.crossborder.a23zf.r8` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230041 | `jdg.micro.crossborder.a30da.r1` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230042 | `jdg.micro.crossborder.a30da.r2` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230043 | `jdg.micro.crossborder.a30da.r3` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230044 | `jdg.micro.crossborder.a30da.r4` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230045 | `jdg.micro.crossborder.a30da.r5` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230046 | `jdg.micro.crossborder.a30da.r6` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230047 | `jdg.micro.crossborder.a30da.r7` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230048 | `jdg.micro.crossborder.a30da.r8` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230049 | `jdg.micro.crossborder.a30da.r9` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230050 | `jdg.micro.crossborder.a30da.r10` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230051 | `jdg.micro.crossborder.a30f.r1` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230052 | `jdg.micro.crossborder.a30f.r2` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230053 | `jdg.micro.crossborder.a30f.r3` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230054 | `jdg.micro.crossborder.a30f.r4` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230055 | `jdg.micro.crossborder.a30f.r5` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230056 | `jdg.micro.crossborder.a30f.r6` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230057 | `jdg.micro.crossborder.a30f.r7` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230058 | `jdg.micro.crossborder.a30f.r8` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230059 | `jdg.micro.crossborder.a30f2.r1` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230060 | `jdg.micro.crossborder.a30f2.r2` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230061 | `jdg.micro.crossborder.a30f2.r3` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230062 | `jdg.micro.crossborder.a30f2.r4` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230063 | `jdg.micro.crossborder.a30f2.r5` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230064 | `jdg.micro.crossborder.a30f2.r6` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230065 | `jdg.micro.crossborder.a30f2.r7` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230066 | `jdg.micro.crossborder.a30f2.r8` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230067 | `jdg.micro.crossborder.a29.r1` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230068 | `jdg.micro.crossborder.a29.r2` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230069 | `jdg.micro.crossborder.a29.r3` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230070 | `jdg.micro.crossborder.a29.r4` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230071 | `jdg.micro.crossborder.a29.r5` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230072 | `jdg.micro.crossborder.a29.r6` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230073 | `jdg.micro.crossborder.a29.r7` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230074 | `jdg.micro.crossborder.a29.r8` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230075 | `jdg.micro.crossborder.a29.r9` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230076 | `jdg.micro.crossborder.a29.r10` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230077 | `jdg.micro.crossborder.a86r.r1` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230078 | `jdg.micro.crossborder.a86r.r2` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230079 | `jdg.micro.crossborder.a86r.r3` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230080 | `jdg.micro.crossborder.a86r.r4` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230081 | `jdg.micro.crossborder.a86r.r5` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230082 | `jdg.micro.crossborder.a86r.r6` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230083 | `jdg.micro.crossborder.a86r.r7` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230084 | `jdg.micro.crossborder.a86r.r8` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230085 | `jdg.micro.crossborder.a86r.r9` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230086 | `jdg.micro.crossborder.a86r.r10` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230087 | `jdg.micro.crossborder.a20.r1` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230088 | `jdg.micro.crossborder.a20.r2` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230089 | `jdg.micro.crossborder.a20.r3` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230090 | `jdg.micro.crossborder.a20.r4` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230091 | `jdg.micro.crossborder.a20.r5` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230092 | `jdg.micro.crossborder.a20.r6` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230093 | `jdg.micro.crossborder.a20.r7` |  | Dyrektywy UE, UPO, TP, CFC |
-| 230094 | `jdg.micro.crossborder.a20.r8` |  | Dyrektywy UE, UPO, TP, CFC |
+| 50000 | `jdg.cb.a28.u1.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50001 | `jdg.cb.a28.u2.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50002 | `jdg.cb.a28.u3.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50003 | `jdg.cb.a29.u1.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50004 | `jdg.cb.a29.u2.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50005 | `jdg.cb.a29.u4.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50006 | `jdg.cb.a29.u5.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50007 | `jdg.cb.a30.u1.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50008 | `jdg.cb.a30.u1.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50009 | `jdg.cb.a30.u2.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50010 | `jdg.cb.a30.u3.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50011 | `jdg.cb.a30.u4.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50012 | `jdg.cb.a30.u5.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50013 | `jdg.cb.a31.u1.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50014 | `jdg.cb.a31.u2.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50015 | `jdg.cb.a31.u3.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50016 | `jdg.cb.a31.u3.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50017 | `jdg.cb.a31.u4.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50018 | `jdg.cb.a31.u4.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50019 | `jdg.cb.a31.u5.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50020 | `jdg.cb.a31.u5.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50021 | `jdg.cb.a32.u1.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50022 | `jdg.cb.a32.u2.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50023 | `jdg.cb.a32.u2.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50024 | `jdg.cb.a32.u3.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50025 | `jdg.cb.a32.u3.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50026 | `jdg.cb.a32.u4.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50027 | `jdg.cb.a32.u4.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50028 | `jdg.cb.a32.u5.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50029 | `jdg.cb.a33.u1.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50030 | `jdg.cb.a33.u1.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50031 | `jdg.cb.a33.u2.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50032 | `jdg.cb.a33.u2.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50033 | `jdg.cb.a33.u3.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50034 | `jdg.cb.a33.u3.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50035 | `jdg.cb.a33.u4.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50036 | `jdg.cb.a33.u5.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50037 | `jdg.cb.a34.u1.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50038 | `jdg.cb.a34.u1.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50039 | `jdg.cb.a34.u2.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50040 | `jdg.cb.a34.u2.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50041 | `jdg.cb.a34.u3.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50042 | `jdg.cb.a34.u4.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50043 | `jdg.cb.a34.u5.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50044 | `jdg.cb.a34.u5.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50045 | `jdg.cb.a35.u1.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50046 | `jdg.cb.a35.u1.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50047 | `jdg.cb.a35.u2.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50048 | `jdg.cb.a35.u3.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50049 | `jdg.cb.a35.u4.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50050 | `jdg.cb.a35.u4.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50051 | `jdg.cb.a35.u5.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50052 | `jdg.cb.a35.u5.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50053 | `jdg.cb.a36.u1.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50054 | `jdg.cb.a36.u2.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50055 | `jdg.cb.a36.u3.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50056 | `jdg.cb.a36.u3.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50057 | `jdg.cb.a36.u4.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50058 | `jdg.cb.a36.u4.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50059 | `jdg.cb.a36.u5.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50060 | `jdg.cb.a36.u5.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50061 | `jdg.cb.a37.u1.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50062 | `jdg.cb.a37.u2.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50063 | `jdg.cb.a37.u2.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50064 | `jdg.cb.a37.u3.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50065 | `jdg.cb.a37.u3.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50066 | `jdg.cb.a37.u4.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50067 | `jdg.cb.a37.u4.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50068 | `jdg.cb.a37.u5.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50069 | `jdg.cb.a38.u1.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50070 | `jdg.cb.a38.u1.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50071 | `jdg.cb.a38.u2.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50072 | `jdg.cb.a38.u2.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50073 | `jdg.cb.a38.u3.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50074 | `jdg.cb.a38.u3.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50075 | `jdg.cb.a38.u4.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50076 | `jdg.cb.a38.u5.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50077 | `jdg.cb.a39.u1.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50078 | `jdg.cb.a39.u1.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50079 | `jdg.cb.a39.u2.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50080 | `jdg.cb.a39.u2.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50081 | `jdg.cb.a39.u3.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50082 | `jdg.cb.a39.u4.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50083 | `jdg.cb.a39.u5.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50084 | `jdg.cb.a39.u5.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50085 | `jdg.cb.a40.u1.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50086 | `jdg.cb.a40.u1.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50087 | `jdg.cb.a40.u2.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50088 | `jdg.cb.a40.u3.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50089 | `jdg.cb.a40.u4.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50090 | `jdg.cb.a40.u4.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50091 | `jdg.cb.a40.u5.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50092 | `jdg.cb.a40.u5.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50093 | `jdg.cb.a41.u1.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50094 | `jdg.cb.a41.u2.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50095 | `jdg.cb.a41.u3.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50096 | `jdg.cb.a41.u3.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50097 | `jdg.cb.a41.u4.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50098 | `jdg.cb.a41.u4.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50099 | `jdg.cb.a41.u5.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50100 | `jdg.cb.a41.u5.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50101 | `jdg.cb.a42.u1.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50102 | `jdg.cb.a42.u2.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50103 | `jdg.cb.a42.u2.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50104 | `jdg.cb.a42.u3.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50105 | `jdg.cb.a42.u3.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50106 | `jdg.cb.a42.u4.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50107 | `jdg.cb.a42.u4.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50108 | `jdg.cb.a42.u5.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50109 | `jdg.cb.a43.u1.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50110 | `jdg.cb.a43.u2.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50111 | `jdg.cb.a43.u3.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50112 | `jdg.cb.a43.u4.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50113 | `jdg.cb.a43.u5.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50114 | `jdg.cb.a44.u1.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50115 | `jdg.cb.a44.u2.p1` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50116 | `jdg.cb.a44.u3.p2` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50117 | `jdg.cb.a44.u5.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50118 | `jdg.cb.a45.u4.p3` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 50119 | `jdg.cb.a45.u5.p4` |  | ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób ... |
+| 230023 | `jdg.micro.crossborder.a23o.r1` |  | Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230024 | `jdg.micro.crossborder.a23o.r2` |  | Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230025 | `jdg.micro.crossborder.a23o.r3` |  | Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230026 | `jdg.micro.crossborder.a23o.r4` |  | Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230027 | `jdg.micro.crossborder.a23o.r5` |  | Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230028 | `jdg.micro.crossborder.a23o.r6` |  | Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230029 | `jdg.micro.crossborder.a23o.r7` |  | Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230030 | `jdg.micro.crossborder.a23o.r8` |  | Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230031 | `jdg.micro.crossborder.a23o.r9` |  | Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230032 | `jdg.micro.crossborder.a23o.r10` |  | Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230033 | `jdg.micro.crossborder.a23zf.r1` |  | Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230034 | `jdg.micro.crossborder.a23zf.r2` |  | Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230035 | `jdg.micro.crossborder.a23zf.r3` |  | Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230036 | `jdg.micro.crossborder.a23zf.r4` |  | Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230037 | `jdg.micro.crossborder.a23zf.r5` |  | Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230038 | `jdg.micro.crossborder.a23zf.r6` |  | Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230039 | `jdg.micro.crossborder.a23zf.r7` |  | Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230040 | `jdg.micro.crossborder.a23zf.r8` |  | Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230041 | `jdg.micro.crossborder.a30da.r1` |  | Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230042 | `jdg.micro.crossborder.a30da.r2` |  | Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230043 | `jdg.micro.crossborder.a30da.r3` |  | Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230044 | `jdg.micro.crossborder.a30da.r4` |  | Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230045 | `jdg.micro.crossborder.a30da.r5` |  | Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230046 | `jdg.micro.crossborder.a30da.r6` |  | Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230047 | `jdg.micro.crossborder.a30da.r7` |  | Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230048 | `jdg.micro.crossborder.a30da.r8` |  | Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230049 | `jdg.micro.crossborder.a30da.r9` |  | Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230050 | `jdg.micro.crossborder.a30da.r10` |  | Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230051 | `jdg.micro.crossborder.a30f.r1` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230052 | `jdg.micro.crossborder.a30f.r2` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230053 | `jdg.micro.crossborder.a30f.r3` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230054 | `jdg.micro.crossborder.a30f.r4` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230055 | `jdg.micro.crossborder.a30f.r5` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230056 | `jdg.micro.crossborder.a30f.r6` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230057 | `jdg.micro.crossborder.a30f.r7` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230058 | `jdg.micro.crossborder.a30f.r8` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230059 | `jdg.micro.crossborder.a30f2.r1` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230060 | `jdg.micro.crossborder.a30f2.r2` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230061 | `jdg.micro.crossborder.a30f2.r3` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230062 | `jdg.micro.crossborder.a30f2.r4` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230063 | `jdg.micro.crossborder.a30f2.r5` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230064 | `jdg.micro.crossborder.a30f2.r6` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230065 | `jdg.micro.crossborder.a30f2.r7` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230066 | `jdg.micro.crossborder.a30f2.r8` |  | Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230067 | `jdg.micro.crossborder.a29.r1` |  | Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 230068 | `jdg.micro.crossborder.a29.r2` |  | Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 230069 | `jdg.micro.crossborder.a29.r3` |  | Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 230070 | `jdg.micro.crossborder.a29.r4` |  | Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 230071 | `jdg.micro.crossborder.a29.r5` |  | Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 230072 | `jdg.micro.crossborder.a29.r6` |  | Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 230073 | `jdg.micro.crossborder.a29.r7` |  | Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 230074 | `jdg.micro.crossborder.a29.r8` |  | Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 230075 | `jdg.micro.crossborder.a29.r9` |  | Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 230076 | `jdg.micro.crossborder.a29.r10` |  | Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 230077 | `jdg.micro.crossborder.a86r.r1` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 230078 | `jdg.micro.crossborder.a86r.r2` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 230079 | `jdg.micro.crossborder.a86r.r3` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 230080 | `jdg.micro.crossborder.a86r.r4` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 230081 | `jdg.micro.crossborder.a86r.r5` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 230082 | `jdg.micro.crossborder.a86r.r6` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 230083 | `jdg.micro.crossborder.a86r.r7` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 230084 | `jdg.micro.crossborder.a86r.r8` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 230085 | `jdg.micro.crossborder.a86r.r9` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 230086 | `jdg.micro.crossborder.a86r.r10` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 230087 | `jdg.micro.crossborder.a20.r1` |  | Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unika... |
+| 230088 | `jdg.micro.crossborder.a20.r2` |  | Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unika... |
+| 230089 | `jdg.micro.crossborder.a20.r3` |  | Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unika... |
+| 230090 | `jdg.micro.crossborder.a20.r4` |  | Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unika... |
+| 230091 | `jdg.micro.crossborder.a20.r5` |  | Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unika... |
+| 230092 | `jdg.micro.crossborder.a20.r6` |  | Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unika... |
+| 230093 | `jdg.micro.crossborder.a20.r7` |  | Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unika... |
+| 230094 | `jdg.micro.crossborder.a20.r8` |  | Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unika... |
+
+### `rules/micro/crossborder_atomic_p12.rego` (9 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 223101 | `jdg.micro.tp.a23m.related_party` | 🟡 TRIAGE | Art. 23m ust. 1 pkt 4 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 223201 | `jdg.micro.tp.a23zf.documentation_threshold` | 🔴 BLOCK | Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 223202 | `jdg.micro.tp.a23zb.sanction_risk` | 🔴 BLOCK | Art. 23zb ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 230001 | `jdg.micro.residency.a3.tracker` | 🟡 TRIAGE | Art. 3 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 230101 | `jdg.micro.cfc.a30f.classifier` | 🔴 BLOCK | Art. 30f ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 230101 | `jdg.micro.wht.a30a.rate` | 🟡 TRIAGE | Art. 30a ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 230301 | `jdg.micro.exit_tax.a30da.calculator` | 🔴 BLOCK | Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowy... |
+| 231401 | `jdg.micro.fx.a14.fx_difference` |  | Art. 14 ust. 2c ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 286101 | `jdg.micro.mdr.a86a.scorer` | 🔴 BLOCK | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
 
 ### `rules/micro/jpk/jpk.rego` (35 reguł)
 
@@ -4309,479 +4325,496 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 50000 | `jdg.kks.a62.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50001 | `jdg.kks.a70.u1.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50002 | `jdg.kks.a70.u2.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50003 | `jdg.kks.a71.u1.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50004 | `jdg.kks.a71.u3.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50005 | `jdg.kks.a71.u4.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50006 | `jdg.kks.a71.u5.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50007 | `jdg.kks.a72.u2.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50008 | `jdg.kks.a72.u3.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50009 | `jdg.kks.a72.u4.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50010 | `jdg.kks.a72.u5.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50011 | `jdg.kks.a73.u1.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50012 | `jdg.kks.a73.u2.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50013 | `jdg.kks.a73.u3.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50014 | `jdg.kks.a73.u4.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50015 | `jdg.kks.a74.u1.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50016 | `jdg.kks.a74.u2.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50017 | `jdg.kks.a74.u3.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50018 | `jdg.kks.a74.u5.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50019 | `jdg.kks.a75.u1.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50020 | `jdg.kks.a75.u2.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50021 | `jdg.kks.a75.u4.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50022 | `jdg.kks.a75.u5.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50023 | `jdg.kks.a76.u1.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50024 | `jdg.kks.a76.u3.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50025 | `jdg.kks.a76.u4.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50026 | `jdg.kks.a76.u5.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50027 | `jdg.kks.a77.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50028 | `jdg.kks.a77.u2.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50029 | `jdg.kks.a77.u3.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50030 | `jdg.kks.a77.u4.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50031 | `jdg.kks.a77.u5.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50032 | `jdg.kks.a78.u1.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50033 | `jdg.kks.a78.u2.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50034 | `jdg.kks.a78.u3.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50035 | `jdg.kks.a78.u4.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50036 | `jdg.kks.a79.u1.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50037 | `jdg.kks.a79.u2.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50038 | `jdg.kks.a79.u3.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50039 | `jdg.kks.a79.u5.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50040 | `jdg.kks.a80.u1.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50041 | `jdg.kks.a80.u2.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50042 | `jdg.kks.a80.u4.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50043 | `jdg.kks.a80.u5.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50044 | `jdg.kks.a81.u1.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50045 | `jdg.kks.a81.u3.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50046 | `jdg.kks.a81.u4.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50047 | `jdg.kks.a81.u5.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50048 | `jdg.kks.a82.u2.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50049 | `jdg.kks.a82.u3.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50050 | `jdg.kks.a82.u4.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50051 | `jdg.kks.a82.u5.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50052 | `jdg.kks.a83.u1.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50053 | `jdg.kks.a83.u2.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50054 | `jdg.kks.a83.u3.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50055 | `jdg.kks.a83.u4.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50056 | `jdg.kks.a84.u1.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50057 | `jdg.kks.a84.u2.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50058 | `jdg.kks.a84.u3.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50059 | `jdg.kks.a84.u5.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50060 | `jdg.kks.a85.u1.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50061 | `jdg.kks.a85.u2.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50062 | `jdg.kks.a85.u4.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50063 | `jdg.kks.a85.u5.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50064 | `jdg.kks.a86.u1.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50065 | `jdg.kks.a86.u3.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50066 | `jdg.kks.a86.u4.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50067 | `jdg.kks.a86.u5.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50068 | `jdg.kks.a87.u2.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50069 | `jdg.kks.a87.u3.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50070 | `jdg.kks.a87.u4.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50071 | `jdg.kks.a87.u5.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50072 | `jdg.kks.a88.u1.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50073 | `jdg.kks.a88.u2.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50074 | `jdg.kks.a88.u3.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50075 | `jdg.kks.a88.u4.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50076 | `jdg.kks.a89.u1.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50077 | `jdg.kks.a89.u2.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50078 | `jdg.kks.a89.u3.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50079 | `jdg.kks.a89.u5.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50080 | `jdg.kks.a90.u1.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50081 | `jdg.kks.a90.u2.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50082 | `jdg.kks.a90.u4.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50083 | `jdg.kks.a90.u5.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50084 | `jdg.kks.a91.u1.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50085 | `jdg.kks.a91.u3.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50086 | `jdg.kks.a91.u4.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50087 | `jdg.kks.a91.u5.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50088 | `jdg.kks.a92.u2.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50089 | `jdg.kks.a92.u3.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50090 | `jdg.kks.a92.u4.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50091 | `jdg.kks.a92.u5.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50092 | `jdg.kks.a93.u1.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50093 | `jdg.kks.a93.u2.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50094 | `jdg.kks.a93.u3.p1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50095 | `jdg.kks.a93.u4.p2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50096 | `jdg.kks.a94.u1.p4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 50097 | `jdg.kks.a94.u5.p3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80016 | `jdg.micro.kks.a16.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80017 | `jdg.micro.kks.a16.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80018 | `jdg.micro.kks.a16.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80019 | `jdg.micro.kks.a16.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80020 | `jdg.micro.kks.a16.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80021 | `jdg.micro.kks.a16.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80022 | `jdg.micro.kks.a16.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80023 | `jdg.micro.kks.a16.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80024 | `jdg.micro.kks.a16.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80025 | `jdg.micro.kks.a16.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80026 | `jdg.micro.kks.a16.r11` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80027 | `jdg.micro.kks.a16.r12` | 🔴 BLOCK | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80028 | `jdg.micro.kks.a20.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80029 | `jdg.micro.kks.a20.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80030 | `jdg.micro.kks.a20.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80031 | `jdg.micro.kks.a20.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80032 | `jdg.micro.kks.a20.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80033 | `jdg.micro.kks.a20.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80034 | `jdg.micro.kks.a20.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80035 | `jdg.micro.kks.a20.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80036 | `jdg.micro.kks.a21.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80037 | `jdg.micro.kks.a21.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80038 | `jdg.micro.kks.a21.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80039 | `jdg.micro.kks.a21.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80040 | `jdg.micro.kks.a21.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80041 | `jdg.micro.kks.a21.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80042 | `jdg.micro.kks.a21.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80043 | `jdg.micro.kks.a21.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80044 | `jdg.micro.kks.a54.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80045 | `jdg.micro.kks.a54.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80046 | `jdg.micro.kks.a54.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80047 | `jdg.micro.kks.a54.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80048 | `jdg.micro.kks.a54.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80049 | `jdg.micro.kks.a54.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80050 | `jdg.micro.kks.a54.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80051 | `jdg.micro.kks.a54.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80052 | `jdg.micro.kks.a54.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80053 | `jdg.micro.kks.a54.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80054 | `jdg.micro.kks.a54.r11` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80055 | `jdg.micro.kks.a54.r12` | 🔴 BLOCK | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80056 | `jdg.micro.kks.a54.r13` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80057 | `jdg.micro.kks.a54.r14` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80058 | `jdg.micro.kks.a54.r15` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80059 | `jdg.micro.kks.a55.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80060 | `jdg.micro.kks.a55.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80061 | `jdg.micro.kks.a55.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80062 | `jdg.micro.kks.a55.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80063 | `jdg.micro.kks.a55.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80064 | `jdg.micro.kks.a55.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80065 | `jdg.micro.kks.a55.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80066 | `jdg.micro.kks.a55.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80067 | `jdg.micro.kks.a55.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80068 | `jdg.micro.kks.a55.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80069 | `jdg.micro.kks.a55.r11` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80070 | `jdg.micro.kks.a55.r12` | 🔴 BLOCK | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80071 | `jdg.micro.kks.a56.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80072 | `jdg.micro.kks.a56.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80073 | `jdg.micro.kks.a56.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80074 | `jdg.micro.kks.a56.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80075 | `jdg.micro.kks.a56.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80076 | `jdg.micro.kks.a56.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80077 | `jdg.micro.kks.a56.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80078 | `jdg.micro.kks.a56.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80079 | `jdg.micro.kks.a56.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80080 | `jdg.micro.kks.a56.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80081 | `jdg.micro.kks.a56.r11` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80082 | `jdg.micro.kks.a56.r12` | 🔴 BLOCK | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80083 | `jdg.micro.kks.a56.r13` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80084 | `jdg.micro.kks.a56.r14` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80085 | `jdg.micro.kks.a56.r15` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80086 | `jdg.micro.kks.a57.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80087 | `jdg.micro.kks.a57.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80088 | `jdg.micro.kks.a57.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80089 | `jdg.micro.kks.a57.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80090 | `jdg.micro.kks.a57.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80091 | `jdg.micro.kks.a57.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80092 | `jdg.micro.kks.a57.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80093 | `jdg.micro.kks.a57.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80094 | `jdg.micro.kks.a57.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80095 | `jdg.micro.kks.a57.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80096 | `jdg.micro.kks.a57.r11` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80097 | `jdg.micro.kks.a57.r12` | 🔴 BLOCK | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80098 | `jdg.micro.kks.a58.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80099 | `jdg.micro.kks.a58.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80100 | `jdg.micro.kks.a58.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80101 | `jdg.micro.kks.a58.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80102 | `jdg.micro.kks.a58.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80103 | `jdg.micro.kks.a58.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80104 | `jdg.micro.kks.a58.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80105 | `jdg.micro.kks.a58.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80106 | `jdg.micro.kks.a58.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80107 | `jdg.micro.kks.a58.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80108 | `jdg.micro.kks.a59.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80109 | `jdg.micro.kks.a59.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80110 | `jdg.micro.kks.a59.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80111 | `jdg.micro.kks.a59.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80112 | `jdg.micro.kks.a59.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80113 | `jdg.micro.kks.a59.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80114 | `jdg.micro.kks.a59.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80115 | `jdg.micro.kks.a59.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80116 | `jdg.micro.kks.a59.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80117 | `jdg.micro.kks.a59.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80118 | `jdg.micro.kks.a60.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80119 | `jdg.micro.kks.a60.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80120 | `jdg.micro.kks.a60.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80121 | `jdg.micro.kks.a60.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80122 | `jdg.micro.kks.a60.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80123 | `jdg.micro.kks.a60.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80124 | `jdg.micro.kks.a60.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80125 | `jdg.micro.kks.a60.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80126 | `jdg.micro.kks.a60.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80127 | `jdg.micro.kks.a60.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80128 | `jdg.micro.kks.a61.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80129 | `jdg.micro.kks.a61.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80130 | `jdg.micro.kks.a61.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80131 | `jdg.micro.kks.a61.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80132 | `jdg.micro.kks.a61.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80133 | `jdg.micro.kks.a61.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80134 | `jdg.micro.kks.a61.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80135 | `jdg.micro.kks.a61.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80136 | `jdg.micro.kks.a61.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80137 | `jdg.micro.kks.a61.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80138 | `jdg.micro.kks.a62.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80139 | `jdg.micro.kks.a62.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80140 | `jdg.micro.kks.a62.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80141 | `jdg.micro.kks.a62.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80142 | `jdg.micro.kks.a62.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80143 | `jdg.micro.kks.a62.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80144 | `jdg.micro.kks.a62.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80145 | `jdg.micro.kks.a62.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80146 | `jdg.micro.kks.a62.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80147 | `jdg.micro.kks.a62.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80148 | `jdg.micro.kks.a62.r11` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80149 | `jdg.micro.kks.a62.r12` | 🔴 BLOCK | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80150 | `jdg.micro.kks.a62.r13` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80151 | `jdg.micro.kks.a62.r14` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80152 | `jdg.micro.kks.a62.r15` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80153 | `jdg.micro.kks.a63.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80154 | `jdg.micro.kks.a63.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80155 | `jdg.micro.kks.a63.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80156 | `jdg.micro.kks.a63.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80157 | `jdg.micro.kks.a63.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80158 | `jdg.micro.kks.a63.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80159 | `jdg.micro.kks.a63.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80160 | `jdg.micro.kks.a63.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80161 | `jdg.micro.kks.a63.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80162 | `jdg.micro.kks.a63.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80163 | `jdg.micro.kks.a64.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80164 | `jdg.micro.kks.a64.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80165 | `jdg.micro.kks.a64.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80166 | `jdg.micro.kks.a64.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80167 | `jdg.micro.kks.a64.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80168 | `jdg.micro.kks.a64.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80169 | `jdg.micro.kks.a64.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80170 | `jdg.micro.kks.a64.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80171 | `jdg.micro.kks.a64.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80172 | `jdg.micro.kks.a64.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80173 | `jdg.micro.kks.a65.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80174 | `jdg.micro.kks.a65.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80175 | `jdg.micro.kks.a65.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80176 | `jdg.micro.kks.a65.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80177 | `jdg.micro.kks.a65.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80178 | `jdg.micro.kks.a65.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80179 | `jdg.micro.kks.a65.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80180 | `jdg.micro.kks.a65.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80181 | `jdg.micro.kks.a65.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80182 | `jdg.micro.kks.a65.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80183 | `jdg.micro.kks.a66.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80184 | `jdg.micro.kks.a66.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80185 | `jdg.micro.kks.a66.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80186 | `jdg.micro.kks.a66.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80187 | `jdg.micro.kks.a66.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80188 | `jdg.micro.kks.a66.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80189 | `jdg.micro.kks.a66.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80190 | `jdg.micro.kks.a66.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80191 | `jdg.micro.kks.a66.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80192 | `jdg.micro.kks.a66.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80193 | `jdg.micro.kks.a67.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80194 | `jdg.micro.kks.a67.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80195 | `jdg.micro.kks.a67.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80196 | `jdg.micro.kks.a67.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80197 | `jdg.micro.kks.a67.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80198 | `jdg.micro.kks.a67.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80199 | `jdg.micro.kks.a67.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80200 | `jdg.micro.kks.a67.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80201 | `jdg.micro.kks.a67.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80202 | `jdg.micro.kks.a67.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80203 | `jdg.micro.kks.a68.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80204 | `jdg.micro.kks.a68.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80205 | `jdg.micro.kks.a68.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80206 | `jdg.micro.kks.a68.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80207 | `jdg.micro.kks.a68.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80208 | `jdg.micro.kks.a68.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80209 | `jdg.micro.kks.a68.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80210 | `jdg.micro.kks.a68.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80211 | `jdg.micro.kks.a68.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80212 | `jdg.micro.kks.a68.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80213 | `jdg.micro.kks.a69.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80214 | `jdg.micro.kks.a69.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80215 | `jdg.micro.kks.a69.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80216 | `jdg.micro.kks.a69.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80217 | `jdg.micro.kks.a69.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80218 | `jdg.micro.kks.a69.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80219 | `jdg.micro.kks.a69.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80220 | `jdg.micro.kks.a69.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80221 | `jdg.micro.kks.a69.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80222 | `jdg.micro.kks.a69.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80223 | `jdg.micro.kks.a70.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80224 | `jdg.micro.kks.a70.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80225 | `jdg.micro.kks.a70.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80226 | `jdg.micro.kks.a70.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80227 | `jdg.micro.kks.a70.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80228 | `jdg.micro.kks.a70.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80229 | `jdg.micro.kks.a70.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80230 | `jdg.micro.kks.a70.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80231 | `jdg.micro.kks.a70.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80232 | `jdg.micro.kks.a70.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80233 | `jdg.micro.kks.a71.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80234 | `jdg.micro.kks.a71.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80235 | `jdg.micro.kks.a71.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80236 | `jdg.micro.kks.a71.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80237 | `jdg.micro.kks.a71.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80238 | `jdg.micro.kks.a71.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80239 | `jdg.micro.kks.a71.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80240 | `jdg.micro.kks.a71.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80241 | `jdg.micro.kks.a71.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80242 | `jdg.micro.kks.a71.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80243 | `jdg.micro.kks.a72.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80244 | `jdg.micro.kks.a72.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80245 | `jdg.micro.kks.a72.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80246 | `jdg.micro.kks.a72.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80247 | `jdg.micro.kks.a72.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80248 | `jdg.micro.kks.a72.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80249 | `jdg.micro.kks.a72.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80250 | `jdg.micro.kks.a72.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80251 | `jdg.micro.kks.a72.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80252 | `jdg.micro.kks.a72.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80253 | `jdg.micro.kks.a73.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80254 | `jdg.micro.kks.a73.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80255 | `jdg.micro.kks.a73.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80256 | `jdg.micro.kks.a73.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80257 | `jdg.micro.kks.a73.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80258 | `jdg.micro.kks.a73.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80259 | `jdg.micro.kks.a73.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80260 | `jdg.micro.kks.a73.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80261 | `jdg.micro.kks.a73.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80262 | `jdg.micro.kks.a73.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80263 | `jdg.micro.kks.a74.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80264 | `jdg.micro.kks.a74.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80265 | `jdg.micro.kks.a74.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80266 | `jdg.micro.kks.a74.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80267 | `jdg.micro.kks.a74.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80268 | `jdg.micro.kks.a74.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80269 | `jdg.micro.kks.a74.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80270 | `jdg.micro.kks.a74.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80271 | `jdg.micro.kks.a74.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80272 | `jdg.micro.kks.a74.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80273 | `jdg.micro.kks.a75.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80274 | `jdg.micro.kks.a75.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80275 | `jdg.micro.kks.a75.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80276 | `jdg.micro.kks.a75.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80277 | `jdg.micro.kks.a75.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80278 | `jdg.micro.kks.a75.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80279 | `jdg.micro.kks.a75.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80280 | `jdg.micro.kks.a75.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80281 | `jdg.micro.kks.a75.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80282 | `jdg.micro.kks.a75.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80283 | `jdg.micro.kks.a76.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80284 | `jdg.micro.kks.a76.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80285 | `jdg.micro.kks.a76.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80286 | `jdg.micro.kks.a76.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80287 | `jdg.micro.kks.a76.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80288 | `jdg.micro.kks.a76.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80289 | `jdg.micro.kks.a76.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80290 | `jdg.micro.kks.a76.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80291 | `jdg.micro.kks.a76.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80292 | `jdg.micro.kks.a76.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80293 | `jdg.micro.kks.a77.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80294 | `jdg.micro.kks.a77.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80295 | `jdg.micro.kks.a77.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80296 | `jdg.micro.kks.a77.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80297 | `jdg.micro.kks.a77.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80298 | `jdg.micro.kks.a77.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80299 | `jdg.micro.kks.a77.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80300 | `jdg.micro.kks.a77.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80301 | `jdg.micro.kks.a77.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80302 | `jdg.micro.kks.a77.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80303 | `jdg.micro.kks.a77.r11` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80304 | `jdg.micro.kks.a77.r12` | 🔴 BLOCK | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80305 | `jdg.micro.kks.a78.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80306 | `jdg.micro.kks.a78.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80307 | `jdg.micro.kks.a78.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80308 | `jdg.micro.kks.a78.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80309 | `jdg.micro.kks.a78.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80310 | `jdg.micro.kks.a78.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80311 | `jdg.micro.kks.a78.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80312 | `jdg.micro.kks.a78.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80313 | `jdg.micro.kks.a78.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80314 | `jdg.micro.kks.a78.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80315 | `jdg.micro.kks.a79.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80316 | `jdg.micro.kks.a79.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80317 | `jdg.micro.kks.a79.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80318 | `jdg.micro.kks.a79.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80319 | `jdg.micro.kks.a79.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80320 | `jdg.micro.kks.a79.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80321 | `jdg.micro.kks.a79.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80322 | `jdg.micro.kks.a79.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80323 | `jdg.micro.kks.a79.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80324 | `jdg.micro.kks.a79.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80325 | `jdg.micro.kks.a80.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80326 | `jdg.micro.kks.a80.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80327 | `jdg.micro.kks.a80.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80328 | `jdg.micro.kks.a80.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80329 | `jdg.micro.kks.a80.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80330 | `jdg.micro.kks.a80.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80331 | `jdg.micro.kks.a80.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80332 | `jdg.micro.kks.a80.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80333 | `jdg.micro.kks.a80.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80334 | `jdg.micro.kks.a80.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80335 | `jdg.micro.kks.a80.r11` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80336 | `jdg.micro.kks.a80.r12` | 🔴 BLOCK | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80337 | `jdg.micro.kks.a81.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80338 | `jdg.micro.kks.a81.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80339 | `jdg.micro.kks.a81.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80340 | `jdg.micro.kks.a81.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80341 | `jdg.micro.kks.a81.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80342 | `jdg.micro.kks.a81.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80343 | `jdg.micro.kks.a81.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80344 | `jdg.micro.kks.a81.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80345 | `jdg.micro.kks.a81.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80346 | `jdg.micro.kks.a81.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80347 | `jdg.micro.kks.a82.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80348 | `jdg.micro.kks.a82.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80349 | `jdg.micro.kks.a82.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80350 | `jdg.micro.kks.a82.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80351 | `jdg.micro.kks.a82.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80352 | `jdg.micro.kks.a82.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80353 | `jdg.micro.kks.a82.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80354 | `jdg.micro.kks.a82.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80355 | `jdg.micro.kks.a82.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80356 | `jdg.micro.kks.a82.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80357 | `jdg.micro.kks.a83.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80358 | `jdg.micro.kks.a83.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80359 | `jdg.micro.kks.a83.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80360 | `jdg.micro.kks.a83.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80361 | `jdg.micro.kks.a83.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80362 | `jdg.micro.kks.a83.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80363 | `jdg.micro.kks.a83.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80364 | `jdg.micro.kks.a83.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80365 | `jdg.micro.kks.a83.r9` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80366 | `jdg.micro.kks.a83.r10` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80367 | `jdg.micro.kks.a85.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80368 | `jdg.micro.kks.a85.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80369 | `jdg.micro.kks.a85.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80370 | `jdg.micro.kks.a85.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80371 | `jdg.micro.kks.a85.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80372 | `jdg.micro.kks.a85.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80373 | `jdg.micro.kks.a85.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80374 | `jdg.micro.kks.a85.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80375 | `jdg.micro.kks.a86.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80376 | `jdg.micro.kks.a86.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80377 | `jdg.micro.kks.a86.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80378 | `jdg.micro.kks.a86.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80379 | `jdg.micro.kks.a86.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80380 | `jdg.micro.kks.a86.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80381 | `jdg.micro.kks.a86.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80382 | `jdg.micro.kks.a86.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80383 | `jdg.micro.kks.a87.r1` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80384 | `jdg.micro.kks.a87.r2` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80385 | `jdg.micro.kks.a87.r3` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80386 | `jdg.micro.kks.a87.r4` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80387 | `jdg.micro.kks.a87.r5` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80388 | `jdg.micro.kks.a87.r6` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80389 | `jdg.micro.kks.a87.r7` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
-| 80390 | `jdg.micro.kks.a87.r8` |  | Kodeks Karny Skarbowy z 10.09.1999 (Dz.U. 1999 nr 83 poz. 93... |
+| 50000 | `jdg.kks.a62.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50001 | `jdg.kks.a70.u1.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50002 | `jdg.kks.a70.u2.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50003 | `jdg.kks.a71.u1.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50004 | `jdg.kks.a71.u3.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50005 | `jdg.kks.a71.u4.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50006 | `jdg.kks.a71.u5.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50007 | `jdg.kks.a72.u2.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50008 | `jdg.kks.a72.u3.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50009 | `jdg.kks.a72.u4.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50010 | `jdg.kks.a72.u5.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50011 | `jdg.kks.a73.u1.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50012 | `jdg.kks.a73.u2.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50013 | `jdg.kks.a73.u3.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50014 | `jdg.kks.a73.u4.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50015 | `jdg.kks.a74.u1.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50016 | `jdg.kks.a74.u2.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50017 | `jdg.kks.a74.u3.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50018 | `jdg.kks.a74.u5.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50019 | `jdg.kks.a75.u1.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50020 | `jdg.kks.a75.u2.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50021 | `jdg.kks.a75.u4.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50022 | `jdg.kks.a75.u5.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50023 | `jdg.kks.a76.u1.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50024 | `jdg.kks.a76.u3.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50025 | `jdg.kks.a76.u4.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50026 | `jdg.kks.a76.u5.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50027 | `jdg.kks.a77.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50028 | `jdg.kks.a77.u2.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50029 | `jdg.kks.a77.u3.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50030 | `jdg.kks.a77.u4.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50031 | `jdg.kks.a77.u5.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50032 | `jdg.kks.a78.u1.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50033 | `jdg.kks.a78.u2.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50034 | `jdg.kks.a78.u3.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50035 | `jdg.kks.a78.u4.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50036 | `jdg.kks.a79.u1.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50037 | `jdg.kks.a79.u2.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50038 | `jdg.kks.a79.u3.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50039 | `jdg.kks.a79.u5.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50040 | `jdg.kks.a80.u1.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50041 | `jdg.kks.a80.u2.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50042 | `jdg.kks.a80.u4.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50043 | `jdg.kks.a80.u5.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50044 | `jdg.kks.a81.u1.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50045 | `jdg.kks.a81.u3.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50046 | `jdg.kks.a81.u4.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50047 | `jdg.kks.a81.u5.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50048 | `jdg.kks.a82.u2.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50049 | `jdg.kks.a82.u3.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50050 | `jdg.kks.a82.u4.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50051 | `jdg.kks.a82.u5.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50052 | `jdg.kks.a83.u1.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50053 | `jdg.kks.a83.u2.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50054 | `jdg.kks.a83.u3.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50055 | `jdg.kks.a83.u4.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50056 | `jdg.kks.a84.u1.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50057 | `jdg.kks.a84.u2.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50058 | `jdg.kks.a84.u3.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50059 | `jdg.kks.a84.u5.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50060 | `jdg.kks.a85.u1.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50061 | `jdg.kks.a85.u2.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50062 | `jdg.kks.a85.u4.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50063 | `jdg.kks.a85.u5.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50064 | `jdg.kks.a86.u1.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50065 | `jdg.kks.a86.u3.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50066 | `jdg.kks.a86.u4.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50067 | `jdg.kks.a86.u5.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50068 | `jdg.kks.a87.u2.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50069 | `jdg.kks.a87.u3.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50070 | `jdg.kks.a87.u4.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50071 | `jdg.kks.a87.u5.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50072 | `jdg.kks.a88.u1.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50073 | `jdg.kks.a88.u2.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50074 | `jdg.kks.a88.u3.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50075 | `jdg.kks.a88.u4.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50076 | `jdg.kks.a89.u1.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50077 | `jdg.kks.a89.u2.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50078 | `jdg.kks.a89.u3.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50079 | `jdg.kks.a89.u5.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50080 | `jdg.kks.a90.u1.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50081 | `jdg.kks.a90.u2.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50082 | `jdg.kks.a90.u4.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50083 | `jdg.kks.a90.u5.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50084 | `jdg.kks.a91.u1.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50085 | `jdg.kks.a91.u3.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50086 | `jdg.kks.a91.u4.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50087 | `jdg.kks.a91.u5.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50088 | `jdg.kks.a92.u2.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50089 | `jdg.kks.a92.u3.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50090 | `jdg.kks.a92.u4.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50091 | `jdg.kks.a92.u5.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50092 | `jdg.kks.a93.u1.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50093 | `jdg.kks.a93.u2.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50094 | `jdg.kks.a93.u3.p1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50095 | `jdg.kks.a93.u4.p2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50096 | `jdg.kks.a94.u1.p4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 50097 | `jdg.kks.a94.u5.p3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80016 | `jdg.micro.kks.a16.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80017 | `jdg.micro.kks.a16.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80018 | `jdg.micro.kks.a16.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80019 | `jdg.micro.kks.a16.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80020 | `jdg.micro.kks.a16.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80021 | `jdg.micro.kks.a16.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80022 | `jdg.micro.kks.a16.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80023 | `jdg.micro.kks.a16.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80024 | `jdg.micro.kks.a16.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80025 | `jdg.micro.kks.a16.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80026 | `jdg.micro.kks.a16.r11` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80027 | `jdg.micro.kks.a16.r12` | 🔴 BLOCK | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80028 | `jdg.micro.kks.a20.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80029 | `jdg.micro.kks.a20.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80030 | `jdg.micro.kks.a20.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80031 | `jdg.micro.kks.a20.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80032 | `jdg.micro.kks.a20.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80033 | `jdg.micro.kks.a20.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80034 | `jdg.micro.kks.a20.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80035 | `jdg.micro.kks.a20.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80036 | `jdg.micro.kks.a21.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80037 | `jdg.micro.kks.a21.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80038 | `jdg.micro.kks.a21.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80039 | `jdg.micro.kks.a21.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80040 | `jdg.micro.kks.a21.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80041 | `jdg.micro.kks.a21.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80042 | `jdg.micro.kks.a21.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80043 | `jdg.micro.kks.a21.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80044 | `jdg.micro.kks.a54.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80045 | `jdg.micro.kks.a54.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80046 | `jdg.micro.kks.a54.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80047 | `jdg.micro.kks.a54.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80048 | `jdg.micro.kks.a54.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80049 | `jdg.micro.kks.a54.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80050 | `jdg.micro.kks.a54.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80051 | `jdg.micro.kks.a54.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80052 | `jdg.micro.kks.a54.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80053 | `jdg.micro.kks.a54.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80054 | `jdg.micro.kks.a54.r11` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80055 | `jdg.micro.kks.a54.r12` | 🔴 BLOCK | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80056 | `jdg.micro.kks.a54.r13` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80057 | `jdg.micro.kks.a54.r14` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80058 | `jdg.micro.kks.a54.r15` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80059 | `jdg.micro.kks.a55.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80060 | `jdg.micro.kks.a55.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80061 | `jdg.micro.kks.a55.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80062 | `jdg.micro.kks.a55.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80063 | `jdg.micro.kks.a55.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80064 | `jdg.micro.kks.a55.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80065 | `jdg.micro.kks.a55.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80066 | `jdg.micro.kks.a55.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80067 | `jdg.micro.kks.a55.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80068 | `jdg.micro.kks.a55.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80069 | `jdg.micro.kks.a55.r11` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80070 | `jdg.micro.kks.a55.r12` | 🔴 BLOCK | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80071 | `jdg.micro.kks.a56.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80072 | `jdg.micro.kks.a56.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80073 | `jdg.micro.kks.a56.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80074 | `jdg.micro.kks.a56.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80075 | `jdg.micro.kks.a56.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80076 | `jdg.micro.kks.a56.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80077 | `jdg.micro.kks.a56.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80078 | `jdg.micro.kks.a56.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80079 | `jdg.micro.kks.a56.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80080 | `jdg.micro.kks.a56.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80081 | `jdg.micro.kks.a56.r11` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80082 | `jdg.micro.kks.a56.r12` | 🔴 BLOCK | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80083 | `jdg.micro.kks.a56.r13` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80084 | `jdg.micro.kks.a56.r14` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80085 | `jdg.micro.kks.a56.r15` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80086 | `jdg.micro.kks.a57.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80087 | `jdg.micro.kks.a57.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80088 | `jdg.micro.kks.a57.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80089 | `jdg.micro.kks.a57.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80090 | `jdg.micro.kks.a57.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80091 | `jdg.micro.kks.a57.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80092 | `jdg.micro.kks.a57.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80093 | `jdg.micro.kks.a57.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80094 | `jdg.micro.kks.a57.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80095 | `jdg.micro.kks.a57.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80096 | `jdg.micro.kks.a57.r11` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80097 | `jdg.micro.kks.a57.r12` | 🔴 BLOCK | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80098 | `jdg.micro.kks.a58.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80099 | `jdg.micro.kks.a58.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80100 | `jdg.micro.kks.a58.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80101 | `jdg.micro.kks.a58.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80102 | `jdg.micro.kks.a58.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80103 | `jdg.micro.kks.a58.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80104 | `jdg.micro.kks.a58.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80105 | `jdg.micro.kks.a58.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80106 | `jdg.micro.kks.a58.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80107 | `jdg.micro.kks.a58.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80108 | `jdg.micro.kks.a59.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80109 | `jdg.micro.kks.a59.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80110 | `jdg.micro.kks.a59.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80111 | `jdg.micro.kks.a59.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80112 | `jdg.micro.kks.a59.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80113 | `jdg.micro.kks.a59.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80114 | `jdg.micro.kks.a59.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80115 | `jdg.micro.kks.a59.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80116 | `jdg.micro.kks.a59.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80117 | `jdg.micro.kks.a59.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80118 | `jdg.micro.kks.a60.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80119 | `jdg.micro.kks.a60.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80120 | `jdg.micro.kks.a60.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80121 | `jdg.micro.kks.a60.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80122 | `jdg.micro.kks.a60.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80123 | `jdg.micro.kks.a60.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80124 | `jdg.micro.kks.a60.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80125 | `jdg.micro.kks.a60.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80126 | `jdg.micro.kks.a60.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80127 | `jdg.micro.kks.a60.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80128 | `jdg.micro.kks.a61.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80129 | `jdg.micro.kks.a61.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80130 | `jdg.micro.kks.a61.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80131 | `jdg.micro.kks.a61.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80132 | `jdg.micro.kks.a61.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80133 | `jdg.micro.kks.a61.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80134 | `jdg.micro.kks.a61.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80135 | `jdg.micro.kks.a61.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80136 | `jdg.micro.kks.a61.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80137 | `jdg.micro.kks.a61.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80138 | `jdg.micro.kks.a62.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80139 | `jdg.micro.kks.a62.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80140 | `jdg.micro.kks.a62.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80141 | `jdg.micro.kks.a62.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80142 | `jdg.micro.kks.a62.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80143 | `jdg.micro.kks.a62.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80144 | `jdg.micro.kks.a62.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80145 | `jdg.micro.kks.a62.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80146 | `jdg.micro.kks.a62.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80147 | `jdg.micro.kks.a62.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80148 | `jdg.micro.kks.a62.r11` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80149 | `jdg.micro.kks.a62.r12` | 🔴 BLOCK | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80150 | `jdg.micro.kks.a62.r13` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80151 | `jdg.micro.kks.a62.r14` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80152 | `jdg.micro.kks.a62.r15` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80153 | `jdg.micro.kks.a63.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80154 | `jdg.micro.kks.a63.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80155 | `jdg.micro.kks.a63.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80156 | `jdg.micro.kks.a63.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80157 | `jdg.micro.kks.a63.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80158 | `jdg.micro.kks.a63.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80159 | `jdg.micro.kks.a63.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80160 | `jdg.micro.kks.a63.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80161 | `jdg.micro.kks.a63.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80162 | `jdg.micro.kks.a63.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80163 | `jdg.micro.kks.a64.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80164 | `jdg.micro.kks.a64.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80165 | `jdg.micro.kks.a64.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80166 | `jdg.micro.kks.a64.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80167 | `jdg.micro.kks.a64.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80168 | `jdg.micro.kks.a64.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80169 | `jdg.micro.kks.a64.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80170 | `jdg.micro.kks.a64.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80171 | `jdg.micro.kks.a64.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80172 | `jdg.micro.kks.a64.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80173 | `jdg.micro.kks.a65.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80174 | `jdg.micro.kks.a65.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80175 | `jdg.micro.kks.a65.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80176 | `jdg.micro.kks.a65.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80177 | `jdg.micro.kks.a65.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80178 | `jdg.micro.kks.a65.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80179 | `jdg.micro.kks.a65.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80180 | `jdg.micro.kks.a65.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80181 | `jdg.micro.kks.a65.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80182 | `jdg.micro.kks.a65.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80183 | `jdg.micro.kks.a66.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80184 | `jdg.micro.kks.a66.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80185 | `jdg.micro.kks.a66.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80186 | `jdg.micro.kks.a66.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80187 | `jdg.micro.kks.a66.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80188 | `jdg.micro.kks.a66.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80189 | `jdg.micro.kks.a66.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80190 | `jdg.micro.kks.a66.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80191 | `jdg.micro.kks.a66.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80192 | `jdg.micro.kks.a66.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80193 | `jdg.micro.kks.a67.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80194 | `jdg.micro.kks.a67.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80195 | `jdg.micro.kks.a67.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80196 | `jdg.micro.kks.a67.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80197 | `jdg.micro.kks.a67.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80198 | `jdg.micro.kks.a67.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80199 | `jdg.micro.kks.a67.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80200 | `jdg.micro.kks.a67.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80201 | `jdg.micro.kks.a67.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80202 | `jdg.micro.kks.a67.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80203 | `jdg.micro.kks.a68.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80204 | `jdg.micro.kks.a68.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80205 | `jdg.micro.kks.a68.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80206 | `jdg.micro.kks.a68.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80207 | `jdg.micro.kks.a68.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80208 | `jdg.micro.kks.a68.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80209 | `jdg.micro.kks.a68.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80210 | `jdg.micro.kks.a68.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80211 | `jdg.micro.kks.a68.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80212 | `jdg.micro.kks.a68.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80213 | `jdg.micro.kks.a69.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80214 | `jdg.micro.kks.a69.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80215 | `jdg.micro.kks.a69.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80216 | `jdg.micro.kks.a69.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80217 | `jdg.micro.kks.a69.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80218 | `jdg.micro.kks.a69.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80219 | `jdg.micro.kks.a69.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80220 | `jdg.micro.kks.a69.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80221 | `jdg.micro.kks.a69.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80222 | `jdg.micro.kks.a69.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80223 | `jdg.micro.kks.a70.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80224 | `jdg.micro.kks.a70.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80225 | `jdg.micro.kks.a70.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80226 | `jdg.micro.kks.a70.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80227 | `jdg.micro.kks.a70.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80228 | `jdg.micro.kks.a70.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80229 | `jdg.micro.kks.a70.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80230 | `jdg.micro.kks.a70.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80231 | `jdg.micro.kks.a70.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80232 | `jdg.micro.kks.a70.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80233 | `jdg.micro.kks.a71.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80234 | `jdg.micro.kks.a71.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80235 | `jdg.micro.kks.a71.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80236 | `jdg.micro.kks.a71.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80237 | `jdg.micro.kks.a71.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80238 | `jdg.micro.kks.a71.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80239 | `jdg.micro.kks.a71.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80240 | `jdg.micro.kks.a71.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80241 | `jdg.micro.kks.a71.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80242 | `jdg.micro.kks.a71.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80243 | `jdg.micro.kks.a72.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80244 | `jdg.micro.kks.a72.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80245 | `jdg.micro.kks.a72.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80246 | `jdg.micro.kks.a72.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80247 | `jdg.micro.kks.a72.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80248 | `jdg.micro.kks.a72.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80249 | `jdg.micro.kks.a72.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80250 | `jdg.micro.kks.a72.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80251 | `jdg.micro.kks.a72.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80252 | `jdg.micro.kks.a72.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80253 | `jdg.micro.kks.a73.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80254 | `jdg.micro.kks.a73.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80255 | `jdg.micro.kks.a73.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80256 | `jdg.micro.kks.a73.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80257 | `jdg.micro.kks.a73.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80258 | `jdg.micro.kks.a73.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80259 | `jdg.micro.kks.a73.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80260 | `jdg.micro.kks.a73.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80261 | `jdg.micro.kks.a73.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80262 | `jdg.micro.kks.a73.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80263 | `jdg.micro.kks.a74.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80264 | `jdg.micro.kks.a74.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80265 | `jdg.micro.kks.a74.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80266 | `jdg.micro.kks.a74.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80267 | `jdg.micro.kks.a74.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80268 | `jdg.micro.kks.a74.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80269 | `jdg.micro.kks.a74.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80270 | `jdg.micro.kks.a74.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80271 | `jdg.micro.kks.a74.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80272 | `jdg.micro.kks.a74.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80273 | `jdg.micro.kks.a75.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80274 | `jdg.micro.kks.a75.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80275 | `jdg.micro.kks.a75.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80276 | `jdg.micro.kks.a75.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80277 | `jdg.micro.kks.a75.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80278 | `jdg.micro.kks.a75.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80279 | `jdg.micro.kks.a75.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80280 | `jdg.micro.kks.a75.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80281 | `jdg.micro.kks.a75.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80282 | `jdg.micro.kks.a75.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80283 | `jdg.micro.kks.a76.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80284 | `jdg.micro.kks.a76.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80285 | `jdg.micro.kks.a76.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80286 | `jdg.micro.kks.a76.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80287 | `jdg.micro.kks.a76.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80288 | `jdg.micro.kks.a76.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80289 | `jdg.micro.kks.a76.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80290 | `jdg.micro.kks.a76.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80291 | `jdg.micro.kks.a76.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80292 | `jdg.micro.kks.a76.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80293 | `jdg.micro.kks.a77.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80294 | `jdg.micro.kks.a77.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80295 | `jdg.micro.kks.a77.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80296 | `jdg.micro.kks.a77.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80297 | `jdg.micro.kks.a77.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80298 | `jdg.micro.kks.a77.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80299 | `jdg.micro.kks.a77.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80300 | `jdg.micro.kks.a77.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80301 | `jdg.micro.kks.a77.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80302 | `jdg.micro.kks.a77.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80303 | `jdg.micro.kks.a77.r11` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80304 | `jdg.micro.kks.a77.r12` | 🔴 BLOCK | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80305 | `jdg.micro.kks.a78.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80306 | `jdg.micro.kks.a78.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80307 | `jdg.micro.kks.a78.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80308 | `jdg.micro.kks.a78.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80309 | `jdg.micro.kks.a78.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80310 | `jdg.micro.kks.a78.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80311 | `jdg.micro.kks.a78.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80312 | `jdg.micro.kks.a78.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80313 | `jdg.micro.kks.a78.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80314 | `jdg.micro.kks.a78.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80315 | `jdg.micro.kks.a79.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80316 | `jdg.micro.kks.a79.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80317 | `jdg.micro.kks.a79.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80318 | `jdg.micro.kks.a79.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80319 | `jdg.micro.kks.a79.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80320 | `jdg.micro.kks.a79.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80321 | `jdg.micro.kks.a79.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80322 | `jdg.micro.kks.a79.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80323 | `jdg.micro.kks.a79.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80324 | `jdg.micro.kks.a79.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80325 | `jdg.micro.kks.a80.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80326 | `jdg.micro.kks.a80.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80327 | `jdg.micro.kks.a80.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80328 | `jdg.micro.kks.a80.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80329 | `jdg.micro.kks.a80.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80330 | `jdg.micro.kks.a80.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80331 | `jdg.micro.kks.a80.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80332 | `jdg.micro.kks.a80.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80333 | `jdg.micro.kks.a80.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80334 | `jdg.micro.kks.a80.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80335 | `jdg.micro.kks.a80.r11` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80336 | `jdg.micro.kks.a80.r12` | 🔴 BLOCK | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80337 | `jdg.micro.kks.a81.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80338 | `jdg.micro.kks.a81.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80339 | `jdg.micro.kks.a81.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80340 | `jdg.micro.kks.a81.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80341 | `jdg.micro.kks.a81.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80342 | `jdg.micro.kks.a81.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80343 | `jdg.micro.kks.a81.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80344 | `jdg.micro.kks.a81.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80345 | `jdg.micro.kks.a81.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80346 | `jdg.micro.kks.a81.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80347 | `jdg.micro.kks.a82.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80348 | `jdg.micro.kks.a82.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80349 | `jdg.micro.kks.a82.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80350 | `jdg.micro.kks.a82.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80351 | `jdg.micro.kks.a82.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80352 | `jdg.micro.kks.a82.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80353 | `jdg.micro.kks.a82.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80354 | `jdg.micro.kks.a82.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80355 | `jdg.micro.kks.a82.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80356 | `jdg.micro.kks.a82.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80357 | `jdg.micro.kks.a83.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80358 | `jdg.micro.kks.a83.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80359 | `jdg.micro.kks.a83.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80360 | `jdg.micro.kks.a83.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80361 | `jdg.micro.kks.a83.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80362 | `jdg.micro.kks.a83.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80363 | `jdg.micro.kks.a83.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80364 | `jdg.micro.kks.a83.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80365 | `jdg.micro.kks.a83.r9` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80366 | `jdg.micro.kks.a83.r10` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80367 | `jdg.micro.kks.a85.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80368 | `jdg.micro.kks.a85.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80369 | `jdg.micro.kks.a85.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80370 | `jdg.micro.kks.a85.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80371 | `jdg.micro.kks.a85.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80372 | `jdg.micro.kks.a85.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80373 | `jdg.micro.kks.a85.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80374 | `jdg.micro.kks.a85.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80375 | `jdg.micro.kks.a86.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80376 | `jdg.micro.kks.a86.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80377 | `jdg.micro.kks.a86.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80378 | `jdg.micro.kks.a86.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80379 | `jdg.micro.kks.a86.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80380 | `jdg.micro.kks.a86.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80381 | `jdg.micro.kks.a86.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80382 | `jdg.micro.kks.a86.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80383 | `jdg.micro.kks.a87.r1` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80384 | `jdg.micro.kks.a87.r2` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80385 | `jdg.micro.kks.a87.r3` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80386 | `jdg.micro.kks.a87.r4` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80387 | `jdg.micro.kks.a87.r5` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80388 | `jdg.micro.kks.a87.r6` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80389 | `jdg.micro.kks.a87.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+| 80390 | `jdg.micro.kks.a87.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
+
+### `rules/micro/kks_ord_atomic_p11.rego` (12 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 211601 | `jdg.micro.kks.a16.active_remorse` |  | Art. 16 § 1 i 2 ustawy z dnia 10 września 1999 r. — Kodeks k... |
+| 211701 | `jdg.micro.kks.a17.voluntary_submission` |  | Art. 17 § 1 i 2 ustawy z dnia 10 września 1999 r. — Kodeks k... |
+| 211701 | `jdg.micro.ord.a117ba.whitelist_monitor` | 🔴 BLOCK | Art. 117ba § 4 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja... |
+| 211901 | `jdg.micro.ord.a119a.gaar_risk` | 🔴 BLOCK | Art. 119a ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
+| 212821 | `jdg.micro.ord.a282b.audit_defense_packet` | 🟡 TRIAGE | Art. 282b, 291, 223 ustawy z dnia 29 sierpnia 1997 r. — Ordy... |
+| 213701 | `jdg.micro.kks.a37.recidivism_monitor` | 🔴 BLOCK | Art. 37 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 214401 | `jdg.micro.kks.a44.limitation` |  | Art. 44 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 215401 | `jdg.micro.kks.a54.penalty_calculator.r1` | 🟡 TRIAGE | Art. 54 § 1 i 3 ustawy z dnia 10 września 1999 r. — Kodeks k... |
+| 215402 | `jdg.micro.kks.a54.penalty_calculator.r2` | 🟡 TRIAGE | Art. 54 § 1 i 3 ustawy z dnia 10 września 1999 r. — Kodeks k... |
+| 217001 | `jdg.micro.ord.a70.limitation` |  | Art. 70 § 1 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja po... |
+| 218101 | `jdg.micro.ord.a81b.correction_duty` | 🔴 BLOCK | Art. 81b § 1 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 219301 | `jdg.micro.ord.a193a.jpk_request` | 🟡 TRIAGE | Art. 193a ustawy z dnia 29 sierpnia 1997 r. — Ordynacja poda... |
 
 ### `rules/micro/ksef/ksef.rego` (79 reguł)
 
@@ -4867,433 +4900,454 @@
 | 180078 | `jdg.micro.ksef.a106nh.r7` |  | Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398) |
 | 180079 | `jdg.micro.ksef.a106nh.r8` |  | Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398) |
 
+### `rules/micro/ksiegowosc_atomic_p10.rego` (16 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 161201 | `jdg.micro.uor.a12.year_close` | 🔴 BLOCK | Art. 12 ust. 2 pkt 1-6 ustawy z dnia 29 września 1994 r. o r... |
+| 162001 | `jdg.micro.uor.a2.decision_engine.r1` | 🔴 BLOCK | Art. 2 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rach... |
+| 162002 | `jdg.micro.uor.a2.decision_engine.r2` |  | Art. 2 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rach... |
+| 162003 | `jdg.micro.uor.a2.threshold_monitor` | 🟡 TRIAGE | Art. 2 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rach... |
+| 162201 | `jdg.micro.uor.a22.double_entry` | 🔴 BLOCK | Art. 15 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 162202 | `jdg.micro.uor.a22.double_entry_ok` |  | Art. 15 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 162601 | `jdg.micro.uor.a26.inventory_schedule` | 🟡 TRIAGE | Art. 26 ust. 1 pkt 1-3 ustawy z dnia 29 września 1994 r. o r... |
+| 163201 | `jdg.micro.uor.a32.book_depreciation.r1` |  | Art. 32 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 163202 | `jdg.micro.uor.a32.book_depreciation.r2` |  | Art. 32 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 164501 | `jdg.micro.uor.a45.financial_statements` | 🔴 BLOCK | Art. 45 ust. 1-3 ustawy z dnia 29 września 1994 r. o rachunk... |
+| 164502 | `jdg.micro.uor.a45.financial_statements_ok` |  | Art. 45 ust. 1-3 ustawy z dnia 29 września 1994 r. o rachunk... |
+| 170101 | `jdg.micro.pkpir.col17_validator` | 🔴 BLOCK | §10-12 rozporządzenia Ministra Finansów z dnia 15 listopada ... |
+| 170102 | `jdg.micro.pkpir.col17_validator_ok` |  | §10-12 rozporządzenia Ministra Finansów z dnia 15 listopada ... |
+| 171701 | `jdg.micro.leasing.classifier.r1` |  | Art. 17f ust. 1 pkt 1-3 ustawy o podatku dochodowym od osób ... |
+| 171702 | `jdg.micro.leasing.classifier.r2` |  | Art. 17f ust. 1 pkt 1-3 ustawy o podatku dochodowym od osób ... |
+| 171703 | `jdg.micro.leasing.car_limit` | 🟡 TRIAGE | Art. 23 ust. 1 pkt 47a ustawy o podatku dochodowym od osób f... |
+
 ### `rules/micro/ord/ord.rego` (423 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 50000 | `jdg.ord.a100.u1.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50001 | `jdg.ord.a100.u2.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50002 | `jdg.ord.a101.u1.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50003 | `jdg.ord.a101.u3.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50004 | `jdg.ord.a101.u4.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50005 | `jdg.ord.a101.u5.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50006 | `jdg.ord.a102.u2.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50007 | `jdg.ord.a102.u3.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50008 | `jdg.ord.a102.u4.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50009 | `jdg.ord.a102.u5.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50010 | `jdg.ord.a103.u1.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50011 | `jdg.ord.a103.u2.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50012 | `jdg.ord.a103.u3.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50013 | `jdg.ord.a103.u4.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50014 | `jdg.ord.a104.u1.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50015 | `jdg.ord.a104.u2.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50016 | `jdg.ord.a104.u3.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50017 | `jdg.ord.a104.u5.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50018 | `jdg.ord.a105.u1.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50019 | `jdg.ord.a105.u2.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50020 | `jdg.ord.a105.u4.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50021 | `jdg.ord.a105.u5.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50022 | `jdg.ord.a106.u1.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50023 | `jdg.ord.a106.u3.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50024 | `jdg.ord.a106.u4.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50025 | `jdg.ord.a106.u5.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50026 | `jdg.ord.a107.u2.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50027 | `jdg.ord.a107.u3.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50028 | `jdg.ord.a107.u4.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50029 | `jdg.ord.a107.u5.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50030 | `jdg.ord.a108.u1.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50031 | `jdg.ord.a108.u2.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50032 | `jdg.ord.a108.u3.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50033 | `jdg.ord.a108.u4.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50034 | `jdg.ord.a109.u1.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50035 | `jdg.ord.a109.u2.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50036 | `jdg.ord.a109.u3.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50037 | `jdg.ord.a109.u5.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50038 | `jdg.ord.a110.u1.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50039 | `jdg.ord.a110.u2.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50040 | `jdg.ord.a110.u4.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50041 | `jdg.ord.a110.u5.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50042 | `jdg.ord.a111.u1.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50043 | `jdg.ord.a111.u3.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50044 | `jdg.ord.a111.u4.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50045 | `jdg.ord.a111.u5.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50046 | `jdg.ord.a112.u2.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50047 | `jdg.ord.a112.u3.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50048 | `jdg.ord.a112.u4.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50049 | `jdg.ord.a112.u5.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50050 | `jdg.ord.a113.u1.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50051 | `jdg.ord.a113.u2.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50052 | `jdg.ord.a113.u3.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50053 | `jdg.ord.a113.u4.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50054 | `jdg.ord.a114.u1.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50055 | `jdg.ord.a114.u2.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50056 | `jdg.ord.a114.u3.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50057 | `jdg.ord.a114.u5.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50058 | `jdg.ord.a115.u1.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50059 | `jdg.ord.a115.u2.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50060 | `jdg.ord.a115.u4.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50061 | `jdg.ord.a115.u5.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50062 | `jdg.ord.a116.u1.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50063 | `jdg.ord.a116.u3.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50064 | `jdg.ord.a116.u4.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50065 | `jdg.ord.a116.u5.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50066 | `jdg.ord.a117.u2.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50067 | `jdg.ord.a117.u3.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50068 | `jdg.ord.a117.u4.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50069 | `jdg.ord.a117.u5.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50070 | `jdg.ord.a118.u1.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50071 | `jdg.ord.a118.u2.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50072 | `jdg.ord.a118.u3.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50073 | `jdg.ord.a118.u4.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50074 | `jdg.ord.a119.u1.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50075 | `jdg.ord.a119.u2.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50076 | `jdg.ord.a119.u3.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50077 | `jdg.ord.a119.u5.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50078 | `jdg.ord.a120.u1.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50079 | `jdg.ord.a120.u2.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50080 | `jdg.ord.a120.u4.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50081 | `jdg.ord.a120.u5.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50082 | `jdg.ord.a121.u1.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50083 | `jdg.ord.a121.u3.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50084 | `jdg.ord.a121.u4.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50085 | `jdg.ord.a121.u5.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50086 | `jdg.ord.a122.u2.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50087 | `jdg.ord.a122.u3.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50088 | `jdg.ord.a122.u4.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50089 | `jdg.ord.a122.u5.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50090 | `jdg.ord.a123.u1.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50091 | `jdg.ord.a123.u2.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50092 | `jdg.ord.a123.u3.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50093 | `jdg.ord.a123.u4.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50094 | `jdg.ord.a124.u1.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50095 | `jdg.ord.a124.u2.p1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50096 | `jdg.ord.a124.u3.p2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50097 | `jdg.ord.a124.u5.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50098 | `jdg.ord.a125.u4.p3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50099 | `jdg.ord.a125.u5.p4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50100 | `jdg.ord.a16.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50101 | `jdg.ord.a16a.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50102 | `jdg.ord.a20.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50103 | `jdg.ord.a21.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 50104 | `jdg.ord.a67a.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70016 | `jdg.micro.ord.a16.r1` |  | Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930) |
-| 70017 | `jdg.micro.ord.a16.r2` |  | Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930) |
-| 70018 | `jdg.micro.ord.a16.r3` |  | Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930) |
-| 70019 | `jdg.micro.ord.a16.r4` |  | Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930) |
-| 70020 | `jdg.micro.ord.a16.r5` |  | Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930) |
-| 70021 | `jdg.micro.ord.a16.r6` |  | Kodeks Karny Skarbowy Art. 16 (Dz.U. 1999 nr 83 poz. 930) |
-| 70022 | `jdg.micro.ord.a20.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70023 | `jdg.micro.ord.a20.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70024 | `jdg.micro.ord.a20.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70025 | `jdg.micro.ord.a20.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70026 | `jdg.micro.ord.a20.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70027 | `jdg.micro.ord.a21.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70028 | `jdg.micro.ord.a21.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70029 | `jdg.micro.ord.a21.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70030 | `jdg.micro.ord.a21.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70031 | `jdg.micro.ord.a21.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70032 | `jdg.micro.ord.a26.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70033 | `jdg.micro.ord.a26.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70034 | `jdg.micro.ord.a26.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70035 | `jdg.micro.ord.a26.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70036 | `jdg.micro.ord.a26.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70037 | `jdg.micro.ord.a26.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70038 | `jdg.micro.ord.a26.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70039 | `jdg.micro.ord.a26.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70040 | `jdg.micro.ord.a27.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70041 | `jdg.micro.ord.a27.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70042 | `jdg.micro.ord.a27.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70043 | `jdg.micro.ord.a27.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70044 | `jdg.micro.ord.a27.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70045 | `jdg.micro.ord.a27.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70046 | `jdg.micro.ord.a28.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70047 | `jdg.micro.ord.a28.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70048 | `jdg.micro.ord.a28.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70049 | `jdg.micro.ord.a28.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70050 | `jdg.micro.ord.a28.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70051 | `jdg.micro.ord.a29.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70052 | `jdg.micro.ord.a29.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70053 | `jdg.micro.ord.a29.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70054 | `jdg.micro.ord.a29.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70055 | `jdg.micro.ord.a29.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70056 | `jdg.micro.ord.a29.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70057 | `jdg.micro.ord.a29.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70058 | `jdg.micro.ord.a29.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70059 | `jdg.micro.ord.a32.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70060 | `jdg.micro.ord.a32.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70061 | `jdg.micro.ord.a32.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70062 | `jdg.micro.ord.a32.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70063 | `jdg.micro.ord.a32.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70064 | `jdg.micro.ord.a33.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70065 | `jdg.micro.ord.a33.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70066 | `jdg.micro.ord.a33.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70067 | `jdg.micro.ord.a33.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70068 | `jdg.micro.ord.a33.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70069 | `jdg.micro.ord.a33.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70070 | `jdg.micro.ord.a33.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70071 | `jdg.micro.ord.a33.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70072 | `jdg.micro.ord.a47.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70073 | `jdg.micro.ord.a47.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70074 | `jdg.micro.ord.a47.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70075 | `jdg.micro.ord.a47.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70076 | `jdg.micro.ord.a47.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70077 | `jdg.micro.ord.a47.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70078 | `jdg.micro.ord.a47.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70079 | `jdg.micro.ord.a47.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70080 | `jdg.micro.ord.a48.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70081 | `jdg.micro.ord.a48.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70082 | `jdg.micro.ord.a48.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70083 | `jdg.micro.ord.a48.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70084 | `jdg.micro.ord.a48.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70085 | `jdg.micro.ord.a51.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70086 | `jdg.micro.ord.a51.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70087 | `jdg.micro.ord.a51.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70088 | `jdg.micro.ord.a51.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70089 | `jdg.micro.ord.a51.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70090 | `jdg.micro.ord.a52.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70091 | `jdg.micro.ord.a52.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70092 | `jdg.micro.ord.a52.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70093 | `jdg.micro.ord.a52.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70094 | `jdg.micro.ord.a52.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70095 | `jdg.micro.ord.a53.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70096 | `jdg.micro.ord.a53.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70097 | `jdg.micro.ord.a53.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70098 | `jdg.micro.ord.a53.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70099 | `jdg.micro.ord.a53.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70100 | `jdg.micro.ord.a54.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70101 | `jdg.micro.ord.a54.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70102 | `jdg.micro.ord.a54.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70103 | `jdg.micro.ord.a54.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70104 | `jdg.micro.ord.a54.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70105 | `jdg.micro.ord.a56.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70106 | `jdg.micro.ord.a56.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70107 | `jdg.micro.ord.a56.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70108 | `jdg.micro.ord.a56.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70109 | `jdg.micro.ord.a56.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70110 | `jdg.micro.ord.a56b.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70111 | `jdg.micro.ord.a56b.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70112 | `jdg.micro.ord.a56b.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70113 | `jdg.micro.ord.a56b.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70114 | `jdg.micro.ord.a56b.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70115 | `jdg.micro.ord.a67a.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70116 | `jdg.micro.ord.a67a.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70117 | `jdg.micro.ord.a67a.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70118 | `jdg.micro.ord.a67a.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70119 | `jdg.micro.ord.a67a.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70120 | `jdg.micro.ord.a67b.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70121 | `jdg.micro.ord.a67b.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70122 | `jdg.micro.ord.a67b.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70123 | `jdg.micro.ord.a67b.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70124 | `jdg.micro.ord.a67b.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70125 | `jdg.micro.ord.a67b.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70126 | `jdg.micro.ord.a67b.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70127 | `jdg.micro.ord.a67b.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70128 | `jdg.micro.ord.a67c.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70129 | `jdg.micro.ord.a67c.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70130 | `jdg.micro.ord.a67c.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70131 | `jdg.micro.ord.a67c.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70132 | `jdg.micro.ord.a67c.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70133 | `jdg.micro.ord.a67d.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70134 | `jdg.micro.ord.a67d.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70135 | `jdg.micro.ord.a67d.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70136 | `jdg.micro.ord.a67d.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70137 | `jdg.micro.ord.a67d.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70138 | `jdg.micro.ord.a67e.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70139 | `jdg.micro.ord.a67e.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70140 | `jdg.micro.ord.a67e.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70141 | `jdg.micro.ord.a67e.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70142 | `jdg.micro.ord.a67e.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70143 | `jdg.micro.ord.a70.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70144 | `jdg.micro.ord.a70.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70145 | `jdg.micro.ord.a70.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70146 | `jdg.micro.ord.a70.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70147 | `jdg.micro.ord.a70.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70148 | `jdg.micro.ord.a70.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70149 | `jdg.micro.ord.a70.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70150 | `jdg.micro.ord.a70.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70151 | `jdg.micro.ord.a70.r9` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70152 | `jdg.micro.ord.a70.r10` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70153 | `jdg.micro.ord.a70.r11` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70154 | `jdg.micro.ord.a70.r12` | 🔴 BLOCK | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70155 | `jdg.micro.ord.a70.r13` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70156 | `jdg.micro.ord.a70.r14` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70157 | `jdg.micro.ord.a70.r15` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70158 | `jdg.micro.ord.a71.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70159 | `jdg.micro.ord.a71.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70160 | `jdg.micro.ord.a71.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70161 | `jdg.micro.ord.a71.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70162 | `jdg.micro.ord.a71.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70163 | `jdg.micro.ord.a71.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70164 | `jdg.micro.ord.a71.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70165 | `jdg.micro.ord.a71.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70166 | `jdg.micro.ord.a71.r9` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70167 | `jdg.micro.ord.a71.r10` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70168 | `jdg.micro.ord.a72.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70169 | `jdg.micro.ord.a72.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70170 | `jdg.micro.ord.a72.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70171 | `jdg.micro.ord.a72.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70172 | `jdg.micro.ord.a72.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70173 | `jdg.micro.ord.a72.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70174 | `jdg.micro.ord.a72.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70175 | `jdg.micro.ord.a72.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70176 | `jdg.micro.ord.a73.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70177 | `jdg.micro.ord.a73.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70178 | `jdg.micro.ord.a73.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70179 | `jdg.micro.ord.a73.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70180 | `jdg.micro.ord.a73.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70181 | `jdg.micro.ord.a74.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70182 | `jdg.micro.ord.a74.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70183 | `jdg.micro.ord.a74.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70184 | `jdg.micro.ord.a74.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70185 | `jdg.micro.ord.a74.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70186 | `jdg.micro.ord.a75.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70187 | `jdg.micro.ord.a75.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70188 | `jdg.micro.ord.a75.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70189 | `jdg.micro.ord.a75.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70190 | `jdg.micro.ord.a75.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70191 | `jdg.micro.ord.a76.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70192 | `jdg.micro.ord.a76.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70193 | `jdg.micro.ord.a76.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70194 | `jdg.micro.ord.a76.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70195 | `jdg.micro.ord.a76.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70196 | `jdg.micro.ord.a77.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70197 | `jdg.micro.ord.a77.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70198 | `jdg.micro.ord.a77.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70199 | `jdg.micro.ord.a77.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70200 | `jdg.micro.ord.a77.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70201 | `jdg.micro.ord.a78.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70202 | `jdg.micro.ord.a78.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70203 | `jdg.micro.ord.a78.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70204 | `jdg.micro.ord.a78.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70205 | `jdg.micro.ord.a78.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70206 | `jdg.micro.ord.a79.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70207 | `jdg.micro.ord.a79.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70208 | `jdg.micro.ord.a79.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70209 | `jdg.micro.ord.a79.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70210 | `jdg.micro.ord.a79.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70211 | `jdg.micro.ord.a80.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70212 | `jdg.micro.ord.a80.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70213 | `jdg.micro.ord.a80.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70214 | `jdg.micro.ord.a80.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70215 | `jdg.micro.ord.a80.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70216 | `jdg.micro.ord.a81.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70217 | `jdg.micro.ord.a81.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70218 | `jdg.micro.ord.a81.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70219 | `jdg.micro.ord.a81.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70220 | `jdg.micro.ord.a81.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70221 | `jdg.micro.ord.a81.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70222 | `jdg.micro.ord.a81.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70223 | `jdg.micro.ord.a81.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70224 | `jdg.micro.ord.a81.r9` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70225 | `jdg.micro.ord.a81.r10` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70226 | `jdg.micro.ord.a81b.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70227 | `jdg.micro.ord.a81b.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70228 | `jdg.micro.ord.a81b.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70229 | `jdg.micro.ord.a81b.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70230 | `jdg.micro.ord.a81b.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70231 | `jdg.micro.ord.a86.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70232 | `jdg.micro.ord.a86.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70233 | `jdg.micro.ord.a86.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70234 | `jdg.micro.ord.a86.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70235 | `jdg.micro.ord.a86.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70236 | `jdg.micro.ord.a86.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70237 | `jdg.micro.ord.a86.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70238 | `jdg.micro.ord.a86.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70239 | `jdg.micro.ord.a87.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70240 | `jdg.micro.ord.a87.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70241 | `jdg.micro.ord.a87.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70242 | `jdg.micro.ord.a87.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70243 | `jdg.micro.ord.a87.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70244 | `jdg.micro.ord.a119a.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70245 | `jdg.micro.ord.a119a.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70246 | `jdg.micro.ord.a119a.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70247 | `jdg.micro.ord.a119a.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70248 | `jdg.micro.ord.a119a.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70249 | `jdg.micro.ord.a119a.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70250 | `jdg.micro.ord.a119a.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70251 | `jdg.micro.ord.a119a.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70252 | `jdg.micro.ord.a119a.r9` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70253 | `jdg.micro.ord.a119a.r10` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70254 | `jdg.micro.ord.a120.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70255 | `jdg.micro.ord.a120.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70256 | `jdg.micro.ord.a120.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70257 | `jdg.micro.ord.a120.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70258 | `jdg.micro.ord.a120.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70259 | `jdg.micro.ord.a121.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70260 | `jdg.micro.ord.a121.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70261 | `jdg.micro.ord.a121.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70262 | `jdg.micro.ord.a121.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70263 | `jdg.micro.ord.a121.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70264 | `jdg.micro.ord.a122.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70265 | `jdg.micro.ord.a122.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70266 | `jdg.micro.ord.a122.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70267 | `jdg.micro.ord.a122.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70268 | `jdg.micro.ord.a122.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70269 | `jdg.micro.ord.a123.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70270 | `jdg.micro.ord.a123.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70271 | `jdg.micro.ord.a123.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70272 | `jdg.micro.ord.a123.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70273 | `jdg.micro.ord.a123.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70274 | `jdg.micro.ord.a124.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70275 | `jdg.micro.ord.a124.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70276 | `jdg.micro.ord.a124.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70277 | `jdg.micro.ord.a124.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70278 | `jdg.micro.ord.a124.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70279 | `jdg.micro.ord.a125.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70280 | `jdg.micro.ord.a125.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70281 | `jdg.micro.ord.a125.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70282 | `jdg.micro.ord.a125.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70283 | `jdg.micro.ord.a125.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70284 | `jdg.micro.ord.a126.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70285 | `jdg.micro.ord.a126.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70286 | `jdg.micro.ord.a126.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70287 | `jdg.micro.ord.a126.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70288 | `jdg.micro.ord.a126.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70289 | `jdg.micro.ord.a127.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70290 | `jdg.micro.ord.a127.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70291 | `jdg.micro.ord.a127.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70292 | `jdg.micro.ord.a127.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70293 | `jdg.micro.ord.a127.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70294 | `jdg.micro.ord.a138a.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70295 | `jdg.micro.ord.a138a.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70296 | `jdg.micro.ord.a138a.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70297 | `jdg.micro.ord.a138a.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70298 | `jdg.micro.ord.a138a.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70299 | `jdg.micro.ord.a138a.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70300 | `jdg.micro.ord.a138a.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70301 | `jdg.micro.ord.a138a.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70302 | `jdg.micro.ord.a138a.r9` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70303 | `jdg.micro.ord.a138a.r10` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70304 | `jdg.micro.ord.a138a.r11` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70305 | `jdg.micro.ord.a138a.r12` | 🔴 BLOCK | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70306 | `jdg.micro.ord.a138a.r13` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70307 | `jdg.micro.ord.a138a.r14` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70308 | `jdg.micro.ord.a138a.r15` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70309 | `jdg.micro.ord.a138a.r16` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70310 | `jdg.micro.ord.a138a.r17` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70311 | `jdg.micro.ord.a138a.r18` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70312 | `jdg.micro.ord.a138a.r19` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70313 | `jdg.micro.ord.a138a.r20` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70314 | `jdg.micro.ord.a138a.r21` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70315 | `jdg.micro.ord.a138a.r22` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70316 | `jdg.micro.ord.a138a.r23` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70317 | `jdg.micro.ord.a138a.r24` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70318 | `jdg.micro.ord.a138a.r25` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70319 | `jdg.micro.ord.a138a.r26` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70320 | `jdg.micro.ord.a138a.r27` | 🔴 BLOCK | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70321 | `jdg.micro.ord.a138a.r28` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70322 | `jdg.micro.ord.a138a.r29` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70323 | `jdg.micro.ord.a138a.r30` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70324 | `jdg.micro.ord.a193a.r1` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70325 | `jdg.micro.ord.a193a.r2` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70326 | `jdg.micro.ord.a193a.r3` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70327 | `jdg.micro.ord.a193a.r4` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70328 | `jdg.micro.ord.a193a.r5` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70329 | `jdg.micro.ord.a193a.r6` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70330 | `jdg.micro.ord.a193a.r7` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70331 | `jdg.micro.ord.a193a.r8` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70332 | `jdg.micro.ord.a193a.r9` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
-| 70333 | `jdg.micro.ord.a193a.r10` |  | Ordynacja Podatkowa z 29.08.1997 (Dz.U. 1997 nr 137 poz. 926... |
+| 50000 | `jdg.ord.a100.u1.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50001 | `jdg.ord.a100.u2.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50002 | `jdg.ord.a101.u1.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50003 | `jdg.ord.a101.u3.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50004 | `jdg.ord.a101.u4.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50005 | `jdg.ord.a101.u5.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50006 | `jdg.ord.a102.u2.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50007 | `jdg.ord.a102.u3.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50008 | `jdg.ord.a102.u4.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50009 | `jdg.ord.a102.u5.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50010 | `jdg.ord.a103.u1.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50011 | `jdg.ord.a103.u2.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50012 | `jdg.ord.a103.u3.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50013 | `jdg.ord.a103.u4.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50014 | `jdg.ord.a104.u1.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50015 | `jdg.ord.a104.u2.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50016 | `jdg.ord.a104.u3.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50017 | `jdg.ord.a104.u5.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50018 | `jdg.ord.a105.u1.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50019 | `jdg.ord.a105.u2.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50020 | `jdg.ord.a105.u4.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50021 | `jdg.ord.a105.u5.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50022 | `jdg.ord.a106.u1.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50023 | `jdg.ord.a106.u3.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50024 | `jdg.ord.a106.u4.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50025 | `jdg.ord.a106.u5.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50026 | `jdg.ord.a107.u2.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50027 | `jdg.ord.a107.u3.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50028 | `jdg.ord.a107.u4.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50029 | `jdg.ord.a107.u5.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50030 | `jdg.ord.a108.u1.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50031 | `jdg.ord.a108.u2.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50032 | `jdg.ord.a108.u3.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50033 | `jdg.ord.a108.u4.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50034 | `jdg.ord.a109.u1.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50035 | `jdg.ord.a109.u2.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50036 | `jdg.ord.a109.u3.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50037 | `jdg.ord.a109.u5.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50038 | `jdg.ord.a110.u1.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50039 | `jdg.ord.a110.u2.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50040 | `jdg.ord.a110.u4.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50041 | `jdg.ord.a110.u5.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50042 | `jdg.ord.a111.u1.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50043 | `jdg.ord.a111.u3.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50044 | `jdg.ord.a111.u4.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50045 | `jdg.ord.a111.u5.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50046 | `jdg.ord.a112.u2.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50047 | `jdg.ord.a112.u3.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50048 | `jdg.ord.a112.u4.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50049 | `jdg.ord.a112.u5.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50050 | `jdg.ord.a113.u1.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50051 | `jdg.ord.a113.u2.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50052 | `jdg.ord.a113.u3.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50053 | `jdg.ord.a113.u4.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50054 | `jdg.ord.a114.u1.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50055 | `jdg.ord.a114.u2.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50056 | `jdg.ord.a114.u3.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50057 | `jdg.ord.a114.u5.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50058 | `jdg.ord.a115.u1.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50059 | `jdg.ord.a115.u2.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50060 | `jdg.ord.a115.u4.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50061 | `jdg.ord.a115.u5.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50062 | `jdg.ord.a116.u1.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50063 | `jdg.ord.a116.u3.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50064 | `jdg.ord.a116.u4.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50065 | `jdg.ord.a116.u5.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50066 | `jdg.ord.a117.u2.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50067 | `jdg.ord.a117.u3.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50068 | `jdg.ord.a117.u4.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50069 | `jdg.ord.a117.u5.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50070 | `jdg.ord.a118.u1.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50071 | `jdg.ord.a118.u2.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50072 | `jdg.ord.a118.u3.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50073 | `jdg.ord.a118.u4.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50074 | `jdg.ord.a119.u1.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50075 | `jdg.ord.a119.u2.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50076 | `jdg.ord.a119.u3.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50077 | `jdg.ord.a119.u5.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50078 | `jdg.ord.a120.u1.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50079 | `jdg.ord.a120.u2.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50080 | `jdg.ord.a120.u4.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50081 | `jdg.ord.a120.u5.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50082 | `jdg.ord.a121.u1.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50083 | `jdg.ord.a121.u3.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50084 | `jdg.ord.a121.u4.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50085 | `jdg.ord.a121.u5.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50086 | `jdg.ord.a122.u2.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50087 | `jdg.ord.a122.u3.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50088 | `jdg.ord.a122.u4.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50089 | `jdg.ord.a122.u5.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50090 | `jdg.ord.a123.u1.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50091 | `jdg.ord.a123.u2.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50092 | `jdg.ord.a123.u3.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50093 | `jdg.ord.a123.u4.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50094 | `jdg.ord.a124.u1.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50095 | `jdg.ord.a124.u2.p1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50096 | `jdg.ord.a124.u3.p2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50097 | `jdg.ord.a124.u5.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50098 | `jdg.ord.a125.u4.p3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50099 | `jdg.ord.a125.u5.p4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50100 | `jdg.ord.a16.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50101 | `jdg.ord.a16a.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50102 | `jdg.ord.a20.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50103 | `jdg.ord.a21.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 50104 | `jdg.ord.a67a.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70016 | `jdg.micro.ord.a16.r1` |  | Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.) |
+| 70017 | `jdg.micro.ord.a16.r2` |  | Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.) |
+| 70018 | `jdg.micro.ord.a16.r3` |  | Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.) |
+| 70019 | `jdg.micro.ord.a16.r4` |  | Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.) |
+| 70020 | `jdg.micro.ord.a16.r5` |  | Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.) |
+| 70021 | `jdg.micro.ord.a16.r6` |  | Kodeks Karny Skarbowy Art. 16 (Dz.U. 2025 poz. 678, ze zm.) |
+| 70022 | `jdg.micro.ord.a20.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70023 | `jdg.micro.ord.a20.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70024 | `jdg.micro.ord.a20.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70025 | `jdg.micro.ord.a20.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70026 | `jdg.micro.ord.a20.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70027 | `jdg.micro.ord.a21.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70028 | `jdg.micro.ord.a21.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70029 | `jdg.micro.ord.a21.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70030 | `jdg.micro.ord.a21.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70031 | `jdg.micro.ord.a21.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70032 | `jdg.micro.ord.a26.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70033 | `jdg.micro.ord.a26.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70034 | `jdg.micro.ord.a26.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70035 | `jdg.micro.ord.a26.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70036 | `jdg.micro.ord.a26.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70037 | `jdg.micro.ord.a26.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70038 | `jdg.micro.ord.a26.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70039 | `jdg.micro.ord.a26.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70040 | `jdg.micro.ord.a27.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70041 | `jdg.micro.ord.a27.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70042 | `jdg.micro.ord.a27.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70043 | `jdg.micro.ord.a27.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70044 | `jdg.micro.ord.a27.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70045 | `jdg.micro.ord.a27.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70046 | `jdg.micro.ord.a28.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70047 | `jdg.micro.ord.a28.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70048 | `jdg.micro.ord.a28.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70049 | `jdg.micro.ord.a28.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70050 | `jdg.micro.ord.a28.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70051 | `jdg.micro.ord.a29.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70052 | `jdg.micro.ord.a29.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70053 | `jdg.micro.ord.a29.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70054 | `jdg.micro.ord.a29.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70055 | `jdg.micro.ord.a29.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70056 | `jdg.micro.ord.a29.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70057 | `jdg.micro.ord.a29.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70058 | `jdg.micro.ord.a29.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70059 | `jdg.micro.ord.a32.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70060 | `jdg.micro.ord.a32.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70061 | `jdg.micro.ord.a32.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70062 | `jdg.micro.ord.a32.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70063 | `jdg.micro.ord.a32.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70064 | `jdg.micro.ord.a33.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70065 | `jdg.micro.ord.a33.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70066 | `jdg.micro.ord.a33.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70067 | `jdg.micro.ord.a33.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70068 | `jdg.micro.ord.a33.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70069 | `jdg.micro.ord.a33.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70070 | `jdg.micro.ord.a33.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70071 | `jdg.micro.ord.a33.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70072 | `jdg.micro.ord.a47.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70073 | `jdg.micro.ord.a47.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70074 | `jdg.micro.ord.a47.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70075 | `jdg.micro.ord.a47.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70076 | `jdg.micro.ord.a47.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70077 | `jdg.micro.ord.a47.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70078 | `jdg.micro.ord.a47.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70079 | `jdg.micro.ord.a47.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70080 | `jdg.micro.ord.a48.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70081 | `jdg.micro.ord.a48.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70082 | `jdg.micro.ord.a48.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70083 | `jdg.micro.ord.a48.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70084 | `jdg.micro.ord.a48.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70085 | `jdg.micro.ord.a51.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70086 | `jdg.micro.ord.a51.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70087 | `jdg.micro.ord.a51.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70088 | `jdg.micro.ord.a51.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70089 | `jdg.micro.ord.a51.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70090 | `jdg.micro.ord.a52.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70091 | `jdg.micro.ord.a52.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70092 | `jdg.micro.ord.a52.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70093 | `jdg.micro.ord.a52.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70094 | `jdg.micro.ord.a52.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70095 | `jdg.micro.ord.a53.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70096 | `jdg.micro.ord.a53.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70097 | `jdg.micro.ord.a53.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70098 | `jdg.micro.ord.a53.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70099 | `jdg.micro.ord.a53.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70100 | `jdg.micro.ord.a54.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70101 | `jdg.micro.ord.a54.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70102 | `jdg.micro.ord.a54.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70103 | `jdg.micro.ord.a54.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70104 | `jdg.micro.ord.a54.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70105 | `jdg.micro.ord.a56.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70106 | `jdg.micro.ord.a56.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70107 | `jdg.micro.ord.a56.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70108 | `jdg.micro.ord.a56.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70109 | `jdg.micro.ord.a56.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70110 | `jdg.micro.ord.a56b.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70111 | `jdg.micro.ord.a56b.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70112 | `jdg.micro.ord.a56b.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70113 | `jdg.micro.ord.a56b.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70114 | `jdg.micro.ord.a56b.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70115 | `jdg.micro.ord.a67a.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70116 | `jdg.micro.ord.a67a.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70117 | `jdg.micro.ord.a67a.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70118 | `jdg.micro.ord.a67a.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70119 | `jdg.micro.ord.a67a.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70120 | `jdg.micro.ord.a67b.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70121 | `jdg.micro.ord.a67b.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70122 | `jdg.micro.ord.a67b.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70123 | `jdg.micro.ord.a67b.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70124 | `jdg.micro.ord.a67b.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70125 | `jdg.micro.ord.a67b.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70126 | `jdg.micro.ord.a67b.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70127 | `jdg.micro.ord.a67b.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70128 | `jdg.micro.ord.a67c.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70129 | `jdg.micro.ord.a67c.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70130 | `jdg.micro.ord.a67c.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70131 | `jdg.micro.ord.a67c.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70132 | `jdg.micro.ord.a67c.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70133 | `jdg.micro.ord.a67d.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70134 | `jdg.micro.ord.a67d.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70135 | `jdg.micro.ord.a67d.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70136 | `jdg.micro.ord.a67d.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70137 | `jdg.micro.ord.a67d.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70138 | `jdg.micro.ord.a67e.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70139 | `jdg.micro.ord.a67e.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70140 | `jdg.micro.ord.a67e.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70141 | `jdg.micro.ord.a67e.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70142 | `jdg.micro.ord.a67e.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70143 | `jdg.micro.ord.a70.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70144 | `jdg.micro.ord.a70.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70145 | `jdg.micro.ord.a70.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70146 | `jdg.micro.ord.a70.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70147 | `jdg.micro.ord.a70.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70148 | `jdg.micro.ord.a70.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70149 | `jdg.micro.ord.a70.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70150 | `jdg.micro.ord.a70.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70151 | `jdg.micro.ord.a70.r9` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70152 | `jdg.micro.ord.a70.r10` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70153 | `jdg.micro.ord.a70.r11` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70154 | `jdg.micro.ord.a70.r12` | 🔴 BLOCK | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70155 | `jdg.micro.ord.a70.r13` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70156 | `jdg.micro.ord.a70.r14` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70157 | `jdg.micro.ord.a70.r15` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70158 | `jdg.micro.ord.a71.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70159 | `jdg.micro.ord.a71.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70160 | `jdg.micro.ord.a71.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70161 | `jdg.micro.ord.a71.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70162 | `jdg.micro.ord.a71.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70163 | `jdg.micro.ord.a71.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70164 | `jdg.micro.ord.a71.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70165 | `jdg.micro.ord.a71.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70166 | `jdg.micro.ord.a71.r9` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70167 | `jdg.micro.ord.a71.r10` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70168 | `jdg.micro.ord.a72.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70169 | `jdg.micro.ord.a72.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70170 | `jdg.micro.ord.a72.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70171 | `jdg.micro.ord.a72.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70172 | `jdg.micro.ord.a72.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70173 | `jdg.micro.ord.a72.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70174 | `jdg.micro.ord.a72.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70175 | `jdg.micro.ord.a72.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70176 | `jdg.micro.ord.a73.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70177 | `jdg.micro.ord.a73.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70178 | `jdg.micro.ord.a73.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70179 | `jdg.micro.ord.a73.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70180 | `jdg.micro.ord.a73.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70181 | `jdg.micro.ord.a74.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70182 | `jdg.micro.ord.a74.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70183 | `jdg.micro.ord.a74.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70184 | `jdg.micro.ord.a74.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70185 | `jdg.micro.ord.a74.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70186 | `jdg.micro.ord.a75.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70187 | `jdg.micro.ord.a75.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70188 | `jdg.micro.ord.a75.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70189 | `jdg.micro.ord.a75.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70190 | `jdg.micro.ord.a75.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70191 | `jdg.micro.ord.a76.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70192 | `jdg.micro.ord.a76.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70193 | `jdg.micro.ord.a76.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70194 | `jdg.micro.ord.a76.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70195 | `jdg.micro.ord.a76.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70196 | `jdg.micro.ord.a77.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70197 | `jdg.micro.ord.a77.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70198 | `jdg.micro.ord.a77.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70199 | `jdg.micro.ord.a77.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70200 | `jdg.micro.ord.a77.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70201 | `jdg.micro.ord.a78.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70202 | `jdg.micro.ord.a78.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70203 | `jdg.micro.ord.a78.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70204 | `jdg.micro.ord.a78.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70205 | `jdg.micro.ord.a78.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70206 | `jdg.micro.ord.a79.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70207 | `jdg.micro.ord.a79.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70208 | `jdg.micro.ord.a79.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70209 | `jdg.micro.ord.a79.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70210 | `jdg.micro.ord.a79.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70211 | `jdg.micro.ord.a80.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70212 | `jdg.micro.ord.a80.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70213 | `jdg.micro.ord.a80.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70214 | `jdg.micro.ord.a80.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70215 | `jdg.micro.ord.a80.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70216 | `jdg.micro.ord.a81.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70217 | `jdg.micro.ord.a81.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70218 | `jdg.micro.ord.a81.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70219 | `jdg.micro.ord.a81.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70220 | `jdg.micro.ord.a81.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70221 | `jdg.micro.ord.a81.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70222 | `jdg.micro.ord.a81.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70223 | `jdg.micro.ord.a81.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70224 | `jdg.micro.ord.a81.r9` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70225 | `jdg.micro.ord.a81.r10` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70226 | `jdg.micro.ord.a81b.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70227 | `jdg.micro.ord.a81b.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70228 | `jdg.micro.ord.a81b.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70229 | `jdg.micro.ord.a81b.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70230 | `jdg.micro.ord.a81b.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70231 | `jdg.micro.ord.a86.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70232 | `jdg.micro.ord.a86.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70233 | `jdg.micro.ord.a86.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70234 | `jdg.micro.ord.a86.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70235 | `jdg.micro.ord.a86.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70236 | `jdg.micro.ord.a86.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70237 | `jdg.micro.ord.a86.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70238 | `jdg.micro.ord.a86.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70239 | `jdg.micro.ord.a87.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70240 | `jdg.micro.ord.a87.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70241 | `jdg.micro.ord.a87.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70242 | `jdg.micro.ord.a87.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70243 | `jdg.micro.ord.a87.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70244 | `jdg.micro.ord.a119a.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70245 | `jdg.micro.ord.a119a.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70246 | `jdg.micro.ord.a119a.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70247 | `jdg.micro.ord.a119a.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70248 | `jdg.micro.ord.a119a.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70249 | `jdg.micro.ord.a119a.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70250 | `jdg.micro.ord.a119a.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70251 | `jdg.micro.ord.a119a.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70252 | `jdg.micro.ord.a119a.r9` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70253 | `jdg.micro.ord.a119a.r10` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70254 | `jdg.micro.ord.a120.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70255 | `jdg.micro.ord.a120.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70256 | `jdg.micro.ord.a120.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70257 | `jdg.micro.ord.a120.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70258 | `jdg.micro.ord.a120.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70259 | `jdg.micro.ord.a121.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70260 | `jdg.micro.ord.a121.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70261 | `jdg.micro.ord.a121.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70262 | `jdg.micro.ord.a121.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70263 | `jdg.micro.ord.a121.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70264 | `jdg.micro.ord.a122.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70265 | `jdg.micro.ord.a122.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70266 | `jdg.micro.ord.a122.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70267 | `jdg.micro.ord.a122.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70268 | `jdg.micro.ord.a122.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70269 | `jdg.micro.ord.a123.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70270 | `jdg.micro.ord.a123.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70271 | `jdg.micro.ord.a123.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70272 | `jdg.micro.ord.a123.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70273 | `jdg.micro.ord.a123.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70274 | `jdg.micro.ord.a124.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70275 | `jdg.micro.ord.a124.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70276 | `jdg.micro.ord.a124.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70277 | `jdg.micro.ord.a124.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70278 | `jdg.micro.ord.a124.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70279 | `jdg.micro.ord.a125.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70280 | `jdg.micro.ord.a125.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70281 | `jdg.micro.ord.a125.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70282 | `jdg.micro.ord.a125.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70283 | `jdg.micro.ord.a125.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70284 | `jdg.micro.ord.a126.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70285 | `jdg.micro.ord.a126.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70286 | `jdg.micro.ord.a126.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70287 | `jdg.micro.ord.a126.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70288 | `jdg.micro.ord.a126.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70289 | `jdg.micro.ord.a127.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70290 | `jdg.micro.ord.a127.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70291 | `jdg.micro.ord.a127.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70292 | `jdg.micro.ord.a127.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70293 | `jdg.micro.ord.a127.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70294 | `jdg.micro.ord.a138a.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70295 | `jdg.micro.ord.a138a.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70296 | `jdg.micro.ord.a138a.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70297 | `jdg.micro.ord.a138a.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70298 | `jdg.micro.ord.a138a.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70299 | `jdg.micro.ord.a138a.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70300 | `jdg.micro.ord.a138a.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70301 | `jdg.micro.ord.a138a.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70302 | `jdg.micro.ord.a138a.r9` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70303 | `jdg.micro.ord.a138a.r10` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70304 | `jdg.micro.ord.a138a.r11` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70305 | `jdg.micro.ord.a138a.r12` | 🔴 BLOCK | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70306 | `jdg.micro.ord.a138a.r13` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70307 | `jdg.micro.ord.a138a.r14` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70308 | `jdg.micro.ord.a138a.r15` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70309 | `jdg.micro.ord.a138a.r16` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70310 | `jdg.micro.ord.a138a.r17` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70311 | `jdg.micro.ord.a138a.r18` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70312 | `jdg.micro.ord.a138a.r19` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70313 | `jdg.micro.ord.a138a.r20` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70314 | `jdg.micro.ord.a138a.r21` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70315 | `jdg.micro.ord.a138a.r22` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70316 | `jdg.micro.ord.a138a.r23` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70317 | `jdg.micro.ord.a138a.r24` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70318 | `jdg.micro.ord.a138a.r25` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70319 | `jdg.micro.ord.a138a.r26` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70320 | `jdg.micro.ord.a138a.r27` | 🔴 BLOCK | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70321 | `jdg.micro.ord.a138a.r28` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70322 | `jdg.micro.ord.a138a.r29` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70323 | `jdg.micro.ord.a138a.r30` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70324 | `jdg.micro.ord.a193a.r1` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70325 | `jdg.micro.ord.a193a.r2` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70326 | `jdg.micro.ord.a193a.r3` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70327 | `jdg.micro.ord.a193a.r4` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70328 | `jdg.micro.ord.a193a.r5` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70329 | `jdg.micro.ord.a193a.r6` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70330 | `jdg.micro.ord.a193a.r7` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70331 | `jdg.micro.ord.a193a.r8` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70332 | `jdg.micro.ord.a193a.r9` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
+| 70333 | `jdg.micro.ord.a193a.r10` |  | Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.) |
 
 ### `rules/micro/p24_innovations_enterprise.rego` (29 reguł)
 
@@ -6243,70 +6297,67 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 80001 | `jdg.micro.pkpir.p9.r1` |  | §9 rozporządzenia MF z 15.11.2025 r. w sprawie PKPiR |
-| 80002 | `jdg.micro.pkpir.p9.r2` |  | §9 ust. 1 rozporządzenia MF w sprawie PKPiR |
-| 80003 | `jdg.micro.pkpir.p9.r3` |  | §9 ust. 1 rozporządzenia MF w sprawie PKPiR |
-| 80004 | `jdg.micro.pkpir.p9.r4` |  | §9 ust. 2 rozporządzenia MF w sprawie PKPiR |
-| 80005 | `jdg.micro.pkpir.p9.r5` | 🔴 BLOCK | §9 ust. 1 rozporządzenia MF w sprawie PKPiR |
-| 80006 | `jdg.micro.pkpir.p9.r6` |  | §9 ust. 3 rozporządzenia MF w sprawie PKPiR |
-| 80007 | `jdg.micro.pkpir.p9.r7` |  | §9 ust. 2 rozporządzenia MF w sprawie PKPiR |
-| 80008 | `jdg.micro.pkpir.p9.r8` |  | §9 ust. 2 rozporządzenia MF w sprawie PKPiR |
+| 80001 | `jdg.micro.pkpir.p9.r1` |  | §9 rozporządzenia Ministra Finansów z dnia 15 listopada 2025... |
+| 80002 | `jdg.micro.pkpir.p9.r2` |  | §9 ust. 1 rozporządzenia Ministra Finansów z dnia 15 listopa... |
+| 80003 | `jdg.micro.pkpir.p9.r3` |  | §9 ust. 1 rozporządzenia Ministra Finansów z dnia 15 listopa... |
+| 80004 | `jdg.micro.pkpir.p9.r4` |  | §9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopa... |
+| 80005 | `jdg.micro.pkpir.p9.r5` | 🔴 BLOCK | §9 ust. 1 rozporządzenia Ministra Finansów z dnia 15 listopa... |
+| 80006 | `jdg.micro.pkpir.p9.r6` |  | §9 ust. 3 rozporządzenia Ministra Finansów z dnia 15 listopa... |
+| 80007 | `jdg.micro.pkpir.p9.r7` |  | §9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopa... |
+| 80008 | `jdg.micro.pkpir.p9.r8` |  | §9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopa... |
 | 80009 | `jdg.micro.pkpir.p9.r9` |  | §9 w zw. z Art. 109 VAT |
-| 80010 | `jdg.micro.pkpir.p9.r10` |  | §9 rozporządzenia MF w sprawie PKPiR + Art. 193a OrdPU |
-| 80099 | `jdg.micro.pkpir.p9.fallback` |  | §9 rozporządzenia MF w sprawie PKPiR |
+| 80010 | `jdg.micro.pkpir.p9.r10` |  | §9 rozporządzenia Ministra Finansów z dnia 15 listopada 2025... |
+| 80099 | `jdg.micro.pkpir.p9.fallback` |  | §9 rozporządzenia Ministra Finansów z dnia 15 listopada 2025... |
 
-### `rules/micro/pkpir/pkpir_kolumny.rego` (12 reguł)
+### `rules/micro/pkpir/pkpir_kolumny.rego` (11 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 80101 | `jdg.micro.pkpir_columns.p10.r1` |  | §10 rozporządzenia MF z 15.11.2025 r. |
-| 80102 | `jdg.micro.pkpir_columns.p10.r2` |  | §10 ust. 1 pkt 1 rozporządzenia MF w sprawie PKPiR |
-| 80103 | `jdg.micro.pkpir_columns.p10.r3` |  | §10 ust. 1 pkt 2-3 rozporządzenia MF w sprawie PKPiR |
-| 80104 | `jdg.micro.pkpir_columns.p10.r4` |  | §10 ust. 1 pkt 4-5 rozporządzenia MF w sprawie PKPiR |
-| 80105 | `jdg.micro.pkpir_columns.p10.r5` |  | §11 rozporządzenia MF w sprawie PKPiR |
-| 80106 | `jdg.micro.pkpir_columns.p10.r6` |  | §12 rozporządzenia MF w sprawie PKPiR |
-| 80107 | `jdg.micro.pkpir_columns.p10.r7` |  | §12 ust. 4-5 rozporządzenia MF w sprawie PKPiR |
-| 80108 | `jdg.micro.pkpir_columns.p10.r8` |  | §12 ust. 6 rozporządzenia MF w sprawie PKPiR |
-| 80109 | `jdg.micro.pkpir_columns.p10.r9` | 🔴 BLOCK | §10 rozporządzenia MF w sprawie PKPiR + Art. 56 KKS |
+| 80101 | `jdg.micro.pkpir_columns.p10.r1` |  | §10 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
+| 80102 | `jdg.micro.pkpir_columns.p10.r2` |  | §10 ust. 1 pkt 1 rozporządzenia Ministra Finansów z dnia 15 ... |
+| 80103 | `jdg.micro.pkpir_columns.p10.r3` |  | §10 ust. 1 pkt 2-3 rozporządzenia Ministra Finansów z dnia 1... |
+| 80104 | `jdg.micro.pkpir_columns.p10.r4` |  | §10 ust. 1 pkt 4-5 rozporządzenia Ministra Finansów z dnia 1... |
+| 80105 | `jdg.micro.pkpir_columns.p10.r5` |  | §11 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
+| 80106 | `jdg.micro.pkpir_columns.p10.r6` |  | §12 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
+| 80107 | `jdg.micro.pkpir_columns.p10.r7` |  | §12 ust. 4-5 rozporządzenia Ministra Finansów z dnia 15 list... |
+| 80108 | `jdg.micro.pkpir_columns.p10.r8` |  | §12 ust. 6 rozporządzenia Ministra Finansów z dnia 15 listop... |
+| 80109 | `jdg.micro.pkpir_columns.p10.r9` | 🔴 BLOCK | §10 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
 | 80110 | `jdg.micro.pkpir_columns.p10.r10` |  | §12 w zw. z Art. 46 SUS |
 | 80111 | `jdg.micro.pkpir_columns.p10.r11` | 🔴 BLOCK | Art. 56 § 1 KKS |
-| 80199 | `jdg.micro.pkpir_columns.p10.fallback` |  | §10-12 rozporządzenia MF w sprawie PKPiR |
 
-### `rules/micro/pkpir/pkpir_korekty.rego` (9 reguł)
+### `rules/micro/pkpir/pkpir_korekty.rego` (8 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 80601 | `jdg.micro.pkpir_corrections.c1.r1` |  | §9 ust. 2 rozporządzenia MF z 15.11.2025 r. |
-| 80602 | `jdg.micro.pkpir_corrections.c1.r2` |  | §9 ust. 2 rozporządzenia MF w sprawie PKPiR |
-| 80603 | `jdg.micro.pkpir_corrections.c1.r3` | 🔴 BLOCK | §9 ust. 2 rozporządzenia MF w sprawie PKPiR |
-| 80604 | `jdg.micro.pkpir_corrections.c1.r4` |  | §9 ust. 2 rozporządzenia MF w sprawie PKPiR + Art. 14 PIT |
-| 80605 | `jdg.micro.pkpir_corrections.c1.r5` |  | §9 ust. 2 rozporządzenia MF w sprawie PKPiR + Art. 22 PIT |
+| 80601 | `jdg.micro.pkpir_corrections.c1.r1` |  | §9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopa... |
+| 80602 | `jdg.micro.pkpir_corrections.c1.r2` |  | §9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopa... |
+| 80603 | `jdg.micro.pkpir_corrections.c1.r3` | 🔴 BLOCK | §9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopa... |
+| 80604 | `jdg.micro.pkpir_corrections.c1.r4` |  | §9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopa... |
+| 80605 | `jdg.micro.pkpir_corrections.c1.r5` |  | §9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopa... |
 | 80606 | `jdg.micro.pkpir_corrections.c1.r6` | 🟡 TRIAGE | Art. 81-81c OrdPU, §9 ust. 2 PKPiR |
 | 80607 | `jdg.micro.pkpir_corrections.c1.r7` |  | §9 PKPiR + Art. 86 VAT |
 | 80608 | `jdg.micro.pkpir_corrections.c1.r8` |  | Art. 81 OrdPU (istotność) |
-| 80699 | `jdg.micro.pkpir_corrections.c1.fallback` |  | §9 rozporządzenia MF w sprawie PKPiR |
 
-### `rules/micro/pkpir/pkpir_koszty.rego` (11 reguł)
+### `rules/micro/pkpir/pkpir_koszty.rego` (10 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 80301 | `jdg.micro.pkpir_costs.p15.r1` |  | §15 rozporządzenia MF z 15.11.2025 r. |
-| 80302 | `jdg.micro.pkpir_costs.p15.r2` |  | §16 rozporządzenia MF w sprawie PKPiR |
-| 80303 | `jdg.micro.pkpir_costs.p15.r3` |  | §17 rozporządzenia MF w sprawie PKPiR |
-| 80304 | `jdg.micro.pkpir_costs.p15.r4` |  | §18 rozporządzenia MF w sprawie PKPiR |
-| 80305 | `jdg.micro.pkpir_costs.p15.r5` |  | §19 rozporządzenia MF w sprawie PKPiR |
-| 80306 | `jdg.micro.pkpir_costs.p15.r6` |  | §18 ust. 2 rozporządzenia MF w sprawie PKPiR |
-| 80307 | `jdg.micro.pkpir_costs.p15.r7` | 🔴 BLOCK | Art. 23 PIT, §21 rozporządzenia MF w sprawie PKPiR |
-| 80308 | `jdg.micro.pkpir_costs.p15.r8` | 🔴 BLOCK | Art. 22p PIT, §19 rozporządzenia MF w sprawie PKPiR |
-| 80309 | `jdg.micro.pkpir_costs.p15.r9` |  | §19 Rozp. MF PKPiR + Art. 22-25 Prawa przedsiębiorców |
+| 80301 | `jdg.micro.pkpir_costs.p15.r1` |  | §15 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
+| 80302 | `jdg.micro.pkpir_costs.p15.r2` |  | §16 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
+| 80303 | `jdg.micro.pkpir_costs.p15.r3` |  | §17 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
+| 80304 | `jdg.micro.pkpir_costs.p15.r4` |  | §18 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
+| 80305 | `jdg.micro.pkpir_costs.p15.r5` |  | §19 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
+| 80306 | `jdg.micro.pkpir_costs.p15.r6` |  | §18 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listop... |
+| 80307 | `jdg.micro.pkpir_costs.p15.r7` | 🔴 BLOCK | Art. 23 PIT, §21 rozporządzenia Ministra Finansów z dnia 15 ... |
+| 80308 | `jdg.micro.pkpir_costs.p15.r8` | 🔴 BLOCK | Art. 22p PIT, §19 rozporządzenia Ministra Finansów z dnia 15... |
+| 80309 | `jdg.micro.pkpir_costs.p15.r9` |  | §19 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
 | 80310 | `jdg.micro.pkpir_costs.p15.r10` |  | Art. 22 ust. 5-5c PIT |
-| 80399 | `jdg.micro.pkpir_costs.p15.fallback` |  | §15-20 rozporządzenia MF w sprawie PKPiR |
 
-### `rules/micro/pkpir/pkpir_nkup.rego` (11 reguł)
+### `rules/micro/pkpir/pkpir_nkup.rego` (10 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 80401 | `jdg.micro.pkpir_nkup.p21.r1` |  | §21 rozporządzenia MF z 15.11.2025 r. |
+| 80401 | `jdg.micro.pkpir_nkup.p21.r1` |  | §21 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
 | 80402 | `jdg.micro.pkpir_nkup.p21.r2` |  | Art. 22-25 Prawa przedsiębiorców |
 | 80403 | `jdg.micro.pkpir_nkup.p21.r3` |  | Art. 23 ust. 1 pkt 23 PIT |
 | 80404 | `jdg.micro.pkpir_nkup.p21.r4` |  | Art. 22p PIT |
@@ -6316,37 +6367,34 @@
 | 80408 | `jdg.micro.pkpir_nkup.p21.r8` |  | Art. 23 ust. 1 pkt 18 PIT |
 | 80409 | `jdg.micro.pkpir_nkup.p21.r9` |  | Art. 23 ust. 1 pkt 43 PIT |
 | 80410 | `jdg.micro.pkpir_nkup.p21.r10` | 🔴 BLOCK | Art. 56 KKS |
-| 80499 | `jdg.micro.pkpir_nkup.p21.fallback` |  | §21 rozporządzenia MF w sprawie PKPiR |
 
-### `rules/micro/pkpir/pkpir_przychody.rego` (11 reguł)
+### `rules/micro/pkpir/pkpir_przychody.rego` (10 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 80201 | `jdg.micro.pkpir_revenue.p13.r1` |  | §13 rozporządzenia MF z 15.11.2025 r. |
-| 80202 | `jdg.micro.pkpir_revenue.p13.r2` | 🟡 TRIAGE | §13 ust. 1 rozporządzenia MF w sprawie PKPiR |
-| 80203 | `jdg.micro.pkpir_revenue.p13.r3` |  | §13 ust. 1 pkt 1 rozporządzenia MF w sprawie PKPiR |
-| 80204 | `jdg.micro.pkpir_revenue.p13.r4` |  | §13 ust. 1 pkt 2 rozporządzenia MF w sprawie PKPiR |
-| 80205 | `jdg.micro.pkpir_revenue.p13.r5` |  | §14 rozporządzenia MF w sprawie PKPiR |
+| 80201 | `jdg.micro.pkpir_revenue.p13.r1` |  | §13 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
+| 80202 | `jdg.micro.pkpir_revenue.p13.r2` | 🟡 TRIAGE | §13 ust. 1 rozporządzenia Ministra Finansów z dnia 15 listop... |
+| 80203 | `jdg.micro.pkpir_revenue.p13.r3` |  | §13 ust. 1 pkt 1 rozporządzenia Ministra Finansów z dnia 15 ... |
+| 80204 | `jdg.micro.pkpir_revenue.p13.r4` |  | §13 ust. 1 pkt 2 rozporządzenia Ministra Finansów z dnia 15 ... |
+| 80205 | `jdg.micro.pkpir_revenue.p13.r5` |  | §14 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
 | 80206 | `jdg.micro.pkpir_revenue.p13.r6` |  | Art. 14 ust. 1 PIT w zw. z §13 PKPiR |
 | 80207 | `jdg.micro.pkpir_revenue.p13.r7` |  | Art. 14 ust. 1 PIT w zw. z §13 PKPiR |
-| 80208 | `jdg.micro.pkpir_revenue.p13.r8` | 🔴 BLOCK | §13 rozporządzenia MF w sprawie PKPiR |
+| 80208 | `jdg.micro.pkpir_revenue.p13.r8` | 🔴 BLOCK | §13 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
 | 80209 | `jdg.micro.pkpir_revenue.p13.r9` |  | §13 PKPiR w zw. z Art. 44 PIT |
 | 80210 | `jdg.micro.pkpir_revenue.p13.r10` |  | §13 PKPiR w zw. z Art. 81 ustawy o świadczeniach zdrowotnych |
-| 80299 | `jdg.micro.pkpir_revenue.p13.fallback` |  | §13-14 rozporządzenia MF w sprawie PKPiR |
 
-### `rules/micro/pkpir/pkpir_remanent.rego` (9 reguł)
+### `rules/micro/pkpir/pkpir_remanent.rego` (8 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 80501 | `jdg.micro.pkpir_remnant.p27.r1` |  | §27 rozporządzenia MF z 15.11.2025 r. |
-| 80502 | `jdg.micro.pkpir_remnant.p27.r2` |  | §28 ust. 1 rozporządzenia MF w sprawie PKPiR |
-| 80503 | `jdg.micro.pkpir_remnant.p27.r3` |  | §28 ust. 2 rozporządzenia MF w sprawie PKPiR |
-| 80504 | `jdg.micro.pkpir_remnant.p27.r4` |  | §29 rozporządzenia MF w sprawie PKPiR |
+| 80501 | `jdg.micro.pkpir_remnant.p27.r1` |  | §27 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
+| 80502 | `jdg.micro.pkpir_remnant.p27.r2` |  | §28 ust. 1 rozporządzenia Ministra Finansów z dnia 15 listop... |
+| 80503 | `jdg.micro.pkpir_remnant.p27.r3` |  | §28 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listop... |
+| 80504 | `jdg.micro.pkpir_remnant.p27.r4` |  | §29 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
 | 80505 | `jdg.micro.pkpir_remnant.p27.r5` | 🔴 BLOCK | Art. 24 ust. 3 PIT |
 | 80506 | `jdg.micro.pkpir_remnant.p27.r6` | 🟡 TRIAGE | Art. 24 ust. 2 PIT, Art. 44 ust. 2 PIT |
-| 80507 | `jdg.micro.pkpir_remnant.p27.r7` | 🟡 TRIAGE | §27 rozporządzenia MF w sprawie PKPiR |
-| 80508 | `jdg.micro.pkpir_remnant.p27.r8` |  | §28-29 rozporządzenia MF w sprawie PKPiR |
-| 80599 | `jdg.micro.pkpir_remnant.p27.fallback` |  | §27-29 rozporządzenia MF w sprawie PKPiR |
+| 80507 | `jdg.micro.pkpir_remnant.p27.r7` | 🟡 TRIAGE | §27 rozporządzenia Ministra Finansów z dnia 15 listopada 202... |
+| 80508 | `jdg.micro.pkpir_remnant.p27.r8` |  | §28-29 rozporządzenia Ministra Finansów z dnia 15 listopada ... |
 
 ### `rules/micro/plan33_agricultural_tax.rego` (5 reguł)
 
@@ -6362,26 +6410,26 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 6200 | `jdg.cb.r1` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6201 | `jdg.cb.r10` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6202 | `jdg.cb.r11` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6203 | `jdg.cb.r12` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6204 | `jdg.cb.r13` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6205 | `jdg.cb.r14` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6206 | `jdg.cb.r15` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6207 | `jdg.cb.r16` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6208 | `jdg.cb.r17` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6209 | `jdg.cb.r18` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6210 | `jdg.cb.r19` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6211 | `jdg.cb.r2` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6212 | `jdg.cb.r20` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6213 | `jdg.cb.r3` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6214 | `jdg.cb.r4` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6215 | `jdg.cb.r5` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6216 | `jdg.cb.r6` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6217 | `jdg.cb.r7` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6218 | `jdg.cb.r8` |  | Dyrektywy UE, UPO, TP, CFC |
-| 6219 | `jdg.cb.r9` |  | Dyrektywy UE, UPO, TP, CFC |
+| 6200 | `jdg.cb.r1` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6201 | `jdg.cb.r10` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6202 | `jdg.cb.r11` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6203 | `jdg.cb.r12` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6204 | `jdg.cb.r13` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6205 | `jdg.cb.r14` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6206 | `jdg.cb.r15` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6207 | `jdg.cb.r16` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6208 | `jdg.cb.r17` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6209 | `jdg.cb.r18` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6210 | `jdg.cb.r19` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6211 | `jdg.cb.r2` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6212 | `jdg.cb.r20` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6213 | `jdg.cb.r3` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6214 | `jdg.cb.r4` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6215 | `jdg.cb.r5` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6216 | `jdg.cb.r6` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6217 | `jdg.cb.r7` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6218 | `jdg.cb.r8` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
+| 6219 | `jdg.cb.r9` |  | transakcje międzynarodowe (WNT/WDT/TP/CFC/MDR) |
 
 ### `rules/micro/plan33_ceidg.rego` (15 reguł)
 
@@ -6547,50 +6595,50 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 3600 | `jdg.micro.kks.plan33.a54.r1` |  | Art. 77 KKS |
+| 3600 | `jdg.micro.kks.plan33.a54.r1` |  | Art. 77 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 | 3601 | `jdg.micro.kks.plan33.a54.r2` |  | Dz.U. 2024 poz. 628 t.j. KKS |
-| 3602 | `jdg.micro.kks.plan33.a54.r6` |  | Art. 54 § 1 KKS |
-| 3603 | `jdg.micro.kks.plan33.a54.r7` |  | Art. 54 § 2 KKS |
-| 3604 | `jdg.micro.kks.plan33.a54.r8` |  | Art. 54 § 3 KKS |
-| 3605 | `jdg.micro.kks.plan33.a54.r9` |  | Art. 54 § 4 KKS |
-| 3606 | `jdg.micro.kks.plan33.a62.r10` |  | Art. 62 § 2 KKS |
-| 3607 | `jdg.micro.kks.plan33.a62.r11` |  | Art. 62 § 2 KKS |
-| 3608 | `jdg.micro.kks.plan33.a62.r6` |  | Art. 62 § 2 KKS |
-| 3609 | `jdg.micro.kks.plan33.a62.r7` |  | Art. 62 § 2 KKS |
-| 3610 | `jdg.micro.kks.plan33.a62.r8` |  | Art. 62 § 2 KKS |
-| 3611 | `jdg.micro.kks.plan33.a62.r9` |  | Art. 62 § 2 KKS |
-| 3612 | `jdg.micro.kks.plan33.a56.r1` |  | Art. 56 KKS |
-| 3613 | `jdg.micro.kks.plan33.a56.r2` |  | Art. 56 KKS |
-| 3614 | `jdg.micro.kks.plan33.a56.r3` |  | Art. 56 KKS |
-| 3615 | `jdg.micro.kks.plan33.a56.r6` |  | Art. 56 § 1 KKS |
-| 3616 | `jdg.micro.kks.plan33.a56.r7` |  | Art. 56 § 2 KKS |
-| 3617 | `jdg.micro.kks.plan33.a56.r8` |  | Art. 56 § 3 KKS |
-| 3618 | `jdg.micro.kks.plan33.a56.r9` |  | Art. 56 § 4 KKS |
-| 3619 | `jdg.micro.kks.plan33.a57.r1` |  | Art. 57 KKS |
-| 3620 | `jdg.micro.kks.plan33.a57.r10` |  | Art. 57 § 5 KKS |
+| 3602 | `jdg.micro.kks.plan33.a54.r6` |  | Art. 54 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3603 | `jdg.micro.kks.plan33.a54.r7` |  | Art. 54 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3604 | `jdg.micro.kks.plan33.a54.r8` |  | Art. 54 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3605 | `jdg.micro.kks.plan33.a54.r9` |  | Art. 54 § 4 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3606 | `jdg.micro.kks.plan33.a62.r10` |  | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3607 | `jdg.micro.kks.plan33.a62.r11` |  | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3608 | `jdg.micro.kks.plan33.a62.r6` |  | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3609 | `jdg.micro.kks.plan33.a62.r7` |  | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3610 | `jdg.micro.kks.plan33.a62.r8` |  | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3611 | `jdg.micro.kks.plan33.a62.r9` |  | Art. 62 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3612 | `jdg.micro.kks.plan33.a56.r1` |  | Art. 56 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3613 | `jdg.micro.kks.plan33.a56.r2` |  | Art. 56 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3614 | `jdg.micro.kks.plan33.a56.r3` |  | Art. 56 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3615 | `jdg.micro.kks.plan33.a56.r6` |  | Art. 56 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3616 | `jdg.micro.kks.plan33.a56.r7` |  | Art. 56 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3617 | `jdg.micro.kks.plan33.a56.r8` |  | Art. 56 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3618 | `jdg.micro.kks.plan33.a56.r9` |  | Art. 56 § 4 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3619 | `jdg.micro.kks.plan33.a57.r1` |  | Art. 57 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3620 | `jdg.micro.kks.plan33.a57.r10` |  | Art. 57 § 5 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 3621 | `jdg.micro.kks.plan33.a57.r11` |  | Art. 56 § 5 w zw. z Art. 57 KKS |
-| 3622 | `jdg.micro.kks.plan33.a57.r2` |  | Art. 57 KKS |
-| 3623 | `jdg.micro.kks.plan33.a57.r6` |  | Art. 57 § 1 KKS |
-| 3624 | `jdg.micro.kks.plan33.a57.r7` |  | Art. 57 § 2 KKS |
-| 3625 | `jdg.micro.kks.plan33.a57.r8` |  | Art. 57 § 3 KKS |
+| 3622 | `jdg.micro.kks.plan33.a57.r2` |  | Art. 57 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3623 | `jdg.micro.kks.plan33.a57.r6` |  | Art. 57 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3624 | `jdg.micro.kks.plan33.a57.r7` |  | Art. 57 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3625 | `jdg.micro.kks.plan33.a57.r8` |  | Art. 57 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 3626 | `jdg.micro.kks.plan33.a57.r9` |  | Art. 57 § 4 w zw. z § 10 JPK_VAT |
-| 3627 | `jdg.micro.kks.plan33.a58.r1` |  | Art. 58 KKS |
-| 3628 | `jdg.micro.kks.plan33.a58.r2` |  | Art. 58 KKS |
-| 3629 | `jdg.micro.kks.plan33.a59.r1` |  | Art. 59 KKS |
-| 3630 | `jdg.micro.kks.plan33.a60.r1` |  | Art. 60 KKS |
-| 3631 | `jdg.micro.kks.plan33.a61.r1` |  | Art. 61 KKS |
-| 3632 | `jdg.micro.kks.plan33.a62.r1` |  | Art. 62 KKS |
-| 3633 | `jdg.micro.kks.plan33.a63.r1` |  | Art. 63 KKS |
-| 3634 | `jdg.micro.kks.plan33.a64.r1` |  | Art. 64 KKS |
-| 3635 | `jdg.micro.kks.plan33.a77.r6` |  | Art. 77 § 1 KKS |
-| 3636 | `jdg.micro.kks.plan33.a77.r7` |  | Art. 77 § 2 KKS |
-| 3637 | `jdg.micro.kks.plan33.a77.r8` |  | Art. 77 § 3 KKS |
-| 3638 | `jdg.micro.kks.plan33.a77.r9` |  | Art. 77 § 4 KKS |
-| 3639 | `jdg.micro.kks.plan33.a80.r1` |  | Art. 80 § 1 KKS |
-| 3640 | `jdg.micro.kks.plan33.a80.r2` |  | Art. 80 § 2 KKS |
-| 3641 | `jdg.micro.kks.plan33.a80.r3` |  | Art. 80 § 3 KKS |
-| 3642 | `jdg.micro.kks.plan33.a80.r4` |  | Art. 80 § 4 KKS |
-| 3643 | `jdg.micro.kks.plan33.a80.r5` |  | Art. 80 § 5 KKS |
+| 3627 | `jdg.micro.kks.plan33.a58.r1` |  | Art. 58 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3628 | `jdg.micro.kks.plan33.a58.r2` |  | Art. 58 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3629 | `jdg.micro.kks.plan33.a59.r1` |  | Art. 59 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3630 | `jdg.micro.kks.plan33.a60.r1` |  | Art. 60 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3631 | `jdg.micro.kks.plan33.a61.r1` |  | Art. 61 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3632 | `jdg.micro.kks.plan33.a62.r1` |  | Art. 62 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3633 | `jdg.micro.kks.plan33.a63.r1` |  | Art. 63 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3634 | `jdg.micro.kks.plan33.a64.r1` |  | Art. 64 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 3635 | `jdg.micro.kks.plan33.a77.r6` |  | Art. 77 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3636 | `jdg.micro.kks.plan33.a77.r7` |  | Art. 77 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3637 | `jdg.micro.kks.plan33.a77.r8` |  | Art. 77 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3638 | `jdg.micro.kks.plan33.a77.r9` |  | Art. 77 § 4 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3639 | `jdg.micro.kks.plan33.a80.r1` |  | Art. 80 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3640 | `jdg.micro.kks.plan33.a80.r2` |  | Art. 80 § 2 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3641 | `jdg.micro.kks.plan33.a80.r3` |  | Art. 80 § 3 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3642 | `jdg.micro.kks.plan33.a80.r4` |  | Art. 80 § 4 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 3643 | `jdg.micro.kks.plan33.a80.r5` |  | Art. 80 § 5 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 3644 | `jdg.kks.mit.r1` |  | Dz.U. 2024 poz. 628 t.j. KKS |
 | 3645 | `jdg.kks.mit.r10` |  | Dz.U. 2024 poz. 628 t.j. KKS |
 | 3646 | `jdg.kks.mit.r2` |  | Dz.U. 2024 poz. 628 t.j. KKS |
@@ -6695,16 +6743,16 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 6800 | `jdg.mdr.r1` |  | Art. 86a-86o Ordynacji Podatkowej (MDR) |
-| 6801 | `jdg.mdr.r10` |  | Art. 86a-86o Ordynacji Podatkowej (MDR) |
-| 6802 | `jdg.mdr.r2` |  | Art. 86a-86o Ordynacji Podatkowej (MDR) |
-| 6803 | `jdg.mdr.r3` |  | Art. 86a-86o Ordynacji Podatkowej (MDR) |
-| 6804 | `jdg.mdr.r4` |  | Art. 86a-86o Ordynacji Podatkowej (MDR) |
-| 6805 | `jdg.mdr.r5` |  | Art. 86a-86o Ordynacji Podatkowej (MDR) |
-| 6806 | `jdg.mdr.r6` |  | Art. 86a-86o Ordynacji Podatkowej (MDR) |
-| 6807 | `jdg.mdr.r7` |  | Art. 86a-86o Ordynacji Podatkowej (MDR) |
-| 6808 | `jdg.mdr.r8` |  | Art. 86a-86o Ordynacji Podatkowej (MDR) |
-| 6809 | `jdg.mdr.r9` |  | Art. 86a-86o Ordynacji Podatkowej (MDR) |
+| 6800 | `jdg.mdr.r1` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 6801 | `jdg.mdr.r10` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 6802 | `jdg.mdr.r2` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 6803 | `jdg.mdr.r3` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 6804 | `jdg.mdr.r4` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 6805 | `jdg.mdr.r5` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 6806 | `jdg.mdr.r6` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 6807 | `jdg.mdr.r7` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 6808 | `jdg.mdr.r8` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 6809 | `jdg.mdr.r9` |  | Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
 
 ### `rules/micro/plan33_ord.rego` (1 reguł)
 
@@ -7119,15 +7167,15 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 7400 | `jdg.tax_trans.r1` |  | Ustawa o podatkach i opłatach lokalnych (Art. 8-13) |
-| 7401 | `jdg.tax_trans.r10` |  | Ustawa o podatkach i opłatach lokalnych (Art. 8-13) |
-| 7402 | `jdg.tax_trans.r2` |  | Ustawa o podatkach i opłatach lokalnych (Art. 8-13) |
-| 7403 | `jdg.tax_trans.r3` |  | Ustawa o podatkach i opłatach lokalnych (Art. 8-13) |
-| 7404 | `jdg.tax_trans.r4` |  | Ustawa o podatkach i opłatach lokalnych (Art. 8-13) |
-| 7405 | `jdg.tax_trans.r5` |  | Ustawa o podatkach i opłatach lokalnych (Art. 8-13) |
-| 7406 | `jdg.tax_trans.r6` |  | Ustawa o podatkach i opłatach lokalnych (Art. 8-13) |
-| 7407 | `jdg.tax_trans.r7` |  | Ustawa o podatkach i opłatach lokalnych (Art. 8-13) |
-| 7408 | `jdg.tax_trans.r8` |  | Ustawa o podatkach i opłatach lokalnych (Art. 8-13) |
+| 7400 | `jdg.tax_trans.r1` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 7401 | `jdg.tax_trans.r10` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 7402 | `jdg.tax_trans.r2` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 7403 | `jdg.tax_trans.r3` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 7404 | `jdg.tax_trans.r4` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 7405 | `jdg.tax_trans.r5` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 7406 | `jdg.tax_trans.r6` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 7407 | `jdg.tax_trans.r7` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 7408 | `jdg.tax_trans.r8` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
 | 7410 | `jdg.tax_trans.r11` |  | Art. 8 pkt 1 ustawy o podatkach i opłatach lokalnych |
 | 7411 | `jdg.tax_trans.r12` |  | Art. 8 pkt 2 ustawy o podatkach i opłatach lokalnych |
 | 7412 | `jdg.tax_trans.r13` |  | Art. 8 pkt 3 ustawy o podatkach i opłatach lokalnych |
@@ -7139,51 +7187,51 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 6500 | `jdg.tp.r1` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6501 | `jdg.tp.r10` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6502 | `jdg.tp.r11` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6503 | `jdg.tp.r12` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6504 | `jdg.tp.r13` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6505 | `jdg.tp.r14` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6506 | `jdg.tp.r15` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6507 | `jdg.tp.r2` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6508 | `jdg.tp.r3` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6509 | `jdg.tp.r4` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6510 | `jdg.tp.r5` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6511 | `jdg.tp.r6` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6512 | `jdg.tp.r7` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6513 | `jdg.tp.r8` |  | Art. 23o-23zf PIT (Ceny transferowe) |
-| 6514 | `jdg.tp.r9` |  | Art. 23o-23zf PIT (Ceny transferowe) |
+| 6500 | `jdg.tp.r1` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6501 | `jdg.tp.r10` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6502 | `jdg.tp.r11` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6503 | `jdg.tp.r12` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6504 | `jdg.tp.r13` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6505 | `jdg.tp.r14` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6506 | `jdg.tp.r15` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6507 | `jdg.tp.r2` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6508 | `jdg.tp.r3` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6509 | `jdg.tp.r4` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6510 | `jdg.tp.r5` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6511 | `jdg.tp.r6` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6512 | `jdg.tp.r7` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6513 | `jdg.tp.r8` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 6514 | `jdg.tp.r9` |  | Art. 23m-23zf ustawy z dnia 26 lipca 1991 r. o podatku docho... |
 
 ### `rules/micro/plan33_uor.rego` (25 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 4800 | `jdg.uor.r1` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4801 | `jdg.uor.r10` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4802 | `jdg.uor.r11` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4803 | `jdg.uor.r12` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4804 | `jdg.uor.r13` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4805 | `jdg.uor.r14` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4806 | `jdg.uor.r15` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4807 | `jdg.uor.r16` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4808 | `jdg.uor.r17` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4809 | `jdg.uor.r18` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4810 | `jdg.uor.r19` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4811 | `jdg.uor.r2` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4812 | `jdg.uor.r20` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4813 | `jdg.uor.r21` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4814 | `jdg.uor.r22` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4815 | `jdg.uor.r23` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4816 | `jdg.uor.r24` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4817 | `jdg.uor.r25` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4818 | `jdg.uor.r3` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4819 | `jdg.uor.r4` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4820 | `jdg.uor.r5` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4821 | `jdg.uor.r6` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4822 | `jdg.uor.r7` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4823 | `jdg.uor.r8` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
-| 4824 | `jdg.uor.r9` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
+| 4800 | `jdg.uor.r1` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4801 | `jdg.uor.r10` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4802 | `jdg.uor.r11` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4803 | `jdg.uor.r12` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4804 | `jdg.uor.r13` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4805 | `jdg.uor.r14` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4806 | `jdg.uor.r15` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4807 | `jdg.uor.r16` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4808 | `jdg.uor.r17` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4809 | `jdg.uor.r18` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4810 | `jdg.uor.r19` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4811 | `jdg.uor.r2` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4812 | `jdg.uor.r20` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4813 | `jdg.uor.r21` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4814 | `jdg.uor.r22` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4815 | `jdg.uor.r23` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4816 | `jdg.uor.r24` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4817 | `jdg.uor.r25` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4818 | `jdg.uor.r3` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4819 | `jdg.uor.r4` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4820 | `jdg.uor.r5` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4821 | `jdg.uor.r6` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4822 | `jdg.uor.r7` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4823 | `jdg.uor.r8` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
+| 4824 | `jdg.uor.r9` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
 
 ### `rules/micro/plan33_vat.rego` (112 reguł)
 
@@ -7306,186 +7354,186 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 2300 | `jdg.zus.a11.r2` |  | Art. 12 SUS |
-| 2301 | `jdg.zus.a11.r3` |  | Art. 11 ust. 2 SUS |
-| 2302 | `jdg.zus.a11.r4` |  | Art. 11 ust. 2 SUS |
-| 2303 | `jdg.zus.a11.r5` |  | Art. 11 ust. 4 SUS |
-| 2304 | `jdg.zus.a11.r6` |  | Art. 12 ust. 1 SUS |
-| 2305 | `jdg.zus.a11.r7` |  | Art. 22 ust. 5 SUS |
-| 2306 | `jdg.zus.a13.r2` |  | Art. 13 pkt 4 i 4a SUS |
-| 2307 | `jdg.zus.a13.r3` |  | Art. 13 pkt 4 SUS |
-| 2308 | `jdg.zus.a16.r1` |  | Art. 16 SUS |
-| 2309 | `jdg.zus.a16.r2` |  | Art. 16 SUS |
-| 2310 | `jdg.zus.a18.r10` |  | Art. 18c SUS |
-| 2311 | `jdg.zus.a18.r11` |  | Art. 18c ust. 1 pkt 1 SUS |
-| 2312 | `jdg.zus.a18.r12` |  | Art. 18c ust. 3 SUS |
-| 2313 | `jdg.zus.a18.r13` |  | Art. 18c ust. 11 SUS |
-| 2314 | `jdg.zus.a18.r14` |  | Art. 18c ust. 1 pkt 2 SUS |
-| 2315 | `jdg.zus.a18.r15` |  | Art. 18a ust. 1, Art. 18a ust. 4 SUS |
-| 2316 | `jdg.zus.a18.r16` |  | Art. 18 ust. 10 SUS |
-| 2317 | `jdg.zus.a18.r17` |  | Art. 18 ust. 10 w zw. z Art. 18a SUS |
-| 2318 | `jdg.zus.a18.r18` |  | Art. 18 ust. 8 pkt 5 SUS |
-| 2319 | `jdg.zus.a18.r19` |  | Art. 18 ust. 9 SUS |
-| 2320 | `jdg.zus.a18.r20` |  | Art. 18 ust. 11 SUS |
-| 2321 | `jdg.zus.a18.r6` |  | Art. 18 ust. 8 SUS |
-| 2322 | `jdg.zus.a18.r7` |  | Art. 18 ust. 8 pkt 5 SUS |
-| 2323 | `jdg.zus.a18.r8` |  | Art. 18a SUS |
-| 2324 | `jdg.zus.a18.r9` |  | Art. 18a ust. 2 SUS |
-| 2325 | `jdg.zus.a22.r10` |  | Art. 22 ust. 3 SUS |
-| 2326 | `jdg.zus.a22.r11` |  | Art. 22 ust. 5 SUS |
-| 2327 | `jdg.zus.a22.r12` |  | Art. 22 ust. 5 pkt 6 SUS |
-| 2328 | `jdg.zus.a22.r9` |  | Art. 22 ust. 1 SUS |
-| 2329 | `jdg.zus.a24.r1` |  | Art. 104 ustawy o promocji zatrudnienia |
-| 2330 | `jdg.zus.a24.r2` |  | Art. 21 ustawy o FGSP |
-| 2331 | `jdg.zus.a24.r3` |  | Art. 104 ust. 1 pkt 1 ustawy o promocji zatrudnienia |
-| 2332 | `jdg.zus.a24.r4` |  | Art. 21 ustawy o FGSP |
-| 2333 | `jdg.zus.a26.r1` |  | Art. 26 ustawy zasiłkowej |
-| 2334 | `jdg.zus.a26.r10` |  | Art. 29 ustawy zasiłkowej |
-| 2335 | `jdg.zus.a26.r11` |  | Art. 35 ustawy zasiłkowej |
-| 2336 | `jdg.zus.a26.r12` |  | Art. 8 ustawy zasiłkowej |
-| 2337 | `jdg.zus.a26.r13` |  | Art. 18 ustawy zasiłkowej |
-| 2338 | `jdg.zus.a26.r14` |  | Art. 18 ust. 1 ustawy zasiłkowej |
-| 2339 | `jdg.zus.a26.r2` |  | Art. 4 ust. 1 pkt 2 ustawy zasiłkowej (90 dni dla dobrowolne... |
-| 2340 | `jdg.zus.a26.r3` |  | Art. 36 ust. 1 ustawy zasiłkowej |
-| 2341 | `jdg.zus.a26.r4` |  | Art. 36 ust. 2 ustawy zasiłkowej |
-| 2342 | `jdg.zus.a26.r5` |  | Art. 8 ustawy zasiłkowej |
-| 2343 | `jdg.zus.a26.r6` |  | Art. 8 pkt 2 ustawy zasiłkowej |
-| 2344 | `jdg.zus.a26.r7` |  | Art. 36 ust. 2 ustawy zasiłkowej |
-| 2345 | `jdg.zus.a26.r8` |  | Art. 36 ust. 3 ustawy zasiłkowej |
-| 2346 | `jdg.zus.a26.r9` |  | Art. 38 ustawy zasiłkowej |
-| 2347 | `jdg.zus.a32.r1` |  | Art. 104b ustawy o promocji zatrudnienia |
-| 2348 | `jdg.zus.a32.r2` |  | Art. 104a ustawy o promocji zatrudnienia |
-| 2349 | `jdg.zus.a35.r1` |  | Art. 21 ustawy o FGSP |
-| 2350 | `jdg.zus.a35.r2` |  | Art. 21 ust. 1 ustawy o FGSP |
-| 2351 | `jdg.zus.a36.r1` |  | Ustawa o FGSP |
-| 2352 | `jdg.zus.a46.r4` |  | Art. 46 ust. 1 SUS |
-| 2353 | `jdg.zus.a46.r5` |  | Art. 46 ust. 2 SUS |
-| 2354 | `jdg.zus.a46.r6` |  | Art. 46 ust. 3 SUS |
-| 2355 | `jdg.zus.a46.r7` |  | Art. 46 ust. 4 SUS |
-| 2356 | `jdg.zus.a46.r8` |  | Art. 46 ust. 6 SUS |
-| 2357 | `jdg.zus.a47.r4` |  | Art. 47 ust. 1 SUS |
-| 2358 | `jdg.zus.a47.r5` |  | Art. 47 ust. 1 pkt 2 SUS (10. dzień dla JDG, NIE 20!) |
-| 2359 | `jdg.zus.a47.r6` |  | Art. 12 par. 5 Ordynacji podatkowej |
-| 2360 | `jdg.zus.a47.r7` |  | Art. 47 ust. 2 SUS |
-| 2361 | `jdg.zus.a6.r10` |  | Art. 6 ust. 1 pkt 22 SUS |
-| 2362 | `jdg.zus.a6.r11` |  | Art. 6 ust. 1 pkt 16 SUS |
-| 2363 | `jdg.zus.a6.r12` |  | Art. 6 ust. 1 pkt 17 SUS |
-| 2364 | `jdg.zus.a6.r13` |  | Art. 6 ust. 1 pkt 20 SUS |
-| 2365 | `jdg.zus.a6.r14` |  | Art. 6 ust. 1 pkt 23 SUS |
-| 2366 | `jdg.zus.a6.r15` |  | Art. 6 ust. 1 pkt 5 w zw. z Art. 8 ust. 6 SUS |
-| 2367 | `jdg.zus.a6.r7` |  | Art. 6 ust. 1 pkt 6 SUS |
-| 2368 | `jdg.zus.a6.r8` |  | Art. 6 ust. 1 pkt 4 SUS |
-| 2369 | `jdg.zus.a6.r9` |  | Art. 6 ust. 1 pkt 4 SUS |
-| 2370 | `jdg.zus.a8.r10` |  | Art. 9 ust. 4 SUS |
-| 2371 | `jdg.zus.a8.r11` |  | Art. 9 ust. 6 SUS |
-| 2372 | `jdg.zus.a8.r12` |  | Art. 9 ust. 1 pkt 5 SUS |
-| 2373 | `jdg.zus.a8.r13` |  | Art. 6 ust. 1 pkt 4 w zw. z Art. 9 SUS |
-| 2374 | `jdg.zus.a8.r14` |  | Art. 9 ust. 5 SUS |
-| 2375 | `jdg.zus.a8.r15` |  | Art. 18a ust. 5 SUS |
-| 2376 | `jdg.zus.a8.r6` |  | Art. 9 ust. 1a SUS |
-| 2377 | `jdg.zus.a8.r7` |  | Art. 9 ust. 1c SUS |
-| 2378 | `jdg.zus.a8.r8` |  | Art. 9 ust. 2 SUS |
-| 2379 | `jdg.zus.a8.r9` |  | Art. 9 ust. 2a SUS |
-| 2380 | `jdg.zus.a9.r10` |  | Art. 9 ust. 1e SUS |
-| 2381 | `jdg.zus.a9.r11` |  | Art. 9 ust. 1f SUS |
-| 2382 | `jdg.zus.a9.r12` |  | Art. 9 ust. 1g SUS |
-| 2383 | `jdg.zus.a9.r13` |  | Art. 9 ust. 1h SUS |
-| 2384 | `jdg.zus.a9.r14` |  | Art. 9 ust. 1i SUS |
-| 2385 | `jdg.zus.a9.r15` |  | Art. 9 ust. 6 SUS |
-| 2386 | `jdg.zus.a9.r6` |  | Art. 9 ust. 1a SUS |
-| 2387 | `jdg.zus.a9.r7` |  | Art. 9 ust. 1b SUS |
-| 2388 | `jdg.zus.a9.r8` |  | Art. 9 ust. 1c SUS |
-| 2389 | `jdg.zus.a9.r9` |  | Art. 9 ust. 1d SUS |
-| 2390 | `jdg.zus.a1.r1` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2391 | `jdg.zus.a1.r10` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2392 | `jdg.zus.a1.r11` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2393 | `jdg.zus.a1.r12` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2394 | `jdg.zus.a1.r13` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2395 | `jdg.zus.a1.r14` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2396 | `jdg.zus.a1.r15` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2397 | `jdg.zus.a1.r2` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2398 | `jdg.zus.a1.r3` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2399 | `jdg.zus.a1.r4` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2400 | `jdg.zus.a1.r5` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2401 | `jdg.zus.a1.r6` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2402 | `jdg.zus.a1.r7` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2403 | `jdg.zus.a1.r8` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2404 | `jdg.zus.a1.r9` |  | Art. 18 ust. 8 SUS — Podstawa wymiaru składek JDG |
-| 2405 | `jdg.zus.a2.r1` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2406 | `jdg.zus.a2.r10` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2407 | `jdg.zus.a2.r11` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2408 | `jdg.zus.a2.r12` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2409 | `jdg.zus.a2.r13` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2410 | `jdg.zus.a2.r14` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2411 | `jdg.zus.a2.r15` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2412 | `jdg.zus.a2.r2` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2413 | `jdg.zus.a2.r3` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2414 | `jdg.zus.a2.r4` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2415 | `jdg.zus.a2.r5` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2416 | `jdg.zus.a2.r6` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2417 | `jdg.zus.a2.r7` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2418 | `jdg.zus.a2.r8` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2419 | `jdg.zus.a2.r9` |  | Ustawa zasiłkowa — Świadczenia z ZUS |
-| 2420 | `jdg.zus.a3.r1` |  | Art. 47 SUS — Terminy płatności składek |
-| 2421 | `jdg.zus.a3.r10` |  | Art. 47 SUS — Terminy płatności składek |
-| 2422 | `jdg.zus.a3.r2` |  | Art. 47 SUS — Terminy płatności składek |
-| 2423 | `jdg.zus.a3.r3` |  | Art. 47 SUS — Terminy płatności składek |
-| 2424 | `jdg.zus.a3.r4` |  | Art. 47 SUS — Terminy płatności składek |
-| 2425 | `jdg.zus.a3.r5` |  | Art. 47 SUS — Terminy płatności składek |
-| 2426 | `jdg.zus.a3.r6` |  | Art. 47 SUS — Terminy płatności składek |
-| 2427 | `jdg.zus.a3.r7` |  | Art. 47 SUS — Terminy płatności składek |
-| 2428 | `jdg.zus.a3.r8` |  | Art. 47 SUS — Terminy płatności składek |
-| 2429 | `jdg.zus.a3.r9` |  | Art. 47 SUS — Terminy płatności składek |
-| 2430 | `jdg.zus.a4.r1` |  | Art. 22 ustawy SUS |
-| 2431 | `jdg.zus.a4.r10` |  | Art. 16 ustawy SUS |
-| 2432 | `jdg.zus.a4.r11` |  | Art. 16 ustawy SUS |
-| 2433 | `jdg.zus.a4.r12` |  | Art. 16 ustawy SUS |
-| 2434 | `jdg.zus.a4.r13` |  | Art. 104 ustawy o promocji zatrudnienia |
-| 2435 | `jdg.zus.a4.r14` |  | Art. 25 ustawy o FGSP |
-| 2436 | `jdg.zus.a4.r15` |  | Suma skladek |
-| 2437 | `jdg.zus.a4.r2` |  | Art. 22 ustawy SUS |
-| 2438 | `jdg.zus.a4.r3` |  | Art. 22 ustawy SUS |
-| 2439 | `jdg.zus.a4.r4` |  | Art. 22 ustawy SUS |
-| 2440 | `jdg.zus.a4.r5` |  | Art. 104 ustawy o promocji zatrudnienia |
-| 2441 | `jdg.zus.a4.r6` |  | Art. 25 ustawy o FGSP |
-| 2442 | `jdg.zus.a4.r7` |  | Art. 16 ustawy SUS |
-| 2443 | `jdg.zus.a4.r8` |  | Art. 16 ustawy SUS |
-| 2444 | `jdg.zus.a4.r9` |  | Art. 16 ustawy SUS |
-| 2445 | `jdg.zus.a5.r1` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2446 | `jdg.zus.a5.r10` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2447 | `jdg.zus.a5.r11` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2448 | `jdg.zus.a5.r12` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2449 | `jdg.zus.a5.r13` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2450 | `jdg.zus.a5.r14` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2451 | `jdg.zus.a5.r15` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2452 | `jdg.zus.a5.r2` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2453 | `jdg.zus.a5.r3` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2454 | `jdg.zus.a5.r4` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2455 | `jdg.zus.a5.r5` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2456 | `jdg.zus.a5.r6` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2457 | `jdg.zus.a5.r7` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2458 | `jdg.zus.a5.r8` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2459 | `jdg.zus.a5.r9` |  | Art. 18c SUS — Mały ZUS Plus |
-| 2460 | `jdg.zus.a17.r1` |  | Art. 18a SUS — Ulga na start (6 mies.) |
-| 2461 | `jdg.zus.a17.r10` |  | Art. 18a SUS — Ulga na start (6 mies.) |
-| 2462 | `jdg.zus.a17.r2` |  | Art. 18a SUS — Ulga na start (6 mies.) |
-| 2463 | `jdg.zus.a17.r3` |  | Art. 18a SUS — Ulga na start (6 mies.) |
-| 2464 | `jdg.zus.a17.r4` |  | Art. 18a SUS — Ulga na start (6 mies.) |
-| 2465 | `jdg.zus.a17.r5` |  | Art. 18a SUS — Ulga na start (6 mies.) |
-| 2466 | `jdg.zus.a17.r6` |  | Art. 18a SUS — Ulga na start (6 mies.) |
-| 2467 | `jdg.zus.a17.r7` |  | Art. 18a SUS — Ulga na start (6 mies.) |
-| 2468 | `jdg.zus.a17.r8` |  | Art. 18a SUS — Ulga na start (6 mies.) |
-| 2469 | `jdg.zus.a17.r9` |  | Art. 18a SUS — Ulga na start (6 mies.) |
-| 2470 | `jdg.zus.a18.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 2471 | `jdg.zus.a18.r10_b` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 2472 | `jdg.zus.a18.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 2473 | `jdg.zus.a18.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 2474 | `jdg.zus.a18.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 2475 | `jdg.zus.a18.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 2476 | `jdg.zus.a18.r6_b` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 2477 | `jdg.zus.a18.r7_b` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 2478 | `jdg.zus.a18.r8_b` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 2479 | `jdg.zus.a18.r9_b` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
+| 2300 | `jdg.micro.zus.a11.r2` |  | Art. 12 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2301 | `jdg.micro.zus.a11.r3` |  | Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o syste... |
+| 2302 | `jdg.micro.zus.a11.r4` |  | Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o syste... |
+| 2303 | `jdg.micro.zus.a11.r5` |  | Art. 11 ust. 4 ustawy z dnia 13 października 1998 r. o syste... |
+| 2304 | `jdg.micro.zus.a11.r6` |  | Art. 12 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 2305 | `jdg.micro.zus.a11.r7` |  | Art. 22 ust. 5 ustawy z dnia 13 października 1998 r. o syste... |
+| 2306 | `jdg.micro.zus.a13.r2` |  | Art. 13 pkt 4 i 4a SUS |
+| 2307 | `jdg.micro.zus.a13.r3` |  | Art. 13 pkt 4 SUS |
+| 2308 | `jdg.micro.zus.a16.r1` |  | Art. 16 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2309 | `jdg.micro.zus.a16.r2` |  | Art. 16 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2310 | `jdg.micro.zus.a18.r10` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2311 | `jdg.micro.zus.a18.r11` |  | Art. 18c ust. 1 pkt 1 ustawy z dnia 13 października 1998 r. ... |
+| 2312 | `jdg.micro.zus.a18.r12` |  | Art. 18c ust. 3 ustawy z dnia 13 października 1998 r. o syst... |
+| 2313 | `jdg.micro.zus.a18.r13` |  | Art. 18c ust. 11 ustawy z dnia 13 października 1998 r. o sys... |
+| 2314 | `jdg.micro.zus.a18.r14` |  | Art. 18c ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. ... |
+| 2315 | `jdg.micro.zus.a18.r15` |  | Art. 18a ust. 1, Art. 18a ust. 4 SUS |
+| 2316 | `jdg.micro.zus.a18.r16` |  | Art. 18 ust. 10 ustawy z dnia 13 października 1998 r. o syst... |
+| 2317 | `jdg.micro.zus.a18.r17` |  | Art. 18 ust. 10 w zw. z Art. 18a SUS |
+| 2318 | `jdg.micro.zus.a18.r18` |  | Art. 18 ust. 8 pkt 5 ustawy z dnia 13 października 1998 r. o... |
+| 2319 | `jdg.micro.zus.a18.r19` |  | Art. 18 ust. 9 ustawy z dnia 13 października 1998 r. o syste... |
+| 2320 | `jdg.micro.zus.a18.r20` |  | Art. 18 ust. 11 ustawy z dnia 13 października 1998 r. o syst... |
+| 2321 | `jdg.micro.zus.a18.r6` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2322 | `jdg.micro.zus.a18.r7` |  | Art. 18 ust. 8 pkt 5 ustawy z dnia 13 października 1998 r. o... |
+| 2323 | `jdg.micro.zus.a18.r8` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2324 | `jdg.micro.zus.a18.r9` |  | Art. 18a ust. 2 ustawy z dnia 13 października 1998 r. o syst... |
+| 2325 | `jdg.micro.zus.a22.r10` |  | Art. 22 ust. 3 ustawy z dnia 13 października 1998 r. o syste... |
+| 2326 | `jdg.micro.zus.a22.r11` |  | Art. 22 ust. 5 ustawy z dnia 13 października 1998 r. o syste... |
+| 2327 | `jdg.micro.zus.a22.r12` |  | Art. 22 ust. 5 pkt 6 ustawy z dnia 13 października 1998 r. o... |
+| 2328 | `jdg.micro.zus.a22.r9` |  | Art. 22 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 2329 | `jdg.micro.zus.a24.r1` |  | Art. 104 ustawy o promocji zatrudnienia |
+| 2330 | `jdg.micro.zus.a24.r2` |  | Art. 21 ustawy o FGSP |
+| 2331 | `jdg.micro.zus.a24.r3` |  | Art. 104 ust. 1 pkt 1 ustawy o promocji zatrudnienia |
+| 2332 | `jdg.micro.zus.a24.r4` |  | Art. 21 ustawy o FGSP |
+| 2333 | `jdg.micro.zus.a26.r1` |  | Art. 26 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 2334 | `jdg.micro.zus.a26.r10` |  | Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 2335 | `jdg.micro.zus.a26.r11` |  | Art. 35 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 2336 | `jdg.micro.zus.a26.r12` |  | Art. 8 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pien... |
+| 2337 | `jdg.micro.zus.a26.r13` |  | Art. 18 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 2338 | `jdg.micro.zus.a26.r14` |  | Art. 18 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 2339 | `jdg.micro.zus.a26.r2` |  | Art. 4 ust. 1 pkt 2 ustawy zasiłkowej (90 dni dla dobrowolne... |
+| 2340 | `jdg.micro.zus.a26.r3` |  | Art. 36 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 2341 | `jdg.micro.zus.a26.r4` |  | Art. 36 ust. 2 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 2342 | `jdg.micro.zus.a26.r5` |  | Art. 8 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pien... |
+| 2343 | `jdg.micro.zus.a26.r6` |  | Art. 8 pkt 2 ustawy zasiłkowej |
+| 2344 | `jdg.micro.zus.a26.r7` |  | Art. 36 ust. 2 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 2345 | `jdg.micro.zus.a26.r8` |  | Art. 36 ust. 3 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 2346 | `jdg.micro.zus.a26.r9` |  | Art. 38 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 2347 | `jdg.micro.zus.a32.r1` |  | Art. 104b ustawy o promocji zatrudnienia |
+| 2348 | `jdg.micro.zus.a32.r2` |  | Art. 104a ustawy o promocji zatrudnienia |
+| 2349 | `jdg.micro.zus.a35.r1` |  | Art. 21 ustawy o FGSP |
+| 2350 | `jdg.micro.zus.a35.r2` |  | Art. 21 ust. 1 ustawy o FGSP |
+| 2351 | `jdg.micro.zus.a36.r1` |  | Ustawa o FGSP |
+| 2352 | `jdg.micro.zus.a46.r4` |  | Art. 46 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 2353 | `jdg.micro.zus.a46.r5` |  | Art. 46 ust. 2 ustawy z dnia 13 października 1998 r. o syste... |
+| 2354 | `jdg.micro.zus.a46.r6` |  | Art. 46 ust. 3 ustawy z dnia 13 października 1998 r. o syste... |
+| 2355 | `jdg.micro.zus.a46.r7` |  | Art. 46 ust. 4 ustawy z dnia 13 października 1998 r. o syste... |
+| 2356 | `jdg.micro.zus.a46.r8` |  | Art. 46 ust. 6 ustawy z dnia 13 października 1998 r. o syste... |
+| 2357 | `jdg.micro.zus.a47.r4` |  | Art. 47 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 2358 | `jdg.micro.zus.a47.r5` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
+| 2359 | `jdg.micro.zus.a47.r6` |  | Art. 12 par. 5 Ordynacji podatkowej |
+| 2360 | `jdg.micro.zus.a47.r7` |  | Art. 47 ust. 2 ustawy z dnia 13 października 1998 r. o syste... |
+| 2361 | `jdg.micro.zus.a6.r10` |  | Art. 6 ust. 1 pkt 22 ustawy z dnia 13 października 1998 r. o... |
+| 2362 | `jdg.micro.zus.a6.r11` |  | Art. 6 ust. 1 pkt 16 ustawy z dnia 13 października 1998 r. o... |
+| 2363 | `jdg.micro.zus.a6.r12` |  | Art. 6 ust. 1 pkt 17 ustawy z dnia 13 października 1998 r. o... |
+| 2364 | `jdg.micro.zus.a6.r13` |  | Art. 6 ust. 1 pkt 20 ustawy z dnia 13 października 1998 r. o... |
+| 2365 | `jdg.micro.zus.a6.r14` |  | Art. 6 ust. 1 pkt 23 ustawy z dnia 13 października 1998 r. o... |
+| 2366 | `jdg.micro.zus.a6.r15` |  | Art. 6 ust. 1 pkt 5 w zw. z Art. 8 ust. 6 SUS |
+| 2367 | `jdg.micro.zus.a6.r7` |  | Art. 6 ust. 1 pkt 6 ustawy z dnia 13 października 1998 r. o ... |
+| 2368 | `jdg.micro.zus.a6.r8` |  | Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o ... |
+| 2369 | `jdg.micro.zus.a6.r9` |  | Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o ... |
+| 2370 | `jdg.micro.zus.a8.r10` |  | Art. 9 ust. 4 ustawy z dnia 13 października 1998 r. o system... |
+| 2371 | `jdg.micro.zus.a8.r11` |  | Art. 9 ust. 6 ustawy z dnia 13 października 1998 r. o system... |
+| 2372 | `jdg.micro.zus.a8.r12` |  | Art. 9 ust. 1 pkt 5 ustawy z dnia 13 października 1998 r. o ... |
+| 2373 | `jdg.micro.zus.a8.r13` |  | Art. 6 ust. 1 pkt 4 w zw. z Art. 9 SUS |
+| 2374 | `jdg.micro.zus.a8.r14` |  | Art. 9 ust. 5 ustawy z dnia 13 października 1998 r. o system... |
+| 2375 | `jdg.micro.zus.a8.r15` |  | Art. 18a ust. 5 ustawy z dnia 13 października 1998 r. o syst... |
+| 2376 | `jdg.micro.zus.a8.r6` |  | Art. 9 ust. 1a SUS |
+| 2377 | `jdg.micro.zus.a8.r7` |  | Art. 9 ust. 1c SUS |
+| 2378 | `jdg.micro.zus.a8.r8` |  | Art. 9 ust. 2 ustawy z dnia 13 października 1998 r. o system... |
+| 2379 | `jdg.micro.zus.a8.r9` |  | Art. 9 ust. 2a SUS |
+| 2380 | `jdg.micro.zus.a9.r10` |  | Art. 9 ust. 1e SUS |
+| 2381 | `jdg.micro.zus.a9.r11` |  | Art. 9 ust. 1f SUS |
+| 2382 | `jdg.micro.zus.a9.r12` |  | Art. 9 ust. 1g SUS |
+| 2383 | `jdg.micro.zus.a9.r13` |  | Art. 9 ust. 1h SUS |
+| 2384 | `jdg.micro.zus.a9.r14` |  | Art. 9 ust. 1i SUS |
+| 2385 | `jdg.micro.zus.a9.r15` |  | Art. 9 ust. 6 ustawy z dnia 13 października 1998 r. o system... |
+| 2386 | `jdg.micro.zus.a9.r6` |  | Art. 9 ust. 1a SUS |
+| 2387 | `jdg.micro.zus.a9.r7` |  | Art. 9 ust. 1b SUS |
+| 2388 | `jdg.micro.zus.a9.r8` |  | Art. 9 ust. 1c SUS |
+| 2389 | `jdg.micro.zus.a9.r9` |  | Art. 9 ust. 1d SUS |
+| 2390 | `jdg.micro.zus.a1.r1` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2391 | `jdg.micro.zus.a1.r10` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2392 | `jdg.micro.zus.a1.r11` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2393 | `jdg.micro.zus.a1.r12` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2394 | `jdg.micro.zus.a1.r13` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2395 | `jdg.micro.zus.a1.r14` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2396 | `jdg.micro.zus.a1.r15` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2397 | `jdg.micro.zus.a1.r2` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2398 | `jdg.micro.zus.a1.r3` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2399 | `jdg.micro.zus.a1.r4` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2400 | `jdg.micro.zus.a1.r5` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2401 | `jdg.micro.zus.a1.r6` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2402 | `jdg.micro.zus.a1.r7` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2403 | `jdg.micro.zus.a1.r8` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2404 | `jdg.micro.zus.a1.r9` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 2405 | `jdg.micro.zus.a2.r1` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2406 | `jdg.micro.zus.a2.r10` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2407 | `jdg.micro.zus.a2.r11` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2408 | `jdg.micro.zus.a2.r12` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2409 | `jdg.micro.zus.a2.r13` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2410 | `jdg.micro.zus.a2.r14` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2411 | `jdg.micro.zus.a2.r15` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2412 | `jdg.micro.zus.a2.r2` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2413 | `jdg.micro.zus.a2.r3` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2414 | `jdg.micro.zus.a2.r4` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2415 | `jdg.micro.zus.a2.r5` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2416 | `jdg.micro.zus.a2.r6` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2417 | `jdg.micro.zus.a2.r7` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2418 | `jdg.micro.zus.a2.r8` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2419 | `jdg.micro.zus.a2.r9` |  | Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych... |
+| 2420 | `jdg.micro.zus.a3.r1` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2421 | `jdg.micro.zus.a3.r10` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2422 | `jdg.micro.zus.a3.r2` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2423 | `jdg.micro.zus.a3.r3` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2424 | `jdg.micro.zus.a3.r4` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2425 | `jdg.micro.zus.a3.r5` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2426 | `jdg.micro.zus.a3.r6` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2427 | `jdg.micro.zus.a3.r7` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2428 | `jdg.micro.zus.a3.r8` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2429 | `jdg.micro.zus.a3.r9` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2430 | `jdg.micro.zus.a4.r1` |  | Art. 22 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2431 | `jdg.micro.zus.a4.r10` |  | Art. 16 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2432 | `jdg.micro.zus.a4.r11` |  | Art. 16 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2433 | `jdg.micro.zus.a4.r12` |  | Art. 16 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2434 | `jdg.micro.zus.a4.r13` |  | Art. 104 ustawy o promocji zatrudnienia |
+| 2435 | `jdg.micro.zus.a4.r14` |  | Art. 25 ustawy o FGSP |
+| 2436 | `jdg.micro.zus.a4.r15` |  | Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o sys... |
+| 2437 | `jdg.micro.zus.a4.r2` |  | Art. 22 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2438 | `jdg.micro.zus.a4.r3` |  | Art. 22 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2439 | `jdg.micro.zus.a4.r4` |  | Art. 22 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2440 | `jdg.micro.zus.a4.r5` |  | Art. 104 ustawy o promocji zatrudnienia |
+| 2441 | `jdg.micro.zus.a4.r6` |  | Art. 25 ustawy o FGSP |
+| 2442 | `jdg.micro.zus.a4.r7` |  | Art. 16 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2443 | `jdg.micro.zus.a4.r8` |  | Art. 16 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2444 | `jdg.micro.zus.a4.r9` |  | Art. 16 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 2445 | `jdg.micro.zus.a5.r1` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2446 | `jdg.micro.zus.a5.r10` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2447 | `jdg.micro.zus.a5.r11` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2448 | `jdg.micro.zus.a5.r12` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2449 | `jdg.micro.zus.a5.r13` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2450 | `jdg.micro.zus.a5.r14` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2451 | `jdg.micro.zus.a5.r15` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2452 | `jdg.micro.zus.a5.r2` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2453 | `jdg.micro.zus.a5.r3` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2454 | `jdg.micro.zus.a5.r4` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2455 | `jdg.micro.zus.a5.r5` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2456 | `jdg.micro.zus.a5.r6` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2457 | `jdg.micro.zus.a5.r7` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2458 | `jdg.micro.zus.a5.r8` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2459 | `jdg.micro.zus.a5.r9` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2460 | `jdg.micro.zus.a17.r1` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2461 | `jdg.micro.zus.a17.r10` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2462 | `jdg.micro.zus.a17.r2` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2463 | `jdg.micro.zus.a17.r3` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2464 | `jdg.micro.zus.a17.r4` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2465 | `jdg.micro.zus.a17.r5` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2466 | `jdg.micro.zus.a17.r6` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2467 | `jdg.micro.zus.a17.r7` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2468 | `jdg.micro.zus.a17.r8` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2469 | `jdg.micro.zus.a17.r9` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 2470 | `jdg.micro.zus.a18.r1` |  | Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń... |
+| 2471 | `jdg.micro.zus.a18.r10_b` |  | Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń... |
+| 2472 | `jdg.micro.zus.a18.r2` |  | Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń... |
+| 2473 | `jdg.micro.zus.a18.r3` |  | Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń... |
+| 2474 | `jdg.micro.zus.a18.r4` |  | Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń... |
+| 2475 | `jdg.micro.zus.a18.r5` |  | Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń... |
+| 2476 | `jdg.micro.zus.a18.r6_b` |  | Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń... |
+| 2477 | `jdg.micro.zus.a18.r7_b` |  | Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń... |
+| 2478 | `jdg.micro.zus.a18.r8_b` |  | Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń... |
+| 2479 | `jdg.micro.zus.a18.r9_b` |  | Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń... |
 
 ### `rules/micro/plan34_ord.rego` (189 reguł)
 
@@ -8135,31 +8183,6 @@
 | 10610 | `jdg.vat.a106e.r10` |  | Art. 106e VAT (elementy faktury) |
 | 10614 | `jdg.vat.a106e.r14` |  | Art. 106e VAT (elementy faktury) |
 
-### `rules/micro/plan34_zus.rego` (20 reguł)
-
-| Priorytet | Rule ID | Routing | Podstawa prawna |
-|:---------:|---------|:-------:|----------------|
-| 601 | `jdg.zus.a6.r1` |  | Art. 6 SUS — Obowiazek ubezpieczenia spolecznego |
-| 602 | `jdg.zus.a6.r2` |  | Art. 6 SUS — Obowiazek ubezpieczenia spolecznego |
-| 603 | `jdg.zus.a6.r3` |  | Art. 6 SUS — Obowiazek ubezpieczenia spolecznego |
-| 604 | `jdg.zus.a6.r4` |  | Art. 6 SUS — Obowiazek ubezpieczenia spolecznego |
-| 605 | `jdg.zus.a6.r5` |  | Art. 6 SUS — Obowiazek ubezpieczenia spolecznego |
-| 606 | `jdg.zus.a6.r6` |  | Art. 6 SUS — Obowiazek ubezpieczenia spolecznego |
-| 701 | `jdg.zus.a7.r1` |  | Art. 7 SUS — Zbieg tytulow z etatem |
-| 801 | `jdg.zus.a8.r1` |  | Art. 8 SUS — Podstawa wymiaru skladek |
-| 802 | `jdg.zus.a8.r2` |  | Art. 8 SUS — Podstawa wymiaru skladek |
-| 803 | `jdg.zus.a8.r3` |  | Art. 8 SUS — Podstawa wymiaru skladek |
-| 804 | `jdg.zus.a8.r4` |  | Art. 8 SUS — Podstawa wymiaru skladek |
-| 805 | `jdg.zus.a8.r5` |  | Art. 8 SUS — Podstawa wymiaru skladek |
-| 901 | `jdg.zus.a9.r1` |  | Art. 9 SUS — Zbieg tytulow ubezpieczenia |
-| 902 | `jdg.zus.a9.r2` |  | Art. 9 SUS — Zbieg tytulow ubezpieczenia |
-| 903 | `jdg.zus.a9.r3` |  | Art. 9 SUS — Zbieg tytulow ubezpieczenia |
-| 1001 | `jdg.zus.a10.r1` |  | Art. 10 SUS — Rozpoczecie obowiazku ubezpieczenia |
-| 1002 | `jdg.zus.a10.r2` |  | Art. 10 SUS — Ustanie obowiazku ubezpieczenia |
-| 1101 | `jdg.zus.a11.r1` |  | Art. 11 SUS — Obowiazek ubezpieczenia |
-| 1201 | `jdg.zus.a12.r1` |  | Art. 12 SUS — Okres wyczekiwania na zasilek chorobowy |
-| 1301 | `jdg.zus.a13.r1` |  | Art. 13 SUS — Ubezpieczenie chorobowe |
-
 ### `rules/micro/pp/pp.rego` (147 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -8771,128 +8794,128 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 90006 | `jdg.micro.sus.a6.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90007 | `jdg.micro.sus.a6.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90008 | `jdg.micro.sus.a6.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90009 | `jdg.micro.sus.a6.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90010 | `jdg.micro.sus.a6.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90011 | `jdg.micro.sus.a6.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90012 | `jdg.micro.sus.a6.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90013 | `jdg.micro.sus.a6.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90014 | `jdg.micro.sus.a6b.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90015 | `jdg.micro.sus.a6b.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90016 | `jdg.micro.sus.a6b.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90017 | `jdg.micro.sus.a6b.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90018 | `jdg.micro.sus.a6b.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90019 | `jdg.micro.sus.a6b.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90020 | `jdg.micro.sus.a9.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90021 | `jdg.micro.sus.a9.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90022 | `jdg.micro.sus.a9.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90023 | `jdg.micro.sus.a9.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90024 | `jdg.micro.sus.a9.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90025 | `jdg.micro.sus.a9.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90026 | `jdg.micro.sus.a9.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90027 | `jdg.micro.sus.a9.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90028 | `jdg.micro.sus.a11.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90029 | `jdg.micro.sus.a11.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90030 | `jdg.micro.sus.a11.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90031 | `jdg.micro.sus.a11.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90032 | `jdg.micro.sus.a11.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90033 | `jdg.micro.sus.a11.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90034 | `jdg.micro.sus.a11.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90035 | `jdg.micro.sus.a11.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90036 | `jdg.micro.sus.a13.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90037 | `jdg.micro.sus.a13.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90038 | `jdg.micro.sus.a13.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90039 | `jdg.micro.sus.a13.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90040 | `jdg.micro.sus.a13.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90041 | `jdg.micro.sus.a13.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90042 | `jdg.micro.sus.a13.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90043 | `jdg.micro.sus.a13.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90044 | `jdg.micro.sus.a14.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90045 | `jdg.micro.sus.a14.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90046 | `jdg.micro.sus.a14.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90047 | `jdg.micro.sus.a14.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90048 | `jdg.micro.sus.a14.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90049 | `jdg.micro.sus.a14.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90050 | `jdg.micro.sus.a14.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90051 | `jdg.micro.sus.a14.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90052 | `jdg.micro.sus.a18.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90053 | `jdg.micro.sus.a18.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90054 | `jdg.micro.sus.a18.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90055 | `jdg.micro.sus.a18.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90056 | `jdg.micro.sus.a18.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90057 | `jdg.micro.sus.a18.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90058 | `jdg.micro.sus.a18.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90059 | `jdg.micro.sus.a18.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90060 | `jdg.micro.sus.a18.r9` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90061 | `jdg.micro.sus.a18.r10` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90062 | `jdg.micro.sus.a18a.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90063 | `jdg.micro.sus.a18a.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90064 | `jdg.micro.sus.a18a.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90065 | `jdg.micro.sus.a18a.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90066 | `jdg.micro.sus.a18a.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90067 | `jdg.micro.sus.a18a.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90068 | `jdg.micro.sus.a18a.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90069 | `jdg.micro.sus.a18a.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90070 | `jdg.micro.sus.a18a.r9` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90071 | `jdg.micro.sus.a18a.r10` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90072 | `jdg.micro.sus.a18c.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90073 | `jdg.micro.sus.a18c.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90074 | `jdg.micro.sus.a18c.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90075 | `jdg.micro.sus.a18c.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90076 | `jdg.micro.sus.a18c.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90077 | `jdg.micro.sus.a18c.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90078 | `jdg.micro.sus.a18c.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90079 | `jdg.micro.sus.a18c.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90080 | `jdg.micro.sus.a18c.r9` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90081 | `jdg.micro.sus.a18c.r10` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90082 | `jdg.micro.sus.a19.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90083 | `jdg.micro.sus.a19.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90084 | `jdg.micro.sus.a19.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90085 | `jdg.micro.sus.a19.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90086 | `jdg.micro.sus.a19.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90087 | `jdg.micro.sus.a19.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90088 | `jdg.micro.sus.a19.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90089 | `jdg.micro.sus.a19.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90090 | `jdg.micro.sus.a22.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90091 | `jdg.micro.sus.a22.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90092 | `jdg.micro.sus.a22.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90093 | `jdg.micro.sus.a22.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90094 | `jdg.micro.sus.a22.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90095 | `jdg.micro.sus.a22.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90096 | `jdg.micro.sus.a22.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90097 | `jdg.micro.sus.a22.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90098 | `jdg.micro.sus.a24.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90099 | `jdg.micro.sus.a24.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90100 | `jdg.micro.sus.a24.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90101 | `jdg.micro.sus.a24.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90102 | `jdg.micro.sus.a24.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90103 | `jdg.micro.sus.a24.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90104 | `jdg.micro.sus.a36.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90105 | `jdg.micro.sus.a36.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90106 | `jdg.micro.sus.a36.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90107 | `jdg.micro.sus.a36.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90108 | `jdg.micro.sus.a36.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90109 | `jdg.micro.sus.a36.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90110 | `jdg.micro.sus.a36.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90111 | `jdg.micro.sus.a36.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90112 | `jdg.micro.sus.a40.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90113 | `jdg.micro.sus.a40.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90114 | `jdg.micro.sus.a40.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90115 | `jdg.micro.sus.a40.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90116 | `jdg.micro.sus.a40.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90117 | `jdg.micro.sus.a40.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90118 | `jdg.micro.sus.a40.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90119 | `jdg.micro.sus.a40.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90120 | `jdg.micro.sus.a47.r1` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90121 | `jdg.micro.sus.a47.r2` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90122 | `jdg.micro.sus.a47.r3` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90123 | `jdg.micro.sus.a47.r4` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90124 | `jdg.micro.sus.a47.r5` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90125 | `jdg.micro.sus.a47.r6` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90126 | `jdg.micro.sus.a47.r7` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
-| 90127 | `jdg.micro.sus.a47.r8` |  | Ustawa o SUS z 13.10.1998 (Dz.U. 1998 nr 137 poz. 887) |
+| 90006 | `jdg.micro.sus.a6.r1` |  | Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o ... |
+| 90007 | `jdg.micro.sus.a6.r2` |  | Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o ... |
+| 90008 | `jdg.micro.sus.a6.r3` |  | Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o ... |
+| 90009 | `jdg.micro.sus.a6.r4` |  | Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o ... |
+| 90010 | `jdg.micro.sus.a6.r5` |  | Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o ... |
+| 90011 | `jdg.micro.sus.a6.r6` |  | Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o ... |
+| 90012 | `jdg.micro.sus.a6.r7` |  | Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o ... |
+| 90013 | `jdg.micro.sus.a6.r8` |  | Art. 6 ust. 1 pkt 4 ustawy z dnia 13 października 1998 r. o ... |
+| 90014 | `jdg.micro.sus.a6b.r1` |  | Art. 6b ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90015 | `jdg.micro.sus.a6b.r2` |  | Art. 6b ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90016 | `jdg.micro.sus.a6b.r3` |  | Art. 6b ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90017 | `jdg.micro.sus.a6b.r4` |  | Art. 6b ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90018 | `jdg.micro.sus.a6b.r5` |  | Art. 6b ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90019 | `jdg.micro.sus.a6b.r6` |  | Art. 6b ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90020 | `jdg.micro.sus.a9.r1` |  | Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o system... |
+| 90021 | `jdg.micro.sus.a9.r2` |  | Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o system... |
+| 90022 | `jdg.micro.sus.a9.r3` |  | Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o system... |
+| 90023 | `jdg.micro.sus.a9.r4` |  | Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o system... |
+| 90024 | `jdg.micro.sus.a9.r5` |  | Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o system... |
+| 90025 | `jdg.micro.sus.a9.r6` |  | Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o system... |
+| 90026 | `jdg.micro.sus.a9.r7` |  | Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o system... |
+| 90027 | `jdg.micro.sus.a9.r8` |  | Art. 9 ust. 1 ustawy z dnia 13 października 1998 r. o system... |
+| 90028 | `jdg.micro.sus.a11.r1` |  | Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o syste... |
+| 90029 | `jdg.micro.sus.a11.r2` |  | Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o syste... |
+| 90030 | `jdg.micro.sus.a11.r3` |  | Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o syste... |
+| 90031 | `jdg.micro.sus.a11.r4` |  | Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o syste... |
+| 90032 | `jdg.micro.sus.a11.r5` |  | Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o syste... |
+| 90033 | `jdg.micro.sus.a11.r6` |  | Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o syste... |
+| 90034 | `jdg.micro.sus.a11.r7` |  | Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o syste... |
+| 90035 | `jdg.micro.sus.a11.r8` |  | Art. 11 ust. 2 ustawy z dnia 13 października 1998 r. o syste... |
+| 90036 | `jdg.micro.sus.a13.r1` |  | Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o system... |
+| 90037 | `jdg.micro.sus.a13.r2` |  | Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o system... |
+| 90038 | `jdg.micro.sus.a13.r3` |  | Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o system... |
+| 90039 | `jdg.micro.sus.a13.r4` |  | Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o system... |
+| 90040 | `jdg.micro.sus.a13.r5` |  | Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o system... |
+| 90041 | `jdg.micro.sus.a13.r6` |  | Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o system... |
+| 90042 | `jdg.micro.sus.a13.r7` |  | Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o system... |
+| 90043 | `jdg.micro.sus.a13.r8` |  | Art. 13 pkt 4 ustawy z dnia 13 października 1998 r. o system... |
+| 90044 | `jdg.micro.sus.a14.r1` |  | Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90045 | `jdg.micro.sus.a14.r2` |  | Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90046 | `jdg.micro.sus.a14.r3` |  | Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90047 | `jdg.micro.sus.a14.r4` |  | Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90048 | `jdg.micro.sus.a14.r5` |  | Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90049 | `jdg.micro.sus.a14.r6` |  | Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90050 | `jdg.micro.sus.a14.r7` |  | Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90051 | `jdg.micro.sus.a14.r8` |  | Art. 14 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90052 | `jdg.micro.sus.a18.r1` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 90053 | `jdg.micro.sus.a18.r2` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 90054 | `jdg.micro.sus.a18.r3` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 90055 | `jdg.micro.sus.a18.r4` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 90056 | `jdg.micro.sus.a18.r5` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 90057 | `jdg.micro.sus.a18.r6` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 90058 | `jdg.micro.sus.a18.r7` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 90059 | `jdg.micro.sus.a18.r8` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 90060 | `jdg.micro.sus.a18.r9` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 90061 | `jdg.micro.sus.a18.r10` |  | Art. 18 ust. 8 ustawy z dnia 13 października 1998 r. o syste... |
+| 90062 | `jdg.micro.sus.a18a.r1` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 90063 | `jdg.micro.sus.a18a.r2` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 90064 | `jdg.micro.sus.a18a.r3` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 90065 | `jdg.micro.sus.a18a.r4` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 90066 | `jdg.micro.sus.a18a.r5` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 90067 | `jdg.micro.sus.a18a.r6` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 90068 | `jdg.micro.sus.a18a.r7` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 90069 | `jdg.micro.sus.a18a.r8` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 90070 | `jdg.micro.sus.a18a.r9` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 90071 | `jdg.micro.sus.a18a.r10` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 90072 | `jdg.micro.sus.a18c.r1` |  | Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o sy... |
+| 90073 | `jdg.micro.sus.a18c.r2` |  | Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o sy... |
+| 90074 | `jdg.micro.sus.a18c.r3` |  | Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o sy... |
+| 90075 | `jdg.micro.sus.a18c.r4` |  | Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o sy... |
+| 90076 | `jdg.micro.sus.a18c.r5` |  | Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o sy... |
+| 90077 | `jdg.micro.sus.a18c.r6` |  | Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o sy... |
+| 90078 | `jdg.micro.sus.a18c.r7` |  | Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o sy... |
+| 90079 | `jdg.micro.sus.a18c.r8` |  | Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o sy... |
+| 90080 | `jdg.micro.sus.a18c.r9` |  | Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o sy... |
+| 90081 | `jdg.micro.sus.a18c.r10` |  | Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o sy... |
+| 90082 | `jdg.micro.sus.a19.r1` |  | Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90083 | `jdg.micro.sus.a19.r2` |  | Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90084 | `jdg.micro.sus.a19.r3` |  | Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90085 | `jdg.micro.sus.a19.r4` |  | Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90086 | `jdg.micro.sus.a19.r5` |  | Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90087 | `jdg.micro.sus.a19.r6` |  | Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90088 | `jdg.micro.sus.a19.r7` |  | Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90089 | `jdg.micro.sus.a19.r8` |  | Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90090 | `jdg.micro.sus.a22.r1` |  | Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o sys... |
+| 90091 | `jdg.micro.sus.a22.r2` |  | Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o sys... |
+| 90092 | `jdg.micro.sus.a22.r3` |  | Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o sys... |
+| 90093 | `jdg.micro.sus.a22.r4` |  | Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o sys... |
+| 90094 | `jdg.micro.sus.a22.r5` |  | Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o sys... |
+| 90095 | `jdg.micro.sus.a22.r6` |  | Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o sys... |
+| 90096 | `jdg.micro.sus.a22.r7` |  | Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o sys... |
+| 90097 | `jdg.micro.sus.a22.r8` |  | Art. 22 ust. 1-4 ustawy z dnia 13 października 1998 r. o sys... |
+| 90098 | `jdg.micro.sus.a24.r1` |  | Art. 24 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90099 | `jdg.micro.sus.a24.r2` |  | Art. 24 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90100 | `jdg.micro.sus.a24.r3` |  | Art. 24 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90101 | `jdg.micro.sus.a24.r4` |  | Art. 24 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90102 | `jdg.micro.sus.a24.r5` |  | Art. 24 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90103 | `jdg.micro.sus.a24.r6` |  | Art. 24 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90104 | `jdg.micro.sus.a36.r1` |  | Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o sys... |
+| 90105 | `jdg.micro.sus.a36.r2` |  | Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o sys... |
+| 90106 | `jdg.micro.sus.a36.r3` |  | Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o sys... |
+| 90107 | `jdg.micro.sus.a36.r4` |  | Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o sys... |
+| 90108 | `jdg.micro.sus.a36.r5` |  | Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o sys... |
+| 90109 | `jdg.micro.sus.a36.r6` |  | Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o sys... |
+| 90110 | `jdg.micro.sus.a36.r7` |  | Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o sys... |
+| 90111 | `jdg.micro.sus.a36.r8` |  | Art. 36 ust. 1-2 ustawy z dnia 13 października 1998 r. o sys... |
+| 90112 | `jdg.micro.sus.a40.r1` |  | Art. 40 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 90113 | `jdg.micro.sus.a40.r2` |  | Art. 40 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 90114 | `jdg.micro.sus.a40.r3` |  | Art. 40 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 90115 | `jdg.micro.sus.a40.r4` |  | Art. 40 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 90116 | `jdg.micro.sus.a40.r5` |  | Art. 40 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 90117 | `jdg.micro.sus.a40.r6` |  | Art. 40 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 90118 | `jdg.micro.sus.a40.r7` |  | Art. 40 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 90119 | `jdg.micro.sus.a40.r8` |  | Art. 40 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 90120 | `jdg.micro.sus.a47.r1` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
+| 90121 | `jdg.micro.sus.a47.r2` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
+| 90122 | `jdg.micro.sus.a47.r3` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
+| 90123 | `jdg.micro.sus.a47.r4` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
+| 90124 | `jdg.micro.sus.a47.r5` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
+| 90125 | `jdg.micro.sus.a47.r6` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
+| 90126 | `jdg.micro.sus.a47.r7` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
+| 90127 | `jdg.micro.sus.a47.r8` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
 
 ### `rules/micro/transport/transport.rego` (44 reguł)
 
@@ -8947,154 +8970,154 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 160004 | `jdg.micro.uor.a2.r1` |  | Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości (Dz.U. 1994 nr 12... |
-| 160005 | `jdg.micro.uor.a2.r2` |  | Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości; Art. 24a PIT |
-| 160006 | `jdg.micro.uor.a2.r3` |  | Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości |
-| 160007 | `jdg.micro.uor.a2.r4` | 🔴 BLOCK | Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości |
-| 160008 | `jdg.micro.uor.a2.r5` |  | Art. 2 ust. 4 Ustawy o rachunkowości |
-| 160009 | `jdg.micro.uor.a2.r6` |  | Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości |
-| 160010 | `jdg.micro.uor.a2.r7` |  | Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości |
-| 160011 | `jdg.micro.uor.a2.r8` | 🔴 BLOCK | Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości |
-| 160012 | `jdg.micro.uor.a3.r1` |  | Art. 3 ust. 1 pkt 12 Ustawy o rachunkowości |
-| 160013 | `jdg.micro.uor.a3.r2` |  | Art. 3 ust. 1 pkt 20 Ustawy o rachunkowości |
-| 160014 | `jdg.micro.uor.a3.r3` |  | Art. 3 ust. 1 pkt 15 Ustawy o rachunkowości; Art. 22a PIT |
-| 160015 | `jdg.micro.uor.a3.r4` |  | Art. 3 ust. 1 pkt 14 Ustawy o rachunkowości; Art. 22b PIT |
-| 160016 | `jdg.micro.uor.a3.r5` |  | Art. 3 ust. 1 pkt 9 Ustawy o rachunkowości |
-| 160017 | `jdg.micro.uor.a3.r6` |  | Art. 3 ust. 1 pkt 31 Ustawy o rachunkowości |
-| 160018 | `jdg.micro.uor.a3.r7` |  | Art. 3 ust. 1 pkt 30 Ustawy o rachunkowości |
-| 160019 | `jdg.micro.uor.a3.r8` |  | Art. 3 ust. 1 pkt 10 Ustawy o rachunkowości |
-| 160020 | `jdg.micro.uor.a4.r1` | 🟡 TRIAGE | Art. 4 ust. 1 pkt 1 Ustawy o rachunkowości |
-| 160021 | `jdg.micro.uor.a4.r2` |  | Art. 4 ust. 1 pkt 1 Ustawy o rachunkowości |
-| 160022 | `jdg.micro.uor.a4.r3` | 🟡 TRIAGE | Art. 4 ust. 1 pkt 2 Ustawy o rachunkowości |
-| 160023 | `jdg.micro.uor.a4.r4` | 🔴 BLOCK | Art. 4 ust. 1 pkt 3 Ustawy o rachunkowości |
-| 160024 | `jdg.micro.uor.a4.r5` | 🔴 BLOCK | Art. 4 ust. 1 pkt 4 Ustawy o rachunkowości |
-| 160025 | `jdg.micro.uor.a4.r6` |  | Art. 4 ust. 1 pkt 5 Ustawy o rachunkowości; KSR 2 |
-| 160026 | `jdg.micro.uor.a4.r7` | 🟡 TRIAGE | Art. 4 ust. 1 pkt 6 Ustawy o rachunkowości |
-| 160027 | `jdg.micro.uor.a4.r8` |  | Art. 4 ust. 1 pkt 5 Ustawy o rachunkowości; Art. 4a UoR |
-| 160028 | `jdg.micro.uor.a4.r9` |  | Art. 4 ust. 1 Ustawy o rachunkowości |
-| 160029 | `jdg.micro.uor.a4.r10` | 🟡 TRIAGE | Art. 4 ust. 1 pkt 1 Ustawy o rachunkowości |
-| 160030 | `jdg.micro.uor.a4.r11` | 🟡 TRIAGE | Art. 4 ust. 1 pkt 3 Ustawy o rachunkowości; KSR 6 |
-| 160031 | `jdg.micro.uor.a4.r12` | 🟡 TRIAGE | Art. 4 ust. 1 pkt 3; Art. 28 ust. 7 Ustawy o rachunkowości |
-| 160032 | `jdg.micro.uor.a5.r1` |  | Art. 5 ust. 1 Ustawy o rachunkowości |
-| 160033 | `jdg.micro.uor.a5.r2` | 🔴 BLOCK | Art. 5 ust. 1; Art. 77 Ustawy o rachunkowości |
-| 160034 | `jdg.micro.uor.a5.r3` | 🔴 BLOCK | Art. 5 ust. 1 Ustawy o rachunkowości |
-| 160035 | `jdg.micro.uor.a5.r4` | 🔴 BLOCK | Art. 5 ust. 1 Ustawy o rachunkowości |
-| 160036 | `jdg.micro.uor.a10.r1` | 🔴 BLOCK | Art. 10 ust. 1 Ustawy o rachunkowości |
-| 160037 | `jdg.micro.uor.a10.r2` |  | Art. 10 ust. 1 pkt 1; Art. 32 Ustawy o rachunkowości |
-| 160038 | `jdg.micro.uor.a10.r3` |  | Art. 10 ust. 1 pkt 2; Art. 28 ust. 1 pkt 6 Ustawy o rachunko... |
-| 160039 | `jdg.micro.uor.a10.r4` |  | Art. 10 ust. 1 pkt 4; Art. 4 ust. 1 pkt 5 Ustawy o rachunkow... |
-| 160040 | `jdg.micro.uor.a10.r5` |  | Art. 10 ust. 1 pkt 3; Art. 47 Ustawy o rachunkowości |
-| 160041 | `jdg.micro.uor.a10.r6` |  | Art. 10 ust. 2 Ustawy o rachunkowości |
-| 160042 | `jdg.micro.uor.a12.r1` | 🔴 BLOCK | Art. 12 ust. 1 Ustawy o rachunkowości |
-| 160043 | `jdg.micro.uor.a12.r2` | 🟡 TRIAGE | Art. 12 ust. 1; Art. 52 Ustawy o rachunkowości |
-| 160044 | `jdg.micro.uor.a12.r3` |  | Art. 12 ust. 2 Ustawy o rachunkowości |
-| 160045 | `jdg.micro.uor.a13.r1` | 🔴 BLOCK | Art. 13 ust. 1 Ustawy o rachunkowości |
-| 160046 | `jdg.micro.uor.a13.r2` | 🔴 BLOCK | Art. 13 ust. 2; Art. 53 Ustawy o rachunkowości |
-| 160047 | `jdg.micro.uor.a13.r3` |  | Art. 13 Ustawy o rachunkowości |
-| 160048 | `jdg.micro.uor.a14.r1` |  | Art. 14 ust. 1 Ustawy o rachunkowości |
-| 160049 | `jdg.micro.uor.a14.r2` |  | Art. 14 ust. 2 Ustawy o rachunkowości |
-| 160050 | `jdg.micro.uor.a14.r3` |  | Art. 14 ust. 3 Ustawy o rachunkowości |
-| 160051 | `jdg.micro.uor.a20.r1` | 🔴 BLOCK | Art. 20-21 Ustawy o rachunkowości |
-| 160052 | `jdg.micro.uor.a20.r2` |  | Art. 20-21 Ustawy o rachunkowości |
-| 160053 | `jdg.micro.uor.a20.r3` | 🟡 TRIAGE | Art. 21 ust. 1 pkt 5 Ustawy o rachunkowości; Art. 96b VAT |
-| 160054 | `jdg.micro.uor.a20.r4` |  | Art. 21 ust. 1 pkt 4 Ustawy o rachunkowości |
-| 160055 | `jdg.micro.uor.a20.r5` | 🟡 TRIAGE | Art. 21 ust. 1 pkt 1-2 Ustawy o rachunkowości |
-| 160056 | `jdg.micro.uor.a20.r6` |  | Art. 21 ust. 1 pkt 9 Ustawy o rachunkowości; Art. 30 UoR |
-| 160057 | `jdg.micro.uor.a20.r7` |  | Art. 20-21 Ustawy o rachunkowości |
-| 160058 | `jdg.micro.uor.a20.r8` |  | Art. 22 ust. 3; Art. 25 Ustawy o rachunkowości |
-| 160059 | `jdg.micro.uor.a22.r1` | 🔴 BLOCK | Art. 22 ust. 1 Ustawy o rachunkowości |
-| 160060 | `jdg.micro.uor.a22.r2` | 🟡 TRIAGE | Art. 22 ust. 1; Art. 24 Ustawy o rachunkowości |
-| 160061 | `jdg.micro.uor.a22.r3` | 🔴 BLOCK | Art. 22 ust. 1; Art. 25 Ustawy o rachunkowości |
-| 160062 | `jdg.micro.uor.a22.r4` |  | Art. 22 ust. 1 Ustawy o rachunkowości |
-| 160063 | `jdg.micro.uor.a22.r5` |  | Art. 24 ust. 1 Ustawy o rachunkowości |
-| 160064 | `jdg.micro.uor.a22.r6` | 🔴 BLOCK | Art. 24; Art. 77 Ustawy o rachunkowości; Art. 60-61 KKS |
-| 160065 | `jdg.micro.uor.a24.r1` | 🔴 BLOCK | Art. 24 ust. 2-3 Ustawy o rachunkowości |
-| 160066 | `jdg.micro.uor.a24.r2` | 🔴 BLOCK | Art. 24 ust. 2 Ustawy o rachunkowości; Art. 23 OrdPU |
-| 160067 | `jdg.micro.uor.a26.r1` | 🔴 BLOCK | Art. 26 ust. 1 Ustawy o rachunkowości |
-| 160068 | `jdg.micro.uor.a26.r2` |  | Art. 26 ust. 1 pkt 1 Ustawy o rachunkowości |
-| 160069 | `jdg.micro.uor.a26.r3` |  | Art. 26 ust. 1 pkt 2 Ustawy o rachunkowości |
-| 160070 | `jdg.micro.uor.a26.r4` |  | Art. 26 ust. 1 pkt 3 Ustawy o rachunkowości |
-| 160071 | `jdg.micro.uor.a26.r5` | 🟡 TRIAGE | Art. 26 ust. 3 Ustawy o rachunkowości |
-| 160072 | `jdg.micro.uor.a26.r6` | 🟡 TRIAGE | Art. 27 ust. 1-2 Ustawy o rachunkowości |
-| 160073 | `jdg.micro.uor.a26.r7` |  | Art. 27 ust. 3 Ustawy o rachunkowości |
-| 160074 | `jdg.micro.uor.a26.r8` |  | Art. 26 ust. 3 pkt 2 Ustawy o rachunkowości |
-| 160075 | `jdg.micro.uor.a28.r1` |  | Art. 28 ust. 1 pkt 1 Ustawy o rachunkowości |
-| 160076 | `jdg.micro.uor.a28.r2` |  | Art. 28 ust. 1 pkt 8; Art. 28 ust. 3 Ustawy o rachunkowości |
-| 160077 | `jdg.micro.uor.a28.r3` |  | Art. 28 ust. 1 pkt 5 Ustawy o rachunkowości |
-| 160078 | `jdg.micro.uor.a28.r4` |  | Art. 28 ust. 1 pkt 6 Ustawy o rachunkowości |
-| 160079 | `jdg.micro.uor.a28.r5` | 🟡 TRIAGE | Art. 28 ust. 7 Ustawy o rachunkowości |
-| 160080 | `jdg.micro.uor.a28.r6` |  | Art. 28 ust. 7-8 Ustawy o rachunkowości |
-| 160081 | `jdg.micro.uor.a28.r7` | 🟡 TRIAGE | Art. 28 ust. 1 pkt 7; Art. 35b Ustawy o rachunkowości |
-| 160082 | `jdg.micro.uor.a28.r8` |  | Art. 28 ust. 1 pkt 8 Ustawy o rachunkowości |
-| 160083 | `jdg.micro.uor.a30.r1` |  | Art. 30 ust. 1 pkt 1 Ustawy o rachunkowości |
-| 160084 | `jdg.micro.uor.a30.r2` |  | Art. 30 ust. 1 pkt 2 Ustawy o rachunkowości |
-| 160085 | `jdg.micro.uor.a30.r3` |  | Art. 30 ust. 2-4 Ustawy o rachunkowości |
-| 160086 | `jdg.micro.uor.a32.r1` |  | Art. 32 ust. 1-2 Ustawy o rachunkowości |
-| 160087 | `jdg.micro.uor.a32.r2` |  | Art. 32 ust. 2 Ustawy o rachunkowości |
-| 160088 | `jdg.micro.uor.a32.r3` |  | Art. 32 ust. 2 Ustawy o rachunkowości |
-| 160089 | `jdg.micro.uor.a32.r4` | 🟡 TRIAGE | Art. 32-33 Ustawy o rachunkowości; Art. 22a-22o PIT; Art. 37... |
-| 160090 | `jdg.micro.uor.a32.r5` |  | Art. 32 ust. 3 Ustawy o rachunkowości |
-| 160091 | `jdg.micro.uor.a32.r6` |  | Art. 32 ust. 6 Ustawy o rachunkowości |
-| 160092 | `jdg.micro.uor.a39.r1` |  | Art. 39 ust. 1 Ustawy o rachunkowości |
-| 160093 | `jdg.micro.uor.a39.r2` |  | Art. 39 ust. 2 Ustawy o rachunkowości |
-| 160094 | `jdg.micro.uor.a39.r3` |  | Art. 39 ust. 2a Ustawy o rachunkowości; Art. 41 UoR |
-| 160095 | `jdg.micro.uor.a39.r4` |  | Art. 39 ust. 1-2 Ustawy o rachunkowości |
-| 160096 | `jdg.micro.uor.a39.r5` | 🟡 TRIAGE | Art. 39 Ustawy o rachunkowości |
-| 160097 | `jdg.micro.uor.a45.r1` | 🔴 BLOCK | Art. 45 ust. 1 Ustawy o rachunkowości |
-| 160098 | `jdg.micro.uor.a46.r1` | 🔴 BLOCK | Art. 46 Ustawy o rachunkowości |
-| 160099 | `jdg.micro.uor.a47.r1` |  | Art. 47 Ustawy o rachunkowości |
-| 160100 | `jdg.micro.uor.a48.r1` |  | Art. 48 Ustawy o rachunkowości |
-| 160101 | `jdg.micro.uor.a48b.r1` |  | Art. 48b Ustawy o rachunkowości |
-| 160102 | `jdg.micro.uor.a52.r1` | 🔴 BLOCK | Art. 52 ust. 1 Ustawy o rachunkowości |
-| 160103 | `jdg.micro.uor.a53.r1` | 🟡 TRIAGE | Art. 53; Art. 64 ust. 1 pkt 4 Ustawy o rachunkowości |
-| 160104 | `jdg.micro.uor.a53.r2` |  | Art. 53; Art. 64 ust. 2 Ustawy o rachunkowości |
-| 160105 | `jdg.micro.uor.a74.r1` |  | Art. 74 ust. 1 pkt 1 Ustawy o rachunkowości |
-| 160106 | `jdg.micro.uor.a74.r2` |  | Art. 74 ust. 1 pkt 2; Art. 74 ust. 1a Ustawy o rachunkowości |
-| 160107 | `jdg.micro.uor.a74.r3` |  | Art. 74 ust. 2 Ustawy o rachunkowości |
-| 160108 | `jdg.micro.uor.a74.r4` |  | Art. 74 ust. 1 Ustawy o rachunkowości |
-| 160109 | `jdg.micro.uor.a76.r1` |  | Art. 76 ust. 1 Ustawy o rachunkowości |
-| 160110 | `jdg.micro.uor.a76.r2` |  | Art. 76 ust. 2 Ustawy o rachunkowości |
-| 160111 | `jdg.micro.uor.a76.r3` |  | Art. 76 ust. 3 Ustawy o rachunkowości |
-| 160112 | `jdg.micro.uor.a77.r1` | 🔴 BLOCK | Art. 77 pkt 1 Ustawy o rachunkowości; Art. 60-61 KKS |
-| 160113 | `jdg.micro.uor.a77.r2` | 🔴 BLOCK | Art. 77 pkt 2 Ustawy o rachunkowości |
-| 160114 | `jdg.micro.uor.a77.r3` | 🔴 BLOCK | Art. 77 pkt 3 Ustawy o rachunkowości |
-| 160115 | `jdg.micro.uor.a77.r4` | 🔴 BLOCK | Art. 77 pkt 4 Ustawy o rachunkowości; Art. 270-271 KK |
-| 160116 | `jdg.micro.uor.a77.r5` | 🔴 BLOCK | Art. 77 pkt 5; Art. 79 Ustawy o rachunkowości |
-| 160117 | `jdg.micro.uor.a79.r1` |  | Art. 79 Ustawy o rachunkowości; Art. 56 KKS |
-| 160118 | `jdg.micro.uor.a79.r2` |  | Art. 79; Art. 10 Ustawy o rachunkowości |
-| 160119 | `jdg.micro.uor.a16.r1` |  | Art. 16 ust. 1; Art. 8 ust. 2 Ustawy o rachunkowości |
-| 160120 | `jdg.micro.uor.a16.r2` | 🟡 TRIAGE | Art. 16 ust. 1; Art. 48 ust. 1 pkt 1 Ustawy o rachunkowości |
-| 160121 | `jdg.micro.uor.a16.r3` | 🟡 TRIAGE | Art. 16 ust. 1; Art. 32 Ustawy o rachunkowości |
-| 160122 | `jdg.micro.uor.a16.r4` |  | Art. 16 ust. 2; Art. 53 Ustawy o rachunkowości |
-| 160123 | `jdg.micro.uor.a78.r1` | 🔴 BLOCK | Art. 78 pkt 1 Ustawy o rachunkowości; Art. 60-61 KKS; Art. 3... |
-| 160124 | `jdg.micro.uor.a78.r2` | 🔴 BLOCK | Art. 78 pkt 1; Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości |
-| 160125 | `jdg.micro.uor.a78.r3` | 🔴 BLOCK | Art. 78 pkt 2 Ustawy o rachunkowości; Art. 276 KK |
-| 160126 | `jdg.micro.uor.a80.r1` | 🔴 BLOCK | Art. 80 Ustawy o rachunkowości; Art. 373-376 Prawa upadłości... |
-| 160127 | `jdg.micro.uor.a80.r2` | 🔴 BLOCK | Art. 80 ust. 2; Art. 81 Ustawy o rachunkowości; Art. 44-45 K... |
-| 160128 | `jdg.micro.uor.a81.r1` | 🔴 BLOCK | Art. 81 Ustawy o rachunkowości; Art. 39 KK |
-| 160129 | `jdg.micro.uor.a7.r1` | 🔴 BLOCK | Art. 7 ust. 1; Art. 55 Ustawy o rachunkowości |
-| 160130 | `jdg.micro.uor.a7.r2` |  | Art. 7 ust. 2; Art. 56 Ustawy o rachunkowości |
-| 160131 | `jdg.micro.uor.a9.r1` |  | Art. 9; Art. 10 ust. 1 Ustawy o rachunkowości |
-| 160132 | `jdg.micro.uor.a9.r2` |  | Art. 9; Art. 10 ust. 1 Ustawy o rachunkowości |
-| 160133 | `jdg.micro.uor.a15.r1` |  | Art. 15 ust. 1; Art. 14 ust. 2 Ustawy o rachunkowości |
-| 160134 | `jdg.micro.uor.a15.r2` | 🟡 TRIAGE | Art. 15 ust. 1; Art. 12 Ustawy o rachunkowości |
-| 160135 | `jdg.micro.uor.a35.r1` | 🟡 TRIAGE | Art. 35 ust. 1; Art. 35d Ustawy o rachunkowości; KSR 6 |
-| 160136 | `jdg.micro.uor.a35.r2` |  | Art. 35d ust. 1-4 Ustawy o rachunkowości |
-| 160137 | `jdg.micro.uor.a37.r1` | 🟡 TRIAGE | Art. 37 ust. 1-6 Ustawy o rachunkowości; KSR 2 |
-| 160138 | `jdg.micro.uor.a37.r2` |  | Art. 37 ust. 4-6 Ustawy o rachunkowości |
-| 160139 | `jdg.micro.uor.a38.r1` | 🟡 TRIAGE | Art. 38 ust. 1; Art. 39 ust. 2 Ustawy o rachunkowości; KSR 6 |
-| 160140 | `jdg.micro.uor.a38.r2` |  | Art. 38 ust. 1; Art. 35d; Art. 39 ust. 2 Ustawy o rachunkowo... |
+| 160004 | `jdg.micro.uor.a2.r1` |  | Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rach... |
+| 160005 | `jdg.micro.uor.a2.r2` |  | Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rach... |
+| 160006 | `jdg.micro.uor.a2.r3` |  | Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rach... |
+| 160007 | `jdg.micro.uor.a2.r4` | 🔴 BLOCK | Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rach... |
+| 160008 | `jdg.micro.uor.a2.r5` |  | Art. 2 ust. 4 ustawy z dnia 29 września 1994 r. o rachunkowo... |
+| 160009 | `jdg.micro.uor.a2.r6` |  | Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rach... |
+| 160010 | `jdg.micro.uor.a2.r7` |  | Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rach... |
+| 160011 | `jdg.micro.uor.a2.r8` | 🔴 BLOCK | Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rach... |
+| 160012 | `jdg.micro.uor.a3.r1` |  | Art. 3 ust. 1 pkt 12 ustawy z dnia 29 września 1994 r. o rac... |
+| 160013 | `jdg.micro.uor.a3.r2` |  | Art. 3 ust. 1 pkt 20 ustawy z dnia 29 września 1994 r. o rac... |
+| 160014 | `jdg.micro.uor.a3.r3` |  | Art. 3 ust. 1 pkt 15 ustawy z dnia 29 września 1994 r. o rac... |
+| 160015 | `jdg.micro.uor.a3.r4` |  | Art. 3 ust. 1 pkt 14 ustawy z dnia 29 września 1994 r. o rac... |
+| 160016 | `jdg.micro.uor.a3.r5` |  | Art. 3 ust. 1 pkt 9 ustawy z dnia 29 września 1994 r. o rach... |
+| 160017 | `jdg.micro.uor.a3.r6` |  | Art. 3 ust. 1 pkt 31 ustawy z dnia 29 września 1994 r. o rac... |
+| 160018 | `jdg.micro.uor.a3.r7` |  | Art. 3 ust. 1 pkt 30 ustawy z dnia 29 września 1994 r. o rac... |
+| 160019 | `jdg.micro.uor.a3.r8` |  | Art. 3 ust. 1 pkt 10 ustawy z dnia 29 września 1994 r. o rac... |
+| 160020 | `jdg.micro.uor.a4.r1` | 🟡 TRIAGE | Art. 4 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rach... |
+| 160021 | `jdg.micro.uor.a4.r2` |  | Art. 4 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rach... |
+| 160022 | `jdg.micro.uor.a4.r3` | 🟡 TRIAGE | Art. 4 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rach... |
+| 160023 | `jdg.micro.uor.a4.r4` | 🔴 BLOCK | Art. 4 ust. 1 pkt 3 ustawy z dnia 29 września 1994 r. o rach... |
+| 160024 | `jdg.micro.uor.a4.r5` | 🔴 BLOCK | Art. 4 ust. 1 pkt 4 ustawy z dnia 29 września 1994 r. o rach... |
+| 160025 | `jdg.micro.uor.a4.r6` |  | Art. 4 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rach... |
+| 160026 | `jdg.micro.uor.a4.r7` | 🟡 TRIAGE | Art. 4 ust. 1 pkt 6 ustawy z dnia 29 września 1994 r. o rach... |
+| 160027 | `jdg.micro.uor.a4.r8` |  | Art. 4 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rach... |
+| 160028 | `jdg.micro.uor.a4.r9` |  | Art. 4 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowo... |
+| 160029 | `jdg.micro.uor.a4.r10` | 🟡 TRIAGE | Art. 4 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rach... |
+| 160030 | `jdg.micro.uor.a4.r11` | 🟡 TRIAGE | Art. 4 ust. 1 pkt 3 ustawy z dnia 29 września 1994 r. o rach... |
+| 160031 | `jdg.micro.uor.a4.r12` | 🟡 TRIAGE | Art. 4 ust. 1 pkt 3; Art. 28 ust. 7 ustawy z dnia 29 wrześni... |
+| 160032 | `jdg.micro.uor.a5.r1` |  | Art. 5 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowo... |
+| 160033 | `jdg.micro.uor.a5.r2` | 🔴 BLOCK | Art. 5 ust. 1; Art. 77 ustawy z dnia 29 września 1994 r. o r... |
+| 160034 | `jdg.micro.uor.a5.r3` | 🔴 BLOCK | Art. 5 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowo... |
+| 160035 | `jdg.micro.uor.a5.r4` | 🔴 BLOCK | Art. 5 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkowo... |
+| 160036 | `jdg.micro.uor.a10.r1` | 🔴 BLOCK | Art. 10 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160037 | `jdg.micro.uor.a10.r2` |  | Art. 10 ust. 1 pkt 1; Art. 32 ustawy z dnia 29 września 1994... |
+| 160038 | `jdg.micro.uor.a10.r3` |  | Art. 10 ust. 1 pkt 2; Art. 28 ust. 1 pkt 6 ustawy z dnia 29 ... |
+| 160039 | `jdg.micro.uor.a10.r4` |  | Art. 10 ust. 1 pkt 4; Art. 4 ust. 1 pkt 5 ustawy z dnia 29 w... |
+| 160040 | `jdg.micro.uor.a10.r5` |  | Art. 10 ust. 1 pkt 3; Art. 47 ustawy z dnia 29 września 1994... |
+| 160041 | `jdg.micro.uor.a10.r6` |  | Art. 10 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160042 | `jdg.micro.uor.a12.r1` | 🔴 BLOCK | Art. 12 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160043 | `jdg.micro.uor.a12.r2` | 🟡 TRIAGE | Art. 12 ust. 1; Art. 52 ustawy z dnia 29 września 1994 r. o ... |
+| 160044 | `jdg.micro.uor.a12.r3` |  | Art. 12 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160045 | `jdg.micro.uor.a13.r1` | 🔴 BLOCK | Art. 13 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160046 | `jdg.micro.uor.a13.r2` | 🔴 BLOCK | Art. 13 ust. 2; Art. 53 ustawy z dnia 29 września 1994 r. o ... |
+| 160047 | `jdg.micro.uor.a13.r3` |  | Art. 13 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 160048 | `jdg.micro.uor.a14.r1` |  | Art. 14 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160049 | `jdg.micro.uor.a14.r2` |  | Art. 14 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160050 | `jdg.micro.uor.a14.r3` |  | Art. 14 ust. 3 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160051 | `jdg.micro.uor.a20.r1` | 🔴 BLOCK | Art. 20-21 ustawy z dnia 29 września 1994 r. o rachunkowości... |
+| 160052 | `jdg.micro.uor.a20.r2` |  | Art. 20-21 ustawy z dnia 29 września 1994 r. o rachunkowości... |
+| 160053 | `jdg.micro.uor.a20.r3` | 🟡 TRIAGE | Art. 21 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rac... |
+| 160054 | `jdg.micro.uor.a20.r4` |  | Art. 21 ust. 1 pkt 4 ustawy z dnia 29 września 1994 r. o rac... |
+| 160055 | `jdg.micro.uor.a20.r5` | 🟡 TRIAGE | Art. 21 ust. 1 pkt 1-2 ustawy z dnia 29 września 1994 r. o r... |
+| 160056 | `jdg.micro.uor.a20.r6` |  | Art. 21 ust. 1 pkt 9 ustawy z dnia 29 września 1994 r. o rac... |
+| 160057 | `jdg.micro.uor.a20.r7` |  | Art. 20-21 ustawy z dnia 29 września 1994 r. o rachunkowości... |
+| 160058 | `jdg.micro.uor.a20.r8` |  | Art. 22 ust. 3; Art. 25 ustawy z dnia 29 września 1994 r. o ... |
+| 160059 | `jdg.micro.uor.a22.r1` | 🔴 BLOCK | Art. 22 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160060 | `jdg.micro.uor.a22.r2` | 🟡 TRIAGE | Art. 22 ust. 1; Art. 24 ustawy z dnia 29 września 1994 r. o ... |
+| 160061 | `jdg.micro.uor.a22.r3` | 🔴 BLOCK | Art. 22 ust. 1; Art. 25 ustawy z dnia 29 września 1994 r. o ... |
+| 160062 | `jdg.micro.uor.a22.r4` |  | Art. 22 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160063 | `jdg.micro.uor.a22.r5` |  | Art. 24 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160064 | `jdg.micro.uor.a22.r6` | 🔴 BLOCK | Art. 24; Art. 77 ustawy z dnia 29 września 1994 r. o rachunk... |
+| 160065 | `jdg.micro.uor.a24.r1` | 🔴 BLOCK | Art. 24 ust. 2-3 ustawy z dnia 29 września 1994 r. o rachunk... |
+| 160066 | `jdg.micro.uor.a24.r2` | 🔴 BLOCK | Art. 24 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160067 | `jdg.micro.uor.a26.r1` | 🔴 BLOCK | Art. 26 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160068 | `jdg.micro.uor.a26.r2` |  | Art. 26 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rac... |
+| 160069 | `jdg.micro.uor.a26.r3` |  | Art. 26 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rac... |
+| 160070 | `jdg.micro.uor.a26.r4` |  | Art. 26 ust. 1 pkt 3 ustawy z dnia 29 września 1994 r. o rac... |
+| 160071 | `jdg.micro.uor.a26.r5` | 🟡 TRIAGE | Art. 26 ust. 3 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160072 | `jdg.micro.uor.a26.r6` | 🟡 TRIAGE | Art. 27 ust. 1-2 ustawy z dnia 29 września 1994 r. o rachunk... |
+| 160073 | `jdg.micro.uor.a26.r7` |  | Art. 27 ust. 3 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160074 | `jdg.micro.uor.a26.r8` |  | Art. 26 ust. 3 pkt 2 ustawy z dnia 29 września 1994 r. o rac... |
+| 160075 | `jdg.micro.uor.a28.r1` |  | Art. 28 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rac... |
+| 160076 | `jdg.micro.uor.a28.r2` |  | Art. 28 ust. 1 pkt 8; Art. 28 ust. 3 ustawy z dnia 29 wrześn... |
+| 160077 | `jdg.micro.uor.a28.r3` |  | Art. 28 ust. 1 pkt 5 ustawy z dnia 29 września 1994 r. o rac... |
+| 160078 | `jdg.micro.uor.a28.r4` |  | Art. 28 ust. 1 pkt 6 ustawy z dnia 29 września 1994 r. o rac... |
+| 160079 | `jdg.micro.uor.a28.r5` | 🟡 TRIAGE | Art. 28 ust. 7 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160080 | `jdg.micro.uor.a28.r6` |  | Art. 28 ust. 7-8 ustawy z dnia 29 września 1994 r. o rachunk... |
+| 160081 | `jdg.micro.uor.a28.r7` | 🟡 TRIAGE | Art. 28 ust. 1 pkt 7; Art. 35b ustawy z dnia 29 września 199... |
+| 160082 | `jdg.micro.uor.a28.r8` |  | Art. 28 ust. 1 pkt 8 ustawy z dnia 29 września 1994 r. o rac... |
+| 160083 | `jdg.micro.uor.a30.r1` |  | Art. 30 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rac... |
+| 160084 | `jdg.micro.uor.a30.r2` |  | Art. 30 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rac... |
+| 160085 | `jdg.micro.uor.a30.r3` |  | Art. 30 ust. 2-4 ustawy z dnia 29 września 1994 r. o rachunk... |
+| 160086 | `jdg.micro.uor.a32.r1` |  | Art. 32 ust. 1-2 ustawy z dnia 29 września 1994 r. o rachunk... |
+| 160087 | `jdg.micro.uor.a32.r2` |  | Art. 32 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160088 | `jdg.micro.uor.a32.r3` |  | Art. 32 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160089 | `jdg.micro.uor.a32.r4` | 🟡 TRIAGE | Art. 32-33 ustawy z dnia 29 września 1994 r. o rachunkowości... |
+| 160090 | `jdg.micro.uor.a32.r5` |  | Art. 32 ust. 3 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160091 | `jdg.micro.uor.a32.r6` |  | Art. 32 ust. 6 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160092 | `jdg.micro.uor.a39.r1` |  | Art. 39 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160093 | `jdg.micro.uor.a39.r2` |  | Art. 39 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160094 | `jdg.micro.uor.a39.r3` |  | Art. 39 ust. 2a ustawy z dnia 29 września 1994 r. o rachunko... |
+| 160095 | `jdg.micro.uor.a39.r4` |  | Art. 39 ust. 1-2 ustawy z dnia 29 września 1994 r. o rachunk... |
+| 160096 | `jdg.micro.uor.a39.r5` | 🟡 TRIAGE | Art. 39 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 160097 | `jdg.micro.uor.a45.r1` | 🔴 BLOCK | Art. 45 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160098 | `jdg.micro.uor.a46.r1` | 🔴 BLOCK | Art. 46 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 160099 | `jdg.micro.uor.a47.r1` |  | Art. 47 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 160100 | `jdg.micro.uor.a48.r1` |  | Art. 48 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 160101 | `jdg.micro.uor.a48b.r1` |  | Art. 48b ustawy z dnia 29 września 1994 r. o rachunkowości (... |
+| 160102 | `jdg.micro.uor.a52.r1` | 🔴 BLOCK | Art. 52 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160103 | `jdg.micro.uor.a53.r1` | 🟡 TRIAGE | Art. 53; Art. 64 ust. 1 pkt 4 ustawy z dnia 29 września 1994... |
+| 160104 | `jdg.micro.uor.a53.r2` |  | Art. 53; Art. 64 ust. 2 ustawy z dnia 29 września 1994 r. o ... |
+| 160105 | `jdg.micro.uor.a74.r1` |  | Art. 74 ust. 1 pkt 1 ustawy z dnia 29 września 1994 r. o rac... |
+| 160106 | `jdg.micro.uor.a74.r2` |  | Art. 74 ust. 1 pkt 2; Art. 74 ust. 1a ustawy z dnia 29 wrześ... |
+| 160107 | `jdg.micro.uor.a74.r3` |  | Art. 74 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160108 | `jdg.micro.uor.a74.r4` |  | Art. 74 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160109 | `jdg.micro.uor.a76.r1` |  | Art. 76 ust. 1 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160110 | `jdg.micro.uor.a76.r2` |  | Art. 76 ust. 2 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160111 | `jdg.micro.uor.a76.r3` |  | Art. 76 ust. 3 ustawy z dnia 29 września 1994 r. o rachunkow... |
+| 160112 | `jdg.micro.uor.a77.r1` | 🔴 BLOCK | Art. 77 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowo... |
+| 160113 | `jdg.micro.uor.a77.r2` | 🔴 BLOCK | Art. 77 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowo... |
+| 160114 | `jdg.micro.uor.a77.r3` | 🔴 BLOCK | Art. 77 pkt 3 ustawy z dnia 29 września 1994 r. o rachunkowo... |
+| 160115 | `jdg.micro.uor.a77.r4` | 🔴 BLOCK | Art. 77 pkt 4 ustawy z dnia 29 września 1994 r. o rachunkowo... |
+| 160116 | `jdg.micro.uor.a77.r5` | 🔴 BLOCK | Art. 77 pkt 5; Art. 79 ustawy z dnia 29 września 1994 r. o r... |
+| 160117 | `jdg.micro.uor.a79.r1` |  | Art. 79 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 160118 | `jdg.micro.uor.a79.r2` |  | Art. 79; Art. 10 ustawy z dnia 29 września 1994 r. o rachunk... |
+| 160119 | `jdg.micro.uor.a16.r1` |  | Art. 16 ust. 1; Art. 8 ust. 2 ustawy z dnia 29 września 1994... |
+| 160120 | `jdg.micro.uor.a16.r2` | 🟡 TRIAGE | Art. 16 ust. 1; Art. 48 ust. 1 pkt 1 ustawy z dnia 29 wrześn... |
+| 160121 | `jdg.micro.uor.a16.r3` | 🟡 TRIAGE | Art. 16 ust. 1; Art. 32 ustawy z dnia 29 września 1994 r. o ... |
+| 160122 | `jdg.micro.uor.a16.r4` |  | Art. 16 ust. 2; Art. 53 ustawy z dnia 29 września 1994 r. o ... |
+| 160123 | `jdg.micro.uor.a78.r1` | 🔴 BLOCK | Art. 78 pkt 1 ustawy z dnia 29 września 1994 r. o rachunkowo... |
+| 160124 | `jdg.micro.uor.a78.r2` | 🔴 BLOCK | Art. 78 pkt 1; Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września... |
+| 160125 | `jdg.micro.uor.a78.r3` | 🔴 BLOCK | Art. 78 pkt 2 ustawy z dnia 29 września 1994 r. o rachunkowo... |
+| 160126 | `jdg.micro.uor.a80.r1` | 🔴 BLOCK | Art. 80 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 160127 | `jdg.micro.uor.a80.r2` | 🔴 BLOCK | Art. 80 ust. 2; Art. 81 ustawy z dnia 29 września 1994 r. o ... |
+| 160128 | `jdg.micro.uor.a81.r1` | 🔴 BLOCK | Art. 81 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 160129 | `jdg.micro.uor.a7.r1` | 🔴 BLOCK | Art. 7 ust. 1; Art. 55 ustawy z dnia 29 września 1994 r. o r... |
+| 160130 | `jdg.micro.uor.a7.r2` |  | Art. 7 ust. 2; Art. 56 ustawy z dnia 29 września 1994 r. o r... |
+| 160131 | `jdg.micro.uor.a9.r1` |  | Art. 9; Art. 10 ust. 1 ustawy z dnia 29 września 1994 r. o r... |
+| 160132 | `jdg.micro.uor.a9.r2` |  | Art. 9; Art. 10 ust. 1 ustawy z dnia 29 września 1994 r. o r... |
+| 160133 | `jdg.micro.uor.a15.r1` |  | Art. 15 ust. 1; Art. 14 ust. 2 ustawy z dnia 29 września 199... |
+| 160134 | `jdg.micro.uor.a15.r2` | 🟡 TRIAGE | Art. 15 ust. 1; Art. 12 ustawy z dnia 29 września 1994 r. o ... |
+| 160135 | `jdg.micro.uor.a35.r1` | 🟡 TRIAGE | Art. 35 ust. 1; Art. 35d ustawy z dnia 29 września 1994 r. o... |
+| 160136 | `jdg.micro.uor.a35.r2` |  | Art. 35d ust. 1-4 ustawy z dnia 29 września 1994 r. o rachun... |
+| 160137 | `jdg.micro.uor.a37.r1` | 🟡 TRIAGE | Art. 37 ust. 1-6 ustawy z dnia 29 września 1994 r. o rachunk... |
+| 160138 | `jdg.micro.uor.a37.r2` |  | Art. 37 ust. 4-6 ustawy z dnia 29 września 1994 r. o rachunk... |
+| 160139 | `jdg.micro.uor.a38.r1` | 🟡 TRIAGE | Art. 38 ust. 1; Art. 39 ust. 2 ustawy z dnia 29 września 199... |
+| 160140 | `jdg.micro.uor.a38.r2` |  | Art. 38 ust. 1; Art. 35d; Art. 39 ust. 2 ustawy z dnia 29 wr... |
 | 160141 | `jdg.micro.uor.a40.r1` |  | Art. 40 ust. 1; § 1-2 Rozporządzenia MF ws. instrumentów fin... |
-| 160142 | `jdg.micro.uor.a41.r1` | 🟡 TRIAGE | Art. 41 ust. 1; Art. 28 ust. 1 pkt 5 Ustawy o rachunkowości |
-| 160143 | `jdg.micro.uor.a42.r1` | 🟡 TRIAGE | Art. 42 ust. 1; Art. 44 Ustawy o rachunkowości; MSR 24 |
-| 160144 | `jdg.micro.uor.a44.r1` |  | Art. 44 ust. 1-2; Art. 60 Ustawy o rachunkowości |
-| 160145 | `jdg.micro.uor.integration.r1` |  | Art. 37 Ustawy o rachunkowości; Art. 22a-22o PIT |
-| 160146 | `jdg.micro.uor.integration.r2` |  | Art. 20-21 Ustawy o rachunkowości; Art. 106e VAT; Art. 109 V... |
-| 160147 | `jdg.micro.uor.integration.r3` | 🔴 BLOCK | Art. 77 Ustawy o rachunkowości; Art. 60-61 KKS; Art. 56 KKS |
-| 160148 | `jdg.micro.uor.a27.r1` |  | Art. 27 ust. 1-2; Art. 30 ust. 1 pkt 1 Ustawy o rachunkowośc... |
-| 160149 | `jdg.micro.uor.a27.r2` | 🟡 TRIAGE | Art. 27 ust. 2; Art. 30 ust. 1 pkt 2 Ustawy o rachunkowości |
-| 160150 | `jdg.micro.uor.a27.r3` |  | Art. 27 ust. 2; Art. 30 ust. 2-4 Ustawy o rachunkowości; Art... |
-| 999999 | `jdg.micro.uor.fallback` |  | Ustawa o rachunkowości z 29.09.1994 (Dz.U. 1994 nr 121 poz. ... |
+| 160142 | `jdg.micro.uor.a41.r1` | 🟡 TRIAGE | Art. 41 ust. 1; Art. 28 ust. 1 pkt 5 ustawy z dnia 29 wrześn... |
+| 160143 | `jdg.micro.uor.a42.r1` | 🟡 TRIAGE | Art. 42 ust. 1; Art. 44 ustawy z dnia 29 września 1994 r. o ... |
+| 160144 | `jdg.micro.uor.a44.r1` |  | Art. 44 ust. 1-2; Art. 60 ustawy z dnia 29 września 1994 r. ... |
+| 160145 | `jdg.micro.uor.integration.r1` |  | Art. 37 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 160146 | `jdg.micro.uor.integration.r2` |  | Art. 20-21 ustawy z dnia 29 września 1994 r. o rachunkowości... |
+| 160147 | `jdg.micro.uor.integration.r3` | 🔴 BLOCK | Art. 77 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 160148 | `jdg.micro.uor.a27.r1` |  | Art. 27 ust. 1-2; Art. 30 ust. 1 pkt 1 ustawy z dnia 29 wrze... |
+| 160149 | `jdg.micro.uor.a27.r2` | 🟡 TRIAGE | Art. 27 ust. 2; Art. 30 ust. 1 pkt 2 ustawy z dnia 29 wrześn... |
+| 160150 | `jdg.micro.uor.a27.r3` |  | Art. 27 ust. 2; Art. 30 ust. 2-4 ustawy z dnia 29 września 1... |
+| 999999 | `jdg.micro.uor.fallback` |  | Ustawa z dnia 29 września 1994 r. o rachunkowości (Dz.U. 202... |
 
 ### `rules/micro/vat/ksef_micro.rego` (10 reguł)
 
@@ -10296,185 +10319,206 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 120019 | `jdg.micro.zasilkowa.a19.r1` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120020 | `jdg.micro.zasilkowa.a19.r2` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120021 | `jdg.micro.zasilkowa.a19.r3` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120022 | `jdg.micro.zasilkowa.a19.r4` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120023 | `jdg.micro.zasilkowa.a19.r5` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120024 | `jdg.micro.zasilkowa.a19.r6` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120025 | `jdg.micro.zasilkowa.a19.r7` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120026 | `jdg.micro.zasilkowa.a19.r8` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120027 | `jdg.micro.zasilkowa.a19.r9` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120028 | `jdg.micro.zasilkowa.a19.r10` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120029 | `jdg.micro.zasilkowa.a29.r1` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120030 | `jdg.micro.zasilkowa.a29.r2` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120031 | `jdg.micro.zasilkowa.a29.r3` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120032 | `jdg.micro.zasilkowa.a29.r4` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120033 | `jdg.micro.zasilkowa.a29.r5` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120034 | `jdg.micro.zasilkowa.a29.r6` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120035 | `jdg.micro.zasilkowa.a29.r7` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120036 | `jdg.micro.zasilkowa.a29.r8` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120037 | `jdg.micro.zasilkowa.a29.r9` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120038 | `jdg.micro.zasilkowa.a29.r10` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120039 | `jdg.micro.zasilkowa.a32.r1` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120040 | `jdg.micro.zasilkowa.a32.r2` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120041 | `jdg.micro.zasilkowa.a32.r3` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120042 | `jdg.micro.zasilkowa.a32.r4` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120043 | `jdg.micro.zasilkowa.a32.r5` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120044 | `jdg.micro.zasilkowa.a32.r6` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120045 | `jdg.micro.zasilkowa.a32.r7` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120046 | `jdg.micro.zasilkowa.a32.r8` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120047 | `jdg.micro.zasilkowa.a32.r9` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120048 | `jdg.micro.zasilkowa.a32.r10` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120049 | `jdg.micro.zasilkowa.a33.r1` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120050 | `jdg.micro.zasilkowa.a33.r2` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120051 | `jdg.micro.zasilkowa.a33.r3` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120052 | `jdg.micro.zasilkowa.a33.r4` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120053 | `jdg.micro.zasilkowa.a33.r5` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120054 | `jdg.micro.zasilkowa.a33.r6` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120055 | `jdg.micro.zasilkowa.a33.r7` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
-| 120056 | `jdg.micro.zasilkowa.a33.r8` |  | Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636) |
+| 120019 | `jdg.micro.zasilkowa.a19.r1` |  | Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 120020 | `jdg.micro.zasilkowa.a19.r2` |  | Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 120021 | `jdg.micro.zasilkowa.a19.r3` |  | Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 120022 | `jdg.micro.zasilkowa.a19.r4` |  | Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 120023 | `jdg.micro.zasilkowa.a19.r5` |  | Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 120024 | `jdg.micro.zasilkowa.a19.r6` |  | Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 120025 | `jdg.micro.zasilkowa.a19.r7` |  | Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 120026 | `jdg.micro.zasilkowa.a19.r8` |  | Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 120027 | `jdg.micro.zasilkowa.a19.r9` |  | Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 120028 | `jdg.micro.zasilkowa.a19.r10` |  | Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 120029 | `jdg.micro.zasilkowa.a29.r1` |  | Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120030 | `jdg.micro.zasilkowa.a29.r2` |  | Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120031 | `jdg.micro.zasilkowa.a29.r3` |  | Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120032 | `jdg.micro.zasilkowa.a29.r4` |  | Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120033 | `jdg.micro.zasilkowa.a29.r5` |  | Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120034 | `jdg.micro.zasilkowa.a29.r6` |  | Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120035 | `jdg.micro.zasilkowa.a29.r7` |  | Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120036 | `jdg.micro.zasilkowa.a29.r8` |  | Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120037 | `jdg.micro.zasilkowa.a29.r9` |  | Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120038 | `jdg.micro.zasilkowa.a29.r10` |  | Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120039 | `jdg.micro.zasilkowa.a32.r1` |  | Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120040 | `jdg.micro.zasilkowa.a32.r2` |  | Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120041 | `jdg.micro.zasilkowa.a32.r3` |  | Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120042 | `jdg.micro.zasilkowa.a32.r4` |  | Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120043 | `jdg.micro.zasilkowa.a32.r5` |  | Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120044 | `jdg.micro.zasilkowa.a32.r6` |  | Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120045 | `jdg.micro.zasilkowa.a32.r7` |  | Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120046 | `jdg.micro.zasilkowa.a32.r8` |  | Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120047 | `jdg.micro.zasilkowa.a32.r9` |  | Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120048 | `jdg.micro.zasilkowa.a32.r10` |  | Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120049 | `jdg.micro.zasilkowa.a33.r1` |  | Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120050 | `jdg.micro.zasilkowa.a33.r2` |  | Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120051 | `jdg.micro.zasilkowa.a33.r3` |  | Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120052 | `jdg.micro.zasilkowa.a33.r4` |  | Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120053 | `jdg.micro.zasilkowa.a33.r5` |  | Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120054 | `jdg.micro.zasilkowa.a33.r6` |  | Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120055 | `jdg.micro.zasilkowa.a33.r7` |  | Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 120056 | `jdg.micro.zasilkowa.a33.r8` |  | Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
 
 ### `rules/micro/zdrowotna/zdrowotna.rego` (136 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 50000 | `jdg.zdr.a10.u1.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50001 | `jdg.zdr.a10.u2.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50002 | `jdg.zdr.a10.u4.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50003 | `jdg.zdr.a10.u5.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50004 | `jdg.zdr.a11.u1.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50005 | `jdg.zdr.a11.u1.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50006 | `jdg.zdr.a11.u2.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50007 | `jdg.zdr.a11.u3.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50008 | `jdg.zdr.a11.u3.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50009 | `jdg.zdr.a11.u4.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50010 | `jdg.zdr.a11.u4.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50011 | `jdg.zdr.a11.u5.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50012 | `jdg.zdr.a12.u1.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50013 | `jdg.zdr.a12.u2.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50014 | `jdg.zdr.a12.u2.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50015 | `jdg.zdr.a12.u3.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50016 | `jdg.zdr.a12.u3.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50017 | `jdg.zdr.a12.u4.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50018 | `jdg.zdr.a12.u5.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50019 | `jdg.zdr.a12.u5.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50020 | `jdg.zdr.a13.u1.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50021 | `jdg.zdr.a13.u1.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50022 | `jdg.zdr.a13.u2.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50023 | `jdg.zdr.a13.u2.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50024 | `jdg.zdr.a13.u3.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50025 | `jdg.zdr.a13.u4.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50026 | `jdg.zdr.a13.u4.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50027 | `jdg.zdr.a13.u5.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50028 | `jdg.zdr.a14.u1.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50029 | `jdg.zdr.a14.u1.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50030 | `jdg.zdr.a14.u2.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50031 | `jdg.zdr.a14.u3.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50032 | `jdg.zdr.a14.u3.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50033 | `jdg.zdr.a14.u4.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50034 | `jdg.zdr.a14.u5.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50035 | `jdg.zdr.a14.u5.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50036 | `jdg.zdr.a15.u1.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50037 | `jdg.zdr.a15.u2.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50038 | `jdg.zdr.a15.u2.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50039 | `jdg.zdr.a15.u3.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50040 | `jdg.zdr.a15.u4.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50041 | `jdg.zdr.a15.u4.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50042 | `jdg.zdr.a15.u5.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50043 | `jdg.zdr.a15.u5.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50044 | `jdg.zdr.a16.u1.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50045 | `jdg.zdr.a16.u1.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50046 | `jdg.zdr.a16.u2.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50047 | `jdg.zdr.a16.u3.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50048 | `jdg.zdr.a16.u3.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50049 | `jdg.zdr.a16.u4.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50050 | `jdg.zdr.a16.u4.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50051 | `jdg.zdr.a16.u5.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50052 | `jdg.zdr.a17.u1.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50053 | `jdg.zdr.a17.u2.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50054 | `jdg.zdr.a17.u2.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50055 | `jdg.zdr.a17.u3.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50056 | `jdg.zdr.a17.u3.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50057 | `jdg.zdr.a17.u4.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50058 | `jdg.zdr.a17.u5.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50059 | `jdg.zdr.a17.u5.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50060 | `jdg.zdr.a18.u1.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50061 | `jdg.zdr.a18.u2.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50062 | `jdg.zdr.a18.u3.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50063 | `jdg.zdr.a18.u4.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50064 | `jdg.zdr.a18.u4.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50065 | `jdg.zdr.a18.u5.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50066 | `jdg.zdr.a19.u1.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50067 | `jdg.zdr.a19.u2.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50068 | `jdg.zdr.a19.u3.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50069 | `jdg.zdr.a19.u5.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50070 | `jdg.zdr.a20.u4.p4` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50071 | `jdg.zdr.a9.u1.p1` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50072 | `jdg.zdr.a9.u2.p2` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 50073 | `jdg.zdr.a9.u3.p3` |  | Ustawa o świadczeniach zdrowotnych z 27.08.2004 |
-| 110079 | `jdg.micro.zdrowotna.a79.r1` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110080 | `jdg.micro.zdrowotna.a79.r2` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110081 | `jdg.micro.zdrowotna.a79.r3` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110082 | `jdg.micro.zdrowotna.a79.r4` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110083 | `jdg.micro.zdrowotna.a79.r5` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110084 | `jdg.micro.zdrowotna.a79.r6` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110085 | `jdg.micro.zdrowotna.a79.r7` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110086 | `jdg.micro.zdrowotna.a79.r8` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110087 | `jdg.micro.zdrowotna.a79.r9` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110088 | `jdg.micro.zdrowotna.a79.r10` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110089 | `jdg.micro.zdrowotna.a81.r1` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110090 | `jdg.micro.zdrowotna.a81.r2` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110091 | `jdg.micro.zdrowotna.a81.r3` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110092 | `jdg.micro.zdrowotna.a81.r4` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110093 | `jdg.micro.zdrowotna.a81.r5` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110094 | `jdg.micro.zdrowotna.a81.r6` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110095 | `jdg.micro.zdrowotna.a81.r7` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110096 | `jdg.micro.zdrowotna.a81.r8` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110097 | `jdg.micro.zdrowotna.a81.r9` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110098 | `jdg.micro.zdrowotna.a81.r10` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110099 | `jdg.micro.zdrowotna.a81b.r1` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110100 | `jdg.micro.zdrowotna.a81b.r2` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110101 | `jdg.micro.zdrowotna.a81b.r3` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110102 | `jdg.micro.zdrowotna.a81b.r4` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110103 | `jdg.micro.zdrowotna.a81b.r5` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110104 | `jdg.micro.zdrowotna.a81b.r6` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110105 | `jdg.micro.zdrowotna.a81b.r7` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110106 | `jdg.micro.zdrowotna.a81b.r8` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110107 | `jdg.micro.zdrowotna.a81b.r9` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110108 | `jdg.micro.zdrowotna.a81b.r10` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110109 | `jdg.micro.zdrowotna.a81c.r1` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110110 | `jdg.micro.zdrowotna.a81c.r2` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110111 | `jdg.micro.zdrowotna.a81c.r3` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110112 | `jdg.micro.zdrowotna.a81c.r4` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110113 | `jdg.micro.zdrowotna.a81c.r5` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110114 | `jdg.micro.zdrowotna.a81c.r6` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110115 | `jdg.micro.zdrowotna.a81c.r7` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110116 | `jdg.micro.zdrowotna.a81c.r8` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110117 | `jdg.micro.zdrowotna.a81c.r9` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110118 | `jdg.micro.zdrowotna.a81c.r10` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110119 | `jdg.micro.zdrowotna.a81c.r11` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110120 | `jdg.micro.zdrowotna.a81c.r12` | 🔴 BLOCK | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110121 | `jdg.micro.zdrowotna.a81d.r1` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110122 | `jdg.micro.zdrowotna.a81d.r2` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110123 | `jdg.micro.zdrowotna.a81d.r3` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110124 | `jdg.micro.zdrowotna.a81d.r4` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110125 | `jdg.micro.zdrowotna.a81d.r5` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110126 | `jdg.micro.zdrowotna.a81d.r6` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110127 | `jdg.micro.zdrowotna.a81d.r7` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110128 | `jdg.micro.zdrowotna.a81d.r8` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110129 | `jdg.micro.zdrowotna.a81d.r9` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110130 | `jdg.micro.zdrowotna.a81d.r10` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110131 | `jdg.micro.zdrowotna.a81d.r11` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110132 | `jdg.micro.zdrowotna.a81d.r12` | 🔴 BLOCK | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110133 | `jdg.micro.zdrowotna.a82.r1` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110134 | `jdg.micro.zdrowotna.a82.r2` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110135 | `jdg.micro.zdrowotna.a82.r3` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110136 | `jdg.micro.zdrowotna.a82.r4` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110137 | `jdg.micro.zdrowotna.a82.r5` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110138 | `jdg.micro.zdrowotna.a82.r6` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110139 | `jdg.micro.zdrowotna.a82.r7` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
-| 110140 | `jdg.micro.zdrowotna.a82.r8` |  | Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 21... |
+| 50000 | `jdg.zdr.a10.u1.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50001 | `jdg.zdr.a10.u2.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50002 | `jdg.zdr.a10.u4.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50003 | `jdg.zdr.a10.u5.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50004 | `jdg.zdr.a11.u1.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50005 | `jdg.zdr.a11.u1.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50006 | `jdg.zdr.a11.u2.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50007 | `jdg.zdr.a11.u3.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50008 | `jdg.zdr.a11.u3.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50009 | `jdg.zdr.a11.u4.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50010 | `jdg.zdr.a11.u4.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50011 | `jdg.zdr.a11.u5.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50012 | `jdg.zdr.a12.u1.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50013 | `jdg.zdr.a12.u2.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50014 | `jdg.zdr.a12.u2.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50015 | `jdg.zdr.a12.u3.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50016 | `jdg.zdr.a12.u3.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50017 | `jdg.zdr.a12.u4.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50018 | `jdg.zdr.a12.u5.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50019 | `jdg.zdr.a12.u5.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50020 | `jdg.zdr.a13.u1.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50021 | `jdg.zdr.a13.u1.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50022 | `jdg.zdr.a13.u2.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50023 | `jdg.zdr.a13.u2.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50024 | `jdg.zdr.a13.u3.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50025 | `jdg.zdr.a13.u4.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50026 | `jdg.zdr.a13.u4.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50027 | `jdg.zdr.a13.u5.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50028 | `jdg.zdr.a14.u1.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50029 | `jdg.zdr.a14.u1.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50030 | `jdg.zdr.a14.u2.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50031 | `jdg.zdr.a14.u3.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50032 | `jdg.zdr.a14.u3.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50033 | `jdg.zdr.a14.u4.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50034 | `jdg.zdr.a14.u5.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50035 | `jdg.zdr.a14.u5.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50036 | `jdg.zdr.a15.u1.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50037 | `jdg.zdr.a15.u2.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50038 | `jdg.zdr.a15.u2.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50039 | `jdg.zdr.a15.u3.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50040 | `jdg.zdr.a15.u4.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50041 | `jdg.zdr.a15.u4.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50042 | `jdg.zdr.a15.u5.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50043 | `jdg.zdr.a15.u5.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50044 | `jdg.zdr.a16.u1.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50045 | `jdg.zdr.a16.u1.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50046 | `jdg.zdr.a16.u2.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50047 | `jdg.zdr.a16.u3.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50048 | `jdg.zdr.a16.u3.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50049 | `jdg.zdr.a16.u4.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50050 | `jdg.zdr.a16.u4.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50051 | `jdg.zdr.a16.u5.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50052 | `jdg.zdr.a17.u1.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50053 | `jdg.zdr.a17.u2.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50054 | `jdg.zdr.a17.u2.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50055 | `jdg.zdr.a17.u3.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50056 | `jdg.zdr.a17.u3.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50057 | `jdg.zdr.a17.u4.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50058 | `jdg.zdr.a17.u5.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50059 | `jdg.zdr.a17.u5.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50060 | `jdg.zdr.a18.u1.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50061 | `jdg.zdr.a18.u2.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50062 | `jdg.zdr.a18.u3.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50063 | `jdg.zdr.a18.u4.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50064 | `jdg.zdr.a18.u4.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50065 | `jdg.zdr.a18.u5.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50066 | `jdg.zdr.a19.u1.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50067 | `jdg.zdr.a19.u2.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50068 | `jdg.zdr.a19.u3.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50069 | `jdg.zdr.a19.u5.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50070 | `jdg.zdr.a20.u4.p4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50071 | `jdg.zdr.a9.u1.p1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50072 | `jdg.zdr.a9.u2.p2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 50073 | `jdg.zdr.a9.u3.p3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 110079 | `jdg.micro.zdrowotna.a79.r1` |  | Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110080 | `jdg.micro.zdrowotna.a79.r2` |  | Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110081 | `jdg.micro.zdrowotna.a79.r3` |  | Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110082 | `jdg.micro.zdrowotna.a79.r4` |  | Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110083 | `jdg.micro.zdrowotna.a79.r5` |  | Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110084 | `jdg.micro.zdrowotna.a79.r6` |  | Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110085 | `jdg.micro.zdrowotna.a79.r7` |  | Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110086 | `jdg.micro.zdrowotna.a79.r8` |  | Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110087 | `jdg.micro.zdrowotna.a79.r9` |  | Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110088 | `jdg.micro.zdrowotna.a79.r10` |  | Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110089 | `jdg.micro.zdrowotna.a81.r1` |  | Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110090 | `jdg.micro.zdrowotna.a81.r2` |  | Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110091 | `jdg.micro.zdrowotna.a81.r3` |  | Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110092 | `jdg.micro.zdrowotna.a81.r4` |  | Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110093 | `jdg.micro.zdrowotna.a81.r5` |  | Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110094 | `jdg.micro.zdrowotna.a81.r6` |  | Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110095 | `jdg.micro.zdrowotna.a81.r7` |  | Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110096 | `jdg.micro.zdrowotna.a81.r8` |  | Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110097 | `jdg.micro.zdrowotna.a81.r9` |  | Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110098 | `jdg.micro.zdrowotna.a81.r10` |  | Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 110099 | `jdg.micro.zdrowotna.a81b.r1` |  | Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadcze... |
+| 110100 | `jdg.micro.zdrowotna.a81b.r2` |  | Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadcze... |
+| 110101 | `jdg.micro.zdrowotna.a81b.r3` |  | Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadcze... |
+| 110102 | `jdg.micro.zdrowotna.a81b.r4` |  | Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadcze... |
+| 110103 | `jdg.micro.zdrowotna.a81b.r5` |  | Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadcze... |
+| 110104 | `jdg.micro.zdrowotna.a81b.r6` |  | Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadcze... |
+| 110105 | `jdg.micro.zdrowotna.a81b.r7` |  | Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadcze... |
+| 110106 | `jdg.micro.zdrowotna.a81b.r8` |  | Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadcze... |
+| 110107 | `jdg.micro.zdrowotna.a81b.r9` |  | Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadcze... |
+| 110108 | `jdg.micro.zdrowotna.a81b.r10` |  | Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadcze... |
+| 110109 | `jdg.micro.zdrowotna.a81c.r1` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110110 | `jdg.micro.zdrowotna.a81c.r2` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110111 | `jdg.micro.zdrowotna.a81c.r3` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110112 | `jdg.micro.zdrowotna.a81c.r4` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110113 | `jdg.micro.zdrowotna.a81c.r5` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110114 | `jdg.micro.zdrowotna.a81c.r6` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110115 | `jdg.micro.zdrowotna.a81c.r7` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110116 | `jdg.micro.zdrowotna.a81c.r8` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110117 | `jdg.micro.zdrowotna.a81c.r9` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110118 | `jdg.micro.zdrowotna.a81c.r10` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110119 | `jdg.micro.zdrowotna.a81c.r11` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110120 | `jdg.micro.zdrowotna.a81c.r12` | 🔴 BLOCK | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110121 | `jdg.micro.zdrowotna.a81d.r1` |  | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110122 | `jdg.micro.zdrowotna.a81d.r2` |  | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110123 | `jdg.micro.zdrowotna.a81d.r3` |  | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110124 | `jdg.micro.zdrowotna.a81d.r4` |  | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110125 | `jdg.micro.zdrowotna.a81d.r5` |  | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110126 | `jdg.micro.zdrowotna.a81d.r6` |  | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110127 | `jdg.micro.zdrowotna.a81d.r7` |  | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110128 | `jdg.micro.zdrowotna.a81d.r8` |  | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110129 | `jdg.micro.zdrowotna.a81d.r9` |  | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110130 | `jdg.micro.zdrowotna.a81d.r10` |  | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110131 | `jdg.micro.zdrowotna.a81d.r11` |  | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110132 | `jdg.micro.zdrowotna.a81d.r12` | 🔴 BLOCK | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 110133 | `jdg.micro.zdrowotna.a82.r1` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 110134 | `jdg.micro.zdrowotna.a82.r2` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 110135 | `jdg.micro.zdrowotna.a82.r3` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 110136 | `jdg.micro.zdrowotna.a82.r4` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 110137 | `jdg.micro.zdrowotna.a82.r5` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 110138 | `jdg.micro.zdrowotna.a82.r6` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 110139 | `jdg.micro.zdrowotna.a82.r7` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 110140 | `jdg.micro.zdrowotna.a82.r8` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+
+### `rules/micro/zus_micro_atomic_p09.rego` (16 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 90801 | `jdg.micro.sus.a19.base_standard_preferential.r1` |  | Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 90802 | `jdg.micro.sus.a19.base_standard_preferential.r2` |  | Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 91801 | `jdg.micro.zus.a18c.maly_zus_plus_eligibility` |  | Art. 18c ust. 1 ustawy z dnia 13 października 1998 r. o syst... |
+| 91802 | `jdg.micro.zus.a18c.maly_zus_plus_limit_monitor` | 🟡 TRIAGE | Art. 18c ust. 1 ustawy z dnia 13 października 1998 r. o syst... |
+| 91803 | `jdg.micro.zus.a18c.maly_zus_plus_base_calc` |  | Art. 18c ust. 4-5 ustawy z dnia 13 października 1998 r. o sy... |
+| 92801 | `jdg.micro.zdrowotna.a81c.tier_switch.r1` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 92802 | `jdg.micro.zdrowotna.a81c.tier_switch.r2` |  | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 92803 | `jdg.micro.zdrowotna.a81c.tier_switch.r3` | 🟡 TRIAGE | Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 92811 | `jdg.micro.zdrowotna.a81d.annual_reconciliation` |  | Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świad... |
+| 93601 | `jdg.micro.sus.a36.reporting_deadline` |  | Art. 36 ust. 4 ustawy z dnia 13 października 1998 r. o syste... |
+| 93801 | `jdg.micro.zasilkowa.a19.benefit_base` |  | Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeni... |
+| 93802 | `jdg.micro.zasilkowa.a29.waiting_period` |  | Art. 4 ust. 1 pkt 2 ustawy z dnia 25 czerwca 1999 r. o świad... |
+| 93803 | `jdg.micro.zasilkowa.a32.limit_tracker` |  | Art. 8 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pien... |
+| 93804 | `jdg.micro.zasilkowa.a33.benefit_rate` |  | Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pie... |
+| 94701 | `jdg.micro.sus.a47.payment_deadline.r1` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
+| 94702 | `jdg.micro.sus.a47.payment_deadline.r2` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
 
 ### `rules/mpips.rego` (12 reguł)
 
@@ -11198,7 +11242,7 @@
 | 1110 | `jdg.p12_crossborder_innovations.wnt_wdt_audit` |  | Ustawa o VAT art. 9-13, art. 2 pkt 8 |
 | 1120 | `jdg.p12_crossborder_innovations.place_of_supply_audit` |  | Ustawa o VAT art. 28a-28o |
 | 1121 | `jdg.p12_crossborder_innovations.place_of_supply_calculator` |  | Ustawa o VAT art. 28a-28o |
-| 1130 | `jdg.p12_crossborder_innovations.mdr_audit` |  | Dyrektywa 2011/16/UE zm. 2018/822 (DAC6); OrdPU art. 86a-86o |
+| 1130 | `jdg.p12_crossborder_innovations.mdr_audit` |  | dyrektywa Rady 2011/16/UE z dnia 15 lutego 2011 r. w sprawie... |
 | 1131 | `jdg.p12_crossborder_innovations.mdr_auto_detector` |  | OrdPU art. 86a-86o; Dyrektywa DAC6 |
 | 1140 | `jdg.p12_crossborder_innovations.tp_cfc_residency_audit` |  | PIT art. 3, 23zf, 24c, 30f |
 | 1141 | `jdg.p12_crossborder_innovations.residency_decision_engine` |  | Art. 3 ust. 1a PIT |
@@ -12966,10 +13010,10 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 4 | `jdg.risk.kks_hidden_income_flag_plan26` | 🔴 BLOCK | Art. 54 KKS |
-| 6 | `jdg.risk.kks_unreliable_books_plan26` | 🔴 BLOCK | Art. 56 KKS |
-| 7 | `jdg.risk.kks_vat_evidence_gap` | 🟡 TRIAGE | Art. 57 KKS |
-| 8 | `jdg.risk.kks_declaration_overdue` | 🟡 TRIAGE | Art. 77 KKS |
+| 4 | `jdg.risk.kks_hidden_income_flag_plan26` | 🔴 BLOCK | Art. 54 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 6 | `jdg.risk.kks_unreliable_books_plan26` | 🔴 BLOCK | Art. 56 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 7 | `jdg.risk.kks_vat_evidence_gap` | 🟡 TRIAGE | Art. 57 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 8 | `jdg.risk.kks_declaration_overdue` | 🟡 TRIAGE | Art. 77 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
 
 ### `rules/rodo.rego` (12 reguł)
 
@@ -13042,7 +13086,7 @@
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
 | 100 | `jdg.sanctions.kks_art54_graduation` |  | Art. 53-54 KKS; Art. 44 KKS; Art. 16 KKS (czynny żal) |
-| 200 | `jdg.sanctions.kks_specific_offenses` | 🔴 BLOCK | Art. 56-62 KKS |
+| 200 | `jdg.sanctions.kks_specific_offenses` | 🔴 BLOCK | Art. 56-62 ustawy z dnia 10 września 1999 r. — Kodeks karny ... |
 | 300 | `jdg.sanctions.penalty_optimization_decision_tree` |  | Art. 16, 16a, 53-62 KKS; Art. 56, 70, 81 OrdPU; Art. 108b-10... |
 | 400 | `jdg.sanctions.kks_risk_calculator` |  | Kompleksowa analiza: KKS + VAT + OrdPU + profilaktyka |
 
@@ -13163,14 +13207,14 @@
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
 | 1153 | `jdg.statute.zus_suspension_during_proceedings` |  | Art. 24 ust. 5b-5d SUS |
-| 1157 | `jdg.statute.interruption_detailed_events` |  | Art. 71 OP |
-| 1167 | `jdg.statute.tax_arrears_detection` | 🟡 TRIAGE | Art. 20-21 OP |
+| 1157 | `jdg.statute.interruption_detailed_events` |  | Art. 71 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatk... |
+| 1167 | `jdg.statute.tax_arrears_detection` | 🟡 TRIAGE | Art. 20-21 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja pod... |
 | 1168 | `jdg.statute.voluntary_disclosure_protection` | 🔴 BLOCK | Art. 16 § 1-4 KKS, Art. 16a KKS |
-| 1169 | `jdg.statute.overpayment_detection_and_refund` |  | Art. 72-80 OP |
+| 1169 | `jdg.statute.overpayment_detection_and_refund` |  | Art. 72-80 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja pod... |
 | 1170 | `jdg.statute.deferral_active_interest_suspended` |  | Art. 48, Art. 67a-67e OP |
-| 1171 | `jdg.statute.tax_remission_liability_extinguished` |  | Art. 51 OP |
+| 1171 | `jdg.statute.tax_remission_liability_extinguished` |  | Art. 51 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatk... |
 | 1172 | `jdg.statute.overpayment_offset_auto` |  | Art. 72-80, Art. 87 OP |
-| 1174 | `jdg.statute.tax_proceedings_deadlines_alert` |  | Art. 120-129 OP |
+| 1174 | `jdg.statute.tax_proceedings_deadlines_alert` |  | Art. 120-129 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
 
 ### `rules/statute_of_limitations.rego` (18 reguł)
 
@@ -13617,7 +13661,7 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 100001 | `jdg.uor.obligation.a2.r1` | 🔴 BLOCK | Art. 2 ust. 1 pkt 2 Ustawy o rachunkowości (Dz.U. 1994 nr 12... |
+| 100001 | `jdg.uor.obligation.a2.r1` | 🔴 BLOCK | Art. 2 ust. 1 pkt 2 ustawy z dnia 29 września 1994 r. o rach... |
 | 100002 | `jdg.uor.obligation.a2.r2` |  | Art. 2 ust. 1 pkt 2 UoR; Art. 24a PIT |
 | 100003 | `jdg.uor.obligation.a2.r3` |  | Art. 2 ust. 1 pkt 2 UoR |
 | 100004 | `jdg.uor.obligation.a2.r4` | 🔴 BLOCK | Art. 2 ust. 1 pkt 2 w zw. z Art. 3 ust. 1 pkt 44 UoR |
@@ -14189,5 +14233,5 @@
 | 999 | `jdg.zus.extensions.coverage_summary` |  | Art. 30h PIT (składka solidarnościowa 4% od nadwyżki >1M PLN... |
 
 ---
-*Wygenerowano automatycznie — 2026-08-17 08:08:40*
+*Wygenerowano automatycznie — 2026-08-17 13:39:20*
 *Generator v8.0 — `python JDG/tools/generate_manifest.py`*

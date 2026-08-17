@@ -46,10 +46,13 @@ def _scan_rule(rule_id: str) -> list[dict]:
         txt = p.read_text(encoding="utf-8", errors="ignore")
         for m in RULE_ID_RE.finditer(txt):
             if m.group(1) == rule_id:
-                ctx = txt[m.start():m.start() + 4000]
+                # okno w obie strony: "matched": true bywa PRZED rule_id w tym
+                # samym literale (np. ostatnia reguła pliku — brak następnego
+                # bloku w oknie forward-only)
+                ctx = txt[max(0, m.start() - 200):m.start() + 4000]
                 bm = BASIS_RE.search(ctx)
                 basis = bm.group(1) if bm else ""
-                has_matched_true = '"matched": true' in ctx[:4000] or '"matched":true' in ctx[:4000]
+                has_matched_true = '"matched": true' in ctx or '"matched":true' in ctx
                 results.append({
                     "file": str(p.relative_to(JDG_ROOT)),
                     "legal_basis": basis,

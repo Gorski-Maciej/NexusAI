@@ -174,7 +174,7 @@ class TestAmortyzacjaRulesStructure:
     def test_post_merge_chain_p45(self):
         text = MAIN_REGO.read_text(encoding="utf-8")
         assert "final_verdict_p45 = safe_merge(final_verdict_p44," in text
-        assert "final_verdict_post_merge = object.union(final_verdict_p45," in text
+        assert "final_verdict_post_merge = object.union(final_verdict_p50," in text
 
     def test_thresholds_depreciation_p06(self):
         text = THRESHOLDS.read_text(encoding="utf-8")

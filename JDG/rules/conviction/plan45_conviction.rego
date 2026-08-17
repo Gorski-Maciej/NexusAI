@@ -50,19 +50,19 @@ else := {"matched":true,"rule_id":"jdg.conviction.hyper.cash_monitoring_enhanced
 }
 
 # ══ R1556-R1560: Tax Office Relations ══
-else := {"matched":true,"rule_id":"jdg.conviction.hyper.enhanced_audit_scrutiny","package":"jdg.conviction.hyper","priority":1556,"_routing":"WARNING","_routing_reason":"KKS: zaostrzony nadzór US","_legal_basis":"Art. 119b OP","_warnings":["Skazanie KKS — częstsze kontrole podatkowe, zaostrzony nadzór"]} {
+else := {"matched":true,"rule_id":"jdg.conviction.hyper.enhanced_audit_scrutiny","package":"jdg.conviction.hyper","priority":1556,"_routing":"WARNING","_routing_reason":"KKS: zaostrzony nadzór US","_legal_basis":"Art. 119b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)","_warnings":["Skazanie KKS — częstsze kontrole podatkowe, zaostrzony nadzór"]} {
     object.get(input.jdg_entrepreneur, "kks_conviction_active", false) == true
 }
-else := {"matched":true,"rule_id":"jdg.conviction.hyper.risk_profile_high","package":"jdg.conviction.hyper","priority":1557,"_routing":"WARNING","_routing_reason":"KKS: profil ryzyka HIGH","_legal_basis":"Art. 119b OP","_warnings":["Skazanie KKS — automatyczne przeklasyfikowanie profilu ryzyka na HIGH"]} {
+else := {"matched":true,"rule_id":"jdg.conviction.hyper.risk_profile_high","package":"jdg.conviction.hyper","priority":1557,"_routing":"WARNING","_routing_reason":"KKS: profil ryzyka HIGH","_legal_basis":"Art. 119b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)","_warnings":["Skazanie KKS — automatyczne przeklasyfikowanie profilu ryzyka na HIGH"]} {
     object.get(input.jdg_entrepreneur, "risk_profile_changed_to_high", false) == true
 }
-else := {"matched":true,"rule_id":"jdg.conviction.hyper.public_warning_list","package":"jdg.conviction.hyper","priority":1558,"_routing":"BLOCK_AND_ALERT","_routing_reason":"KKS: lista ostrzeżeń publicznych","_legal_basis":"Art. 119b OP","_warnings":["Skazanie KKS + zaległości — wpis na listę ostrzeżeń publicznych MF!"]} {
+else := {"matched":true,"rule_id":"jdg.conviction.hyper.public_warning_list","package":"jdg.conviction.hyper","priority":1558,"_routing":"BLOCK_AND_ALERT","_routing_reason":"KKS: lista ostrzeżeń publicznych","_legal_basis":"Art. 119b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)","_warnings":["Skazanie KKS + zaległości — wpis na listę ostrzeżeń publicznych MF!"]} {
     object.get(input.jdg_entrepreneur, "public_warning_list_entry", false) == true
 }
-else := {"matched":true,"rule_id":"jdg.conviction.hyper.statute_interruption","package":"jdg.conviction.hyper","priority":1559,"_routing":"WARNING","_routing_reason":"KKS: przerwanie przedawnienia","_legal_basis":"Art. 70 § 4 OP","_warnings":["Skazanie KKS przerywa bieg przedawnienia zobowiązania podatkowego"]} {
+else := {"matched":true,"rule_id":"jdg.conviction.hyper.statute_interruption","package":"jdg.conviction.hyper","priority":1559,"_routing":"WARNING","_routing_reason":"KKS: przerwanie przedawnienia","_legal_basis":"Art. 70 § 4 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)","_warnings":["Skazanie KKS przerywa bieg przedawnienia zobowiązania podatkowego"]} {
     object.get(input.jdg_entrepreneur, "kks_conviction_caused_statute_interruption", false) == true
 }
-else := {"matched":true,"rule_id":"jdg.conviction.hyper.extended_audit_period","package":"jdg.conviction.hyper","priority":1560,"_routing":"WARNING","_routing_reason":"KKS: przedłużona kontrola 60 dni","_legal_basis":"Art. 83 PP","_warnings":["Skazanie KKS — kontrola podatkowa może trwać 60 dni (zamiast 30)"]} {
+else := {"matched":true,"rule_id":"jdg.conviction.hyper.extended_audit_period","package":"jdg.conviction.hyper","priority":1560,"_routing":"WARNING","_routing_reason":"KKS: przedłużona kontrola 60 dni","_legal_basis":"Art. 83 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 226, ze zm.)","_warnings":["Skazanie KKS — kontrola podatkowa może trwać 60 dni (zamiast 30)"]} {
     object.get(input.jdg_entrepreneur, "audit_in_progress", false) == true
     object.get(input.jdg_entrepreneur, "kks_conviction_active", false) == true
 }
@@ -87,10 +87,10 @@ else := {"matched":true,"rule_id":"jdg.conviction.hyper.network_isolation","pack
 }
 
 # ══ R1566-R1570: Rehabilitation ══
-else := {"matched":true,"rule_id":"jdg.conviction.hyper.rehabilitation_misdemeanor_3y","package":"jdg.conviction.hyper","priority":1566,"_routing":"","_routing_reason":"Zatarcie: wykroczenie skarbowe 3 lata","_legal_basis":"Art. 19 KKS","_warnings":["Wykroczenie skarbowe — zatarcie skazania po 3 latach od wykonania kary (v7.0 FIX K19-1: Art. 19 KKS, nie Art. 21)"]} {
+else := {"matched":true,"rule_id":"jdg.conviction.hyper.rehabilitation_misdemeanor_3y","package":"jdg.conviction.hyper","priority":1566,"_routing":"","_routing_reason":"Zatarcie: wykroczenie skarbowe 3 lata","_legal_basis":"Art. 19 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)","_warnings":["Wykroczenie skarbowe — zatarcie skazania po 3 latach od wykonania kary (v7.0 FIX K19-1: Art. 19 KKS, nie Art. 21)"]} {
     object.get(input.jdg_entrepreneur, "kks_offense_type", "") == "MISDEMEANOR"
 }
-else := {"matched":true,"rule_id":"jdg.conviction.hyper.rehabilitation_crime_5y","package":"jdg.conviction.hyper","priority":1567,"_routing":"","_routing_reason":"Zatarcie: przestępstwo skarbowe 5 lat","_legal_basis":"Art. 19 KKS","_warnings":["Przestępstwo skarbowe — zatarcie skazania po 5 latach od wykonania kary (v7.0 FIX K19-1: Art. 19 KKS, nie Art. 21)"]} {
+else := {"matched":true,"rule_id":"jdg.conviction.hyper.rehabilitation_crime_5y","package":"jdg.conviction.hyper","priority":1567,"_routing":"","_routing_reason":"Zatarcie: przestępstwo skarbowe 5 lat","_legal_basis":"Art. 19 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)","_warnings":["Przestępstwo skarbowe — zatarcie skazania po 5 latach od wykonania kary (v7.0 FIX K19-1: Art. 19 KKS, nie Art. 21)"]} {
     object.get(input.jdg_entrepreneur, "kks_offense_type", "") == "CRIME"
 }
 else := {"matched":true,"rule_id":"jdg.conviction.hyper.rehabilitation_clean_record","package":"jdg.conviction.hyper","priority":1568,"_routing":"","_routing_reason":"Skutek zatarcia — czysta karta","_legal_basis":"Art. 106 KK","_warnings":["Zatarcie skazania = powrót do stanu sprzed skazania, wszystkie ograniczenia uchylone"]} {
@@ -106,7 +106,7 @@ else := {"matched":true,"rule_id":"jdg.conviction.hyper.rehabilitation_us_notifi
 }
 
 # ══ R1571-R1575: Enforcement ══
-else := {"matched":true,"rule_id":"jdg.conviction.hyper.full_asset_enforcement","package":"jdg.conviction.hyper","priority":1571,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Egzekucja z całego majątku","_legal_basis":"Art. 26 OP","_warnings":["Egzekucja zaległości podatkowych — odpowiedzialność całym majątkiem osobistym!"]} {
+else := {"matched":true,"rule_id":"jdg.conviction.hyper.full_asset_enforcement","package":"jdg.conviction.hyper","priority":1571,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Egzekucja z całego majątku","_legal_basis":"Art. 26 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)","_warnings":["Egzekucja zaległości podatkowych — odpowiedzialność całym majątkiem osobistym!"]} {
     object.get(input.jdg_entrepreneur, "tax_arrears", 0) > 0
     object.get(input.jdg_entrepreneur, "enforcement_active", false) == true
 }
@@ -116,7 +116,7 @@ else := {"matched":true,"rule_id":"jdg.conviction.hyper.no_asset_concealment","p
 else := {"matched":true,"rule_id":"jdg.conviction.hyper.bank_account_seizure","package":"jdg.conviction.hyper","priority":1573,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Zajęcie rachunków bankowych","_legal_basis":"Art. 75-89 Ustawa o post. egz.","_warnings":["Zajęcie rachunków bankowych — egzekucja zaległości podatkowych"]} {
     object.get(input.jdg_entrepreneur, "bank_account_seized", false) == true
 }
-else := {"matched":true,"rule_id":"jdg.conviction.hyper.collateral_required","package":"jdg.conviction.hyper","priority":1574,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Zabezpieczenie majątkowe","_legal_basis":"Art. 33 OP","_warnings":["Wymóg złożenia zabezpieczenia majątkowego na poczet przyszłych zaległości"]} {
+else := {"matched":true,"rule_id":"jdg.conviction.hyper.collateral_required","package":"jdg.conviction.hyper","priority":1574,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Zabezpieczenie majątkowe","_legal_basis":"Art. 33 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)","_warnings":["Wymóg złożenia zabezpieczenia majątkowego na poczet przyszłych zaległości"]} {
     object.get(input.jdg_entrepreneur, "collateral_required_by_us", false) == true
 }
 else := {"matched":true,"rule_id":"jdg.conviction.hyper.insolvency_filing_obligation","package":"jdg.conviction.hyper","priority":1575,"_routing":"BLOCK_AND_ALERT","_routing_reason":"Obowiązek wniosku o upadłość","_legal_basis":"Art. 21 Prawa upadłościowego","_warnings":["Niewypłacalność — obowiązek złożenia wniosku o upadłość w ciągu 30 dni!"]} {

@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  pkpir.corrections — Korekty i storna w PKPiR (10 reguł)                  ║
-# ║  Legal basis: §9 ust. 2 Rozp. MF PKPiR, Art. 81-81c OrdPU                 ║
+# ║  Legal basis: §9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów, Art. 81-81c OrdPU                 ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pkpir_corrections.c1.r1: storno_red_definition — definicja storna czerwonego
@@ -32,7 +32,7 @@ decide := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 ust. 2 rozporządzenia MF z 15.11.2025 r.",
+    "_legal_basis": "§9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
     "_warnings": ["[MICRO] PKPiR Korekty: Storno czerwone = NOWY wiersz z kwotą ujemną. NIE przekreślać oryginału!"]
 } { input.jdg_entrepreneur.uses_pkpir == true }
 
@@ -47,7 +47,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR",
+    "_legal_basis": "§9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
     "_warnings": [sprintf("[MICRO] PKPiR Korekty: Storno pozycji %s — nowy wiersz LP=%d, kwota %.2f PLN (minus), kol.17: 'korekta poz. %s'", [original_lp, new_lp, amount, original_lp])]
 } {
     input.invoice.correction_type == "STORNO"
@@ -69,7 +69,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Próba wymazania/wyskrobania wpisu PKPiR — NIEDOZWOLONE! Użyj storna!",
-    "_legal_basis": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR",
+    "_legal_basis": "§9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
     "_warnings": [sprintf("[MICRO] PKPiR Korekty: BLOCK — próba fizycznego usunięcia wpisu LP=%d. UŻYJ STORNA CZERWONEGO! Kol.17: wyjaśnij przyczynę.", [lp_number])]
 } {
     object.get(input.invoice, "pkpir_erasure_attempted", false) == true
@@ -87,7 +87,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR + Art. 14 PIT",
+    "_legal_basis": "§9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów + Art. 14 PIT",
     "_warnings": [sprintf("[MICRO] PKPiR Korekty: Korekta przychodu -%.2f PLN (kol.7/8) — storno od zwrotu towaru/rabatu. Faktura korygująca: %s", [amount, kor_number])]
 } {
     input.invoice.direction == "SALE"
@@ -107,7 +107,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 ust. 2 rozporządzenia MF w sprawie PKPiR + Art. 22 PIT",
+    "_legal_basis": "§9 ust. 2 rozporządzenia Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów + Art. 22 PIT",
     "_warnings": [sprintf("[MICRO] PKPiR Korekty: Korekta kosztu -%.2f PLN (kol.10-13) — storno przy otrzymaniu faktury korygującej od dostawcy", [amount])]
 } {
     input.invoice.direction == "PURCHASE"
@@ -174,17 +174,3 @@ else := {
     amount > 0
 }
 
-# ── Fallback ──────────────────────────────────────────────────────────────────
-else := {
-    "matched": true, "rule_id": "jdg.micro.pkpir_corrections.c1.fallback",
-    "package": "jdg.micro.pkpir_corrections", "priority": 80699,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "§9 rozporządzenia MF w sprawie PKPiR",
-    "_warnings": ["[MICRO] PKPiR korekty — brak korekty dla tej transakcji"]
-} { true }

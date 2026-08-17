@@ -9,7 +9,7 @@
 #            limit 2 mln EUR (art. 6), wyłączenia (art. 8), ewidencja (art. 15)
 #            + AUTO-KALKULATOR stawki z kodu PKWiU (INN-01)
 #   Sekcja 2: AUDYT KARTY PODATKOWEJ — zasady, stawki, limity zatrudnienia,
-#            zgłoszenie do US (art. 21-28 ustawy o ryczałcie)
+#            zgłoszenie do US (art. 21-28 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne (Dz.U. 2025 poz. 234 ze zm.))
 #   Sekcja 3: AUDYT CYKLU ŻYCIA JDG (PRIORYTET) — rejestracja CEIDG → start →
 #            wzrost → dojrzałość → zawieszenie → wznowienie → exit/sukcesja
 #            + ASYSTENT cyklu życia z kalendarzem obowiązków (INN-03)
@@ -114,7 +114,7 @@ ryczalt_coverage_report := {
 }
 
 # ── SEKCJA 1: AUDYT STAWEK RYCZAŁTU WG PKWiU (POZIOM ENTERPRISE — PRIORYTET) ─
-# art. 12 ust. 1 ustawy o ryczałcie — stawki 3%..25% wg PKWiU; art. 6 — limit
+# art. 12 ust. 1 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne (Dz.U. 2025 poz. 234 ze zm.) — stawki 3%..25% wg PKWiU; art. 6 — limit
 # 2 mln EUR; art. 8 — wyłączenia; art. 15 — ewidencja przychodów.
 ryczalt_rates_audit := {
     "rule_id": "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_rates_audit",
@@ -147,7 +147,7 @@ ryczalt_rate_calculator := {
     "pkwiu_code": object.get(input.activity, "pkwiu_code", ""),
     "rate": ryczalt_rate_for_code(object.get(input.activity, "pkwiu_code", "")),
     "pkwiu_section": pkwiu_section(object.get(input.activity, "pkwiu_code", "")),
-    "note": "stawka ryczałtu wg PKWiU (art. 12 ust. 1 ustawy o ryczałcie) — auto-kalkulator z kodu",
+    "note": "stawka ryczałtu wg PKWiU (art. 12 ust. 1 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne (Dz.U. 2025 poz. 234 ze zm.)) — auto-kalkulator z kodu",
     "_routing": "",
     "_routing_reason": "Auto-kalkulator stawki ryczałtu z kodu PKWiU (art. 12 ust. 1)",
     "_legal_basis": "Ustawa o ryczałcie art. 12 ust. 1",

@@ -283,7 +283,7 @@ class TestReliefsWiring:
     def test_post_merge_chain_continues(self):
         text = MAIN_REGO.read_text(encoding="utf-8")
         assert "final_verdict_p45" in text
-        assert "final_verdict_post_merge = object.union(final_verdict_p45," in text
+        assert "final_verdict_post_merge = object.union(final_verdict_p50," in text
 
     def test_p07_tools_exist(self):
         for tool in ["relief_detector", "ipbox_nexus_calculator",

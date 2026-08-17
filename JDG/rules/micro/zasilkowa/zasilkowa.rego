@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  zasilkowa.a19 — Zasiłek chorobowy (10 reguł)                                    ║
-# ║  Legal basis: Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)                                                   ║
+# ║  Legal basis: Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.zasilkowa.a19.r1: zasilkowa_a19_r1_eligibility
@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek chorobowy: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -71,7 +71,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek chorobowy: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "zasilkowa_condition_met", false) == true
@@ -99,7 +99,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek chorobowy: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "zasilkowa_a19_r3_pass", false) == true
@@ -127,7 +127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek chorobowy: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "zasilkowa_a19_r4_checks", false) == true
@@ -155,7 +155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek chorobowy: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "zasilkowa_exclusion_applies", false) == false
@@ -183,7 +183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek chorobowy: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "zasilkowa_exclusion_2", false) == false
@@ -211,7 +211,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek chorobowy: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "zasilkowa_a19_exception", false) == true
@@ -239,7 +239,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek chorobowy: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "zasilkowa_a19_exception_2", false) == true
@@ -267,7 +267,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek chorobowy: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_zasilkowa", false) == true
@@ -295,7 +295,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 19 ust. 1 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek chorobowy: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_zasilkowa", false) == true
@@ -303,7 +303,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  zasilkowa.a29 — Zasiłek macierzyński (10 reguł)                                    ║
-# ║  Legal basis: Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)                                                   ║
+# ║  Legal basis: Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.zasilkowa.a29.r1: zasilkowa_a29_r1_eligibility
@@ -328,7 +328,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek macierzyński: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -356,7 +356,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek macierzyński: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "zasilkowa_condition_met", false) == true
@@ -384,7 +384,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek macierzyński: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "zasilkowa_a29_r3_pass", false) == true
@@ -412,7 +412,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek macierzyński: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "zasilkowa_a29_r4_checks", false) == true
@@ -440,7 +440,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek macierzyński: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "zasilkowa_exclusion_applies", false) == false
@@ -468,7 +468,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek macierzyński: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "zasilkowa_exclusion_2", false) == false
@@ -496,7 +496,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek macierzyński: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "zasilkowa_a29_exception", false) == true
@@ -524,7 +524,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek macierzyński: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "zasilkowa_a29_exception_2", false) == true
@@ -552,7 +552,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek macierzyński: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_zasilkowa", false) == true
@@ -580,7 +580,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 29 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek macierzyński: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_zasilkowa", false) == true
@@ -588,7 +588,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  zasilkowa.a32 — Zasiłek opiekuńczy (10 reguł)                                    ║
-# ║  Legal basis: Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)                                                   ║
+# ║  Legal basis: Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.zasilkowa.a32.r1: zasilkowa_a32_r1_eligibility
@@ -613,7 +613,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek opiekuńczy: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -641,7 +641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek opiekuńczy: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "zasilkowa_condition_met", false) == true
@@ -669,7 +669,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek opiekuńczy: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "zasilkowa_a32_r3_pass", false) == true
@@ -697,7 +697,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek opiekuńczy: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "zasilkowa_a32_r4_checks", false) == true
@@ -725,7 +725,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek opiekuńczy: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "zasilkowa_exclusion_applies", false) == false
@@ -753,7 +753,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek opiekuńczy: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "zasilkowa_exclusion_2", false) == false
@@ -781,7 +781,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek opiekuńczy: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "zasilkowa_a32_exception", false) == true
@@ -809,7 +809,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek opiekuńczy: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "zasilkowa_a32_exception_2", false) == true
@@ -837,7 +837,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek opiekuńczy: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_zasilkowa", false) == true
@@ -865,7 +865,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 32 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek opiekuńczy: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_zasilkowa", false) == true
@@ -873,7 +873,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  zasilkowa.a33 — Zasiłek rehabilitacyjny (8 reguł)                                    ║
-# ║  Legal basis: Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)                                                   ║
+# ║  Legal basis: Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.zasilkowa.a33.r1: zasilkowa_a33_r1_eligibility
@@ -898,7 +898,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek rehabilitacyjny: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -926,7 +926,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek rehabilitacyjny: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "zasilkowa_condition_met", false) == true
@@ -954,7 +954,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek rehabilitacyjny: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "zasilkowa_a33_r3_pass", false) == true
@@ -982,7 +982,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek rehabilitacyjny: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "zasilkowa_a33_r4_checks", false) == true
@@ -1010,7 +1010,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek rehabilitacyjny: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "zasilkowa_exclusion_applies", false) == false
@@ -1038,7 +1038,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek rehabilitacyjny: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "zasilkowa_exclusion_2", false) == false
@@ -1066,7 +1066,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek rehabilitacyjny: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "zasilkowa_a33_exception", false) == true
@@ -1094,7 +1094,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa zasiłkowa z 25.06.1999 (Dz.U. 1999 nr 60 poz. 636)",
+    "_legal_basis": "Art. 33 ustawy z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
     "_warnings": ["[MICRO] Zasiłek rehabilitacyjny: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "zasilkowa_a33_exception_2", false) == true

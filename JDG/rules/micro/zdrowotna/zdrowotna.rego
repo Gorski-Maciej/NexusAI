@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  zdrowotna.a79 — Obowiązek składki zdrowotnej (10 reguł)                                    ║
-# ║  Legal basis: Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)                                                   ║
+# ║  Legal basis: Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.zdrowotna.a79.r1: zdrowotna_a79_r1_eligibility
@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Obowiązek składki zdrowotnej: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -71,7 +71,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Obowiązek składki zdrowotnej: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "zdrowotna_condition_met", false) == true
@@ -99,7 +99,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Obowiązek składki zdrowotnej: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a79_r3_pass", false) == true
@@ -127,7 +127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Obowiązek składki zdrowotnej: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a79_r4_checks", false) == true
@@ -155,7 +155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Obowiązek składki zdrowotnej: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "zdrowotna_exclusion_applies", false) == false
@@ -183,7 +183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Obowiązek składki zdrowotnej: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "zdrowotna_exclusion_2", false) == false
@@ -211,7 +211,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Obowiązek składki zdrowotnej: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "zdrowotna_a79_exception", false) == true
@@ -239,7 +239,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Obowiązek składki zdrowotnej: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "zdrowotna_a79_exception_2", false) == true
@@ -267,7 +267,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Obowiązek składki zdrowotnej: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_zdrowotna", false) == true
@@ -295,7 +295,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 79 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Obowiązek składki zdrowotnej: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_zdrowotna", false) == true
@@ -303,7 +303,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  zdrowotna.a81 — Podstawa wymiaru — skala (10 reguł)                                    ║
-# ║  Legal basis: Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)                                                   ║
+# ║  Legal basis: Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.zdrowotna.a81.r1: zdrowotna_a81_r1_eligibility
@@ -328,7 +328,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — skala: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -356,7 +356,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — skala: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "zdrowotna_condition_met", false) == true
@@ -384,7 +384,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — skala: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a81_r3_pass", false) == true
@@ -412,7 +412,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — skala: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a81_r4_checks", false) == true
@@ -440,7 +440,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — skala: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "zdrowotna_exclusion_applies", false) == false
@@ -468,7 +468,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — skala: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "zdrowotna_exclusion_2", false) == false
@@ -496,7 +496,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — skala: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "zdrowotna_a81_exception", false) == true
@@ -524,7 +524,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — skala: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "zdrowotna_a81_exception_2", false) == true
@@ -552,7 +552,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — skala: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_zdrowotna", false) == true
@@ -580,7 +580,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — skala: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_zdrowotna", false) == true
@@ -588,7 +588,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  zdrowotna.a81b — Podstawa wymiaru — liniowy (10 reguł)                                    ║
-# ║  Legal basis: Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)                                                   ║
+# ║  Legal basis: Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.zdrowotna.a81b.r1: zdrowotna_a81b_r1_eligibility
@@ -613,7 +613,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — liniowy: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -641,7 +641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — liniowy: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "zdrowotna_condition_met", false) == true
@@ -669,7 +669,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — liniowy: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a81b_r3_pass", false) == true
@@ -697,7 +697,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — liniowy: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a81b_r4_checks", false) == true
@@ -725,7 +725,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — liniowy: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "zdrowotna_exclusion_applies", false) == false
@@ -753,7 +753,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — liniowy: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "zdrowotna_exclusion_2", false) == false
@@ -781,7 +781,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — liniowy: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "zdrowotna_a81b_exception", false) == true
@@ -809,7 +809,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — liniowy: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "zdrowotna_a81b_exception_2", false) == true
@@ -837,7 +837,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — liniowy: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_zdrowotna", false) == true
@@ -865,7 +865,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2c ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — liniowy: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_zdrowotna", false) == true
@@ -873,7 +873,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  zdrowotna.a81c — Podstawa wymiaru — ryczałt (12 reguł)                                    ║
-# ║  Legal basis: Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)                                                   ║
+# ║  Legal basis: Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.zdrowotna.a81c.r1: zdrowotna_a81c_r1_eligibility
@@ -898,7 +898,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — ryczałt: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -926,7 +926,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — ryczałt: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "zdrowotna_condition_met", false) == true
@@ -954,7 +954,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — ryczałt: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a81c_r3_pass", false) == true
@@ -982,7 +982,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — ryczałt: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a81c_r4_checks", false) == true
@@ -1010,7 +1010,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — ryczałt: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "zdrowotna_exclusion_applies", false) == false
@@ -1038,7 +1038,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — ryczałt: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "zdrowotna_exclusion_2", false) == false
@@ -1066,7 +1066,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — ryczałt: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "zdrowotna_a81c_exception", false) == true
@@ -1094,7 +1094,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — ryczałt: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "zdrowotna_a81c_exception_2", false) == true
@@ -1122,7 +1122,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — ryczałt: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_zdrowotna", false) == true
@@ -1150,7 +1150,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — ryczałt: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_zdrowotna", false) == true
@@ -1178,7 +1178,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — ryczałt: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "zdrowotna_deadline_required", false) == true
@@ -1209,7 +1209,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Podstawa wymiaru — ryczałt",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2e-2f ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Podstawa wymiaru — ryczałt: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a81c_violation", false) == true
@@ -1217,7 +1217,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  zdrowotna.a81d — Roczne rozliczenie zdrowotnej (12 reguł)                                    ║
-# ║  Legal basis: Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)                                                   ║
+# ║  Legal basis: Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.zdrowotna.a81d.r1: zdrowotna_a81d_r1_eligibility
@@ -1242,7 +1242,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Roczne rozliczenie zdrowotnej: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1270,7 +1270,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Roczne rozliczenie zdrowotnej: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "zdrowotna_condition_met", false) == true
@@ -1298,7 +1298,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Roczne rozliczenie zdrowotnej: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a81d_r3_pass", false) == true
@@ -1326,7 +1326,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Roczne rozliczenie zdrowotnej: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a81d_r4_checks", false) == true
@@ -1354,7 +1354,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Roczne rozliczenie zdrowotnej: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "zdrowotna_exclusion_applies", false) == false
@@ -1382,7 +1382,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Roczne rozliczenie zdrowotnej: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "zdrowotna_exclusion_2", false) == false
@@ -1410,7 +1410,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Roczne rozliczenie zdrowotnej: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "zdrowotna_a81d_exception", false) == true
@@ -1438,7 +1438,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Roczne rozliczenie zdrowotnej: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "zdrowotna_a81d_exception_2", false) == true
@@ -1466,7 +1466,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Roczne rozliczenie zdrowotnej: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_zdrowotna", false) == true
@@ -1494,7 +1494,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Roczne rozliczenie zdrowotnej: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_zdrowotna", false) == true
@@ -1522,7 +1522,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Roczne rozliczenie zdrowotnej: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "zdrowotna_deadline_required", false) == true
@@ -1553,7 +1553,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Roczne rozliczenie zdrowotnej",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 81 ust. 2g-2h ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Roczne rozliczenie zdrowotnej: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a81d_violation", false) == true
@@ -1561,7 +1561,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  zdrowotna.a82 — Zdrowotna przy zawieszeniu (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)                                                   ║
+# ║  Legal basis: Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.zdrowotna.a82.r1: zdrowotna_a82_r1_eligibility
@@ -1586,7 +1586,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Zdrowotna przy zawieszeniu: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1614,7 +1614,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Zdrowotna przy zawieszeniu: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "zdrowotna_condition_met", false) == true
@@ -1642,7 +1642,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Zdrowotna przy zawieszeniu: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a82_r3_pass", false) == true
@@ -1670,7 +1670,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Zdrowotna przy zawieszeniu: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "zdrowotna_a82_r4_checks", false) == true
@@ -1698,7 +1698,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Zdrowotna przy zawieszeniu: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "zdrowotna_exclusion_applies", false) == false
@@ -1726,7 +1726,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Zdrowotna przy zawieszeniu: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "zdrowotna_exclusion_2", false) == false
@@ -1754,7 +1754,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Zdrowotna przy zawieszeniu: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "zdrowotna_a82_exception", false) == true
@@ -1782,7 +1782,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o świad. opieki zdrow. z 27.08.2004 (Dz.U. 2004 nr 210 poz. 2135)",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Zdrowotna przy zawieszeniu: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "zdrowotna_a82_exception_2", false) == true
@@ -1816,7 +1816,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 10 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a10_u1_p2_check", false) == true
@@ -1843,7 +1843,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 10 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a10_u2_p3_check", false) == true
@@ -1870,7 +1870,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 10 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a10_u4_p4_check", false) == true
@@ -1897,7 +1897,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 10 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a10_u5_p1_check", false) == true
@@ -1924,7 +1924,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a11_u1_p1_check", false) == true
@@ -1951,7 +1951,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a11_u1_p3_check", false) == true
@@ -1978,7 +1978,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a11_u2_p2_check", false) == true
@@ -2005,7 +2005,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a11_u3_p3_check", false) == true
@@ -2032,7 +2032,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a11_u3_p4_check", false) == true
@@ -2059,7 +2059,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a11_u4_p1_check", false) == true
@@ -2086,7 +2086,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a11_u4_p4_check", false) == true
@@ -2113,7 +2113,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a11_u5_p2_check", false) == true
@@ -2140,7 +2140,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a12_u1_p2_check", false) == true
@@ -2167,7 +2167,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a12_u2_p3_check", false) == true
@@ -2194,7 +2194,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a12_u2_p4_check", false) == true
@@ -2221,7 +2221,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a12_u3_p1_check", false) == true
@@ -2248,7 +2248,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a12_u3_p4_check", false) == true
@@ -2275,7 +2275,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a12_u4_p2_check", false) == true
@@ -2302,7 +2302,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a12_u5_p1_check", false) == true
@@ -2329,7 +2329,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a12_u5_p3_check", false) == true
@@ -2356,7 +2356,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a13_u1_p3_check", false) == true
@@ -2383,7 +2383,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a13_u1_p4_check", false) == true
@@ -2410,7 +2410,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a13_u2_p1_check", false) == true
@@ -2437,7 +2437,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a13_u2_p4_check", false) == true
@@ -2464,7 +2464,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a13_u3_p2_check", false) == true
@@ -2491,7 +2491,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a13_u4_p1_check", false) == true
@@ -2518,7 +2518,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a13_u4_p3_check", false) == true
@@ -2545,7 +2545,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a13_u5_p2_check", false) == true
@@ -2572,7 +2572,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a14_u1_p1_check", false) == true
@@ -2599,7 +2599,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a14_u1_p4_check", false) == true
@@ -2626,7 +2626,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a14_u2_p2_check", false) == true
@@ -2653,7 +2653,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a14_u3_p1_check", false) == true
@@ -2680,7 +2680,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a14_u3_p3_check", false) == true
@@ -2707,7 +2707,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a14_u4_p2_check", false) == true
@@ -2734,7 +2734,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a14_u5_p3_check", false) == true
@@ -2761,7 +2761,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a14_u5_p4_check", false) == true
@@ -2788,7 +2788,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a15_u1_p2_check", false) == true
@@ -2815,7 +2815,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a15_u2_p1_check", false) == true
@@ -2842,7 +2842,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a15_u2_p3_check", false) == true
@@ -2869,7 +2869,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a15_u3_p2_check", false) == true
@@ -2896,7 +2896,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a15_u4_p3_check", false) == true
@@ -2923,7 +2923,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a15_u4_p4_check", false) == true
@@ -2950,7 +2950,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a15_u5_p1_check", false) == true
@@ -2977,7 +2977,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a15_u5_p4_check", false) == true
@@ -3004,7 +3004,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a16_u1_p1_check", false) == true
@@ -3031,7 +3031,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a16_u1_p3_check", false) == true
@@ -3058,7 +3058,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a16_u2_p2_check", false) == true
@@ -3085,7 +3085,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a16_u3_p3_check", false) == true
@@ -3112,7 +3112,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a16_u3_p4_check", false) == true
@@ -3139,7 +3139,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a16_u4_p1_check", false) == true
@@ -3166,7 +3166,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a16_u4_p4_check", false) == true
@@ -3193,7 +3193,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a16_u5_p2_check", false) == true
@@ -3220,7 +3220,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a17_u1_p2_check", false) == true
@@ -3247,7 +3247,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a17_u2_p3_check", false) == true
@@ -3274,7 +3274,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a17_u2_p4_check", false) == true
@@ -3301,7 +3301,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a17_u3_p1_check", false) == true
@@ -3328,7 +3328,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a17_u3_p4_check", false) == true
@@ -3355,7 +3355,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a17_u4_p2_check", false) == true
@@ -3382,7 +3382,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a17_u5_p1_check", false) == true
@@ -3409,7 +3409,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a17_u5_p3_check", false) == true
@@ -3436,7 +3436,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a18_u1_p4_check", false) == true
@@ -3463,7 +3463,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a18_u2_p1_check", false) == true
@@ -3490,7 +3490,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a18_u3_p2_check", false) == true
@@ -3517,7 +3517,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a18_u4_p1_check", false) == true
@@ -3544,7 +3544,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a18_u4_p3_check", false) == true
@@ -3571,7 +3571,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a18_u5_p2_check", false) == true
@@ -3598,7 +3598,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a19_u1_p1_check", false) == true
@@ -3625,7 +3625,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a19_u2_p2_check", false) == true
@@ -3652,7 +3652,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a19_u3_p3_check", false) == true
@@ -3679,7 +3679,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a19_u5_p4_check", false) == true
@@ -3706,7 +3706,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a20_u4_p4_check", false) == true
@@ -3733,7 +3733,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 9 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 9: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a9_u1_p1_check", false) == true
@@ -3760,7 +3760,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 9 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 9: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a9_u2_p2_check", false) == true
@@ -3787,7 +3787,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 9 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o świadczeniach zdrowotnych z 27.08.2004",
+    "_legal_basis": "Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
     "_warnings": ["[MICRO] Art. 9: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "zdr_a9_u3_p3_check", false) == true

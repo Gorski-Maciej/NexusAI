@@ -698,8 +698,75 @@ zus := {
     "pension_rate": 0.1952,                      # 19.52% — emerytalna
     "disability_rate": 0.08,                     # 8% — rentowa
     "sickness_voluntary_rate": 0.0245,           # 2.45% — chorobowa (dobrowolna)
-    "accident_rate": 0.0167,                     # 1.67% — wypadkowa
+    "accident_rate": 0.0167,                     # 1.67% — wypadkowa (średnia dla JDG)
+    "accident_rate_min": 0.0067,                 # 0.67% — min. stopa wypadkowa (art. 22 ust. 4 pkt 2 SUS)
+    "accident_rate_max": 0.0333,                 # 3.33% — max. stopa wypadkowa (art. 22 ust. 4 pkt 1 SUS)
     "labour_fund_rate": 0.0245,                  # 2.45% — Fundusz Pracy
+
+    # ── GLM52 P09 — ZUS MIKRO (mikro-atomowe reguły sus/zdrowotna/zasilkowa) ──
+    # Podstawy wymiaru składek (art. 18/18a/18c SUS, mikro)
+    "social_base_standard_60pct": 5460.00,       # PLN — 60% przeciętnego (2026)
+    "preferential_base_30pct": 1440.00,          # PLN — 30% minimalnego (preferencyjna, 2026)
+    "maly_zus_plus_base_pct": 30,                # % minimalnego — podstawa MZP (art. 18c ust. 4)
+    "maly_zus_plus_base_cap_pct": 60,            # % przeciętnego — górny kraniec podstawy MZP
+    "maly_zus_plus_months_window": 60,           # mies. okno — max 36 mies. MZP w 60 (art. 18c ust. 11)
+
+    # Składka zdrowotna — podstawy minimalne (mikro, art. 81 ust. 2 u.ś.o.z.)
+    "health_min_base_standard": 4800.00,         # PLN — 100% minimalnego (JDG)
+    "health_min_base_first_year": 3600.00,       # PLN — 75% minimalnego (pierwszy rok działalności)
+    "health_lump_annual_deadline": "05-22",     # korekta roczna ryczałtu — 22 maja
+    "health_lump_tier_1_multiplier": 0.60,       # 60% przeciętnego — TIER I (przychód ≤ 60 000)
+    "health_lump_tier_2_multiplier": 1.00,       # 100% przeciętnego — TIER II (przychód ≤ 300 000)
+    "health_lump_tier_3_multiplier": 1.80,       # 180% przeciętnego — TIER III (> 300 000)
+
+    # Zasiłki (ustawa zasiłkowa, mikro)
+    "sickness_waiting_days_employee": 30,        # 30 dni wyczekiwania (pracownik / obowiązkowe chorobowe)
+    "sickness_waiting_days_voluntary": 90,       # 90 dni wyczekiwania (dobrowolne chorobowe JDG)
+    "sickness_max_days_standard": 182,           # limit 182 dni (art. 8 ustawy zasiłkowej)
+    "sickness_max_days_tb": 270,                 # limit 270 dni (gruźlica / szczególne przypadki)
+    "sickness_benefit_base_months": 12,          # 12 mies. — podstawa z historii składek
+    "sickness_benefit_daily_divisor": 30,        # podstawa dzienna = podstawa / 30
+
+    # Terminy płatności (art. 47 ust. 1 pkt 2 SUS — mikro)
+    "payment_deadline_social": 10,               # 10. dzień miesiąca (JDG bez pracowników)
+    "payment_deadline_social_employees": 15,     # 15. dzień miesiąca (DRA, pracownicy)
+    "payment_deadline_health": 10,               # 10. dzień miesiąca (zdrowotna JDG)
+
+    # Zgłoszenia (art. 36 ust. 4 SUS)
+    "reporting_deadline_days": 7,                # 7 dni na ZUA/ZWUA
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# KSIĘGOWOŚĆ (GLM52 P10 — PKPiR/UoR/amortyzacja księgowa/leasing)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+ksiegowosc := {
+    # Art. 2 ust. 1 pkt 5 UoR — próg pełnej księgowości (przychody netto)
+    "uor_threshold_eur": 2000000,              # 2 000 000 EUR
+    "uor_threshold_group_eur": 2500000,        # 2 500 000 EUR — grupy kapitałowe
+    "uor_obligation_years": 2,                 # rok obrotowy + 2 kolejne (art. 2 ust. 1)
+    "eur_pln_rate_default": 4.50,              # kurs orientacyjny EUR/PLN (2026)
+
+    # Art. 32 UoR — amortyzacja księgowa
+    "depreciation_one_time_limit_eur": 100000,  # jednorazowy odpis — limit 100 000 EUR
+    "depreciation_degresja_multiplier": 2.0,    # degresywna księgowa — 2× stawka liniowa
+
+    # Art. 26 UoR — inwentaryzacja
+    "inventory_cycle_years": 4,                # co 4 lata (droga inwentaryzacja)
+    "inventory_rotation_pct": 25,              # 25% pozycji rocznie (ciągła)
+
+    # Art. 17f ust. 1 PIT — testy leasingu finansowego
+    "leasing_value_test_pct": 90,              # suma opłat ≥ 90% wartości początkowej
+    "leasing_period_test_pct": 75,             # okres ≥ 75% normatywnego okresu amortyzacji
+    "leasing_realestate_min_years": 10,        # nieruchomości — okres ≥ 10 lat
+
+    # Limity samochodów osobowych (PIT/VAT — PROMPT 02/06)
+    "car_limit_150k": 150000,                  # limit 150 000 zł (samochody < 3,5 t, PIT)
+    "car_limit_225k": 225000,                  # limit 225 000 zł (samochody elektryczne)
+
+    # PKPiR — struktura ewidencji
+    "pkpir_columns": 17,                       # kolumny 1–17 (rozporządzenie MF 15.11.2025)
+    "pkpir_cash_basis_days": 14,               # memoriał kasowy — 14 dni na zapis
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -767,6 +834,20 @@ ord := {
     # Historia: 50% mies. (do 30.06.2023) → 75% mies. (od 01.07.2023) →
     # od 01.01.2026 limit KWARTALNY = 225% płacy min. (ekwiwalent mies. 75%).
     "unregistered_revenue_pct": 0.75,            # 75% min. wynagrodzenia (P930, od 01.07.2023)
+
+    # GLM52 P11 — Ordynacja podatkowa: terminy obrony i korekt
+    "correction_deadline_days": 14,              # Art. 81b — korekta deklaracji: 14 dni
+    "whitelist_sanction_pct": 0.20,              # Art. 117ba — sankcja 20% przy braku powiadomienia
+    "gaar_risk_flag": true,                      # Art. 119a — aktywna klauzula GAAR
+    "appeal_deadline_days": 14,                  # Art. 223 — odwołanie od decyzji: 14 dni
+    "audit_notification_days": 7,                # Art. 282b — zawiadomienie o kontroli: 7 dni
+    "protocol_objection_days": 14,               # Art. 291 — zastrzeżenia do protokołu: 14 dni
+    "wsa_appeal_days": 30,                       # Art. 53 PPSA — skarga do WSA: 30 dni
+    "statute_limitation_break_reset": true,      # Art. 70 § 4 — przerwanie biegu przedawnienia
+    "statute_limitation_suspend_kks": true,      # Art. 70 § 6 — zawieszenie (postęp. karno-skarbowe)
+    "overpayment_claim_years": 5,                # Art. 72-80 — prawo do wniosku o nadpłatę: 5 lat
+    "interest_lombard_multiplier": 2.0,          # Art. 56 — odsetki: 200% stopy lombardowej
+    "instalment_relief_active": true,            # Art. 67a-67e — ulgi w spłacie
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -787,6 +868,20 @@ kks := {
     "limitation_years_misdemeanor": 3,
     "small_value_multiple": 500,
     "correction_interest_pct": 0.15,
+
+    # GLM52 P11 — gradacja kar KKS (art. 54-83) i ścieżki minimalizacji
+    "active_remorse_impact_pct": 0.50,           # Art. 16 — czynny żal: znikoma szkodliwość → umorzenie
+    "voluntary_submission_impact_pct": 0.50,     # Art. 17 — dobrowolne poddanie się odpowiedzialności: 50% obniżki
+    "small_value_min_pln": 100.0,                # Art. 53 § 6-8 — mała wartość: do 100 zł
+    "lesser_weight_max_pln": 5000.0,             # Art. 53 § 9 — wypadek mniejszej wagi
+    "daily_rate_min_pln": 77.0,                  # Art. 23 § 2 — stawka dzienna: min 1/720 min. wynagrodzenia
+    "daily_rate_max_pln": 1540.0,                # Art. 23 § 2 — stawka dzienna: max 1/30 min. wynagrodzenia (2026)
+    "daily_rates_crime_max": 720,                # Art. 27 § 1 — przestępstwo skarbowe: do 720 stawek
+    "daily_rates_misdemeanor_max": 240,          # Art. 27 § 1 — wykroczenie skarbowe: do 240 stawek
+    "joint_penalty_max_years": 3,                # Art. 39 — grzywna łączna
+    "recidivism_days_window": 1825,              # Art. 37 — recydywa: 5 lat
+    "statute_limitation_kks_years": 5,           # Art. 44 § 1 — przedawnienie karalności: 5 lat
+    "conviction_expungement_years": 3,           # Art. 45 — zatarcie skazania
     "valid_from": "2026-01-01",
     "valid_to": null,
     "source_act": "Kodeks karny skarbowy; Ordynacja podatkowa",
@@ -893,8 +988,28 @@ crossborder := {
     "cfc_passive_income_pct": 0.33,             # >33% dochodu pasywnego
     "cfc_tax_rate_threshold_pct": 0.1425,       # <14.25% podatku zagranicznego
 
-    # Art. 30da PIT — Exit tax    "exit_tax_threshold_pln": 4000000,          # próg 4 000 000 PLN
+    # Art. 30da PIT — Exit tax
+    "exit_tax_threshold_pln": 4000000,          # próg 4 000 000 PLN
     "exit_tax_rate_pct": 0.19,                  # 19%
+
+    # GLM52 P12 — TP progi dokumentacyjne (art. 23zf PIT) — domknięcie pustyni pokrycia
+    "tp_goods_transactions_pln": 10000000,      # transakcje towarowe: 10 000 000 zł
+    "tp_services_transactions_pln": 2000000,    # transakcje usługowe: 2 000 000 zł
+    "tp_financial_transactions_pln": 2500000,   # transakcje finansowe: 2 500 000 zł
+    "tp_documentation_months": 6,               # 6 miesięcy na dokumentację (art. 23zf)
+    "tp_related_party_share_pct": 0.25,         # art. 23m ust. 1 pkt 4 — powiązania ≥25%
+    "tp_market_price_arm_length": true,         # art. 23o — zasada ceny rynkowej
+    "tp_adjustment_sanction_pct": 0.10,         # art. 23zb — korekta 10%
+
+    # GLM52 P12 — MDR/DAC6 (art. 86a-86o OrdPU) + CBAM/DAC8/ViDA
+    "mdr_mbt_threshold_eur": 250000,            # główna korzyść podatkowa: 250k EUR
+    "mdr_hallmark_reportable": true,            # hallmarks A-E → raportowanie
+    "mdr_sanction_daily_rates": 720,            # art. 80f-80h KKS: do 720 stawek
+    "cbam_registration_threshold_eur": 150,     # CBAM: przesyłki ≤150 EUR wyłączone
+    "cbam_quarterly_reports": true,             # CBAM: raporty kwartalne
+    "cbam_certificate_required_2026": true,     # CBAM: pełny mechanizm od 2026
+    "dac8_crypto_reporting_2026": true,         # DAC8: raportowanie krypto od 2026
+    "vida_platform_rules_2030": true,           # ViDA: e-fakturowanie 2030+
     "valid_from": "2025-01-01",
     "valid_to": null,
 }
@@ -983,11 +1098,36 @@ business_lifecycle := {
 
     # Zawieszenie (art. 22-25 PP)
     "suspension_max_months": 24,                # max 24 mies. zawieszenia
+    "suspension_min_days": 30,                  # min. 30 dni zawieszenia (art. 22 ust. 3 PP)
+    "suspension_alert_pct": 90,                 # alert przy 90% limitu 24 mies.
+
+    # Ryczałt — monitor limitu 2M EUR (art. 6 ust. 4: kurs NBP z 1.10)
+    "ryczalt_limit_alert_pct": 95,              # alert przy 95% limitu
+    "ryczalt_limit_exceeded_penalty_pct": 0.0,  # brak kary — przejście na skalę od 1.01
+
+    # Ryczałt — stawki PKWiU (art. 12 ust. 1 u.z.p.d.)
+    "ryczalt_rate_3_pct": 0.03,                 # działalność wytwórcza 3%
+    "ryczalt_rate_55_pct": 0.055,               # działalność wytwórcza/roboty budowlane 5,5%
+    "ryczalt_rate_85_pct": 0.085,               # usługi 8,5%
+    "ryczalt_rate_125_pct": 0.125,              # wolne zawody 12,5%
+    "ryczalt_rate_17_pct": 0.17,                # najem/lekarze 17%
+    "ryczalt_rate_20_pct": 0.20,                # 20% (przychody z działów specjalnych)
+    "ryczalt_rate_25_pct": 0.25,                # 25% (pozostałe usługi, art. 12 ust. 1 pkt 5)
+
+    # Sukcesja (art. 3-15 u.z.s.) — pełny cykl
+    "succession_appointment_days": 14,          # powołanie zarządcy → wpis CEIDG 14 dni
+    "succession_death_notice_days": 30,         # zgłoszenie śmierci do ZUS 30 dni
+    "succession_remnant_deadline_days": 30,     # remanent sukcesyjny 30 dni
+    "succession_ext_extension_years": 3,        # przedłużenie do 3 lat (art. 13)
+
+    # Działalność nieewidencjonowana (art. 5-6 PP)
+    "unregistered_monitor_monthly": true,       # monitor miesięczny 50% minimalnej
 
     # Cykl życia JDG — fazy
     "lifecycle_ulga_start_months": 6,           # ulga na start 0-6 mies.
     "lifecycle_pref_zus_months": 24,            # preferencyjny ZUS 6-30 mies.
     "lifecycle_vat_threshold_pln": 200000,      # próg VAT (art. 113 ust. 1)
+    "lifecycle_health_scorecard_levels": 5,     # poziomy health scorecard (A-E)
 
     "valid_from": "2025-01-01",
     "valid_to": null,

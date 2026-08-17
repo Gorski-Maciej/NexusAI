@@ -172,7 +172,7 @@ class ZUSCompletenessEngine:
         self._analyze_act("SUS", SUS_ARTICLES, [
             MICRO_DIR / "sus" / "sus.rego",
             MICRO_DIR / "plan33_zus.rego",
-            MICRO_DIR / "plan34_zus.rego",
+            MICRO_DIR / "zus_micro_atomic_p09.rego",
         ])
         self._analyze_act("ZDROWOTNA", ZDROWOTNA_ARTICLES, [
             MICRO_DIR / "zdrowotna" / "zdrowotna.rego",

@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sukcesja.a3 — Zarządca sukcesyjny (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)                                                   ║
+# ║  Legal basis: ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sukcesja.a3.r1: sukcesja_a3_r1_eligibility
@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zarządca sukcesyjny: sprawdzenie czy przepis ma zastosowanie do JDG"],
     "valid_from": "2018-11-19",
     "valid_to": null,
@@ -73,7 +73,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zarządca sukcesyjny: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sukcesja_condition_met", false) == true
@@ -101,7 +101,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zarządca sukcesyjny: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sukcesja_a3_r3_pass", false) == true
@@ -129,7 +129,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zarządca sukcesyjny: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sukcesja_a3_r4_checks", false) == true
@@ -157,7 +157,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zarządca sukcesyjny: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sukcesja_exclusion_applies", false) == false
@@ -185,7 +185,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zarządca sukcesyjny: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sukcesja_exclusion_2", false) == false
@@ -213,7 +213,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zarządca sukcesyjny: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sukcesja_a3_exception", false) == true
@@ -241,7 +241,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zarządca sukcesyjny: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sukcesja_a3_exception_2", false) == true
@@ -249,7 +249,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sukcesja.a12 — Obowiązki zarządcy (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)                                                   ║
+# ║  Legal basis: ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sukcesja.a12.r1: sukcesja_a12_r1_eligibility
@@ -274,7 +274,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Obowiązki zarządcy: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -302,7 +302,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Obowiązki zarządcy: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sukcesja_condition_met", false) == true
@@ -330,7 +330,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Obowiązki zarządcy: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sukcesja_a12_r3_pass", false) == true
@@ -358,7 +358,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Obowiązki zarządcy: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sukcesja_a12_r4_checks", false) == true
@@ -386,7 +386,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Obowiązki zarządcy: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sukcesja_exclusion_applies", false) == false
@@ -414,7 +414,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Obowiązki zarządcy: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sukcesja_exclusion_2", false) == false
@@ -442,7 +442,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Obowiązki zarządcy: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sukcesja_a12_exception", false) == true
@@ -470,7 +470,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Obowiązki zarządcy: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sukcesja_a12_exception_2", false) == true
@@ -478,7 +478,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sukcesja.a14 — Kontynuacja działalności (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)                                                   ║
+# ║  Legal basis: ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sukcesja.a14.r1: sukcesja_a14_r1_eligibility
@@ -503,7 +503,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Kontynuacja działalności: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -531,7 +531,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Kontynuacja działalności: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sukcesja_condition_met", false) == true
@@ -559,7 +559,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Kontynuacja działalności: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sukcesja_a14_r3_pass", false) == true
@@ -587,7 +587,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Kontynuacja działalności: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sukcesja_a14_r4_checks", false) == true
@@ -615,7 +615,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Kontynuacja działalności: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sukcesja_exclusion_applies", false) == false
@@ -643,7 +643,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Kontynuacja działalności: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sukcesja_exclusion_2", false) == false
@@ -671,7 +671,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Kontynuacja działalności: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sukcesja_a14_exception", false) == true
@@ -699,7 +699,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Kontynuacja działalności: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sukcesja_a14_exception_2", false) == true
@@ -707,7 +707,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sukcesja.a21 — Zakończenie zarządu (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)                                                   ║
+# ║  Legal basis: ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sukcesja.a21.r1: sukcesja_a21_r1_eligibility
@@ -732,7 +732,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zakończenie zarządu: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -760,7 +760,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zakończenie zarządu: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sukcesja_condition_met", false) == true
@@ -788,7 +788,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zakończenie zarządu: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sukcesja_a21_r3_pass", false) == true
@@ -816,7 +816,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zakończenie zarządu: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sukcesja_a21_r4_checks", false) == true
@@ -844,7 +844,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zakończenie zarządu: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sukcesja_exclusion_applies", false) == false
@@ -872,7 +872,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zakończenie zarządu: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sukcesja_exclusion_2", false) == false
@@ -900,7 +900,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zakończenie zarządu: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "sukcesja_a21_exception", false) == true
@@ -928,7 +928,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Zakończenie zarządu: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "sukcesja_a21_exception_2", false) == true
@@ -936,7 +936,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  sukcesja.a24 — Odpowiedzialność zarządcy (6 reguł)                                    ║
-# ║  Legal basis: Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)                                                   ║
+# ║  Legal basis: ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.sukcesja.a24.r1: sukcesja_a24_r1_eligibility
@@ -961,7 +961,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 24 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 24 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Odpowiedzialność zarządcy: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -989,7 +989,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 24 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 24 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Odpowiedzialność zarządcy: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "sukcesja_condition_met", false) == true
@@ -1017,7 +1017,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 24 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 24 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Odpowiedzialność zarządcy: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "sukcesja_a24_r3_pass", false) == true
@@ -1045,7 +1045,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 24 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 24 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Odpowiedzialność zarządcy: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "sukcesja_a24_r4_checks", false) == true
@@ -1073,7 +1073,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 24 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 24 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Odpowiedzialność zarządcy: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "sukcesja_exclusion_applies", false) == false
@@ -1101,7 +1101,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 24 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 24 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Odpowiedzialność zarządcy: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "sukcesja_exclusion_2", false) == false
@@ -1534,7 +1534,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 10 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a10_u1_p2_check", false) == true
@@ -1561,7 +1561,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 10 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a10_u2_p3_check", false) == true
@@ -1588,7 +1588,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 10 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a10_u3_p4_check", false) == true
@@ -1615,7 +1615,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 10 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a10_u4_p1_check", false) == true
@@ -1642,7 +1642,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a11_u1_p3_check", false) == true
@@ -1669,7 +1669,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a11_u2_p4_check", false) == true
@@ -1696,7 +1696,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a11_u3_p1_check", false) == true
@@ -1723,7 +1723,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a11_u5_p2_check", false) == true
@@ -1750,7 +1750,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a12_u1_p1_check", false) == true
@@ -1777,7 +1777,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a12_u1_p4_check", false) == true
@@ -1804,7 +1804,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a12_u2_p1_check", false) == true
@@ -1831,7 +1831,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a12_u2_p2_check", false) == true
@@ -1858,7 +1858,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a12_u4_p2_check", false) == true
@@ -1885,7 +1885,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a12_u5_p3_check", false) == true
@@ -1912,7 +1912,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a13_u1_p1_check", false) == true
@@ -1939,7 +1939,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a13_u1_p2_check", false) == true
@@ -1966,7 +1966,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a13_u3_p2_check", false) == true
@@ -1993,7 +1993,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a13_u3_p3_check", false) == true
@@ -2020,7 +2020,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a13_u4_p3_check", false) == true
@@ -2047,7 +2047,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a13_u4_p4_check", false) == true
@@ -2074,7 +2074,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a13_u5_p1_check", false) == true
@@ -2101,7 +2101,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a13_u5_p4_check", false) == true
@@ -2128,7 +2128,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a14_u2_p2_check", false) == true
@@ -2155,7 +2155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a14_u2_p3_check", false) == true
@@ -2182,7 +2182,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a14_u3_p3_check", false) == true
@@ -2209,7 +2209,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a14_u3_p4_check", false) == true
@@ -2236,7 +2236,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a14_u4_p1_check", false) == true
@@ -2263,7 +2263,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a14_u4_p4_check", false) == true
@@ -2290,7 +2290,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a14_u5_p1_check", false) == true
@@ -2317,7 +2317,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a14_u5_p2_check", false) == true
@@ -2344,7 +2344,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a15_u1_p2_check", false) == true
@@ -2371,7 +2371,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a15_u1_p3_check", false) == true
@@ -2398,7 +2398,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a15_u2_p3_check", false) == true
@@ -2425,7 +2425,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a15_u2_p4_check", false) == true
@@ -2452,7 +2452,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a15_u3_p1_check", false) == true
@@ -2479,7 +2479,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a15_u3_p4_check", false) == true
@@ -2506,7 +2506,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a15_u4_p1_check", false) == true
@@ -2533,7 +2533,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a15_u4_p2_check", false) == true
@@ -2560,7 +2560,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a16_u1_p3_check", false) == true
@@ -2587,7 +2587,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a16_u1_p4_check", false) == true
@@ -2614,7 +2614,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a16_u2_p1_check", false) == true
@@ -2641,7 +2641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a16_u2_p4_check", false) == true
@@ -2668,7 +2668,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a16_u3_p1_check", false) == true
@@ -2695,7 +2695,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a16_u3_p2_check", false) == true
@@ -2722,7 +2722,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a16_u5_p2_check", false) == true
@@ -2749,7 +2749,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a16_u5_p3_check", false) == true
@@ -2776,7 +2776,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a17_u1_p1_check", false) == true
@@ -2803,7 +2803,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a17_u1_p4_check", false) == true
@@ -2830,7 +2830,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a17_u2_p1_check", false) == true
@@ -2857,7 +2857,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a17_u2_p2_check", false) == true
@@ -2884,7 +2884,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a17_u4_p2_check", false) == true
@@ -2911,7 +2911,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a17_u4_p3_check", false) == true
@@ -2938,7 +2938,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a17_u5_p3_check", false) == true
@@ -2965,7 +2965,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a17_u5_p4_check", false) == true
@@ -2992,7 +2992,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a18_u1_p1_check", false) == true
@@ -3019,7 +3019,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a18_u1_p2_check", false) == true
@@ -3046,7 +3046,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a18_u3_p2_check", false) == true
@@ -3073,7 +3073,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a18_u3_p3_check", false) == true
@@ -3100,7 +3100,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a18_u4_p3_check", false) == true
@@ -3127,7 +3127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a18_u4_p4_check", false) == true
@@ -3154,7 +3154,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a18_u5_p1_check", false) == true
@@ -3181,7 +3181,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a18_u5_p4_check", false) == true
@@ -3208,7 +3208,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a19_u2_p2_check", false) == true
@@ -3235,7 +3235,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a19_u2_p3_check", false) == true
@@ -3262,7 +3262,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a19_u3_p3_check", false) == true
@@ -3289,7 +3289,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a19_u3_p4_check", false) == true
@@ -3316,7 +3316,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a19_u4_p1_check", false) == true
@@ -3343,7 +3343,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a19_u4_p4_check", false) == true
@@ -3370,7 +3370,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a19_u5_p1_check", false) == true
@@ -3397,7 +3397,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a19_u5_p2_check", false) == true
@@ -3424,7 +3424,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a20_u1_p2_check", false) == true
@@ -3451,7 +3451,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a20_u2_p3_check", false) == true
@@ -3478,7 +3478,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a20_u3_p4_check", false) == true
@@ -3505,7 +3505,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a20_u4_p1_check", false) == true
@@ -3532,7 +3532,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a21_u1_p3_check", false) == true
@@ -3559,7 +3559,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a21_u2_p4_check", false) == true
@@ -3586,7 +3586,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a21_u3_p1_check", false) == true
@@ -3613,7 +3613,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a21_u5_p2_check", false) == true
@@ -3640,7 +3640,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a22_u4_p2_check", false) == true
@@ -3667,7 +3667,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 8 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 8: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a8_u1_p1_check", false) == true
@@ -3694,7 +3694,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 9 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 9: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a9_u2_p2_check", false) == true
@@ -3721,7 +3721,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 9 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 9: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a9_u3_p3_check", false) == true
@@ -3748,7 +3748,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 9 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 9: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a9_u4_p4_check", false) == true
@@ -3775,7 +3775,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 9 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 2018 poz. 1629)",
+    "_legal_basis": "Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings": ["[MICRO] Art. 9: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "suk_a9_u5_p1_check", false) == true

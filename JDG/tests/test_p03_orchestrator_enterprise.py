@@ -68,8 +68,10 @@ class TestRuntimeInvariants:
 
     def test_post_merge_reference_in_main(self):
         main = MAIN_REGO.read_text(encoding="utf-8")
-        # P03: PAS 43 (warstwa mikro VAT+JPK) wydłużył łańcuch post-merge
-        assert "final_verdict_post_merge = object.union(final_verdict_p45," in main
+        # P03: PAS 43 (warstwa mikro VAT+JPK) wydłużył łańcuch post-merge;
+        # P09 (GLM52): PAS 46 (mikro ZUS); P10 (GLM52): PAS 47 (mikro księgowość);
+        # P11 (GLM52): PAS 48 (mikro KKS/Ordynacja/Audyt)
+        assert "final_verdict_post_merge = object.union(final_verdict_p50," in main
         assert "runtime_invariants.enforce(final_verdict_post_merge)" in main
         assert "final_verdict_enforced" in main
 
@@ -174,7 +176,13 @@ class TestMainJdgWiring:
         assert "final_verdict_p38 = safe_merge(final_verdict_p37," in text
         assert "final_verdict_p39 = safe_merge(final_verdict_p38," in text
         assert "final_verdict_p42 = safe_merge(final_verdict_p41," in text
-        assert "final_verdict_post_merge = object.union(final_verdict_p45," in text
+        # P09 (GLM52): PAS 46 — warstwa mikro ZUS (sus/zdrowotna/zasilkowa/plan33/atomic)
+        assert "final_verdict_p46 = safe_merge(final_verdict_p45," in text
+        # P10 (GLM52): PAS 47 — warstwa mikro księgowość (pkpir/uor/plan33_uor/atomic)
+        assert "final_verdict_p47 = safe_merge(final_verdict_p46," in text
+        # P11 (GLM52): PAS 48 — warstwa mikro KKS/Ordynacja/Audyt (kks/ord/plan33/plan34/atomic)
+        assert "final_verdict_p48 = safe_merge(final_verdict_p47," in text
+        assert "final_verdict_post_merge = object.union(final_verdict_p50," in text
         assert "final_verdict_enforced = object.union(final_verdict_post_merge," in text
         assert "final_verdict = final_verdict_enforced" in text
         assert '"_routing_context": routing_context' in text

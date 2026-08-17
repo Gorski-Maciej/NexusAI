@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  crossborder.a23o — Ceny transferowe — dokumentacja (10 reguł)                                    ║
-# ║  Legal basis: Dyrektywy UE, UPO, TP, CFC                                                   ║
+# ║  Legal basis: art. 9-13, 28a-28o VAT (Dz.U. 2024 poz. 1557 ze zm.), art. 23m-23zf/30f/30da PIT (Dz.U. 2024 poz. 1760 ze zm.), art. 86a-86o OrdPU (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.crossborder.a23o.r1: crossborder_a23o_r1_eligibility
@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — dokumentacja: sprawdzenie czy przepis ma zastosowanie do JDG"],
     "valid_from": "2024-01-01",
     "valid_to": null
@@ -73,7 +73,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — dokumentacja: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "crossborder_condition_met", false) == true
@@ -101,7 +101,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — dokumentacja: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a23o_r3_pass", false) == true
@@ -129,7 +129,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — dokumentacja: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a23o_r4_checks", false) == true
@@ -157,7 +157,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — dokumentacja: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "crossborder_exclusion_applies", false) == false
@@ -185,7 +185,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — dokumentacja: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "crossborder_exclusion_2", false) == false
@@ -213,7 +213,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — dokumentacja: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "crossborder_a23o_exception", false) == true
@@ -241,7 +241,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — dokumentacja: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "crossborder_a23o_exception_2", false) == true
@@ -269,7 +269,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — dokumentacja: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_crossborder", false) == true
@@ -297,7 +297,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23o ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — dokumentacja: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_crossborder", false) == true
@@ -305,7 +305,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  crossborder.a23zf — Ceny transferowe — progi (8 reguł)                                    ║
-# ║  Legal basis: Dyrektywy UE, UPO, TP, CFC                                                   ║
+# ║  Legal basis: art. 9-13, 28a-28o VAT (Dz.U. 2024 poz. 1557 ze zm.), art. 23m-23zf/30f/30da PIT (Dz.U. 2024 poz. 1760 ze zm.), art. 86a-86o OrdPU (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.crossborder.a23zf.r1: crossborder_a23zf_r1_eligibility
@@ -330,7 +330,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — progi: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -358,7 +358,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — progi: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "crossborder_condition_met", false) == true
@@ -386,7 +386,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — progi: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a23zf_r3_pass", false) == true
@@ -414,7 +414,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — progi: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a23zf_r4_checks", false) == true
@@ -442,7 +442,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — progi: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "crossborder_exclusion_applies", false) == false
@@ -470,7 +470,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — progi: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "crossborder_exclusion_2", false) == false
@@ -498,7 +498,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — progi: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "crossborder_a23zf_exception", false) == true
@@ -526,7 +526,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 23zf ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Ceny transferowe — progi: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "crossborder_a23zf_exception_2", false) == true
@@ -534,7 +534,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  crossborder.a30da — Exit Tax (10 reguł)                                    ║
-# ║  Legal basis: Dyrektywy UE, UPO, TP, CFC                                                   ║
+# ║  Legal basis: art. 9-13, 28a-28o VAT (Dz.U. 2024 poz. 1557 ze zm.), art. 23m-23zf/30f/30da PIT (Dz.U. 2024 poz. 1760 ze zm.), art. 86a-86o OrdPU (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.crossborder.a30da.r1: crossborder_a30da_r1_eligibility
@@ -559,7 +559,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Exit Tax: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -587,7 +587,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Exit Tax: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "crossborder_condition_met", false) == true
@@ -615,7 +615,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Exit Tax: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a30da_r3_pass", false) == true
@@ -643,7 +643,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Exit Tax: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a30da_r4_checks", false) == true
@@ -671,7 +671,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Exit Tax: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "crossborder_exclusion_applies", false) == false
@@ -699,7 +699,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Exit Tax: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "crossborder_exclusion_2", false) == false
@@ -727,7 +727,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Exit Tax: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "crossborder_a30da_exception", false) == true
@@ -755,7 +755,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Exit Tax: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "crossborder_a30da_exception_2", false) == true
@@ -783,7 +783,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Exit Tax: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_crossborder", false) == true
@@ -811,7 +811,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30da ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Exit Tax: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_crossborder", false) == true
@@ -819,7 +819,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  crossborder.a30f — CFC — definicja (8 reguł)                                    ║
-# ║  Legal basis: Dyrektywy UE, UPO, TP, CFC                                                   ║
+# ║  Legal basis: art. 9-13, 28a-28o VAT (Dz.U. 2024 poz. 1557 ze zm.), art. 23m-23zf/30f/30da PIT (Dz.U. 2024 poz. 1760 ze zm.), art. 86a-86o OrdPU (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.crossborder.a30f.r1: crossborder_a30f_r1_eligibility
@@ -844,7 +844,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — definicja: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -872,7 +872,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — definicja: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "crossborder_condition_met", false) == true
@@ -900,7 +900,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — definicja: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a30f_r3_pass", false) == true
@@ -928,7 +928,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — definicja: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a30f_r4_checks", false) == true
@@ -956,7 +956,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — definicja: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "crossborder_exclusion_applies", false) == false
@@ -984,7 +984,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — definicja: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "crossborder_exclusion_2", false) == false
@@ -1012,7 +1012,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — definicja: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "crossborder_a30f_exception", false) == true
@@ -1040,7 +1040,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — definicja: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "crossborder_a30f_exception_2", false) == true
@@ -1048,7 +1048,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  crossborder.a30f2 — CFC — test dochodu pasywnego (8 reguł)                                    ║
-# ║  Legal basis: Dyrektywy UE, UPO, TP, CFC                                                   ║
+# ║  Legal basis: art. 9-13, 28a-28o VAT (Dz.U. 2024 poz. 1557 ze zm.), art. 23m-23zf/30f/30da PIT (Dz.U. 2024 poz. 1760 ze zm.), art. 86a-86o OrdPU (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.crossborder.a30f2.r1: crossborder_a30f2_r1_eligibility
@@ -1073,7 +1073,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — test dochodu pasywnego: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1101,7 +1101,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — test dochodu pasywnego: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "crossborder_condition_met", false) == true
@@ -1129,7 +1129,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — test dochodu pasywnego: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a30f2_r3_pass", false) == true
@@ -1157,7 +1157,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — test dochodu pasywnego: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a30f2_r4_checks", false) == true
@@ -1185,7 +1185,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — test dochodu pasywnego: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "crossborder_exclusion_applies", false) == false
@@ -1213,7 +1213,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — test dochodu pasywnego: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "crossborder_exclusion_2", false) == false
@@ -1241,7 +1241,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — test dochodu pasywnego: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "crossborder_a30f2_exception", false) == true
@@ -1269,7 +1269,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 30f ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] CFC — test dochodu pasywnego: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "crossborder_a30f2_exception_2", false) == true
@@ -1277,7 +1277,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  crossborder.a29 — Podatek u źródła WHT (10 reguł)                                    ║
-# ║  Legal basis: Dyrektywy UE, UPO, TP, CFC                                                   ║
+# ║  Legal basis: art. 9-13, 28a-28o VAT (Dz.U. 2024 poz. 1557 ze zm.), art. 23m-23zf/30f/30da PIT (Dz.U. 2024 poz. 1760 ze zm.), art. 86a-86o OrdPU (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.crossborder.a29.r1: crossborder_a29_r1_eligibility
@@ -1302,7 +1302,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.) w zw. z art. 30a (WHT)",
     "_warnings": ["[MICRO] Podatek u źródła WHT: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1330,7 +1330,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.) w zw. z art. 30a (WHT)",
     "_warnings": ["[MICRO] Podatek u źródła WHT: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "crossborder_condition_met", false) == true
@@ -1358,7 +1358,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.) w zw. z art. 30a (WHT)",
     "_warnings": ["[MICRO] Podatek u źródła WHT: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a29_r3_pass", false) == true
@@ -1386,7 +1386,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.) w zw. z art. 30a (WHT)",
     "_warnings": ["[MICRO] Podatek u źródła WHT: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a29_r4_checks", false) == true
@@ -1414,7 +1414,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.) w zw. z art. 30a (WHT)",
     "_warnings": ["[MICRO] Podatek u źródła WHT: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "crossborder_exclusion_applies", false) == false
@@ -1442,7 +1442,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.) w zw. z art. 30a (WHT)",
     "_warnings": ["[MICRO] Podatek u źródła WHT: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "crossborder_exclusion_2", false) == false
@@ -1470,7 +1470,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.) w zw. z art. 30a (WHT)",
     "_warnings": ["[MICRO] Podatek u źródła WHT: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "crossborder_a29_exception", false) == true
@@ -1498,7 +1498,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.) w zw. z art. 30a (WHT)",
     "_warnings": ["[MICRO] Podatek u źródła WHT: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "crossborder_a29_exception_2", false) == true
@@ -1526,7 +1526,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.) w zw. z art. 30a (WHT)",
     "_warnings": ["[MICRO] Podatek u źródła WHT: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_crossborder", false) == true
@@ -1554,7 +1554,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 29 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.) w zw. z art. 30a (WHT)",
     "_warnings": ["[MICRO] Podatek u źródła WHT: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_crossborder", false) == true
@@ -1562,7 +1562,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  crossborder.a86r — MDR — raportowanie schematów (10 reguł)                                    ║
-# ║  Legal basis: Dyrektywy UE, UPO, TP, CFC                                                   ║
+# ║  Legal basis: art. 9-13, 28a-28o VAT (Dz.U. 2024 poz. 1557 ze zm.), art. 23m-23zf/30f/30da PIT (Dz.U. 2024 poz. 1760 ze zm.), art. 86a-86o OrdPU (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.crossborder.a86r.r1: crossborder_a86r_r1_eligibility
@@ -1587,7 +1587,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] MDR — raportowanie schematów: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1615,7 +1615,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] MDR — raportowanie schematów: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "crossborder_condition_met", false) == true
@@ -1643,7 +1643,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] MDR — raportowanie schematów: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a86r_r3_pass", false) == true
@@ -1671,7 +1671,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] MDR — raportowanie schematów: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a86r_r4_checks", false) == true
@@ -1699,7 +1699,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] MDR — raportowanie schematów: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "crossborder_exclusion_applies", false) == false
@@ -1727,7 +1727,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] MDR — raportowanie schematów: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "crossborder_exclusion_2", false) == false
@@ -1755,7 +1755,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] MDR — raportowanie schematów: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "crossborder_a86r_exception", false) == true
@@ -1783,7 +1783,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] MDR — raportowanie schematów: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "crossborder_a86r_exception_2", false) == true
@@ -1811,7 +1811,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] MDR — raportowanie schematów: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_crossborder", false) == true
@@ -1839,7 +1839,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Art. 86a-86o ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
     "_warnings": ["[MICRO] MDR — raportowanie schematów: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_crossborder", false) == true
@@ -1847,7 +1847,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  crossborder.a20 — Konwencje MLI (8 reguł)                                    ║
-# ║  Legal basis: Dyrektywy UE, UPO, TP, CFC                                                   ║
+# ║  Legal basis: art. 9-13, 28a-28o VAT (Dz.U. 2024 poz. 1557 ze zm.), art. 23m-23zf/30f/30da PIT (Dz.U. 2024 poz. 1760 ze zm.), art. 86a-86o OrdPU (Dz.U. 2025 poz. 234, ze zm.)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.crossborder.a20.r1: crossborder_a20_r1_eligibility
@@ -1872,7 +1872,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unikaniu podwójnego opodatkowania",
     "_warnings": ["[MICRO] Konwencje MLI: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1900,7 +1900,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unikaniu podwójnego opodatkowania",
     "_warnings": ["[MICRO] Konwencje MLI: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "crossborder_condition_met", false) == true
@@ -1928,7 +1928,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unikaniu podwójnego opodatkowania",
     "_warnings": ["[MICRO] Konwencje MLI: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a20_r3_pass", false) == true
@@ -1956,7 +1956,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unikaniu podwójnego opodatkowania",
     "_warnings": ["[MICRO] Konwencje MLI: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "crossborder_a20_r4_checks", false) == true
@@ -1984,7 +1984,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unikaniu podwójnego opodatkowania",
     "_warnings": ["[MICRO] Konwencje MLI: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "crossborder_exclusion_applies", false) == false
@@ -2012,7 +2012,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unikaniu podwójnego opodatkowania",
     "_warnings": ["[MICRO] Konwencje MLI: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "crossborder_exclusion_2", false) == false
@@ -2040,7 +2040,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unikaniu podwójnego opodatkowania",
     "_warnings": ["[MICRO] Konwencje MLI: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "crossborder_a20_exception", false) == true
@@ -2068,7 +2068,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Dyrektywy UE, UPO, TP, CFC",
+    "_legal_basis": "Konwencja MLI (Dz.U. 2018 poz. 1299) w zw. z umowami o unikaniu podwójnego opodatkowania",
     "_warnings": ["[MICRO] Konwencje MLI: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "crossborder_a20_exception_2", false) == true
@@ -2102,7 +2102,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a28_u1_p1_check", false) == true
@@ -2129,7 +2129,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a28_u2_p2_check", false) == true
@@ -2156,7 +2156,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a28_u3_p3_check", false) == true
@@ -2183,7 +2183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a29_u1_p2_check", false) == true
@@ -2210,7 +2210,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a29_u2_p3_check", false) == true
@@ -2237,7 +2237,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a29_u4_p4_check", false) == true
@@ -2264,7 +2264,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a29_u5_p1_check", false) == true
@@ -2291,7 +2291,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a30_u1_p1_check", false) == true
@@ -2318,7 +2318,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a30_u1_p3_check", false) == true
@@ -2345,7 +2345,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a30_u2_p2_check", false) == true
@@ -2372,7 +2372,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a30_u3_p4_check", false) == true
@@ -2399,7 +2399,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a30_u4_p1_check", false) == true
@@ -2426,7 +2426,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a30_u5_p2_check", false) == true
@@ -2453,7 +2453,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a31_u1_p2_check", false) == true
@@ -2480,7 +2480,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a31_u2_p4_check", false) == true
@@ -2507,7 +2507,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a31_u3_p1_check", false) == true
@@ -2534,7 +2534,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a31_u3_p3_check", false) == true
@@ -2561,7 +2561,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a31_u4_p2_check", false) == true
@@ -2588,7 +2588,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a31_u4_p4_check", false) == true
@@ -2615,7 +2615,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a31_u5_p1_check", false) == true
@@ -2642,7 +2642,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a31_u5_p3_check", false) == true
@@ -2669,7 +2669,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a32_u1_p4_check", false) == true
@@ -2696,7 +2696,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a32_u2_p1_check", false) == true
@@ -2723,7 +2723,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a32_u2_p3_check", false) == true
@@ -2750,7 +2750,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a32_u3_p2_check", false) == true
@@ -2777,7 +2777,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a32_u3_p4_check", false) == true
@@ -2804,7 +2804,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a32_u4_p1_check", false) == true
@@ -2831,7 +2831,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a32_u4_p3_check", false) == true
@@ -2858,7 +2858,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a32_u5_p2_check", false) == true
@@ -2885,7 +2885,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a33_u1_p1_check", false) == true
@@ -2912,7 +2912,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a33_u1_p3_check", false) == true
@@ -2939,7 +2939,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a33_u2_p2_check", false) == true
@@ -2966,7 +2966,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a33_u2_p4_check", false) == true
@@ -2993,7 +2993,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a33_u3_p1_check", false) == true
@@ -3020,7 +3020,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a33_u3_p3_check", false) == true
@@ -3047,7 +3047,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a33_u4_p2_check", false) == true
@@ -3074,7 +3074,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a33_u5_p4_check", false) == true
@@ -3101,7 +3101,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a34_u1_p2_check", false) == true
@@ -3128,7 +3128,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a34_u1_p4_check", false) == true
@@ -3155,7 +3155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a34_u2_p1_check", false) == true
@@ -3182,7 +3182,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a34_u2_p3_check", false) == true
@@ -3209,7 +3209,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a34_u3_p2_check", false) == true
@@ -3236,7 +3236,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a34_u4_p4_check", false) == true
@@ -3263,7 +3263,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a34_u5_p1_check", false) == true
@@ -3290,7 +3290,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a34_u5_p3_check", false) == true
@@ -3317,7 +3317,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a35_u1_p1_check", false) == true
@@ -3344,7 +3344,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a35_u1_p3_check", false) == true
@@ -3371,7 +3371,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a35_u2_p2_check", false) == true
@@ -3398,7 +3398,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a35_u3_p4_check", false) == true
@@ -3425,7 +3425,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a35_u4_p1_check", false) == true
@@ -3452,7 +3452,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a35_u4_p3_check", false) == true
@@ -3479,7 +3479,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a35_u5_p2_check", false) == true
@@ -3506,7 +3506,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a35_u5_p4_check", false) == true
@@ -3533,7 +3533,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a36_u1_p2_check", false) == true
@@ -3560,7 +3560,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a36_u2_p4_check", false) == true
@@ -3587,7 +3587,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a36_u3_p1_check", false) == true
@@ -3614,7 +3614,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a36_u3_p3_check", false) == true
@@ -3641,7 +3641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a36_u4_p2_check", false) == true
@@ -3668,7 +3668,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a36_u4_p4_check", false) == true
@@ -3695,7 +3695,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a36_u5_p1_check", false) == true
@@ -3722,7 +3722,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 36 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 36: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a36_u5_p3_check", false) == true
@@ -3749,7 +3749,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a37_u1_p4_check", false) == true
@@ -3776,7 +3776,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a37_u2_p1_check", false) == true
@@ -3803,7 +3803,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a37_u2_p3_check", false) == true
@@ -3830,7 +3830,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a37_u3_p2_check", false) == true
@@ -3857,7 +3857,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a37_u3_p4_check", false) == true
@@ -3884,7 +3884,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a37_u4_p1_check", false) == true
@@ -3911,7 +3911,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a37_u4_p3_check", false) == true
@@ -3938,7 +3938,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 37 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 37: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a37_u5_p2_check", false) == true
@@ -3965,7 +3965,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a38_u1_p1_check", false) == true
@@ -3992,7 +3992,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a38_u1_p3_check", false) == true
@@ -4019,7 +4019,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a38_u2_p2_check", false) == true
@@ -4046,7 +4046,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a38_u2_p4_check", false) == true
@@ -4073,7 +4073,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a38_u3_p1_check", false) == true
@@ -4100,7 +4100,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a38_u3_p3_check", false) == true
@@ -4127,7 +4127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a38_u4_p2_check", false) == true
@@ -4154,7 +4154,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 38 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 38: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a38_u5_p4_check", false) == true
@@ -4181,7 +4181,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a39_u1_p2_check", false) == true
@@ -4208,7 +4208,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a39_u1_p4_check", false) == true
@@ -4235,7 +4235,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a39_u2_p1_check", false) == true
@@ -4262,7 +4262,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a39_u2_p3_check", false) == true
@@ -4289,7 +4289,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a39_u3_p2_check", false) == true
@@ -4316,7 +4316,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a39_u4_p4_check", false) == true
@@ -4343,7 +4343,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a39_u5_p1_check", false) == true
@@ -4370,7 +4370,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 39 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 39: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a39_u5_p3_check", false) == true
@@ -4397,7 +4397,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a40_u1_p1_check", false) == true
@@ -4424,7 +4424,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a40_u1_p3_check", false) == true
@@ -4451,7 +4451,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a40_u2_p2_check", false) == true
@@ -4478,7 +4478,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a40_u3_p4_check", false) == true
@@ -4505,7 +4505,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a40_u4_p1_check", false) == true
@@ -4532,7 +4532,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a40_u4_p3_check", false) == true
@@ -4559,7 +4559,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a40_u5_p2_check", false) == true
@@ -4586,7 +4586,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 40 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 40: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a40_u5_p4_check", false) == true
@@ -4613,7 +4613,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a41_u1_p2_check", false) == true
@@ -4640,7 +4640,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a41_u2_p4_check", false) == true
@@ -4667,7 +4667,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a41_u3_p1_check", false) == true
@@ -4694,7 +4694,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a41_u3_p3_check", false) == true
@@ -4721,7 +4721,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a41_u4_p2_check", false) == true
@@ -4748,7 +4748,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a41_u4_p4_check", false) == true
@@ -4775,7 +4775,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a41_u5_p1_check", false) == true
@@ -4802,7 +4802,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 41 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 41: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a41_u5_p3_check", false) == true
@@ -4829,7 +4829,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a42_u1_p4_check", false) == true
@@ -4856,7 +4856,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a42_u2_p1_check", false) == true
@@ -4883,7 +4883,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a42_u2_p3_check", false) == true
@@ -4910,7 +4910,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a42_u3_p2_check", false) == true
@@ -4937,7 +4937,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a42_u3_p4_check", false) == true
@@ -4964,7 +4964,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a42_u4_p1_check", false) == true
@@ -4991,7 +4991,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a42_u4_p3_check", false) == true
@@ -5018,7 +5018,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 42 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 42: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a42_u5_p2_check", false) == true
@@ -5045,7 +5045,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a43_u1_p3_check", false) == true
@@ -5072,7 +5072,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a43_u2_p4_check", false) == true
@@ -5099,7 +5099,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a43_u3_p1_check", false) == true
@@ -5126,7 +5126,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a43_u4_p2_check", false) == true
@@ -5153,7 +5153,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 43 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 43: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a43_u5_p4_check", false) == true
@@ -5180,7 +5180,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a44_u1_p4_check", false) == true
@@ -5207,7 +5207,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a44_u2_p1_check", false) == true
@@ -5234,7 +5234,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a44_u3_p2_check", false) == true
@@ -5261,7 +5261,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 44 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 44: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a44_u5_p3_check", false) == true
@@ -5288,7 +5288,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a45_u4_p3_check", false) == true
@@ -5315,7 +5315,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 45 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o PIT/CIT — cross-border",
+    "_legal_basis": "ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
     "_warnings": ["[MICRO] Art. 45: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "cb_a45_u5_p4_check", false) == true
