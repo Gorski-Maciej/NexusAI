@@ -36,6 +36,27 @@ test_ryczalt_rental_17 {
     r.pit_rate == "0.17"
 }
 
+test_ryczalt_construction_55 {
+    r := atomic.decide with input as {"ryczalt": {"pkwiu_code": "41.00.1", "activity_type": "construction"}}
+    r.matched == true
+    r.rule_id == "jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r6"
+    r.pit_rate == "0.055"
+}
+
+test_ryczalt_special_agriculture_20 {
+    r := atomic.decide with input as {"ryczalt": {"pkwiu_code": "01.11.Z", "activity_type": "special_agriculture"}}
+    r.matched == true
+    r.rule_id == "jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r7"
+    r.pit_rate == "0.20"
+}
+
+test_ryczalt_high_rate_services_25 {
+    r := atomic.decide with input as {"ryczalt": {"pkwiu_code": "74.90.Z", "activity_type": "high_rate_services"}}
+    r.matched == true
+    r.rule_id == "jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r8"
+    r.pit_rate == "0.25"
+}
+
 # ── limit 2M EUR ───────────────────────────────────────────────────────────────
 test_limit_alert_95 {
     r := atomic.decide with input as {"ryczalt": {"revenue_pln": 9_000_000}}

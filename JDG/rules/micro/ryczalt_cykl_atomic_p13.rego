@@ -51,6 +51,9 @@ decide := {
     not _is_manufacturing
     not _is_professional
     not _is_rental
+    not _is_construction
+    not _is_special_agriculture
+    not _is_high_rate_services
 }
 
 decide := {
@@ -152,6 +155,81 @@ decide := {
     "_warnings": [],
 } {
     _is_rental
+}
+
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r6",
+    "package": "jdg.micro.ryczalt_cykl_atomic_p13",
+    "priority": 13006,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "0.055",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "_routing": "ryczalt_pkwiu",
+    "_routing_reason": "Stawka 5,5% dla robót budowlanych (art. 12 ust. 1 pkt 2 u.z.p.d.)",
+    "_legal_basis": "Art. 12 ust. 1 pkt 2 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne (Dz.U. 2025 poz. 234 ze zm.)",
+    "_warnings": [],
+} {
+    _is_construction
+}
+
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r7",
+    "package": "jdg.micro.ryczalt_cykl_atomic_p13",
+    "priority": 13007,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "0.20",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "_routing": "ryczalt_pkwiu",
+    "_routing_reason": "Stawka 20% dla działów specjalnych produkcji rolnej (art. 12 ust. 1 pkt 3 u.z.p.d.)",
+    "_legal_basis": "Art. 12 ust. 1 pkt 3 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne (Dz.U. 2025 poz. 234 ze zm.)",
+    "_warnings": [],
+} {
+    _is_special_agriculture
+}
+
+decide := {
+    "matched": true,
+    "rule_id": "jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r8",
+    "package": "jdg.micro.ryczalt_cykl_atomic_p13",
+    "priority": 13008,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "0.25",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "",
+    "_routing": "ryczalt_pkwiu",
+    "_routing_reason": "Stawka 25% dla pozostałych usług (art. 12 ust. 1 pkt 5 lit. b u.z.p.d.)",
+    "_legal_basis": "Art. 12 ust. 1 pkt 5 lit. b ustawy z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne (Dz.U. 2025 poz. 234 ze zm.)",
+    "_warnings": [],
+} {
+    _is_high_rate_services
 }
 
 # ── RYCZAŁT: monitor limitu 2M EUR (art. 6 ust. 4 u.z.p.d.) ────────────────────
@@ -503,4 +581,24 @@ _is_rental {
 
 _is_services {
     object.get(input.ryczalt, "activity_type", "") == "services"
+}
+
+_is_construction {
+    startswith(object.get(input.ryczalt, "pkwiu_code", ""), "41")
+}
+
+_is_construction {
+    startswith(object.get(input.ryczalt, "pkwiu_code", ""), "43")
+}
+
+_is_construction {
+    object.get(input.ryczalt, "activity_type", "") == "construction"
+}
+
+_is_special_agriculture {
+    object.get(input.ryczalt, "activity_type", "") == "special_agriculture"
+}
+
+_is_high_rate_services {
+    object.get(input.ryczalt, "activity_type", "") == "high_rate_services"
 }
